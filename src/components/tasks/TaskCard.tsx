@@ -23,6 +23,7 @@ import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
 import { TaskDetailsSheet } from './TaskDetailsSheet'
 import { EvidenceUploadDialog } from './EvidenceUploadDialog'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface TaskCardProps {
   task: Task
@@ -38,6 +39,7 @@ export function TaskCard({
   onAddEvidence,
 }: TaskCardProps) {
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const [detailsOpen, setDetailsOpen] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [file, setFile] = useState<File | null>(null)
@@ -122,12 +124,12 @@ export function TaskCard({
               variant="outline"
               className={getPriorityColor(task.priority)}
             >
-              {task.priority}
+              {task.priority.toUpperCase()}
             </Badge>
             <div className="flex gap-1 flex-wrap justify-end">
               {task.type === 'cleaning' && (
                 <Badge variant="secondary" className="text-[10px] h-5">
-                  Limpeza
+                  {t('partners.cleaning')}
                 </Badge>
               )}
               {task.type === 'maintenance' && (
@@ -189,7 +191,7 @@ export function TaskCard({
               className="w-full h-8 text-xs bg-trust-blue hover:bg-trust-blue/90"
               onClick={() => setCheckInOpen(true)}
             >
-              <Camera className="h-3 w-3 mr-2" /> Iniciar (Check-in)
+              <Camera className="h-3 w-3 mr-2" /> {t('tasks.start_checkin')}
             </Button>
           )}
           {task.status === 'in_progress' && (
@@ -198,23 +200,27 @@ export function TaskCard({
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button size="sm" variant="outline" className="text-xs h-8">
-                      <Upload className="h-3 w-3 mr-1" /> Fotos
+                      <Upload className="h-3 w-3 mr-1" /> {t('tasks.photos')}
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Upload de Evidências</DialogTitle>
+                      <DialogTitle>{t('tasks.evidence_upload')}</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                       <div className="grid w-full max-w-sm items-center gap-1.5">
-                        <Label htmlFor="picture">Evidência (Foto)</Label>
+                        <Label htmlFor="picture">
+                          {t('tasks.evidence_photo')}
+                        </Label>
                         <Input
                           id="picture"
                           type="file"
                           onChange={(e) => setFile(e.target.files?.[0] || null)}
                         />
                       </div>
-                      <Button onClick={handleGenericUpload}>Enviar</Button>
+                      <Button onClick={handleGenericUpload}>
+                        {t('tasks.send')}
+                      </Button>
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -224,7 +230,7 @@ export function TaskCard({
                 className="text-xs h-8 bg-green-600 hover:bg-green-700"
                 onClick={() => setCheckOutOpen(true)}
               >
-                <CheckCircle2 className="h-3 w-3 mr-1" /> Concluir
+                <CheckCircle2 className="h-3 w-3 mr-1" /> {t('tasks.finish')}
               </Button>
             </div>
           )}
@@ -234,8 +240,8 @@ export function TaskCard({
               size="sm"
               className="w-full h-8 text-xs cursor-default"
             >
-              <CheckCircle2 className="h-3 w-3 mr-2 text-green-600" /> Tarefa
-              Concluída
+              <CheckCircle2 className="h-3 w-3 mr-2 text-green-600" />
+              {t('common.completed')}
             </Button>
           )}
           <Button
@@ -244,7 +250,7 @@ export function TaskCard({
             className="w-full h-7 text-xs text-muted-foreground"
             onClick={() => setDetailsOpen(true)}
           >
-            Ver Detalhes & Evidências
+            {t('tasks.details_evidence')}
           </Button>
         </CardFooter>
       </Card>

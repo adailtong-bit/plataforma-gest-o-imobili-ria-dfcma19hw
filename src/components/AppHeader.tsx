@@ -1,4 +1,4 @@
-import { Bell, Search, Menu, UserCircle } from 'lucide-react'
+import { Bell, Search, Menu, Globe } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,12 +12,13 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useSidebar } from '@/components/ui/sidebar'
 import useAuthStore from '@/stores/useAuthStore'
-import { getRoleLabel } from '@/lib/permissions'
+import useLanguageStore from '@/stores/useLanguageStore'
 import { Badge } from '@/components/ui/badge'
 
 export function AppHeader() {
   const { toggleSidebar } = useSidebar()
   const { currentUser, setCurrentUser, allUsers } = useAuthStore()
+  const { language, setLanguage, t } = useLanguageStore()
 
   return (
     <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
@@ -34,10 +35,39 @@ export function AppHeader() {
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar..."
+          placeholder={t('common.search')}
           className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
         />
       </div>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <Globe className="h-5 w-5 text-muted-foreground" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            onClick={() => setLanguage('pt')}
+            className={language === 'pt' ? 'bg-accent' : ''}
+          >
+            🇵🇹 Português
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => setLanguage('en')}
+            className={language === 'en' ? 'bg-accent' : ''}
+          >
+            🇺🇸 English
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => setLanguage('es')}
+            className={language === 'es' ? 'bg-accent' : ''}
+          >
+            🇪🇸 Español
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <Button variant="ghost" size="icon" className="relative">
         <Bell className="h-5 w-5" />
         <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600" />
@@ -61,7 +91,7 @@ export function AppHeader() {
                 {currentUser?.email}
               </p>
               <Badge className="mt-2 w-fit" variant="secondary">
-                {getRoleLabel(currentUser?.role)}
+                {t(`roles.${currentUser?.role}`)}
               </Badge>
             </div>
           </DropdownMenuLabel>
@@ -78,13 +108,13 @@ export function AppHeader() {
                 <div className="flex flex-col">
                   <span>{user.name}</span>
                   <span className="text-[10px] text-muted-foreground">
-                    {getRoleLabel(user.role)}
+                    {t(`roles.${user.role}`)}
                   </span>
                 </div>
               </DropdownMenuItem>
             ))}
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Log out</DropdownMenuItem>
+          <DropdownMenuItem>{t('common.logout')}</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label'
 import { Loader2, MapPin, Clock, Camera } from 'lucide-react'
 import { format } from 'date-fns'
 import { Evidence, Task } from '@/lib/types'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface EvidenceUploadDialogProps {
   open: boolean
@@ -29,6 +30,7 @@ export function EvidenceUploadDialog({
   type,
   onConfirm,
 }: EvidenceUploadDialogProps) {
+  const { t } = useLanguageStore()
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [loadingLocation, setLoadingLocation] = useState(false)
@@ -83,13 +85,9 @@ export function EvidenceUploadDialog({
   }
 
   const title =
-    type === 'arrival'
-      ? 'Check-in: Início do Serviço'
-      : 'Check-out: Conclusão do Serviço'
+    type === 'arrival' ? t('tasks.checkin_title') : t('tasks.checkout_title')
   const description =
-    type === 'arrival'
-      ? 'Tire uma foto do local ao chegar para registrar o início dos trabalhos.'
-      : 'Tire uma foto do serviço realizado para finalizar a tarefa.'
+    type === 'arrival' ? t('tasks.checkin_desc') : t('tasks.checkout_desc')
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -108,10 +106,11 @@ export function EvidenceUploadDialog({
             </div>
             <div className="flex items-center gap-2 text-sm">
               <MapPin className="h-4 w-4 text-red-600" />
-              <span className="font-medium">Localização:</span>
+              <span className="font-medium">{t('tasks.location')}:</span>
               {loadingLocation ? (
                 <span className="flex items-center gap-1 text-muted-foreground italic">
-                  <Loader2 className="h-3 w-3 animate-spin" /> Obtendo GPS...
+                  <Loader2 className="h-3 w-3 animate-spin" />{' '}
+                  {t('tasks.gps_loading')}
                 </span>
               ) : (
                 <span
@@ -130,7 +129,7 @@ export function EvidenceUploadDialog({
               <div className="h-40 w-full rounded-md border-2 border-dashed flex flex-col items-center justify-center gap-2 bg-muted/20 hover:bg-muted/40 transition-colors relative cursor-pointer">
                 <Camera className="h-8 w-8 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">
-                  Clique para tirar ou carregar foto
+                  {t('tasks.photo_placeholder')}
                 </span>
                 <Input
                   type="file"
@@ -155,7 +154,7 @@ export function EvidenceUploadDialog({
                     setPreview(null)
                   }}
                 >
-                  Alterar
+                  {t('common.edit')}
                 </Button>
               </div>
             )}
@@ -168,14 +167,16 @@ export function EvidenceUploadDialog({
             onClick={() => onOpenChange(false)}
             className="flex-1 sm:flex-none"
           >
-            Cancelar
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={handleConfirm}
             disabled={!file || loadingLocation}
             className="flex-1 sm:flex-none bg-trust-blue"
           >
-            {type === 'arrival' ? 'Confirmar Chegada' : 'Finalizar Serviço'}
+            {type === 'arrival'
+              ? t('tasks.confirm_arrival')
+              : t('tasks.finalize_service')}
           </Button>
         </DialogFooter>
       </DialogContent>

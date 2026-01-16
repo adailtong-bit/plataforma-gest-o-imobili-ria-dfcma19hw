@@ -36,10 +36,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Financial() {
   const { financials, addInvoice } = useFinancialStore()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const [newInv, setNewInv] = useState({ desc: '', amount: '' })
 
   const handleAddInvoice = () => {
@@ -51,8 +53,8 @@ export default function Financial() {
       date: new Date().toISOString().split('T')[0],
     })
     toast({
-      title: 'Fatura Criada',
-      description: 'Fatura adicionada com status pendente.',
+      title: t('financial.invoice_created'),
+      description: t('financial.invoice_desc'),
     })
     setNewInv({ desc: '', amount: '' })
   }
@@ -62,29 +64,28 @@ export default function Financial() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Financeiro
+            {t('financial.title')}
           </h1>
-          <p className="text-muted-foreground">
-            Faturas, pagamentos e relatórios.
-          </p>
+          <p className="text-muted-foreground">{t('financial.subtitle')}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" /> Exportar Relatório
+            <Download className="h-4 w-4 mr-2" /> {t('financial.export_report')}
           </Button>
           <Dialog>
             <DialogTrigger asChild>
               <Button className="bg-trust-blue">
-                <PlusCircle className="h-4 w-4 mr-2" /> Nova Fatura
+                <PlusCircle className="h-4 w-4 mr-2" />{' '}
+                {t('financial.new_invoice')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Criar Nova Fatura</DialogTitle>
+                <DialogTitle>{t('financial.create_invoice')}</DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label>Descrição</Label>
+                  <Label>{t('financial.description')}</Label>
                   <Input
                     value={newInv.desc}
                     onChange={(e) =>
@@ -94,7 +95,7 @@ export default function Financial() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Valor ($)</Label>
+                  <Label>{t('financial.amount')}</Label>
                   <Input
                     type="number"
                     value={newInv.amount}
@@ -104,7 +105,9 @@ export default function Financial() {
                     placeholder="0.00"
                   />
                 </div>
-                <Button onClick={handleAddInvoice}>Criar Fatura</Button>
+                <Button onClick={handleAddInvoice}>
+                  {t('financial.create_invoice')}
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -115,7 +118,7 @@ export default function Financial() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Receita Bruta (Ano)
+              {t('financial.gross_revenue')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -125,7 +128,7 @@ export default function Financial() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Despesas Totais
+              {t('financial.total_expenses')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -135,7 +138,7 @@ export default function Financial() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Lucro Líquido
+              {t('financial.net_profit')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -146,7 +149,7 @@ export default function Financial() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Fluxo de Caixa</CardTitle>
+          <CardTitle>{t('financial.cash_flow')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ChartContainer
@@ -184,15 +187,19 @@ export default function Financial() {
 
       <Tabs defaultValue="invoices">
         <TabsList>
-          <TabsTrigger value="invoices">Faturas</TabsTrigger>
-          <TabsTrigger value="utilities">Utilities</TabsTrigger>
-          <TabsTrigger value="owners">Extrato Proprietários</TabsTrigger>
+          <TabsTrigger value="invoices">{t('financial.invoices')}</TabsTrigger>
+          <TabsTrigger value="utilities">
+            {t('financial.utilities')}
+          </TabsTrigger>
+          <TabsTrigger value="owners">
+            {t('financial.owners_statement')}
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="invoices">
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
-                <CardTitle>Faturas Recentes</CardTitle>
+                <CardTitle>{t('financial.recent_invoices')}</CardTitle>
                 <Button variant="ghost" size="sm">
                   <Filter className="h-4 w-4" />
                 </Button>
@@ -203,11 +210,15 @@ export default function Financial() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[100px]">ID</TableHead>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Valor</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
+                    <TableHead>{t('financial.description')}</TableHead>
+                    <TableHead>{t('common.date')}</TableHead>
+                    <TableHead>{t('common.status')}</TableHead>
+                    <TableHead className="text-right">
+                      {t('common.value')}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t('common.actions')}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -237,11 +248,7 @@ export default function Financial() {
                                 : ''
                           }
                         >
-                          {invoice.status === 'pending'
-                            ? 'Pendente'
-                            : invoice.status === 'paid'
-                              ? 'Pago'
-                              : 'Aprovado'}
+                          {t(`common.${invoice.status}`)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">

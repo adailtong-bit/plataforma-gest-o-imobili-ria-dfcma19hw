@@ -41,12 +41,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Owners() {
   const { owners, addOwner } = useOwnerStore()
   const { properties } = usePropertyStore()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
 
@@ -65,8 +67,8 @@ export default function Owners() {
   const handleAddOwner = () => {
     if (!newOwner.name || !newOwner.email) {
       toast({
-        title: 'Erro',
-        description: 'Nome e Email são obrigatórios',
+        title: t('tenants.error_title'),
+        description: t('tenants.error_desc'),
         variant: 'destructive',
       })
       return
@@ -78,9 +80,13 @@ export default function Owners() {
       email: newOwner.email,
       phone: newOwner.phone,
       status: 'active',
+      role: 'property_owner',
     })
 
-    toast({ title: 'Sucesso', description: 'Proprietário registrado.' })
+    toast({
+      title: t('tenants.success_title'),
+      description: t('owners.success_desc') || 'Owner registered.',
+    })
     setOpen(false)
     setNewOwner({ name: '', email: '', phone: '' })
   }
@@ -91,8 +97,11 @@ export default function Owners() {
 
   const handleAction = (ownerName: string, action: string) => {
     toast({
-      title: 'Ação Iniciada',
-      description: `Workflow: ${action} para ${ownerName}`,
+      title: t('owners.workflow_started'),
+      description: t('owners.workflow_desc', {
+        action: action,
+        name: ownerName,
+      }),
     })
   }
 
@@ -101,25 +110,23 @@ export default function Owners() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Proprietários
+            {t('owners.title')}
           </h1>
-          <p className="text-muted-foreground">
-            Gestão dos donos das propriedades (Landlords).
-          </p>
+          <p className="text-muted-foreground">{t('owners.subtitle')}</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="bg-trust-blue gap-2">
-              <Plus className="h-4 w-4" /> Novo Proprietário
+              <Plus className="h-4 w-4" /> {t('owners.new_owner')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Registrar Proprietário</DialogTitle>
+              <DialogTitle>{t('owners.register_title')}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label>Nome Completo</Label>
+                <Label>{t('common.name')}</Label>
                 <Input
                   value={newOwner.name}
                   onChange={(e) =>
@@ -129,7 +136,7 @@ export default function Owners() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Email</Label>
+                <Label>{t('common.email')}</Label>
                 <Input
                   value={newOwner.email}
                   onChange={(e) =>
@@ -139,7 +146,7 @@ export default function Owners() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Telefone</Label>
+                <Label>{t('common.phone')}</Label>
                 <Input
                   value={newOwner.phone}
                   onChange={(e) =>
@@ -149,7 +156,7 @@ export default function Owners() {
                 />
               </div>
               <Button onClick={handleAddOwner} className="w-full">
-                Salvar
+                {t('common.save')}
               </Button>
             </div>
           </DialogContent>
@@ -159,11 +166,11 @@ export default function Owners() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
-            <CardTitle>Base de Proprietários</CardTitle>
+            <CardTitle>{t('owners.base_title')}</CardTitle>
             <div className="relative w-64">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar proprietários..."
+                placeholder={t('owners.search_placeholder')}
                 className="pl-8"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
@@ -175,11 +182,13 @@ export default function Owners() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Contato</TableHead>
-                <TableHead>Propriedades</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead>{t('common.name')}</TableHead>
+                <TableHead>{t('owners.contact_details')}</TableHead>
+                <TableHead>{t('owners.properties_count')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -211,7 +220,8 @@ export default function Owners() {
                     <TableCell>
                       <Badge variant="secondary" className="gap-1">
                         <Building2 className="h-3 w-3" />
-                        {getPropertyCount(owner.id)} Imóveis
+                        {getPropertyCount(owner.id)}{' '}
+                        {t('owners.properties_count')}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -220,7 +230,7 @@ export default function Owners() {
                           owner.status === 'active' ? 'default' : 'secondary'
                         }
                       >
-                        {owner.status === 'active' ? 'Ativo' : 'Inativo'}
+                        {t(`common.${owner.status}`)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -229,7 +239,7 @@ export default function Owners() {
                           variant="ghost"
                           size="icon"
                           onClick={() => navigate(`/owners/${owner.id}`)}
-                          title="Ver Detalhes"
+                          title={t('common.details')}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -240,26 +250,31 @@ export default function Owners() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                            <DropdownMenuLabel>
+                              {t('common.actions')}
+                            </DropdownMenuLabel>
                             <DropdownMenuItem
                               onClick={() => navigate('/messages')}
                             >
                               <MessageSquare className="mr-2 h-4 w-4" />{' '}
-                              Mensagem
+                              {t('tenants.send_message')}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                handleAction(owner.name, 'Renovação')
+                                handleAction(
+                                  owner.name,
+                                  t('owners.renew_contract'),
+                                )
                               }
                             >
-                              <FileText className="mr-2 h-4 w-4" /> Renovar
-                              Contrato
+                              <FileText className="mr-2 h-4 w-4" />{' '}
+                              {t('owners.renew_contract')}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onClick={() => navigate(`/owners/${owner.id}`)}
                             >
-                              Ver Perfil Completo
+                              {t('common.view')} {t('common.profile')}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>

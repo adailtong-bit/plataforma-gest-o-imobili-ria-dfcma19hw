@@ -37,11 +37,13 @@ import usePartnerStore from '@/stores/usePartnerStore'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/use-toast'
 import { Partner } from '@/lib/types'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Partners() {
   const { partners, addPartner } = usePartnerStore()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
 
@@ -68,8 +70,8 @@ export default function Partners() {
   const handleAddPartner = () => {
     if (!newPartner.name || !newPartner.email) {
       toast({
-        title: 'Erro',
-        description: 'Nome e Email são obrigatórios',
+        title: t('tenants.error_title'),
+        description: t('tenants.error_desc'),
         variant: 'destructive',
       })
       return
@@ -84,9 +86,13 @@ export default function Partners() {
       phone: newPartner.phone,
       status: 'active',
       rating: 5.0,
+      role: 'partner',
     })
 
-    toast({ title: 'Sucesso', description: 'Parceiro registrado.' })
+    toast({
+      title: t('tenants.success_title'),
+      description: 'Parceiro registrado.',
+    })
     setOpen(false)
     setNewPartner({
       name: '',
@@ -101,7 +107,7 @@ export default function Partners() {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {list.length === 0 ? (
         <div className="col-span-full text-center py-10 text-muted-foreground">
-          Nenhum parceiro encontrado nesta categoria.
+          {t('partners.no_partners')}
         </div>
       ) : (
         list.map((partner) => (
@@ -122,7 +128,9 @@ export default function Partners() {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Briefcase className="h-4 w-4" />
-                  <span className="capitalize">{partner.type}</span>
+                  <span className="capitalize">
+                    {t(`partners.${partner.type}`)}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Phone className="h-4 w-4" />
@@ -134,7 +142,8 @@ export default function Partners() {
                     className="w-full gap-2"
                     onClick={() => navigate('/messages')}
                   >
-                    <MessageSquare className="h-4 w-4" /> Enviar Mensagem
+                    <MessageSquare className="h-4 w-4" />{' '}
+                    {t('tenants.send_message')}
                   </Button>
                 </div>
               </div>
@@ -150,25 +159,23 @@ export default function Partners() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Parceiros & Serviços
+            {t('partners.title')}
           </h1>
-          <p className="text-muted-foreground">
-            Diretório de agentes, limpeza e manutenção.
-          </p>
+          <p className="text-muted-foreground">{t('partners.subtitle')}</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="bg-trust-blue gap-2">
-              <Plus className="h-4 w-4" /> Novo Parceiro
+              <Plus className="h-4 w-4" /> {t('partners.new_partner')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Registrar Novo Parceiro</DialogTitle>
+              <DialogTitle>{t('partners.register_title')}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label>Nome do Contato</Label>
+                <Label>{t('partners.contact_name')}</Label>
                 <Input
                   value={newPartner.name}
                   onChange={(e) =>
@@ -178,7 +185,7 @@ export default function Partners() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Nome da Empresa (Opcional)</Label>
+                <Label>{t('partners.company_name')}</Label>
                 <Input
                   value={newPartner.companyName}
                   onChange={(e) =>
@@ -191,7 +198,7 @@ export default function Partners() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Categoria</Label>
+                <Label>{t('partners.category')}</Label>
                 <Select
                   value={newPartner.type}
                   onValueChange={(val: any) =>
@@ -202,15 +209,19 @@ export default function Partners() {
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="agent">Agente Imobiliário</SelectItem>
-                    <SelectItem value="cleaning">Limpeza</SelectItem>
-                    <SelectItem value="maintenance">Manutenção</SelectItem>
+                    <SelectItem value="agent">{t('partners.agent')}</SelectItem>
+                    <SelectItem value="cleaning">
+                      {t('partners.cleaning')}
+                    </SelectItem>
+                    <SelectItem value="maintenance">
+                      {t('partners.maintenance')}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>Email</Label>
+                  <Label>{t('common.email')}</Label>
                   <Input
                     value={newPartner.email}
                     onChange={(e) =>
@@ -220,7 +231,7 @@ export default function Partners() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Telefone</Label>
+                  <Label>{t('common.phone')}</Label>
                   <Input
                     value={newPartner.phone}
                     onChange={(e) =>
@@ -231,7 +242,7 @@ export default function Partners() {
                 </div>
               </div>
               <Button onClick={handleAddPartner} className="w-full">
-                Salvar
+                {t('common.save')}
               </Button>
             </div>
           </DialogContent>
@@ -241,7 +252,7 @@ export default function Partners() {
       <div className="relative w-full md:w-1/3">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Buscar parceiros..."
+          placeholder={t('partners.search_placeholder')}
           className="pl-8"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
@@ -250,10 +261,12 @@ export default function Partners() {
 
       <Tabs defaultValue="all" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="all">Todos</TabsTrigger>
-          <TabsTrigger value="agent">Agentes</TabsTrigger>
-          <TabsTrigger value="cleaning">Limpeza</TabsTrigger>
-          <TabsTrigger value="maintenance">Manutenção</TabsTrigger>
+          <TabsTrigger value="all">{t('common.all')}</TabsTrigger>
+          <TabsTrigger value="agent">{t('partners.agent')}</TabsTrigger>
+          <TabsTrigger value="cleaning">{t('partners.cleaning')}</TabsTrigger>
+          <TabsTrigger value="maintenance">
+            {t('partners.maintenance')}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="all">

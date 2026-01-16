@@ -25,6 +25,7 @@ import {
   systemUsers,
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
+import { translations, Language } from '@/lib/translations'
 
 interface AppContextType {
   properties: Property[]
@@ -36,6 +37,9 @@ interface AppContextType {
   partners: Partner[]
   currentUser: User | Owner | Partner | Tenant
   allUsers: (User | Owner | Partner | Tenant)[]
+  language: Language
+  setLanguage: (lang: Language) => void
+  t: (key: string, params?: Record<string, string>) => string
   addProperty: (property: Property) => void
   updateTaskStatus: (taskId: string, status: Task['status']) => void
   addTask: (task: Task) => void
@@ -65,6 +69,41 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     ...owner1Messages,
     ...partner1Messages,
   ])
+
+  // Language State
+  const [language, setLanguageState] = useState<Language>(() => {
+    const saved = localStorage.getItem('app_language')
+    return (saved as Language) || 'pt'
+  })
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang)
+    localStorage.setItem('app_language', lang)
+  }
+
+  // Translation Helper
+  const t = (key: string, params?: Record<string, string>) => {
+    const keys = key.split('.')
+    let current: any = translations[language]
+
+    for (const k of keys) {
+      if (current[k] === undefined) {
+        console.warn(`Missing translation for key: ${key} in ${language}`)
+        return key
+      }
+      current = current[k]
+    }
+
+    if (typeof current === 'string' && params) {
+      let text = current
+      Object.entries(params).forEach(([pkey, pval]) => {
+        text = text.replace(`{${pkey}}`, pval)
+      })
+      return text
+    }
+
+    return current as string
+  }
 
   // Auth State
   const [currentUser, setCurrentUserObj] = useState<
@@ -130,7 +169,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     attachments: string[] = [],
   ) => {
     setAllMessages((prev) => {
-      // Find existing conversation for this user
       const existing = prev.find(
         (m) => m.ownerId === currentUser.id && m.contactId === contactId,
       )
@@ -162,7 +200,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           return m
         })
       } else {
-        // Create new conversation
         const contact = allUsers.find((u) => u.id === contactId)
         if (!contact) return prev
 
@@ -195,13 +232,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const contact = allUsers.find((u) => u.id === contactId)
     if (!contact) return
 
-    // Check if conversation exists
     const existing = visibleMessages.find((m) => m.contactId === contactId)
     if (existing) {
-      // It exists, UI should select it (handled by router/state in page usually, but here we just ensure it's there)
+      // Logic for existing chat
     } else {
-      // We create an empty conversation or just let UI handle "New Chat" state
-      // For simplicity, we just create a placeholder conversation if not exists
       if (canChat(currentUser.role, contact.role)) {
         const newMsg: Message = {
           id: `${currentUser.id}_${contactId}_new`,
@@ -250,6 +284,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         partners,
         currentUser,
         allUsers,
+        language,
+        setLanguage,
+        t,
         addProperty,
         updateTaskStatus,
         addTask,

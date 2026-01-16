@@ -25,7 +25,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { canChat, getRoleLabel } from '@/lib/permissions'
+import { canChat } from '@/lib/permissions'
 import {
   Dialog,
   DialogContent,
@@ -33,10 +33,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Messages() {
   const { messages, sendMessage, markAsRead, startChat } = useMessageStore()
   const { currentUser, allUsers } = useAuthStore()
+  const { t } = useLanguageStore()
   const [filter, setFilter] = useState('all')
   const [selectedMessageId, setSelectedMessageId] = useState<string>('')
   const [inputText, setInputText] = useState('')
@@ -61,8 +63,7 @@ export default function Messages() {
   }, [messages])
 
   const filteredMessages = messages.filter((msg) => {
-    // Basic type filtering if needed, but 'type' in Message is getting messy
-    // We can filter by participant role if we had that detail in message root
+    // Basic type filtering if needed
     return true
   })
 
@@ -112,7 +113,6 @@ export default function Messages() {
     setAttachments((prev) => prev.filter((_, i) => i !== index))
   }
 
-  // Filter contacts for New Chat
   const availableContacts = allUsers.filter((user) => {
     if (user.id === currentUser.id) return false
     if (!canChat(currentUser.role, user.role)) return false
@@ -127,14 +127,6 @@ export default function Messages() {
   const handleStartChat = (contactId: string) => {
     startChat(contactId)
     setIsNewChatOpen(false)
-    // We should ideally set selectedMessageId to the new chat here
-    // But since startChat might be async or state update takes a tick,
-    // we rely on the effect or complex logic.
-    // For now, we assume startChat adds it to top of list.
-    setTimeout(() => {
-      // Find the message with this contactId
-      // This is a hacky way to select the new chat, in real app we'd return the ID
-    }, 100)
   }
 
   return (
@@ -143,7 +135,7 @@ export default function Messages() {
       <Card className="w-80 flex flex-col">
         <CardHeader className="p-4 border-b space-y-3">
           <div className="flex justify-between items-center">
-            <CardTitle className="text-lg">Mensagens</CardTitle>
+            <CardTitle className="text-lg">{t('messages.title')}</CardTitle>
             <Dialog open={isNewChatOpen} onOpenChange={setIsNewChatOpen}>
               <DialogTrigger asChild>
                 <Button size="icon" variant="ghost">
@@ -152,11 +144,11 @@ export default function Messages() {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Nova Mensagem</DialogTitle>
+                  <DialogTitle>{t('messages.new_message')}</DialogTitle>
                 </DialogHeader>
                 <div className="py-4">
                   <Input
-                    placeholder="Buscar contato..."
+                    placeholder={t('messages.search_contact')}
                     value={searchContact}
                     onChange={(e) => setSearchContact(e.target.value)}
                     className="mb-4"
@@ -165,7 +157,7 @@ export default function Messages() {
                     <div className="space-y-2">
                       {availableContacts.length === 0 ? (
                         <p className="text-center text-muted-foreground text-sm py-4">
-                          Nenhum contato disponível.
+                          {t('messages.no_contacts')}
                         </p>
                       ) : (
                         availableContacts.map((contact) => (
@@ -185,7 +177,7 @@ export default function Messages() {
                                 {contact.name}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                {getRoleLabel(contact.role)}
+                                {t(`roles.${contact.role}`)}
                               </p>
                             </div>
                           </div>
@@ -199,7 +191,7 @@ export default function Messages() {
           </div>
           <div className="relative">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Buscar conversas..." className="pl-8" />
+            <Input placeholder={t('messages.search_conv')} className="pl-8" />
           </div>
           <Tabs
             defaultValue="all"
@@ -208,8 +200,8 @@ export default function Messages() {
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="all">Todas</TabsTrigger>
-              <TabsTrigger value="unread">Não lidas</TabsTrigger>
+              <TabsTrigger value="all">{t('common.all')}</TabsTrigger>
+              <TabsTrigger value="unread">{t('messages.unread')}</TabsTrigger>
             </TabsList>
           </Tabs>
         </CardHeader>
@@ -218,7 +210,7 @@ export default function Messages() {
             <div className="flex flex-col">
               {filteredMessages.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground text-sm">
-                  Nenhuma conversa encontrada.
+                  {t('messages.no_conv')}
                 </div>
               ) : (
                 filteredMessages.map((msg) => (
@@ -277,10 +269,10 @@ export default function Messages() {
                 </h3>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-green-500 flex items-center gap-1">
-                    ● Online
+                    ● {t('messages.online')}
                   </span>
                   <Badge variant="outline" className="text-[10px] h-5 px-1">
-                    {getRoleLabel(selectedConversation.type as any)}
+                    {t(`roles.${selectedConversation.type}`)}
                   </Badge>
                 </div>
               </div>
@@ -297,7 +289,7 @@ export default function Messages() {
             <div className="space-y-4">
               {selectedConversation.history.length === 0 && (
                 <div className="text-center text-muted-foreground text-sm mt-10">
-                  Esta é uma nova conversa. Diga olá!
+                  {t('messages.new_chat_prompt')}
                 </div>
               )}
               {selectedConversation.history.map((msg) => (
@@ -375,12 +367,12 @@ export default function Messages() {
                 variant="ghost"
                 size="icon"
                 onClick={() => fileInputRef.current?.click()}
-                title="Anexar arquivo"
+                title={t('messages.attach')}
               >
                 <Paperclip className="h-5 w-5" />
               </Button>
               <Input
-                placeholder="Digite sua mensagem..."
+                placeholder={t('messages.type_message')}
                 className="flex-1"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
@@ -402,9 +394,7 @@ export default function Messages() {
         </Card>
       ) : (
         <Card className="flex-1 flex items-center justify-center bg-muted/20">
-          <p className="text-muted-foreground">
-            Selecione uma conversa ou inicie uma nova.
-          </p>
+          <p className="text-muted-foreground">{t('messages.select_prompt')}</p>
         </Card>
       )}
     </div>

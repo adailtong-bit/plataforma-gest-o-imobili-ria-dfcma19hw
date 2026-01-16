@@ -30,11 +30,13 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Properties() {
   const { properties, addProperty } = usePropertyStore()
   const { owners } = useOwnerStore()
   const { partners } = usePartnerStore()
+  const { t } = useLanguageStore()
   const [filter, setFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const { toast } = useToast()
@@ -90,8 +92,8 @@ export default function Properties() {
       agentId: newProp.agentId,
     })
     toast({
-      title: 'Propriedade Adicionada',
-      description: `${newProp.name} foi criada com sucesso.`,
+      title: t('properties.property_added'),
+      description: `${newProp.name} ${t('properties.property_added_desc')}`,
     })
     setNewProp({
       name: '',
@@ -110,25 +112,23 @@ export default function Properties() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Propriedades
+            {t('properties.title')}
           </h1>
-          <p className="text-muted-foreground">
-            Gerencie suas casas e condomínios.
-          </p>
+          <p className="text-muted-foreground">{t('properties.subtitle')}</p>
         </div>
         <Dialog>
           <DialogTrigger asChild>
             <Button className="bg-trust-blue hover:bg-blue-700">
-              Nova Propriedade
+              {t('properties.new_property')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Adicionar Nova Propriedade</DialogTitle>
+              <DialogTitle>{t('properties.add_title')}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label>Nome</Label>
+                <Label>{t('common.name')}</Label>
                 <Input
                   value={newProp.name}
                   onChange={(e) =>
@@ -138,7 +138,7 @@ export default function Properties() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Endereço</Label>
+                <Label>{t('common.address')}</Label>
                 <Input
                   value={newProp.address}
                   onChange={(e) =>
@@ -149,7 +149,7 @@ export default function Properties() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>Proprietário</Label>
+                  <Label>{t('properties.owner')}</Label>
                   <Select
                     value={newProp.ownerId}
                     onValueChange={(val) =>
@@ -157,7 +157,7 @@ export default function Properties() {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o dono" />
+                      <SelectValue placeholder={t('properties.select_owner')} />
                     </SelectTrigger>
                     <SelectContent>
                       {owners.map((o) => (
@@ -169,7 +169,7 @@ export default function Properties() {
                   </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label>Realtor (Agente)</Label>
+                  <Label>{t('properties.agent')}</Label>
                   <Select
                     value={newProp.agentId}
                     onValueChange={(val) =>
@@ -177,7 +177,7 @@ export default function Properties() {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o agente" />
+                      <SelectValue placeholder={t('properties.select_agent')} />
                     </SelectTrigger>
                     <SelectContent>
                       {realtors.map((r) => (
@@ -191,7 +191,7 @@ export default function Properties() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>Tipo</Label>
+                  <Label>{t('common.type')}</Label>
                   <Select
                     value={newProp.type}
                     onValueChange={(val) =>
@@ -202,14 +202,20 @@ export default function Properties() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="House">Casa</SelectItem>
-                      <SelectItem value="Condo">Apartamento</SelectItem>
-                      <SelectItem value="Townhouse">Townhouse</SelectItem>
+                      <SelectItem value="House">
+                        {t('properties.house')}
+                      </SelectItem>
+                      <SelectItem value="Condo">
+                        {t('properties.condo')}
+                      </SelectItem>
+                      <SelectItem value="Townhouse">
+                        {t('properties.townhouse')}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label>Hóspedes</Label>
+                  <Label>{t('properties.guests')}</Label>
                   <Input
                     type="number"
                     value={newProp.guests}
@@ -221,7 +227,7 @@ export default function Properties() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>Quartos</Label>
+                  <Label>{t('properties.beds')}</Label>
                   <Input
                     type="number"
                     value={newProp.bedrooms}
@@ -231,7 +237,7 @@ export default function Properties() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Banheiros</Label>
+                  <Label>{t('properties.baths')}</Label>
                   <Input
                     type="number"
                     value={newProp.bathrooms}
@@ -241,7 +247,7 @@ export default function Properties() {
                   />
                 </div>
               </div>
-              <Button onClick={handleAddProperty}>Salvar</Button>
+              <Button onClick={handleAddProperty}>{t('common.save')}</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -249,20 +255,22 @@ export default function Properties() {
 
       <div className="flex flex-col md:flex-row gap-4 items-center bg-card p-4 rounded-lg border shadow-sm">
         <Input
-          placeholder="Buscar por nome ou endereço..."
+          placeholder={t('properties.search_placeholder')}
           className="md:w-[300px]"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-full md:w-[200px]">
-            <SelectValue placeholder="Status" />
+            <SelectValue placeholder={t('common.status')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="occupied">Ocupado</SelectItem>
-            <SelectItem value="vacant">Vago</SelectItem>
-            <SelectItem value="maintenance">Manutenção</SelectItem>
+            <SelectItem value="all">{t('common.all')}</SelectItem>
+            <SelectItem value="occupied">{t('common.occupied')}</SelectItem>
+            <SelectItem value="vacant">{t('common.vacant')}</SelectItem>
+            <SelectItem value="maintenance">
+              {t('common.maintenance')}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -282,7 +290,7 @@ export default function Properties() {
               <Badge
                 className={`absolute top-2 right-2 ${getStatusColor(property.status)} hover:${getStatusColor(property.status)}`}
               >
-                {property.status}
+                {t(`common.${property.status}`)}
               </Badge>
             </div>
             <CardHeader className="pb-2">
@@ -305,19 +313,19 @@ export default function Properties() {
                 <div className="flex flex-col items-center p-2 bg-secondary/50 rounded-md">
                   <BedDouble className="h-4 w-4 mb-1 text-primary" />
                   <span className="font-semibold">
-                    {property.bedrooms} Beds
+                    {property.bedrooms} {t('properties.beds')}
                   </span>
                 </div>
                 <div className="flex flex-col items-center p-2 bg-secondary/50 rounded-md">
                   <Bath className="h-4 w-4 mb-1 text-primary" />
                   <span className="font-semibold">
-                    {property.bathrooms} Baths
+                    {property.bathrooms} {t('properties.baths')}
                   </span>
                 </div>
                 <div className="flex flex-col items-center p-2 bg-secondary/50 rounded-md">
                   <Users className="h-4 w-4 mb-1 text-primary" />
                   <span className="font-semibold">
-                    {property.guests} Guests
+                    {property.guests} {t('properties.guests')}
                   </span>
                 </div>
               </div>
@@ -328,7 +336,7 @@ export default function Properties() {
                   variant="outline"
                   className="w-full hover:bg-primary hover:text-white transition-colors"
                 >
-                  Ver Detalhes
+                  {t('properties.view_details')}
                 </Button>
               </Link>
             </CardFooter>

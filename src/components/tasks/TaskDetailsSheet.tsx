@@ -21,6 +21,7 @@ import {
 import { format } from 'date-fns'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface TaskDetailsSheetProps {
   task: Task | null
@@ -33,6 +34,7 @@ export function TaskDetailsSheet({
   open,
   onOpenChange,
 }: TaskDetailsSheetProps) {
+  const { t } = useLanguageStore()
   if (!task) return null
 
   const getPriorityColor = (priority: string) => {
@@ -45,21 +47,6 @@ export function TaskDetailsSheet({
         return 'text-blue-600 bg-blue-100 border-blue-200'
       default:
         return 'text-gray-600 bg-gray-100 border-gray-200'
-    }
-  }
-
-  const getStatusLabel = (status: Task['status']) => {
-    switch (status) {
-      case 'pending':
-        return 'Pendente'
-      case 'in_progress':
-        return 'Em Andamento'
-      case 'approved':
-        return 'Aguardando Aprovação'
-      case 'completed':
-        return 'Concluído'
-      default:
-        return status
     }
   }
 
@@ -84,7 +71,7 @@ export function TaskDetailsSheet({
                 >
                   {task.priority.toUpperCase()}
                 </Badge>
-                <Badge variant="secondary">{getStatusLabel(task.status)}</Badge>
+                <Badge variant="secondary">{t(`common.${task.status}`)}</Badge>
               </div>
               <SheetTitle className="text-2xl">{task.title}</SheetTitle>
               <SheetDescription className="text-base">
@@ -96,7 +83,7 @@ export function TaskDetailsSheet({
               {/* Location Section */}
               <div className="bg-muted/30 p-4 rounded-lg border space-y-3">
                 <h3 className="font-semibold flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wide">
-                  <MapPin className="h-4 w-4" /> Localização
+                  <MapPin className="h-4 w-4" /> {t('tasks.location')}
                 </h3>
                 <div className="grid gap-2">
                   <div className="flex items-start gap-2">
@@ -129,7 +116,7 @@ export function TaskDetailsSheet({
               {/* Workflow Evidence - NEW SECTION */}
               <div className="space-y-4">
                 <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" /> Registro de Atividade
+                  <CheckCircle2 className="h-4 w-4" /> {t('tasks.activity_log')}
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -137,7 +124,7 @@ export function TaskDetailsSheet({
                   <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden">
                     <div className="p-3 bg-muted/50 border-b flex items-center justify-between">
                       <span className="font-semibold text-xs uppercase tracking-wider text-blue-600">
-                        Chegada (Start)
+                        {t('tasks.arrival')}
                       </span>
                       {arrivalEvidence && (
                         <CheckCircle2 className="h-3 w-3 text-green-500" />
@@ -175,7 +162,7 @@ export function TaskDetailsSheet({
                         </div>
                       ) : (
                         <div className="h-32 flex items-center justify-center text-xs text-muted-foreground italic bg-muted/10">
-                          Pendente
+                          {t('common.pending')}
                         </div>
                       )}
                     </div>
@@ -185,7 +172,7 @@ export function TaskDetailsSheet({
                   <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden">
                     <div className="p-3 bg-muted/50 border-b flex items-center justify-between">
                       <span className="font-semibold text-xs uppercase tracking-wider text-green-600">
-                        Conclusão (End)
+                        {t('tasks.completion')}
                       </span>
                       {completionEvidence && (
                         <CheckCircle2 className="h-3 w-3 text-green-500" />
@@ -223,7 +210,7 @@ export function TaskDetailsSheet({
                         </div>
                       ) : (
                         <div className="h-32 flex items-center justify-center text-xs text-muted-foreground italic bg-muted/10">
-                          Pendente
+                          {t('common.pending')}
                         </div>
                       )}
                     </div>
@@ -237,13 +224,13 @@ export function TaskDetailsSheet({
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                    <User className="h-3 w-3" /> Responsável
+                    <User className="h-3 w-3" /> {t('tasks.assignee')}
                   </h4>
                   <p className="font-medium">{task.assignee}</p>
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                    <Calendar className="h-3 w-3" /> Data Agendada
+                    <Calendar className="h-3 w-3" /> {t('tasks.scheduled_date')}
                   </h4>
                   <p className="font-medium">
                     {format(new Date(task.date), 'dd/MM/yyyy')}
@@ -252,7 +239,8 @@ export function TaskDetailsSheet({
                 {task.price && (
                   <div className="space-y-1">
                     <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                      <DollarSign className="h-3 w-3" /> Valor Estimado
+                      <DollarSign className="h-3 w-3" />{' '}
+                      {t('tasks.estimated_value')}
                     </h4>
                     <p className="font-medium">${task.price.toFixed(2)}</p>
                   </div>
@@ -260,7 +248,7 @@ export function TaskDetailsSheet({
                 {task.backToBack && (
                   <div className="space-y-1">
                     <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                      <CheckCircle2 className="h-3 w-3" /> Tipo
+                      <CheckCircle2 className="h-3 w-3" /> {t('common.type')}
                     </h4>
                     <Badge variant="destructive">Back-to-Back</Badge>
                   </div>
@@ -272,7 +260,7 @@ export function TaskDetailsSheet({
               {/* Description */}
               <div className="space-y-2">
                 <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                  Descrição
+                  {t('common.description')}
                 </h3>
                 <p className="text-sm leading-relaxed">
                   {task.description || 'Sem descrição detalhada.'}
@@ -283,7 +271,8 @@ export function TaskDetailsSheet({
               {(legacyImages.length > 0 || otherEvidence.length > 0) && (
                 <div className="space-y-3">
                   <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
-                    <ImageIcon className="h-4 w-4" /> Fotos Adicionais
+                    <ImageIcon className="h-4 w-4" />{' '}
+                    {t('tasks.additional_photos')}
                   </h3>
                   <div className="grid grid-cols-2 gap-2">
                     {otherEvidence.map((ev, idx) => (

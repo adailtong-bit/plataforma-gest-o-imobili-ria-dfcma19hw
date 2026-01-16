@@ -37,12 +37,14 @@ import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Tenants() {
   const { tenants, addTenant } = useTenantStore()
   const { properties } = usePropertyStore()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
 
@@ -63,8 +65,8 @@ export default function Tenants() {
   const handleAddTenant = () => {
     if (!newTenant.name || !newTenant.email) {
       toast({
-        title: 'Erro',
-        description: 'Nome e Email são obrigatórios',
+        title: t('tenants.error_title'),
+        description: t('tenants.error_desc'),
         variant: 'destructive',
       })
       return
@@ -78,9 +80,13 @@ export default function Tenants() {
       rentValue: parseFloat(newTenant.rentValue) || 0,
       propertyId: newTenant.propertyId,
       status: 'active',
+      role: 'tenant',
     })
 
-    toast({ title: 'Sucesso', description: 'Inquilino registrado.' })
+    toast({
+      title: t('tenants.success_title'),
+      description: t('tenants.success_desc'),
+    })
     setOpen(false)
     setNewTenant({
       name: '',
@@ -93,7 +99,7 @@ export default function Tenants() {
 
   const getPropertyName = (id?: string) => {
     const prop = properties.find((p) => p.id === id)
-    return prop ? prop.name : 'Não atribuído'
+    return prop ? prop.name : t('properties.not_assigned')
   }
 
   return (
@@ -101,25 +107,23 @@ export default function Tenants() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Inquilinos
+            {t('tenants.title')}
           </h1>
-          <p className="text-muted-foreground">
-            Gestão de locatários e contratos de aluguel.
-          </p>
+          <p className="text-muted-foreground">{t('tenants.subtitle')}</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="bg-trust-blue gap-2">
-              <Plus className="h-4 w-4" /> Novo Inquilino
+              <Plus className="h-4 w-4" /> {t('tenants.new_tenant')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Registrar Novo Inquilino</DialogTitle>
+              <DialogTitle>{t('tenants.register_title')}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label>Nome Completo</Label>
+                <Label>{t('common.name')}</Label>
                 <Input
                   value={newTenant.name}
                   onChange={(e) =>
@@ -130,7 +134,7 @@ export default function Tenants() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>Email</Label>
+                  <Label>{t('common.email')}</Label>
                   <Input
                     value={newTenant.email}
                     onChange={(e) =>
@@ -140,7 +144,7 @@ export default function Tenants() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Telefone</Label>
+                  <Label>{t('common.phone')}</Label>
                   <Input
                     value={newTenant.phone}
                     onChange={(e) =>
@@ -151,7 +155,7 @@ export default function Tenants() {
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label>Propriedade</Label>
+                <Label>{t('tenants.property')}</Label>
                 <Select
                   value={newTenant.propertyId}
                   onValueChange={(val) =>
@@ -171,7 +175,7 @@ export default function Tenants() {
                 </Select>
               </div>
               <div className="grid gap-2">
-                <Label>Valor do Aluguel ($)</Label>
+                <Label>{t('tenants.rent_value')} ($)</Label>
                 <Input
                   type="number"
                   value={newTenant.rentValue}
@@ -182,7 +186,7 @@ export default function Tenants() {
                 />
               </div>
               <Button onClick={handleAddTenant} className="w-full">
-                Salvar
+                {t('common.save')}
               </Button>
             </div>
           </DialogContent>
@@ -192,11 +196,11 @@ export default function Tenants() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
-            <CardTitle>Lista de Inquilinos</CardTitle>
+            <CardTitle>{t('tenants.list_title')}</CardTitle>
             <div className="relative w-64">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar inquilinos..."
+                placeholder={t('tenants.search_placeholder')}
                 className="pl-8"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
@@ -208,19 +212,21 @@ export default function Tenants() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Contato</TableHead>
-                <TableHead>Propriedade</TableHead>
-                <TableHead>Aluguel</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead>{t('common.name')}</TableHead>
+                <TableHead>{t('tenants.contact')}</TableHead>
+                <TableHead>{t('tenants.property')}</TableHead>
+                <TableHead>{t('tenants.rent_value')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredTenants.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
-                    Nenhum inquilino encontrado.
+                    {t('tenants.no_tenants')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -244,7 +250,7 @@ export default function Tenants() {
                     <TableCell>${tenant.rentValue.toFixed(2)}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="bg-green-50">
-                        {tenant.status}
+                        {t(`common.${tenant.status}`)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -252,7 +258,7 @@ export default function Tenants() {
                         variant="ghost"
                         size="icon"
                         onClick={() => navigate('/messages')}
-                        title="Enviar Mensagem"
+                        title={t('tenants.send_message')}
                       >
                         <MessageSquare className="h-4 w-4 text-trust-blue" />
                       </Button>

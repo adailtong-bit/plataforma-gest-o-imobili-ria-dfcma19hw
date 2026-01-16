@@ -28,40 +28,40 @@ import {
 import { Badge } from '@/components/ui/badge'
 import useTaskStore from '@/stores/useTaskStore'
 import useFinancialStore from '@/stores/useFinancialStore'
-
-const chartConfig = {
-  maintenance: {
-    label: 'Manutenção',
-    color: 'hsl(var(--chart-1))',
-  },
-  cleaning: {
-    label: 'Limpeza',
-    color: 'hsl(var(--chart-2))',
-  },
-  taxes: {
-    label: 'Impostos',
-    color: 'hsl(var(--chart-3))',
-  },
-  utilities: {
-    label: 'Utilidades',
-    color: 'hsl(var(--chart-4))',
-  },
-}
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Index() {
   const [date, setDate] = useState<Date | undefined>(new Date())
   const { tasks } = useTaskStore()
   const { financials } = useFinancialStore()
+  const { t } = useLanguageStore()
+
+  const chartConfig = {
+    maintenance: {
+      label: t('common.maintenance'),
+      color: 'hsl(var(--chart-1))',
+    },
+    cleaning: {
+      label: t('common.cleaning'),
+      color: 'hsl(var(--chart-2))',
+    },
+    taxes: {
+      label: 'Impostos',
+      color: 'hsl(var(--chart-3))',
+    },
+    utilities: {
+      label: 'Utilidades',
+      color: 'hsl(var(--chart-4))',
+    },
+  }
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-navy">
-          Dashboard
+          {t('dashboard.title')}
         </h1>
-        <p className="text-muted-foreground">
-          Visão geral das operações e desempenho financeiro.
-        </p>
+        <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
       </div>
 
       {/* KPI Cards */}
@@ -69,35 +69,35 @@ export default function Index() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Receita Total (Mês)
+              {t('dashboard.total_revenue')}
             </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">$24,000</div>
             <p className="text-xs text-muted-foreground">
-              +20.1% em relação ao mês anterior
+              +20.1% {t('dashboard.from_last_month')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Taxa de Ocupação (STR)
+              {t('dashboard.occupancy_rate')}
             </CardTitle>
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">85%</div>
             <p className="text-xs text-muted-foreground">
-              +4% desde a última semana
+              +4% {t('dashboard.from_last_week')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Tarefas Ativas
+              {t('dashboard.active_tasks')}
             </CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -105,20 +105,22 @@ export default function Index() {
             <div className="text-2xl font-bold">
               {tasks.filter((t) => t.status !== 'completed').length}
             </div>
-            <p className="text-xs text-muted-foreground">3 alta prioridade</p>
+            <p className="text-xs text-muted-foreground">
+              3 {t('dashboard.high_priority')}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Inadimplência (LTR)
+              {t('dashboard.defaulters')}
             </CardTitle>
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">2.4%</div>
             <p className="text-xs text-muted-foreground">
-              -0.5% desde o último mês
+              -0.5% {t('dashboard.from_last_month')}
             </p>
           </CardContent>
         </Card>
@@ -128,13 +130,16 @@ export default function Index() {
         {/* Main Chart */}
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Receita vs Despesas</CardTitle>
-            <CardDescription>Visão geral dos últimos 6 meses</CardDescription>
+            <CardTitle>{t('dashboard.revenue_vs_expenses')}</CardTitle>
+            <CardDescription>{t('dashboard.revenue_overview')}</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
             <ChartContainer
               config={{
-                revenue: { label: 'Receita', color: 'hsl(var(--primary))' },
+                revenue: {
+                  label: 'Receita', // Could translate chart keys too if needed
+                  color: 'hsl(var(--primary))',
+                },
               }}
               className="h-[300px] w-full"
             >
@@ -160,8 +165,8 @@ export default function Index() {
         {/* Mini Calendar & Activity */}
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Calendário Rápido</CardTitle>
-            <CardDescription>Check-ins e Check-outs de hoje</CardDescription>
+            <CardTitle>{t('dashboard.quick_calendar')}</CardTitle>
+            <CardDescription>{t('dashboard.todays_activity')}</CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center">
             <Calendar
@@ -178,10 +183,8 @@ export default function Index() {
         {/* Pending Approvals */}
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Aprovações Pendentes</CardTitle>
-            <CardDescription>
-              Faturas e tarefas aguardando sua ação
-            </CardDescription>
+            <CardTitle>{t('dashboard.pending_approvals')}</CardTitle>
+            <CardDescription>{t('dashboard.pending_desc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -210,7 +213,7 @@ export default function Index() {
                         ${invoice.amount.toFixed(2)}
                       </span>
                       <Button size="sm" variant="outline">
-                        Revisar
+                        {t('dashboard.review')}
                       </Button>
                     </div>
                   </div>
@@ -234,9 +237,9 @@ export default function Index() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="secondary">Pendente</Badge>
+                      <Badge variant="secondary">{t('common.pending')}</Badge>
                       <Button size="sm" variant="default">
-                        Aprovar
+                        {t('dashboard.approve')}
                       </Button>
                     </div>
                   </div>
@@ -248,8 +251,8 @@ export default function Index() {
         {/* Expenses Chart */}
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Distribuição de Despesas</CardTitle>
-            <CardDescription>Por categoria este mês</CardDescription>
+            <CardTitle>{t('dashboard.expense_distribution')}</CardTitle>
+            <CardDescription>{t('dashboard.expense_desc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer

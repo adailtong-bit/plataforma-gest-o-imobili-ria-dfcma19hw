@@ -25,21 +25,23 @@ import {
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export function AppSidebar() {
   const location = useLocation()
   const pathname = location.pathname
+  const { t } = useLanguageStore()
 
   const menuItems = [
-    { title: 'Dashboard', url: '/', icon: Home },
-    { title: 'Propriedades', url: '/properties', icon: Building },
-    { title: 'Inquilinos', url: '/tenants', icon: Users },
-    { title: 'Proprietários', url: '/owners', icon: UserCheck },
-    { title: 'Parceiros', url: '/partners', icon: Briefcase },
-    { title: 'Calendário', url: '/calendar', icon: Calendar },
-    { title: 'Tarefas', url: '/tasks', icon: ClipboardList },
-    { title: 'Financeiro', url: '/financial', icon: DollarSign },
-    { title: 'Mensagens', url: '/messages', icon: MessageSquare },
+    { title: t('common.dashboard'), url: '/', icon: Home },
+    { title: t('common.properties'), url: '/properties', icon: Building },
+    { title: t('common.tenants'), url: '/tenants', icon: Users },
+    { title: t('common.owners'), url: '/owners', icon: UserCheck },
+    { title: t('common.partners'), url: '/partners', icon: Briefcase },
+    { title: t('common.calendar'), url: '/calendar', icon: Calendar },
+    { title: t('common.tasks'), url: '/tasks', icon: ClipboardList },
+    { title: t('common.financial'), url: '/financial', icon: DollarSign },
+    { title: t('common.messages'), url: '/messages', icon: MessageSquare },
   ]
 
   const isActive = (url: string) => {
@@ -87,11 +89,11 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={isActive('/settings')}
-                  tooltip="Configurações"
+                  tooltip={t('common.settings')}
                 >
                   <Link to="/settings">
                     <Settings />
-                    <span>Configurações</span>
+                    <span>{t('common.settings')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -4,29 +4,29 @@ import { Badge } from '@/components/ui/badge'
 import useTaskStore from '@/stores/useTaskStore'
 import { TaskCard } from '@/components/tasks/TaskCard'
 import { CreateTaskDialog } from '@/components/tasks/CreateTaskDialog'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Tasks() {
   const { tasks, updateTaskStatus, addTaskImage, addTaskEvidence } =
     useTaskStore()
+  const { t } = useLanguageStore()
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Tarefas & Manutenção
+            {t('tasks.title')}
           </h1>
-          <p className="text-muted-foreground">
-            Gerencie limpezas, reparos e inspeções.
-          </p>
+          <p className="text-muted-foreground">{t('tasks.subtitle')}</p>
         </div>
         <CreateTaskDialog />
       </div>
 
       <Tabs defaultValue="board" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="board">Quadro (Kanban)</TabsTrigger>
-          <TabsTrigger value="list">Lista</TabsTrigger>
+          <TabsTrigger value="board">{t('tasks.board')}</TabsTrigger>
+          <TabsTrigger value="list">{t('tasks.list')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="board">
@@ -35,7 +35,7 @@ export default function Tasks() {
             <div className="bg-muted/50 p-4 rounded-lg flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-sm uppercase text-muted-foreground">
-                  Pendente
+                  {t('common.pending')}
                 </h3>
                 <Badge variant="secondary">
                   {tasks.filter((t) => t.status === 'pending').length}
@@ -59,7 +59,7 @@ export default function Tasks() {
             <div className="bg-muted/50 p-4 rounded-lg flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-sm uppercase text-blue-600">
-                  Em Progresso
+                  {t('tasks.in_progress')}
                 </h3>
                 <Badge className="bg-blue-100 text-blue-700">
                   {tasks.filter((t) => t.status === 'in_progress').length}
@@ -84,7 +84,7 @@ export default function Tasks() {
             <div className="bg-muted/50 p-4 rounded-lg flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-sm uppercase text-orange-600">
-                  Aprovação
+                  {t('tasks.approval')}
                 </h3>
                 <Badge className="bg-orange-100 text-orange-700">
                   {tasks.filter((t) => t.status === 'approved').length}
@@ -108,7 +108,7 @@ export default function Tasks() {
             <div className="bg-muted/50 p-4 rounded-lg flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-sm uppercase text-green-600">
-                  Concluído
+                  {t('common.completed')}
                 </h3>
                 <Badge className="bg-green-100 text-green-700">
                   {tasks.filter((t) => t.status === 'completed').length}

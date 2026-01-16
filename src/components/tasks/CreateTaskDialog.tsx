@@ -52,6 +52,7 @@ import useTaskStore from '@/stores/useTaskStore'
 import usePartnerStore from '@/stores/usePartnerStore'
 import { useToast } from '@/hooks/use-toast'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 const formSchema = z.object({
   title: z.string().min(2, 'O título deve ter pelo menos 2 caracteres.'),
@@ -73,6 +74,7 @@ export function CreateTaskDialog() {
   const { addTask } = useTaskStore()
   const { partners } = usePartnerStore()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -135,8 +137,11 @@ export function CreateTaskDialog() {
     })
 
     toast({
-      title: 'Tarefa criada com sucesso!',
-      description: `Tarefa "${values.title}" foi atribuída a ${assignee?.name}.`,
+      title: t('tasks.success_created'),
+      description: t('tasks.assigned_to', {
+        title: values.title,
+        name: assignee?.name || '',
+      }),
     })
 
     setOpen(false)
@@ -148,15 +153,13 @@ export function CreateTaskDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="bg-trust-blue gap-2">
-          <Plus className="h-4 w-4" /> Nova Tarefa
+          <Plus className="h-4 w-4" /> {t('tasks.new_task')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] h-[90vh] flex flex-col p-0">
         <DialogHeader className="p-6 pb-2">
-          <DialogTitle>Nova Tarefa ou Serviço</DialogTitle>
-          <DialogDescription>
-            Preencha os detalhes para criar uma nova ordem de serviço.
-          </DialogDescription>
+          <DialogTitle>{t('tasks.create_title')}</DialogTitle>
+          <DialogDescription>{t('tasks.create_desc')}</DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="flex-1 p-6 pt-2">
@@ -168,7 +171,7 @@ export function CreateTaskDialog() {
                   name="propertyId"
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>Propriedade</FormLabel>
+                      <FormLabel>{t('tenants.property')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -211,7 +214,7 @@ export function CreateTaskDialog() {
                   name="title"
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>Título da Tarefa</FormLabel>
+                      <FormLabel>{t('tasks.task_title')}</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Ex: Limpeza de Check-out"
@@ -228,7 +231,7 @@ export function CreateTaskDialog() {
                   name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tipo de Serviço</FormLabel>
+                      <FormLabel>{t('tasks.service_type')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -239,9 +242,11 @@ export function CreateTaskDialog() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="cleaning">Limpeza</SelectItem>
+                          <SelectItem value="cleaning">
+                            {t('partners.cleaning')}
+                          </SelectItem>
                           <SelectItem value="maintenance">
-                            Manutenção
+                            {t('partners.maintenance')}
                           </SelectItem>
                           <SelectItem value="inspection">Inspeção</SelectItem>
                         </SelectContent>
@@ -256,7 +261,7 @@ export function CreateTaskDialog() {
                   name="priority"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Prioridade</FormLabel>
+                      <FormLabel>{t('common.priority')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -283,7 +288,7 @@ export function CreateTaskDialog() {
                   name="assigneeId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Responsável</FormLabel>
+                      <FormLabel>{t('tasks.assignee')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -313,7 +318,7 @@ export function CreateTaskDialog() {
                   name="date"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Data Agendada</FormLabel>
+                      <FormLabel>{t('tasks.scheduled_date')}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -364,10 +369,8 @@ export function CreateTaskDialog() {
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
-                        <FormLabel>Back-to-Back (Check-out/Check-in)</FormLabel>
-                        <FormDescription>
-                          Marque se há hóspedes chegando no mesmo dia.
-                        </FormDescription>
+                        <FormLabel>{t('tasks.b2b_label')}</FormLabel>
+                        <FormDescription>{t('tasks.b2b_desc')}</FormDescription>
                       </div>
                     </FormItem>
                   )}
@@ -375,7 +378,7 @@ export function CreateTaskDialog() {
               )}
 
               <div className="space-y-3">
-                <FormLabel>Fotos de Reconhecimento / Referência</FormLabel>
+                <FormLabel>{t('tasks.photos_ref')}</FormLabel>
                 <div className="flex flex-wrap gap-2">
                   {uploadedImages.map((img, idx) => (
                     <div
@@ -406,9 +409,7 @@ export function CreateTaskDialog() {
                     <ImageIcon className="h-6 w-6 text-muted-foreground" />
                   </div>
                 </div>
-                <FormDescription>
-                  Adicione fotos do problema ou do local para ajudar o executor.
-                </FormDescription>
+                <FormDescription>{t('tasks.photos_desc')}</FormDescription>
               </div>
 
               <FormField
@@ -416,10 +417,10 @@ export function CreateTaskDialog() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Descrição Detalhada</FormLabel>
+                    <FormLabel>{t('tasks.detailed_desc')}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Instruções adicionais, código do cofre, etc..."
+                        placeholder={t('tasks.desc_placeholder')}
                         className="resize-none"
                         {...field}
                       />
@@ -430,7 +431,7 @@ export function CreateTaskDialog() {
               />
 
               <Button type="submit" className="w-full bg-trust-blue">
-                Criar Tarefa
+                {t('tasks.create_btn')}
               </Button>
             </form>
           </Form>

@@ -12,33 +12,34 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Settings() {
+  const { t } = useLanguageStore()
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-navy">
-          Configurações
+          {t('settings.title')}
         </h1>
-        <p className="text-muted-foreground">
-          Gerencie seu perfil e preferências do sistema.
-        </p>
+        <p className="text-muted-foreground">{t('settings.subtitle')}</p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="profile">Perfil</TabsTrigger>
-          <TabsTrigger value="notifications">Notificações</TabsTrigger>
-          <TabsTrigger value="team">Equipe</TabsTrigger>
+          <TabsTrigger value="profile">{t('common.profile')}</TabsTrigger>
+          <TabsTrigger value="notifications">
+            {t('common.notifications')}
+          </TabsTrigger>
+          <TabsTrigger value="team">{t('common.team')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile">
           <Card>
             <CardHeader>
-              <CardTitle>Informações Pessoais</CardTitle>
-              <CardDescription>
-                Atualize sua foto e dados de contato.
-              </CardDescription>
+              <CardTitle>{t('settings.personal_info')}</CardTitle>
+              <CardDescription>{t('settings.update_info')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center gap-6">
@@ -46,29 +47,31 @@ export default function Settings() {
                   <AvatarImage src="https://img.usecurling.com/ppl/thumbnail?gender=male" />
                   <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
-                <Button variant="outline">Alterar Foto</Button>
+                <Button variant="outline">{t('settings.change_photo')}</Button>
               </div>
               <Separator />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Nome Completo</Label>
+                  <Label htmlFor="name">{t('settings.full_name')}</Label>
                   <Input id="name" defaultValue="Admin User" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t('common.email')}</Label>
                   <Input id="email" defaultValue="admin@sistema.com" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Telefone</Label>
+                  <Label htmlFor="phone">{t('common.phone')}</Label>
                   <Input id="phone" defaultValue="+1 (555) 123-4567" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="role">Cargo</Label>
+                  <Label htmlFor="role">{t('common.role')}</Label>
                   <Input id="role" defaultValue="Gerente Geral" disabled />
                 </div>
               </div>
               <div className="flex justify-end">
-                <Button className="bg-trust-blue">Salvar Alterações</Button>
+                <Button className="bg-trust-blue">
+                  {t('settings.save_changes')}
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -77,17 +80,17 @@ export default function Settings() {
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
-              <CardTitle>Preferências de Alerta</CardTitle>
-              <CardDescription>
-                Escolha como deseja ser notificado.
-              </CardDescription>
+              <CardTitle>{t('settings.alert_prefs')}</CardTitle>
+              <CardDescription>{t('settings.alert_desc')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Notificações por Email</Label>
+                  <Label className="text-base">
+                    {t('settings.email_notif')}
+                  </Label>
                   <p className="text-sm text-muted-foreground">
-                    Receba um resumo diário de atividades.
+                    {t('settings.email_desc')}
                   </p>
                 </div>
                 <Switch defaultChecked />
@@ -95,9 +98,9 @@ export default function Settings() {
               <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Alertas Críticos (SMS)</Label>
+                  <Label className="text-base">{t('settings.sms_notif')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Para emergências de manutenção.
+                    {t('settings.sms_desc')}
                   </p>
                 </div>
                 <Switch defaultChecked />
@@ -105,9 +108,11 @@ export default function Settings() {
               <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Novas Tarefas</Label>
+                  <Label className="text-base">
+                    {t('settings.tasks_notif')}
+                  </Label>
                   <p className="text-sm text-muted-foreground">
-                    Quando uma limpeza for concluída.
+                    {t('settings.tasks_desc')}
                   </p>
                 </div>
                 <Switch />

@@ -29,7 +29,7 @@ import useOwnerStore from '@/stores/useOwnerStore'
 import usePartnerStore from '@/stores/usePartnerStore'
 import useAuthStore from '@/stores/useAuthStore'
 import useMessageStore from '@/stores/useMessageStore'
-import { canChat } from '@/lib/permissions'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -38,6 +38,7 @@ export default function PropertyDetails() {
   const { partners } = usePartnerStore()
   const { currentUser } = useAuthStore()
   const { startChat } = useMessageStore()
+  const { t } = useLanguageStore()
   const navigate = useNavigate()
 
   const property = properties.find((p) => p.id === id)
@@ -57,9 +58,6 @@ export default function PropertyDetails() {
     ? partners.find((p) => p.id === property.agentId)
     : null
 
-  // Simplified logic: If I'm a Property Owner, I want to contact the Manager
-  // In a real app, we'd find the specific manager assigned to this property.
-  // Here we'll default to the 'plat_manager'.
   const propertyManagerId = 'plat_manager'
 
   const handleContactManager = () => {
@@ -76,7 +74,7 @@ export default function PropertyDetails() {
             size="sm"
             className="pl-0 gap-1 text-muted-foreground hover:text-primary"
           >
-            <ArrowLeft className="h-4 w-4" /> Voltar para lista
+            <ArrowLeft className="h-4 w-4" /> {t('common.back')}
           </Button>
         </Link>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -93,16 +91,18 @@ export default function PropertyDetails() {
             <Button variant="outline" size="icon">
               <Share2 className="h-4 w-4" />
             </Button>
-            {/* If Current User is Property Owner, show Contact Manager instead of Edit */}
             {currentUser.role === 'property_owner' ? (
               <Button
                 className="bg-trust-blue gap-2"
                 onClick={handleContactManager}
               >
-                <MessageSquare className="h-4 w-4" /> Falar com Gestor
+                <MessageSquare className="h-4 w-4" />{' '}
+                {t('properties.contact_manager')}
               </Button>
             ) : (
-              <Button className="bg-trust-blue">Editar Propriedade</Button>
+              <Button className="bg-trust-blue">
+                {t('properties.edit_property')}
+              </Button>
             )}
           </div>
         </div>
@@ -110,41 +110,53 @@ export default function PropertyDetails() {
 
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="access">Acesso & Wifi</TabsTrigger>
-          <TabsTrigger value="gallery">Galeria</TabsTrigger>
-          <TabsTrigger value="docs">Documentos</TabsTrigger>
-          <TabsTrigger value="hoa">HOA & Regras</TabsTrigger>
+          <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
+          <TabsTrigger value="access">
+            {t('properties.access_wifi')}
+          </TabsTrigger>
+          <TabsTrigger value="gallery">{t('properties.gallery')}</TabsTrigger>
+          <TabsTrigger value="docs">{t('properties.docs')}</TabsTrigger>
+          <TabsTrigger value="hoa">{t('properties.hoa')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-3">
             <Card className="md:col-span-2">
               <CardHeader>
-                <CardTitle>Detalhes da Propriedade</CardTitle>
+                <CardTitle>{t('properties.details_card')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="p-4 bg-secondary rounded-lg text-center">
-                    <p className="text-sm text-muted-foreground">Tipo</p>
+                    <p className="text-sm text-muted-foreground">
+                      {t('common.type')}
+                    </p>
                     <p className="font-semibold">{property.type}</p>
                   </div>
                   <div className="p-4 bg-secondary rounded-lg text-center">
-                    <p className="text-sm text-muted-foreground">Quartos</p>
+                    <p className="text-sm text-muted-foreground">
+                      {t('properties.beds')}
+                    </p>
                     <p className="font-semibold">{property.bedrooms}</p>
                   </div>
                   <div className="p-4 bg-secondary rounded-lg text-center">
-                    <p className="text-sm text-muted-foreground">Banheiros</p>
+                    <p className="text-sm text-muted-foreground">
+                      {t('properties.baths')}
+                    </p>
                     <p className="font-semibold">{property.bathrooms}</p>
                   </div>
                   <div className="p-4 bg-secondary rounded-lg text-center">
-                    <p className="text-sm text-muted-foreground">Capacidade</p>
-                    <p className="font-semibold">{property.guests} Pessoas</p>
+                    <p className="text-sm text-muted-foreground">
+                      {t('properties.guests')}
+                    </p>
+                    <p className="font-semibold">{property.guests}</p>
                   </div>
                 </div>
                 <Separator />
                 <div>
-                  <h3 className="font-semibold mb-2">Descrição</h3>
+                  <h3 className="font-semibold mb-2">
+                    {t('common.description')}
+                  </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     Esta é uma propriedade premium localizada na comunidade de{' '}
                     {property.community}. Perfeita para famílias e grupos
@@ -155,7 +167,7 @@ export default function PropertyDetails() {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <h3 className="font-semibold mb-2 flex items-center gap-2">
-                      <User className="h-4 w-4" /> Proprietário
+                      <User className="h-4 w-4" /> {t('properties.owner')}
                     </h3>
                     {owner ? (
                       <div className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg border group hover:bg-muted/40 transition-colors">
@@ -176,14 +188,14 @@ export default function PropertyDetails() {
                       </div>
                     ) : (
                       <div className="p-3 text-sm text-muted-foreground border rounded-lg">
-                        Não atribuído
+                        {t('properties.not_assigned')}
                       </div>
                     )}
                   </div>
 
                   <div>
                     <h3 className="font-semibold mb-2 flex items-center gap-2">
-                      <Briefcase className="h-4 w-4" /> Realtor / Agente
+                      <Briefcase className="h-4 w-4" /> {t('properties.agent')}
                     </h3>
                     {agent ? (
                       <div className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg border">
@@ -199,7 +211,7 @@ export default function PropertyDetails() {
                       </div>
                     ) : (
                       <div className="p-3 text-sm text-muted-foreground border rounded-lg">
-                        Venda direta / Não informado
+                        {t('properties.not_assigned')}
                       </div>
                     )}
                   </div>
@@ -209,41 +221,39 @@ export default function PropertyDetails() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Status Atual</CardTitle>
+                <CardTitle>{t('properties.current_status')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col gap-4">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">
-                      Estado
+                      {t('common.status')}
                     </span>
                     <Badge
                       variant={
                         property.status === 'occupied' ? 'default' : 'secondary'
                       }
                     >
-                      {property.status === 'occupied'
-                        ? 'Ocupado'
-                        : property.status === 'maintenance'
-                          ? 'Manutenção'
-                          : 'Vago'}
+                      {t(`common.${property.status}`)}
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">
-                      Próximo Check-in
+                      {t('properties.next_checkin')}
                     </span>
                     <span className="font-medium">12/06/2026</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">
-                      Última Limpeza
+                      {t('properties.last_cleaning')}
                     </span>
-                    <span className="font-medium">Há 2 dias</span>
+                    <span className="font-medium">
+                      2 {t('common.days_ago', { count: '2' })}
+                    </span>
                   </div>
                   <Separator />
                   <Button className="w-full" variant="outline">
-                    Ver Calendário
+                    {t('common.view')} {t('common.calendar')}
                   </Button>
                 </div>
               </CardContent>
@@ -254,10 +264,8 @@ export default function PropertyDetails() {
         <TabsContent value="access">
           <Card>
             <CardHeader>
-              <CardTitle>Códigos de Acesso e Wifi</CardTitle>
-              <CardDescription>
-                Informações sensíveis para hóspedes e staff.
-              </CardDescription>
+              <CardTitle>{t('properties.access_codes')}</CardTitle>
+              <CardDescription>{t('properties.access_desc')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center gap-4 p-4 border rounded-lg bg-slate-50">
@@ -266,14 +274,14 @@ export default function PropertyDetails() {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-muted-foreground">
-                    Código da Porta (Smart Lock)
+                    {t('properties.door_code')}
                   </p>
                   <p className="text-2xl font-bold tracking-widest">
                     {property.accessCode}
                   </p>
                 </div>
                 <Button variant="ghost" size="sm">
-                  Copiar
+                  {t('properties.copy')}
                 </Button>
               </div>
 
@@ -283,12 +291,12 @@ export default function PropertyDetails() {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-muted-foreground">
-                    Rede Wifi / Senha
+                    {t('properties.wifi_network')}
                   </p>
                   <p className="text-lg font-bold">{property.wifi}</p>
                 </div>
                 <Button variant="ghost" size="sm">
-                  Copiar
+                  {t('properties.copy')}
                 </Button>
               </div>
             </CardContent>
@@ -331,7 +339,7 @@ export default function PropertyDetails() {
                   <div className="text-center">
                     <Camera className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">
-                      Adicionar Fotos
+                      {t('properties.add_photos')}
                     </span>
                   </div>
                 </div>
@@ -343,7 +351,7 @@ export default function PropertyDetails() {
         <TabsContent value="docs">
           <Card>
             <CardHeader>
-              <CardTitle>Documentos Legais</CardTitle>
+              <CardTitle>{t('properties.legal_docs')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -361,7 +369,7 @@ export default function PropertyDetails() {
                       <span>{doc}</span>
                     </div>
                     <Button variant="ghost" size="sm">
-                      Baixar
+                      {t('properties.download')}
                     </Button>
                   </div>
                 ))}
@@ -373,12 +381,12 @@ export default function PropertyDetails() {
         <TabsContent value="hoa">
           <Card>
             <CardHeader>
-              <CardTitle>Informações do Condomínio (HOA)</CardTitle>
+              <CardTitle>{t('properties.hoa_info')}</CardTitle>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[200px] w-full rounded-md border p-4">
                 <h4 className="font-semibold mb-2">
-                  Regras da Comunidade {property.community}
+                  {t('properties.hoa_rules')} {property.community}
                 </h4>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
                   <li>Proibido estacionar na rua entre 2h e 6h.</li>

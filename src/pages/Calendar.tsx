@@ -9,9 +9,11 @@ import {
 import { useState } from 'react'
 import { addDays } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function CalendarPage() {
   const [date, setDate] = useState<Date | undefined>(new Date())
+  const { t } = useLanguageStore()
 
   // Mock events for the selected date
   const events = [
@@ -42,27 +44,25 @@ export default function CalendarPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-navy">
-          Calendário Unificado
+          {t('calendar.title')}
         </h1>
-        <p className="text-muted-foreground">
-          Visualize ocupação, manutenções e rotinas de limpeza.
-        </p>
+        <p className="text-muted-foreground">{t('calendar.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
         <Card className="lg:col-span-2 h-fit">
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>Visão Mensal</CardTitle>
+              <CardTitle>{t('calendar.monthly_view')}</CardTitle>
               <div className="flex gap-2">
                 <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
-                  Check-in
+                  {t('calendar.check_in')}
                 </Badge>
                 <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                  Ocupado
+                  {t('calendar.occupied')}
                 </Badge>
                 <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100">
-                  Manutenção
+                  {t('common.maintenance')}
                 </Badge>
               </div>
             </div>
@@ -101,7 +101,7 @@ export default function CalendarPage() {
 
         <Card className="h-fit">
           <CardHeader>
-            <CardTitle>Agenda do Dia</CardTitle>
+            <CardTitle>{t('calendar.daily_agenda')}</CardTitle>
             <CardDescription>
               {date?.toLocaleDateString('pt-BR', {
                 weekday: 'long',
@@ -133,7 +133,7 @@ export default function CalendarPage() {
               ))}
               <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800 font-medium">
-                  Atenção: Back-to-back na Villa Sunshine amanhã!
+                  {t('calendar.back_to_back_warn')}
                 </p>
               </div>
             </div>
