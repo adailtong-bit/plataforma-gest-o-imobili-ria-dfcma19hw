@@ -19,11 +19,28 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Search, MessageSquare, Building2, Phone } from 'lucide-react'
+import {
+  Plus,
+  Search,
+  MessageSquare,
+  Building2,
+  Phone,
+  Eye,
+  MoreHorizontal,
+  FileText,
+} from 'lucide-react'
 import useOwnerStore from '@/stores/useOwnerStore'
 import usePropertyStore from '@/stores/usePropertyStore'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useToast } from '@/hooks/use-toast'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 export default function Owners() {
   const { owners, addOwner } = useOwnerStore()
@@ -70,6 +87,13 @@ export default function Owners() {
 
   const getPropertyCount = (ownerId: string) => {
     return properties.filter((p) => p.ownerId === ownerId).length
+  }
+
+  const handleAction = (ownerName: string, action: string) => {
+    toast({
+      title: 'Ação Iniciada',
+      description: `Workflow: ${action} para ${ownerName}`,
+    })
   }
 
   return (
@@ -168,7 +192,14 @@ export default function Owners() {
               ) : (
                 filteredOwners.map((owner) => (
                   <TableRow key={owner.id}>
-                    <TableCell className="font-medium">{owner.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link
+                        to={`/owners/${owner.id}`}
+                        className="hover:underline text-trust-blue"
+                      >
+                        {owner.name}
+                      </Link>
+                    </TableCell>
                     <TableCell>
                       <div className="flex flex-col text-sm">
                         <span>{owner.email}</span>
@@ -193,14 +224,46 @@ export default function Owners() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => navigate('/messages')}
-                        title="Enviar Mensagem"
-                      >
-                        <MessageSquare className="h-4 w-4 text-trust-blue" />
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => navigate(`/owners/${owner.id}`)}
+                          title="Ver Detalhes"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                            <DropdownMenuItem
+                              onClick={() => navigate('/messages')}
+                            >
+                              <MessageSquare className="mr-2 h-4 w-4" />{' '}
+                              Mensagem
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleAction(owner.name, 'Renovação')
+                              }
+                            >
+                              <FileText className="mr-2 h-4 w-4" /> Renovar
+                              Contrato
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => navigate(`/owners/${owner.id}`)}
+                            >
+                              Ver Perfil Completo
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

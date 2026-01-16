@@ -2,22 +2,48 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, Send, Paperclip, Mic, Phone, X } from 'lucide-react'
+import {
+  Search,
+  Send,
+  Paperclip,
+  Mic,
+  Phone,
+  X,
+  Lock,
+  Users,
+} from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import useMessageStore from '@/stores/useMessageStore'
 import { useState, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 export default function Messages() {
   const { messages, sendMessage, markAsRead } = useMessageStore()
-  const [selectedContactId, setSelectedContactId] = useState<string>(
-    messages[0]?.id || '',
-  )
+  const [filter, setFilter] = useState('all')
+  const [selectedContactId, setSelectedContactId] = useState<string>('')
   const [inputText, setInputText] = useState('')
   const [attachments, setAttachments] = useState<string[]>([])
   const scrollRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Initialize selected contact
+  useEffect(() => {
+    if (!selectedContactId && messages.length > 0) {
+      setSelectedContactId(messages[0].id)
+    }
+  }, [messages])
+
+  const filteredMessages = messages.filter((msg) => {
+    if (filter === 'all') return true
+    return msg.type === filter
+  })
 
   const selectedConversation = messages.find((m) => m.id === selectedContactId)
 
@@ -31,7 +57,7 @@ export default function Messages() {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  }, [selectedConversation?.history])
+  }, [selectedConversation?.history, selectedContactId])
 
   const handleSend = () => {
     if ((inputText.trim() || attachments.length > 0) && selectedContactId) {
@@ -57,7 +83,6 @@ export default function Messages() {
       const url = URL.createObjectURL(file)
       setAttachments((prev) => [...prev, url])
     }
-    // Reset input so same file can be selected again if needed
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -77,43 +102,71 @@ export default function Messages() {
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Buscar conversas..." className="pl-8" />
           </div>
+          <Tabs
+            defaultValue="all"
+            value={filter}
+            onValueChange={setFilter}
+            className="w-full mt-2"
+          >
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="all">Todos</TabsTrigger>
+              <TabsTrigger value="partner">Parceiros</TabsTrigger>
+              <TabsTrigger value="owner">Owners</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </CardHeader>
         <CardContent className="p-0 flex-1 overflow-hidden">
           <ScrollArea className="h-full">
             <div className="flex flex-col">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  onClick={() => setSelectedContactId(msg.id)}
-                  className={cn(
-                    'flex gap-3 p-4 border-b cursor-pointer hover:bg-accent transition-colors',
-                    msg.id === selectedContactId ? 'bg-accent/50' : '',
-                  )}
-                >
-                  <Avatar>
-                    <AvatarImage src={msg.avatar} />
-                    <AvatarFallback>{msg.contact.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 overflow-hidden">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-semibold text-sm truncate">
-                        {msg.contact}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {msg.time}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {msg.lastMessage}
-                    </p>
-                  </div>
-                  {msg.unread > 0 && (
-                    <Badge className="h-5 w-5 rounded-full p-0 flex items-center justify-center bg-trust-blue">
-                      {msg.unread}
-                    </Badge>
-                  )}
+              {filteredMessages.length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground text-sm">
+                  Nenhuma conversa encontrada.
                 </div>
-              ))}
+              ) : (
+                filteredMessages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    onClick={() => setSelectedContactId(msg.id)}
+                    className={cn(
+                      'flex gap-3 p-4 border-b cursor-pointer hover:bg-accent transition-colors relative',
+                      msg.id === selectedContactId ? 'bg-accent/50' : '',
+                    )}
+                  >
+                    <Avatar>
+                      <AvatarImage src={msg.avatar} />
+                      <AvatarFallback>{msg.contact.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 overflow-hidden">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-semibold text-sm truncate max-w-[120px]">
+                          {msg.contact}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {msg.time}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {msg.lastMessage}
+                      </p>
+                    </div>
+                    {msg.unread > 0 && (
+                      <Badge className="h-5 w-5 rounded-full p-0 flex items-center justify-center bg-trust-blue absolute right-2 bottom-4">
+                        {msg.unread}
+                      </Badge>
+                    )}
+                    {msg.type === 'partner' && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Lock className="h-3 w-3 text-amber-500 absolute top-2 right-2" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Restrito: Apenas Gestão</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </div>
+                ))
+              )}
             </div>
           </ScrollArea>
         </CardContent>
@@ -134,9 +187,24 @@ export default function Messages() {
                 <h3 className="font-semibold">
                   {selectedConversation.contact}
                 </h3>
-                <span className="text-xs text-green-500 flex items-center gap-1">
-                  ● Online
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-green-500 flex items-center gap-1">
+                    ● Online
+                  </span>
+                  {selectedConversation.type === 'partner' && (
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] h-5 px-1 bg-amber-50 text-amber-600 border-amber-200"
+                    >
+                      <Lock className="h-3 w-3 mr-1" /> Interno
+                    </Badge>
+                  )}
+                  {selectedConversation.type === 'owner' && (
+                    <Badge variant="outline" className="text-[10px] h-5 px-1">
+                      <Users className="h-3 w-3 mr-1" /> Proprietário
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
             <Button variant="ghost" size="icon">
@@ -229,7 +297,11 @@ export default function Messages() {
                 <Paperclip className="h-5 w-5" />
               </Button>
               <Input
-                placeholder="Digite sua mensagem..."
+                placeholder={
+                  selectedConversation.type === 'partner'
+                    ? 'Mensagem interna para parceiro...'
+                    : 'Digite sua mensagem...'
+                }
                 className="flex-1"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}

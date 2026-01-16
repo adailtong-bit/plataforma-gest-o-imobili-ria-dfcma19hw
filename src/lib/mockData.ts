@@ -55,6 +55,7 @@ export const properties: Property[] = [
     accessCode: '4921',
     wifi: 'Sunshine_Guest / sun123',
     ownerId: 'owner1',
+    agentId: 'partner3',
   },
   {
     id: 'prop2',
@@ -70,6 +71,7 @@ export const properties: Property[] = [
     accessCode: '8812',
     wifi: 'BH_Guest / brickell',
     ownerId: 'owner2',
+    agentId: 'partner3',
   },
   {
     id: 'prop3',
@@ -306,6 +308,7 @@ export const messages: Message[] = [
   {
     id: 'partner1',
     contact: 'Maria Silva (Cleaner)',
+    type: 'partner',
     lastMessage: 'Terminei a limpeza na Villa Sunshine. Seguem as fotos.',
     time: '10:30',
     unread: 2,
@@ -314,6 +317,7 @@ export const messages: Message[] = [
   {
     id: 'owner1',
     contact: 'John Doe (Owner)',
+    type: 'owner',
     lastMessage: 'Você pode verificar a correspondência?',
     time: 'Ontem',
     unread: 0,
@@ -322,6 +326,7 @@ export const messages: Message[] = [
   {
     id: 'partner2',
     contact: 'Carlos Tech (Maintenance)',
+    type: 'partner',
     lastMessage: 'Preciso da aprovação para a peça do AC.',
     time: 'Ontem',
     unread: 1,

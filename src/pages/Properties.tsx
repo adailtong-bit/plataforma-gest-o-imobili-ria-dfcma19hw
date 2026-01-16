@@ -20,6 +20,7 @@ import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useOwnerStore from '@/stores/useOwnerStore'
+import usePartnerStore from '@/stores/usePartnerStore'
 import {
   Dialog,
   DialogContent,
@@ -33,9 +34,12 @@ import { useToast } from '@/hooks/use-toast'
 export default function Properties() {
   const { properties, addProperty } = usePropertyStore()
   const { owners } = useOwnerStore()
+  const { partners } = usePartnerStore()
   const [filter, setFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const { toast } = useToast()
+
+  const realtors = partners.filter((p) => p.type === 'agent')
 
   const [newProp, setNewProp] = useState({
     name: '',
@@ -45,6 +49,7 @@ export default function Properties() {
     bathrooms: '2',
     guests: '6',
     ownerId: '',
+    agentId: '',
   })
 
   const filteredProperties = properties.filter(
@@ -82,6 +87,7 @@ export default function Properties() {
       accessCode: 'Pending',
       wifi: 'Pending',
       ownerId: newProp.ownerId || 'owner1',
+      agentId: newProp.agentId,
     })
     toast({
       title: 'Propriedade Adicionada',
@@ -95,6 +101,7 @@ export default function Properties() {
       bathrooms: '2',
       guests: '6',
       ownerId: '',
+      agentId: '',
     })
   }
 
@@ -162,6 +169,28 @@ export default function Properties() {
                   </Select>
                 </div>
                 <div className="grid gap-2">
+                  <Label>Realtor (Agente)</Label>
+                  <Select
+                    value={newProp.agentId}
+                    onValueChange={(val) =>
+                      setNewProp({ ...newProp, agentId: val })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o agente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {realtors.map((r) => (
+                        <SelectItem key={r.id} value={r.id}>
+                          {r.name} ({r.companyName})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
                   <Label>Tipo</Label>
                   <Select
                     value={newProp.type}
@@ -179,8 +208,18 @@ export default function Properties() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="grid gap-2">
+                  <Label>Hóspedes</Label>
+                  <Input
+                    type="number"
+                    value={newProp.guests}
+                    onChange={(e) =>
+                      setNewProp({ ...newProp, guests: e.target.value })
+                    }
+                  />
+                </div>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label>Quartos</Label>
                   <Input
@@ -198,16 +237,6 @@ export default function Properties() {
                     value={newProp.bathrooms}
                     onChange={(e) =>
                       setNewProp({ ...newProp, bathrooms: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Hóspedes</Label>
-                  <Input
-                    type="number"
-                    value={newProp.guests}
-                    onChange={(e) =>
-                      setNewProp({ ...newProp, guests: e.target.value })
                     }
                   />
                 </div>

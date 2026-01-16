@@ -17,17 +17,21 @@ import {
   Share2,
   Camera,
   User,
+  Briefcase,
+  ExternalLink,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useOwnerStore from '@/stores/useOwnerStore'
+import usePartnerStore from '@/stores/usePartnerStore'
 
 export default function PropertyDetails() {
   const { id } = useParams()
   const { properties } = usePropertyStore()
   const { owners } = useOwnerStore()
+  const { partners } = usePartnerStore()
   const property = properties.find((p) => p.id === id)
 
   if (!property)
@@ -41,6 +45,9 @@ export default function PropertyDetails() {
     )
 
   const owner = owners.find((o) => o.id === property.ownerId)
+  const agent = property.agentId
+    ? partners.find((p) => p.id === property.agentId)
+    : null
 
   return (
     <div className="flex flex-col gap-6">
@@ -117,33 +124,55 @@ export default function PropertyDetails() {
                     mobiliada e equipada para estadias de curto e longo prazo.
                   </p>
                 </div>
-                <div>
-                  <h3 className="font-semibold mb-2 flex items-center gap-2">
-                    <User className="h-4 w-4" /> Proprietário
-                  </h3>
-                  <div className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg border">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                      {owner ? owner.name.charAt(0) : '?'}
-                    </div>
-                    <div>
-                      <p className="font-medium">
-                        {owner ? owner.name : 'Desconhecido'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {owner ? owner.email : '-'}
-                      </p>
-                    </div>
-                    {owner && (
-                      <Badge
-                        variant="outline"
-                        className={
-                          owner.status === 'active'
-                            ? 'ml-auto text-green-600 bg-green-50'
-                            : 'ml-auto text-gray-500'
-                        }
-                      >
-                        {owner.status === 'active' ? 'Ativo' : 'Inativo'}
-                      </Badge>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="font-semibold mb-2 flex items-center gap-2">
+                      <User className="h-4 w-4" /> Proprietário
+                    </h3>
+                    {owner ? (
+                      <div className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg border group hover:bg-muted/40 transition-colors">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                          {owner.name.charAt(0)}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium">{owner.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {owner.email}
+                          </p>
+                        </div>
+                        <Link to={`/owners/${owner.id}`}>
+                          <Button variant="ghost" size="icon">
+                            <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                          </Button>
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="p-3 text-sm text-muted-foreground border rounded-lg">
+                        Não atribuído
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold mb-2 flex items-center gap-2">
+                      <Briefcase className="h-4 w-4" /> Realtor / Agente
+                    </h3>
+                    {agent ? (
+                      <div className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg border">
+                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
+                          {agent.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-medium">{agent.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {agent.companyName}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-3 text-sm text-muted-foreground border rounded-lg">
+                        Venda direta / Não informado
+                      </div>
                     )}
                   </div>
                 </div>

@@ -12,6 +12,7 @@ export interface Property {
   accessCode: string
   wifi: string
   ownerId: string
+  agentId?: string // Associated Realtor/Agent
 }
 
 export interface Tenant {
@@ -100,6 +101,7 @@ export interface Message {
   time: string
   unread: number
   avatar: string
+  type?: 'owner' | 'tenant' | 'partner'
   history: ChatMessage[]
 }
 
