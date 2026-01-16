@@ -3,7 +3,6 @@ import { Task } from '@/lib/types'
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -19,9 +18,10 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Clock, Upload } from 'lucide-react'
+import { Clock, Upload, MapPin, Eye } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
+import { TaskDetailsSheet } from './TaskDetailsSheet'
 
 interface TaskCardProps {
   task: Task
@@ -31,6 +31,7 @@ interface TaskCardProps {
 
 export function TaskCard({ task, onStatusChange, onUpload }: TaskCardProps) {
   const { toast } = useToast()
+  const [detailsOpen, setDetailsOpen] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [file, setFile] = useState<File | null>(null)
 
@@ -59,108 +60,133 @@ export function TaskCard({ task, onStatusChange, onUpload }: TaskCardProps) {
   }
 
   return (
-    <Card className="cursor-pointer hover:shadow-md transition-shadow group">
-      <CardHeader className="p-4 pb-2">
-        <div className="flex justify-between items-start mb-2">
-          <Badge variant="outline" className={getPriorityColor(task.priority)}>
-            {task.priority}
-          </Badge>
-          <div className="flex gap-1">
-            {task.type === 'cleaning' && (
-              <Badge variant="secondary">Limpeza</Badge>
+    <>
+      <TaskDetailsSheet
+        task={task}
+        open={detailsOpen}
+        onOpenChange={setDetailsOpen}
+      />
+      <Card className="hover:shadow-md transition-shadow group flex flex-col h-full">
+        <CardHeader className="p-4 pb-2 space-y-2">
+          <div className="flex justify-between items-start">
+            <Badge
+              variant="outline"
+              className={getPriorityColor(task.priority)}
+            >
+              {task.priority}
+            </Badge>
+            <div className="flex gap-1 flex-wrap justify-end">
+              {task.type === 'cleaning' && (
+                <Badge variant="secondary" className="text-[10px] h-5">
+                  Limpeza
+                </Badge>
+              )}
+              {task.type === 'maintenance' && (
+                <Badge variant="secondary" className="text-[10px] h-5">
+                  Reparo
+                </Badge>
+              )}
+              {task.type === 'inspection' && (
+                <Badge variant="secondary" className="text-[10px] h-5">
+                  Inspeção
+                </Badge>
+              )}
+              {task.backToBack && (
+                <Badge variant="destructive" className="text-[10px] px-1 h-5">
+                  B2B
+                </Badge>
+              )}
+            </div>
+          </div>
+          <CardTitle className="text-sm font-semibold leading-tight line-clamp-2">
+            {task.title}
+          </CardTitle>
+          <div className="text-xs text-muted-foreground space-y-0.5">
+            <div className="font-medium truncate">{task.propertyName}</div>
+            {(task.propertyAddress || task.propertyCommunity) && (
+              <div className="flex items-start gap-1 text-[10px] opacity-80">
+                <MapPin className="h-3 w-3 shrink-0 mt-0.5" />
+                <span className="line-clamp-2">
+                  {task.propertyCommunity ? `${task.propertyCommunity}, ` : ''}
+                  {task.propertyAddress}
+                </span>
+              </div>
             )}
-            {task.type === 'maintenance' && (
-              <Badge variant="secondary">Reparo</Badge>
-            )}
-            {task.type === 'inspection' && (
-              <Badge variant="secondary">Inspeção</Badge>
-            )}
-            {task.backToBack && (
-              <Badge variant="destructive" className="text-[10px] px-1 h-5">
-                B2B
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 pt-2 flex-grow">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
+            <Clock className="h-3 w-3" />
+            <span>{format(new Date(task.date), 'dd/MM/yyyy')}</span>
+          </div>
+
+          <div className="flex items-center justify-between mt-auto">
+            <div className="text-xs font-medium bg-secondary px-2 py-1 rounded-full truncate max-w-[120px]">
+              {task.assignee}
+            </div>
+            {task.images && task.images.length > 0 && (
+              <Badge variant="outline" className="text-[10px] h-5 gap-1">
+                <Eye className="h-2 w-2" /> {task.images.length}
               </Badge>
             )}
           </div>
-        </div>
-        <CardTitle className="text-sm font-semibold leading-tight line-clamp-2">
-          {task.title}
-        </CardTitle>
-        <CardDescription className="text-xs truncate">
-          {task.propertyName}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-4 pt-2">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-          <Clock className="h-3 w-3" />
-          <span>{format(new Date(task.date), 'dd/MM/yyyy')}</span>
-        </div>
-        <div className="flex items-center justify-between mt-2">
-          <div className="text-xs font-medium bg-secondary px-2 py-1 rounded-full truncate max-w-[120px]">
-            {task.assignee}
-          </div>
-          {task.price && (
-            <span className="text-xs font-semibold text-muted-foreground">
-              ${task.price}
-            </span>
-          )}
-        </div>
-        {task.description && (
-          <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
-            {task.description}
-          </p>
-        )}
-        <div className="flex gap-2 mt-3">
+        </CardContent>
+        <CardFooter className="p-4 pt-0 mt-auto grid gap-2">
           {task.status === 'pending' && (
             <Button
               size="sm"
-              className="w-full h-7 text-xs"
+              className="w-full h-8 text-xs"
               onClick={() => onStatusChange('in_progress')}
             >
-              Iniciar
+              Iniciar Serviço
             </Button>
           )}
           {task.status === 'in_progress' && (
-            <Button
-              size="sm"
-              className="w-full h-7 text-xs"
-              onClick={() => onStatusChange('completed')}
-            >
-              Concluir
-            </Button>
-          )}
-        </div>
-      </CardContent>
-      {task.status === 'in_progress' && onUpload && (
-        <CardFooter className="p-2 pt-0">
-          <Dialog>
-            <DialogTrigger asChild>
+            <div className="grid grid-cols-2 gap-2 w-full">
+              {onUpload && (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button size="sm" variant="outline" className="text-xs h-8">
+                      <Upload className="h-3 w-3 mr-1" /> Fotos
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Upload de Evidências</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid w-full max-w-sm items-center gap-1.5">
+                        <Label htmlFor="picture">Evidência (Foto)</Label>
+                        <Input
+                          id="picture"
+                          type="file"
+                          onChange={(e) => setFile(e.target.files?.[0] || null)}
+                        />
+                      </div>
+                      <Button onClick={handleUpload}>Enviar</Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
               <Button
                 size="sm"
-                variant="outline"
-                className="w-full text-xs h-7"
+                className="text-xs h-8"
+                onClick={() => onStatusChange('completed')}
               >
-                <Upload className="h-3 w-3 mr-1" /> Fotos
+                Concluir
               </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Upload de Evidências</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="picture">Evidência (Foto)</Label>
-                  <Input
-                    id="picture"
-                    type="file"
-                    onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  />
-                </div>
-                <Button onClick={handleUpload}>Enviar para Tarefa</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full h-7 text-xs text-muted-foreground"
+            onClick={() => setDetailsOpen(true)}
+          >
+            Ver Detalhes & Localização
+          </Button>
         </CardFooter>
-      )}
-    </Card>
+      </Card>
+    </>
   )
 }

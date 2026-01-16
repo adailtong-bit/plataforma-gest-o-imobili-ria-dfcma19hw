@@ -19,6 +19,8 @@ export interface Task {
   title: string
   propertyId: string
   propertyName: string
+  propertyAddress?: string
+  propertyCommunity?: string
   status: 'pending' | 'in_progress' | 'completed' | 'approved'
   type: 'cleaning' | 'maintenance' | 'inspection'
   assignee: string
