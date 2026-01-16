@@ -27,11 +27,10 @@ export default function Tasks() {
         <TabsList>
           <TabsTrigger value="board">Quadro (Kanban)</TabsTrigger>
           <TabsTrigger value="list">Lista</TabsTrigger>
-          <TabsTrigger value="cleaners">Equipes</TabsTrigger>
         </TabsList>
 
         <TabsContent value="board">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 h-full min-h-[500px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full min-h-[500px]">
             {/* Pending Column */}
             <div className="bg-muted/50 p-4 rounded-lg flex flex-col gap-4">
               <div className="flex items-center justify-between">

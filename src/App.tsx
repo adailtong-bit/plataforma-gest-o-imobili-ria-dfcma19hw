@@ -12,6 +12,9 @@ import Tasks from './pages/Tasks'
 import Financial from './pages/Financial'
 import Messages from './pages/Messages'
 import Settings from './pages/Settings'
+import Tenants from './pages/Tenants'
+import Owners from './pages/Owners'
+import Partners from './pages/Partners'
 import { AppProvider } from '@/stores/AppContext'
 
 const App = () => (
@@ -27,6 +30,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/properties" element={<Properties />} />
             <Route path="/properties/:id" element={<PropertyDetails />} />
+            <Route path="/tenants" element={<Tenants />} />
+            <Route path="/owners" element={<Owners />} />
+            <Route path="/partners" element={<Partners />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/financial" element={<Financial />} />

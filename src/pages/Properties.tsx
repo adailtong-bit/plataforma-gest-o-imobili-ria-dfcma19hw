@@ -19,6 +19,7 @@ import { MapPin, Users, BedDouble, Bath } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import usePropertyStore from '@/stores/usePropertyStore'
+import useOwnerStore from '@/stores/useOwnerStore'
 import {
   Dialog,
   DialogContent,
@@ -31,6 +32,7 @@ import { useToast } from '@/hooks/use-toast'
 
 export default function Properties() {
   const { properties, addProperty } = usePropertyStore()
+  const { owners } = useOwnerStore()
   const [filter, setFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const { toast } = useToast()
@@ -42,6 +44,7 @@ export default function Properties() {
     bedrooms: '3',
     bathrooms: '2',
     guests: '6',
+    ownerId: '',
   })
 
   const filteredProperties = properties.filter(
@@ -78,7 +81,7 @@ export default function Properties() {
       guests: parseInt(newProp.guests),
       accessCode: 'Pending',
       wifi: 'Pending',
-      owner: 'Self',
+      ownerId: newProp.ownerId || 'owner1',
     })
     toast({
       title: 'Propriedade Adicionada',
@@ -91,6 +94,7 @@ export default function Properties() {
       bedrooms: '3',
       bathrooms: '2',
       guests: '6',
+      ownerId: '',
     })
   }
 
@@ -136,6 +140,46 @@ export default function Properties() {
                   placeholder="Ex: 123 Main St"
                 />
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label>Proprietário</Label>
+                  <Select
+                    value={newProp.ownerId}
+                    onValueChange={(val) =>
+                      setNewProp({ ...newProp, ownerId: val })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o dono" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {owners.map((o) => (
+                        <SelectItem key={o.id} value={o.id}>
+                          {o.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Tipo</Label>
+                  <Select
+                    value={newProp.type}
+                    onValueChange={(val) =>
+                      setNewProp({ ...newProp, type: val })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="House">Casa</SelectItem>
+                      <SelectItem value="Condo">Apartamento</SelectItem>
+                      <SelectItem value="Townhouse">Townhouse</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
               <div className="grid grid-cols-3 gap-4">
                 <div className="grid gap-2">
                   <Label>Quartos</Label>
@@ -174,7 +218,6 @@ export default function Properties() {
         </Dialog>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4 items-center bg-card p-4 rounded-lg border shadow-sm">
         <Input
           placeholder="Buscar por nome ou endereço..."
@@ -195,7 +238,6 @@ export default function Properties() {
         </Select>
       </div>
 
-      {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredProperties.map((property) => (
           <Card

@@ -19,8 +19,9 @@ import {
   DollarSign,
   MessageSquare,
   Settings,
-  LogOut,
-  User,
+  Users,
+  Briefcase,
+  UserCheck,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -32,6 +33,9 @@ export function AppSidebar() {
   const menuItems = [
     { title: 'Dashboard', url: '/', icon: Home },
     { title: 'Propriedades', url: '/properties', icon: Building },
+    { title: 'Inquilinos', url: '/tenants', icon: Users },
+    { title: 'Proprietários', url: '/owners', icon: UserCheck },
+    { title: 'Parceiros', url: '/partners', icon: Briefcase },
     { title: 'Calendário', url: '/calendar', icon: Calendar },
     { title: 'Tarefas', url: '/tasks', icon: ClipboardList },
     { title: 'Financeiro', url: '/financial', icon: DollarSign },

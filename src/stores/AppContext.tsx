@@ -6,12 +6,18 @@ import {
   Message,
   Invoice,
   Evidence,
+  Tenant,
+  Owner,
+  Partner,
 } from '@/lib/types'
 import {
   properties as initialProperties,
   tasks as initialTasks,
   financials as initialFinancials,
   messages as initialMessages,
+  tenants as initialTenants,
+  owners as initialOwners,
+  partners as initialPartners,
 } from '@/lib/mockData'
 
 interface AppContextType {
@@ -19,6 +25,9 @@ interface AppContextType {
   tasks: Task[]
   financials: Financials
   messages: Message[]
+  tenants: Tenant[]
+  owners: Owner[]
+  partners: Partner[]
   addProperty: (property: Property) => void
   updateTaskStatus: (taskId: string, status: Task['status']) => void
   addTask: (task: Task) => void
@@ -27,18 +36,20 @@ interface AppContextType {
   addTaskEvidence: (taskId: string, evidence: Evidence) => void
   sendMessage: (contactId: string, text: string, attachments?: string[]) => void
   markAsRead: (contactId: string) => void
+  addTenant: (tenant: Tenant) => void
+  addOwner: (owner: Owner) => void
+  addPartner: (partner: Partner) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [properties, setProperties] = useState<Property[]>(
-    initialProperties as Property[],
-  )
-  const [tasks, setTasks] = useState<Task[]>(initialTasks as Task[])
-  const [financials, setFinancials] = useState<Financials>(
-    initialFinancials as Financials,
-  )
+  const [properties, setProperties] = useState<Property[]>(initialProperties)
+  const [tasks, setTasks] = useState<Task[]>(initialTasks)
+  const [financials, setFinancials] = useState<Financials>(initialFinancials)
+  const [tenants, setTenants] = useState<Tenant[]>(initialTenants)
+  const [owners, setOwners] = useState<Owner[]>(initialOwners)
+  const [partners, setPartners] = useState<Partner[]>(initialPartners)
 
   // Transform initial messages to include history if not present
   const [messages, setMessages] = useState<Message[]>(
@@ -77,7 +88,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           ? {
               ...t,
               evidence: [...(t.evidence || []), evidence],
-              // Add to images for backward compatibility if needed, but not strictly required
               images: [...(t.images || []), evidence.url],
             }
           : t,
@@ -97,15 +107,43 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     text: string,
     attachments: string[] = [],
   ) => {
-    setMessages(
-      messages.map((m) => {
-        if (m.id === contactId) {
-          return {
-            ...m,
-            lastMessage: text || (attachments.length > 0 ? '📎 Anexo' : ''),
+    setMessages((prev) => {
+      const existing = prev.find((m) => m.id === contactId)
+      if (existing) {
+        return prev.map((m) => {
+          if (m.id === contactId) {
+            return {
+              ...m,
+              lastMessage: text || (attachments.length > 0 ? '📎 Anexo' : ''),
+              time: 'Agora',
+              history: [
+                ...m.history,
+                {
+                  id: Date.now().toString(),
+                  text,
+                  sender: 'me',
+                  timestamp: new Date().toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  }),
+                  attachments,
+                },
+              ],
+            }
+          }
+          return m
+        })
+      } else {
+        // Create new conversation mock
+        return [
+          {
+            id: contactId,
+            contact: 'Novo Contato', // In a real app, resolve name from ID
+            lastMessage: text,
             time: 'Agora',
+            unread: 0,
+            avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male',
             history: [
-              ...m.history,
               {
                 id: Date.now().toString(),
                 text,
@@ -117,17 +155,29 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 attachments,
               },
             ],
-          }
-        }
-        return m
-      }),
-    )
+          },
+          ...prev,
+        ]
+      }
+    })
   }
 
   const markAsRead = (contactId: string) => {
     setMessages(
       messages.map((m) => (m.id === contactId ? { ...m, unread: 0 } : m)),
     )
+  }
+
+  const addTenant = (tenant: Tenant) => {
+    setTenants([...tenants, tenant])
+  }
+
+  const addOwner = (owner: Owner) => {
+    setOwners([...owners, owner])
+  }
+
+  const addPartner = (partner: Partner) => {
+    setPartners([...partners, partner])
   }
 
   return (
@@ -137,6 +187,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         tasks,
         financials,
         messages,
+        tenants,
+        owners,
+        partners,
         addProperty,
         updateTaskStatus,
         addTask,
@@ -145,6 +198,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addTaskEvidence,
         sendMessage,
         markAsRead,
+        addTenant,
+        addOwner,
+        addPartner,
       }}
     >
       {children}

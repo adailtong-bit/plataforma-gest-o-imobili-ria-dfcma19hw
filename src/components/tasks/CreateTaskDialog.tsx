@@ -49,6 +49,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useTaskStore from '@/stores/useTaskStore'
+import usePartnerStore from '@/stores/usePartnerStore'
 import { useToast } from '@/hooks/use-toast'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
@@ -58,7 +59,7 @@ const formSchema = z.object({
   type: z.enum(['cleaning', 'maintenance', 'inspection'], {
     required_error: 'Selecione o tipo de serviço.',
   }),
-  assignee: z.string().min(2, 'Informe o responsável.'),
+  assigneeId: z.string().min(2, 'Selecione o responsável.'),
   priority: z.enum(['low', 'medium', 'high', 'critical']),
   date: z.date({ required_error: 'Selecione uma data.' }),
   price: z.string().optional(),
@@ -70,6 +71,7 @@ export function CreateTaskDialog() {
   const [open, setOpen] = useState(false)
   const { properties } = usePropertyStore()
   const { addTask } = useTaskStore()
+  const { partners } = usePartnerStore()
   const { toast } = useToast()
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
 
@@ -77,7 +79,7 @@ export function CreateTaskDialog() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
-      assignee: '',
+      assigneeId: '',
       priority: 'medium',
       backToBack: false,
       description: '',
@@ -90,14 +92,19 @@ export function CreateTaskDialog() {
 
   const selectedProperty = properties.find((p) => p.id === watchPropertyId)
 
+  const relevantPartners = partners.filter((p) => {
+    if (watchType === 'cleaning') return p.type === 'cleaning'
+    if (watchType === 'maintenance') return p.type === 'maintenance'
+    if (watchType === 'inspection') return p.type === 'agent'
+    return true
+  })
+
   // Mock upload function
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      // Create a fake URL for the uploaded file
-      // In a real app, this would be an upload to a server
       const fakeUrl = `https://img.usecurling.com/p/300/200?q=issue%20${uploadedImages.length}`
       setUploadedImages([...uploadedImages, fakeUrl])
-      e.target.value = '' // Reset input
+      e.target.value = ''
     }
   }
 
@@ -106,6 +113,8 @@ export function CreateTaskDialog() {
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    const assignee = partners.find((p) => p.id === values.assigneeId)
+
     addTask({
       id: Math.random().toString(36).substr(2, 9),
       title: values.title,
@@ -115,7 +124,8 @@ export function CreateTaskDialog() {
       propertyCommunity: selectedProperty?.community,
       status: 'pending',
       type: values.type,
-      assignee: values.assignee,
+      assignee: assignee ? assignee.name : 'Desconhecido',
+      assigneeId: values.assigneeId,
       date: values.date.toISOString(),
       priority: values.priority,
       description: values.description,
@@ -126,7 +136,7 @@ export function CreateTaskDialog() {
 
     toast({
       title: 'Tarefa criada com sucesso!',
-      description: `Tarefa "${values.title}" foi adicionada.`,
+      description: `Tarefa "${values.title}" foi atribuída a ${assignee?.name}.`,
     })
 
     setOpen(false)
@@ -270,13 +280,29 @@ export function CreateTaskDialog() {
 
                 <FormField
                   control={form.control}
-                  name="assignee"
+                  name="assigneeId"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Responsável</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Nome ou Empresa" {...field} />
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        disabled={!watchType}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione Parceiro" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {relevantPartners.map((p) => (
+                            <SelectItem key={p.id} value={p.id}>
+                              {p.name}{' '}
+                              {p.companyName ? `(${p.companyName})` : ''}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}

@@ -16,15 +16,18 @@ import {
   FileText,
   Share2,
   Camera,
+  User,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import usePropertyStore from '@/stores/usePropertyStore'
+import useOwnerStore from '@/stores/useOwnerStore'
 
 export default function PropertyDetails() {
   const { id } = useParams()
   const { properties } = usePropertyStore()
+  const { owners } = useOwnerStore()
   const property = properties.find((p) => p.id === id)
 
   if (!property)
@@ -37,9 +40,10 @@ export default function PropertyDetails() {
       </div>
     )
 
+  const owner = owners.find((o) => o.id === property.ownerId)
+
   return (
     <div className="flex flex-col gap-6">
-      {/* Header */}
       <div className="flex flex-col gap-4">
         <Link to="/properties">
           <Button
@@ -69,7 +73,6 @@ export default function PropertyDetails() {
         </div>
       </div>
 
-      {/* Main Content */}
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
@@ -115,17 +118,33 @@ export default function PropertyDetails() {
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Proprietário</h3>
-                  <div className="flex items-center gap-2">
+                  <h3 className="font-semibold mb-2 flex items-center gap-2">
+                    <User className="h-4 w-4" /> Proprietário
+                  </h3>
+                  <div className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg border">
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                      {property.owner.charAt(0)}
+                      {owner ? owner.name.charAt(0) : '?'}
                     </div>
                     <div>
-                      <p className="font-medium">{property.owner}</p>
+                      <p className="font-medium">
+                        {owner ? owner.name : 'Desconhecido'}
+                      </p>
                       <p className="text-xs text-muted-foreground">
-                        Contrato Ativo • Gestão Total
+                        {owner ? owner.email : '-'}
                       </p>
                     </div>
+                    {owner && (
+                      <Badge
+                        variant="outline"
+                        className={
+                          owner.status === 'active'
+                            ? 'ml-auto text-green-600 bg-green-50'
+                            : 'ml-auto text-gray-500'
+                        }
+                      >
+                        {owner.status === 'active' ? 'Ativo' : 'Inativo'}
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </CardContent>

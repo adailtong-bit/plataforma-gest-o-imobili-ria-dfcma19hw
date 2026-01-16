@@ -1,5 +1,44 @@
 import { addDays, subDays } from 'date-fns'
-import { Property, Task, Financials, Message } from '@/lib/types'
+import {
+  Property,
+  Task,
+  Financials,
+  Message,
+  Tenant,
+  Owner,
+  Partner,
+} from '@/lib/types'
+
+export const owners: Owner[] = [
+  {
+    id: 'owner1',
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    phone: '+1 (555) 0101',
+    status: 'active',
+  },
+  {
+    id: 'owner2',
+    name: 'Jane Smith',
+    email: 'jane.smith@example.com',
+    phone: '+1 (555) 0102',
+    status: 'active',
+  },
+  {
+    id: 'owner3',
+    name: 'Robert Johnson',
+    email: 'robert.j@example.com',
+    phone: '+1 (555) 0103',
+    status: 'active',
+  },
+  {
+    id: 'owner4',
+    name: 'Emily Davis',
+    email: 'emily.d@example.com',
+    phone: '+1 (555) 0104',
+    status: 'inactive',
+  },
+]
 
 export const properties: Property[] = [
   {
@@ -15,7 +54,7 @@ export const properties: Property[] = [
     guests: 8,
     accessCode: '4921',
     wifi: 'Sunshine_Guest / sun123',
-    owner: 'John Doe',
+    ownerId: 'owner1',
   },
   {
     id: 'prop2',
@@ -30,7 +69,7 @@ export const properties: Property[] = [
     guests: 4,
     accessCode: '8812',
     wifi: 'BH_Guest / brickell',
-    owner: 'Jane Smith',
+    ownerId: 'owner2',
   },
   {
     id: 'prop3',
@@ -45,7 +84,7 @@ export const properties: Property[] = [
     guests: 12,
     accessCode: 'Locker: 1234',
     wifi: 'LakeView / fish123',
-    owner: 'Robert Johnson',
+    ownerId: 'owner3',
   },
   {
     id: 'prop4',
@@ -60,7 +99,61 @@ export const properties: Property[] = [
     guests: 6,
     accessCode: 'Key under mat',
     wifi: 'CabinWifi / bear',
-    owner: 'Emily Davis',
+    ownerId: 'owner4',
+  },
+]
+
+export const tenants: Tenant[] = [
+  {
+    id: 'tenant1',
+    name: 'Michael Scott',
+    email: 'michael@dunder.com',
+    phone: '+1 (555) 1111',
+    propertyId: 'prop1',
+    rentValue: 2500,
+    status: 'active',
+  },
+  {
+    id: 'tenant2',
+    name: 'Jim Halpert',
+    email: 'jim@dunder.com',
+    phone: '+1 (555) 2222',
+    propertyId: 'prop4',
+    rentValue: 1800,
+    status: 'active',
+  },
+]
+
+export const partners: Partner[] = [
+  {
+    id: 'partner1',
+    name: 'Maria Silva',
+    type: 'cleaning',
+    companyName: 'Sparkle Cleaners',
+    email: 'maria@sparkle.com',
+    phone: '+1 (555) 9991',
+    status: 'active',
+    rating: 4.8,
+  },
+  {
+    id: 'partner2',
+    name: 'Carlos Tech',
+    type: 'maintenance',
+    companyName: 'FixIt All',
+    email: 'carlos@fixit.com',
+    phone: '+1 (555) 9992',
+    status: 'active',
+    rating: 4.5,
+  },
+  {
+    id: 'partner3',
+    name: 'Sarah Connor',
+    type: 'agent',
+    companyName: 'Realty Group',
+    email: 'sarah@realty.com',
+    phone: '+1 (555) 9993',
+    status: 'active',
+    rating: 5.0,
   },
 ]
 
@@ -75,6 +168,7 @@ export const tasks: Task[] = [
     status: 'completed',
     type: 'cleaning',
     assignee: 'Maria Silva',
+    assigneeId: 'partner1',
     date: subDays(new Date(), 1).toISOString(),
     priority: 'high',
     images: ['https://img.usecurling.com/p/300/200?q=clean%20bedroom'],
@@ -113,6 +207,7 @@ export const tasks: Task[] = [
     status: 'in_progress',
     type: 'maintenance',
     assignee: 'Carlos Tech',
+    assigneeId: 'partner2',
     date: new Date().toISOString(),
     priority: 'critical',
     images: ['https://img.usecurling.com/p/300/200?q=broken%20ac'],
@@ -139,7 +234,8 @@ export const tasks: Task[] = [
     propertyCommunity: 'Brickell Heights',
     status: 'pending',
     type: 'inspection',
-    assignee: 'Ana Manager',
+    assignee: 'Sarah Connor',
+    assigneeId: 'partner3',
     date: addDays(new Date(), 2).toISOString(),
     priority: 'medium',
   },
@@ -208,7 +304,7 @@ export const financials: Financials = {
 
 export const messages: Message[] = [
   {
-    id: 'msg1',
+    id: 'partner1',
     contact: 'Maria Silva (Cleaner)',
     lastMessage: 'Terminei a limpeza na Villa Sunshine. Seguem as fotos.',
     time: '10:30',
@@ -216,7 +312,7 @@ export const messages: Message[] = [
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=1',
   },
   {
-    id: 'msg2',
+    id: 'owner1',
     contact: 'John Doe (Owner)',
     lastMessage: 'Você pode verificar a correspondência?',
     time: 'Ontem',
@@ -224,7 +320,7 @@ export const messages: Message[] = [
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=2',
   },
   {
-    id: 'msg3',
+    id: 'partner2',
     contact: 'Carlos Tech (Maintenance)',
     lastMessage: 'Preciso da aprovação para a peça do AC.',
     time: 'Ontem',

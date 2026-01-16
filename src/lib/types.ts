@@ -11,7 +11,39 @@ export interface Property {
   guests: number
   accessCode: string
   wifi: string
-  owner: string
+  ownerId: string
+}
+
+export interface Tenant {
+  id: string
+  name: string
+  email: string
+  phone: string
+  propertyId?: string
+  rentValue: number
+  leaseStart?: string
+  leaseEnd?: string
+  status: 'active' | 'past' | 'prospective'
+}
+
+export interface Owner {
+  id: string
+  name: string
+  email: string
+  phone: string
+  status: 'active' | 'inactive'
+  accountNumber?: string
+}
+
+export interface Partner {
+  id: string
+  name: string
+  type: 'agent' | 'cleaning' | 'maintenance'
+  companyName?: string
+  email: string
+  phone: string
+  status: 'active' | 'inactive'
+  rating?: number
 }
 
 export interface Evidence {
@@ -36,7 +68,8 @@ export interface Task {
   propertyCommunity?: string
   status: 'pending' | 'in_progress' | 'completed' | 'approved'
   type: 'cleaning' | 'maintenance' | 'inspection'
-  assignee: string
+  assignee: string // Can be Partner ID or Name
+  assigneeId?: string // Link to Partner
   date: string
   priority: 'low' | 'medium' | 'high' | 'critical'
   images?: string[]
