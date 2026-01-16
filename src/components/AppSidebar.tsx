@@ -1,0 +1,119 @@
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+} from '@/components/ui/sidebar'
+import {
+  Home,
+  Building,
+  Calendar,
+  ClipboardList,
+  DollarSign,
+  MessageSquare,
+  Settings,
+  LogOut,
+  User,
+} from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+
+export function AppSidebar() {
+  const location = useLocation()
+  const pathname = location.pathname
+
+  const menuItems = [
+    { title: 'Dashboard', url: '/', icon: Home },
+    { title: 'Propriedades', url: '/properties', icon: Building },
+    { title: 'Calendário', url: '/calendar', icon: Calendar },
+    { title: 'Tarefas', url: '/tasks', icon: ClipboardList },
+    { title: 'Financeiro', url: '/financial', icon: DollarSign },
+    { title: 'Mensagens', url: '/messages', icon: MessageSquare },
+  ]
+
+  const isActive = (url: string) => {
+    if (url === '/' && pathname === '/') return true
+    if (url !== '/' && pathname.startsWith(url)) return true
+    return false
+  }
+
+  return (
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="h-14 flex items-center px-4 border-b">
+        <div className="flex items-center gap-2 font-bold text-xl text-primary overflow-hidden">
+          <Building className="h-6 w-6 shrink-0" />
+          <span className="truncate">Gestão Imob.</span>
+        </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive(item.url)}
+                    tooltip={item.title}
+                  >
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup className="mt-auto">
+          <SidebarGroupLabel>Sistema</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/settings')}
+                  tooltip="Configurações"
+                >
+                  <Link to="/settings">
+                    <Settings />
+                    <span>Configurações</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <div className="flex items-center gap-2 p-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="https://img.usecurling.com/ppl/thumbnail?gender=male" />
+                <AvatarFallback>AD</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col text-sm leading-tight group-data-[collapsible=icon]:hidden">
+                <span className="font-semibold">Admin User</span>
+                <span className="text-xs text-muted-foreground">
+                  admin@sistema.com
+                </span>
+              </div>
+            </div>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  )
+}
