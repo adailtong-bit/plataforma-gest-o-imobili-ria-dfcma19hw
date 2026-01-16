@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode } from 'react'
+import React, { createContext, useState, ReactNode, useEffect } from 'react'
 import {
   Property,
   Task,
@@ -9,16 +9,22 @@ import {
   Tenant,
   Owner,
   Partner,
+  User,
+  UserRole,
 } from '@/lib/types'
 import {
   properties as initialProperties,
   tasks as initialTasks,
   financials as initialFinancials,
   messages as initialMessages,
+  owner1Messages,
+  partner1Messages,
   tenants as initialTenants,
   owners as initialOwners,
   partners as initialPartners,
+  systemUsers,
 } from '@/lib/mockData'
+import { canChat } from '@/lib/permissions'
 
 interface AppContextType {
   properties: Property[]
@@ -28,6 +34,8 @@ interface AppContextType {
   tenants: Tenant[]
   owners: Owner[]
   partners: Partner[]
+  currentUser: User | Owner | Partner | Tenant
+  allUsers: (User | Owner | Partner | Tenant)[]
   addProperty: (property: Property) => void
   updateTaskStatus: (taskId: string, status: Task['status']) => void
   addTask: (task: Task) => void
@@ -39,6 +47,8 @@ interface AppContextType {
   addTenant: (tenant: Tenant) => void
   addOwner: (owner: Owner) => void
   addPartner: (partner: Partner) => void
+  setCurrentUser: (userId: string) => void
+  startChat: (contactId: string) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -50,15 +60,27 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [tenants, setTenants] = useState<Tenant[]>(initialTenants)
   const [owners, setOwners] = useState<Owner[]>(initialOwners)
   const [partners, setPartners] = useState<Partner[]>(initialPartners)
+  const [allMessages, setAllMessages] = useState<Message[]>([
+    ...initialMessages,
+    ...owner1Messages,
+    ...partner1Messages,
+  ])
 
-  // Transform initial messages to include history if not present
-  const [messages, setMessages] = useState<Message[]>(
-    initialMessages.map((m) => ({
-      ...m,
-      history: [
-        { id: '1', text: m.lastMessage, sender: 'other', timestamp: m.time },
-      ],
-    })),
+  // Auth State
+  const [currentUser, setCurrentUserObj] = useState<
+    User | Owner | Partner | Tenant
+  >(systemUsers.find((u) => u.id === 'plat_manager')!)
+
+  const allUsers = [...systemUsers, ...owners, ...partners, ...tenants]
+
+  const setCurrentUser = (userId: string) => {
+    const user = allUsers.find((u) => u.id === userId)
+    if (user) setCurrentUserObj(user)
+  }
+
+  // Filter messages for current user
+  const visibleMessages = allMessages.filter(
+    (m) => m.ownerId === currentUser.id,
   )
 
   const addProperty = (property: Property) => {
@@ -107,11 +129,20 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     text: string,
     attachments: string[] = [],
   ) => {
-    setMessages((prev) => {
-      const existing = prev.find((m) => m.id === contactId)
+    setAllMessages((prev) => {
+      // Find existing conversation for this user
+      const existing = prev.find(
+        (m) => m.ownerId === currentUser.id && m.contactId === contactId,
+      )
+
+      const timestamp = new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+
       if (existing) {
         return prev.map((m) => {
-          if (m.id === contactId) {
+          if (m.id === existing.id) {
             return {
               ...m,
               lastMessage: text || (attachments.length > 0 ? '📎 Anexo' : ''),
@@ -122,10 +153,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                   id: Date.now().toString(),
                   text,
                   sender: 'me',
-                  timestamp: new Date().toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  }),
+                  timestamp,
                   attachments,
                 },
               ],
@@ -134,37 +162,67 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           return m
         })
       } else {
-        // Create new conversation mock
-        return [
-          {
-            id: contactId,
-            contact: 'Novo Contato', // In a real app, resolve name from ID
-            lastMessage: text,
-            time: 'Agora',
-            unread: 0,
-            avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male',
-            history: [
-              {
-                id: Date.now().toString(),
-                text,
-                sender: 'me',
-                timestamp: new Date().toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                }),
-                attachments,
-              },
-            ],
-          },
-          ...prev,
-        ]
+        // Create new conversation
+        const contact = allUsers.find((u) => u.id === contactId)
+        if (!contact) return prev
+
+        const newMsg: Message = {
+          id: `${currentUser.id}_${contactId}_${Date.now()}`,
+          ownerId: currentUser.id,
+          contact: contact.name,
+          contactId: contact.id,
+          type: contact.role,
+          lastMessage: text,
+          time: 'Agora',
+          unread: 0,
+          avatar: contact.avatar || '',
+          history: [
+            {
+              id: Date.now().toString(),
+              text,
+              sender: 'me',
+              timestamp,
+              attachments,
+            },
+          ],
+        }
+        return [newMsg, ...prev]
       }
     })
   }
 
-  const markAsRead = (contactId: string) => {
-    setMessages(
-      messages.map((m) => (m.id === contactId ? { ...m, unread: 0 } : m)),
+  const startChat = (contactId: string) => {
+    const contact = allUsers.find((u) => u.id === contactId)
+    if (!contact) return
+
+    // Check if conversation exists
+    const existing = visibleMessages.find((m) => m.contactId === contactId)
+    if (existing) {
+      // It exists, UI should select it (handled by router/state in page usually, but here we just ensure it's there)
+    } else {
+      // We create an empty conversation or just let UI handle "New Chat" state
+      // For simplicity, we just create a placeholder conversation if not exists
+      if (canChat(currentUser.role, contact.role)) {
+        const newMsg: Message = {
+          id: `${currentUser.id}_${contactId}_new`,
+          ownerId: currentUser.id,
+          contact: contact.name,
+          contactId: contact.id,
+          type: contact.role,
+          lastMessage: 'Inicie a conversa...',
+          time: 'Agora',
+          unread: 0,
+          avatar: contact.avatar || '',
+          history: [],
+        }
+        setAllMessages((prev) => [newMsg, ...prev])
+      }
+    }
+  }
+
+  const markAsRead = (messageId: string) => {
+    setAllMessages((prev) =>
+      prev.map((m) => (m.id === messageId ? { ...m, unread: 0 } : m)),
     )
   }
 
@@ -186,10 +244,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         properties,
         tasks,
         financials,
-        messages,
+        messages: visibleMessages,
         tenants,
         owners,
         partners,
+        currentUser,
+        allUsers,
         addProperty,
         updateTaskStatus,
         addTask,
@@ -201,6 +261,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addTenant,
         addOwner,
         addPartner,
+        setCurrentUser,
+        startChat,
       }}
     >
       {children}

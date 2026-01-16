@@ -7,7 +7,40 @@ import {
   Tenant,
   Owner,
   Partner,
+  User,
 } from '@/lib/types'
+
+// System Users (Staff/Admins)
+export const systemUsers: User[] = [
+  {
+    id: 'app_admin',
+    name: 'Super Admin',
+    email: 'admin@skip.com',
+    role: 'app_owner',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=99',
+  },
+  {
+    id: 'plat_owner',
+    name: 'Boss Manager',
+    email: 'boss@manager.com',
+    role: 'platform_owner',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=98',
+  },
+  {
+    id: 'plat_manager',
+    name: 'Alice Manager',
+    email: 'alice@manager.com',
+    role: 'platform_manager',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=97',
+  },
+  {
+    id: 'plat_staff1',
+    name: 'Bob Staff',
+    email: 'bob@manager.com',
+    role: 'platform_staff_long',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=96',
+  },
+]
 
 export const owners: Owner[] = [
   {
@@ -16,6 +49,8 @@ export const owners: Owner[] = [
     email: 'john.doe@example.com',
     phone: '+1 (555) 0101',
     status: 'active',
+    role: 'property_owner',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=2',
   },
   {
     id: 'owner2',
@@ -23,6 +58,8 @@ export const owners: Owner[] = [
     email: 'jane.smith@example.com',
     phone: '+1 (555) 0102',
     status: 'active',
+    role: 'property_owner',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=4',
   },
   {
     id: 'owner3',
@@ -30,6 +67,8 @@ export const owners: Owner[] = [
     email: 'robert.j@example.com',
     phone: '+1 (555) 0103',
     status: 'active',
+    role: 'property_owner',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=5',
   },
   {
     id: 'owner4',
@@ -37,6 +76,8 @@ export const owners: Owner[] = [
     email: 'emily.d@example.com',
     phone: '+1 (555) 0104',
     status: 'inactive',
+    role: 'property_owner',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=6',
   },
 ]
 
@@ -114,6 +155,8 @@ export const tenants: Tenant[] = [
     propertyId: 'prop1',
     rentValue: 2500,
     status: 'active',
+    role: 'tenant',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=10',
   },
   {
     id: 'tenant2',
@@ -123,6 +166,8 @@ export const tenants: Tenant[] = [
     propertyId: 'prop4',
     rentValue: 1800,
     status: 'active',
+    role: 'tenant',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=11',
   },
 ]
 
@@ -136,6 +181,8 @@ export const partners: Partner[] = [
     phone: '+1 (555) 9991',
     status: 'active',
     rating: 4.8,
+    role: 'partner',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=1',
   },
   {
     id: 'partner2',
@@ -146,6 +193,8 @@ export const partners: Partner[] = [
     phone: '+1 (555) 9992',
     status: 'active',
     rating: 4.5,
+    role: 'partner',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=3',
   },
   {
     id: 'partner3',
@@ -156,6 +205,8 @@ export const partners: Partner[] = [
     phone: '+1 (555) 9993',
     status: 'active',
     rating: 5.0,
+    role: 'partner',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=12',
   },
 ]
 
@@ -304,32 +355,116 @@ export const financials: Financials = {
   ],
 }
 
+// Initial Messages for 'plat_manager' (Alice Manager)
 export const messages: Message[] = [
   {
-    id: 'partner1',
+    id: 'conv1',
     contact: 'Maria Silva (Cleaner)',
+    contactId: 'partner1',
+    ownerId: 'plat_manager',
     type: 'partner',
     lastMessage: 'Terminei a limpeza na Villa Sunshine. Seguem as fotos.',
     time: '10:30',
     unread: 2,
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=1',
+    history: [
+      {
+        id: 'm1',
+        text: 'Bom dia, você vai na Villa Sunshine hoje?',
+        sender: 'me',
+        timestamp: '09:00',
+      },
+      {
+        id: 'm2',
+        text: 'Sim, estou a caminho.',
+        sender: 'other',
+        timestamp: '09:15',
+      },
+      {
+        id: 'm3',
+        text: 'Terminei a limpeza na Villa Sunshine. Seguem as fotos.',
+        sender: 'other',
+        timestamp: '10:30',
+      },
+    ],
   },
   {
-    id: 'owner1',
+    id: 'conv2',
     contact: 'John Doe (Owner)',
-    type: 'owner',
+    contactId: 'owner1',
+    ownerId: 'plat_manager',
+    type: 'property_owner',
     lastMessage: 'Você pode verificar a correspondência?',
     time: 'Ontem',
     unread: 0,
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=2',
+    history: [
+      {
+        id: 'm1',
+        text: 'Você pode verificar a correspondência?',
+        sender: 'other',
+        timestamp: '16:00',
+      },
+    ],
   },
+]
+
+// Mock Messages for 'owner1' (John Doe)
+// He can talk to 'plat_manager'
+export const owner1Messages: Message[] = [
   {
-    id: 'partner2',
-    contact: 'Carlos Tech (Maintenance)',
-    type: 'partner',
-    lastMessage: 'Preciso da aprovação para a peça do AC.',
+    id: 'conv_owner1_1',
+    contact: 'Alice Manager',
+    contactId: 'plat_manager',
+    ownerId: 'owner1',
+    type: 'platform_manager',
+    lastMessage: 'Verificamos e colocamos na sua mesa.',
     time: 'Ontem',
     unread: 1,
-    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=3',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=97',
+    history: [
+      {
+        id: 'm1',
+        text: 'Você pode verificar a correspondência?',
+        sender: 'me',
+        timestamp: '16:00',
+      },
+      {
+        id: 'm2',
+        text: 'Verificamos e colocamos na sua mesa.',
+        sender: 'other',
+        timestamp: '16:15',
+      },
+    ],
+  },
+]
+
+// Mock Messages for 'partner1' (Maria)
+// She can talk to 'plat_manager'
+export const partner1Messages: Message[] = [
+  {
+    id: 'conv_part1_1',
+    contact: 'Alice Manager',
+    contactId: 'plat_manager',
+    ownerId: 'partner1',
+    type: 'platform_manager',
+    lastMessage: 'Ok, obrigada!',
+    time: '10:35',
+    unread: 0,
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=97',
+    history: [
+      {
+        id: 'm1',
+        text: 'Terminei a limpeza na Villa Sunshine.',
+        sender: 'me',
+        timestamp: '10:30',
+      },
+      {
+        id: 'm2',
+        text: 'Ok, obrigada!',
+        sender: 'other',
+        timestamp: '10:35',
+      },
+    ],
   },
 ]

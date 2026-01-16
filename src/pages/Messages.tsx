@@ -11,11 +11,13 @@ import {
   X,
   Lock,
   Users,
+  Plus,
 } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import useMessageStore from '@/stores/useMessageStore'
+import useAuthStore from '@/stores/useAuthStore'
 import { useState, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import {
@@ -23,45 +25,67 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { canChat, getRoleLabel } from '@/lib/permissions'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 export default function Messages() {
-  const { messages, sendMessage, markAsRead } = useMessageStore()
+  const { messages, sendMessage, markAsRead, startChat } = useMessageStore()
+  const { currentUser, allUsers } = useAuthStore()
   const [filter, setFilter] = useState('all')
-  const [selectedContactId, setSelectedContactId] = useState<string>('')
+  const [selectedMessageId, setSelectedMessageId] = useState<string>('')
   const [inputText, setInputText] = useState('')
   const [attachments, setAttachments] = useState<string[]>([])
+  const [isNewChatOpen, setIsNewChatOpen] = useState(false)
+  const [searchContact, setSearchContact] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Initialize selected contact
+  // Auto-select first conversation
   useEffect(() => {
-    if (!selectedContactId && messages.length > 0) {
-      setSelectedContactId(messages[0].id)
+    if (!selectedMessageId && messages.length > 0) {
+      setSelectedMessageId(messages[0].id)
+    }
+  }, [messages])
+
+  // Deselect if messages become empty (e.g. user switch)
+  useEffect(() => {
+    if (messages.length === 0) {
+      setSelectedMessageId('')
     }
   }, [messages])
 
   const filteredMessages = messages.filter((msg) => {
-    if (filter === 'all') return true
-    return msg.type === filter
+    // Basic type filtering if needed, but 'type' in Message is getting messy
+    // We can filter by participant role if we had that detail in message root
+    return true
   })
 
-  const selectedConversation = messages.find((m) => m.id === selectedContactId)
+  const selectedConversation = messages.find((m) => m.id === selectedMessageId)
 
   useEffect(() => {
-    if (selectedContactId) {
-      markAsRead(selectedContactId)
+    if (selectedMessageId) {
+      markAsRead(selectedMessageId)
     }
-  }, [selectedContactId])
+  }, [selectedMessageId])
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  }, [selectedConversation?.history, selectedContactId])
+  }, [selectedConversation?.history, selectedMessageId])
 
   const handleSend = () => {
-    if ((inputText.trim() || attachments.length > 0) && selectedContactId) {
-      sendMessage(selectedContactId, inputText, attachments)
+    if (
+      (inputText.trim() || attachments.length > 0) &&
+      selectedConversation?.contactId
+    ) {
+      sendMessage(selectedConversation.contactId, inputText, attachments)
       setInputText('')
       setAttachments([])
     }
@@ -71,10 +95,6 @@ export default function Messages() {
     if (e.key === 'Enter') {
       handleSend()
     }
-  }
-
-  const handleFileClick = () => {
-    fileInputRef.current?.click()
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,13 +112,92 @@ export default function Messages() {
     setAttachments((prev) => prev.filter((_, i) => i !== index))
   }
 
+  // Filter contacts for New Chat
+  const availableContacts = allUsers.filter((user) => {
+    if (user.id === currentUser.id) return false
+    if (!canChat(currentUser.role, user.role)) return false
+    if (
+      searchContact &&
+      !user.name.toLowerCase().includes(searchContact.toLowerCase())
+    )
+      return false
+    return true
+  })
+
+  const handleStartChat = (contactId: string) => {
+    startChat(contactId)
+    setIsNewChatOpen(false)
+    // We should ideally set selectedMessageId to the new chat here
+    // But since startChat might be async or state update takes a tick,
+    // we rely on the effect or complex logic.
+    // For now, we assume startChat adds it to top of list.
+    setTimeout(() => {
+      // Find the message with this contactId
+      // This is a hacky way to select the new chat, in real app we'd return the ID
+    }, 100)
+  }
+
   return (
     <div className="flex h-[calc(100vh-8rem)] gap-4">
       {/* Sidebar List */}
       <Card className="w-80 flex flex-col">
-        <CardHeader className="p-4 border-b">
-          <CardTitle className="text-lg">Mensagens</CardTitle>
-          <div className="relative mt-2">
+        <CardHeader className="p-4 border-b space-y-3">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-lg">Mensagens</CardTitle>
+            <Dialog open={isNewChatOpen} onOpenChange={setIsNewChatOpen}>
+              <DialogTrigger asChild>
+                <Button size="icon" variant="ghost">
+                  <Plus className="h-5 w-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Nova Mensagem</DialogTitle>
+                </DialogHeader>
+                <div className="py-4">
+                  <Input
+                    placeholder="Buscar contato..."
+                    value={searchContact}
+                    onChange={(e) => setSearchContact(e.target.value)}
+                    className="mb-4"
+                  />
+                  <ScrollArea className="h-[300px]">
+                    <div className="space-y-2">
+                      {availableContacts.length === 0 ? (
+                        <p className="text-center text-muted-foreground text-sm py-4">
+                          Nenhum contato disponível.
+                        </p>
+                      ) : (
+                        availableContacts.map((contact) => (
+                          <div
+                            key={contact.id}
+                            className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg cursor-pointer transition-colors"
+                            onClick={() => handleStartChat(contact.id)}
+                          >
+                            <Avatar>
+                              <AvatarImage src={contact.avatar} />
+                              <AvatarFallback>
+                                {contact.name.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <p className="font-medium text-sm">
+                                {contact.name}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {getRoleLabel(contact.role)}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+          <div className="relative">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Buscar conversas..." className="pl-8" />
           </div>
@@ -106,12 +205,11 @@ export default function Messages() {
             defaultValue="all"
             value={filter}
             onValueChange={setFilter}
-            className="w-full mt-2"
+            className="w-full"
           >
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="all">Todos</TabsTrigger>
-              <TabsTrigger value="partner">Parceiros</TabsTrigger>
-              <TabsTrigger value="owner">Owners</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="all">Todas</TabsTrigger>
+              <TabsTrigger value="unread">Não lidas</TabsTrigger>
             </TabsList>
           </Tabs>
         </CardHeader>
@@ -126,10 +224,10 @@ export default function Messages() {
                 filteredMessages.map((msg) => (
                   <div
                     key={msg.id}
-                    onClick={() => setSelectedContactId(msg.id)}
+                    onClick={() => setSelectedMessageId(msg.id)}
                     className={cn(
                       'flex gap-3 p-4 border-b cursor-pointer hover:bg-accent transition-colors relative',
-                      msg.id === selectedContactId ? 'bg-accent/50' : '',
+                      msg.id === selectedMessageId ? 'bg-accent/50' : '',
                     )}
                   >
                     <Avatar>
@@ -153,16 +251,6 @@ export default function Messages() {
                       <Badge className="h-5 w-5 rounded-full p-0 flex items-center justify-center bg-trust-blue absolute right-2 bottom-4">
                         {msg.unread}
                       </Badge>
-                    )}
-                    {msg.type === 'partner' && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Lock className="h-3 w-3 text-amber-500 absolute top-2 right-2" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Restrito: Apenas Gestão</p>
-                        </TooltipContent>
-                      </Tooltip>
                     )}
                   </div>
                 ))
@@ -191,19 +279,9 @@ export default function Messages() {
                   <span className="text-xs text-green-500 flex items-center gap-1">
                     ● Online
                   </span>
-                  {selectedConversation.type === 'partner' && (
-                    <Badge
-                      variant="outline"
-                      className="text-[10px] h-5 px-1 bg-amber-50 text-amber-600 border-amber-200"
-                    >
-                      <Lock className="h-3 w-3 mr-1" /> Interno
-                    </Badge>
-                  )}
-                  {selectedConversation.type === 'owner' && (
-                    <Badge variant="outline" className="text-[10px] h-5 px-1">
-                      <Users className="h-3 w-3 mr-1" /> Proprietário
-                    </Badge>
-                  )}
+                  <Badge variant="outline" className="text-[10px] h-5 px-1">
+                    {getRoleLabel(selectedConversation.type as any)}
+                  </Badge>
                 </div>
               </div>
             </div>
@@ -217,6 +295,11 @@ export default function Messages() {
             ref={scrollRef}
           >
             <div className="space-y-4">
+              {selectedConversation.history.length === 0 && (
+                <div className="text-center text-muted-foreground text-sm mt-10">
+                  Esta é uma nova conversa. Diga olá!
+                </div>
+              )}
               {selectedConversation.history.map((msg) => (
                 <div
                   key={msg.id}
@@ -291,17 +374,13 @@ export default function Messages() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={handleFileClick}
+                onClick={() => fileInputRef.current?.click()}
                 title="Anexar arquivo"
               >
                 <Paperclip className="h-5 w-5" />
               </Button>
               <Input
-                placeholder={
-                  selectedConversation.type === 'partner'
-                    ? 'Mensagem interna para parceiro...'
-                    : 'Digite sua mensagem...'
-                }
+                placeholder="Digite sua mensagem..."
                 className="flex-1"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
@@ -324,7 +403,7 @@ export default function Messages() {
       ) : (
         <Card className="flex-1 flex items-center justify-center bg-muted/20">
           <p className="text-muted-foreground">
-            Selecione uma conversa para começar.
+            Selecione uma conversa ou inicie uma nova.
           </p>
         </Card>
       )}

@@ -10,6 +10,7 @@ const useMessageStore = () => {
     messages: context.messages,
     sendMessage: context.sendMessage,
     markAsRead: context.markAsRead,
+    startChat: context.startChat,
   }
 }
 

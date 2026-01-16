@@ -1,3 +1,23 @@
+export type UserRole =
+  | 'app_owner'
+  | 'platform_owner'
+  | 'platform_manager'
+  | 'platform_staff_long'
+  | 'platform_staff_short'
+  | 'property_owner'
+  | 'partner'
+  | 'tenant'
+
+export interface User {
+  id: string
+  name: string
+  email: string
+  role: UserRole
+  avatar?: string
+  phone?: string
+  companyName?: string
+}
+
 export interface Property {
   id: string
   name: string
@@ -25,6 +45,8 @@ export interface Tenant {
   leaseStart?: string
   leaseEnd?: string
   status: 'active' | 'past' | 'prospective'
+  role: UserRole
+  avatar?: string
 }
 
 export interface Owner {
@@ -34,6 +56,8 @@ export interface Owner {
   phone: string
   status: 'active' | 'inactive'
   accountNumber?: string
+  role: UserRole
+  avatar?: string
 }
 
 export interface Partner {
@@ -45,6 +69,8 @@ export interface Partner {
   phone: string
   status: 'active' | 'inactive'
   rating?: number
+  role: UserRole
+  avatar?: string
 }
 
 export interface Evidence {
@@ -96,12 +122,14 @@ export interface Financials {
 
 export interface Message {
   id: string
-  contact: string
+  contact: string // Display Name
+  contactId: string // The ID of the other person
+  ownerId: string // The ID of the user who owns this message thread (Inbox Owner)
   lastMessage: string
   time: string
   unread: number
   avatar: string
-  type?: 'owner' | 'tenant' | 'partner'
+  type?: string
   history: ChatMessage[]
 }
 

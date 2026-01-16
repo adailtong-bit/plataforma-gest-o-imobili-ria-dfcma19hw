@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -19,6 +19,7 @@ import {
   User,
   Briefcase,
   ExternalLink,
+  MessageSquare,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -26,12 +27,19 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useOwnerStore from '@/stores/useOwnerStore'
 import usePartnerStore from '@/stores/usePartnerStore'
+import useAuthStore from '@/stores/useAuthStore'
+import useMessageStore from '@/stores/useMessageStore'
+import { canChat } from '@/lib/permissions'
 
 export default function PropertyDetails() {
   const { id } = useParams()
   const { properties } = usePropertyStore()
   const { owners } = useOwnerStore()
   const { partners } = usePartnerStore()
+  const { currentUser } = useAuthStore()
+  const { startChat } = useMessageStore()
+  const navigate = useNavigate()
+
   const property = properties.find((p) => p.id === id)
 
   if (!property)
@@ -48,6 +56,16 @@ export default function PropertyDetails() {
   const agent = property.agentId
     ? partners.find((p) => p.id === property.agentId)
     : null
+
+  // Simplified logic: If I'm a Property Owner, I want to contact the Manager
+  // In a real app, we'd find the specific manager assigned to this property.
+  // Here we'll default to the 'plat_manager'.
+  const propertyManagerId = 'plat_manager'
+
+  const handleContactManager = () => {
+    startChat(propertyManagerId)
+    navigate('/messages')
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -75,7 +93,17 @@ export default function PropertyDetails() {
             <Button variant="outline" size="icon">
               <Share2 className="h-4 w-4" />
             </Button>
-            <Button className="bg-trust-blue">Editar Propriedade</Button>
+            {/* If Current User is Property Owner, show Contact Manager instead of Edit */}
+            {currentUser.role === 'property_owner' ? (
+              <Button
+                className="bg-trust-blue gap-2"
+                onClick={handleContactManager}
+              >
+                <MessageSquare className="h-4 w-4" /> Falar com Gestor
+              </Button>
+            ) : (
+              <Button className="bg-trust-blue">Editar Propriedade</Button>
+            )}
           </div>
         </div>
       </div>
