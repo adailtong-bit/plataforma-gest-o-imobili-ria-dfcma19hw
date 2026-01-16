@@ -5,17 +5,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import {
-  Activity,
-  DollarSign,
-  Home,
-  AlertCircle,
-  CheckCircle,
-} from 'lucide-react'
+import { Activity, DollarSign, Home, AlertCircle } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { tasks, financials } from '@/lib/mockData'
 import {
   ChartContainer,
   ChartTooltip,
@@ -32,8 +25,9 @@ import {
   Pie,
   PieChart,
 } from 'recharts'
-import { Link } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
+import useTaskStore from '@/stores/useTaskStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 
 const chartConfig = {
   maintenance: {
@@ -56,6 +50,8 @@ const chartConfig = {
 
 export default function Index() {
   const [date, setDate] = useState<Date | undefined>(new Date())
+  const { tasks } = useTaskStore()
+  const { financials } = useFinancialStore()
 
   return (
     <div className="flex flex-col gap-6">

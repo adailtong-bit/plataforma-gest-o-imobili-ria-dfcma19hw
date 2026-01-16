@@ -1,5 +1,4 @@
 import { useParams, Link } from 'react-router-dom'
-import { properties } from '@/lib/mockData'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -21,9 +20,11 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import usePropertyStore from '@/stores/usePropertyStore'
 
 export default function PropertyDetails() {
   const { id } = useParams()
+  const { properties } = usePropertyStore()
   const property = properties.find((p) => p.id === id)
 
   if (!property)

@@ -8,9 +8,8 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { tasks } from '@/lib/mockData'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle, Clock, AlertTriangle, Plus, Upload } from 'lucide-react'
+import { Clock, Plus, Upload } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -20,8 +19,13 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import useTaskStore from '@/stores/useTaskStore'
+import { useToast } from '@/hooks/use-toast'
+import { useState } from 'react'
 
 export default function Tasks() {
+  const { tasks, updateTaskStatus, addTaskImage } = useTaskStore()
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'critical':
@@ -77,6 +81,9 @@ export default function Tasks() {
                     key={task.id}
                     task={task}
                     priorityColor={getPriorityColor(task.priority)}
+                    onStatusChange={(status) =>
+                      updateTaskStatus(task.id, status)
+                    }
                   />
                 ))}
             </div>
@@ -98,6 +105,10 @@ export default function Tasks() {
                     key={task.id}
                     task={task}
                     priorityColor={getPriorityColor(task.priority)}
+                    onStatusChange={(status) =>
+                      updateTaskStatus(task.id, status)
+                    }
+                    onUpload={(img) => addTaskImage(task.id, img)}
                   />
                 ))}
             </div>
@@ -108,12 +119,22 @@ export default function Tasks() {
                 <h3 className="font-semibold text-sm uppercase text-orange-600">
                   Aprovação
                 </h3>
-                <Badge className="bg-orange-100 text-orange-700">0</Badge>
+                <Badge className="bg-orange-100 text-orange-700">
+                  {tasks.filter((t) => t.status === 'approved').length}
+                </Badge>
               </div>
-              {/* No tasks for approval in mock data, adding placeholder */}
-              <div className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-4 text-center text-sm text-muted-foreground">
-                Arraste itens aqui
-              </div>
+              {tasks
+                .filter((t) => t.status === 'approved')
+                .map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    priorityColor={getPriorityColor(task.priority)}
+                    onStatusChange={(status) =>
+                      updateTaskStatus(task.id, status)
+                    }
+                  />
+                ))}
             </div>
 
             {/* Completed Column */}
@@ -133,6 +154,9 @@ export default function Tasks() {
                     key={task.id}
                     task={task}
                     priorityColor={getPriorityColor(task.priority)}
+                    onStatusChange={(status) =>
+                      updateTaskStatus(task.id, status)
+                    }
                   />
                 ))}
             </div>
@@ -154,10 +178,28 @@ export default function Tasks() {
 function TaskCard({
   task,
   priorityColor,
+  onStatusChange,
+  onUpload,
 }: {
   task: any
   priorityColor: string
+  onStatusChange: (status: any) => void
+  onUpload?: (img: string) => void
 }) {
+  const { toast } = useToast()
+  const [file, setFile] = useState<File | null>(null)
+
+  const handleUpload = () => {
+    if (onUpload) {
+      // Mock upload
+      onUpload('https://img.usecurling.com/p/200/150?q=fix')
+      toast({
+        title: 'Foto enviada',
+        description: 'Evidência adicionada à tarefa.',
+      })
+    }
+  }
+
   return (
     <Card className="cursor-pointer hover:shadow-md transition-shadow">
       <CardHeader className="p-4 pb-2">
@@ -192,8 +234,28 @@ function TaskCard({
             {task.assignee}
           </div>
         </div>
+        <div className="flex gap-2 mt-3">
+          {task.status === 'pending' && (
+            <Button
+              size="sm"
+              className="w-full h-7 text-xs"
+              onClick={() => onStatusChange('in_progress')}
+            >
+              Iniciar
+            </Button>
+          )}
+          {task.status === 'in_progress' && (
+            <Button
+              size="sm"
+              className="w-full h-7 text-xs"
+              onClick={() => onStatusChange('completed')}
+            >
+              Concluir
+            </Button>
+          )}
+        </div>
       </CardContent>
-      {task.status === 'in_progress' && (
+      {task.status === 'in_progress' && onUpload && (
         <CardFooter className="p-2 pt-0">
           <Dialog>
             <DialogTrigger asChild>
@@ -211,14 +273,14 @@ function TaskCard({
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="picture">Antes (Foto)</Label>
-                  <Input id="picture" type="file" />
+                  <Label htmlFor="picture">Evidência (Foto)</Label>
+                  <Input
+                    id="picture"
+                    type="file"
+                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  />
                 </div>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="picture-after">Depois (Foto)</Label>
-                  <Input id="picture-after" type="file" />
-                </div>
-                <Button>Enviar para Aprovação</Button>
+                <Button onClick={handleUpload}>Enviar para Tarefa</Button>
               </div>
             </DialogContent>
           </Dialog>

@@ -1,13 +1,6 @@
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { financials } from '@/lib/mockData'
 import { Badge } from '@/components/ui/badge'
 import { Download, Filter, PlusCircle, Check, X } from 'lucide-react'
 import {
@@ -31,8 +24,39 @@ import {
   YAxis,
   ResponsiveContainer,
 } from 'recharts'
+import useFinancialStore from '@/stores/useFinancialStore'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useState } from 'react'
+import { useToast } from '@/hooks/use-toast'
 
 export default function Financial() {
+  const { financials, addInvoice } = useFinancialStore()
+  const { toast } = useToast()
+  const [newInv, setNewInv] = useState({ desc: '', amount: '' })
+
+  const handleAddInvoice = () => {
+    addInvoice({
+      id: `INV-${Math.floor(Math.random() * 1000)}`,
+      description: newInv.desc,
+      amount: parseFloat(newInv.amount),
+      status: 'pending',
+      date: new Date().toISOString().split('T')[0],
+    })
+    toast({
+      title: 'Fatura Criada',
+      description: 'Fatura adicionada com status pendente.',
+    })
+    setNewInv({ desc: '', amount: '' })
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
@@ -48,9 +72,42 @@ export default function Financial() {
           <Button variant="outline">
             <Download className="h-4 w-4 mr-2" /> Exportar Relatório
           </Button>
-          <Button className="bg-trust-blue">
-            <PlusCircle className="h-4 w-4 mr-2" /> Nova Fatura
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="bg-trust-blue">
+                <PlusCircle className="h-4 w-4 mr-2" /> Nova Fatura
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Criar Nova Fatura</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label>Descrição</Label>
+                  <Input
+                    value={newInv.desc}
+                    onChange={(e) =>
+                      setNewInv({ ...newInv, desc: e.target.value })
+                    }
+                    placeholder="Serviço..."
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Valor ($)</Label>
+                  <Input
+                    type="number"
+                    value={newInv.amount}
+                    onChange={(e) =>
+                      setNewInv({ ...newInv, amount: e.target.value })
+                    }
+                    placeholder="0.00"
+                  />
+                </div>
+                <Button onClick={handleAddInvoice}>Criar Fatura</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 

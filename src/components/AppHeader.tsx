@@ -1,6 +1,5 @@
-import { Bell, Search, Menu } from 'lucide-react'
+import { Bell, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import {
   DropdownMenu,
@@ -11,22 +10,103 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '@/components/ui/command'
+import { useState, useEffect } from 'react'
+import usePropertyStore from '@/stores/usePropertyStore'
+import useTaskStore from '@/stores/useTaskStore'
+import useMessageStore from '@/stores/useMessageStore'
+import { useNavigate } from 'react-router-dom'
 
 export function AppHeader() {
+  const [open, setOpen] = useState(false)
+  const { properties } = usePropertyStore()
+  const { tasks } = useTaskStore()
+  const { messages } = useMessageStore()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setOpen((open) => !open)
+      }
+    }
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
+
   return (
     <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 lg:px-6 shadow-sm">
       <SidebarTrigger />
 
       <div className="flex-1 flex items-center max-w-xl mx-auto lg:ml-0">
-        <div className="relative w-full">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Buscar propriedades, tarefas, proprietários..."
-            className="w-full bg-background pl-8 md:w-[300px] lg:w-[400px]"
-          />
-        </div>
+        <Button
+          variant="outline"
+          className="relative w-full justify-start text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64"
+          onClick={() => setOpen(true)}
+        >
+          <span className="hidden lg:inline-flex">Buscar...</span>
+          <span className="inline-flex lg:hidden">Buscar...</span>
+          <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+            <span className="text-xs">⌘</span>K
+          </kbd>
+        </Button>
+        <CommandDialog open={open} onOpenChange={setOpen}>
+          <CommandInput placeholder="Digite para buscar..." />
+          <CommandList>
+            <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
+            <CommandGroup heading="Propriedades">
+              {properties.map((prop) => (
+                <CommandItem
+                  key={prop.id}
+                  onSelect={() => {
+                    setOpen(false)
+                    navigate(`/properties/${prop.id}`)
+                  }}
+                >
+                  {prop.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Contatos">
+              {messages.map((msg) => (
+                <CommandItem
+                  key={msg.id}
+                  onSelect={() => {
+                    setOpen(false)
+                    navigate('/messages')
+                  }}
+                >
+                  {msg.contact}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Tarefas">
+              {tasks.map((task) => (
+                <CommandItem
+                  key={task.id}
+                  onSelect={() => {
+                    setOpen(false)
+                    navigate('/tasks')
+                  }}
+                >
+                  {task.title} - {task.propertyName}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </CommandDialog>
       </div>
 
       <div className="flex items-center gap-4 ml-auto">
@@ -72,11 +152,7 @@ export function AppHeader() {
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            classNames={{ content: 'w-56' }}
-            align="end"
-            forceMount
-          >
+          <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">Admin User</p>

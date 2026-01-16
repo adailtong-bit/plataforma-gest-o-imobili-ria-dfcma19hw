@@ -12,29 +12,32 @@ import Tasks from './pages/Tasks'
 import Financial from './pages/Financial'
 import Messages from './pages/Messages'
 import Settings from './pages/Settings'
+import { AppProvider } from '@/stores/AppContext'
 
 const App = () => (
-  <BrowserRouter
-    future={{ v7_startTransition: false, v7_relativeSplatPath: false }}
-  >
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <Routes>
-        <Route element={<DashboardLayout />}>
-          <Route path="/" element={<Index />} />
-          <Route path="/properties" element={<Properties />} />
-          <Route path="/properties/:id" element={<PropertyDetails />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/tasks" element={<Tasks />} />
-          <Route path="/financial" element={<Financial />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </TooltipProvider>
-  </BrowserRouter>
+  <AppProvider>
+    <BrowserRouter
+      future={{ v7_startTransition: false, v7_relativeSplatPath: false }}
+    >
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <Routes>
+          <Route element={<DashboardLayout />}>
+            <Route path="/" element={<Index />} />
+            <Route path="/properties" element={<Properties />} />
+            <Route path="/properties/:id" element={<PropertyDetails />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/financial" element={<Financial />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </TooltipProvider>
+    </BrowserRouter>
+  </AppProvider>
 )
 
 export default App
