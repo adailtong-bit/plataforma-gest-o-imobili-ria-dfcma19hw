@@ -1,43 +1,12 @@
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { Clock, Plus, Upload } from 'lucide-react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import useTaskStore from '@/stores/useTaskStore'
-import { useToast } from '@/hooks/use-toast'
-import { useState } from 'react'
+import { TaskCard } from '@/components/tasks/TaskCard'
+import { CreateTaskDialog } from '@/components/tasks/CreateTaskDialog'
 
 export default function Tasks() {
   const { tasks, updateTaskStatus, addTaskImage } = useTaskStore()
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'critical':
-        return 'text-red-600 bg-red-100'
-      case 'high':
-        return 'text-orange-600 bg-orange-100'
-      case 'medium':
-        return 'text-blue-600 bg-blue-100'
-      default:
-        return 'text-gray-600 bg-gray-100'
-    }
-  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -50,9 +19,7 @@ export default function Tasks() {
             Gerencie limpezas, reparos e inspeções.
           </p>
         </div>
-        <Button className="bg-trust-blue gap-2">
-          <Plus className="h-4 w-4" /> Nova Tarefa
-        </Button>
+        <CreateTaskDialog />
       </div>
 
       <Tabs defaultValue="board" className="space-y-4">
@@ -80,7 +47,6 @@ export default function Tasks() {
                   <TaskCard
                     key={task.id}
                     task={task}
-                    priorityColor={getPriorityColor(task.priority)}
                     onStatusChange={(status) =>
                       updateTaskStatus(task.id, status)
                     }
@@ -104,11 +70,10 @@ export default function Tasks() {
                   <TaskCard
                     key={task.id}
                     task={task}
-                    priorityColor={getPriorityColor(task.priority)}
                     onStatusChange={(status) =>
                       updateTaskStatus(task.id, status)
                     }
-                    onUpload={(img) => addTaskImage(task.id, img)}
+                    onUpload={addTaskImage}
                   />
                 ))}
             </div>
@@ -129,7 +94,6 @@ export default function Tasks() {
                   <TaskCard
                     key={task.id}
                     task={task}
-                    priorityColor={getPriorityColor(task.priority)}
                     onStatusChange={(status) =>
                       updateTaskStatus(task.id, status)
                     }
@@ -153,7 +117,6 @@ export default function Tasks() {
                   <TaskCard
                     key={task.id}
                     task={task}
-                    priorityColor={getPriorityColor(task.priority)}
                     onStatusChange={(status) =>
                       updateTaskStatus(task.id, status)
                     }
@@ -172,120 +135,5 @@ export default function Tasks() {
         </TabsContent>
       </Tabs>
     </div>
-  )
-}
-
-function TaskCard({
-  task,
-  priorityColor,
-  onStatusChange,
-  onUpload,
-}: {
-  task: any
-  priorityColor: string
-  onStatusChange: (status: any) => void
-  onUpload?: (img: string) => void
-}) {
-  const { toast } = useToast()
-  const [file, setFile] = useState<File | null>(null)
-
-  const handleUpload = () => {
-    if (onUpload) {
-      // Mock upload
-      onUpload('https://img.usecurling.com/p/200/150?q=fix')
-      toast({
-        title: 'Foto enviada',
-        description: 'Evidência adicionada à tarefa.',
-      })
-    }
-  }
-
-  return (
-    <Card className="cursor-pointer hover:shadow-md transition-shadow">
-      <CardHeader className="p-4 pb-2">
-        <div className="flex justify-between items-start mb-2">
-          <Badge variant="outline" className={priorityColor}>
-            {task.priority}
-          </Badge>
-          {task.type === 'cleaning' && (
-            <Badge variant="secondary">Limpeza</Badge>
-          )}
-          {task.type === 'maintenance' && (
-            <Badge variant="secondary">Reparo</Badge>
-          )}
-          {task.type === 'inspection' && (
-            <Badge variant="secondary">Inspeção</Badge>
-          )}
-        </div>
-        <CardTitle className="text-sm font-semibold leading-tight">
-          {task.title}
-        </CardTitle>
-        <CardDescription className="text-xs">
-          {task.propertyName}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-4 pt-2">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-          <Clock className="h-3 w-3" />
-          <span>{new Date(task.date).toLocaleDateString()}</span>
-        </div>
-        <div className="flex items-center justify-between mt-2">
-          <div className="text-xs font-medium bg-secondary px-2 py-1 rounded-full">
-            {task.assignee}
-          </div>
-        </div>
-        <div className="flex gap-2 mt-3">
-          {task.status === 'pending' && (
-            <Button
-              size="sm"
-              className="w-full h-7 text-xs"
-              onClick={() => onStatusChange('in_progress')}
-            >
-              Iniciar
-            </Button>
-          )}
-          {task.status === 'in_progress' && (
-            <Button
-              size="sm"
-              className="w-full h-7 text-xs"
-              onClick={() => onStatusChange('completed')}
-            >
-              Concluir
-            </Button>
-          )}
-        </div>
-      </CardContent>
-      {task.status === 'in_progress' && onUpload && (
-        <CardFooter className="p-2 pt-0">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                size="sm"
-                variant="outline"
-                className="w-full text-xs h-7"
-              >
-                <Upload className="h-3 w-3 mr-1" /> Fotos
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Upload de Evidências</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="picture">Evidência (Foto)</Label>
-                  <Input
-                    id="picture"
-                    type="file"
-                    onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  />
-                </div>
-                <Button onClick={handleUpload}>Enviar para Tarefa</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </CardFooter>
-      )}
-    </Card>
   )
 }

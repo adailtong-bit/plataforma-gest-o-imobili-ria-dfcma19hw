@@ -25,6 +25,9 @@ export interface Task {
   date: string
   priority: 'low' | 'medium' | 'high' | 'critical'
   images?: string[]
+  description?: string
+  price?: number
+  backToBack?: boolean
 }
 
 export interface Invoice {

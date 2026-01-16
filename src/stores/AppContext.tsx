@@ -6,7 +6,6 @@ import {
   financials as initialFinancials,
   messages as initialMessages,
 } from '@/lib/mockData'
-import { addDays } from 'date-fns'
 
 interface AppContextType {
   properties: Property[]
@@ -80,7 +79,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         if (m.id === contactId) {
           return {
             ...m,
-            lastMessage: text,
+            lastMessage: text || (attachments.length > 0 ? '📎 Anexo' : ''),
             time: 'Agora',
             history: [
               ...m.history,

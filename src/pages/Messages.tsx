@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, Send, Paperclip, Mic, Phone } from 'lucide-react'
+import { Search, Send, Paperclip, Mic, Phone, X } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import useMessageStore from '@/stores/useMessageStore'
@@ -15,7 +15,9 @@ export default function Messages() {
     messages[0]?.id || '',
   )
   const [inputText, setInputText] = useState('')
+  const [attachments, setAttachments] = useState<string[]>([])
   const scrollRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const selectedConversation = messages.find((m) => m.id === selectedContactId)
 
@@ -32,9 +34,10 @@ export default function Messages() {
   }, [selectedConversation?.history])
 
   const handleSend = () => {
-    if (inputText.trim() && selectedContactId) {
-      sendMessage(selectedContactId, inputText)
+    if ((inputText.trim() || attachments.length > 0) && selectedContactId) {
+      sendMessage(selectedContactId, inputText, attachments)
       setInputText('')
+      setAttachments([])
     }
   }
 
@@ -42,6 +45,26 @@ export default function Messages() {
     if (e.key === 'Enter') {
       handleSend()
     }
+  }
+
+  const handleFileClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const url = URL.createObjectURL(file)
+      setAttachments((prev) => [...prev, url])
+    }
+    // Reset input so same file can be selected again if needed
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const removeAttachment = (index: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index))
   }
 
   return (
@@ -146,7 +169,11 @@ export default function Messages() {
                     {msg.attachments && msg.attachments.length > 0 && (
                       <div className="mt-2 grid grid-cols-2 gap-2">
                         {msg.attachments.map((att, i) => (
-                          <img key={i} src={att} className="rounded-md" />
+                          <img
+                            key={i}
+                            src={att}
+                            className="rounded-md object-cover w-full h-auto max-h-40"
+                          />
                         ))}
                       </div>
                     )}
@@ -166,9 +193,39 @@ export default function Messages() {
             </div>
           </div>
 
-          <div className="p-4 border-t bg-card rounded-b-lg">
+          <div className="p-4 border-t bg-card rounded-b-lg flex flex-col gap-2">
+            {attachments.length > 0 && (
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {attachments.map((url, i) => (
+                  <div key={i} className="relative group shrink-0">
+                    <img
+                      src={url}
+                      className="h-16 w-16 object-cover rounded-md border"
+                    />
+                    <button
+                      onClick={() => removeAttachment(i)}
+                      className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="flex gap-2 items-center">
-              <Button variant="ghost" size="icon">
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*,.pdf,.doc,.docx"
+                onChange={handleFileChange}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleFileClick}
+                title="Anexar arquivo"
+              >
                 <Paperclip className="h-5 w-5" />
               </Button>
               <Input
@@ -185,6 +242,7 @@ export default function Messages() {
                 size="icon"
                 className="bg-trust-blue"
                 onClick={handleSend}
+                disabled={!inputText.trim() && attachments.length === 0}
               >
                 <Send className="h-4 w-4" />
               </Button>
