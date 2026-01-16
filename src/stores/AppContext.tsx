@@ -1,5 +1,12 @@
 import React, { createContext, useState, ReactNode } from 'react'
-import { Property, Task, Financials, Message, Invoice } from '@/lib/types'
+import {
+  Property,
+  Task,
+  Financials,
+  Message,
+  Invoice,
+  Evidence,
+} from '@/lib/types'
 import {
   properties as initialProperties,
   tasks as initialTasks,
@@ -17,6 +24,7 @@ interface AppContextType {
   addTask: (task: Task) => void
   addInvoice: (invoice: Invoice) => void
   addTaskImage: (taskId: string, imageUrl: string) => void
+  addTaskEvidence: (taskId: string, evidence: Evidence) => void
   sendMessage: (contactId: string, text: string, attachments?: string[]) => void
   markAsRead: (contactId: string) => void
 }
@@ -58,6 +66,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setTasks(
       tasks.map((t) =>
         t.id === taskId ? { ...t, images: [...(t.images || []), imageUrl] } : t,
+      ),
+    )
+  }
+
+  const addTaskEvidence = (taskId: string, evidence: Evidence) => {
+    setTasks(
+      tasks.map((t) =>
+        t.id === taskId
+          ? {
+              ...t,
+              evidence: [...(t.evidence || []), evidence],
+              // Add to images for backward compatibility if needed, but not strictly required
+              images: [...(t.images || []), evidence.url],
+            }
+          : t,
       ),
     )
   }
@@ -119,6 +142,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addTask,
         addInvoice,
         addTaskImage,
+        addTaskEvidence,
         sendMessage,
         markAsRead,
       }}

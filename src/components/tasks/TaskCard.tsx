@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Task } from '@/lib/types'
+import { Task, Evidence } from '@/lib/types'
 import {
   Card,
   CardContent,
@@ -18,22 +18,32 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Clock, Upload, MapPin, Eye } from 'lucide-react'
+import { Clock, Upload, MapPin, Eye, Camera, CheckCircle2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
 import { TaskDetailsSheet } from './TaskDetailsSheet'
+import { EvidenceUploadDialog } from './EvidenceUploadDialog'
 
 interface TaskCardProps {
   task: Task
   onStatusChange: (status: Task['status']) => void
   onUpload?: (taskId: string, img: string) => void
+  onAddEvidence?: (taskId: string, evidence: Evidence) => void
 }
 
-export function TaskCard({ task, onStatusChange, onUpload }: TaskCardProps) {
+export function TaskCard({
+  task,
+  onStatusChange,
+  onUpload,
+  onAddEvidence,
+}: TaskCardProps) {
   const { toast } = useToast()
   const [detailsOpen, setDetailsOpen] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [file, setFile] = useState<File | null>(null)
+
+  const [checkInOpen, setCheckInOpen] = useState(false)
+  const [checkOutOpen, setCheckOutOpen] = useState(false)
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -48,7 +58,7 @@ export function TaskCard({ task, onStatusChange, onUpload }: TaskCardProps) {
     }
   }
 
-  const handleUpload = () => {
+  const handleGenericUpload = () => {
     if (onUpload) {
       // Mock upload
       onUpload(task.id, 'https://img.usecurling.com/p/200/150?q=maintenance')
@@ -59,6 +69,28 @@ export function TaskCard({ task, onStatusChange, onUpload }: TaskCardProps) {
     }
   }
 
+  const handleEvidenceUpload = (evidence: Evidence) => {
+    if (onAddEvidence) {
+      onAddEvidence(task.id, evidence)
+
+      if (evidence.type === 'arrival') {
+        onStatusChange('in_progress')
+        setCheckInOpen(false)
+        toast({
+          title: 'Check-in realizado',
+          description: 'Tarefa iniciada com registro de chegada.',
+        })
+      } else if (evidence.type === 'completion') {
+        onStatusChange('completed')
+        setCheckOutOpen(false)
+        toast({
+          title: 'Serviço Concluído',
+          description: 'Tarefa finalizada com registro de conclusão.',
+        })
+      }
+    }
+  }
+
   return (
     <>
       <TaskDetailsSheet
@@ -66,6 +98,23 @@ export function TaskCard({ task, onStatusChange, onUpload }: TaskCardProps) {
         open={detailsOpen}
         onOpenChange={setDetailsOpen}
       />
+
+      <EvidenceUploadDialog
+        open={checkInOpen}
+        onOpenChange={setCheckInOpen}
+        task={task}
+        type="arrival"
+        onConfirm={handleEvidenceUpload}
+      />
+
+      <EvidenceUploadDialog
+        open={checkOutOpen}
+        onOpenChange={setCheckOutOpen}
+        task={task}
+        type="completion"
+        onConfirm={handleEvidenceUpload}
+      />
+
       <Card className="hover:shadow-md transition-shadow group flex flex-col h-full">
         <CardHeader className="p-4 pb-2 space-y-2">
           <div className="flex justify-between items-start">
@@ -124,9 +173,11 @@ export function TaskCard({ task, onStatusChange, onUpload }: TaskCardProps) {
             <div className="text-xs font-medium bg-secondary px-2 py-1 rounded-full truncate max-w-[120px]">
               {task.assignee}
             </div>
-            {task.images && task.images.length > 0 && (
+            {((task.images && task.images.length > 0) ||
+              (task.evidence && task.evidence.length > 0)) && (
               <Badge variant="outline" className="text-[10px] h-5 gap-1">
-                <Eye className="h-2 w-2" /> {task.images.length}
+                <Eye className="h-2 w-2" />
+                {(task.images?.length || 0) + (task.evidence?.length || 0)}
               </Badge>
             )}
           </div>
@@ -135,10 +186,10 @@ export function TaskCard({ task, onStatusChange, onUpload }: TaskCardProps) {
           {task.status === 'pending' && (
             <Button
               size="sm"
-              className="w-full h-8 text-xs"
-              onClick={() => onStatusChange('in_progress')}
+              className="w-full h-8 text-xs bg-trust-blue hover:bg-trust-blue/90"
+              onClick={() => setCheckInOpen(true)}
             >
-              Iniciar Serviço
+              <Camera className="h-3 w-3 mr-2" /> Iniciar (Check-in)
             </Button>
           )}
           {task.status === 'in_progress' && (
@@ -163,19 +214,29 @@ export function TaskCard({ task, onStatusChange, onUpload }: TaskCardProps) {
                           onChange={(e) => setFile(e.target.files?.[0] || null)}
                         />
                       </div>
-                      <Button onClick={handleUpload}>Enviar</Button>
+                      <Button onClick={handleGenericUpload}>Enviar</Button>
                     </div>
                   </DialogContent>
                 </Dialog>
               )}
               <Button
                 size="sm"
-                className="text-xs h-8"
-                onClick={() => onStatusChange('completed')}
+                className="text-xs h-8 bg-green-600 hover:bg-green-700"
+                onClick={() => setCheckOutOpen(true)}
               >
-                Concluir
+                <CheckCircle2 className="h-3 w-3 mr-1" /> Concluir
               </Button>
             </div>
+          )}
+          {task.status === 'completed' && (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="w-full h-8 text-xs cursor-default"
+            >
+              <CheckCircle2 className="h-3 w-3 mr-2 text-green-600" /> Tarefa
+              Concluída
+            </Button>
           )}
           <Button
             variant="ghost"
@@ -183,7 +244,7 @@ export function TaskCard({ task, onStatusChange, onUpload }: TaskCardProps) {
             className="w-full h-7 text-xs text-muted-foreground"
             onClick={() => setDetailsOpen(true)}
           >
-            Ver Detalhes & Localização
+            Ver Detalhes & Evidências
           </Button>
         </CardFooter>
       </Card>

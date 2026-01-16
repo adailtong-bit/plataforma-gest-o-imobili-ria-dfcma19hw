@@ -6,7 +6,8 @@ import { TaskCard } from '@/components/tasks/TaskCard'
 import { CreateTaskDialog } from '@/components/tasks/CreateTaskDialog'
 
 export default function Tasks() {
-  const { tasks, updateTaskStatus, addTaskImage } = useTaskStore()
+  const { tasks, updateTaskStatus, addTaskImage, addTaskEvidence } =
+    useTaskStore()
 
   return (
     <div className="flex flex-col gap-6">
@@ -50,6 +51,7 @@ export default function Tasks() {
                     onStatusChange={(status) =>
                       updateTaskStatus(task.id, status)
                     }
+                    onAddEvidence={addTaskEvidence}
                   />
                 ))}
             </div>
@@ -74,6 +76,7 @@ export default function Tasks() {
                       updateTaskStatus(task.id, status)
                     }
                     onUpload={addTaskImage}
+                    onAddEvidence={addTaskEvidence}
                   />
                 ))}
             </div>
@@ -97,6 +100,7 @@ export default function Tasks() {
                     onStatusChange={(status) =>
                       updateTaskStatus(task.id, status)
                     }
+                    onAddEvidence={addTaskEvidence}
                   />
                 ))}
             </div>
@@ -120,6 +124,7 @@ export default function Tasks() {
                     onStatusChange={(status) =>
                       updateTaskStatus(task.id, status)
                     }
+                    onAddEvidence={addTaskEvidence}
                   />
                 ))}
             </div>

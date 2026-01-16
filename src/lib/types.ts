@@ -14,6 +14,19 @@ export interface Property {
   owner: string
 }
 
+export interface Evidence {
+  id: string
+  url: string
+  type: 'arrival' | 'completion' | 'other'
+  timestamp: string
+  location?: {
+    lat: number
+    lng: number
+    address: string
+  }
+  notes?: string
+}
+
 export interface Task {
   id: string
   title: string
@@ -27,6 +40,7 @@ export interface Task {
   date: string
   priority: 'low' | 'medium' | 'high' | 'critical'
   images?: string[]
+  evidence?: Evidence[]
   description?: string
   price?: number
   backToBack?: boolean

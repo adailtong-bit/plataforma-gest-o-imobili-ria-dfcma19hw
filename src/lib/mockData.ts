@@ -1,6 +1,7 @@
 import { addDays, subDays } from 'date-fns'
+import { Property, Task, Financials, Message } from '@/lib/types'
 
-export const properties = [
+export const properties: Property[] = [
   {
     id: 'prop1',
     name: 'Villa Sunshine',
@@ -63,7 +64,7 @@ export const properties = [
   },
 ]
 
-export const tasks = [
+export const tasks: Task[] = [
   {
     id: 'task1',
     title: 'Limpeza Pós-Checkout',
@@ -77,6 +78,30 @@ export const tasks = [
     date: subDays(new Date(), 1).toISOString(),
     priority: 'high',
     images: ['https://img.usecurling.com/p/300/200?q=clean%20bedroom'],
+    evidence: [
+      {
+        id: 'ev1',
+        url: 'https://img.usecurling.com/p/300/200?q=front%20door',
+        type: 'arrival',
+        timestamp: subDays(new Date(), 1).toISOString(),
+        location: {
+          lat: 28.5383,
+          lng: -81.3792,
+          address: '123 Palm Street, Orlando, FL',
+        },
+      },
+      {
+        id: 'ev2',
+        url: 'https://img.usecurling.com/p/300/200?q=clean%20living%20room',
+        type: 'completion',
+        timestamp: subDays(new Date(), 1).toISOString(),
+        location: {
+          lat: 28.5383,
+          lng: -81.3792,
+          address: '123 Palm Street, Orlando, FL',
+        },
+      },
+    ],
   },
   {
     id: 'task2',
@@ -91,6 +116,19 @@ export const tasks = [
     date: new Date().toISOString(),
     priority: 'critical',
     images: ['https://img.usecurling.com/p/300/200?q=broken%20ac'],
+    evidence: [
+      {
+        id: 'ev3',
+        url: 'https://img.usecurling.com/p/300/200?q=ac%20unit',
+        type: 'arrival',
+        timestamp: new Date().toISOString(),
+        location: {
+          lat: 28.2919,
+          lng: -81.4076,
+          address: '789 Lake View Dr, Kissimmee, FL',
+        },
+      },
+    ],
   },
   {
     id: 'task3',
@@ -121,7 +159,7 @@ export const tasks = [
   },
 ]
 
-export const financials = {
+export const financials: Financials = {
   revenue: [
     { month: 'Jan', value: 12500 },
     { month: 'Fev', value: 15000 },
@@ -168,7 +206,7 @@ export const financials = {
   ],
 }
 
-export const messages = [
+export const messages: Message[] = [
   {
     id: 'msg1',
     contact: 'Maria Silva (Cleaner)',

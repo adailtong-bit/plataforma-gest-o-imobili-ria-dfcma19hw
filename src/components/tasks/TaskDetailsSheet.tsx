@@ -15,6 +15,8 @@ import {
   Image as ImageIcon,
   DollarSign,
   CheckCircle2,
+  Clock,
+  Navigation,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -60,6 +62,14 @@ export function TaskDetailsSheet({
         return status
     }
   }
+
+  const arrivalEvidence = task.evidence?.find((e) => e.type === 'arrival')
+  const completionEvidence = task.evidence?.find((e) => e.type === 'completion')
+  const otherEvidence = task.evidence?.filter((e) => e.type === 'other') || []
+  // Fallback for legacy images
+  const legacyImages =
+    task.images?.filter((img) => !task.evidence?.some((e) => e.url === img)) ||
+    []
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -116,6 +126,113 @@ export function TaskDetailsSheet({
 
               <Separator />
 
+              {/* Workflow Evidence - NEW SECTION */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4" /> Registro de Atividade
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Arrival Card */}
+                  <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden">
+                    <div className="p-3 bg-muted/50 border-b flex items-center justify-between">
+                      <span className="font-semibold text-xs uppercase tracking-wider text-blue-600">
+                        Chegada (Start)
+                      </span>
+                      {arrivalEvidence && (
+                        <CheckCircle2 className="h-3 w-3 text-green-500" />
+                      )}
+                    </div>
+                    <div className="p-0">
+                      {arrivalEvidence ? (
+                        <div className="flex flex-col">
+                          <div className="relative aspect-video bg-black">
+                            <img
+                              src={arrivalEvidence.url}
+                              alt="Arrival"
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                          <div className="p-3 text-xs space-y-1.5 bg-muted/10">
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                              <Clock className="h-3 w-3" />
+                              <span>
+                                {format(
+                                  new Date(arrivalEvidence.timestamp),
+                                  'dd/MM/yyyy HH:mm',
+                                )}
+                              </span>
+                            </div>
+                            {arrivalEvidence.location && (
+                              <div className="flex items-start gap-1.5 text-muted-foreground">
+                                <Navigation className="h-3 w-3 mt-0.5 shrink-0" />
+                                <span className="leading-tight">
+                                  {arrivalEvidence.location.address}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="h-32 flex items-center justify-center text-xs text-muted-foreground italic bg-muted/10">
+                          Pendente
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Completion Card */}
+                  <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden">
+                    <div className="p-3 bg-muted/50 border-b flex items-center justify-between">
+                      <span className="font-semibold text-xs uppercase tracking-wider text-green-600">
+                        Conclusão (End)
+                      </span>
+                      {completionEvidence && (
+                        <CheckCircle2 className="h-3 w-3 text-green-500" />
+                      )}
+                    </div>
+                    <div className="p-0">
+                      {completionEvidence ? (
+                        <div className="flex flex-col">
+                          <div className="relative aspect-video bg-black">
+                            <img
+                              src={completionEvidence.url}
+                              alt="Completion"
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                          <div className="p-3 text-xs space-y-1.5 bg-muted/10">
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                              <Clock className="h-3 w-3" />
+                              <span>
+                                {format(
+                                  new Date(completionEvidence.timestamp),
+                                  'dd/MM/yyyy HH:mm',
+                                )}
+                              </span>
+                            </div>
+                            {completionEvidence.location && (
+                              <div className="flex items-start gap-1.5 text-muted-foreground">
+                                <Navigation className="h-3 w-3 mt-0.5 shrink-0" />
+                                <span className="leading-tight">
+                                  {completionEvidence.location.address}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="h-32 flex items-center justify-center text-xs text-muted-foreground italic bg-muted/10">
+                          Pendente
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
               {/* Execution Details */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
@@ -162,32 +279,43 @@ export function TaskDetailsSheet({
                 </p>
               </div>
 
-              {/* Photos / Attachments */}
-              <div className="space-y-3">
-                <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
-                  <ImageIcon className="h-4 w-4" /> Fotos & Referências Visuais
-                </h3>
-                {task.images && task.images.length > 0 ? (
+              {/* Additional Photos / Attachments */}
+              {(legacyImages.length > 0 || otherEvidence.length > 0) && (
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                    <ImageIcon className="h-4 w-4" /> Fotos Adicionais
+                  </h3>
                   <div className="grid grid-cols-2 gap-2">
-                    {task.images.map((img, idx) => (
+                    {otherEvidence.map((ev, idx) => (
                       <div
-                        key={idx}
+                        key={ev.id}
+                        className="relative aspect-video rounded-md overflow-hidden border bg-muted group"
+                      >
+                        <img
+                          src={ev.url}
+                          alt={`Evidence ${idx + 1}`}
+                          className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-1 text-[10px] text-white truncate px-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {format(new Date(ev.timestamp), 'dd/MM HH:mm')}
+                        </div>
+                      </div>
+                    ))}
+                    {legacyImages.map((img, idx) => (
+                      <div
+                        key={`legacy-${idx}`}
                         className="relative aspect-video rounded-md overflow-hidden border bg-muted"
                       >
                         <img
                           src={img}
-                          alt={`Evidência ${idx + 1}`}
+                          alt={`Legacy ${idx + 1}`}
                           className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
                         />
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <div className="text-sm text-muted-foreground italic p-4 bg-muted/30 rounded-md text-center">
-                    Nenhuma foto anexada.
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </ScrollArea>
