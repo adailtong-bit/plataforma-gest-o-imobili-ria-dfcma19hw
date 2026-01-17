@@ -94,6 +94,15 @@ export interface Condominium {
   }
 }
 
+// Updated Property Status
+export type PropertyStatus =
+  | 'interested'
+  | 'rented'
+  | 'available'
+  | 'in_registration'
+  | 'suspended'
+  | 'released'
+
 export interface Property {
   id: string
   name: string
@@ -105,7 +114,7 @@ export interface Property {
   profileType: 'long_term' | 'short_term'
   community: string
   condominiumId?: string
-  status: 'occupied' | 'vacant' | 'maintenance'
+  status: PropertyStatus
   marketingStatus?: 'listed' | 'unlisted'
   image: string
   gallery?: string[]
@@ -183,6 +192,14 @@ export interface Owner {
   avatar?: string
 }
 
+export interface ServiceRate {
+  id: string
+  serviceName: string
+  price: number
+  validFrom: string
+  validTo?: string
+}
+
 export interface Partner {
   id: string
   name: string
@@ -194,6 +211,14 @@ export interface Partner {
   rating?: number
   role: UserRole
   avatar?: string
+  // Enhanced Details
+  address?: string
+  paymentInfo?: {
+    bankName: string
+    routingNumber: string
+    accountNumber: string
+  }
+  serviceRates?: ServiceRate[]
 }
 
 export interface Evidence {
@@ -254,10 +279,11 @@ export interface LedgerEntry {
   propertyId: string
   date: string
   type: 'income' | 'expense'
-  category: string // e.g. 'Rent', 'Maintenance', 'Cleaning', 'HOA', 'Management Fee'
+  category: string
   amount: number
   description: string
-  referenceId?: string // Link to Task ID, Invoice ID, Payment ID
+  referenceId?: string
+  beneficiaryId?: string // Link to Partner/Owner/Tenant
   status: 'pending' | 'cleared' | 'void'
 }
 

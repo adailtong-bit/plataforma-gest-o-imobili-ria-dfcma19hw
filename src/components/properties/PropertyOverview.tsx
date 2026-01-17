@@ -1,4 +1,4 @@
-import { Property } from '@/lib/types'
+import { Property, PropertyStatus } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -9,6 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { FileUpload } from '@/components/ui/file-upload'
+import useLanguageStore from '@/stores/useLanguageStore'
+import { hasPermission } from '@/lib/permissions'
+import useAuthStore from '@/stores/useAuthStore'
+import { User } from '@/lib/types'
 
 interface PropertyOverviewProps {
   data: Property
@@ -21,10 +26,21 @@ export function PropertyOverview({
   onChange,
   canEdit,
 }: PropertyOverviewProps) {
+  const { t } = useLanguageStore()
+  const { currentUser } = useAuthStore()
+
+  // Access Control for Media
+  const canViewMedia =
+    currentUser.role === 'platform_owner' ||
+    currentUser.role === 'property_owner' ||
+    currentUser.role === 'software_tenant' ||
+    (currentUser.role === 'internal_user' &&
+      hasPermission(currentUser as User, 'properties', 'view'))
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Visão Geral</CardTitle>
+        <CardTitle>{t('properties.overview')}</CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid gap-2">
@@ -62,26 +78,35 @@ export function PropertyOverview({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="House">Casa</SelectItem>
-              <SelectItem value="Condo">Apartamento</SelectItem>
-              <SelectItem value="Townhouse">Townhouse</SelectItem>
+              <SelectItem value="House">{t('properties.house')}</SelectItem>
+              <SelectItem value="Condo">{t('properties.condo')}</SelectItem>
+              <SelectItem value="Townhouse">
+                {t('properties.townhouse')}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="grid gap-2">
-          <Label>Status</Label>
+          <Label>{t('common.status')}</Label>
           <Select
             value={data.status}
-            onValueChange={(v) => onChange('status', v)}
+            onValueChange={(v) => onChange('status', v as PropertyStatus)}
             disabled={!canEdit}
           >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="occupied">Ocupado</SelectItem>
-              <SelectItem value="vacant">Vago</SelectItem>
-              <SelectItem value="maintenance">Em Manutenção</SelectItem>
+              <SelectItem value="interested">
+                {t('status.interested')}
+              </SelectItem>
+              <SelectItem value="rented">{t('status.rented')}</SelectItem>
+              <SelectItem value="available">{t('status.available')}</SelectItem>
+              <SelectItem value="in_registration">
+                {t('status.in_registration')}
+              </SelectItem>
+              <SelectItem value="suspended">{t('status.suspended')}</SelectItem>
+              <SelectItem value="released">{t('status.released')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -102,12 +127,19 @@ export function PropertyOverview({
           </Select>
         </div>
         <div className="grid gap-2 col-span-1 md:col-span-2">
-          <Label>URL da Imagem Principal</Label>
-          <Input
-            value={data.image}
-            onChange={(e) => onChange('image', e.target.value)}
-            disabled={!canEdit}
-          />
+          <Label>Imagem Principal</Label>
+          {canViewMedia ? (
+            <FileUpload
+              value={data.image}
+              onChange={(url) => onChange('image', url)}
+              disabled={!canEdit}
+              label={t('properties.upload_image')}
+            />
+          ) : (
+            <div className="p-4 border border-dashed rounded bg-muted text-muted-foreground text-center text-sm">
+              {t('properties.image_access_restricted')}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -49,14 +49,14 @@ export function TaskCard({
 }: TaskCardProps) {
   const { toast } = useToast()
   const { t } = useLanguageStore()
-  const { addLedgerEntry, ledgerEntries } = useFinancialStore()
+  const { ledgerEntries } = useFinancialStore()
   const [detailsOpen, setDetailsOpen] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [file, setFile] = useState<File | null>(null)
 
   const [checkInOpen, setCheckInOpen] = useState(false)
   const [checkOutOpen, setCheckOutOpen] = useState(false)
 
+  // Auto-posted via AppContext, check if exists
   const isBilled = ledgerEntries.some((e) => e.referenceId === task.id)
 
   const getPriorityColor = (priority: string) => {
@@ -99,44 +99,10 @@ export function TaskCard({
         setCheckOutOpen(false)
         toast({
           title: 'Serviço Concluído',
-          description: 'Tarefa finalizada com registro de conclusão.',
+          description: 'Tarefa finalizada e lançada no financeiro.',
         })
       }
     }
-  }
-
-  const handleBillTask = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (!task.price) {
-      toast({
-        title: 'Erro',
-        description: 'Esta tarefa não tem preço definido.',
-        variant: 'destructive',
-      })
-      return
-    }
-
-    addLedgerEntry({
-      id: `ledg-task-${task.id}`,
-      propertyId: task.propertyId,
-      date: new Date().toISOString(),
-      type: 'expense',
-      category:
-        task.type === 'cleaning'
-          ? 'Cleaning'
-          : task.type === 'maintenance'
-            ? 'Maintenance'
-            : 'Other',
-      amount: task.price,
-      description: `${t(`tasks.${task.type}`)} - ${task.title}`,
-      referenceId: task.id,
-      status: 'pending',
-    })
-
-    toast({
-      title: 'Lançamento Criado',
-      description: `Despesa de $${task.price} adicionada ao ledger.`,
-    })
   }
 
   return (
@@ -290,23 +256,12 @@ export function TaskCard({
                 <CheckCircle2 className="h-3 w-3 mr-2 text-green-600" />
                 {t('common.completed')}
               </Button>
-              {task.price && !isBilled && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-8 w-8 p-0"
-                  onClick={handleBillTask}
-                  title="Lançar no Financeiro"
-                >
-                  <Receipt className="h-4 w-4 text-orange-600" />
-                </Button>
-              )}
               {isBilled && (
                 <Button
                   size="sm"
                   variant="ghost"
                   className="h-8 w-8 p-0 text-green-600"
-                  title="Já lançado"
+                  title="Faturado Automaticamente"
                   disabled
                 >
                   <Receipt className="h-4 w-4" />

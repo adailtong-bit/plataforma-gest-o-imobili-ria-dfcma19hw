@@ -9,6 +9,7 @@ const usePartnerStore = () => {
   return {
     partners: context.partners,
     addPartner: context.addPartner,
+    updatePartner: context.updatePartner,
   }
 }
 

@@ -163,7 +163,7 @@ export const properties: Property[] = [
     profileType: 'short_term',
     community: 'Sunny Isles HOA',
     condominiumId: 'condo1',
-    status: 'occupied',
+    status: 'rented',
     marketingStatus: 'listed',
     image: 'https://img.usecurling.com/p/400/300?q=modern%20villa',
     gallery: ['https://img.usecurling.com/p/400/300?q=modern%20villa'],
@@ -191,7 +191,7 @@ export const properties: Property[] = [
     profileType: 'long_term',
     community: 'Brickell Heights',
     condominiumId: 'condo2',
-    status: 'vacant',
+    status: 'available',
     marketingStatus: 'unlisted',
     image: 'https://img.usecurling.com/p/400/300?q=luxury%20apartment',
     gallery: ['https://img.usecurling.com/p/400/300?q=luxury%20apartment'],
@@ -238,6 +238,26 @@ export const partners: Partner[] = [
     rating: 4.8,
     role: 'partner',
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=1',
+    address: '123 Cleaning Rd, Orlando, FL',
+    paymentInfo: {
+      bankName: 'Bank of America',
+      routingNumber: '111000222',
+      accountNumber: '999888777',
+    },
+    serviceRates: [
+      {
+        id: 'rate1',
+        serviceName: 'Limpeza Padrão',
+        price: 150.0,
+        validFrom: '2024-01-01',
+      },
+      {
+        id: 'rate2',
+        serviceName: 'Limpeza Pesada',
+        price: 250.0,
+        validFrom: '2024-01-01',
+      },
+    ],
   },
 ]
 
@@ -351,6 +371,7 @@ export const ledgerEntries: LedgerEntry[] = [
     category: 'Cleaning',
     amount: 120.0,
     description: 'Limpeza de Rotina',
+    beneficiaryId: 'partner1', // Linked to partner
     status: 'pending',
   },
   {

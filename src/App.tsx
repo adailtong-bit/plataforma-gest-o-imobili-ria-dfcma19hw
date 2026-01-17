@@ -16,6 +16,7 @@ import Tenants from './pages/Tenants'
 import Owners from './pages/Owners'
 import OwnerDetails from './pages/OwnerDetails'
 import Partners from './pages/Partners'
+import PartnerDetails from './pages/PartnerDetails'
 import Condominiums from './pages/Condominiums'
 import CondominiumDetails from './pages/CondominiumDetails'
 import Users from './pages/Users'
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/owners" element={<Owners />} />
             <Route path="/owners/:id" element={<OwnerDetails />} />
             <Route path="/partners" element={<Partners />} />
+            <Route path="/partners/:id" element={<PartnerDetails />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/financial" element={<Financial />} />

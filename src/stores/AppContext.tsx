@@ -77,6 +77,7 @@ interface AppContextType {
   addTenant: (tenant: Tenant) => void
   addOwner: (owner: Owner) => void
   addPartner: (partner: Partner) => void
+  updatePartner: (partner: Partner) => void
   setCurrentUser: (userId: string) => void
   startChat: (contactId: string) => void
   updateAutomationRule: (rule: AutomationRule) => void
@@ -160,6 +161,27 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const allUsers = [...users, ...owners, ...partners, ...tenants]
 
+  const addAuditLog = (log: Omit<AuditLog, 'id' | 'timestamp'>) => {
+    const newLog: AuditLog = {
+      id: `log-${Date.now()}-${Math.random()}`,
+      timestamp: new Date().toISOString(),
+      ...log,
+    }
+    setAuditLogs((prev) => [newLog, ...prev])
+  }
+
+  const addLedgerEntry = (entry: LedgerEntry) => {
+    setLedgerEntries((prev) => [...prev, entry])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Ledger',
+      entityId: entry.id,
+      details: `Created ledger entry: ${entry.amount} (${entry.type})`,
+    })
+  }
+
   const setCurrentUser = (userId: string) => {
     const user = allUsers.find((u) => u.id === userId)
     if (user) {
@@ -172,15 +194,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         details: 'User switched/logged in',
       })
     }
-  }
-
-  const addAuditLog = (log: Omit<AuditLog, 'id' | 'timestamp'>) => {
-    const newLog: AuditLog = {
-      id: `log-${Date.now()}-${Math.random()}`,
-      timestamp: new Date().toISOString(),
-      ...log,
-    }
-    setAuditLogs((prev) => [newLog, ...prev])
   }
 
   const visibleMessages = allMessages.filter(
@@ -229,6 +242,77 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  const updateTaskStatus = (taskId: string, status: Task['status']) => {
+    setTasks((prevTasks) => {
+      const task = prevTasks.find((t) => t.id === taskId)
+      // Integrated Financial Automation
+      if (
+        task &&
+        status === 'completed' &&
+        task.status !== 'completed' &&
+        task.assigneeId
+      ) {
+        const partner = partners.find((p) => p.id === task.assigneeId)
+        let cost = task.price || 0
+
+        // Look up agent rate if not set
+        if (!cost && partner && partner.serviceRates) {
+          const rate = partner.serviceRates.find((r) =>
+            task.type.toLowerCase().includes(r.serviceName.toLowerCase()),
+          ) // Simple matching logic
+          if (rate) cost = rate.price
+        }
+
+        if (cost > 0) {
+          const entry: LedgerEntry = {
+            id: `auto-ledger-${task.id}`,
+            propertyId: task.propertyId,
+            date: new Date().toISOString(),
+            type: 'expense',
+            category:
+              task.type === 'cleaning'
+                ? 'Cleaning'
+                : task.type === 'maintenance'
+                  ? 'Maintenance'
+                  : 'Other',
+            amount: cost,
+            description: `${t(`tasks.${task.type}`)} - ${task.title} (Auto)`,
+            referenceId: task.id,
+            beneficiaryId: task.assigneeId,
+            status: 'pending',
+          }
+          // We can't call addLedgerEntry directly inside setState, so we do it via effect or timeout or simple state update sequence
+          // For simplicity in this mock, we'll queue it
+          setTimeout(() => addLedgerEntry(entry), 0)
+        }
+      }
+
+      return prevTasks.map((t) => (t.id === taskId ? { ...t, status } : t))
+    })
+
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Task',
+      entityId: taskId,
+      details: `Updated task status to: ${status}`,
+    })
+  }
+
+  const addTask = (task: Task) => {
+    setTasks([...tasks, task])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Task',
+      entityId: task.id,
+      details: `Created task: ${task.title}`,
+    })
+  }
+
+  // ... (keep existing helper functions)
   const addCondominium = (condo: Condominium) => {
     setCondominiums([...condominiums, condo])
     addAuditLog({
@@ -266,30 +350,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       entity: 'Condominium',
       entityId: condoId,
       details: 'Deleted condo',
-    })
-  }
-
-  const updateTaskStatus = (taskId: string, status: Task['status']) => {
-    setTasks(tasks.map((t) => (t.id === taskId ? { ...t, status } : t)))
-    addAuditLog({
-      userId: currentUser.id,
-      userName: currentUser.name,
-      action: 'update',
-      entity: 'Task',
-      entityId: taskId,
-      details: `Updated task status to: ${status}`,
-    })
-  }
-
-  const addTask = (task: Task) => {
-    setTasks([...tasks, task])
-    addAuditLog({
-      userId: currentUser.id,
-      userName: currentUser.name,
-      action: 'create',
-      entity: 'Task',
-      entityId: task.id,
-      details: `Created task: ${task.title}`,
     })
   }
 
@@ -347,68 +407,124 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  // Enhanced Privacy Messaging
   const sendMessage = (
     contactId: string,
     text: string,
     attachments: string[] = [],
   ) => {
+    const timestamp = new Date().toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+
+    const newMessageId = Date.now().toString()
+
     setAllMessages((prev) => {
-      const existing = prev.find(
+      // 1. Update Sender's Thread
+      const senderThread = prev.find(
         (m) => m.ownerId === currentUser.id && m.contactId === contactId,
       )
 
-      const timestamp = new Date().toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
+      let newPrev = [...prev]
 
-      if (existing) {
-        return prev.map((m) => {
-          if (m.id === existing.id) {
-            return {
-              ...m,
-              lastMessage: text || (attachments.length > 0 ? '📎 Anexo' : ''),
-              time: 'Agora',
-              history: [
-                ...m.history,
-                {
-                  id: Date.now().toString(),
-                  text,
-                  sender: 'me',
-                  timestamp,
-                  attachments,
-                },
-              ],
-            }
-          }
-          return m
-        })
+      if (senderThread) {
+        newPrev = newPrev.map((m) =>
+          m.id === senderThread.id
+            ? {
+                ...m,
+                lastMessage: text || (attachments.length > 0 ? '📎 Anexo' : ''),
+                time: 'Agora',
+                history: [
+                  ...m.history,
+                  {
+                    id: newMessageId,
+                    text,
+                    sender: 'me',
+                    timestamp,
+                    attachments,
+                  },
+                ],
+              }
+            : m,
+        )
       } else {
         const contact = allUsers.find((u) => u.id === contactId)
-        if (!contact) return prev
+        if (contact) {
+          newPrev.push({
+            id: `${currentUser.id}_${contactId}_${Date.now()}`,
+            ownerId: currentUser.id,
+            contact: contact.name,
+            contactId: contact.id,
+            type: contact.role,
+            lastMessage: text,
+            time: 'Agora',
+            unread: 0,
+            avatar: contact.avatar || '',
+            history: [
+              {
+                id: newMessageId,
+                text,
+                sender: 'me',
+                timestamp,
+                attachments,
+              },
+            ],
+          })
+        }
+      }
 
-        const newMsg: Message = {
-          id: `${currentUser.id}_${contactId}_${Date.now()}`,
-          ownerId: currentUser.id,
-          contact: contact.name,
-          contactId: contact.id,
-          type: contact.role,
+      // 2. Update/Create Recipient's Thread (Reciprocal)
+      const recipientThread = prev.find(
+        (m) => m.ownerId === contactId && m.contactId === currentUser.id,
+      )
+
+      if (recipientThread) {
+        newPrev = newPrev.map((m) =>
+          m.id === recipientThread.id
+            ? {
+                ...m,
+                lastMessage: text || (attachments.length > 0 ? '📎 Anexo' : ''),
+                time: 'Agora',
+                unread: m.unread + 1,
+                history: [
+                  ...m.history,
+                  {
+                    id: newMessageId,
+                    text,
+                    sender: 'other', // From recipient perspective
+                    timestamp,
+                    attachments,
+                  },
+                ],
+              }
+            : m,
+        )
+      } else {
+        // Create thread for recipient
+        newPrev.push({
+          id: `${contactId}_${currentUser.id}_${Date.now()}`,
+          ownerId: contactId,
+          contact: currentUser.name,
+          contactId: currentUser.id,
+          type: currentUser.role,
           lastMessage: text,
           time: 'Agora',
-          unread: 0,
-          avatar: contact.avatar || '',
+          unread: 1,
+          avatar: currentUser.avatar || '',
           history: [
             {
-              id: Date.now().toString(),
+              id: newMessageId,
               text,
-              sender: 'me',
+              sender: 'other',
               timestamp,
               attachments,
             },
           ],
-        }
-        return [newMsg, ...prev]
+        })
       }
+
+      return newPrev
     })
   }
 
@@ -417,9 +533,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (!contact) return
 
     const existing = visibleMessages.find((m) => m.contactId === contactId)
-    if (existing) {
-      // Logic for existing chat
-    } else {
+    if (!existing) {
       if (canChat(currentUser.role, contact.role)) {
         const newMsg: Message = {
           id: `${currentUser.id}_${contactId}_new`,
@@ -446,6 +560,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const addTenant = (tenant: Tenant) => {
     setTenants([...tenants, tenant])
+    // Dynamic Status Transition
+    if (tenant.propertyId) {
+      const property = properties.find((p) => p.id === tenant.propertyId)
+      if (property && property.status === 'available') {
+        updateProperty({ ...property, status: 'rented' })
+      }
+    }
+
     addAuditLog({
       userId: currentUser.id,
       userName: currentUser.name,
@@ -477,6 +599,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       entity: 'Partner',
       entityId: partner.id,
       details: `Registered partner: ${partner.name}`,
+    })
+  }
+
+  const updatePartner = (partner: Partner) => {
+    setPartners(partners.map((p) => (p.id === partner.id ? partner : p)))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Partner',
+      entityId: partner.id,
+      details: `Updated partner: ${partner.name}`,
     })
   }
 
@@ -567,18 +701,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
-  const addLedgerEntry = (entry: LedgerEntry) => {
-    setLedgerEntries([...ledgerEntries, entry])
-    addAuditLog({
-      userId: currentUser.id,
-      userName: currentUser.name,
-      action: 'create',
-      entity: 'Ledger',
-      entityId: entry.id,
-      details: `Created ledger entry: ${entry.amount} (${entry.type})`,
-    })
-  }
-
   const updateLedgerEntry = (entry: LedgerEntry) => {
     setLedgerEntries(ledgerEntries.map((e) => (e.id === entry.id ? entry : e)))
     addAuditLog({
@@ -643,6 +765,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addTenant,
         addOwner,
         addPartner,
+        updatePartner,
         setCurrentUser,
         startChat,
         updateAutomationRule,

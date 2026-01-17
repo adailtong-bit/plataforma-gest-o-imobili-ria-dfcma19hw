@@ -32,6 +32,7 @@ import {
   Star,
   Phone,
   Briefcase,
+  Eye,
 } from 'lucide-react'
 import usePartnerStore from '@/stores/usePartnerStore'
 import { useNavigate } from 'react-router-dom'
@@ -47,18 +48,14 @@ export default function Partners() {
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
 
-  const [newPartner, setNewPartner] = useState<{
-    name: string
-    type: 'agent' | 'cleaning' | 'maintenance'
-    companyName: string
-    email: string
-    phone: string
-  }>({
+  const [newPartner, setNewPartner] = useState<Partial<Partner>>({
     name: '',
     type: 'agent',
     companyName: '',
     email: '',
     phone: '',
+    address: '',
+    paymentInfo: { bankName: '', routingNumber: '', accountNumber: '' },
   })
 
   const filteredPartners = partners.filter(
@@ -79,14 +76,17 @@ export default function Partners() {
 
     addPartner({
       id: `partner-${Date.now()}`,
-      name: newPartner.name,
-      type: newPartner.type,
+      name: newPartner.name || '',
+      type: newPartner.type as 'agent' | 'cleaning' | 'maintenance',
       companyName: newPartner.companyName,
       email: newPartner.email,
-      phone: newPartner.phone,
+      phone: newPartner.phone || '',
+      address: newPartner.address,
+      paymentInfo: newPartner.paymentInfo,
       status: 'active',
       rating: 5.0,
       role: 'partner',
+      serviceRates: [],
     })
 
     toast({
@@ -100,6 +100,8 @@ export default function Partners() {
       companyName: '',
       email: '',
       phone: '',
+      address: '',
+      paymentInfo: { bankName: '', routingNumber: '', accountNumber: '' },
     })
   }
 
@@ -136,14 +138,20 @@ export default function Partners() {
                   <Phone className="h-4 w-4" />
                   <span>{partner.phone}</span>
                 </div>
-                <div className="pt-2">
+                <div className="pt-2 flex gap-2">
                   <Button
                     variant="outline"
-                    className="w-full gap-2"
+                    className="flex-1 gap-2"
                     onClick={() => navigate('/messages')}
                   >
                     <MessageSquare className="h-4 w-4" />{' '}
                     {t('tenants.send_message')}
+                  </Button>
+                  <Button
+                    className="flex-1 gap-2 bg-trust-blue"
+                    onClick={() => navigate(`/partners/${partner.id}`)}
+                  >
+                    <Eye className="h-4 w-4" /> {t('common.details')}
                   </Button>
                 </div>
               </div>
@@ -169,34 +177,37 @@ export default function Partners() {
               <Plus className="h-4 w-4" /> {t('partners.new_partner')}
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>{t('partners.register_title')}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label>{t('partners.contact_name')}</Label>
-                <Input
-                  value={newPartner.name}
-                  onChange={(e) =>
-                    setNewPartner({ ...newPartner, name: e.target.value })
-                  }
-                  placeholder="Ex: Maria Silva"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label>{t('partners.contact_name')}</Label>
+                  <Input
+                    value={newPartner.name}
+                    onChange={(e) =>
+                      setNewPartner({ ...newPartner, name: e.target.value })
+                    }
+                    placeholder="Ex: Maria Silva"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>{t('partners.company_name')}</Label>
+                  <Input
+                    value={newPartner.companyName}
+                    onChange={(e) =>
+                      setNewPartner({
+                        ...newPartner,
+                        companyName: e.target.value,
+                      })
+                    }
+                    placeholder="Ex: Silva Services LLC"
+                  />
+                </div>
               </div>
-              <div className="grid gap-2">
-                <Label>{t('partners.company_name')}</Label>
-                <Input
-                  value={newPartner.companyName}
-                  onChange={(e) =>
-                    setNewPartner({
-                      ...newPartner,
-                      companyName: e.target.value,
-                    })
-                  }
-                  placeholder="Ex: Silva Services LLC"
-                />
-              </div>
+
               <div className="grid gap-2">
                 <Label>{t('partners.category')}</Label>
                 <Select
@@ -219,6 +230,7 @@ export default function Partners() {
                   </SelectContent>
                 </Select>
               </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label>{t('common.email')}</Label>
@@ -241,6 +253,65 @@ export default function Partners() {
                   />
                 </div>
               </div>
+
+              <div className="grid gap-2">
+                <Label>{t('common.address')}</Label>
+                <Input
+                  value={newPartner.address}
+                  onChange={(e) =>
+                    setNewPartner({ ...newPartner, address: e.target.value })
+                  }
+                  placeholder="Full Address"
+                />
+              </div>
+
+              <div className="border rounded-md p-3 space-y-3 bg-muted/20">
+                <Label className="font-semibold">
+                  {t('partners.bank_info')}
+                </Label>
+                <div className="grid grid-cols-3 gap-2">
+                  <Input
+                    placeholder={t('partners.bank_name')}
+                    value={newPartner.paymentInfo?.bankName}
+                    onChange={(e) =>
+                      setNewPartner({
+                        ...newPartner,
+                        paymentInfo: {
+                          ...newPartner.paymentInfo!,
+                          bankName: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                  <Input
+                    placeholder={t('partners.routing')}
+                    value={newPartner.paymentInfo?.routingNumber}
+                    onChange={(e) =>
+                      setNewPartner({
+                        ...newPartner,
+                        paymentInfo: {
+                          ...newPartner.paymentInfo!,
+                          routingNumber: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                  <Input
+                    placeholder={t('partners.account')}
+                    value={newPartner.paymentInfo?.accountNumber}
+                    onChange={(e) =>
+                      setNewPartner({
+                        ...newPartner,
+                        paymentInfo: {
+                          ...newPartner.paymentInfo!,
+                          accountNumber: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
               <Button onClick={handleAddPartner} className="w-full">
                 {t('common.save')}
               </Button>
