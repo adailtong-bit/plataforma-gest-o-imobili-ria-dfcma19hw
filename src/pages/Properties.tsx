@@ -32,6 +32,17 @@ import {
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 export default function Properties() {
   const { properties, addProperty, deleteProperty } = usePropertyStore()
@@ -128,11 +139,19 @@ export default function Properties() {
     })
   }
 
-  const handleDelete = (e: React.MouseEvent, id: string) => {
-    e.preventDefault()
-    if (confirm(t('common.delete_desc'))) {
+  const handleDelete = (id: string) => {
+    try {
       deleteProperty(id)
       toast({ title: 'Propriedade excluída com sucesso.' })
+    } catch (e: any) {
+      toast({
+        title: t('common.error'),
+        description:
+          e.message === 'error_active_tenant'
+            ? t('common.delete_active_tenant_error')
+            : 'Erro ao excluir.',
+        variant: 'destructive',
+      })
     }
   }
 
@@ -343,14 +362,42 @@ export default function Properties() {
               >
                 {t(`common.${property.status}`)}
               </Badge>
-              <Button
-                variant="destructive"
-                size="icon"
-                className="absolute top-2 left-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={(e) => handleDelete(e, property.id)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 left-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {t('common.delete_title')}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t('common.delete_desc')}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                      {t('common.cancel')}
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDelete(property.id)
+                      }}
+                    >
+                      {t('common.delete')}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">

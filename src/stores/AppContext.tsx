@@ -151,6 +151,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const deleteProperty = (propertyId: string) => {
+    const hasActiveTenant = tenants.some(
+      (t) => t.propertyId === propertyId && t.status === 'active',
+    )
+    if (hasActiveTenant) {
+      throw new Error('error_active_tenant')
+    }
     setProperties(properties.filter((p) => p.id !== propertyId))
   }
 
@@ -163,6 +169,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const deleteCondominium = (condoId: string) => {
+    // Integrity Check
+    const isLinked = properties.some((p) => p.condominiumId === condoId)
+    if (isLinked) {
+      throw new Error('error_linked_condo')
+    }
     setCondominiums(condominiums.filter((c) => c.id !== condoId))
   }
 

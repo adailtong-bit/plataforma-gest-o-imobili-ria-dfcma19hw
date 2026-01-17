@@ -62,6 +62,12 @@ export const translations = {
       confirm_delete: 'Confirmar Exclusão',
       delete_desc:
         'Tem certeza que deseja excluir? Esta ação não pode ser desfeita.',
+      delete_title: 'Você tem certeza absoluta?',
+      delete_linked_error:
+        'Não é possível excluir este item pois ele possui registros vinculados.',
+      delete_active_tenant_error:
+        'Não é possível excluir propriedade com inquilino ativo.',
+      continue: 'Continuar',
     },
     // ... existing translations
     dashboard: {
@@ -327,6 +333,10 @@ export const translations = {
       no_condos: 'Nenhum condomínio encontrado.',
       add_title: 'Adicionar Condomínio',
       edit_title: 'Editar Condomínio',
+      access_credentials: 'Credenciales de Acesso',
+      financial_hoa: 'Financeiro & HOA',
+      hoa_contract: 'Contrato da Associação',
+      upload_contract: 'Upload Contrato',
     },
     roles: {
       app_owner: 'Admin do Sistema',
@@ -402,6 +412,12 @@ export const translations = {
       confirm_delete: 'Confirm Delete',
       delete_desc:
         'Are you sure you want to delete? This action cannot be undone.',
+      delete_title: 'Are you absolutely sure?',
+      delete_linked_error:
+        'Cannot delete this item because it has linked records.',
+      delete_active_tenant_error:
+        'Cannot delete property with an active tenant.',
+      continue: 'Continue',
     },
     // ... skip repeats where not changed
     properties: {
@@ -491,6 +507,10 @@ export const translations = {
       no_condos: 'No condominiums found.',
       add_title: 'Add Condominium',
       edit_title: 'Edit Condominium',
+      access_credentials: 'Access Credentials',
+      financial_hoa: 'Financial & HOA',
+      hoa_contract: 'Association Contract',
+      upload_contract: 'Upload Contract',
     },
     // ...
     // other english keys...
@@ -757,6 +777,12 @@ export const translations = {
       confirm_delete: 'Confirmar Eliminación',
       delete_desc:
         '¿Está seguro que desea eliminar? Esta acción no se puede deshacer.',
+      delete_title: '¿Está completamente seguro?',
+      delete_linked_error:
+        'No es posible eliminar este elemento porque tiene registros vinculados.',
+      delete_active_tenant_error:
+        'No es posible eliminar propiedad con inquilino activo.',
+      continue: 'Continuar',
     },
     // ... skip repeats where not changed
     condominiums: {
@@ -768,6 +794,10 @@ export const translations = {
       no_condos: 'No se encontraron condominios.',
       add_title: 'Agregar Condominio',
       edit_title: 'Editar Condominio',
+      access_credentials: 'Credenciales de Acceso',
+      financial_hoa: 'Financiero y HOA',
+      hoa_contract: 'Contrato de Asociación',
+      upload_contract: 'Subir Contrato',
     },
     properties: {
       title: 'Propiedades',
@@ -911,7 +941,7 @@ export const translations = {
       register_title: 'Registrar Nuevo Socio',
       search_placeholder: 'Buscar socios...',
       company_name: 'Nombre de la Empresa',
-      category: 'Categoría',
+      category: 'Categoria',
       agent: 'Agente Inmobiliario',
       cleaning: 'Limpieza',
       maintenance: 'Mantenimiento',

@@ -25,6 +25,19 @@ export interface Condominium {
   managerName?: string
   managerPhone?: string
   managerEmail?: string
+  description?: string
+  accessCredentials?: {
+    guest?: string
+    service?: string
+    cleaning?: string
+  }
+  hoaFee?: number
+  hoaFrequency?: 'monthly' | 'quarterly' | 'semi-annually' | 'annually'
+  hoaContract?: {
+    name: string
+    url: string
+    date: string
+  }
 }
 
 export interface Property {

@@ -91,6 +91,14 @@ export const condominiums: Condominium[] = [
     managerName: 'Pedro Manager',
     managerPhone: '+1 555-8888',
     managerEmail: 'hoasunny@example.com',
+    description: 'Condomínio de alto padrão próximo aos parques.',
+    accessCredentials: {
+      guest: '9988',
+      service: '7766',
+      cleaning: '5544',
+    },
+    hoaFee: 450.0,
+    hoaFrequency: 'monthly',
   },
   {
     id: 'condo2',
@@ -98,12 +106,18 @@ export const condominiums: Condominium[] = [
     address: '450 Brickell Ave, Miami, FL',
     managerName: 'Lucia Director',
     managerEmail: 'brickell.hoa@example.com',
+    description: 'Edifício moderno no centro financeiro.',
+    hoaFee: 1200.0,
+    hoaFrequency: 'quarterly',
   },
   {
     id: 'condo3',
     name: 'Lakefront HOA',
     address: 'Lake View Dr, Kissimmee, FL',
     managerName: 'Mike Lake',
+    description: 'Área tranquila com vista para o lago.',
+    hoaFee: 300.0,
+    hoaFrequency: 'annually',
   },
 ]
 

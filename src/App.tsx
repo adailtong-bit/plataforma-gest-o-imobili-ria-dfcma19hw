@@ -17,6 +17,7 @@ import Owners from './pages/Owners'
 import OwnerDetails from './pages/OwnerDetails'
 import Partners from './pages/Partners'
 import Condominiums from './pages/Condominiums'
+import CondominiumDetails from './pages/CondominiumDetails'
 import { AppProvider } from '@/stores/AppContext'
 
 const App = () => (
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/properties" element={<Properties />} />
             <Route path="/properties/:id" element={<PropertyDetails />} />
             <Route path="/condominiums" element={<Condominiums />} />
+            <Route path="/condominiums/:id" element={<CondominiumDetails />} />
             <Route path="/tenants" element={<Tenants />} />
             <Route path="/owners" element={<Owners />} />
             <Route path="/owners/:id" element={<OwnerDetails />} />

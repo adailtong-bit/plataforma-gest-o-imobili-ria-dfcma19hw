@@ -1,12 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -35,21 +29,33 @@ import {
   Plus,
   Search,
   MoreHorizontal,
-  Pencil,
+  Eye,
   Trash2,
 } from 'lucide-react'
 import useCondominiumStore from '@/stores/useCondominiumStore'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { useNavigate } from 'react-router-dom'
 
 export default function Condominiums() {
-  const { condominiums, addCondominium, updateCondominium, deleteCondominium } =
+  const { condominiums, addCondominium, deleteCondominium } =
     useCondominiumStore()
   const { toast } = useToast()
   const { t } = useLanguageStore()
+  const navigate = useNavigate()
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -75,44 +81,33 @@ export default function Condominiums() {
       return
     }
 
-    if (editingId) {
-      updateCondominium({
-        id: editingId,
-        ...formData,
-      })
-      toast({ title: 'Condomínio atualizado com sucesso' })
-    } else {
-      addCondominium({
-        id: `condo-${Date.now()}`,
-        ...formData,
-      })
-      toast({ title: 'Condomínio adicionado com sucesso' })
-    }
+    addCondominium({
+      id: `condo-${Date.now()}`,
+      ...formData,
+      description: '',
+    })
+    toast({ title: 'Condomínio adicionado com sucesso' })
     setOpen(false)
     resetForm()
   }
 
-  const handleEdit = (condo: any) => {
-    setEditingId(condo.id)
-    setFormData({
-      name: condo.name,
-      address: condo.address,
-      managerName: condo.managerName || '',
-      managerPhone: condo.managerPhone || '',
-      managerEmail: condo.managerEmail || '',
-    })
-    setOpen(true)
-  }
-
   const handleDelete = (id: string) => {
-    if (confirm(t('common.delete_desc'))) {
+    try {
       deleteCondominium(id)
       toast({ title: 'Condomínio excluído' })
+    } catch (error: any) {
+      toast({
+        title: t('common.error'),
+        description:
+          error.message === 'error_linked_condo'
+            ? t('common.delete_linked_error')
+            : 'Erro ao excluir.',
+        variant: 'destructive',
+      })
     }
   }
 
   const resetForm = () => {
-    setEditingId(null)
     setFormData({
       name: '',
       address: '',
@@ -145,11 +140,7 @@ export default function Condominiums() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>
-                {editingId
-                  ? t('condominiums.edit_title')
-                  : t('condominiums.add_title')}
-              </DialogTitle>
+              <DialogTitle>{t('condominiums.add_title')}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
@@ -268,17 +259,45 @@ export default function Condominiums() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleEdit(condo)}>
-                            <Pencil className="mr-2 h-4 w-4" />{' '}
-                            {t('common.edit')}
-                          </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => handleDelete(condo.id)}
-                            className="text-red-600 focus:text-red-600"
+                            onClick={() =>
+                              navigate(`/condominiums/${condo.id}`)
+                            }
                           >
-                            <Trash2 className="mr-2 h-4 w-4" />{' '}
-                            {t('common.delete')}
+                            <Eye className="mr-2 h-4 w-4" /> {t('common.view')}
                           </DropdownMenuItem>
+
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <DropdownMenuItem
+                                onSelect={(e) => e.preventDefault()}
+                                className="text-red-600 focus:text-red-600"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />{' '}
+                                {t('common.delete')}
+                              </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  {t('common.delete_title')}
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  {t('common.delete_desc')}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>
+                                  {t('common.cancel')}
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(condo.id)}
+                                >
+                                  {t('common.delete')}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
