@@ -47,7 +47,8 @@ import {
 export default function CondominiumDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { condominiums, updateCondominium } = useCondominiumStore()
+  const { condominiums, updateCondominium, deleteCondominium } =
+    useCondominiumStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
@@ -73,6 +74,23 @@ export default function CondominiumDetails() {
       title: t('common.save'),
       description: 'Dados do condomínio atualizados.',
     })
+  }
+
+  const handleDelete = () => {
+    try {
+      deleteCondominium(condo.id)
+      toast({ title: 'Condomínio excluído' })
+      navigate('/condominiums')
+    } catch (error: any) {
+      toast({
+        title: t('common.error'),
+        description:
+          error.message === 'error_linked_condo'
+            ? t('common.delete_linked_error')
+            : 'Erro ao excluir.',
+        variant: 'destructive',
+      })
+    }
   }
 
   const handleChange = (field: string, value: any) => {
@@ -129,9 +147,32 @@ export default function CondominiumDetails() {
             <p className="text-muted-foreground">{formData.address}</p>
           </div>
         </div>
-        <Button onClick={handleSave} className="bg-trust-blue gap-2">
-          <Save className="h-4 w-4" /> {t('common.save')}
-        </Button>
+        <div className="flex gap-2">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="icon">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t('common.delete_title')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t('common.delete_desc')}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>
+                  {t('common.delete')}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <Button onClick={handleSave} className="bg-trust-blue gap-2">
+            <Save className="h-4 w-4" /> {t('common.save')}
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
@@ -173,7 +214,7 @@ export default function CondominiumDetails() {
                     onChange={(e) =>
                       handleChange('description', e.target.value)
                     }
-                    placeholder="Informações gerais sobre o condomínio..."
+                    placeholder="Informações gerais sobre o condomínio, notas importantes..."
                     className="min-h-[100px]"
                   />
                 </div>

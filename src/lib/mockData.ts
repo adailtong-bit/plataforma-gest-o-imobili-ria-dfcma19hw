@@ -11,6 +11,8 @@ import {
   AutomationRule,
   Condominium,
   PaymentIntegration,
+  FinancialSettings,
+  BankStatement,
 } from '@/lib/types'
 
 // System Users (Staff/Admins)
@@ -60,6 +62,39 @@ export const systemUsers: User[] = [
       { resource: 'tenants', actions: ['view'] },
     ],
     allowedProfileTypes: ['short_term'],
+  },
+]
+
+export const defaultFinancialSettings: FinancialSettings = {
+  companyName: 'Minha Imobiliária LLC',
+  ein: '12-3456789',
+  bankName: 'Chase Bank',
+  routingNumber: '123456789',
+  accountNumber: '987654321',
+  gatewayProvider: 'stripe',
+  apiKey: 'sk_test_123456789',
+  apiSecret: '****',
+  isProduction: false,
+}
+
+export const mockBankStatements: BankStatement[] = [
+  {
+    id: 'stmt_1',
+    fileName: 'Chase_Statement_Apr2024.pdf',
+    uploadDate: '2024-05-01',
+    status: 'reconciled',
+    itemsCount: 145,
+    totalAmount: 12500.0,
+    url: '#',
+  },
+  {
+    id: 'stmt_2',
+    fileName: 'Chase_Statement_May2024.csv',
+    uploadDate: '2024-06-01',
+    status: 'pending',
+    itemsCount: 132,
+    totalAmount: 14200.0,
+    url: '#',
   },
 ]
 
@@ -266,6 +301,3 @@ export const messages: Message[] = [
     history: [],
   },
 ]
-
-export const owner1Messages: Message[] = []
-export const partner1Messages: Message[] = []

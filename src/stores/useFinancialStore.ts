@@ -8,8 +8,12 @@ const useFinancialStore = () => {
 
   return {
     financials: context.financials,
+    financialSettings: context.financialSettings,
+    bankStatements: context.bankStatements,
     addInvoice: context.addInvoice,
     markPaymentAs: context.markPaymentAs,
+    updateFinancialSettings: context.updateFinancialSettings,
+    uploadBankStatement: context.uploadBankStatement,
   }
 }
 

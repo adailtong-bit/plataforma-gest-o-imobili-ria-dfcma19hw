@@ -14,6 +14,8 @@ import {
   AutomationRule,
   Condominium,
   PaymentIntegration,
+  FinancialSettings,
+  BankStatement,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -27,6 +29,8 @@ import {
   automationRules as initialAutomationRules,
   condominiums as initialCondominiums,
   defaultPaymentIntegrations,
+  defaultFinancialSettings,
+  mockBankStatements,
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
@@ -45,6 +49,8 @@ interface AppContextType {
   allUsers: (User | Owner | Partner | Tenant)[]
   users: User[] // Managed system users
   paymentIntegrations: PaymentIntegration[]
+  financialSettings: FinancialSettings
+  bankStatements: BankStatement[]
   language: Language
   setLanguage: (lang: Language) => void
   t: (key: string, params?: Record<string, string>) => string
@@ -74,6 +80,8 @@ interface AppContextType {
   deleteUser: (userId: string) => void
   // Payment Settings
   updatePaymentIntegration: (integration: PaymentIntegration) => void
+  updateFinancialSettings: (settings: FinancialSettings) => void
+  uploadBankStatement: (statement: BankStatement) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -95,6 +103,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [paymentIntegrations, setPaymentIntegrations] = useState<
     PaymentIntegration[]
   >(defaultPaymentIntegrations)
+  const [financialSettings, setFinancialSettings] = useState<FinancialSettings>(
+    defaultFinancialSettings,
+  )
+  const [bankStatements, setBankStatements] =
+    useState<BankStatement[]>(mockBankStatements)
 
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app_language')
@@ -356,6 +369,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     )
   }
 
+  const updateFinancialSettings = (settings: FinancialSettings) => {
+    setFinancialSettings(settings)
+  }
+
+  const uploadBankStatement = (statement: BankStatement) => {
+    setBankStatements([statement, ...bankStatements])
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -372,6 +393,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         allUsers,
         users,
         paymentIntegrations,
+        financialSettings,
+        bankStatements,
         language,
         setLanguage,
         t,
@@ -399,6 +422,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateUser,
         deleteUser,
         updatePaymentIntegration,
+        updateFinancialSettings,
+        uploadBankStatement,
       }}
     >
       {children}

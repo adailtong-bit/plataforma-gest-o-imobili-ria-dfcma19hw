@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -38,7 +38,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Plus, Trash2, Edit } from 'lucide-react'
+import { Plus, Trash2, Edit, Shield } from 'lucide-react'
 import useUserStore from '@/stores/useUserStore'
 import useAuthStore from '@/stores/useAuthStore'
 import { hasPermission } from '@/lib/permissions'
@@ -65,20 +65,27 @@ export default function Users() {
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
 
-  const initialFormState: Partial<User> = {
+  const initialFormState: Partial<User> & {
+    password?: string
+    confirmPassword?: string
+  } = {
     name: '',
     email: '',
+    phone: '',
     role: 'internal_user',
     permissions: [],
     allowedProfileTypes: ['long_term', 'short_term'],
+    password: '',
+    confirmPassword: '',
   }
 
-  const [formData, setFormData] = useState<Partial<User>>(initialFormState)
+  const [formData, setFormData] = useState(initialFormState)
   const [isEditing, setIsEditing] = useState(false)
 
   // Determine allowed roles to create based on hierarchy
   const canCreateRole = (role: UserRole) => {
-    if (currentUser.role === 'platform_owner') return true
+    if (currentUser.role === 'platform_owner')
+      return ['software_tenant', 'internal_user'].includes(role)
     if (currentUser.role === 'software_tenant') return role === 'internal_user'
     return false
   }
@@ -94,19 +101,40 @@ export default function Users() {
   const handleSave = () => {
     if (!formData.name || !formData.email) {
       toast({
-        title: 'Erro',
+        title: t('common.error'),
         description: 'Nome e Email são obrigatórios',
         variant: 'destructive',
       })
       return
     }
 
+    if (!isEditing && !formData.password) {
+      toast({
+        title: t('common.error'),
+        description: 'Senha é obrigatória para novos usuários',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (formData.password && formData.password !== formData.confirmPassword) {
+      toast({
+        title: t('common.error'),
+        description: 'As senhas não coincidem',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, confirmPassword, ...userData } = formData
+
     if (isEditing && formData.id) {
-      updateUser(formData as User)
+      updateUser(userData as User)
       toast({ title: 'Sucesso', description: 'Usuário atualizado.' })
     } else {
       addUser({
-        ...formData,
+        ...userData,
         id: `user-${Date.now()}`,
         parentId: currentUser.id,
       } as User)
@@ -148,7 +176,7 @@ export default function Users() {
   }
 
   const openEdit = (user: User) => {
-    setFormData({ ...user })
+    setFormData({ ...user, password: '', confirmPassword: '' })
     setIsEditing(true)
     setOpen(true)
   }
@@ -180,7 +208,7 @@ export default function Users() {
           >
             <DialogTrigger asChild>
               <Button className="bg-trust-blue">
-                <Plus className="mr-2 h-4 w-4" /> Novo Usuário
+                <Plus className="mr-2 h-4 w-4" /> {t('common.new')} Usuário
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -193,7 +221,7 @@ export default function Users() {
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Nome</Label>
+                    <Label>{t('common.name')}</Label>
                     <Input
                       value={formData.name}
                       onChange={(e) =>
@@ -202,7 +230,7 @@ export default function Users() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Email</Label>
+                    <Label>{t('common.email')}</Label>
                     <Input
                       value={formData.email}
                       onChange={(e) =>
@@ -210,36 +238,78 @@ export default function Users() {
                       }
                     />
                   </div>
+                  <div className="grid gap-2">
+                    <Label>{t('common.phone')}</Label>
+                    <Input
+                      value={formData.phone || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Função (Role)</Label>
+                    <Select
+                      value={formData.role}
+                      onValueChange={(val: UserRole) =>
+                        setFormData({ ...formData, role: val })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {canCreateRole('software_tenant') && (
+                          <SelectItem value="software_tenant">
+                            Locador (Tenant)
+                          </SelectItem>
+                        )}
+                        <SelectItem value="internal_user">
+                          Usuário Interno
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
-                <div className="grid gap-2">
-                  <Label>Função (Role)</Label>
-                  <Select
-                    value={formData.role}
-                    onValueChange={(val: UserRole) =>
-                      setFormData({ ...formData, role: val })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {canCreateRole('software_tenant') && (
-                        <SelectItem value="software_tenant">
-                          Locador (Tenant)
-                        </SelectItem>
-                      )}
-                      <SelectItem value="internal_user">
-                        Usuário Interno
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-2 gap-4 border-t pt-4">
+                  <div className="grid gap-2">
+                    <Label>{t('common.password')}</Label>
+                    <Input
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) =>
+                        setFormData({ ...formData, password: e.target.value })
+                      }
+                      placeholder={isEditing ? '••••••' : ''}
+                    />
+                    {isEditing && (
+                      <span className="text-xs text-muted-foreground">
+                        Deixe em branco para manter a atual
+                      </span>
+                    )}
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>{t('common.confirm_password')}</Label>
+                    <Input
+                      type="password"
+                      value={formData.confirmPassword}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          confirmPassword: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
                 </div>
 
                 {formData.role === 'internal_user' && (
                   <>
                     <div className="border rounded-md p-4 bg-muted/20">
-                      <h4 className="font-medium mb-3">Permissões (Skills)</h4>
+                      <h4 className="font-medium mb-3 flex items-center gap-2">
+                        <Shield className="h-4 w-4" /> Permissões (Skills)
+                      </h4>
                       <Table>
                         <TableHeader>
                           <TableRow>
@@ -258,7 +328,9 @@ export default function Users() {
                           {RESOURCES.map((res) => (
                             <TableRow key={res}>
                               <TableCell className="capitalize">
-                                {res}
+                                {t(`common.${res}`) !== `common.${res}`
+                                  ? t(`common.${res}`)
+                                  : res}
                               </TableCell>
                               {ACTIONS.map((action) => {
                                 const checked =
@@ -414,19 +486,20 @@ export default function Users() {
                           <AlertDialogContent>
                             <AlertDialogHeader>
                               <AlertDialogTitle>
-                                Confirmação de Exclusão
+                                {t('common.delete_title')}
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                Tem certeza que deseja excluir o usuário{' '}
-                                {user.name}? Esta ação não pode ser desfeita.
+                                {t('common.delete_desc')}
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogCancel>
+                                {t('common.cancel')}
+                              </AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={() => handleDelete(user.id)}
                               >
-                                Excluir
+                                {t('common.delete')}
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>

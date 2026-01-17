@@ -27,6 +27,28 @@ export interface Permission {
   actions: Action[]
 }
 
+export interface FinancialSettings {
+  companyName: string
+  ein: string
+  bankName: string
+  routingNumber: string
+  accountNumber: string
+  gatewayProvider: 'stripe' | 'plaid' | 'manual'
+  apiKey?: string
+  apiSecret?: string
+  isProduction: boolean
+}
+
+export interface BankStatement {
+  id: string
+  fileName: string
+  uploadDate: string
+  status: 'pending' | 'reconciled' | 'error'
+  itemsCount: number
+  totalAmount: number
+  url: string
+}
+
 export interface PaymentIntegration {
   provider: 'bank_transfer' | 'credit_card' | 'bill_com'
   enabled: boolean
@@ -46,6 +68,7 @@ export interface User {
   parentId?: string // For hierarchy
   permissions?: Permission[] // For internal users
   allowedProfileTypes?: ('long_term' | 'short_term')[] // Property profile restrictions
+  password?: string // Only for creation/update handling, not stored in real DB response usually
 }
 
 export interface Condominium {
@@ -75,7 +98,7 @@ export interface Property {
   name: string
   address: string
   type: string
-  profileType: 'long_term' | 'short_term' // NEW field
+  profileType: 'long_term' | 'short_term'
   community: string
   condominiumId?: string
   status: 'occupied' | 'vacant' | 'maintenance'

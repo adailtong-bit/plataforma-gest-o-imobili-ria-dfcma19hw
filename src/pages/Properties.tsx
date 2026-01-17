@@ -15,12 +15,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Users, BedDouble, Bath, Trash2 } from 'lucide-react'
+import { MapPin, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import usePropertyStore from '@/stores/usePropertyStore'
-import useOwnerStore from '@/stores/useOwnerStore'
-import usePartnerStore from '@/stores/usePartnerStore'
 import useCondominiumStore from '@/stores/useCondominiumStore'
 import {
   Dialog,
@@ -49,8 +47,6 @@ import {
 
 export default function Properties() {
   const { properties, addProperty, deleteProperty } = usePropertyStore()
-  const { owners } = useOwnerStore()
-  const { partners } = usePartnerStore()
   const { condominiums } = useCondominiumStore()
   const { currentUser } = useAuthStore()
   const { t } = useLanguageStore()
@@ -61,8 +57,6 @@ export default function Properties() {
   >('all')
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
-
-  const realtors = partners.filter((p) => p.type === 'agent')
 
   const [newProp, setNewProp] = useState<Partial<Property>>({
     name: '',
