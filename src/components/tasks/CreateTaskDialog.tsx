@@ -66,6 +66,9 @@ const formSchema = z.object({
   price: z.string().optional(),
   description: z.string().optional(),
   backToBack: z.boolean().default(false),
+  recurrence: z
+    .enum(['none', 'daily', 'weekly', 'monthly', 'yearly'])
+    .default('none'),
 })
 
 export function CreateTaskDialog() {
@@ -86,11 +89,13 @@ export function CreateTaskDialog() {
       backToBack: false,
       description: '',
       price: '',
+      recurrence: 'none',
     },
   })
 
   const watchPropertyId = form.watch('propertyId')
   const watchType = form.watch('type')
+  const watchAssigneeId = form.watch('assigneeId')
 
   const selectedProperty = properties.find((p) => p.id === watchPropertyId)
 
@@ -101,7 +106,24 @@ export function CreateTaskDialog() {
     return true
   })
 
-  // Mock upload function
+  // Auto fetch price when assignee changes
+  if (watchAssigneeId && watchType) {
+    const partner = partners.find((p) => p.id === watchAssigneeId)
+    if (partner && partner.serviceRates) {
+      // Simple matching of task title or type with service name
+      const rate = partner.serviceRates.find(
+        (r) =>
+          watchType.toLowerCase().includes(r.serviceName.toLowerCase()) ||
+          r.serviceName.toLowerCase().includes(watchType.toLowerCase()),
+      )
+
+      // We only auto-set if the price field is empty to allow overrides,
+      // but in this controlled form loop it might fight. Better to just suggest or hint.
+      // For now, we won't force it in the UI loop to avoid infinite re-renders or complexity,
+      // but the store handles it if price is undefined.
+    }
+  }
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const fakeUrl = `https://img.usecurling.com/p/300/200?q=issue%20${uploadedImages.length}`
@@ -116,6 +138,17 @@ export function CreateTaskDialog() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const assignee = partners.find((p) => p.id === values.assigneeId)
+    let finalPrice = values.price ? parseFloat(values.price) : undefined
+
+    // If price is not set, try to get from catalog
+    if (!finalPrice && assignee && assignee.serviceRates) {
+      const rate = assignee.serviceRates.find(
+        (r) =>
+          values.type.toLowerCase().includes(r.serviceName.toLowerCase()) ||
+          r.serviceName.toLowerCase().includes(values.type.toLowerCase()),
+      )
+      if (rate) finalPrice = rate.price
+    }
 
     addTask({
       id: Math.random().toString(36).substr(2, 9),
@@ -131,8 +164,9 @@ export function CreateTaskDialog() {
       date: values.date.toISOString(),
       priority: values.priority,
       description: values.description,
-      price: values.price ? parseFloat(values.price) : undefined,
+      price: finalPrice,
       backToBack: values.backToBack,
+      recurrence: values.recurrence,
       images: uploadedImages,
     })
 
@@ -356,26 +390,54 @@ export function CreateTaskDialog() {
                 />
               </div>
 
-              {watchType === 'cleaning' && (
+              <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="backToBack"
+                  name="recurrence"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>{t('tasks.b2b_label')}</FormLabel>
-                        <FormDescription>{t('tasks.b2b_desc')}</FormDescription>
-                      </div>
+                    <FormItem>
+                      <FormLabel>Recorrência</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Não recorrente" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="none">Nenhuma</SelectItem>
+                          <SelectItem value="daily">Diária</SelectItem>
+                          <SelectItem value="weekly">Semanal</SelectItem>
+                          <SelectItem value="monthly">Mensal</SelectItem>
+                          <SelectItem value="yearly">Anual</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
-              )}
+                {watchType === 'cleaning' && (
+                  <FormField
+                    control={form.control}
+                    name="backToBack"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-end space-x-3 space-y-0 p-2">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>{t('tasks.b2b_label')}</FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                )}
+              </div>
 
               <div className="space-y-3">
                 <FormLabel>{t('tasks.photos_ref')}</FormLabel>

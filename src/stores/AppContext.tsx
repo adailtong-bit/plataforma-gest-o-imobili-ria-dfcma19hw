@@ -38,6 +38,14 @@ import {
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
+import {
+  addDays,
+  addWeeks,
+  addMonths,
+  addYears,
+  eachMonthOfInterval,
+  startOfMonth,
+} from 'date-fns'
 
 interface AppContextType {
   properties: Property[]
@@ -51,7 +59,7 @@ interface AppContextType {
   automationRules: AutomationRule[]
   currentUser: User | Owner | Partner | Tenant
   allUsers: (User | Owner | Partner | Tenant)[]
-  users: User[] // Managed system users
+  users: User[]
   paymentIntegrations: PaymentIntegration[]
   financialSettings: FinancialSettings
   bankStatements: BankStatement[]
@@ -81,19 +89,15 @@ interface AppContextType {
   setCurrentUser: (userId: string) => void
   startChat: (contactId: string) => void
   updateAutomationRule: (rule: AutomationRule) => void
-  // User Management
   addUser: (user: User) => void
   updateUser: (user: User) => void
   deleteUser: (userId: string) => void
-  // Payment Settings
   updatePaymentIntegration: (integration: PaymentIntegration) => void
   updateFinancialSettings: (settings: FinancialSettings) => void
   uploadBankStatement: (statement: BankStatement) => void
-  // Ledger
   addLedgerEntry: (entry: LedgerEntry) => void
   updateLedgerEntry: (entry: LedgerEntry) => void
   deleteLedgerEntry: (entryId: string) => void
-  // Audit
   addAuditLog: (log: Omit<AuditLog, 'id' | 'timestamp'>) => void
 }
 
@@ -245,6 +249,30 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const updateTaskStatus = (taskId: string, status: Task['status']) => {
     setTasks((prevTasks) => {
       const task = prevTasks.find((t) => t.id === taskId)
+
+      // Recurring Task Logic
+      if (task && status === 'completed' && task.status !== 'completed') {
+        if (task.recurrence && task.recurrence !== 'none') {
+          let nextDate = new Date(task.date)
+          if (task.recurrence === 'daily') nextDate = addDays(nextDate, 1)
+          if (task.recurrence === 'weekly') nextDate = addWeeks(nextDate, 1)
+          if (task.recurrence === 'monthly') nextDate = addMonths(nextDate, 1)
+          if (task.recurrence === 'yearly') nextDate = addYears(nextDate, 1)
+
+          const nextTask: Task = {
+            ...task,
+            id: `task-rec-${Date.now()}`,
+            date: nextDate.toISOString(),
+            status: 'pending',
+            images: [],
+            evidence: [],
+            // Preserve recurrence
+          }
+          // Schedule task creation (avoid state update inside state update)
+          setTimeout(() => addTask(nextTask), 0)
+        }
+      }
+
       // Integrated Financial Automation
       if (
         task &&
@@ -255,11 +283,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const partner = partners.find((p) => p.id === task.assigneeId)
         let cost = task.price || 0
 
-        // Look up agent rate if not set
         if (!cost && partner && partner.serviceRates) {
           const rate = partner.serviceRates.find((r) =>
             task.type.toLowerCase().includes(r.serviceName.toLowerCase()),
-          ) // Simple matching logic
+          )
           if (rate) cost = rate.price
         }
 
@@ -281,8 +308,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             beneficiaryId: task.assigneeId,
             status: 'pending',
           }
-          // We can't call addLedgerEntry directly inside setState, so we do it via effect or timeout or simple state update sequence
-          // For simplicity in this mock, we'll queue it
           setTimeout(() => addLedgerEntry(entry), 0)
         }
       }
@@ -301,7 +326,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const addTask = (task: Task) => {
-    setTasks([...tasks, task])
+    setTasks((prev) => [...prev, task])
     addAuditLog({
       userId: currentUser.id,
       userName: currentUser.name,
@@ -312,7 +337,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
-  // ... (keep existing helper functions)
   const addCondominium = (condo: Condominium) => {
     setCondominiums([...condominiums, condo])
     addAuditLog({
@@ -407,7 +431,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
-  // Enhanced Privacy Messaging
   const sendMessage = (
     contactId: string,
     text: string,
@@ -421,11 +444,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const newMessageId = Date.now().toString()
 
     setAllMessages((prev) => {
-      // 1. Update Sender's Thread
       const senderThread = prev.find(
         (m) => m.ownerId === currentUser.id && m.contactId === contactId,
       )
-
       let newPrev = [...prev]
 
       if (senderThread) {
@@ -474,7 +495,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         }
       }
 
-      // 2. Update/Create Recipient's Thread (Reciprocal)
       const recipientThread = prev.find(
         (m) => m.ownerId === contactId && m.contactId === currentUser.id,
       )
@@ -492,7 +512,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                   {
                     id: newMessageId,
                     text,
-                    sender: 'other', // From recipient perspective
+                    sender: 'other',
                     timestamp,
                     attachments,
                   },
@@ -501,7 +521,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             : m,
         )
       } else {
-        // Create thread for recipient
         newPrev.push({
           id: `${contactId}_${currentUser.id}_${Date.now()}`,
           ownerId: contactId,
@@ -560,11 +579,42 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const addTenant = (tenant: Tenant) => {
     setTenants([...tenants, tenant])
-    // Dynamic Status Transition
     if (tenant.propertyId) {
       const property = properties.find((p) => p.id === tenant.propertyId)
       if (property && property.status === 'available') {
         updateProperty({ ...property, status: 'rented' })
+      }
+
+      // Billing Automation
+      if (tenant.leaseStart && tenant.leaseEnd && tenant.rentValue > 0) {
+        const start = new Date(tenant.leaseStart)
+        const end = new Date(tenant.leaseEnd)
+        const months = eachMonthOfInterval({ start, end })
+
+        // Generate future ledger entries
+        const newEntries: LedgerEntry[] = months.map((date) => ({
+          id: `auto-rent-${tenant.id}-${date.getTime()}`,
+          propertyId: tenant.propertyId!,
+          date: date.toISOString(),
+          type: 'income',
+          category: 'Rent',
+          amount: tenant.rentValue,
+          description: `Aluguel Automático - ${tenant.name}`,
+          beneficiaryId: tenant.id,
+          status: 'pending',
+        }))
+
+        // We use setTimeout to break the render cycle update
+        setTimeout(() => {
+          setLedgerEntries((prev) => [...prev, ...newEntries])
+          addAuditLog({
+            userId: currentUser.id,
+            userName: currentUser.name,
+            action: 'create',
+            entity: 'Ledger',
+            details: `Generated ${newEntries.length} automatic billing entries for lease`,
+          })
+        }, 0)
       }
     }
 

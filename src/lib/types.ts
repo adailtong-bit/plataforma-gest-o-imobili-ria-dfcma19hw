@@ -20,6 +20,7 @@ export type Resource =
   | 'users'
   | 'settings'
   | 'audit_logs'
+  | 'portal'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -165,6 +166,9 @@ export interface Property {
 
   ownerId: string
   agentId?: string
+
+  // External Calendar
+  iCalUrl?: string
 }
 
 export interface Tenant {
@@ -252,6 +256,7 @@ export interface Task {
   description?: string
   price?: number
   backToBack?: boolean
+  recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
 }
 
 export interface Invoice {

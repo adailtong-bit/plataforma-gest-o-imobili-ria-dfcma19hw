@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, Save, Trash2 } from 'lucide-react'
+import { ArrowLeft, Save, Trash2, CalendarDays } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -23,6 +23,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 import { PropertyOverview } from '@/components/properties/PropertyOverview'
 import { PropertyLocation } from '@/components/properties/PropertyLocation'
@@ -50,7 +59,7 @@ export default function PropertyDetails() {
 
   useEffect(() => {
     if (property) {
-      // Local state persists until save, but if navigating away and back, it resets
+      // Local state persists until save
     }
   }, [property])
 
@@ -127,6 +136,11 @@ export default function PropertyDetails() {
     'view',
   )
 
+  // Generate Mock iCal URL if missing
+  const iCalUrl =
+    formData.iCalUrl ||
+    `https://api.plataforma.com/ical/${formData.id}/calendar.ics`
+
   return (
     <div className="flex flex-col gap-6 pb-10">
       <div className="flex items-center justify-between">
@@ -186,6 +200,11 @@ export default function PropertyDetails() {
           <TabsTrigger value="features">Características</TabsTrigger>
           <TabsTrigger value="content">Conteúdo</TabsTrigger>
           <TabsTrigger value="financial">Financeiro</TabsTrigger>
+          {formData.profileType === 'short_term' && (
+            <TabsTrigger value="ical">
+              <CalendarDays className="h-4 w-4 mr-2" /> iCal Sync
+            </TabsTrigger>
+          )}
         </TabsList>
         <div className="mt-4">
           <TabsContent value="overview">
@@ -238,6 +257,41 @@ export default function PropertyDetails() {
               )}
             </div>
           </TabsContent>
+          {formData.profileType === 'short_term' && (
+            <TabsContent value="ical">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sincronização de Calendário</CardTitle>
+                  <CardDescription>
+                    Use este link iCal para sincronizar a disponibilidade desta
+                    propriedade com Airbnb, Booking.com ou Google Calendar.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex gap-2">
+                    <div className="grid w-full gap-2">
+                      <Label>iCal URL (Export)</Label>
+                      <Input value={iCalUrl} readOnly />
+                    </div>
+                    <div className="flex items-end">
+                      <Button
+                        onClick={() => {
+                          navigator.clipboard.writeText(iCalUrl)
+                          toast({
+                            title: 'Copiado!',
+                            description:
+                              'URL copiada para a área de transferência.',
+                          })
+                        }}
+                      >
+                        Copiar
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
         </div>
       </Tabs>
     </div>

@@ -32,7 +32,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Search, MessageSquare, Home, Phone } from 'lucide-react'
+import {
+  Plus,
+  Search,
+  MessageSquare,
+  Home,
+  Phone,
+  FileText,
+} from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import { useNavigate } from 'react-router-dom'
@@ -54,6 +61,8 @@ export default function Tenants() {
     phone: '',
     rentValue: '',
     propertyId: '',
+    leaseStart: '',
+    leaseEnd: '',
   })
 
   const filteredTenants = tenants.filter(
@@ -79,6 +88,8 @@ export default function Tenants() {
       phone: newTenant.phone,
       rentValue: parseFloat(newTenant.rentValue) || 0,
       propertyId: newTenant.propertyId,
+      leaseStart: newTenant.leaseStart,
+      leaseEnd: newTenant.leaseEnd,
       status: 'active',
       role: 'tenant',
     })
@@ -94,12 +105,21 @@ export default function Tenants() {
       phone: '',
       rentValue: '',
       propertyId: '',
+      leaseStart: '',
+      leaseEnd: '',
     })
   }
 
   const getPropertyName = (id?: string) => {
     const prop = properties.find((p) => p.id === id)
     return prop ? prop.name : t('properties.not_assigned')
+  }
+
+  const generateLease = (tenantId: string) => {
+    toast({
+      title: 'Contrato Gerado',
+      description: `O contrato de locação para o inquilino foi gerado e baixado.`,
+    })
   }
 
   return (
@@ -117,7 +137,7 @@ export default function Tenants() {
               <Plus className="h-4 w-4" /> {t('tenants.new_tenant')}
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>{t('tenants.register_title')}</DialogTitle>
             </DialogHeader>
@@ -184,6 +204,28 @@ export default function Tenants() {
                   }
                   placeholder="0.00"
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label>Início do Contrato</Label>
+                  <Input
+                    type="date"
+                    value={newTenant.leaseStart}
+                    onChange={(e) =>
+                      setNewTenant({ ...newTenant, leaseStart: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Fim do Contrato</Label>
+                  <Input
+                    type="date"
+                    value={newTenant.leaseEnd}
+                    onChange={(e) =>
+                      setNewTenant({ ...newTenant, leaseEnd: e.target.value })
+                    }
+                  />
+                </div>
               </div>
               <Button onClick={handleAddTenant} className="w-full">
                 {t('common.save')}
@@ -254,14 +296,24 @@ export default function Tenants() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => navigate('/messages')}
-                        title={t('tenants.send_message')}
-                      >
-                        <MessageSquare className="h-4 w-4 text-trust-blue" />
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => generateLease(tenant.id)}
+                          title="Gerar Contrato"
+                        >
+                          <FileText className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => navigate('/messages')}
+                          title={t('tenants.send_message')}
+                        >
+                          <MessageSquare className="h-4 w-4 text-trust-blue" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

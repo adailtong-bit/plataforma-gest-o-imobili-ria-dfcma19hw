@@ -63,6 +63,7 @@ export const systemUsers: User[] = [
       { resource: 'calendar', actions: ['view'] },
       { resource: 'tenants', actions: ['view'] },
       { resource: 'financial', actions: ['view', 'create', 'edit'] },
+      { resource: 'portal', actions: ['view'] },
     ],
     allowedProfileTypes: ['short_term'],
   },
@@ -179,6 +180,7 @@ export const properties: Property[] = [
       en: 'Beautiful modern villa near Disney.',
       es: 'Hermosa villa moderna cerca de Disney.',
     },
+    iCalUrl: 'https://api.plataforma.com/ical/prop1/calendar.ics',
   },
   {
     id: 'prop2',
@@ -257,6 +259,12 @@ export const partners: Partner[] = [
         price: 250.0,
         validFrom: '2024-01-01',
       },
+      {
+        id: 'rate3',
+        serviceName: 'Cleaning',
+        price: 150.0,
+        validFrom: '2024-01-01',
+      },
     ],
   },
 ]
@@ -277,6 +285,21 @@ export const tasks: Task[] = [
     priority: 'high',
     images: ['https://img.usecurling.com/p/300/200?q=clean%20bedroom'],
     price: 150.0,
+    recurrence: 'none',
+  },
+  {
+    id: 'task2',
+    title: 'Manutenção Mensal AC',
+    propertyId: 'prop2',
+    propertyName: 'Downtown Condo',
+    status: 'pending',
+    type: 'maintenance',
+    assignee: 'Maria Silva',
+    assigneeId: 'partner1',
+    date: new Date().toISOString(),
+    priority: 'medium',
+    price: 120.0,
+    recurrence: 'monthly',
   },
 ]
 

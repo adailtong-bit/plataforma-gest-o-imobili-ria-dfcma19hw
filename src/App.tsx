@@ -20,6 +20,8 @@ import PartnerDetails from './pages/PartnerDetails'
 import Condominiums from './pages/Condominiums'
 import CondominiumDetails from './pages/CondominiumDetails'
 import Users from './pages/Users'
+import TenantPortal from './pages/portal/TenantPortal'
+import OwnerPortal from './pages/portal/OwnerPortal'
 import { AppProvider } from '@/stores/AppContext'
 
 const App = () => (
@@ -48,6 +50,9 @@ const App = () => (
             <Route path="/messages" element={<Messages />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/users" element={<Users />} />
+            {/* Portals - In real app, might use different layout */}
+            <Route path="/portal/tenant" element={<TenantPortal />} />
+            <Route path="/portal/owner" element={<OwnerPortal />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
