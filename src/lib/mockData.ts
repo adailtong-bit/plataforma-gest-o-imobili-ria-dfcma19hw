@@ -1,4 +1,4 @@
-import { addDays, subDays } from 'date-fns'
+import { subDays } from 'date-fns'
 import {
   Property,
   Task,
@@ -152,7 +152,10 @@ export const properties: Property[] = [
   {
     id: 'prop1',
     name: 'Villa Sunshine',
-    address: '123 Palm Street, Orlando, FL',
+    address: '123 Palm Street',
+    city: 'Orlando',
+    state: 'FL',
+    zipCode: '32801',
     type: 'House',
     profileType: 'short_term',
     community: 'Sunny Isles HOA',
@@ -168,11 +171,19 @@ export const properties: Property[] = [
     hoaFrequency: 'monthly',
     ownerId: 'owner1',
     agentId: 'partner3',
+    description: {
+      pt: 'Linda villa moderna perto da Disney.',
+      en: 'Beautiful modern villa near Disney.',
+      es: 'Hermosa villa moderna cerca de Disney.',
+    },
   },
   {
     id: 'prop2',
     name: 'Downtown Condo',
-    address: '450 Brickell Ave, Miami, FL',
+    address: '450 Brickell Ave',
+    city: 'Miami',
+    state: 'FL',
+    zipCode: '33131',
     type: 'Condo',
     profileType: 'long_term',
     community: 'Brickell Heights',
@@ -188,6 +199,11 @@ export const properties: Property[] = [
     hoaFrequency: 'quarterly',
     ownerId: 'owner2',
     agentId: 'partner3',
+    description: {
+      pt: 'Apartamento de luxo no coração de Miami.',
+      en: 'Luxury apartment in the heart of Miami.',
+      es: 'Apartamento de lujo en el corazón de Miami.',
+    },
   },
 ]
 

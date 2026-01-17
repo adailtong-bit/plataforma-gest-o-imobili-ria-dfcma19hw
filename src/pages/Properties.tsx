@@ -61,6 +61,9 @@ export default function Properties() {
   const [newProp, setNewProp] = useState<Partial<Property>>({
     name: '',
     address: '',
+    city: '',
+    state: '',
+    zipCode: '',
     type: 'House',
     profileType: 'short_term',
     bedrooms: 3,
@@ -117,6 +120,9 @@ export default function Properties() {
       id: `prop${Date.now()}`,
       name: newProp.name || '',
       address: newProp.address || '',
+      city: newProp.city || '',
+      state: newProp.state || '',
+      zipCode: newProp.zipCode || '',
       type: newProp.type || 'House',
       profileType: newProp.profileType || 'short_term',
       community: selectedCondo ? selectedCondo.name : 'Independent',
@@ -127,8 +133,8 @@ export default function Properties() {
       bedrooms: newProp.bedrooms || 0,
       bathrooms: newProp.bathrooms || 0,
       guests: newProp.guests || 0,
-      wifiSsid: 'Network',
-      wifiPassword: 'Password',
+      wifiSsid: '',
+      wifiPassword: '',
       accessCodeBuilding: '',
       accessCodeUnit: '',
       description: { pt: '', en: '', es: '' },
@@ -192,6 +198,39 @@ export default function Properties() {
                     placeholder="Ex: Villa Bella"
                   />
                 </div>
+                <div className="grid gap-2">
+                  <Label>{t('common.address')}</Label>
+                  <Input
+                    value={newProp.address}
+                    onChange={(e) =>
+                      setNewProp({ ...newProp, address: e.target.value })
+                    }
+                    placeholder="Ex: 123 Main St"
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <Input
+                    placeholder="City"
+                    value={newProp.city}
+                    onChange={(e) =>
+                      setNewProp({ ...newProp, city: e.target.value })
+                    }
+                  />
+                  <Input
+                    placeholder="State"
+                    value={newProp.state}
+                    onChange={(e) =>
+                      setNewProp({ ...newProp, state: e.target.value })
+                    }
+                  />
+                  <Input
+                    placeholder="Zip"
+                    value={newProp.zipCode}
+                    onChange={(e) =>
+                      setNewProp({ ...newProp, zipCode: e.target.value })
+                    }
+                  />
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label>{t('common.type')}</Label>
@@ -236,7 +275,6 @@ export default function Properties() {
                     </Select>
                   </div>
                 </div>
-                {/* ... other fields simplified for brevity, assume similar structure */}
                 <Button onClick={handleAddProperty}>{t('common.save')}</Button>
               </div>
             </DialogContent>

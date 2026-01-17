@@ -1,23 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ArrowLeft, Save, Trash2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
+import useCondominiumStore from '@/stores/useCondominiumStore'
+import useOwnerStore from '@/stores/useOwnerStore'
+import usePartnerStore from '@/stores/usePartnerStore'
 import { Property, User } from '@/lib/types'
 import { hasPermission } from '@/lib/permissions'
 import {
@@ -32,10 +24,19 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 
+import { PropertyOverview } from '@/components/properties/PropertyOverview'
+import { PropertyLocation } from '@/components/properties/PropertyLocation'
+import { PropertyFeatures } from '@/components/properties/PropertyFeatures'
+import { PropertyFinancials } from '@/components/properties/PropertyFinancials'
+import { PropertyContent } from '@/components/properties/PropertyContent'
+
 export default function PropertyDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { properties, updateProperty, deleteProperty } = usePropertyStore()
+  const { condominiums } = useCondominiumStore()
+  const { owners } = useOwnerStore()
+  const { partners } = usePartnerStore()
   const { currentUser } = useAuthStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
@@ -48,7 +49,9 @@ export default function PropertyDetails() {
 
   useEffect(() => {
     if (property) {
-      setFormData(JSON.parse(JSON.stringify(property)))
+      // Only update if property changes externally and we haven't modified (simplified sync)
+      // Actually we generally want local state to persist until save.
+      // But if ID changes, we must reset.
     }
   }, [property])
 
@@ -85,6 +88,25 @@ export default function PropertyDetails() {
     setFormData((prev) => (prev ? { ...prev, [field]: value } : null))
   }
 
+  const handleNestedChange = (
+    parent: keyof Property,
+    key: string,
+    value: string,
+  ) => {
+    setFormData((prev: any) => {
+      if (!prev) return null
+      // Ensure parent object exists
+      const parentObj = prev[parent] || {}
+      return {
+        ...prev,
+        [parent]: {
+          ...parentObj,
+          [key]: value,
+        },
+      }
+    })
+  }
+
   if (!property || !formData) return <div>Not Found</div>
 
   // Permission Check
@@ -115,6 +137,9 @@ export default function PropertyDetails() {
             <h1 className="text-3xl font-bold tracking-tight text-navy">
               {formData.name}
             </h1>
+            <p className="text-sm text-muted-foreground">
+              {formData.address} {formData.city ? `, ${formData.city}` : ''}
+            </p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -152,36 +177,53 @@ export default function PropertyDetails() {
       </div>
 
       <Tabs defaultValue="overview">
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
-          {/* Other tabs */}
+          <TabsTrigger value="location">Localização</TabsTrigger>
+          <TabsTrigger value="features">Características</TabsTrigger>
+          <TabsTrigger value="content">Conteúdo</TabsTrigger>
+          <TabsTrigger value="financial">Financeiro</TabsTrigger>
         </TabsList>
-        <TabsContent value="overview">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('common.details')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-2">
-                <Label>Perfil</Label>
-                <Select
-                  value={formData.profileType}
-                  onValueChange={(v) => handleChange('profileType', v)}
-                  disabled={!canEdit}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="short_term">Short Term (STR)</SelectItem>
-                    <SelectItem value="long_term">Long Term (LTR)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {/* Other inputs */}
-            </CardContent>
-          </Card>
-        </TabsContent>
+        <div className="mt-4">
+          <TabsContent value="overview">
+            <PropertyOverview
+              data={formData}
+              onChange={handleChange}
+              canEdit={canEdit}
+            />
+          </TabsContent>
+          <TabsContent value="location">
+            <PropertyLocation
+              data={formData}
+              onChange={handleChange}
+              canEdit={canEdit}
+              condominiums={condominiums}
+            />
+          </TabsContent>
+          <TabsContent value="features">
+            <PropertyFeatures
+              data={formData}
+              onChange={handleChange}
+              canEdit={canEdit}
+            />
+          </TabsContent>
+          <TabsContent value="content">
+            <PropertyContent
+              data={formData}
+              onNestedChange={handleNestedChange}
+              canEdit={canEdit}
+            />
+          </TabsContent>
+          <TabsContent value="financial">
+            <PropertyFinancials
+              data={formData}
+              onChange={handleChange}
+              canEdit={canEdit}
+              owners={owners}
+              partners={partners}
+            />
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   )

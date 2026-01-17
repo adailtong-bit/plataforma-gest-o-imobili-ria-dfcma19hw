@@ -68,7 +68,7 @@ export interface User {
   parentId?: string // For hierarchy
   permissions?: Permission[] // For internal users
   allowedProfileTypes?: ('long_term' | 'short_term')[] // Property profile restrictions
-  password?: string // Only for creation/update handling, not stored in real DB response usually
+  password?: string
 }
 
 export interface Condominium {
@@ -97,6 +97,9 @@ export interface Property {
   id: string
   name: string
   address: string
+  city?: string
+  state?: string
+  zipCode?: string
   type: string
   profileType: 'long_term' | 'short_term'
   community: string
