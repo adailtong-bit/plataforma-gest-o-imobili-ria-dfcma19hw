@@ -18,12 +18,21 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Clock, Upload, MapPin, Eye, Camera, CheckCircle2 } from 'lucide-react'
+import {
+  Clock,
+  Upload,
+  MapPin,
+  Eye,
+  Camera,
+  CheckCircle2,
+  Receipt,
+} from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
 import { TaskDetailsSheet } from './TaskDetailsSheet'
 import { EvidenceUploadDialog } from './EvidenceUploadDialog'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 
 interface TaskCardProps {
   task: Task
@@ -40,12 +49,15 @@ export function TaskCard({
 }: TaskCardProps) {
   const { toast } = useToast()
   const { t } = useLanguageStore()
+  const { addLedgerEntry, ledgerEntries } = useFinancialStore()
   const [detailsOpen, setDetailsOpen] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [file, setFile] = useState<File | null>(null)
 
   const [checkInOpen, setCheckInOpen] = useState(false)
   const [checkOutOpen, setCheckOutOpen] = useState(false)
+
+  const isBilled = ledgerEntries.some((e) => e.referenceId === task.id)
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -91,6 +103,40 @@ export function TaskCard({
         })
       }
     }
+  }
+
+  const handleBillTask = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!task.price) {
+      toast({
+        title: 'Erro',
+        description: 'Esta tarefa não tem preço definido.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    addLedgerEntry({
+      id: `ledg-task-${task.id}`,
+      propertyId: task.propertyId,
+      date: new Date().toISOString(),
+      type: 'expense',
+      category:
+        task.type === 'cleaning'
+          ? 'Cleaning'
+          : task.type === 'maintenance'
+            ? 'Maintenance'
+            : 'Other',
+      amount: task.price,
+      description: `${t(`tasks.${task.type}` || 'Serviço')} - ${task.title}`,
+      referenceId: task.id,
+      status: 'pending',
+    })
+
+    toast({
+      title: 'Lançamento Criado',
+      description: `Despesa de $${task.price} adicionada ao ledger.`,
+    })
   }
 
   return (
@@ -235,14 +281,38 @@ export function TaskCard({
             </div>
           )}
           {task.status === 'completed' && (
-            <Button
-              variant="secondary"
-              size="sm"
-              className="w-full h-8 text-xs cursor-default"
-            >
-              <CheckCircle2 className="h-3 w-3 mr-2 text-green-600" />
-              {t('common.completed')}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="flex-1 h-8 text-xs cursor-default"
+              >
+                <CheckCircle2 className="h-3 w-3 mr-2 text-green-600" />
+                {t('common.completed')}
+              </Button>
+              {task.price && !isBilled && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                  onClick={handleBillTask}
+                  title="Lançar no Financeiro"
+                >
+                  <Receipt className="h-4 w-4 text-orange-600" />
+                </Button>
+              )}
+              {isBilled && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 text-green-600"
+                  title="Já lançado"
+                  disabled
+                >
+                  <Receipt className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           )}
           <Button
             variant="ghost"

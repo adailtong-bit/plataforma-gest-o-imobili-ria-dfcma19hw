@@ -33,8 +33,34 @@ import useLanguageStore from '@/stores/useLanguageStore'
 export default function Index() {
   const [date, setDate] = useState<Date | undefined>(new Date())
   const { tasks } = useTaskStore()
-  const { financials } = useFinancialStore()
+  const { ledgerEntries, financials } = useFinancialStore()
   const { t } = useLanguageStore()
+
+  // Calculate real metrics from ledger
+  const totalRevenue = ledgerEntries
+    .filter((e) => e.type === 'income')
+    .reduce((acc, curr) => acc + curr.value || curr.amount, 0)
+
+  // Chart Data preparation
+  const chartData = ledgerEntries.reduce(
+    (acc, entry) => {
+      const month = new Date(entry.date).toLocaleString('default', {
+        month: 'short',
+      })
+      const existing = acc.find((d) => d.month === month)
+      if (existing) {
+        existing.value += entry.amount
+      } else {
+        acc.push({ month, value: entry.amount })
+      }
+      return acc
+    },
+    [] as { month: string; value: number }[],
+  )
+
+  // Use mock data if ledger is empty for demo purposes, otherwise use real data
+  const revenueData =
+    chartData.length > 0 ? chartData : financials.revenue || []
 
   const chartConfig = {
     maintenance: {
@@ -54,12 +80,6 @@ export default function Index() {
       color: 'hsl(var(--chart-4))',
     },
   }
-
-  // Calculate total revenue from both invoices (if applicable) and payments
-  const totalRevenue = financials.revenue.reduce(
-    (acc, curr) => acc + curr.value,
-    0,
-  )
 
   return (
     <div className="flex flex-col gap-6">
@@ -151,7 +171,7 @@ export default function Index() {
               }}
               className="h-[300px] w-full"
             >
-              <BarChart data={financials.revenue}>
+              <BarChart data={revenueData}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis
                   dataKey="month"

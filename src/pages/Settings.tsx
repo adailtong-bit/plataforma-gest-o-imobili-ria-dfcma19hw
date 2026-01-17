@@ -15,17 +15,35 @@ import { Switch } from '@/components/ui/switch'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAutomationStore from '@/stores/useAutomationStore'
 import useFinancialStore from '@/stores/useFinancialStore'
+import useAuthStore from '@/stores/useAuthStore'
+import { hasPermission } from '@/lib/permissions'
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import { AuditLogList } from '@/components/audit/AuditLogList'
+import { User } from '@/lib/types'
 
 export default function Settings() {
   const { t } = useLanguageStore()
   const { toast } = useToast()
   const { automationRules, updateAutomationRule } = useAutomationStore()
   const { financialSettings, updateFinancialSettings } = useFinancialStore()
+  const { currentUser } = useAuthStore()
   const [formData, setFormData] = useState(financialSettings)
 
   const handleFinancialSave = () => {
+    // Basic validation
+    if (
+      formData.routingNumber.length !== 9 ||
+      !/^\d+$/.test(formData.routingNumber)
+    ) {
+      toast({
+        title: t('common.error'),
+        description: 'Routing Number must be 9 digits.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     updateFinancialSettings(formData)
     toast({
       title: t('common.save'),
@@ -37,6 +55,8 @@ export default function Settings() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
+  const canViewAudit = hasPermission(currentUser as User, 'audit_logs', 'view')
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
@@ -46,7 +66,7 @@ export default function Settings() {
         <p className="text-muted-foreground">{t('settings.subtitle')}</p>
       </div>
 
-      <Tabs defaultValue="gateway" className="space-y-4">
+      <Tabs defaultValue="profile" className="space-y-4">
         <TabsList>
           <TabsTrigger value="profile">{t('common.profile')}</TabsTrigger>
           <TabsTrigger value="notifications">
@@ -56,6 +76,7 @@ export default function Settings() {
           <TabsTrigger value="gateway">
             {t('settings.payment_gateway')}
           </TabsTrigger>
+          {canViewAudit && <TabsTrigger value="audit">Auditoria</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="gateway">
@@ -80,7 +101,7 @@ export default function Settings() {
                   <Input
                     value={formData.ein}
                     onChange={(e) => handleChange('ein', e.target.value)}
-                    placeholder="12-3456789"
+                    placeholder="XX-XXXXXXX"
                   />
                 </div>
                 <div className="space-y-2">
@@ -166,8 +187,8 @@ export default function Settings() {
             <CardContent className="space-y-6">
               <div className="flex items-center gap-6">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage src="https://img.usecurling.com/ppl/thumbnail?gender=male" />
-                  <AvatarFallback>AD</AvatarFallback>
+                  <AvatarImage src={currentUser.avatar} />
+                  <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <Button variant="outline">{t('settings.change_photo')}</Button>
               </div>
@@ -175,11 +196,11 @@ export default function Settings() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">{t('settings.full_name')}</Label>
-                  <Input id="name" defaultValue="Admin User" />
+                  <Input id="name" defaultValue={currentUser.name} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">{t('common.email')}</Label>
-                  <Input id="email" defaultValue="admin@sistema.com" />
+                  <Input id="email" defaultValue={currentUser.email} />
                 </div>
               </div>
               <div className="flex justify-end">
@@ -267,6 +288,12 @@ export default function Settings() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {canViewAudit && (
+          <TabsContent value="audit">
+            <AuditLogList />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   )

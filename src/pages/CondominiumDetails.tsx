@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,6 +27,8 @@ import {
   Upload,
   Download,
   Trash2,
+  Edit,
+  X,
 } from 'lucide-react'
 import useCondominiumStore from '@/stores/useCondominiumStore'
 import { useToast } from '@/hooks/use-toast'
@@ -43,6 +45,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { Condominium } from '@/lib/types'
 
 export default function CondominiumDetails() {
   const { id } = useParams()
@@ -53,9 +56,16 @@ export default function CondominiumDetails() {
   const { toast } = useToast()
 
   const condo = condominiums.find((c) => c.id === id)
-  const [formData, setFormData] = useState(condo)
+  const [formData, setFormData] = useState<Condominium | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (condo) {
+      setFormData(JSON.parse(JSON.stringify(condo)))
+    }
+  }, [condo])
 
   if (!condo || !formData) {
     return (
@@ -70,10 +80,16 @@ export default function CondominiumDetails() {
 
   const handleSave = () => {
     updateCondominium(formData)
+    setIsEditing(false)
     toast({
       title: t('common.save'),
       description: 'Dados do condomínio atualizados.',
     })
+  }
+
+  const handleCancel = () => {
+    setFormData(JSON.parse(JSON.stringify(condo)))
+    setIsEditing(false)
   }
 
   const handleDelete = () => {
@@ -113,7 +129,6 @@ export default function CondominiumDetails() {
     if (!file) return
 
     setIsUploading(true)
-    // Simulate upload
     setTimeout(() => {
       setFormData((prev: any) => ({
         ...prev,
@@ -126,7 +141,7 @@ export default function CondominiumDetails() {
       setIsUploading(false)
       toast({
         title: t('condominiums.upload_contract'),
-        description: 'Contrato enviado com sucesso.',
+        description: 'Contrato enviado com sucesso. (Não salvo até confirmar)',
       })
     }, 1000)
   }
@@ -148,30 +163,53 @@ export default function CondominiumDetails() {
           </div>
         </div>
         <div className="flex gap-2">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="icon">
-                <Trash2 className="h-4 w-4" />
+          {!isEditing ? (
+            <>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="icon">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {t('common.delete_title')}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t('common.delete_desc')}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                      {t('common.delete')}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <Button
+                onClick={() => setIsEditing(true)}
+                variant="outline"
+                className="gap-2"
+              >
+                <Edit className="h-4 w-4" /> {t('common.edit')}
               </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t('common.delete_title')}</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {t('common.delete_desc')}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>
-                  {t('common.delete')}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <Button onClick={handleSave} className="bg-trust-blue gap-2">
-            <Save className="h-4 w-4" /> {t('common.save')}
-          </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={handleCancel}
+                variant="outline"
+                className="gap-2"
+              >
+                <X className="h-4 w-4" /> {t('common.cancel')}
+              </Button>
+              <Button onClick={handleSave} className="bg-trust-blue gap-2">
+                <Save className="h-4 w-4" /> {t('common.save')}
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -198,6 +236,7 @@ export default function CondominiumDetails() {
                   <Input
                     value={formData.name}
                     onChange={(e) => handleChange('name', e.target.value)}
+                    disabled={!isEditing}
                   />
                 </div>
                 <div className="grid gap-2">
@@ -205,6 +244,7 @@ export default function CondominiumDetails() {
                   <Input
                     value={formData.address}
                     onChange={(e) => handleChange('address', e.target.value)}
+                    disabled={!isEditing}
                   />
                 </div>
                 <div className="grid gap-2">
@@ -214,8 +254,9 @@ export default function CondominiumDetails() {
                     onChange={(e) =>
                       handleChange('description', e.target.value)
                     }
-                    placeholder="Informações gerais sobre o condomínio, notas importantes..."
+                    placeholder="Informações gerais sobre o condomínio..."
                     className="min-h-[100px]"
+                    disabled={!isEditing}
                   />
                 </div>
               </CardContent>
@@ -233,6 +274,7 @@ export default function CondominiumDetails() {
                     onChange={(e) =>
                       handleChange('managerName', e.target.value)
                     }
+                    disabled={!isEditing}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -243,6 +285,7 @@ export default function CondominiumDetails() {
                       onChange={(e) =>
                         handleChange('managerPhone', e.target.value)
                       }
+                      disabled={!isEditing}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -252,6 +295,7 @@ export default function CondominiumDetails() {
                       onChange={(e) =>
                         handleChange('managerEmail', e.target.value)
                       }
+                      disabled={!isEditing}
                     />
                   </div>
                 </div>
@@ -286,6 +330,7 @@ export default function CondominiumDetails() {
                     }
                     placeholder="****"
                     className="font-mono text-lg"
+                    disabled={!isEditing}
                   />
                 </div>
                 <div className="space-y-2">
@@ -301,6 +346,7 @@ export default function CondominiumDetails() {
                     }
                     placeholder="****"
                     className="font-mono text-lg"
+                    disabled={!isEditing}
                   />
                 </div>
                 <div className="space-y-2">
@@ -316,6 +362,7 @@ export default function CondominiumDetails() {
                     }
                     placeholder="****"
                     className="font-mono text-lg"
+                    disabled={!isEditing}
                   />
                 </div>
               </div>
@@ -346,6 +393,7 @@ export default function CondominiumDetails() {
                         }
                         className="pl-8"
                         placeholder="0.00"
+                        disabled={!isEditing}
                       />
                     </div>
                   </div>
@@ -354,6 +402,7 @@ export default function CondominiumDetails() {
                     <Select
                       value={formData.hoaFrequency || 'monthly'}
                       onValueChange={(val) => handleChange('hoaFrequency', val)}
+                      disabled={!isEditing}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -391,18 +440,21 @@ export default function CondominiumDetails() {
                     className="hidden"
                     onChange={handleFileUpload}
                     accept=".pdf,.doc,.docx"
+                    disabled={!isEditing}
                   />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isUploading}
-                  >
-                    <Upload className="mr-2 h-4 w-4" />
-                    {isUploading
-                      ? t('properties.uploading')
-                      : t('common.upload')}
-                  </Button>
+                  {isEditing && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      {isUploading
+                        ? t('properties.uploading')
+                        : t('common.upload')}
+                    </Button>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
@@ -430,39 +482,16 @@ export default function CondominiumDetails() {
                           <Download className="h-4 w-4" />
                         </Button>
                       </a>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              {t('common.delete_title')}
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {t('common.delete_desc')}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>
-                              {t('common.cancel')}
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() =>
-                                handleChange('hoaContract', undefined)
-                              }
-                            >
-                              {t('common.delete')}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      {isEditing && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-red-500 hover:text-red-700"
+                          onClick={() => handleChange('hoaContract', undefined)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ) : (

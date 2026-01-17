@@ -1,4 +1,4 @@
-import { subDays } from 'date-fns'
+import { subDays, subMonths } from 'date-fns'
 import {
   Property,
   Task,
@@ -13,6 +13,8 @@ import {
   PaymentIntegration,
   FinancialSettings,
   BankStatement,
+  LedgerEntry,
+  AuditLog,
 } from '@/lib/types'
 
 // System Users (Staff/Admins)
@@ -60,6 +62,7 @@ export const systemUsers: User[] = [
       { resource: 'tasks', actions: ['view', 'create', 'edit', 'delete'] },
       { resource: 'calendar', actions: ['view'] },
       { resource: 'tenants', actions: ['view'] },
+      { resource: 'financial', actions: ['view', 'create', 'edit'] },
     ],
     allowedProfileTypes: ['short_term'],
   },
@@ -253,6 +256,7 @@ export const tasks: Task[] = [
     date: subDays(new Date(), 1).toISOString(),
     priority: 'high',
     images: ['https://img.usecurling.com/p/300/200?q=clean%20bedroom'],
+    price: 150.0,
   },
 ]
 
@@ -315,5 +319,70 @@ export const messages: Message[] = [
     unread: 2,
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=1',
     history: [],
+  },
+]
+
+export const ledgerEntries: LedgerEntry[] = [
+  {
+    id: 'ledg1',
+    propertyId: 'prop1',
+    date: subDays(new Date(), 5).toISOString(),
+    type: 'income',
+    category: 'Rent',
+    amount: 2500.0,
+    description: 'Aluguel Janeiro',
+    status: 'cleared',
+  },
+  {
+    id: 'ledg2',
+    propertyId: 'prop1',
+    date: subDays(new Date(), 2).toISOString(),
+    type: 'expense',
+    category: 'Maintenance',
+    amount: 150.0,
+    description: 'Reparo Ar Condicionado',
+    status: 'cleared',
+  },
+  {
+    id: 'ledg3',
+    propertyId: 'prop1',
+    date: subDays(new Date(), 1).toISOString(),
+    type: 'expense',
+    category: 'Cleaning',
+    amount: 120.0,
+    description: 'Limpeza de Rotina',
+    status: 'pending',
+  },
+  {
+    id: 'ledg4',
+    propertyId: 'prop2',
+    date: subMonths(new Date(), 1).toISOString(),
+    type: 'income',
+    category: 'Rent',
+    amount: 3200.0,
+    description: 'Aluguel Dezembro',
+    status: 'cleared',
+  },
+]
+
+export const auditLogs: AuditLog[] = [
+  {
+    id: 'log1',
+    timestamp: subDays(new Date(), 1).toISOString(),
+    userId: 'admin_platform',
+    userName: 'Platform Administrator',
+    action: 'login',
+    entity: 'System',
+    details: 'User logged in',
+  },
+  {
+    id: 'log2',
+    timestamp: subDays(new Date(), 2).toISOString(),
+    userId: 'tenant_realestate',
+    userName: 'Real Estate Tenant',
+    action: 'update',
+    entity: 'Property',
+    entityId: 'prop1',
+    details: 'Updated property description',
   },
 ]

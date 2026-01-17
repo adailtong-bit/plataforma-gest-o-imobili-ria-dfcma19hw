@@ -10,10 +10,14 @@ const useFinancialStore = () => {
     financials: context.financials,
     financialSettings: context.financialSettings,
     bankStatements: context.bankStatements,
+    ledgerEntries: context.ledgerEntries,
     addInvoice: context.addInvoice,
     markPaymentAs: context.markPaymentAs,
     updateFinancialSettings: context.updateFinancialSettings,
     uploadBankStatement: context.uploadBankStatement,
+    addLedgerEntry: context.addLedgerEntry,
+    updateLedgerEntry: context.updateLedgerEntry,
+    deleteLedgerEntry: context.deleteLedgerEntry,
   }
 }
 

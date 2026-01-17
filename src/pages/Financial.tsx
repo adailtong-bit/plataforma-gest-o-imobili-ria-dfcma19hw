@@ -15,7 +15,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Upload, FileText, CheckCircle2 } from 'lucide-react'
+import { Upload, FileText, CheckCircle2, DollarSign } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
 import useFinancialStore from '@/stores/useFinancialStore'
@@ -24,14 +24,34 @@ import { User, BankStatement } from '@/lib/types'
 import { useRef, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  YAxis,
+  Legend,
+} from 'recharts'
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 
 export default function Financial() {
   const { t } = useLanguageStore()
   const { currentUser } = useAuthStore()
-  const { bankStatements, uploadBankStatement } = useFinancialStore()
+  const { bankStatements, uploadBankStatement, ledgerEntries } =
+    useFinancialStore()
   const { toast } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [reportPeriod, setReportPeriod] = useState('yearly')
 
   if (!hasPermission(currentUser as User, 'financial', 'view')) {
     return (
@@ -40,6 +60,39 @@ export default function Financial() {
       </div>
     )
   }
+
+  // Calculate Metrics
+  const totalIncome = ledgerEntries
+    .filter((e) => e.type === 'income' && e.status === 'cleared')
+    .reduce((sum, e) => sum + e.amount, 0)
+
+  const totalExpense = ledgerEntries
+    .filter((e) => e.type === 'expense' && e.status === 'cleared')
+    .reduce((sum, e) => sum + e.amount, 0)
+
+  const noi = totalIncome - totalExpense
+
+  // Prepare Chart Data (Group by Month)
+  const chartData = ledgerEntries.reduce(
+    (acc, entry) => {
+      const month = new Date(entry.date).toLocaleString('default', {
+        month: 'short',
+      })
+      const existing = acc.find((d) => d.month === month)
+      if (existing) {
+        if (entry.type === 'income') existing.income += entry.amount
+        else existing.expense += entry.amount
+      } else {
+        acc.push({
+          month,
+          income: entry.type === 'income' ? entry.amount : 0,
+          expense: entry.type === 'expense' ? entry.amount : 0,
+        })
+      }
+      return acc
+    },
+    [] as { month: string; income: number; expense: number }[],
+  )
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -75,25 +128,107 @@ export default function Financial() {
           </h1>
           <p className="text-muted-foreground">{t('financial.subtitle')}</p>
         </div>
+        <Select value={reportPeriod} onValueChange={setReportPeriod}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="monthly">Mensal</SelectItem>
+            <SelectItem value="semiannual">Semestral</SelectItem>
+            <SelectItem value="yearly">Anual</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Receita Total</CardTitle>
+            <DollarSign className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              ${totalIncome.toLocaleString()}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Despesa Total</CardTitle>
+            <DollarSign className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">
+              ${totalExpense.toLocaleString()}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">NOI (Líquido)</CardTitle>
+            <DollarSign className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">
+              ${noi.toLocaleString()}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <Tabs defaultValue="dashboard">
         <TabsList>
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="dashboard">Analytics Dashboard</TabsTrigger>
           <TabsTrigger value="reconciliation">
             {t('financial.reconciliation')}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard">
-          <Card>
+          <Card className="col-span-4">
             <CardHeader>
-              <CardTitle>Dashboard Financeiro</CardTitle>
+              <CardTitle>Receita vs Despesas</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p>
-                Conteúdo financeiro visível apenas para usuários autorizados.
-              </p>
+            <CardContent className="pl-2">
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      dataKey="month"
+                      stroke="#888888"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis
+                      stroke="#888888"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(value) => `$${value}`}
+                    />
+                    <RechartsTooltip
+                      formatter={(value: number) =>
+                        `$${value.toLocaleString()}`
+                      }
+                    />
+                    <Legend />
+                    <Bar
+                      dataKey="income"
+                      name="Receita"
+                      fill="#22c55e"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="expense"
+                      name="Despesa"
+                      fill="#ef4444"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

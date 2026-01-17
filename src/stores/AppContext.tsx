@@ -16,6 +16,8 @@ import {
   PaymentIntegration,
   FinancialSettings,
   BankStatement,
+  LedgerEntry,
+  AuditLog,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -31,6 +33,8 @@ import {
   defaultPaymentIntegrations,
   defaultFinancialSettings,
   mockBankStatements,
+  ledgerEntries as initialLedgerEntries,
+  auditLogs as initialAuditLogs,
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
@@ -51,6 +55,8 @@ interface AppContextType {
   paymentIntegrations: PaymentIntegration[]
   financialSettings: FinancialSettings
   bankStatements: BankStatement[]
+  ledgerEntries: LedgerEntry[]
+  auditLogs: AuditLog[]
   language: Language
   setLanguage: (lang: Language) => void
   t: (key: string, params?: Record<string, string>) => string
@@ -82,6 +88,12 @@ interface AppContextType {
   updatePaymentIntegration: (integration: PaymentIntegration) => void
   updateFinancialSettings: (settings: FinancialSettings) => void
   uploadBankStatement: (statement: BankStatement) => void
+  // Ledger
+  addLedgerEntry: (entry: LedgerEntry) => void
+  updateLedgerEntry: (entry: LedgerEntry) => void
+  deleteLedgerEntry: (entryId: string) => void
+  // Audit
+  addAuditLog: (log: Omit<AuditLog, 'id' | 'timestamp'>) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -108,6 +120,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   )
   const [bankStatements, setBankStatements] =
     useState<BankStatement[]>(mockBankStatements)
+  const [ledgerEntries, setLedgerEntries] =
+    useState<LedgerEntry[]>(initialLedgerEntries)
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(initialAuditLogs)
 
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app_language')
@@ -147,7 +162,25 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const setCurrentUser = (userId: string) => {
     const user = allUsers.find((u) => u.id === userId)
-    if (user) setCurrentUserObj(user)
+    if (user) {
+      setCurrentUserObj(user)
+      addAuditLog({
+        userId: user.id,
+        userName: user.name,
+        action: 'login',
+        entity: 'System',
+        details: 'User switched/logged in',
+      })
+    }
+  }
+
+  const addAuditLog = (log: Omit<AuditLog, 'id' | 'timestamp'>) => {
+    const newLog: AuditLog = {
+      id: `log-${Date.now()}-${Math.random()}`,
+      timestamp: new Date().toISOString(),
+      ...log,
+    }
+    setAuditLogs((prev) => [newLog, ...prev])
   }
 
   const visibleMessages = allMessages.filter(
@@ -156,10 +189,26 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const addProperty = (property: Property) => {
     setProperties([...properties, property])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Property',
+      entityId: property.id,
+      details: `Created property: ${property.name}`,
+    })
   }
 
   const updateProperty = (property: Property) => {
     setProperties(properties.map((p) => (p.id === property.id ? property : p)))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Property',
+      entityId: property.id,
+      details: `Updated property: ${property.name}`,
+    })
   }
 
   const deleteProperty = (propertyId: string) => {
@@ -170,14 +219,38 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       throw new Error('error_active_tenant')
     }
     setProperties(properties.filter((p) => p.id !== propertyId))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'Property',
+      entityId: propertyId,
+      details: 'Deleted property',
+    })
   }
 
   const addCondominium = (condo: Condominium) => {
     setCondominiums([...condominiums, condo])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Condominium',
+      entityId: condo.id,
+      details: `Created condo: ${condo.name}`,
+    })
   }
 
   const updateCondominium = (condo: Condominium) => {
     setCondominiums(condominiums.map((c) => (c.id === condo.id ? condo : c)))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Condominium',
+      entityId: condo.id,
+      details: `Updated condo: ${condo.name}`,
+    })
   }
 
   const deleteCondominium = (condoId: string) => {
@@ -186,14 +259,38 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       throw new Error('error_linked_condo')
     }
     setCondominiums(condominiums.filter((c) => c.id !== condoId))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'Condominium',
+      entityId: condoId,
+      details: 'Deleted condo',
+    })
   }
 
   const updateTaskStatus = (taskId: string, status: Task['status']) => {
     setTasks(tasks.map((t) => (t.id === taskId ? { ...t, status } : t)))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Task',
+      entityId: taskId,
+      details: `Updated task status to: ${status}`,
+    })
   }
 
   const addTask = (task: Task) => {
     setTasks([...tasks, task])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Task',
+      entityId: task.id,
+      details: `Created task: ${task.title}`,
+    })
   }
 
   const addTaskImage = (taskId: string, imageUrl: string) => {
@@ -223,6 +320,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       ...financials,
       invoices: [invoice, ...financials.invoices],
     })
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Invoice',
+      entityId: invoice.id,
+      details: `Created invoice: ${invoice.description}`,
+    })
   }
 
   const markPaymentAs = (paymentId: string, status: Payment['status']) => {
@@ -231,6 +336,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       payments: financials.payments.map((p) =>
         p.id === paymentId ? { ...p, status } : p,
       ),
+    })
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Payment',
+      entityId: paymentId,
+      details: `Updated payment status to: ${status}`,
     })
   }
 
@@ -333,32 +446,88 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const addTenant = (tenant: Tenant) => {
     setTenants([...tenants, tenant])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Tenant',
+      entityId: tenant.id,
+      details: `Registered tenant: ${tenant.name}`,
+    })
   }
 
   const addOwner = (owner: Owner) => {
     setOwners([...owners, owner])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Owner',
+      entityId: owner.id,
+      details: `Registered owner: ${owner.name}`,
+    })
   }
 
   const addPartner = (partner: Partner) => {
     setPartners([...partners, partner])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Partner',
+      entityId: partner.id,
+      details: `Registered partner: ${partner.name}`,
+    })
   }
 
   const updateAutomationRule = (rule: AutomationRule) => {
     setAutomationRules(
       automationRules.map((r) => (r.id === rule.id ? rule : r)),
     )
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Automation',
+      entityId: rule.id,
+      details: `Updated automation rule: ${rule.type}`,
+    })
   }
 
   const addUser = (user: User) => {
     setUsers([...users, user])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'User',
+      entityId: user.id,
+      details: `Created user: ${user.name}`,
+    })
   }
 
   const updateUser = (user: User) => {
     setUsers(users.map((u) => (u.id === user.id ? user : u)))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'User',
+      entityId: user.id,
+      details: `Updated user: ${user.name}`,
+    })
   }
 
   const deleteUser = (userId: string) => {
     setUsers(users.filter((u) => u.id !== userId))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'User',
+      entityId: userId,
+      details: 'Deleted user',
+    })
   }
 
   const updatePaymentIntegration = (integration: PaymentIntegration) => {
@@ -367,14 +536,71 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         p.provider === integration.provider ? integration : p,
       ),
     )
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Settings',
+      details: `Updated payment integration: ${integration.provider}`,
+    })
   }
 
   const updateFinancialSettings = (settings: FinancialSettings) => {
     setFinancialSettings(settings)
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Settings',
+      details: 'Updated financial settings',
+    })
   }
 
   const uploadBankStatement = (statement: BankStatement) => {
     setBankStatements([statement, ...bankStatements])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'BankStatement',
+      details: `Uploaded statement: ${statement.fileName}`,
+    })
+  }
+
+  const addLedgerEntry = (entry: LedgerEntry) => {
+    setLedgerEntries([...ledgerEntries, entry])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Ledger',
+      entityId: entry.id,
+      details: `Created ledger entry: ${entry.amount} (${entry.type})`,
+    })
+  }
+
+  const updateLedgerEntry = (entry: LedgerEntry) => {
+    setLedgerEntries(ledgerEntries.map((e) => (e.id === entry.id ? entry : e)))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Ledger',
+      entityId: entry.id,
+      details: `Updated ledger entry: ${entry.id}`,
+    })
+  }
+
+  const deleteLedgerEntry = (entryId: string) => {
+    setLedgerEntries(ledgerEntries.filter((e) => e.id !== entryId))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'Ledger',
+      entityId: entryId,
+      details: 'Deleted ledger entry',
+    })
   }
 
   return (
@@ -395,6 +621,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         paymentIntegrations,
         financialSettings,
         bankStatements,
+        ledgerEntries,
+        auditLogs,
         language,
         setLanguage,
         t,
@@ -424,6 +652,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updatePaymentIntegration,
         updateFinancialSettings,
         uploadBankStatement,
+        addLedgerEntry,
+        updateLedgerEntry,
+        deleteLedgerEntry,
+        addAuditLog,
       }}
     >
       {children}

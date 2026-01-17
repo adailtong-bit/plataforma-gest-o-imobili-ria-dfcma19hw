@@ -19,6 +19,7 @@ export type Resource =
   | 'messages'
   | 'users'
   | 'settings'
+  | 'audit_logs'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -246,6 +247,29 @@ export interface Payment {
   dueDate: string
   status: 'paid' | 'pending' | 'overdue'
   type: 'rent' | 'deposit' | 'fee'
+}
+
+export interface LedgerEntry {
+  id: string
+  propertyId: string
+  date: string
+  type: 'income' | 'expense'
+  category: string // e.g. 'Rent', 'Maintenance', 'Cleaning', 'HOA', 'Management Fee'
+  amount: number
+  description: string
+  referenceId?: string // Link to Task ID, Invoice ID, Payment ID
+  status: 'pending' | 'cleared' | 'void'
+}
+
+export interface AuditLog {
+  id: string
+  timestamp: string
+  userId: string
+  userName: string
+  action: 'create' | 'update' | 'delete' | 'login' | 'other'
+  entity: string
+  entityId?: string
+  details?: string
 }
 
 export interface Financials {

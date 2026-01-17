@@ -29,6 +29,7 @@ import { PropertyLocation } from '@/components/properties/PropertyLocation'
 import { PropertyFeatures } from '@/components/properties/PropertyFeatures'
 import { PropertyFinancials } from '@/components/properties/PropertyFinancials'
 import { PropertyContent } from '@/components/properties/PropertyContent'
+import { PropertyLedger } from '@/components/financial/PropertyLedger'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -49,9 +50,7 @@ export default function PropertyDetails() {
 
   useEffect(() => {
     if (property) {
-      // Only update if property changes externally and we haven't modified (simplified sync)
-      // Actually we generally want local state to persist until save.
-      // But if ID changes, we must reset.
+      // Local state persists until save, but if navigating away and back, it resets
     }
   }, [property])
 
@@ -95,7 +94,6 @@ export default function PropertyDetails() {
   ) => {
     setFormData((prev: any) => {
       if (!prev) return null
-      // Ensure parent object exists
       const parentObj = prev[parent] || {}
       return {
         ...prev,
@@ -123,6 +121,11 @@ export default function PropertyDetails() {
 
   const canEdit = hasPermission(currentUser as User, 'properties', 'edit')
   const canDelete = hasPermission(currentUser as User, 'properties', 'delete')
+  const canViewFinancials = hasPermission(
+    currentUser as User,
+    'financial',
+    'view',
+  )
 
   return (
     <div className="flex flex-col gap-6 pb-10">
@@ -215,13 +218,25 @@ export default function PropertyDetails() {
             />
           </TabsContent>
           <TabsContent value="financial">
-            <PropertyFinancials
-              data={formData}
-              onChange={handleChange}
-              canEdit={canEdit}
-              owners={owners}
-              partners={partners}
-            />
+            <div className="space-y-6">
+              <PropertyFinancials
+                data={formData}
+                onChange={handleChange}
+                canEdit={canEdit}
+                owners={owners}
+                partners={partners}
+              />
+              {canViewFinancials && (
+                <PropertyLedger
+                  propertyId={formData.id}
+                  canEdit={hasPermission(
+                    currentUser as User,
+                    'financial',
+                    'edit',
+                  )}
+                />
+              )}
+            </div>
           </TabsContent>
         </div>
       </Tabs>

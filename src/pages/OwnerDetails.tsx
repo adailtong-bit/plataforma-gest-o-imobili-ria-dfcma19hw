@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import useOwnerStore from '@/stores/useOwnerStore'
 import usePropertyStore from '@/stores/usePropertyStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,11 +32,14 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { OwnerStatement } from '@/components/financial/OwnerStatement'
 
 export default function OwnerDetails() {
   const { id } = useParams()
   const { owners } = useOwnerStore()
   const { properties } = usePropertyStore()
+  const { ledgerEntries } = useFinancialStore()
   const navigate = useNavigate()
   const { toast } = useToast()
   const { t } = useLanguageStore()
@@ -161,58 +165,77 @@ export default function OwnerDetails() {
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>{t('owners.linked_properties')}</CardTitle>
-            <CardDescription>{t('owners.linked_desc')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {ownerProperties.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                {t('owners.no_properties')}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {ownerProperties.map((prop) => (
-                  <Link
-                    key={prop.id}
-                    to={`/properties/${prop.id}`}
-                    className="block group"
-                  >
-                    <div className="border rounded-lg overflow-hidden hover:shadow-md transition-all bg-card">
-                      <div className="relative h-32">
-                        <img
-                          src={prop.image}
-                          alt={prop.name}
-                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                        />
-                        <Badge
-                          className={`absolute top-2 right-2`}
-                          variant="secondary"
-                        >
-                          {t(`common.${prop.status}`)}
-                        </Badge>
-                      </div>
-                      <div className="p-4">
-                        <h4 className="font-semibold group-hover:text-primary transition-colors">
-                          {prop.name}
-                        </h4>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {prop.address}
-                        </p>
-                        <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Building2 className="h-3 w-3" /> {prop.type}
-                          </span>
-                        </div>
-                      </div>
+        <div className="md:col-span-2">
+          <Tabs defaultValue="properties">
+            <TabsList>
+              <TabsTrigger value="properties">
+                {t('owners.linked_properties')}
+              </TabsTrigger>
+              <TabsTrigger value="financial">Extrato Financeiro</TabsTrigger>
+            </TabsList>
+            <TabsContent value="properties" className="mt-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('owners.linked_properties')}</CardTitle>
+                  <CardDescription>{t('owners.linked_desc')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {ownerProperties.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      {t('owners.no_properties')}
                     </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {ownerProperties.map((prop) => (
+                        <Link
+                          key={prop.id}
+                          to={`/properties/${prop.id}`}
+                          className="block group"
+                        >
+                          <div className="border rounded-lg overflow-hidden hover:shadow-md transition-all bg-card">
+                            <div className="relative h-32">
+                              <img
+                                src={prop.image}
+                                alt={prop.name}
+                                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                              />
+                              <Badge
+                                className={`absolute top-2 right-2`}
+                                variant="secondary"
+                              >
+                                {t(`common.${prop.status}`)}
+                              </Badge>
+                            </div>
+                            <div className="p-4">
+                              <h4 className="font-semibold group-hover:text-primary transition-colors">
+                                {prop.name}
+                              </h4>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {prop.address}
+                              </p>
+                              <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                  <Building2 className="h-3 w-3" /> {prop.type}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="financial" className="mt-4">
+              <OwnerStatement
+                ownerId={owner.id}
+                properties={properties}
+                ledgerEntries={ledgerEntries}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   )
