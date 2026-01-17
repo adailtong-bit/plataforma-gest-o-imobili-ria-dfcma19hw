@@ -28,6 +28,7 @@ import {
   Globe,
   TrendingUp,
   DollarSign,
+  Loader2,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -41,7 +42,7 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useTaskStore from '@/stores/useTaskStore'
 import useFinancialStore from '@/stores/useFinancialStore'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
@@ -86,6 +87,8 @@ export default function PropertyDetails() {
   const [hoaLang, setHoaLang] = useState<'pt' | 'en' | 'es'>('pt')
   const [editMode, setEditMode] = useState(false)
   const [localProperty, setLocalProperty] = useState<any>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const property = properties.find((p) => p.id === id)
 
@@ -152,15 +155,58 @@ export default function PropertyDetails() {
     })
   }
 
-  const handleUploadImage = () => {
-    const newImage = `https://img.usecurling.com/p/400/300?q=interior${Math.random()}`
-    const updatedGallery = [...(localProperty.gallery || []), newImage]
-    setLocalProperty({ ...localProperty, gallery: updatedGallery })
-    updateProperty({ ...property, gallery: updatedGallery })
-    toast({
-      title: 'Imagem Adicionada',
-      description: 'A imagem foi adicionada à galeria.',
-    })
+  const handleFileSelect = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate format
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      toast({
+        title: t('common.error'),
+        description: t('properties.invalid_format'),
+        variant: 'destructive',
+      })
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+      return
+    }
+
+    setIsUploading(true)
+
+    // Simulate upload delay
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
+    try {
+      const imageUrl = URL.createObjectURL(file)
+      const updatedGallery = [...(localProperty.gallery || []), imageUrl]
+
+      const updatedProperty = { ...localProperty, gallery: updatedGallery }
+      setLocalProperty(updatedProperty)
+      updateProperty(updatedProperty)
+
+      toast({
+        title: t('properties.image_added'),
+        description: t('properties.upload_success'),
+      })
+    } catch (error) {
+      toast({
+        title: t('common.error'),
+        description: t('properties.upload_error'),
+        variant: 'destructive',
+      })
+    } finally {
+      setIsUploading(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
   }
 
   const handleUploadDoc = () => {
@@ -196,6 +242,13 @@ export default function PropertyDetails() {
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-full overflow-hidden">
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/jpeg,image/png,image/webp"
+        onChange={handleFileChange}
+      />
       <div className="flex flex-col gap-4">
         <Link to="/properties">
           <Button
@@ -573,9 +626,22 @@ export default function PropertyDetails() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>{t('properties.gallery')}</CardTitle>
-                  <Button size="sm" onClick={handleUploadImage}>
-                    <Camera className="mr-2 h-4 w-4" />{' '}
-                    {t('properties.add_photos')}
+                  <Button
+                    size="sm"
+                    onClick={handleFileSelect}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+                        {t('properties.uploading')}
+                      </>
+                    ) : (
+                      <>
+                        <Camera className="mr-2 h-4 w-4" />{' '}
+                        {t('properties.add_photos')}
+                      </>
+                    )}
                   </Button>
                 </CardHeader>
                 <CardContent>
