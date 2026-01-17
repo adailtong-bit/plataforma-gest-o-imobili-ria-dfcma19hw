@@ -8,8 +8,12 @@ const usePartnerStore = () => {
 
   return {
     partners: context.partners,
+    genericServiceRates: context.genericServiceRates,
     addPartner: context.addPartner,
     updatePartner: context.updatePartner,
+    addGenericServiceRate: context.addGenericServiceRate,
+    updateGenericServiceRate: context.updateGenericServiceRate,
+    deleteGenericServiceRate: context.deleteGenericServiceRate,
   }
 }
 

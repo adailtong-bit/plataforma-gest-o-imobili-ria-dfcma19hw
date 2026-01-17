@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, Save, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Save, Trash2, Users, Building } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import usePartnerStore from '@/stores/usePartnerStore'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -21,6 +21,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { format } from 'date-fns'
+import { PartnerStaff } from '@/components/partners/PartnerStaff'
+import { PartnerProperties } from '@/components/partners/PartnerProperties'
 
 export default function PartnerDetails() {
   const { id } = useParams()
@@ -45,8 +47,16 @@ export default function PartnerDetails() {
   if (!partner || !formData) return <div>Not Found</div>
 
   const handleSave = () => {
-    updatePartner(formData)
-    toast({ title: t('common.save'), description: 'Partner updated' })
+    if (formData) {
+      updatePartner(formData)
+      toast({ title: t('common.save'), description: 'Partner updated' })
+    }
+  }
+
+  const handleUpdate = (updatedPartner: Partner) => {
+    setFormData(updatedPartner)
+    // Auto save or just update local state? Let's update global too
+    updatePartner(updatedPartner)
   }
 
   const handleDelete = () => {
@@ -62,6 +72,7 @@ export default function PartnerDetails() {
         serviceName: newRate.serviceName,
         price: Number(newRate.price),
         validFrom: newRate.validFrom!,
+        type: 'specific',
       }
       setFormData({
         ...formData,
@@ -122,6 +133,12 @@ export default function PartnerDetails() {
       <Tabs defaultValue="overview">
         <TabsList>
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
+          <TabsTrigger value="staff">
+            <Users className="h-4 w-4 mr-2" /> Equipe
+          </TabsTrigger>
+          <TabsTrigger value="properties">
+            <Building className="h-4 w-4 mr-2" /> Propriedades
+          </TabsTrigger>
           <TabsTrigger value="rates">{t('partners.service_rates')}</TabsTrigger>
           <TabsTrigger value="financial">
             {t('partners.financial_report')}
@@ -254,6 +271,22 @@ export default function PartnerDetails() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="staff">
+          <PartnerStaff
+            partner={formData}
+            onUpdate={handleUpdate}
+            canEdit={true}
+          />
+        </TabsContent>
+
+        <TabsContent value="properties">
+          <PartnerProperties
+            partner={formData}
+            onUpdate={handleUpdate}
+            canEdit={true}
+          />
         </TabsContent>
 
         <TabsContent value="rates">

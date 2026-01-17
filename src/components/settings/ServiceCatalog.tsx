@@ -40,29 +40,48 @@ import { format } from 'date-fns'
 import { ServiceRate } from '@/lib/types'
 
 export function ServiceCatalog() {
-  const { partners, updatePartner } = usePartnerStore()
+  const {
+    partners,
+    updatePartner,
+    genericServiceRates,
+    addGenericServiceRate,
+    updateGenericServiceRate,
+    deleteGenericServiceRate,
+  } = usePartnerStore()
   const { toast } = useToast()
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
-  const [selectedPartnerId, setSelectedPartnerId] = useState<string>('')
+  const [selectedPartnerId, setSelectedPartnerId] = useState<string>('generic') // 'generic' or partner ID
 
   const [currentRate, setCurrentRate] = useState<Partial<ServiceRate>>({
     serviceName: '',
     price: 0,
     validFrom: format(new Date(), 'yyyy-MM-dd'),
     validTo: '',
+    type: 'generic',
   })
 
-  // Flatten all service rates
-  const allRates = partners.flatMap((partner) =>
+  // Flatten all service rates including generic
+  const partnerRates = partners.flatMap((partner) =>
     (partner.serviceRates || []).map((rate) => ({
       ...rate,
       partnerName: partner.name,
       partnerId: partner.id,
       partnerType: partner.type,
+      isGeneric: false,
     })),
   )
+
+  const genericRatesFormatted = genericServiceRates.map((rate) => ({
+    ...rate,
+    partnerName: 'Genérico (Todos)',
+    partnerId: 'generic',
+    partnerType: 'System',
+    isGeneric: true,
+  }))
+
+  const allRates = [...genericRatesFormatted, ...partnerRates]
 
   const filteredRates = allRates.filter(
     (rate) =>
@@ -71,7 +90,7 @@ export function ServiceCatalog() {
   )
 
   const handleSave = () => {
-    if (!selectedPartnerId || !currentRate.serviceName || !currentRate.price) {
+    if (!currentRate.serviceName || !currentRate.price) {
       toast({
         title: 'Erro',
         description: 'Preencha todos os campos obrigatórios.',
@@ -80,26 +99,44 @@ export function ServiceCatalog() {
       return
     }
 
-    const partner = partners.find((p) => p.id === selectedPartnerId)
-    if (!partner) return
-
-    let updatedRates = partner.serviceRates ? [...partner.serviceRates] : []
-
-    if (editMode && currentRate.id) {
-      updatedRates = updatedRates.map((r) =>
-        r.id === currentRate.id ? (currentRate as ServiceRate) : r,
-      )
-    } else {
-      updatedRates.push({
-        id: `rate-${Date.now()}`,
+    if (selectedPartnerId === 'generic') {
+      const rateData: ServiceRate = {
+        id: currentRate.id || `gen-rate-${Date.now()}`,
         serviceName: currentRate.serviceName,
         price: Number(currentRate.price),
         validFrom: currentRate.validFrom || new Date().toISOString(),
         validTo: currentRate.validTo,
-      } as ServiceRate)
-    }
+        type: 'generic',
+      }
 
-    updatePartner({ ...partner, serviceRates: updatedRates })
+      if (editMode && currentRate.id) {
+        updateGenericServiceRate(rateData)
+      } else {
+        addGenericServiceRate(rateData)
+      }
+    } else {
+      const partner = partners.find((p) => p.id === selectedPartnerId)
+      if (!partner) return
+
+      let updatedRates = partner.serviceRates ? [...partner.serviceRates] : []
+
+      if (editMode && currentRate.id) {
+        updatedRates = updatedRates.map((r) =>
+          r.id === currentRate.id ? (currentRate as ServiceRate) : r,
+        )
+      } else {
+        updatedRates.push({
+          id: `rate-${Date.now()}`,
+          serviceName: currentRate.serviceName,
+          price: Number(currentRate.price),
+          validFrom: currentRate.validFrom || new Date().toISOString(),
+          validTo: currentRate.validTo,
+          type: 'specific',
+        } as ServiceRate)
+      }
+
+      updatePartner({ ...partner, serviceRates: updatedRates })
+    }
 
     toast({
       title: 'Sucesso',
@@ -114,13 +151,17 @@ export function ServiceCatalog() {
 
   const handleDelete = (partnerId: string, rateId: string) => {
     if (confirm('Tem certeza que deseja excluir este serviço?')) {
-      const partner = partners.find((p) => p.id === partnerId)
-      if (!partner) return
+      if (partnerId === 'generic') {
+        deleteGenericServiceRate(rateId)
+      } else {
+        const partner = partners.find((p) => p.id === partnerId)
+        if (!partner) return
 
-      const updatedRates = (partner.serviceRates || []).filter(
-        (r) => r.id !== rateId,
-      )
-      updatePartner({ ...partner, serviceRates: updatedRates })
+        const updatedRates = (partner.serviceRates || []).filter(
+          (r) => r.id !== rateId,
+        )
+        updatePartner({ ...partner, serviceRates: updatedRates })
+      }
 
       toast({
         title: 'Excluído',
@@ -144,17 +185,19 @@ export function ServiceCatalog() {
       price: rate.price,
       validFrom: rate.validFrom,
       validTo: rate.validTo || '',
+      type: rate.type,
     })
     setOpen(true)
   }
 
   const resetForm = () => {
-    setSelectedPartnerId('')
+    setSelectedPartnerId('generic')
     setCurrentRate({
       serviceName: '',
       price: 0,
       validFrom: format(new Date(), 'yyyy-MM-dd'),
       validTo: '',
+      type: 'generic',
     })
   }
 
@@ -182,16 +225,19 @@ export function ServiceCatalog() {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label>Parceiro / Fornecedor</Label>
+                  <Label>Tipo de Precificação</Label>
                   <Select
                     value={selectedPartnerId}
                     onValueChange={setSelectedPartnerId}
                     disabled={editMode}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o parceiro" />
+                      <SelectValue placeholder="Selecione o tipo" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="generic">
+                        Genérico (Todos os Parceiros)
+                      </SelectItem>
                       {partners.map((p) => (
                         <SelectItem key={p.id} value={p.id}>
                           {p.name} ({p.type})
@@ -317,7 +363,13 @@ export function ServiceCatalog() {
                     <TableCell className="font-medium">
                       {rate.serviceName}
                     </TableCell>
-                    <TableCell>{rate.partnerName}</TableCell>
+                    <TableCell>
+                      {rate.isGeneric ? (
+                        <Badge variant="secondary">Genérico</Badge>
+                      ) : (
+                        rate.partnerName
+                      )}
+                    </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="capitalize">
                         {rate.partnerType}

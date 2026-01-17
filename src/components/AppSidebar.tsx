@@ -132,7 +132,8 @@ export function AppSidebar() {
       <SidebarContent>
         {/* Special Portal Links for specific roles */}
         {(currentUser.role === 'tenant' ||
-          currentUser.role === 'property_owner') && (
+          currentUser.role === 'property_owner' ||
+          currentUser.role === 'partner') && (
           <SidebarGroup>
             <SidebarGroupLabel>Portal</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -159,6 +160,19 @@ export function AppSidebar() {
                       <Link to="/portal/owner">
                         <LayoutDashboard />
                         <span>Portal Proprietário</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+                {currentUser.role === 'partner' && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive('/portal/partner')}
+                    >
+                      <Link to="/portal/partner">
+                        <LayoutDashboard />
+                        <span>Portal Parceiro</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

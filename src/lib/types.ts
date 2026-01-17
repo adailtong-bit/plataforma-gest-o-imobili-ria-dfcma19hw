@@ -202,6 +202,20 @@ export interface ServiceRate {
   price: number
   validFrom: string
   validTo?: string
+  type?: 'generic' | 'specific' // Optional flag, implied by location usually
+}
+
+export interface PartnerEmployee {
+  id: string
+  name: string
+  role: string
+  email?: string
+  phone?: string
+  status: 'active' | 'inactive'
+  schedule?: {
+    date: string // YYYY-MM-DD
+    slots: string[] // ["09:00", "14:00"]
+  }[]
 }
 
 export interface Partner {
@@ -223,6 +237,8 @@ export interface Partner {
     accountNumber: string
   }
   serviceRates?: ServiceRate[]
+  employees?: PartnerEmployee[]
+  linkedPropertyIds?: string[]
 }
 
 export interface Evidence {
@@ -249,6 +265,7 @@ export interface Task {
   type: 'cleaning' | 'maintenance' | 'inspection'
   assignee: string
   assigneeId?: string
+  partnerEmployeeId?: string // Assigned internal staff
   date: string
   priority: 'low' | 'medium' | 'high' | 'critical'
   images?: string[]

@@ -18,6 +18,7 @@ import {
   BankStatement,
   LedgerEntry,
   AuditLog,
+  ServiceRate,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -35,6 +36,7 @@ import {
   mockBankStatements,
   ledgerEntries as initialLedgerEntries,
   auditLogs as initialAuditLogs,
+  genericServiceRates as initialGenericRates,
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
@@ -44,7 +46,7 @@ import {
   addMonths,
   addYears,
   eachMonthOfInterval,
-  startOfMonth,
+  format,
 } from 'date-fns'
 
 interface AppContextType {
@@ -65,6 +67,7 @@ interface AppContextType {
   bankStatements: BankStatement[]
   ledgerEntries: LedgerEntry[]
   auditLogs: AuditLog[]
+  genericServiceRates: ServiceRate[]
   language: Language
   setLanguage: (lang: Language) => void
   t: (key: string, params?: Record<string, string>) => string
@@ -75,6 +78,7 @@ interface AppContextType {
   updateCondominium: (condo: Condominium) => void
   deleteCondominium: (condoId: string) => void
   updateTaskStatus: (taskId: string, status: Task['status']) => void
+  updateTask: (task: Task) => void
   addTask: (task: Task) => void
   addInvoice: (invoice: Invoice) => void
   markPaymentAs: (paymentId: string, status: Payment['status']) => void
@@ -99,6 +103,9 @@ interface AppContextType {
   updateLedgerEntry: (entry: LedgerEntry) => void
   deleteLedgerEntry: (entryId: string) => void
   addAuditLog: (log: Omit<AuditLog, 'id' | 'timestamp'>) => void
+  addGenericServiceRate: (rate: ServiceRate) => void
+  updateGenericServiceRate: (rate: ServiceRate) => void
+  deleteGenericServiceRate: (rateId: string) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -128,6 +135,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [ledgerEntries, setLedgerEntries] =
     useState<LedgerEntry[]>(initialLedgerEntries)
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(initialAuditLogs)
+  const [genericServiceRates, setGenericServiceRates] =
+    useState<ServiceRate[]>(initialGenericRates)
 
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app_language')
@@ -200,9 +209,192 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  // Filter messages for current user
   const visibleMessages = allMessages.filter(
-    (m) => m.ownerId === currentUser.id,
+    (m) =>
+      m.ownerId === currentUser.id ||
+      (m.contactId === currentUser.id && m.ownerId !== currentUser.id),
   )
+
+  const sendMessage = (
+    contactId: string,
+    text: string,
+    attachments: string[] = [],
+  ) => {
+    const timestamp = new Date().toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+
+    const newMessageId = Date.now().toString()
+
+    setAllMessages((prev) => {
+      // Logic for sender
+      const senderThread = prev.find(
+        (m) => m.ownerId === currentUser.id && m.contactId === contactId,
+      )
+      let newPrev = [...prev]
+
+      if (senderThread) {
+        newPrev = newPrev.map((m) =>
+          m.id === senderThread.id
+            ? {
+                ...m,
+                lastMessage: text || (attachments.length > 0 ? '📎 Anexo' : ''),
+                time: 'Agora',
+                history: [
+                  ...m.history,
+                  {
+                    id: newMessageId,
+                    text,
+                    sender: 'me',
+                    timestamp,
+                    attachments,
+                  },
+                ],
+              }
+            : m,
+        )
+      } else {
+        const contact = allUsers.find((u) => u.id === contactId)
+        if (contact) {
+          newPrev.push({
+            id: `${currentUser.id}_${contactId}_${Date.now()}`,
+            ownerId: currentUser.id,
+            contact: contact.name,
+            contactId: contact.id,
+            type: contact.role,
+            lastMessage: text,
+            time: 'Agora',
+            unread: 0,
+            avatar: contact.avatar || '',
+            history: [
+              {
+                id: newMessageId,
+                text,
+                sender: 'me',
+                timestamp,
+                attachments,
+              },
+            ],
+          })
+        }
+      }
+
+      // Logic for recipient (simulating backend)
+      const recipientThread = prev.find(
+        (m) => m.ownerId === contactId && m.contactId === currentUser.id,
+      )
+
+      if (recipientThread) {
+        newPrev = newPrev.map((m) =>
+          m.id === recipientThread.id
+            ? {
+                ...m,
+                lastMessage: text || (attachments.length > 0 ? '📎 Anexo' : ''),
+                time: 'Agora',
+                unread: m.unread + 1,
+                history: [
+                  ...m.history,
+                  {
+                    id: newMessageId,
+                    text,
+                    sender: 'other',
+                    timestamp,
+                    attachments,
+                  },
+                ],
+              }
+            : m,
+        )
+      } else {
+        newPrev.push({
+          id: `${contactId}_${currentUser.id}_${Date.now()}`,
+          ownerId: contactId,
+          contact: currentUser.name,
+          contactId: currentUser.id,
+          type: currentUser.role,
+          lastMessage: text,
+          time: 'Agora',
+          unread: 1,
+          avatar: currentUser.avatar || '',
+          history: [
+            {
+              id: newMessageId,
+              text,
+              sender: 'other',
+              timestamp,
+              attachments,
+            },
+          ],
+        })
+      }
+
+      return newPrev
+    })
+  }
+
+  // Helper to send automated system message
+  const sendSystemMessage = (toUserId: string, text: string) => {
+    // We act as 'admin_platform' for system messages
+    const systemId = 'admin_platform'
+    const timestamp = new Date().toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+    const newMessageId = `sys-${Date.now()}`
+
+    setAllMessages((prev) => {
+      const existingThread = prev.find(
+        (m) => m.ownerId === toUserId && m.contactId === systemId,
+      )
+      if (existingThread) {
+        return prev.map((m) =>
+          m.id === existingThread.id
+            ? {
+                ...m,
+                lastMessage: text,
+                time: 'Agora',
+                unread: m.unread + 1,
+                history: [
+                  ...m.history,
+                  {
+                    id: newMessageId,
+                    text,
+                    sender: 'other',
+                    timestamp,
+                  },
+                ],
+              }
+            : m,
+        )
+      } else {
+        return [
+          ...prev,
+          {
+            id: `${toUserId}_${systemId}_${Date.now()}`,
+            ownerId: toUserId,
+            contact: 'System Admin',
+            contactId: systemId,
+            type: 'platform_owner',
+            lastMessage: text,
+            time: 'Agora',
+            unread: 1,
+            avatar:
+              'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=99',
+            history: [
+              {
+                id: newMessageId,
+                text,
+                sender: 'other',
+                timestamp,
+              },
+            ],
+          },
+        ]
+      }
+    })
+  }
 
   const addProperty = (property: Property) => {
     setProperties([...properties, property])
@@ -325,6 +517,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  const updateTask = (task: Task) => {
+    setTasks((prev) => prev.map((t) => (t.id === task.id ? task : t)))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Task',
+      entityId: task.id,
+      details: `Updated task: ${task.title}`,
+    })
+  }
+
   const addTask = (task: Task) => {
     setTasks((prev) => [...prev, task])
     addAuditLog({
@@ -335,6 +539,31 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       entityId: task.id,
       details: `Created task: ${task.title}`,
     })
+
+    // Automated Task Notifications for Partners
+    const notifyPartner = (partnerId: string) => {
+      const partner = partners.find((p) => p.id === partnerId)
+      if (partner) {
+        const message = `Nova tarefa atribuída: ${task.title} em ${task.propertyName}. Data: ${format(new Date(task.date), 'dd/MM/yyyy')}. Prioridade: ${task.priority}.`
+        sendSystemMessage(partnerId, message)
+      }
+    }
+
+    if (task.assigneeId) {
+      notifyPartner(task.assigneeId)
+    } else {
+      // Check linked properties if no assignee set yet
+      const linkedPartner = partners.find((p) =>
+        p.linkedPropertyIds?.includes(task.propertyId),
+      )
+      if (
+        linkedPartner &&
+        (task.type === 'cleaning' || task.type === 'maintenance') && // Filter by type if needed
+        linkedPartner.type === task.type // Simple matching
+      ) {
+        notifyPartner(linkedPartner.id)
+      }
+    }
   }
 
   const addCondominium = (condo: Condominium) => {
@@ -428,122 +657,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       entity: 'Payment',
       entityId: paymentId,
       details: `Updated payment status to: ${status}`,
-    })
-  }
-
-  const sendMessage = (
-    contactId: string,
-    text: string,
-    attachments: string[] = [],
-  ) => {
-    const timestamp = new Date().toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-
-    const newMessageId = Date.now().toString()
-
-    setAllMessages((prev) => {
-      const senderThread = prev.find(
-        (m) => m.ownerId === currentUser.id && m.contactId === contactId,
-      )
-      let newPrev = [...prev]
-
-      if (senderThread) {
-        newPrev = newPrev.map((m) =>
-          m.id === senderThread.id
-            ? {
-                ...m,
-                lastMessage: text || (attachments.length > 0 ? '📎 Anexo' : ''),
-                time: 'Agora',
-                history: [
-                  ...m.history,
-                  {
-                    id: newMessageId,
-                    text,
-                    sender: 'me',
-                    timestamp,
-                    attachments,
-                  },
-                ],
-              }
-            : m,
-        )
-      } else {
-        const contact = allUsers.find((u) => u.id === contactId)
-        if (contact) {
-          newPrev.push({
-            id: `${currentUser.id}_${contactId}_${Date.now()}`,
-            ownerId: currentUser.id,
-            contact: contact.name,
-            contactId: contact.id,
-            type: contact.role,
-            lastMessage: text,
-            time: 'Agora',
-            unread: 0,
-            avatar: contact.avatar || '',
-            history: [
-              {
-                id: newMessageId,
-                text,
-                sender: 'me',
-                timestamp,
-                attachments,
-              },
-            ],
-          })
-        }
-      }
-
-      const recipientThread = prev.find(
-        (m) => m.ownerId === contactId && m.contactId === currentUser.id,
-      )
-
-      if (recipientThread) {
-        newPrev = newPrev.map((m) =>
-          m.id === recipientThread.id
-            ? {
-                ...m,
-                lastMessage: text || (attachments.length > 0 ? '📎 Anexo' : ''),
-                time: 'Agora',
-                unread: m.unread + 1,
-                history: [
-                  ...m.history,
-                  {
-                    id: newMessageId,
-                    text,
-                    sender: 'other',
-                    timestamp,
-                    attachments,
-                  },
-                ],
-              }
-            : m,
-        )
-      } else {
-        newPrev.push({
-          id: `${contactId}_${currentUser.id}_${Date.now()}`,
-          ownerId: contactId,
-          contact: currentUser.name,
-          contactId: currentUser.id,
-          type: currentUser.role,
-          lastMessage: text,
-          time: 'Agora',
-          unread: 1,
-          avatar: currentUser.avatar || '',
-          history: [
-            {
-              id: newMessageId,
-              text,
-              sender: 'other',
-              timestamp,
-              attachments,
-            },
-          ],
-        })
-      }
-
-      return newPrev
     })
   }
 
@@ -775,6 +888,41 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  const addGenericServiceRate = (rate: ServiceRate) => {
+    setGenericServiceRates([...genericServiceRates, rate])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'ServiceRate',
+      details: `Added generic rate: ${rate.serviceName}`,
+    })
+  }
+
+  const updateGenericServiceRate = (rate: ServiceRate) => {
+    setGenericServiceRates(
+      genericServiceRates.map((r) => (r.id === rate.id ? rate : r)),
+    )
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'ServiceRate',
+      details: `Updated generic rate: ${rate.serviceName}`,
+    })
+  }
+
+  const deleteGenericServiceRate = (rateId: string) => {
+    setGenericServiceRates(genericServiceRates.filter((r) => r.id !== rateId))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'ServiceRate',
+      details: 'Deleted generic rate',
+    })
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -795,6 +943,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         bankStatements,
         ledgerEntries,
         auditLogs,
+        genericServiceRates,
         language,
         setLanguage,
         t,
@@ -805,6 +954,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateCondominium,
         deleteCondominium,
         updateTaskStatus,
+        updateTask,
         addTask,
         addInvoice,
         markPaymentAs,
@@ -829,6 +979,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateLedgerEntry,
         deleteLedgerEntry,
         addAuditLog,
+        addGenericServiceRate,
+        updateGenericServiceRate,
+        deleteGenericServiceRate,
       }}
     >
       {children}

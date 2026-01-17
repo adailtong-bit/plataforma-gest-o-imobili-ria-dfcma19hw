@@ -1,4 +1,4 @@
-import { subDays, subMonths } from 'date-fns'
+import { subDays, subMonths, addDays } from 'date-fns'
 import {
   Property,
   Task,
@@ -15,6 +15,7 @@ import {
   BankStatement,
   LedgerEntry,
   AuditLog,
+  ServiceRate,
 } from '@/lib/types'
 
 // System Users (Staff/Admins)
@@ -246,6 +247,28 @@ export const partners: Partner[] = [
       routingNumber: '111000222',
       accountNumber: '999888777',
     },
+    linkedPropertyIds: ['prop1', 'prop2'],
+    employees: [
+      {
+        id: 'emp1',
+        name: 'Ana Helper',
+        role: 'Staff',
+        status: 'active',
+        email: 'ana@sparkle.com',
+        schedule: [
+          {
+            date: addDays(new Date(), 1).toISOString().split('T')[0],
+            slots: ['09:00', '14:00'],
+          },
+        ],
+      },
+      {
+        id: 'emp2',
+        name: 'Carlos Cleaner',
+        role: 'Supervisor',
+        status: 'active',
+      },
+    ],
     serviceRates: [
       {
         id: 'rate1',
@@ -428,5 +451,29 @@ export const auditLogs: AuditLog[] = [
     entity: 'Property',
     entityId: 'prop1',
     details: 'Updated property description',
+  },
+]
+
+export const genericServiceRates: ServiceRate[] = [
+  {
+    id: 'gen1',
+    serviceName: 'Limpeza Padrão (2 Quartos)',
+    price: 120.0,
+    validFrom: '2024-01-01',
+    type: 'generic',
+  },
+  {
+    id: 'gen2',
+    serviceName: 'Limpeza Padrão (3 Quartos)',
+    price: 150.0,
+    validFrom: '2024-01-01',
+    type: 'generic',
+  },
+  {
+    id: 'gen3',
+    serviceName: 'Manutenção Hora Técnica',
+    price: 85.0,
+    validFrom: '2024-01-01',
+    type: 'generic',
   },
 ]
