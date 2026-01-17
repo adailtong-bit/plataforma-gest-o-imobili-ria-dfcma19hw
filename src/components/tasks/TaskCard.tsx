@@ -128,7 +128,7 @@ export function TaskCard({
             ? 'Maintenance'
             : 'Other',
       amount: task.price,
-      description: `${t(`tasks.${task.type}` || 'Serviço')} - ${task.title}`,
+      description: `${t(`tasks.${task.type}`)} - ${task.title}`,
       referenceId: task.id,
       status: 'pending',
     })
