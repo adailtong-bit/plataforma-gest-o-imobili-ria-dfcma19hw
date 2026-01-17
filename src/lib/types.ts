@@ -26,11 +26,43 @@ export interface Property {
   community: string
   status: 'occupied' | 'vacant' | 'maintenance'
   image: string
+  gallery?: string[]
   bedrooms: number
   bathrooms: number
   guests: number
-  accessCode: string
-  wifi: string
+
+  // Access
+  wifiSsid?: string
+  wifiPassword?: string
+  accessCodeBuilding?: string
+  accessCodeUnit?: string
+
+  // Multilingual Content
+  description?: {
+    pt: string
+    en: string
+    es: string
+  }
+  hoaRules?: {
+    pt: string
+    en: string
+    es: string
+  }
+
+  // Documents
+  documents?: {
+    id: string
+    name: string
+    url: string
+    date: string
+  }[]
+
+  // Contract Alerts
+  contractConfig?: {
+    expirationAlertDays: number
+    renewalAlertDate?: string
+  }
+
   ownerId: string
   agentId?: string // Associated Realtor/Agent
 }

@@ -9,6 +9,7 @@ const usePropertyStore = () => {
   return {
     properties: context.properties,
     addProperty: context.addProperty,
+    updateProperty: context.updateProperty,
   }
 }
 

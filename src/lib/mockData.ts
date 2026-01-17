@@ -90,11 +90,41 @@ export const properties: Property[] = [
     community: 'Sunny Isles HOA',
     status: 'occupied',
     image: 'https://img.usecurling.com/p/400/300?q=modern%20villa',
+    gallery: [
+      'https://img.usecurling.com/p/400/300?q=modern%20villa',
+      'https://img.usecurling.com/p/400/300?q=living%20room',
+      'https://img.usecurling.com/p/400/300?q=kitchen%20modern',
+      'https://img.usecurling.com/p/400/300?q=pool',
+    ],
     bedrooms: 4,
     bathrooms: 3,
     guests: 8,
-    accessCode: '4921',
-    wifi: 'Sunshine_Guest / sun123',
+    wifiSsid: 'Sunshine_Guest',
+    wifiPassword: 'sun123',
+    accessCodeBuilding: '9988',
+    accessCodeUnit: '4921',
+    description: {
+      pt: 'Uma bela villa com piscina aquecida e sala de jogos. Perfeita para famílias.',
+      en: 'A beautiful villa with heated pool and game room. Perfect for families.',
+      es: 'Una hermosa villa con piscina climatizada y sala de juegos. Perfecta para familias.',
+    },
+    hoaRules: {
+      pt: 'Sem barulho após as 22h. Proibido estacionar na grama.',
+      en: 'No noise after 10 PM. No parking on the grass.',
+      es: 'Sin ruido después de las 22h. Prohibido estacionar en el césped.',
+    },
+    documents: [
+      {
+        id: 'd1',
+        name: 'Contrato de Gestão.pdf',
+        url: '#',
+        date: '2024-01-15',
+      },
+      { id: 'd2', name: 'Planta Baixa.pdf', url: '#', date: '2023-12-10' },
+    ],
+    contractConfig: {
+      expirationAlertDays: 30,
+    },
     ownerId: 'owner1',
     agentId: 'partner3',
   },
@@ -106,11 +136,24 @@ export const properties: Property[] = [
     community: 'Brickell Heights',
     status: 'vacant',
     image: 'https://img.usecurling.com/p/400/300?q=luxury%20apartment',
+    gallery: ['https://img.usecurling.com/p/400/300?q=luxury%20apartment'],
     bedrooms: 2,
     bathrooms: 2,
     guests: 4,
-    accessCode: '8812',
-    wifi: 'BH_Guest / brickell',
+    wifiSsid: 'BH_Guest',
+    wifiPassword: 'brickell',
+    accessCodeBuilding: '1234',
+    accessCodeUnit: '8812',
+    description: {
+      pt: 'Condomínio de luxo no coração de Miami. Perto de tudo.',
+      en: 'Luxury condo in the heart of Miami. Close to everything.',
+      es: 'Condominio de lujo en el corazón de Miami. Cerca de todo.',
+    },
+    hoaRules: {
+      pt: 'Apenas residentes na piscina.',
+      en: 'Residents only at the pool.',
+      es: 'Solo residentes en la piscina.',
+    },
     ownerId: 'owner2',
     agentId: 'partner3',
   },
@@ -122,11 +165,23 @@ export const properties: Property[] = [
     community: 'Lakefront HOA',
     status: 'maintenance',
     image: 'https://img.usecurling.com/p/400/300?q=lake%20house',
+    gallery: ['https://img.usecurling.com/p/400/300?q=lake%20house'],
     bedrooms: 5,
     bathrooms: 4,
     guests: 12,
-    accessCode: 'Locker: 1234',
-    wifi: 'LakeView / fish123',
+    wifiSsid: 'LakeView',
+    wifiPassword: 'fish123',
+    accessCodeUnit: '5566',
+    description: {
+      pt: 'Retiro tranquilo à beira do lago.',
+      en: 'Peaceful lakeside retreat.',
+      es: 'Retiro tranquilo junto al lago.',
+    },
+    hoaRules: {
+      pt: 'Não alimentar os jacarés.',
+      en: 'Do not feed the alligators.',
+      es: 'No alimentar a los caimanes.',
+    },
     ownerId: 'owner3',
   },
   {
@@ -137,11 +192,23 @@ export const properties: Property[] = [
     community: 'Mountain Views',
     status: 'occupied',
     image: 'https://img.usecurling.com/p/400/300?q=cabin%20woods',
+    gallery: ['https://img.usecurling.com/p/400/300?q=cabin%20woods'],
     bedrooms: 3,
     bathrooms: 2,
     guests: 6,
-    accessCode: 'Key under mat',
-    wifi: 'CabinWifi / bear',
+    wifiSsid: 'CabinWifi',
+    wifiPassword: 'bear',
+    accessCodeUnit: 'KEY-BOX',
+    description: {
+      pt: 'Cabana aconchegante nas montanhas.',
+      en: 'Cozy cabin in the mountains.',
+      es: 'Cabaña acogedora en las montañas.',
+    },
+    hoaRules: {
+      pt: 'Proibido fogueiras.',
+      en: 'No open fires.',
+      es: 'Prohibido fogatas.',
+    },
     ownerId: 'owner4',
   },
 ]
@@ -154,6 +221,8 @@ export const tenants: Tenant[] = [
     phone: '+1 (555) 1111',
     propertyId: 'prop1',
     rentValue: 2500,
+    leaseStart: '2024-01-01',
+    leaseEnd: '2024-12-31',
     status: 'active',
     role: 'tenant',
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=10',
@@ -165,6 +234,8 @@ export const tenants: Tenant[] = [
     phone: '+1 (555) 2222',
     propertyId: 'prop4',
     rentValue: 1800,
+    leaseStart: '2024-03-01',
+    leaseEnd: '2024-09-30',
     status: 'active',
     role: 'tenant',
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=11',
@@ -409,8 +480,6 @@ export const messages: Message[] = [
   },
 ]
 
-// Mock Messages for 'owner1' (John Doe)
-// He can talk to 'plat_manager'
 export const owner1Messages: Message[] = [
   {
     id: 'conv_owner1_1',
@@ -439,8 +508,6 @@ export const owner1Messages: Message[] = [
   },
 ]
 
-// Mock Messages for 'partner1' (Maria)
-// She can talk to 'plat_manager'
 export const partner1Messages: Message[] = [
   {
     id: 'conv_part1_1',

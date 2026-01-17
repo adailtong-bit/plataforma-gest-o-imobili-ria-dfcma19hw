@@ -41,6 +41,7 @@ interface AppContextType {
   setLanguage: (lang: Language) => void
   t: (key: string, params?: Record<string, string>) => string
   addProperty: (property: Property) => void
+  updateProperty: (property: Property) => void
   updateTaskStatus: (taskId: string, status: Task['status']) => void
   addTask: (task: Task) => void
   addInvoice: (invoice: Invoice) => void
@@ -124,6 +125,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const addProperty = (property: Property) => {
     setProperties([...properties, property])
+  }
+
+  const updateProperty = (property: Property) => {
+    setProperties(properties.map((p) => (p.id === property.id ? property : p)))
   }
 
   const updateTaskStatus = (taskId: string, status: Task['status']) => {
@@ -288,6 +293,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setLanguage,
         t,
         addProperty,
+        updateProperty,
         updateTaskStatus,
         addTask,
         addInvoice,
