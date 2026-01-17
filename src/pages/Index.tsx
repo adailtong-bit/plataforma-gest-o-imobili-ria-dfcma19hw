@@ -42,7 +42,7 @@ export default function Index() {
       color: 'hsl(var(--chart-1))',
     },
     cleaning: {
-      label: t('common.cleaning'),
+      label: t('partners.cleaning'),
       color: 'hsl(var(--chart-2))',
     },
     taxes: {
@@ -54,6 +54,12 @@ export default function Index() {
       color: 'hsl(var(--chart-4))',
     },
   }
+
+  // Calculate total revenue from both invoices (if applicable) and payments
+  const totalRevenue = financials.revenue.reduce(
+    (acc, curr) => acc + curr.value,
+    0,
+  )
 
   return (
     <div className="flex flex-col gap-6">
@@ -74,7 +80,9 @@ export default function Index() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$24,000</div>
+            <div className="text-2xl font-bold">
+              ${totalRevenue.toLocaleString()}
+            </div>
             <p className="text-xs text-muted-foreground">
               +20.1% {t('dashboard.from_last_month')}
             </p>
@@ -137,7 +145,7 @@ export default function Index() {
             <ChartContainer
               config={{
                 revenue: {
-                  label: 'Receita', // Could translate chart keys too if needed
+                  label: 'Receita',
                   color: 'hsl(var(--primary))',
                 },
               }}

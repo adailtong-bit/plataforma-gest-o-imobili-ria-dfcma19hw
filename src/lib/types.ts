@@ -25,6 +25,7 @@ export interface Property {
   type: string
   community: string
   status: 'occupied' | 'vacant' | 'maintenance'
+  marketingStatus?: 'listed' | 'unlisted'
   image: string
   gallery?: string[]
   bedrooms: number
@@ -146,10 +147,31 @@ export interface Invoice {
   date: string
 }
 
+export interface Payment {
+  id: string
+  tenantId: string
+  tenantName: string
+  propertyId: string
+  amount: number
+  date: string
+  dueDate: string
+  status: 'paid' | 'pending' | 'overdue'
+  type: 'rent' | 'deposit' | 'fee'
+}
+
 export interface Financials {
   revenue: { month: string; value: number }[]
   expenses: { category: string; value: number; fill: string }[]
   invoices: Invoice[]
+  payments: Payment[]
+}
+
+export interface AutomationRule {
+  id: string
+  type: 'rent_reminder' | 'contract_expiry' | 'maintenance_update'
+  enabled: boolean
+  daysBefore: number
+  template: string
 }
 
 export interface Message {

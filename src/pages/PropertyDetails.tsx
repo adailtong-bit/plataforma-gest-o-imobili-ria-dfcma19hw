@@ -16,8 +16,6 @@ import {
   FileText,
   Share2,
   Camera,
-  User,
-  Briefcase,
   ExternalLink,
   MessageSquare,
   Building,
@@ -27,6 +25,9 @@ import {
   Upload,
   Clock,
   CheckCircle2,
+  Globe,
+  TrendingUp,
+  DollarSign,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -39,6 +40,7 @@ import useMessageStore from '@/stores/useMessageStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useTaskStore from '@/stores/useTaskStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 import { useState } from 'react'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
@@ -52,6 +54,19 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { format } from 'date-fns'
+import { Switch } from '@/components/ui/switch'
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart'
+import {
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  Bar,
+  ResponsiveContainer,
+} from 'recharts'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -60,6 +75,7 @@ export default function PropertyDetails() {
   const { partners } = usePartnerStore()
   const { tenants } = useTenantStore()
   const { tasks } = useTaskStore()
+  const { financials } = useFinancialStore()
   const { currentUser } = useAuthStore()
   const { startChat } = useMessageStore()
   const { t } = useLanguageStore()
@@ -97,6 +113,15 @@ export default function PropertyDetails() {
     : null
   const propertyManagerId = 'plat_manager'
   const propertyTasks = tasks.filter((task) => task.propertyId === property.id)
+  const propertyPayments = financials.payments.filter(
+    (p) => p.propertyId === property.id,
+  )
+
+  // Calculate mock revenue for this property (simple distribution for demo)
+  const propRevenue = financials.revenue.map((r) => ({
+    ...r,
+    value: r.value * 0.15, // assume this prop contributes 15%
+  }))
 
   const handleContactManager = () => {
     startChat(propertyManagerId)
@@ -109,6 +134,21 @@ export default function PropertyDetails() {
     toast({
       title: t('common.save'),
       description: 'Alterações salvas com sucesso.',
+    })
+  }
+
+  const handleToggleListing = (enabled: boolean) => {
+    const updated = {
+      ...property,
+      marketingStatus: enabled ? 'listed' : 'unlisted',
+    } as any
+    updateProperty(updated)
+    setLocalProperty(updated)
+    toast({
+      title: enabled ? t('properties.listed') : t('properties.unlisted'),
+      description: enabled
+        ? 'Propriedade visível publicamente.'
+        : 'Propriedade removida da listagem pública.',
     })
   }
 
@@ -149,7 +189,6 @@ export default function PropertyDetails() {
     toast({ title: 'Alertas Configurados' })
   }
 
-  // Display helpers
   const currentDesc =
     localProperty?.description?.[descLang] || property.description?.[descLang]
   const currentHoa =
@@ -219,6 +258,9 @@ export default function PropertyDetails() {
               <TabsTrigger value="access">
                 {t('properties.access_wifi')}
               </TabsTrigger>
+              <TabsTrigger value="performance">
+                {t('properties.performance')}
+              </TabsTrigger>
               <TabsTrigger value="gallery">
                 {t('properties.gallery')}
               </TabsTrigger>
@@ -231,8 +273,29 @@ export default function PropertyDetails() {
 
             <TabsContent value="overview" className="space-y-4">
               <Card>
-                <CardHeader>
-                  <CardTitle>{t('properties.details_card')}</CardTitle>
+                <CardHeader className="flex flex-row justify-between items-start">
+                  <div>
+                    <CardTitle>{t('properties.details_card')}</CardTitle>
+                  </div>
+                  <div className="flex items-center gap-2 p-2 bg-secondary/30 rounded-lg border">
+                    <Globe className="h-4 w-4 text-blue-600" />
+                    <div className="flex flex-col">
+                      <span className="text-xs font-semibold">
+                        {t('properties.public_listing')}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={property.marketingStatus === 'listed'}
+                          onCheckedChange={handleToggleListing}
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          {property.marketingStatus === 'listed'
+                            ? t('properties.listed')
+                            : t('properties.unlisted')}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -301,6 +364,81 @@ export default function PropertyDetails() {
                       </p>
                     )}
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="performance" className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      {t('properties.occupancy')}
+                    </CardTitle>
+                    <Building className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {activeTenant ? '100%' : '0%'}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {t('properties.occupancy_desc')}
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Total Revenue
+                    </CardTitle>
+                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      $
+                      {propRevenue
+                        .reduce((acc, curr) => acc + curr.value, 0)
+                        .toFixed(0)}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Year to date
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('dashboard.revenue_overview')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer
+                    config={{
+                      revenue: {
+                        label: 'Receita',
+                        color: 'hsl(var(--primary))',
+                      },
+                    }}
+                    className="h-[250px] w-full"
+                  >
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={propRevenue}>
+                        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                        <XAxis
+                          dataKey="month"
+                          tickLine={false}
+                          tickMargin={10}
+                          axisLine={false}
+                        />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Bar
+                          dataKey="value"
+                          fill="var(--color-revenue)"
+                          radius={[4, 4, 0, 0]}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
                 </CardContent>
               </Card>
             </TabsContent>

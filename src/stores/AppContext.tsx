@@ -11,6 +11,8 @@ import {
   Partner,
   User,
   UserRole,
+  Payment,
+  AutomationRule,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -23,6 +25,7 @@ import {
   owners as initialOwners,
   partners as initialPartners,
   systemUsers,
+  automationRules as initialAutomationRules,
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
@@ -35,6 +38,7 @@ interface AppContextType {
   tenants: Tenant[]
   owners: Owner[]
   partners: Partner[]
+  automationRules: AutomationRule[]
   currentUser: User | Owner | Partner | Tenant
   allUsers: (User | Owner | Partner | Tenant)[]
   language: Language
@@ -45,6 +49,7 @@ interface AppContextType {
   updateTaskStatus: (taskId: string, status: Task['status']) => void
   addTask: (task: Task) => void
   addInvoice: (invoice: Invoice) => void
+  markPaymentAs: (paymentId: string, status: Payment['status']) => void
   addTaskImage: (taskId: string, imageUrl: string) => void
   addTaskEvidence: (taskId: string, evidence: Evidence) => void
   sendMessage: (contactId: string, text: string, attachments?: string[]) => void
@@ -54,6 +59,7 @@ interface AppContextType {
   addPartner: (partner: Partner) => void
   setCurrentUser: (userId: string) => void
   startChat: (contactId: string) => void
+  updateAutomationRule: (rule: AutomationRule) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -65,6 +71,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [tenants, setTenants] = useState<Tenant[]>(initialTenants)
   const [owners, setOwners] = useState<Owner[]>(initialOwners)
   const [partners, setPartners] = useState<Partner[]>(initialPartners)
+  const [automationRules, setAutomationRules] = useState<AutomationRule[]>(
+    initialAutomationRules,
+  )
   const [allMessages, setAllMessages] = useState<Message[]>([
     ...initialMessages,
     ...owner1Messages,
@@ -165,6 +174,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setFinancials({
       ...financials,
       invoices: [invoice, ...financials.invoices],
+    })
+  }
+
+  const markPaymentAs = (paymentId: string, status: Payment['status']) => {
+    setFinancials({
+      ...financials,
+      payments: financials.payments.map((p) =>
+        p.id === paymentId ? { ...p, status } : p,
+      ),
     })
   }
 
@@ -277,6 +295,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setPartners([...partners, partner])
   }
 
+  const updateAutomationRule = (rule: AutomationRule) => {
+    setAutomationRules(
+      automationRules.map((r) => (r.id === rule.id ? rule : r)),
+    )
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -287,6 +311,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         tenants,
         owners,
         partners,
+        automationRules,
         currentUser,
         allUsers,
         language,
@@ -297,6 +322,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateTaskStatus,
         addTask,
         addInvoice,
+        markPaymentAs,
         addTaskImage,
         addTaskEvidence,
         sendMessage,
@@ -306,6 +332,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addPartner,
         setCurrentUser,
         startChat,
+        updateAutomationRule,
       }}
     >
       {children}

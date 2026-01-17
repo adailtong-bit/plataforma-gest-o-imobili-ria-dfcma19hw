@@ -8,6 +8,7 @@ import {
   Owner,
   Partner,
   User,
+  AutomationRule,
 } from '@/lib/types'
 
 // System Users (Staff/Admins)
@@ -89,6 +90,7 @@ export const properties: Property[] = [
     type: 'House',
     community: 'Sunny Isles HOA',
     status: 'occupied',
+    marketingStatus: 'listed',
     image: 'https://img.usecurling.com/p/400/300?q=modern%20villa',
     gallery: [
       'https://img.usecurling.com/p/400/300?q=modern%20villa',
@@ -135,6 +137,7 @@ export const properties: Property[] = [
     type: 'Condo',
     community: 'Brickell Heights',
     status: 'vacant',
+    marketingStatus: 'unlisted',
     image: 'https://img.usecurling.com/p/400/300?q=luxury%20apartment',
     gallery: ['https://img.usecurling.com/p/400/300?q=luxury%20apartment'],
     bedrooms: 2,
@@ -164,6 +167,7 @@ export const properties: Property[] = [
     type: 'House',
     community: 'Lakefront HOA',
     status: 'maintenance',
+    marketingStatus: 'listed',
     image: 'https://img.usecurling.com/p/400/300?q=lake%20house',
     gallery: ['https://img.usecurling.com/p/400/300?q=lake%20house'],
     bedrooms: 5,
@@ -191,6 +195,7 @@ export const properties: Property[] = [
     type: 'House',
     community: 'Mountain Views',
     status: 'occupied',
+    marketingStatus: 'listed',
     image: 'https://img.usecurling.com/p/400/300?q=cabin%20woods',
     gallery: ['https://img.usecurling.com/p/400/300?q=cabin%20woods'],
     bedrooms: 3,
@@ -424,7 +429,77 @@ export const financials: Financials = {
       date: '2024-05-12',
     },
   ],
+  payments: [
+    {
+      id: 'PAY-001',
+      tenantId: 'tenant1',
+      tenantName: 'Michael Scott',
+      propertyId: 'prop1',
+      amount: 2500.0,
+      date: '2024-05-01',
+      dueDate: '2024-05-01',
+      status: 'paid',
+      type: 'rent',
+    },
+    {
+      id: 'PAY-002',
+      tenantId: 'tenant2',
+      tenantName: 'Jim Halpert',
+      propertyId: 'prop4',
+      amount: 1800.0,
+      date: '2024-05-05',
+      dueDate: '2024-05-01',
+      status: 'paid',
+      type: 'rent',
+    },
+    {
+      id: 'PAY-003',
+      tenantId: 'tenant1',
+      tenantName: 'Michael Scott',
+      propertyId: 'prop1',
+      amount: 2500.0,
+      date: '',
+      dueDate: '2024-06-01',
+      status: 'pending',
+      type: 'rent',
+    },
+    {
+      id: 'PAY-004',
+      tenantId: 'tenant2',
+      tenantName: 'Jim Halpert',
+      propertyId: 'prop4',
+      amount: 1800.0,
+      date: '',
+      dueDate: '2024-06-01',
+      status: 'pending',
+      type: 'rent',
+    },
+  ],
 }
+
+export const automationRules: AutomationRule[] = [
+  {
+    id: 'rule1',
+    type: 'rent_reminder',
+    enabled: true,
+    daysBefore: 3,
+    template: 'Olá {tenant}, lembrete que seu aluguel vence em 3 dias.',
+  },
+  {
+    id: 'rule2',
+    type: 'contract_expiry',
+    enabled: true,
+    daysBefore: 30,
+    template: 'Seu contrato de aluguel expira em 30 dias. Entre em contato.',
+  },
+  {
+    id: 'rule3',
+    type: 'maintenance_update',
+    enabled: false,
+    daysBefore: 0,
+    template: 'Sua solicitação de manutenção foi atualizada.',
+  },
+]
 
 // Initial Messages for 'plat_manager' (Alice Manager)
 export const messages: Message[] = [

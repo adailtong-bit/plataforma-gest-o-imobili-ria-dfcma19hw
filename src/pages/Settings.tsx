@@ -13,9 +13,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useAutomationStore from '@/stores/useAutomationStore'
 
 export default function Settings() {
   const { t } = useLanguageStore()
+  const { automationRules, updateAutomationRule } = useAutomationStore()
 
   return (
     <div className="flex flex-col gap-6">
@@ -32,6 +34,7 @@ export default function Settings() {
           <TabsTrigger value="notifications">
             {t('common.notifications')}
           </TabsTrigger>
+          <TabsTrigger value="automation">{t('common.automation')}</TabsTrigger>
           <TabsTrigger value="team">{t('common.team')}</TabsTrigger>
         </TabsList>
 
@@ -116,6 +119,66 @@ export default function Settings() {
                   </p>
                 </div>
                 <Switch />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="automation">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('settings.automation_title')}</CardTitle>
+              <CardDescription>{t('settings.automation_desc')}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {automationRules.map((rule) => (
+                <div key={rule.id}>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="space-y-0.5">
+                      <Label className="text-base">
+                        {t(`settings.${rule.type}`)}
+                      </Label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Input
+                          type="number"
+                          value={rule.daysBefore}
+                          onChange={(e) =>
+                            updateAutomationRule({
+                              ...rule,
+                              daysBefore: parseInt(e.target.value),
+                            })
+                          }
+                          className="w-16 h-8 text-center"
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          {t('settings.days_before')}
+                        </span>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={rule.enabled}
+                      onCheckedChange={(checked) =>
+                        updateAutomationRule({ ...rule, enabled: checked })
+                      }
+                    />
+                  </div>
+                  <Input
+                    value={rule.template}
+                    onChange={(e) =>
+                      updateAutomationRule({
+                        ...rule,
+                        template: e.target.value,
+                      })
+                    }
+                    className="text-sm text-muted-foreground bg-muted/20"
+                  />
+                  <Separator className="mt-6" />
+                </div>
+              ))}
+              <div className="flex justify-end">
+                <Button className="bg-trust-blue">
+                  {t('settings.save_changes')}
+                </Button>
               </div>
             </CardContent>
           </Card>

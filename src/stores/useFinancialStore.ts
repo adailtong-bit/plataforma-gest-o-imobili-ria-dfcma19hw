@@ -9,6 +9,7 @@ const useFinancialStore = () => {
   return {
     financials: context.financials,
     addInvoice: context.addInvoice,
+    markPaymentAs: context.markPaymentAs,
   }
 }
 

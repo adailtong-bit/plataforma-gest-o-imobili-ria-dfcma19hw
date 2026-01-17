@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { Download, Filter, PlusCircle, Check, X } from 'lucide-react'
+import { Download, Filter, PlusCircle, Check, X, Printer } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -37,12 +37,19 @@ import { Label } from '@/components/ui/label'
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 export default function Financial() {
-  const { financials, addInvoice } = useFinancialStore()
+  const { financials, addInvoice, markPaymentAs } = useFinancialStore()
   const { toast } = useToast()
   const { t } = useLanguageStore()
   const [newInv, setNewInv] = useState({ desc: '', amount: '' })
+  const [paymentFilter, setPaymentFilter] = useState('all')
 
   const handleAddInvoice = () => {
     addInvoice({
@@ -58,6 +65,17 @@ export default function Financial() {
     })
     setNewInv({ desc: '', amount: '' })
   }
+
+  const handlePrintReceipt = (id: string) => {
+    toast({
+      title: t('common.upload'),
+      description: `Gerando recibo para pagamento ${id}...`,
+    })
+  }
+
+  const filteredPayments = financials.payments.filter((p) =>
+    paymentFilter === 'all' ? true : p.status === paymentFilter,
+  )
 
   return (
     <div className="flex flex-col gap-6">
@@ -185,16 +203,142 @@ export default function Financial() {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="invoices">
+      <Tabs defaultValue="payments">
         <TabsList>
+          <TabsTrigger value="payments">{t('financial.payments')}</TabsTrigger>
           <TabsTrigger value="invoices">{t('financial.invoices')}</TabsTrigger>
           <TabsTrigger value="utilities">
             {t('financial.utilities')}
           </TabsTrigger>
-          <TabsTrigger value="owners">
-            {t('financial.owners_statement')}
-          </TabsTrigger>
         </TabsList>
+        <TabsContent value="payments">
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>{t('financial.payment_list_title')}</CardTitle>
+                <div className="flex items-center gap-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Filter className="h-4 w-4 mr-2" />
+                        {paymentFilter === 'all'
+                          ? t('common.filter')
+                          : t(`common.${paymentFilter}`)}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => setPaymentFilter('all')}>
+                        {t('common.all')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setPaymentFilter('paid')}
+                      >
+                        {t('common.paid')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setPaymentFilter('pending')}
+                      >
+                        {t('common.pending')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setPaymentFilter('overdue')}
+                      >
+                        {t('common.overdue')}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('tenants.contact')}</TableHead>
+                    <TableHead>{t('financial.payment_type')}</TableHead>
+                    <TableHead>{t('common.due_date')}</TableHead>
+                    <TableHead>{t('common.status')}</TableHead>
+                    <TableHead className="text-right">
+                      {t('common.value')}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t('common.actions')}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredPayments.map((payment) => (
+                    <TableRow key={payment.id}>
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span className="font-medium">
+                            {payment.tenantName}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {payment.propertyId}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="capitalize">
+                        {payment.type}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(payment.dueDate).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            payment.status === 'paid'
+                              ? 'default'
+                              : payment.status === 'pending'
+                                ? 'outline'
+                                : 'destructive'
+                          }
+                          className={
+                            payment.status === 'paid'
+                              ? 'bg-green-100 text-green-700 hover:bg-green-100 border-green-200'
+                              : payment.status === 'pending'
+                                ? 'border-orange-200 text-orange-600 bg-orange-50'
+                                : ''
+                          }
+                        >
+                          {t(`common.${payment.status}`)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right font-medium">
+                        ${payment.amount.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          {payment.status === 'pending' && (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8 text-green-600"
+                              onClick={() => markPaymentAs(payment.id, 'paid')}
+                              title={t('financial.mark_paid')}
+                            >
+                              <Check className="h-4 w-4" />
+                            </Button>
+                          )}
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-muted-foreground"
+                            onClick={() => handlePrintReceipt(payment.id)}
+                            title={t('financial.receipt')}
+                          >
+                            <Printer className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
         <TabsContent value="invoices">
           <Card>
             <CardHeader>
