@@ -38,7 +38,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Plus, Trash2, Edit, Shield } from 'lucide-react'
+import { Plus, Trash2, Edit, Shield, Share2, Copy } from 'lucide-react'
 import useUserStore from '@/stores/useUserStore'
 import useAuthStore from '@/stores/useAuthStore'
 import { hasPermission } from '@/lib/permissions'
@@ -64,6 +64,7 @@ export default function Users() {
   const { t } = useLanguageStore()
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
+  const [inviteOpen, setInviteOpen] = useState(false)
 
   const initialFormState: Partial<User> & {
     password?: string
@@ -181,6 +182,16 @@ export default function Users() {
     setOpen(true)
   }
 
+  const copyInviteLink = () => {
+    const url = window.location.origin
+    navigator.clipboard.writeText(url)
+    toast({
+      title: 'Link Copiado',
+      description: 'O link de acesso foi copiado para a área de transferência.',
+    })
+    setInviteOpen(false)
+  }
+
   if (!hasPermission(currentUser as User, 'users', 'view')) {
     return <div className="p-8 text-center">Acesso negado.</div>
   }
@@ -195,247 +206,277 @@ export default function Users() {
           <p className="text-muted-foreground">Gerencie acesso e permissões.</p>
         </div>
 
-        {hasPermission(currentUser as User, 'users', 'create') && (
-          <Dialog
-            open={open}
-            onOpenChange={(val) => {
-              setOpen(val)
-              if (!val) {
-                setFormData(initialFormState)
-                setIsEditing(false)
-              }
-            }}
-          >
+        <div className="flex gap-2">
+          <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-trust-blue">
-                <Plus className="mr-2 h-4 w-4" /> {t('common.new')} Usuário
+              <Button variant="outline" className="gap-2">
+                <Share2 className="h-4 w-4" /> Convidar Testador
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogContent>
               <DialogHeader>
-                <DialogTitle>
-                  {isEditing ? 'Editar Usuário' : 'Novo Usuário'}
-                </DialogTitle>
+                <DialogTitle>Compartilhar Acesso</DialogTitle>
               </DialogHeader>
-
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>{t('common.name')}</Label>
-                    <Input
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>{t('common.email')}</Label>
-                    <Input
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>{t('common.phone')}</Label>
-                    <Input
-                      value={formData.phone || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Função (Role)</Label>
-                    <Select
-                      value={formData.role}
-                      onValueChange={(val: UserRole) =>
-                        setFormData({ ...formData, role: val })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {canCreateRole('software_tenant') && (
-                          <SelectItem value="software_tenant">
-                            Locador (Tenant)
-                          </SelectItem>
-                        )}
-                        <SelectItem value="internal_user">
-                          Usuário Interno
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <div className="py-4 space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Compartilhe o link abaixo para permitir que testadores
+                  externos acessem a plataforma. Eles poderão usar a conta de
+                  demonstração pública.
+                </p>
+                <div className="flex gap-2">
+                  <Input readOnly value={window.location.origin} />
+                  <Button size="icon" onClick={copyInviteLink}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4 border-t pt-4">
-                  <div className="grid gap-2">
-                    <Label>{t('common.password')}</Label>
-                    <Input
-                      type="password"
-                      value={formData.password}
-                      onChange={(e) =>
-                        setFormData({ ...formData, password: e.target.value })
-                      }
-                      placeholder={isEditing ? '••••••' : ''}
-                    />
-                    {isEditing && (
-                      <span className="text-xs text-muted-foreground">
-                        Deixe em branco para manter a atual
-                      </span>
-                    )}
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>{t('common.confirm_password')}</Label>
-                    <Input
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          confirmPassword: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-
-                {formData.role === 'internal_user' && (
-                  <>
-                    <div className="border rounded-md p-4 bg-muted/20">
-                      <h4 className="font-medium mb-3 flex items-center gap-2">
-                        <Shield className="h-4 w-4" /> Permissões (Skills)
-                      </h4>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Recurso</TableHead>
-                            <TableHead className="text-center">Ver</TableHead>
-                            <TableHead className="text-center">Criar</TableHead>
-                            <TableHead className="text-center">
-                              Editar
-                            </TableHead>
-                            <TableHead className="text-center">
-                              Excluir
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {RESOURCES.map((res) => (
-                            <TableRow key={res}>
-                              <TableCell className="capitalize">
-                                {t(`common.${res}`) !== `common.${res}`
-                                  ? t(`common.${res}`)
-                                  : res}
-                              </TableCell>
-                              {ACTIONS.map((action) => {
-                                const checked =
-                                  formData.permissions
-                                    ?.find((p) => p.resource === res)
-                                    ?.actions.includes(action) || false
-                                return (
-                                  <TableCell
-                                    key={action}
-                                    className="text-center"
-                                  >
-                                    <Checkbox
-                                      checked={checked}
-                                      onCheckedChange={(c) =>
-                                        handlePermissionChange(
-                                          res,
-                                          action,
-                                          c as boolean,
-                                        )
-                                      }
-                                    />
-                                  </TableCell>
-                                )
-                              })}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-
-                    <div className="border rounded-md p-4 bg-muted/20">
-                      <h4 className="font-medium mb-2">
-                        Acesso a Propriedades
-                      </h4>
-                      <div className="flex gap-4">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id="long_term"
-                            checked={formData.allowedProfileTypes?.includes(
-                              'long_term',
-                            )}
-                            onCheckedChange={(c) => {
-                              const types = formData.allowedProfileTypes || []
-                              if (c) {
-                                if (!types.includes('long_term'))
-                                  setFormData({
-                                    ...formData,
-                                    allowedProfileTypes: [
-                                      ...types,
-                                      'long_term',
-                                    ],
-                                  })
-                              } else {
-                                setFormData({
-                                  ...formData,
-                                  allowedProfileTypes: types.filter(
-                                    (t) => t !== 'long_term',
-                                  ),
-                                })
-                              }
-                            }}
-                          />
-                          <Label htmlFor="long_term">Long Term</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id="short_term"
-                            checked={formData.allowedProfileTypes?.includes(
-                              'short_term',
-                            )}
-                            onCheckedChange={(c) => {
-                              const types = formData.allowedProfileTypes || []
-                              if (c) {
-                                if (!types.includes('short_term'))
-                                  setFormData({
-                                    ...formData,
-                                    allowedProfileTypes: [
-                                      ...types,
-                                      'short_term',
-                                    ],
-                                  })
-                              } else {
-                                setFormData({
-                                  ...formData,
-                                  allowedProfileTypes: types.filter(
-                                    (t) => t !== 'short_term',
-                                  ),
-                                })
-                              }
-                            }}
-                          />
-                          <Label htmlFor="short_term">Short Term</Label>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
-
-              <DialogFooter>
-                <Button onClick={handleSave}>Salvar</Button>
-              </DialogFooter>
             </DialogContent>
           </Dialog>
-        )}
+
+          {hasPermission(currentUser as User, 'users', 'create') && (
+            <Dialog
+              open={open}
+              onOpenChange={(val) => {
+                setOpen(val)
+                if (!val) {
+                  setFormData(initialFormState)
+                  setIsEditing(false)
+                }
+              }}
+            >
+              <DialogTrigger asChild>
+                <Button className="bg-trust-blue">
+                  <Plus className="mr-2 h-4 w-4" /> {t('common.new')} Usuário
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>
+                    {isEditing ? 'Editar Usuário' : 'Novo Usuário'}
+                  </DialogTitle>
+                </DialogHeader>
+
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>{t('common.name')}</Label>
+                      <Input
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>{t('common.email')}</Label>
+                      <Input
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>{t('common.phone')}</Label>
+                      <Input
+                        value={formData.phone || ''}
+                        onChange={(e) =>
+                          setFormData({ ...formData, phone: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Função (Role)</Label>
+                      <Select
+                        value={formData.role}
+                        onValueChange={(val: UserRole) =>
+                          setFormData({ ...formData, role: val })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {canCreateRole('software_tenant') && (
+                            <SelectItem value="software_tenant">
+                              Locador (Cliente)
+                            </SelectItem>
+                          )}
+                          <SelectItem value="internal_user">
+                            Usuário Interno
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 border-t pt-4">
+                    <div className="grid gap-2">
+                      <Label>{t('common.password')}</Label>
+                      <Input
+                        type="password"
+                        value={formData.password}
+                        onChange={(e) =>
+                          setFormData({ ...formData, password: e.target.value })
+                        }
+                        placeholder={isEditing ? '••••••' : ''}
+                      />
+                      {isEditing && (
+                        <span className="text-xs text-muted-foreground">
+                          Deixe em branco para manter a atual
+                        </span>
+                      )}
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>{t('common.confirm_password')}</Label>
+                      <Input
+                        type="password"
+                        value={formData.confirmPassword}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            confirmPassword: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  {formData.role === 'internal_user' && (
+                    <>
+                      <div className="border rounded-md p-4 bg-muted/20">
+                        <h4 className="font-medium mb-3 flex items-center gap-2">
+                          <Shield className="h-4 w-4" /> Permissões (Skills)
+                        </h4>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Recurso</TableHead>
+                              <TableHead className="text-center">Ver</TableHead>
+                              <TableHead className="text-center">
+                                Criar
+                              </TableHead>
+                              <TableHead className="text-center">
+                                Editar
+                              </TableHead>
+                              <TableHead className="text-center">
+                                Excluir
+                              </TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {RESOURCES.map((res) => (
+                              <TableRow key={res}>
+                                <TableCell className="capitalize">
+                                  {t(`common.${res}`) !== `common.${res}`
+                                    ? t(`common.${res}`)
+                                    : res}
+                                </TableCell>
+                                {ACTIONS.map((action) => {
+                                  const checked =
+                                    formData.permissions
+                                      ?.find((p) => p.resource === res)
+                                      ?.actions.includes(action) || false
+                                  return (
+                                    <TableCell
+                                      key={action}
+                                      className="text-center"
+                                    >
+                                      <Checkbox
+                                        checked={checked}
+                                        onCheckedChange={(c) =>
+                                          handlePermissionChange(
+                                            res,
+                                            action,
+                                            c as boolean,
+                                          )
+                                        }
+                                      />
+                                    </TableCell>
+                                  )
+                                })}
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+
+                      <div className="border rounded-md p-4 bg-muted/20">
+                        <h4 className="font-medium mb-2">
+                          Acesso a Propriedades
+                        </h4>
+                        <div className="flex gap-4">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="long_term"
+                              checked={formData.allowedProfileTypes?.includes(
+                                'long_term',
+                              )}
+                              onCheckedChange={(c) => {
+                                const types = formData.allowedProfileTypes || []
+                                if (c) {
+                                  if (!types.includes('long_term'))
+                                    setFormData({
+                                      ...formData,
+                                      allowedProfileTypes: [
+                                        ...types,
+                                        'long_term',
+                                      ],
+                                    })
+                                } else {
+                                  setFormData({
+                                    ...formData,
+                                    allowedProfileTypes: types.filter(
+                                      (t) => t !== 'long_term',
+                                    ),
+                                  })
+                                }
+                              }}
+                            />
+                            <Label htmlFor="long_term">Long Term</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="short_term"
+                              checked={formData.allowedProfileTypes?.includes(
+                                'short_term',
+                              )}
+                              onCheckedChange={(c) => {
+                                const types = formData.allowedProfileTypes || []
+                                if (c) {
+                                  if (!types.includes('short_term'))
+                                    setFormData({
+                                      ...formData,
+                                      allowedProfileTypes: [
+                                        ...types,
+                                        'short_term',
+                                      ],
+                                    })
+                                } else {
+                                  setFormData({
+                                    ...formData,
+                                    allowedProfileTypes: types.filter(
+                                      (t) => t !== 'short_term',
+                                    ),
+                                  })
+                                }
+                              }}
+                            />
+                            <Label htmlFor="short_term">Short Term</Label>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <DialogFooter>
+                  <Button onClick={handleSave}>Salvar</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
       </div>
 
       <Card>

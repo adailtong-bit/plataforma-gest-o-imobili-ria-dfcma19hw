@@ -39,6 +39,7 @@ import { PropertyFeatures } from '@/components/properties/PropertyFeatures'
 import { PropertyFinancials } from '@/components/properties/PropertyFinancials'
 import { PropertyContent } from '@/components/properties/PropertyContent'
 import { PropertyLedger } from '@/components/financial/PropertyLedger'
+import { PropertyMedia } from '@/components/properties/PropertyMedia'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -59,7 +60,8 @@ export default function PropertyDetails() {
 
   useEffect(() => {
     if (property) {
-      // Local state persists until save
+      // Local state persists until save, but we should sync if property changes externally
+      // For this simplified logic we keep as is to avoid overwriting ongoing edits
     }
   }, [property])
 
@@ -196,6 +198,7 @@ export default function PropertyDetails() {
       <Tabs defaultValue="overview">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
+          <TabsTrigger value="media">Media & Docs</TabsTrigger>
           <TabsTrigger value="location">Localização</TabsTrigger>
           <TabsTrigger value="features">Características</TabsTrigger>
           <TabsTrigger value="content">Conteúdo</TabsTrigger>
@@ -209,6 +212,13 @@ export default function PropertyDetails() {
         <div className="mt-4">
           <TabsContent value="overview">
             <PropertyOverview
+              data={formData}
+              onChange={handleChange}
+              canEdit={canEdit}
+            />
+          </TabsContent>
+          <TabsContent value="media">
+            <PropertyMedia
               data={formData}
               onChange={handleChange}
               canEdit={canEdit}

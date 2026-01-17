@@ -20,6 +20,7 @@ import { hasPermission } from '@/lib/permissions'
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 import { AuditLogList } from '@/components/audit/AuditLogList'
+import { ServiceCatalog } from '@/components/settings/ServiceCatalog'
 import { User } from '@/lib/types'
 
 export default function Settings() {
@@ -67,8 +68,9 @@ export default function Settings() {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4">
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="profile">{t('common.profile')}</TabsTrigger>
+          <TabsTrigger value="catalog">Catálogo de Serviços</TabsTrigger>
           <TabsTrigger value="notifications">
             {t('common.notifications')}
           </TabsTrigger>
@@ -78,6 +80,10 @@ export default function Settings() {
           </TabsTrigger>
           {canViewAudit && <TabsTrigger value="audit">Auditoria</TabsTrigger>}
         </TabsList>
+
+        <TabsContent value="catalog">
+          <ServiceCatalog />
+        </TabsContent>
 
         <TabsContent value="gateway">
           <Card>

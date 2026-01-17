@@ -11,6 +11,7 @@ import { Partner, ServiceRate } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { FileUpload } from '@/components/ui/file-upload'
 import {
   Table,
   TableBody,
@@ -128,113 +129,131 @@ export default function PartnerDetails() {
         </TabsList>
 
         <TabsContent value="overview">
-          <Card>
-            <CardHeader>
-              <CardTitle>Detalhes do Parceiro</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>{t('common.name')}</Label>
-                  <Input
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                  />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="md:col-span-2">
+              <CardHeader>
+                <CardTitle>Detalhes do Parceiro</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>{t('common.name')}</Label>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>{t('partners.company_name')}</Label>
+                    <Input
+                      value={formData.companyName}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          companyName: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>{t('common.email')}</Label>
+                    <Input
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>{t('common.phone')}</Label>
+                    <Input
+                      value={formData.phone}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2 col-span-2">
+                    <Label>{t('common.address')}</Label>
+                    <Input
+                      value={formData.address}
+                      onChange={(e) =>
+                        setFormData({ ...formData, address: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label>{t('partners.company_name')}</Label>
-                  <Input
-                    value={formData.companyName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, companyName: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>{t('common.email')}</Label>
-                  <Input
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>{t('common.phone')}</Label>
-                  <Input
-                    value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="grid gap-2 col-span-2">
-                  <Label>{t('common.address')}</Label>
-                  <Input
-                    value={formData.address}
-                    onChange={(e) =>
-                      setFormData({ ...formData, address: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
 
-              <div className="border-t pt-4 mt-4">
-                <h3 className="font-semibold mb-3">
-                  {t('partners.bank_info')}
-                </h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="grid gap-2">
-                    <Label>{t('partners.bank_name')}</Label>
-                    <Input
-                      value={formData.paymentInfo?.bankName}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          paymentInfo: {
-                            ...formData.paymentInfo!,
-                            bankName: e.target.value,
-                          },
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>{t('partners.routing')}</Label>
-                    <Input
-                      value={formData.paymentInfo?.routingNumber}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          paymentInfo: {
-                            ...formData.paymentInfo!,
-                            routingNumber: e.target.value,
-                          },
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>{t('partners.account')}</Label>
-                    <Input
-                      value={formData.paymentInfo?.accountNumber}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          paymentInfo: {
-                            ...formData.paymentInfo!,
-                            accountNumber: e.target.value,
-                          },
-                        })
-                      }
-                    />
+                <div className="border-t pt-4 mt-4">
+                  <h3 className="font-semibold mb-3">
+                    {t('partners.bank_info')}
+                  </h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="grid gap-2">
+                      <Label>{t('partners.bank_name')}</Label>
+                      <Input
+                        value={formData.paymentInfo?.bankName}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            paymentInfo: {
+                              ...formData.paymentInfo!,
+                              bankName: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>{t('partners.routing')}</Label>
+                      <Input
+                        value={formData.paymentInfo?.routingNumber}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            paymentInfo: {
+                              ...formData.paymentInfo!,
+                              routingNumber: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>{t('partners.account')}</Label>
+                      <Input
+                        value={formData.paymentInfo?.accountNumber}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            paymentInfo: {
+                              ...formData.paymentInfo!,
+                              accountNumber: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Foto de Perfil</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FileUpload
+                  value={formData.avatar}
+                  onChange={(url) => setFormData({ ...formData, avatar: url })}
+                  label="Upload Avatar"
+                />
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="rates">
