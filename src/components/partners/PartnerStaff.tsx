@@ -22,7 +22,8 @@ import { Badge } from '@/components/ui/badge'
 import { Plus, Trash2, Edit, Calendar } from 'lucide-react'
 import { Partner, PartnerEmployee } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
-import { addDays, format } from 'date-fns'
+import { format } from 'date-fns'
+import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 
 interface PartnerStaffProps {
   partner: Partner
@@ -50,10 +51,9 @@ export function PartnerStaff({
   const [schedulerOpen, setSchedulerOpen] = useState(false)
   const [selectedEmployee, setSelectedEmployee] =
     useState<PartnerEmployee | null>(null)
-  const [scheduleDate, setScheduleDate] = useState<string>(
-    format(new Date(), 'yyyy-MM-dd'),
-  )
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
   const [scheduleSlots, setScheduleSlots] = useState<string>('09:00, 14:00')
+  const [scheduleValue, setScheduleValue] = useState<string>('')
 
   const handleSave = () => {
     if (!formData.name || !formData.role) return
@@ -106,25 +106,49 @@ export function PartnerStaff({
   // Schedule logic
   const openScheduler = (employee: PartnerEmployee) => {
     setSelectedEmployee(employee)
+    setSelectedDate(new Date())
+    updateSchedulerForm(employee, new Date())
     setSchedulerOpen(true)
-    // Pre-fill if exists for today?
-    // Simplified for now
+  }
+
+  const updateSchedulerForm = (employee: PartnerEmployee, date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd')
+    const existing = employee.schedule?.find((s) => s.date === dateStr)
+    if (existing) {
+      setScheduleSlots(existing.slots.join(', '))
+      setScheduleValue(existing.value ? existing.value.toString() : '')
+    } else {
+      setScheduleSlots('09:00, 14:00')
+      setScheduleValue('')
+    }
+  }
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (!date || !selectedEmployee) return
+    setSelectedDate(date)
+    updateSchedulerForm(selectedEmployee, date)
   }
 
   const saveSchedule = () => {
-    if (!selectedEmployee) return
+    if (!selectedEmployee || !selectedDate) return
 
+    const dateStr = format(selectedDate, 'yyyy-MM-dd')
     const employees = partner.employees ? [...partner.employees] : []
     const index = employees.findIndex((e) => e.id === selectedEmployee.id)
+
     if (index !== -1) {
       const emp = employees[index]
       const currentSchedule = emp.schedule || []
-      // remove existing for that date
-      const filtered = currentSchedule.filter((s) => s.date !== scheduleDate)
-      filtered.push({
-        date: scheduleDate,
-        slots: scheduleSlots.split(',').map((s) => s.trim()),
-      })
+      const filtered = currentSchedule.filter((s) => s.date !== dateStr)
+
+      if (scheduleSlots.trim()) {
+        filtered.push({
+          date: dateStr,
+          slots: scheduleSlots.split(',').map((s) => s.trim()),
+          value: scheduleValue ? parseFloat(scheduleValue) : undefined,
+        })
+      }
+
       employees[index] = { ...emp, schedule: filtered }
       onUpdate({ ...partner, employees })
       toast({ title: 'Agenda atualizada' })
@@ -213,14 +237,17 @@ export function PartnerStaff({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {partner.employees?.length === 0 ? (
+            {!partner.employees || partner.employees.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
+                <TableCell
+                  colSpan={5}
+                  className="text-center py-8 text-muted-foreground"
+                >
                   Nenhum funcionário cadastrado.
                 </TableCell>
               </TableRow>
             ) : (
-              partner.employees?.map((emp) => (
+              partner.employees.map((emp) => (
                 <TableRow key={emp.id}>
                   <TableCell className="font-medium">{emp.name}</TableCell>
                   <TableCell>{emp.role}</TableCell>
@@ -276,30 +303,73 @@ export function PartnerStaff({
           </TableBody>
         </Table>
 
-        {/* Schedule Dialog */}
+        {/* Scheduler Dialog */}
         <Dialog open={schedulerOpen} onOpenChange={setSchedulerOpen}>
-          <DialogContent>
+          <DialogContent className="max-w-3xl">
             <DialogHeader>
               <DialogTitle>Agenda: {selectedEmployee?.name}</DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label>Data</Label>
-                <Input
-                  type="date"
-                  value={scheduleDate}
-                  onChange={(e) => setScheduleDate(e.target.value)}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+              <div className="border rounded-md p-4 flex justify-center">
+                <CalendarComponent
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateSelect}
+                  className="rounded-md"
                 />
               </div>
-              <div className="grid gap-2">
-                <Label>Horários Disponíveis (separados por vírgula)</Label>
-                <Input
-                  value={scheduleSlots}
-                  onChange={(e) => setScheduleSlots(e.target.value)}
-                  placeholder="09:00, 14:00"
-                />
+              <div className="space-y-4">
+                <div className="bg-muted/30 p-4 rounded-lg border">
+                  <h4 className="font-medium mb-4">
+                    Detalhes para{' '}
+                    {selectedDate
+                      ? format(selectedDate, 'dd/MM/yyyy')
+                      : 'Selecione uma data'}
+                  </h4>
+                  <div className="grid gap-4">
+                    <div className="grid gap-2">
+                      <Label>
+                        Horários Disponíveis (separados por vírgula)
+                      </Label>
+                      <Input
+                        value={scheduleSlots}
+                        onChange={(e) => setScheduleSlots(e.target.value)}
+                        placeholder="Ex: 09:00, 14:00"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Valor Diária / Serviço ($)</Label>
+                      <Input
+                        type="number"
+                        value={scheduleValue}
+                        onChange={(e) => setScheduleValue(e.target.value)}
+                        placeholder="Opcional: Valor específico"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Deixe em branco para usar valor padrão.
+                      </p>
+                    </div>
+                    <Button
+                      onClick={saveSchedule}
+                      className="mt-2 bg-trust-blue"
+                    >
+                      Atualizar Disponibilidade
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="text-sm text-muted-foreground">
+                  <p>Dias com agenda definida:</p>
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    {selectedEmployee?.schedule?.map((s) => (
+                      <Badge key={s.date} variant="outline">
+                        {format(new Date(s.date), 'dd/MM')} ({s.slots.length}{' '}
+                        slots)
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <Button onClick={saveSchedule}>Atualizar Disponibilidade</Button>
             </div>
           </DialogContent>
         </Dialog>

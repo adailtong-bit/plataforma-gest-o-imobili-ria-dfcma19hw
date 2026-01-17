@@ -215,6 +215,7 @@ export interface PartnerEmployee {
   schedule?: {
     date: string // YYYY-MM-DD
     slots: string[] // ["09:00", "14:00"]
+    value?: number // Override value for this specific date/schedule
   }[]
 }
 

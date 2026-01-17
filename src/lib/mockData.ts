@@ -259,6 +259,7 @@ export const partners: Partner[] = [
           {
             date: addDays(new Date(), 1).toISOString().split('T')[0],
             slots: ['09:00', '14:00'],
+            value: 80,
           },
         ],
       },

@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { Plus, Trash2, Building2 } from 'lucide-react'
-import { Partner, Property } from '@/lib/types'
+import { Partner } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import usePropertyStore from '@/stores/usePropertyStore'
 

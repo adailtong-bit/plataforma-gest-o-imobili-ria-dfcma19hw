@@ -2,12 +2,20 @@ import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, Save, Trash2, Users, Building } from 'lucide-react'
+import {
+  ArrowLeft,
+  Save,
+  Trash2,
+  Users,
+  Building,
+  DollarSign,
+  ClipboardList,
+} from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import usePartnerStore from '@/stores/usePartnerStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useFinancialStore from '@/stores/useFinancialStore'
-import { Partner, ServiceRate } from '@/lib/types'
+import { Partner } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -23,6 +31,8 @@ import {
 import { format } from 'date-fns'
 import { PartnerStaff } from '@/components/partners/PartnerStaff'
 import { PartnerProperties } from '@/components/partners/PartnerProperties'
+import { PartnerTasks } from '@/components/partners/PartnerTasks'
+import { PartnerPricing } from '@/components/partners/PartnerPricing'
 
 export default function PartnerDetails() {
   const { id } = useParams()
@@ -34,63 +44,45 @@ export default function PartnerDetails() {
 
   const partner = partners.find((p) => p.id === id)
 
+  // Use local state but initialize from store. Sync on save.
   const [formData, setFormData] = useState<Partner | null>(() =>
     partner ? JSON.parse(JSON.stringify(partner)) : null,
   )
 
-  const [newRate, setNewRate] = useState<Partial<ServiceRate>>({
-    serviceName: '',
-    price: 0,
-    validFrom: format(new Date(), 'yyyy-MM-dd'),
-  })
-
-  if (!partner || !formData) return <div>Not Found</div>
+  if (!partner || !formData) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+        <h2 className="text-xl font-semibold">Parceiro não encontrado</h2>
+        <Button variant="outline" onClick={() => navigate('/partners')}>
+          Voltar para Lista
+        </Button>
+      </div>
+    )
+  }
 
   const handleSave = () => {
     if (formData) {
       updatePartner(formData)
-      toast({ title: t('common.save'), description: 'Partner updated' })
+      toast({
+        title: t('common.save'),
+        description: 'Dados do parceiro atualizados.',
+      })
     }
   }
 
   const handleUpdate = (updatedPartner: Partner) => {
     setFormData(updatedPartner)
-    // Auto save or just update local state? Let's update global too
+    // Auto-update global state for sub-components that rely on it immediately if needed
+    // or wait for explicit save. For smooth UX in tabs, we update global store too.
     updatePartner(updatedPartner)
   }
 
   const handleDelete = () => {
-    // Logic to delete partner
-    toast({ title: 'Deleted', description: 'Partner deleted' })
-    navigate('/partners')
-  }
-
-  const handleAddRate = () => {
-    if (newRate.serviceName && newRate.price) {
-      const rate: ServiceRate = {
-        id: `rate-${Date.now()}`,
-        serviceName: newRate.serviceName,
-        price: Number(newRate.price),
-        validFrom: newRate.validFrom!,
-        type: 'specific',
-      }
-      setFormData({
-        ...formData,
-        serviceRates: [...(formData.serviceRates || []), rate],
-      })
-      setNewRate({
-        serviceName: '',
-        price: 0,
-        validFrom: format(new Date(), 'yyyy-MM-dd'),
-      })
+    if (confirm('Tem certeza que deseja excluir este parceiro?')) {
+      // Logic to delete partner would go here (add deletePartner to store)
+      toast({ title: 'Excluído', description: 'Parceiro removido.' })
+      navigate('/partners')
     }
-  }
-
-  const removeRate = (rateId: string) => {
-    setFormData({
-      ...formData,
-      serviceRates: formData.serviceRates?.filter((r) => r.id !== rateId),
-    })
   }
 
   // Financial Report
@@ -131,7 +123,7 @@ export default function PartnerDetails() {
       </div>
 
       <Tabs defaultValue="overview">
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
           <TabsTrigger value="staff">
             <Users className="h-4 w-4 mr-2" /> Equipe
@@ -139,7 +131,12 @@ export default function PartnerDetails() {
           <TabsTrigger value="properties">
             <Building className="h-4 w-4 mr-2" /> Propriedades
           </TabsTrigger>
-          <TabsTrigger value="rates">{t('partners.service_rates')}</TabsTrigger>
+          <TabsTrigger value="rates">
+            <DollarSign className="h-4 w-4 mr-2" /> Preços
+          </TabsTrigger>
+          <TabsTrigger value="tasks">
+            <ClipboardList className="h-4 w-4 mr-2" /> Tarefas
+          </TabsTrigger>
           <TabsTrigger value="financial">
             {t('partners.financial_report')}
           </TabsTrigger>
@@ -290,80 +287,15 @@ export default function PartnerDetails() {
         </TabsContent>
 
         <TabsContent value="rates">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>{t('partners.service_rates')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-2 mb-6 items-end border p-4 rounded-md bg-muted/20">
-                <div className="grid gap-2 flex-1">
-                  <Label>{t('partners.rate_name')}</Label>
-                  <Input
-                    value={newRate.serviceName}
-                    onChange={(e) =>
-                      setNewRate({ ...newRate, serviceName: e.target.value })
-                    }
-                    placeholder="Ex: Limpeza Padrão"
-                  />
-                </div>
-                <div className="grid gap-2 w-32">
-                  <Label>{t('partners.rate_price')}</Label>
-                  <Input
-                    type="number"
-                    value={newRate.price}
-                    onChange={(e) =>
-                      setNewRate({ ...newRate, price: Number(e.target.value) })
-                    }
-                  />
-                </div>
-                <div className="grid gap-2 w-40">
-                  <Label>{t('partners.rate_valid_from')}</Label>
-                  <Input
-                    type="date"
-                    value={newRate.validFrom}
-                    onChange={(e) =>
-                      setNewRate({ ...newRate, validFrom: e.target.value })
-                    }
-                  />
-                </div>
-                <Button onClick={handleAddRate}>
-                  <Plus className="h-4 w-4 mr-2" /> {t('common.add_title')}
-                </Button>
-              </div>
+          <PartnerPricing
+            partner={formData}
+            onUpdate={handleUpdate}
+            canEdit={true}
+          />
+        </TabsContent>
 
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Serviço</TableHead>
-                    <TableHead>Preço</TableHead>
-                    <TableHead>Validade</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {formData.serviceRates?.map((rate) => (
-                    <TableRow key={rate.id}>
-                      <TableCell>{rate.serviceName}</TableCell>
-                      <TableCell>${rate.price.toFixed(2)}</TableCell>
-                      <TableCell>
-                        {format(new Date(rate.validFrom), 'dd/MM/yyyy')}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-500"
-                          onClick={() => removeRate(rate.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+        <TabsContent value="tasks">
+          <PartnerTasks partnerId={formData.id} canEdit={true} />
         </TabsContent>
 
         <TabsContent value="financial">
@@ -408,27 +340,38 @@ export default function PartnerDetails() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {partnerEntries.map((entry) => (
-                    <TableRow key={entry.id}>
-                      <TableCell>
-                        {format(new Date(entry.date), 'dd/MM/yyyy')}
-                      </TableCell>
-                      <TableCell>{entry.description}</TableCell>
-                      <TableCell>{entry.category}</TableCell>
-                      <TableCell>${entry.amount.toFixed(2)}</TableCell>
-                      <TableCell>
-                        <span
-                          className={`capitalize ${
-                            entry.status === 'cleared'
-                              ? 'text-green-600'
-                              : 'text-orange-600'
-                          }`}
-                        >
-                          {entry.status}
-                        </span>
+                  {partnerEntries.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={5}
+                        className="text-center py-8 text-muted-foreground"
+                      >
+                        Nenhum pagamento encontrado.
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    partnerEntries.map((entry) => (
+                      <TableRow key={entry.id}>
+                        <TableCell>
+                          {format(new Date(entry.date), 'dd/MM/yyyy')}
+                        </TableCell>
+                        <TableCell>{entry.description}</TableCell>
+                        <TableCell>{entry.category}</TableCell>
+                        <TableCell>${entry.amount.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <span
+                            className={`capitalize ${
+                              entry.status === 'cleared'
+                                ? 'text-green-600'
+                                : 'text-orange-600'
+                            }`}
+                          >
+                            {entry.status}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
