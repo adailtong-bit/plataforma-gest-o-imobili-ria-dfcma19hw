@@ -25,44 +25,54 @@ import TenantPortal from './pages/portal/TenantPortal'
 import OwnerPortal from './pages/portal/OwnerPortal'
 import PartnerPortal from './pages/portal/PartnerPortal'
 import { AppProvider } from '@/stores/AppContext'
+import { useEffect } from 'react'
 
-const App = () => (
-  <AppProvider>
-    <BrowserRouter
-      future={{ v7_startTransition: false, v7_relativeSplatPath: false }}
-    >
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <Routes>
-          <Route element={<DashboardLayout />}>
-            <Route path="/" element={<Index />} />
-            <Route path="/properties" element={<Properties />} />
-            <Route path="/properties/:id" element={<PropertyDetails />} />
-            <Route path="/condominiums" element={<Condominiums />} />
-            <Route path="/condominiums/:id" element={<CondominiumDetails />} />
-            <Route path="/tenants" element={<Tenants />} />
-            <Route path="/owners" element={<Owners />} />
-            <Route path="/owners/:id" element={<OwnerDetails />} />
-            <Route path="/partners" element={<Partners />} />
-            <Route path="/partners/:id" element={<PartnerDetails />} />
-            <Route path="/calendar" element={<CalendarPage />} />
-            <Route path="/tasks" element={<Tasks />} />
-            <Route path="/financial" element={<Financial />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/service-pricing" element={<ServicePricing />} />
-            {/* Portals - In real app, might use different layout */}
-            <Route path="/portal/tenant" element={<TenantPortal />} />
-            <Route path="/portal/owner" element={<OwnerPortal />} />
-            <Route path="/portal/partner" element={<PartnerPortal />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </TooltipProvider>
-    </BrowserRouter>
-  </AppProvider>
-)
+const App = () => {
+  useEffect(() => {
+    document.title = 'COREPM'
+  }, [])
+
+  return (
+    <AppProvider>
+      <BrowserRouter
+        future={{ v7_startTransition: false, v7_relativeSplatPath: false }}
+      >
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <Routes>
+            <Route element={<DashboardLayout />}>
+              <Route path="/" element={<Index />} />
+              <Route path="/properties" element={<Properties />} />
+              <Route path="/properties/:id" element={<PropertyDetails />} />
+              <Route path="/condominiums" element={<Condominiums />} />
+              <Route
+                path="/condominiums/:id"
+                element={<CondominiumDetails />}
+              />
+              <Route path="/tenants" element={<Tenants />} />
+              <Route path="/owners" element={<Owners />} />
+              <Route path="/owners/:id" element={<OwnerDetails />} />
+              <Route path="/partners" element={<Partners />} />
+              <Route path="/partners/:id" element={<PartnerDetails />} />
+              <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/financial" element={<Financial />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/service-pricing" element={<ServicePricing />} />
+              {/* Portals - In real app, might use different layout */}
+              <Route path="/portal/tenant" element={<TenantPortal />} />
+              <Route path="/portal/owner" element={<OwnerPortal />} />
+              <Route path="/portal/partner" element={<PartnerPortal />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </TooltipProvider>
+      </BrowserRouter>
+    </AppProvider>
+  )
+}
 
 export default App

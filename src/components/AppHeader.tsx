@@ -1,4 +1,4 @@
-import { Bell, Search, Menu, Globe } from 'lucide-react'
+import { Bell, Search, Menu, Globe, Command } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -30,8 +30,13 @@ export function AppHeader() {
         <Menu className="h-5 w-5" />
       </Button>
       <div className="flex items-center gap-2">
-        <h2 className="text-lg font-semibold md:text-xl text-navy">Skip</h2>
-        <Badge variant="outline" className="text-xs">
+        <div className="bg-slate-900 text-white p-1 rounded-md shrink-0">
+          <Command className="h-5 w-5" />
+        </div>
+        <h2 className="text-lg font-bold md:text-xl text-slate-900 tracking-tight">
+          COREPM
+        </h2>
+        <Badge variant="outline" className="text-xs hidden md:inline-flex">
           Gestão
         </Badge>
       </div>

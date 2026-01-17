@@ -13,10 +13,7 @@ export default function DashboardLayout() {
           <Outlet />
         </main>
         <footer className="border-t py-4 px-6 text-center text-xs text-muted-foreground">
-          <p>
-            © 2026 Plataforma de Gestão Imobiliária v0.0.1. Todos os direitos
-            reservados.
-          </p>
+          <p>© 2026 COREPM v1.0.0. All rights reserved.</p>
         </footer>
       </SidebarInset>
     </SidebarProvider>

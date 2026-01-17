@@ -25,6 +25,7 @@ import {
   Building2,
   LayoutDashboard,
   Tag,
+  Command,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -124,9 +125,11 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="h-14 flex items-center px-4 border-b">
-        <div className="flex items-center gap-2 font-bold text-xl text-primary overflow-hidden">
-          <Building className="h-6 w-6 shrink-0" />
-          <span className="truncate">Gestão Imob.</span>
+        <div className="flex items-center gap-2 font-bold text-xl text-slate-900 overflow-hidden">
+          <div className="bg-slate-900 text-white p-1 rounded-md shrink-0">
+            <Command className="h-5 w-5" />
+          </div>
+          <span className="truncate tracking-tight">COREPM</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
