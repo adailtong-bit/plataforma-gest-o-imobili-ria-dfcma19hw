@@ -14,10 +14,14 @@ import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAutomationStore from '@/stores/useAutomationStore'
+import { useContext } from 'react'
+import { AppContext } from '@/stores/AppContext'
 
 export default function Settings() {
   const { t } = useLanguageStore()
   const { automationRules, updateAutomationRule } = useAutomationStore()
+  const context = useContext(AppContext)
+  const { paymentIntegrations, updatePaymentIntegration } = context!
 
   return (
     <div className="flex flex-col gap-6">
@@ -35,6 +39,7 @@ export default function Settings() {
             {t('common.notifications')}
           </TabsTrigger>
           <TabsTrigger value="automation">{t('common.automation')}</TabsTrigger>
+          <TabsTrigger value="integrations">Integrações</TabsTrigger>
           <TabsTrigger value="team">{t('common.team')}</TabsTrigger>
         </TabsList>
 
@@ -61,14 +66,6 @@ export default function Settings() {
                 <div className="space-y-2">
                   <Label htmlFor="email">{t('common.email')}</Label>
                   <Input id="email" defaultValue="admin@sistema.com" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">{t('common.phone')}</Label>
-                  <Input id="phone" defaultValue="+1 (555) 123-4567" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="role">{t('common.role')}</Label>
-                  <Input id="role" defaultValue="Gerente Geral" disabled />
                 </div>
               </div>
               <div className="flex justify-end">
@@ -97,28 +94,6 @@ export default function Settings() {
                   </p>
                 </div>
                 <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="text-base">{t('settings.sms_notif')}</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t('settings.sms_desc')}
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="text-base">
-                    {t('settings.tasks_notif')}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t('settings.tasks_desc')}
-                  </p>
-                </div>
-                <Switch />
               </div>
             </CardContent>
           </Card>
@@ -175,11 +150,81 @@ export default function Settings() {
                   <Separator className="mt-6" />
                 </div>
               ))}
-              <div className="flex justify-end">
-                <Button className="bg-trust-blue">
-                  {t('settings.save_changes')}
-                </Button>
-              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="integrations">
+          <Card>
+            <CardHeader>
+              <CardTitle>Configurações de Pagamento</CardTitle>
+              <CardDescription>
+                Gerencie integrações bancárias e gateways.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {paymentIntegrations.map((integration) => (
+                <div
+                  key={integration.provider}
+                  className="border p-4 rounded-lg"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <Label className="text-lg capitalize font-semibold">
+                        {integration.provider.replace('_', ' ')}
+                      </Label>
+                      {integration.provider === 'bill_com' && (
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+                          Recomendado
+                        </span>
+                      )}
+                    </div>
+                    <Switch
+                      checked={integration.enabled}
+                      onCheckedChange={(c) =>
+                        updatePaymentIntegration({ ...integration, enabled: c })
+                      }
+                    />
+                  </div>
+
+                  {integration.enabled && (
+                    <div className="grid gap-4 pl-4 border-l-2">
+                      {integration.provider === 'bill_com' && (
+                        <div className="grid gap-2">
+                          <Label>API Key</Label>
+                          <Input
+                            value={integration.apiKey || ''}
+                            onChange={(e) =>
+                              updatePaymentIntegration({
+                                ...integration,
+                                apiKey: e.target.value,
+                              })
+                            }
+                            type="password"
+                          />
+                        </div>
+                      )}
+                      {integration.provider === 'bank_transfer' && (
+                        <div className="grid gap-2">
+                          <Label>Conta Padrão</Label>
+                          <Input
+                            value={integration.config?.account || ''}
+                            onChange={(e) =>
+                              updatePaymentIntegration({
+                                ...integration,
+                                config: {
+                                  ...integration.config,
+                                  account: e.target.value,
+                                },
+                              })
+                            }
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
             </CardContent>
           </Card>
         </TabsContent>

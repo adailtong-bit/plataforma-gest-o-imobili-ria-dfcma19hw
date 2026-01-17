@@ -27,30 +27,91 @@ import {
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useAuthStore from '@/stores/useAuthStore'
+import { hasPermission } from '@/lib/permissions'
+import { User, Resource } from '@/lib/types'
 
 export function AppSidebar() {
   const location = useLocation()
   const pathname = location.pathname
   const { t } = useLanguageStore()
+  const { currentUser } = useAuthStore()
 
-  const menuItems = [
-    { title: t('common.dashboard'), url: '/', icon: Home },
-    { title: t('common.properties'), url: '/properties', icon: Building },
-    { title: t('common.condominiums'), url: '/condominiums', icon: Building2 },
-    { title: t('common.tenants'), url: '/tenants', icon: Users },
-    { title: t('common.owners'), url: '/owners', icon: UserCheck },
-    { title: t('common.partners'), url: '/partners', icon: Briefcase },
-    { title: t('common.calendar'), url: '/calendar', icon: Calendar },
-    { title: t('common.tasks'), url: '/tasks', icon: ClipboardList },
-    { title: t('common.financial'), url: '/financial', icon: DollarSign },
-    { title: t('common.messages'), url: '/messages', icon: MessageSquare },
+  const allMenuItems = [
+    {
+      title: t('common.dashboard'),
+      url: '/',
+      icon: Home,
+      resource: 'dashboard',
+    },
+    {
+      title: t('common.properties'),
+      url: '/properties',
+      icon: Building,
+      resource: 'properties',
+    },
+    {
+      title: t('common.condominiums'),
+      url: '/condominiums',
+      icon: Building2,
+      resource: 'condominiums',
+    },
+    {
+      title: t('common.tenants'),
+      url: '/tenants',
+      icon: Users,
+      resource: 'tenants',
+    },
+    {
+      title: t('common.owners'),
+      url: '/owners',
+      icon: UserCheck,
+      resource: 'owners',
+    },
+    {
+      title: t('common.partners'),
+      url: '/partners',
+      icon: Briefcase,
+      resource: 'partners',
+    },
+    {
+      title: t('common.calendar'),
+      url: '/calendar',
+      icon: Calendar,
+      resource: 'calendar',
+    },
+    {
+      title: t('common.tasks'),
+      url: '/tasks',
+      icon: ClipboardList,
+      resource: 'tasks',
+    },
+    {
+      title: t('common.financial'),
+      url: '/financial',
+      icon: DollarSign,
+      resource: 'financial',
+    },
+    {
+      title: t('common.messages'),
+      url: '/messages',
+      icon: MessageSquare,
+      resource: 'messages',
+    },
   ]
+
+  const visibleMenuItems = allMenuItems.filter((item) =>
+    hasPermission(currentUser as User, item.resource as Resource, 'view'),
+  )
 
   const isActive = (url: string) => {
     if (url === '/' && pathname === '/') return true
     if (url !== '/' && pathname.startsWith(url)) return true
     return false
   }
+
+  const showUsers = hasPermission(currentUser as User, 'users', 'view')
+  const showSettings = hasPermission(currentUser as User, 'settings', 'view')
 
   return (
     <Sidebar collapsible="icon">
@@ -65,7 +126,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {visibleMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
@@ -87,18 +148,34 @@ export function AppSidebar() {
           <SidebarGroupLabel>Sistema</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive('/settings')}
-                  tooltip={t('common.settings')}
-                >
-                  <Link to="/settings">
-                    <Settings />
-                    <span>{t('common.settings')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {showUsers && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive('/users')}
+                    tooltip="Usuários"
+                  >
+                    <Link to="/users">
+                      <Users />
+                      <span>Usuários</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+              {showSettings && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive('/settings')}
+                    tooltip={t('common.settings')}
+                  >
+                    <Link to="/settings">
+                      <Settings />
+                      <span>{t('common.settings')}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -108,13 +185,15 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <div className="flex items-center gap-2 p-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src="https://img.usecurling.com/ppl/thumbnail?gender=male" />
-                <AvatarFallback>AD</AvatarFallback>
+                <AvatarImage src={currentUser.avatar} />
+                <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="font-semibold">Admin User</span>
-                <span className="text-xs text-muted-foreground">
-                  admin@sistema.com
+                <span className="font-semibold truncate w-32">
+                  {currentUser.name}
+                </span>
+                <span className="text-xs text-muted-foreground truncate w-32">
+                  {currentUser.email}
                 </span>
               </div>
             </div>

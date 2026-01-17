@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode, useEffect } from 'react'
+import React, { createContext, useState, ReactNode } from 'react'
 import {
   Property,
   Task,
@@ -10,24 +10,23 @@ import {
   Owner,
   Partner,
   User,
-  UserRole,
   Payment,
   AutomationRule,
   Condominium,
+  PaymentIntegration,
 } from '@/lib/types'
 import {
   properties as initialProperties,
   tasks as initialTasks,
   financials as initialFinancials,
   messages as initialMessages,
-  owner1Messages,
-  partner1Messages,
   tenants as initialTenants,
   owners as initialOwners,
   partners as initialPartners,
   systemUsers,
   automationRules as initialAutomationRules,
   condominiums as initialCondominiums,
+  defaultPaymentIntegrations,
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
@@ -44,6 +43,8 @@ interface AppContextType {
   automationRules: AutomationRule[]
   currentUser: User | Owner | Partner | Tenant
   allUsers: (User | Owner | Partner | Tenant)[]
+  users: User[] // Managed system users
+  paymentIntegrations: PaymentIntegration[]
   language: Language
   setLanguage: (lang: Language) => void
   t: (key: string, params?: Record<string, string>) => string
@@ -67,6 +68,12 @@ interface AppContextType {
   setCurrentUser: (userId: string) => void
   startChat: (contactId: string) => void
   updateAutomationRule: (rule: AutomationRule) => void
+  // User Management
+  addUser: (user: User) => void
+  updateUser: (user: User) => void
+  deleteUser: (userId: string) => void
+  // Payment Settings
+  updatePaymentIntegration: (integration: PaymentIntegration) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -83,13 +90,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [automationRules, setAutomationRules] = useState<AutomationRule[]>(
     initialAutomationRules,
   )
-  const [allMessages, setAllMessages] = useState<Message[]>([
-    ...initialMessages,
-    ...owner1Messages,
-    ...partner1Messages,
-  ])
+  const [allMessages, setAllMessages] = useState<Message[]>(initialMessages)
+  const [users, setUsers] = useState<User[]>(systemUsers)
+  const [paymentIntegrations, setPaymentIntegrations] = useState<
+    PaymentIntegration[]
+  >(defaultPaymentIntegrations)
 
-  // Language State
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app_language')
     return (saved as Language) || 'pt'
@@ -100,17 +106,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('app_language', lang)
   }
 
-  // Translation Helper
   const t = (key: string, params?: Record<string, string>) => {
     const keys = key.split('.')
     let current: any = translations[language]
 
     for (const k of keys) {
-      if (current[k] === undefined) {
-        // Fallback or warning
-        // console.warn(`Missing translation for key: ${key} in ${language}`)
-        return key
-      }
+      if (current[k] === undefined) return key
       current = current[k]
     }
 
@@ -125,19 +126,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return current as string
   }
 
-  // Auth State
   const [currentUser, setCurrentUserObj] = useState<
     User | Owner | Partner | Tenant
-  >(systemUsers.find((u) => u.id === 'plat_manager')!)
+  >(systemUsers[0])
 
-  const allUsers = [...systemUsers, ...owners, ...partners, ...tenants]
+  const allUsers = [...users, ...owners, ...partners, ...tenants]
 
   const setCurrentUser = (userId: string) => {
     const user = allUsers.find((u) => u.id === userId)
     if (user) setCurrentUserObj(user)
   }
 
-  // Filter messages for current user
   const visibleMessages = allMessages.filter(
     (m) => m.ownerId === currentUser.id,
   )
@@ -169,7 +168,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const deleteCondominium = (condoId: string) => {
-    // Integrity Check
     const isLinked = properties.some((p) => p.condominiumId === condoId)
     if (isLinked) {
       throw new Error('error_linked_condo')
@@ -338,6 +336,26 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     )
   }
 
+  const addUser = (user: User) => {
+    setUsers([...users, user])
+  }
+
+  const updateUser = (user: User) => {
+    setUsers(users.map((u) => (u.id === user.id ? user : u)))
+  }
+
+  const deleteUser = (userId: string) => {
+    setUsers(users.filter((u) => u.id !== userId))
+  }
+
+  const updatePaymentIntegration = (integration: PaymentIntegration) => {
+    setPaymentIntegrations(
+      paymentIntegrations.map((p) =>
+        p.provider === integration.provider ? integration : p,
+      ),
+    )
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -352,6 +370,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         automationRules,
         currentUser,
         allUsers,
+        users,
+        paymentIntegrations,
         language,
         setLanguage,
         t,
@@ -375,6 +395,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setCurrentUser,
         startChat,
         updateAutomationRule,
+        addUser,
+        updateUser,
+        deleteUser,
+        updatePaymentIntegration,
       }}
     >
       {children}

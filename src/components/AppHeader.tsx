@@ -20,6 +20,10 @@ export function AppHeader() {
   const { currentUser, setCurrentUser, allUsers } = useAuthStore()
   const { language, setLanguage, t } = useLanguageStore()
 
+  // Simplified test user switch logic for demo purposes
+  // In a real app, this would be handled by auth provider/session
+  const demoUsers = allUsers.filter((u) => u.id !== currentUser?.id).slice(0, 8)
+
   return (
     <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
       <Button variant="ghost" size="icon" onClick={toggleSidebar}>
@@ -97,22 +101,19 @@ export function AppHeader() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Alternar Usuário (Demo)</DropdownMenuLabel>
-          {allUsers
-            .filter((u) => u.id !== currentUser?.id)
-            .slice(0, 8)
-            .map((user) => (
-              <DropdownMenuItem
-                key={user.id}
-                onClick={() => setCurrentUser(user.id)}
-              >
-                <div className="flex flex-col">
-                  <span>{user.name}</span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {t(`roles.${user.role}`)}
-                  </span>
-                </div>
-              </DropdownMenuItem>
-            ))}
+          {demoUsers.map((user) => (
+            <DropdownMenuItem
+              key={user.id}
+              onClick={() => setCurrentUser(user.id)}
+            >
+              <div className="flex flex-col">
+                <span>{user.name}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {t(`roles.${user.role}`)}
+                </span>
+              </div>
+            </DropdownMenuItem>
+          ))}
           <DropdownMenuSeparator />
           <DropdownMenuItem>{t('common.logout')}</DropdownMenuItem>
         </DropdownMenuContent>

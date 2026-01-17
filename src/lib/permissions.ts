@@ -1,99 +1,59 @@
-import { UserRole } from './types'
+import { User, UserRole, Resource, Action } from './types'
+
+export const hasPermission = (
+  user: User,
+  resource: Resource,
+  action: Action,
+): boolean => {
+  // 1. Platform Owner has full access
+  if (user.role === 'platform_owner') return true
+
+  // 2. Software Tenant has full access to their tenant scope (mocked as full access here)
+  if (user.role === 'software_tenant') return true
+
+  // 3. Internal User relies on permissions
+  if (user.role === 'internal_user') {
+    const permission = user.permissions?.find((p) => p.resource === resource)
+    if (!permission) return false
+    return permission.actions.includes(action)
+  }
+
+  // 4. Other roles (Owner, Partner, Tenant) - defaults
+  // They generally don't access the dashboard admin features, but if they did:
+  if (user.role === 'property_owner') {
+    // Limited access example
+    if (resource === 'messages' && action === 'view') return true
+    if (resource === 'calendar' && action === 'view') return true
+    // Owners might see their own properties (logic handled in component usually)
+    return false
+  }
+
+  return false
+}
 
 export const canChat = (
   initiatorRole: UserRole,
   targetRole: UserRole,
 ): boolean => {
-  // App Owner Rules
-  if (initiatorRole === 'app_owner') {
-    // Can view/msg Platform Tenants (Owner, Manager, Staff)
-    // Cannot msg Property Owners or Partners directly
-    return [
-      'platform_owner',
-      'platform_manager',
-      'platform_staff_long',
-      'platform_staff_short',
-    ].includes(targetRole)
-  }
+  if (initiatorRole === 'platform_owner') return true
+  if (initiatorRole === 'software_tenant') return true
+  if (initiatorRole === 'internal_user') return true
 
-  // Platform Tenant Rules (Company)
-  if (initiatorRole === 'platform_owner') {
-    // Can msg everyone
-    return true
-  }
-
-  if (initiatorRole === 'platform_manager') {
-    // Can msg everyone
-    return true
-  }
-
-  if (
-    initiatorRole === 'platform_staff_long' ||
-    initiatorRole === 'platform_staff_short'
-  ) {
-    // Can msg Platform Owner/Manager, Property Owners, Partners
-    // Cannot msg App Owner directly (usually only Platform Owner does this, but for simplicity let's say they can't)
-    return [
-      'platform_owner',
-      'platform_manager',
-      'platform_staff_long',
-      'platform_staff_short',
-      'property_owner',
-      'partner',
-      'tenant',
-    ].includes(targetRole)
-  }
-
-  // Property Owner Rules
-  if (initiatorRole === 'property_owner') {
-    // Can msg Platform Tenant's employees
-    // PROHIBITED: Partners, App Owner, Other Property Owners (privacy)
-    return [
-      'platform_owner',
-      'platform_manager',
-      'platform_staff_long',
-      'platform_staff_short',
-    ].includes(targetRole)
-  }
-
-  // Partner Rules
-  if (initiatorRole === 'partner') {
-    // Can msg Platform Tenant's employees
-    // PROHIBITED: Property Owners, App Owner
-    return [
-      'platform_owner',
-      'platform_manager',
-      'platform_staff_long',
-      'platform_staff_short',
-    ].includes(targetRole)
-  }
-
-  // Tenant (Renter) Rules
-  if (initiatorRole === 'tenant') {
-    // Can msg Platform Tenant's employees
-    return [
-      'platform_owner',
-      'platform_manager',
-      'platform_staff_long',
-      'platform_staff_short',
-    ].includes(targetRole)
-  }
+  // Basic rules for others
+  const staffRoles = ['platform_owner', 'software_tenant', 'internal_user']
+  if (staffRoles.includes(targetRole)) return true
 
   return false
 }
 
 export const getRoleLabel = (role: UserRole): string => {
   switch (role) {
-    case 'app_owner':
-      return 'Admin do Sistema'
     case 'platform_owner':
-      return 'Dono da Empresa'
-    case 'platform_manager':
-      return 'Gerente'
-    case 'platform_staff_long':
-      return 'Staff (Fixo)'
-    case 'platform_staff_short':
-      return 'Staff (Temp)'
+      return 'Dono da Plataforma'
+    case 'software_tenant':
+      return 'Locador (Cliente)'
+    case 'internal_user':
+      return 'Usuário Interno'
     case 'property_owner':
       return 'Proprietário'
     case 'partner':

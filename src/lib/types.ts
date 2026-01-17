@@ -1,12 +1,39 @@
 export type UserRole =
-  | 'app_owner'
   | 'platform_owner'
-  | 'platform_manager'
-  | 'platform_staff_long'
-  | 'platform_staff_short'
+  | 'software_tenant'
+  | 'internal_user'
   | 'property_owner'
   | 'partner'
   | 'tenant'
+
+export type Resource =
+  | 'dashboard'
+  | 'properties'
+  | 'condominiums'
+  | 'tenants'
+  | 'owners'
+  | 'partners'
+  | 'calendar'
+  | 'tasks'
+  | 'financial'
+  | 'messages'
+  | 'users'
+  | 'settings'
+
+export type Action = 'view' | 'create' | 'edit' | 'delete'
+
+export interface Permission {
+  resource: Resource
+  actions: Action[]
+}
+
+export interface PaymentIntegration {
+  provider: 'bank_transfer' | 'credit_card' | 'bill_com'
+  enabled: boolean
+  apiKey?: string
+  accountNumber?: string
+  config?: Record<string, any>
+}
 
 export interface User {
   id: string
@@ -16,6 +43,9 @@ export interface User {
   avatar?: string
   phone?: string
   companyName?: string
+  parentId?: string // For hierarchy
+  permissions?: Permission[] // For internal users
+  allowedProfileTypes?: ('long_term' | 'short_term')[] // Property profile restrictions
 }
 
 export interface Condominium {
@@ -45,7 +75,8 @@ export interface Property {
   name: string
   address: string
   type: string
-  community: string // Can be legacy field, or sync with Condo name
+  profileType: 'long_term' | 'short_term' // NEW field
+  community: string
   condominiumId?: string
   status: 'occupied' | 'vacant' | 'maintenance'
   marketingStatus?: 'listed' | 'unlisted'
@@ -97,7 +128,7 @@ export interface Property {
   }
 
   ownerId: string
-  agentId?: string // Associated Realtor/Agent
+  agentId?: string
 }
 
 export interface Tenant {
@@ -160,8 +191,8 @@ export interface Task {
   propertyCommunity?: string
   status: 'pending' | 'in_progress' | 'completed' | 'approved'
   type: 'cleaning' | 'maintenance' | 'inspection'
-  assignee: string // Can be Partner ID or Name
-  assigneeId?: string // Link to Partner
+  assignee: string
+  assigneeId?: string
   date: string
   priority: 'low' | 'medium' | 'high' | 'critical'
   images?: string[]
@@ -208,9 +239,9 @@ export interface AutomationRule {
 
 export interface Message {
   id: string
-  contact: string // Display Name
-  contactId: string // The ID of the other person
-  ownerId: string // The ID of the user who owns this message thread (Inbox Owner)
+  contact: string
+  contactId: string
+  ownerId: string
   lastMessage: string
   time: string
   unread: number
