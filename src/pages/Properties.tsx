@@ -15,12 +15,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Users, BedDouble, Bath } from 'lucide-react'
+import { MapPin, Users, BedDouble, Bath, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useOwnerStore from '@/stores/useOwnerStore'
 import usePartnerStore from '@/stores/usePartnerStore'
+import useCondominiumStore from '@/stores/useCondominiumStore'
 import {
   Dialog,
   DialogContent,
@@ -33,13 +34,15 @@ import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Properties() {
-  const { properties, addProperty } = usePropertyStore()
+  const { properties, addProperty, deleteProperty } = usePropertyStore()
   const { owners } = useOwnerStore()
   const { partners } = usePartnerStore()
+  const { condominiums } = useCondominiumStore()
   const { t } = useLanguageStore()
   const [filter, setFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const { toast } = useToast()
+  const [open, setOpen] = useState(false)
 
   const realtors = partners.filter((p) => p.type === 'agent')
 
@@ -52,14 +55,20 @@ export default function Properties() {
     guests: '6',
     ownerId: '',
     agentId: '',
+    condominiumId: '',
   })
 
-  const filteredProperties = properties.filter(
-    (p) =>
-      (p.name.toLowerCase().includes(filter.toLowerCase()) ||
-        p.address.toLowerCase().includes(filter.toLowerCase())) &&
-      (statusFilter === 'all' || p.status === statusFilter),
-  )
+  const filteredProperties = properties.filter((p) => {
+    const matchesFilter =
+      p.name.toLowerCase().includes(filter.toLowerCase()) ||
+      p.address.toLowerCase().includes(filter.toLowerCase()) ||
+      condominiums
+        .find((c) => c.id === p.condominiumId)
+        ?.name.toLowerCase()
+        .includes(filter.toLowerCase())
+    const matchesStatus = statusFilter === 'all' || p.status === statusFilter
+    return matchesFilter && matchesStatus
+  })
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -75,12 +84,16 @@ export default function Properties() {
   }
 
   const handleAddProperty = () => {
+    const selectedCondo = condominiums.find(
+      (c) => c.id === newProp.condominiumId,
+    )
     addProperty({
       id: `prop${Date.now()}`,
       name: newProp.name,
       address: newProp.address,
       type: newProp.type,
-      community: 'New Community',
+      community: selectedCondo ? selectedCondo.name : 'Independent',
+      condominiumId: newProp.condominiumId,
       status: 'vacant',
       image: 'https://img.usecurling.com/p/400/300?q=house',
       gallery: [],
@@ -101,6 +114,7 @@ export default function Properties() {
       title: t('properties.property_added'),
       description: `${newProp.name} ${t('properties.property_added_desc')}`,
     })
+    setOpen(false)
     setNewProp({
       name: '',
       address: '',
@@ -110,7 +124,16 @@ export default function Properties() {
       guests: '6',
       ownerId: '',
       agentId: '',
+      condominiumId: '',
     })
+  }
+
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.preventDefault()
+    if (confirm(t('common.delete_desc'))) {
+      deleteProperty(id)
+      toast({ title: 'Propriedade excluída com sucesso.' })
+    }
   }
 
   return (
@@ -122,13 +145,13 @@ export default function Properties() {
           </h1>
           <p className="text-muted-foreground">{t('properties.subtitle')}</p>
         </div>
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="bg-trust-blue hover:bg-blue-700">
               {t('properties.new_property')}
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{t('properties.add_title')}</DialogTitle>
             </DialogHeader>
@@ -152,6 +175,28 @@ export default function Properties() {
                   }
                   placeholder="Ex: 123 Main St"
                 />
+              </div>
+              <div className="grid gap-2">
+                <Label>{t('properties.condominium')}</Label>
+                <Select
+                  value={newProp.condominiumId}
+                  onValueChange={(val) =>
+                    setNewProp({ ...newProp, condominiumId: val })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={t('properties.select_condo') || 'Selecione'}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {condominiums.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
@@ -285,7 +330,7 @@ export default function Properties() {
         {filteredProperties.map((property) => (
           <Card
             key={property.id}
-            className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col"
+            className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col group relative"
           >
             <div className="relative h-48 w-full">
               <img
@@ -298,6 +343,14 @@ export default function Properties() {
               >
                 {t(`common.${property.status}`)}
               </Badge>
+              <Button
+                variant="destructive"
+                size="icon"
+                className="absolute top-2 left-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={(e) => handleDelete(e, property.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">

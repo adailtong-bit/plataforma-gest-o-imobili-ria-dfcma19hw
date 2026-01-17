@@ -9,6 +9,7 @@ import {
   Partner,
   User,
   AutomationRule,
+  Condominium,
 } from '@/lib/types'
 
 // System Users (Staff/Admins)
@@ -82,6 +83,30 @@ export const owners: Owner[] = [
   },
 ]
 
+export const condominiums: Condominium[] = [
+  {
+    id: 'condo1',
+    name: 'Sunny Isles HOA',
+    address: '100 Sunny Blvd, Orlando, FL',
+    managerName: 'Pedro Manager',
+    managerPhone: '+1 555-8888',
+    managerEmail: 'hoasunny@example.com',
+  },
+  {
+    id: 'condo2',
+    name: 'Brickell Heights',
+    address: '450 Brickell Ave, Miami, FL',
+    managerName: 'Lucia Director',
+    managerEmail: 'brickell.hoa@example.com',
+  },
+  {
+    id: 'condo3',
+    name: 'Lakefront HOA',
+    address: 'Lake View Dr, Kissimmee, FL',
+    managerName: 'Mike Lake',
+  },
+]
+
 export const properties: Property[] = [
   {
     id: 'prop1',
@@ -89,6 +114,7 @@ export const properties: Property[] = [
     address: '123 Palm Street, Orlando, FL',
     type: 'House',
     community: 'Sunny Isles HOA',
+    condominiumId: 'condo1',
     status: 'occupied',
     marketingStatus: 'listed',
     image: 'https://img.usecurling.com/p/400/300?q=modern%20villa',
@@ -105,6 +131,10 @@ export const properties: Property[] = [
     wifiPassword: 'sun123',
     accessCodeBuilding: '9988',
     accessCodeUnit: '4921',
+    accessCodeGuest: '1234',
+    accessCodeCleaning: '9999',
+    hoaValue: 350.0,
+    hoaFrequency: 'monthly',
     description: {
       pt: 'Uma bela villa com piscina aquecida e sala de jogos. Perfeita para famílias.',
       en: 'A beautiful villa with heated pool and game room. Perfect for families.',
@@ -121,6 +151,7 @@ export const properties: Property[] = [
         name: 'Contrato de Gestão.pdf',
         url: '#',
         date: '2024-01-15',
+        type: 'application/pdf',
       },
       { id: 'd2', name: 'Planta Baixa.pdf', url: '#', date: '2023-12-10' },
     ],
@@ -136,6 +167,7 @@ export const properties: Property[] = [
     address: '450 Brickell Ave, Miami, FL',
     type: 'Condo',
     community: 'Brickell Heights',
+    condominiumId: 'condo2',
     status: 'vacant',
     marketingStatus: 'unlisted',
     image: 'https://img.usecurling.com/p/400/300?q=luxury%20apartment',
@@ -147,6 +179,8 @@ export const properties: Property[] = [
     wifiPassword: 'brickell',
     accessCodeBuilding: '1234',
     accessCodeUnit: '8812',
+    hoaValue: 800.0,
+    hoaFrequency: 'quarterly',
     description: {
       pt: 'Condomínio de luxo no coração de Miami. Perto de tudo.',
       en: 'Luxury condo in the heart of Miami. Close to everything.',
@@ -166,6 +200,7 @@ export const properties: Property[] = [
     address: '789 Lake View Dr, Kissimmee, FL',
     type: 'House',
     community: 'Lakefront HOA',
+    condominiumId: 'condo3',
     status: 'maintenance',
     marketingStatus: 'listed',
     image: 'https://img.usecurling.com/p/400/300?q=lake%20house',

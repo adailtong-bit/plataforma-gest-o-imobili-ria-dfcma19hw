@@ -13,6 +13,7 @@ import {
   UserRole,
   Payment,
   AutomationRule,
+  Condominium,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -26,12 +27,14 @@ import {
   partners as initialPartners,
   systemUsers,
   automationRules as initialAutomationRules,
+  condominiums as initialCondominiums,
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
 
 interface AppContextType {
   properties: Property[]
+  condominiums: Condominium[]
   tasks: Task[]
   financials: Financials
   messages: Message[]
@@ -46,6 +49,10 @@ interface AppContextType {
   t: (key: string, params?: Record<string, string>) => string
   addProperty: (property: Property) => void
   updateProperty: (property: Property) => void
+  deleteProperty: (propertyId: string) => void
+  addCondominium: (condo: Condominium) => void
+  updateCondominium: (condo: Condominium) => void
+  deleteCondominium: (condoId: string) => void
   updateTaskStatus: (taskId: string, status: Task['status']) => void
   addTask: (task: Task) => void
   addInvoice: (invoice: Invoice) => void
@@ -66,6 +73,8 @@ export const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [properties, setProperties] = useState<Property[]>(initialProperties)
+  const [condominiums, setCondominiums] =
+    useState<Condominium[]>(initialCondominiums)
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
   const [financials, setFinancials] = useState<Financials>(initialFinancials)
   const [tenants, setTenants] = useState<Tenant[]>(initialTenants)
@@ -98,7 +107,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     for (const k of keys) {
       if (current[k] === undefined) {
-        console.warn(`Missing translation for key: ${key} in ${language}`)
+        // Fallback or warning
+        // console.warn(`Missing translation for key: ${key} in ${language}`)
         return key
       }
       current = current[k]
@@ -138,6 +148,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const updateProperty = (property: Property) => {
     setProperties(properties.map((p) => (p.id === property.id ? property : p)))
+  }
+
+  const deleteProperty = (propertyId: string) => {
+    setProperties(properties.filter((p) => p.id !== propertyId))
+  }
+
+  const addCondominium = (condo: Condominium) => {
+    setCondominiums([...condominiums, condo])
+  }
+
+  const updateCondominium = (condo: Condominium) => {
+    setCondominiums(condominiums.map((c) => (c.id === condo.id ? condo : c)))
+  }
+
+  const deleteCondominium = (condoId: string) => {
+    setCondominiums(condominiums.filter((c) => c.id !== condoId))
   }
 
   const updateTaskStatus = (taskId: string, status: Task['status']) => {
@@ -305,6 +331,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     <AppContext.Provider
       value={{
         properties,
+        condominiums,
         tasks,
         financials,
         messages: visibleMessages,
@@ -319,6 +346,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         t,
         addProperty,
         updateProperty,
+        deleteProperty,
+        addCondominium,
+        updateCondominium,
+        deleteCondominium,
         updateTaskStatus,
         addTask,
         addInvoice,

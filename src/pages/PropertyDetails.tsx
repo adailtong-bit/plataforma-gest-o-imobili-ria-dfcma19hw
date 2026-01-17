@@ -26,9 +26,11 @@ import {
   Clock,
   CheckCircle2,
   Globe,
-  TrendingUp,
   DollarSign,
   Loader2,
+  Building2,
+  User,
+  ShieldCheck,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -42,6 +44,7 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useTaskStore from '@/stores/useTaskStore'
 import useFinancialStore from '@/stores/useFinancialStore'
+import useCondominiumStore from '@/stores/useCondominiumStore'
 import { useState, useRef, useEffect } from 'react'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
@@ -68,6 +71,13 @@ import {
   Bar,
   ResponsiveContainer,
 } from 'recharts'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -77,6 +87,7 @@ export default function PropertyDetails() {
   const { tenants } = useTenantStore()
   const { tasks } = useTaskStore()
   const { financials } = useFinancialStore()
+  const { condominiums } = useCondominiumStore()
   const { currentUser } = useAuthStore()
   const { startChat } = useMessageStore()
   const { t } = useLanguageStore()
@@ -88,7 +99,10 @@ export default function PropertyDetails() {
   const [editMode, setEditMode] = useState(false)
   const [localProperty, setLocalProperty] = useState<any>(null)
   const [isUploading, setIsUploading] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Refs for file inputs
+  const imageInputRef = useRef<HTMLInputElement>(null)
+  const docInputRef = useRef<HTMLInputElement>(null)
 
   const property = properties.find((p) => p.id === id)
 
@@ -102,10 +116,14 @@ export default function PropertyDetails() {
       </div>
     )
 
-  // Initialize local state if not set
-  if (!localProperty && property) {
-    setLocalProperty(JSON.parse(JSON.stringify(property)))
-  }
+  // Initialize local state if not set or if ID changes
+  useEffect(() => {
+    if (property) {
+      setLocalProperty(JSON.parse(JSON.stringify(property)))
+    }
+  }, [property])
+
+  if (!localProperty) return null
 
   const activeTenant = tenants.find(
     (tn) => tn.propertyId === property.id && tn.status === 'active',
@@ -116,8 +134,10 @@ export default function PropertyDetails() {
     : null
   const propertyManagerId = 'plat_manager'
   const propertyTasks = tasks.filter((task) => task.propertyId === property.id)
-  const propertyPayments = financials.payments.filter(
-    (p) => p.propertyId === property.id,
+
+  // Linked Condominium
+  const linkedCondo = condominiums.find(
+    (c) => c.id === localProperty.condominiumId,
   )
 
   // Calculate mock revenue for this property (simple distribution for demo)
@@ -142,11 +162,11 @@ export default function PropertyDetails() {
 
   const handleToggleListing = (enabled: boolean) => {
     const updated = {
-      ...property,
+      ...localProperty,
       marketingStatus: enabled ? 'listed' : 'unlisted',
-    } as any
-    updateProperty(updated)
+    }
     setLocalProperty(updated)
+    updateProperty(updated)
     toast({
       title: enabled ? t('properties.listed') : t('properties.unlisted'),
       description: enabled
@@ -155,11 +175,7 @@ export default function PropertyDetails() {
     })
   }
 
-  const handleFileSelect = () => {
-    fileInputRef.current?.click()
-  }
-
-  const handleFileChange = async (
+  const handleImageChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0]
@@ -172,8 +188,8 @@ export default function PropertyDetails() {
         description: t('properties.invalid_format'),
         variant: 'destructive',
       })
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
+      if (imageInputRef.current) {
+        imageInputRef.current.value = ''
       }
       return
     }
@@ -203,25 +219,59 @@ export default function PropertyDetails() {
       })
     } finally {
       setIsUploading(false)
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
+      if (imageInputRef.current) {
+        imageInputRef.current.value = ''
       }
     }
   }
 
-  const handleUploadDoc = () => {
-    const newDoc = {
-      id: `doc-${Date.now()}`,
-      name: `Documento ${localProperty.documents?.length || 0 + 1}.pdf`,
-      url: '#',
-      date: new Date().toISOString(),
-    }
-    const updatedDocs = [...(localProperty.documents || []), newDoc]
-    setLocalProperty({ ...localProperty, documents: updatedDocs })
-    updateProperty({ ...property, documents: updatedDocs })
+  const handleDocChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
     toast({
-      title: 'Documento Adicionado',
-      description: 'O documento foi salvo.',
+      title: t('properties.uploading'),
+      description: 'Processando arquivo...',
+    })
+
+    // Simulate upload
+    setTimeout(() => {
+      const newDoc = {
+        id: `doc-${Date.now()}`,
+        name: file.name,
+        url: URL.createObjectURL(file),
+        date: new Date().toISOString(),
+        type: file.type,
+        size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+      }
+      const updatedDocs = [...(localProperty.documents || []), newDoc]
+      const updatedProperty = { ...localProperty, documents: updatedDocs }
+
+      setLocalProperty(updatedProperty)
+      updateProperty(updatedProperty)
+
+      toast({
+        title: t('properties.contract_uploaded'),
+        description: file.name,
+      })
+      if (docInputRef.current) docInputRef.current.value = ''
+    }, 1000)
+  }
+
+  const handleDownloadDoc = (doc: any) => {
+    // Create a temporary link to download
+    const link = document.createElement('a')
+    link.href = doc.url
+    link.download = doc.name
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    toast({
+      title: 'Download iniciado',
+      description: `Baixando ${doc.name}`,
     })
   }
 
@@ -241,14 +291,22 @@ export default function PropertyDetails() {
     localProperty?.hoaRules?.[hoaLang] || property.hoaRules?.[hoaLang]
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-full overflow-hidden">
+    <div className="flex flex-col gap-6 w-full max-w-full overflow-hidden pb-10">
       <input
         type="file"
-        ref={fileInputRef}
+        ref={imageInputRef}
         className="hidden"
         accept="image/jpeg,image/png,image/webp"
-        onChange={handleFileChange}
+        onChange={handleImageChange}
       />
+      <input
+        type="file"
+        ref={docInputRef}
+        className="hidden"
+        accept=".pdf,.doc,.docx,.jpg,.png"
+        onChange={handleDocChange}
+      />
+
       <div className="flex flex-col gap-4">
         <Link to="/properties">
           <Button
@@ -289,7 +347,9 @@ export default function PropertyDetails() {
               </Button>
             ) : (
               <Button
-                className="bg-trust-blue"
+                className={
+                  editMode ? 'bg-green-600 hover:bg-green-700' : 'bg-trust-blue'
+                }
                 onClick={() =>
                   editMode ? handleSave() : setEditMode(!editMode)
                 }
@@ -324,7 +384,8 @@ export default function PropertyDetails() {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="overview" className="space-y-4">
+            <TabsContent value="overview" className="space-y-6">
+              {/* Basic Info */}
               <Card>
                 <CardHeader className="flex flex-row justify-between items-start">
                   <div>
@@ -338,11 +399,12 @@ export default function PropertyDetails() {
                       </span>
                       <div className="flex items-center gap-2">
                         <Switch
-                          checked={property.marketingStatus === 'listed'}
+                          checked={localProperty.marketingStatus === 'listed'}
                           onCheckedChange={handleToggleListing}
+                          disabled={editMode} // Disable switch in edit mode to avoid conflicts, or handle appropriately
                         />
                         <span className="text-xs text-muted-foreground">
-                          {property.marketingStatus === 'listed'
+                          {localProperty.marketingStatus === 'listed'
                             ? t('properties.listed')
                             : t('properties.unlisted')}
                         </span>
@@ -416,6 +478,136 @@ export default function PropertyDetails() {
                         {currentDesc || 'Sem descrição.'}
                       </p>
                     )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* HOA & Condominium Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('properties.condominium')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>{t('properties.select_condo')}</Label>
+                      {editMode ? (
+                        <Select
+                          value={localProperty.condominiumId || ''}
+                          onValueChange={(val) =>
+                            setLocalProperty({
+                              ...localProperty,
+                              condominiumId: val,
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={t('properties.select_condo')}
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {condominiums.map((c) => (
+                              <SelectItem key={c.id} value={c.id}>
+                                {c.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <div className="p-2 border rounded-md bg-muted/20 flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium">
+                            {linkedCondo
+                              ? linkedCondo.name
+                              : t('properties.not_assigned')}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {linkedCondo && (
+                      <div className="space-y-2 p-3 bg-blue-50 border border-blue-100 rounded-md text-sm">
+                        <p className="font-semibold text-blue-800">
+                          {linkedCondo.name}
+                        </p>
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <MapPin className="h-3 w-3" /> {linkedCondo.address}
+                        </div>
+                        {linkedCondo.managerName && (
+                          <div className="flex items-center gap-2 text-blue-700">
+                            <User className="h-3 w-3" />{' '}
+                            {linkedCondo.managerName}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <Separator />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>{t('properties.hoa_fee')}</Label>
+                      {editMode ? (
+                        <Input
+                          type="number"
+                          value={localProperty.hoaValue || ''}
+                          onChange={(e) =>
+                            setLocalProperty({
+                              ...localProperty,
+                              hoaValue: parseFloat(e.target.value),
+                            })
+                          }
+                          placeholder="0.00"
+                          startIcon={<DollarSign className="h-4 w-4" />}
+                        />
+                      ) : (
+                        <p className="font-medium text-lg">
+                          {localProperty.hoaValue
+                            ? `$${localProperty.hoaValue.toFixed(2)}`
+                            : '-'}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t('properties.hoa_freq')}</Label>
+                      {editMode ? (
+                        <Select
+                          value={localProperty.hoaFrequency || 'monthly'}
+                          onValueChange={(val) =>
+                            setLocalProperty({
+                              ...localProperty,
+                              hoaFrequency: val,
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="monthly">
+                              {t('properties.monthly')}
+                            </SelectItem>
+                            <SelectItem value="quarterly">
+                              {t('properties.quarterly')}
+                            </SelectItem>
+                            <SelectItem value="semi-annually">
+                              {t('properties.semiannually')}
+                            </SelectItem>
+                            <SelectItem value="annually">
+                              {t('properties.annually')}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Badge variant="outline">
+                          {localProperty.hoaFrequency
+                            ? t(`properties.${localProperty.hoaFrequency}`)
+                            : '-'}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -528,7 +720,7 @@ export default function PropertyDetails() {
                           />
                         ) : (
                           <p className="text-xl font-bold tracking-widest break-all">
-                            {property.accessCodeBuilding || 'N/A'}
+                            {localProperty.accessCodeBuilding || 'N/A'}
                           </p>
                         )}
                       </div>
@@ -556,9 +748,87 @@ export default function PropertyDetails() {
                           />
                         ) : (
                           <p className="text-xl font-bold tracking-widest break-all">
-                            {property.accessCodeUnit || 'N/A'}
+                            {localProperty.accessCodeUnit || 'N/A'}
                           </p>
                         )}
+                      </div>
+                    </div>
+
+                    {/* Guest Code */}
+                    <div className="flex items-center gap-3 p-4 border rounded-lg bg-slate-50">
+                      <div className="bg-white p-2 rounded-full shadow-sm">
+                        <User className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-muted-foreground truncate">
+                          {t('properties.guest_code')}
+                        </p>
+                        {editMode ? (
+                          <Input
+                            value={localProperty?.accessCodeGuest || ''}
+                            onChange={(e) =>
+                              setLocalProperty({
+                                ...localProperty,
+                                accessCodeGuest: e.target.value,
+                              })
+                            }
+                            className="h-8 mt-1"
+                          />
+                        ) : (
+                          <p className="text-lg font-bold tracking-widest break-all">
+                            {localProperty.accessCodeGuest || 'N/A'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Service/Cleaning Code */}
+                    <div className="flex items-center gap-3 p-4 border rounded-lg bg-slate-50">
+                      <div className="bg-white p-2 rounded-full shadow-sm">
+                        <ShieldCheck className="h-5 w-5 text-orange-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-muted-foreground truncate">
+                          {t('properties.service_code')} /{' '}
+                          {t('properties.cleaning_code')}
+                        </p>
+                        <div className="flex gap-2">
+                          {editMode ? (
+                            <>
+                              <Input
+                                placeholder="Service"
+                                value={localProperty?.accessCodeService || ''}
+                                onChange={(e) =>
+                                  setLocalProperty({
+                                    ...localProperty,
+                                    accessCodeService: e.target.value,
+                                  })
+                                }
+                                className="h-8 mt-1"
+                              />
+                              <Input
+                                placeholder="Cleaning"
+                                value={localProperty?.accessCodeCleaning || ''}
+                                onChange={(e) =>
+                                  setLocalProperty({
+                                    ...localProperty,
+                                    accessCodeCleaning: e.target.value,
+                                  })
+                                }
+                                className="h-8 mt-1"
+                              />
+                            </>
+                          ) : (
+                            <div className="flex flex-col text-sm font-mono mt-1">
+                              <span>
+                                S: {localProperty.accessCodeService || 'N/A'}
+                              </span>
+                              <span>
+                                C: {localProperty.accessCodeCleaning || 'N/A'}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -584,7 +854,7 @@ export default function PropertyDetails() {
                           />
                         ) : (
                           <p className="text-lg font-bold break-all">
-                            {property.wifiSsid || 'N/A'}
+                            {localProperty.wifiSsid || 'N/A'}
                           </p>
                         )}
                       </div>
@@ -612,7 +882,7 @@ export default function PropertyDetails() {
                           />
                         ) : (
                           <p className="text-lg font-mono break-all">
-                            {property.wifiPassword || 'N/A'}
+                            {localProperty.wifiPassword || 'N/A'}
                           </p>
                         )}
                       </div>
@@ -628,7 +898,7 @@ export default function PropertyDetails() {
                   <CardTitle>{t('properties.gallery')}</CardTitle>
                   <Button
                     size="sm"
-                    onClick={handleFileSelect}
+                    onClick={() => imageInputRef.current?.click()}
                     disabled={isUploading}
                   >
                     {isUploading ? (
@@ -678,8 +948,13 @@ export default function PropertyDetails() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>{t('properties.legal_docs')}</CardTitle>
-                  <Button size="sm" variant="outline" onClick={handleUploadDoc}>
-                    <Upload className="mr-2 h-4 w-4" /> {t('common.upload')}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => docInputRef.current?.click()}
+                  >
+                    <Upload className="mr-2 h-4 w-4" />{' '}
+                    {t('properties.upload_contract')}
                   </Button>
                 </CardHeader>
                 <CardContent>
@@ -705,12 +980,19 @@ export default function PropertyDetails() {
                               <span className="truncate font-medium">
                                 {doc.name}
                               </span>
-                              <span className="text-xs text-muted-foreground">
-                                {format(new Date(doc.date), 'dd/MM/yyyy')}
+                              <span className="text-xs text-muted-foreground flex gap-2">
+                                <span>
+                                  {format(new Date(doc.date), 'dd/MM/yyyy')}
+                                </span>
+                                {doc.size && <span>• {doc.size}</span>}
                               </span>
                             </div>
                           </div>
-                          <Button variant="ghost" size="sm">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDownloadDoc(doc)}
+                          >
                             <Download className="h-4 w-4" />
                           </Button>
                         </div>
@@ -840,10 +1122,12 @@ export default function PropertyDetails() {
                 </span>
                 <Badge
                   variant={
-                    property.status === 'occupied' ? 'default' : 'secondary'
+                    localProperty.status === 'occupied'
+                      ? 'default'
+                      : 'secondary'
                   }
                 >
-                  {t(`common.${property.status}`)}
+                  {t(`common.${localProperty.status}`)}
                 </Badge>
               </div>
 

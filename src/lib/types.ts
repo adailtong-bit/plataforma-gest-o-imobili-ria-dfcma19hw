@@ -18,12 +18,22 @@ export interface User {
   companyName?: string
 }
 
+export interface Condominium {
+  id: string
+  name: string
+  address: string
+  managerName?: string
+  managerPhone?: string
+  managerEmail?: string
+}
+
 export interface Property {
   id: string
   name: string
   address: string
   type: string
-  community: string
+  community: string // Can be legacy field, or sync with Condo name
+  condominiumId?: string
   status: 'occupied' | 'vacant' | 'maintenance'
   marketingStatus?: 'listed' | 'unlisted'
   image: string
@@ -37,6 +47,13 @@ export interface Property {
   wifiPassword?: string
   accessCodeBuilding?: string
   accessCodeUnit?: string
+  accessCodeGuest?: string
+  accessCodeService?: string
+  accessCodeCleaning?: string
+
+  // HOA / Condominium Info
+  hoaValue?: number
+  hoaFrequency?: 'monthly' | 'quarterly' | 'semi-annually' | 'annually'
 
   // Multilingual Content
   description?: {
@@ -56,6 +73,8 @@ export interface Property {
     name: string
     url: string
     date: string
+    size?: string
+    type?: string
   }[]
 
   // Contract Alerts

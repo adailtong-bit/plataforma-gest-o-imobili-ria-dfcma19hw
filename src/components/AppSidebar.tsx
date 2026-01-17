@@ -22,6 +22,7 @@ import {
   Users,
   Briefcase,
   UserCheck,
+  Building2,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -35,6 +36,7 @@ export function AppSidebar() {
   const menuItems = [
     { title: t('common.dashboard'), url: '/', icon: Home },
     { title: t('common.properties'), url: '/properties', icon: Building },
+    { title: t('common.condominiums'), url: '/condominiums', icon: Building2 },
     { title: t('common.tenants'), url: '/tenants', icon: Users },
     { title: t('common.owners'), url: '/owners', icon: UserCheck },
     { title: t('common.partners'), url: '/partners', icon: Briefcase },

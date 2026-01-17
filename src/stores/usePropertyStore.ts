@@ -10,6 +10,7 @@ const usePropertyStore = () => {
     properties: context.properties,
     addProperty: context.addProperty,
     updateProperty: context.updateProperty,
+    deleteProperty: context.deleteProperty,
   }
 }
 
