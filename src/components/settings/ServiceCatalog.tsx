@@ -37,7 +37,7 @@ import { Search, Plus, Trash2, Edit } from 'lucide-react'
 import usePartnerStore from '@/stores/usePartnerStore'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
-import { ServiceRate, Partner } from '@/lib/types'
+import { ServiceRate } from '@/lib/types'
 
 export function ServiceCatalog() {
   const { partners, updatePartner } = usePartnerStore()
@@ -51,6 +51,7 @@ export function ServiceCatalog() {
     serviceName: '',
     price: 0,
     validFrom: format(new Date(), 'yyyy-MM-dd'),
+    validTo: '',
   })
 
   // Flatten all service rates
@@ -94,6 +95,7 @@ export function ServiceCatalog() {
         serviceName: currentRate.serviceName,
         price: Number(currentRate.price),
         validFrom: currentRate.validFrom || new Date().toISOString(),
+        validTo: currentRate.validTo,
       } as ServiceRate)
     }
 
@@ -141,6 +143,7 @@ export function ServiceCatalog() {
       serviceName: rate.serviceName,
       price: rate.price,
       validFrom: rate.validFrom,
+      validTo: rate.validTo || '',
     })
     setOpen(true)
   }
@@ -151,6 +154,7 @@ export function ServiceCatalog() {
       serviceName: '',
       price: 0,
       validFrom: format(new Date(), 'yyyy-MM-dd'),
+      validTo: '',
     })
   }
 
@@ -170,7 +174,7 @@ export function ServiceCatalog() {
                 <Plus className="mr-2 h-4 w-4" /> Adicionar Serviço
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-lg">
               <DialogHeader>
                 <DialogTitle>
                   {editMode ? 'Editar Serviço' : 'Novo Serviço'}
@@ -178,7 +182,7 @@ export function ServiceCatalog() {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label>Parceiro</Label>
+                  <Label>Parceiro / Fornecedor</Label>
                   <Select
                     value={selectedPartnerId}
                     onValueChange={setSelectedPartnerId}
@@ -224,7 +228,7 @@ export function ServiceCatalog() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Válido a partir de</Label>
+                    <Label>Validade (Início)</Label>
                     <Input
                       type="date"
                       value={
@@ -239,6 +243,23 @@ export function ServiceCatalog() {
                         setCurrentRate({
                           ...currentRate,
                           validFrom: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Validade (Fim)</Label>
+                    <Input
+                      type="date"
+                      value={
+                        currentRate.validTo
+                          ? format(new Date(currentRate.validTo), 'yyyy-MM-dd')
+                          : ''
+                      }
+                      onChange={(e) =>
+                        setCurrentRate({
+                          ...currentRate,
+                          validTo: e.target.value,
                         })
                       }
                     />
@@ -306,9 +327,20 @@ export function ServiceCatalog() {
                       ${rate.price.toFixed(2)}
                     </TableCell>
                     <TableCell>
-                      {rate.validFrom
-                        ? format(new Date(rate.validFrom), 'dd/MM/yyyy')
-                        : '-'}
+                      <div className="flex flex-col text-xs">
+                        <span>
+                          De:{' '}
+                          {rate.validFrom
+                            ? format(new Date(rate.validFrom), 'dd/MM/yyyy')
+                            : '-'}
+                        </span>
+                        <span>
+                          Até:{' '}
+                          {rate.validTo
+                            ? format(new Date(rate.validTo), 'dd/MM/yyyy')
+                            : 'Indefinido'}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

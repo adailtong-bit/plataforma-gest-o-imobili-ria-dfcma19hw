@@ -24,6 +24,7 @@ import {
   UserCheck,
   Building2,
   LayoutDashboard,
+  Tag,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -86,6 +87,12 @@ export function AppSidebar() {
       url: '/tasks',
       icon: ClipboardList,
       resource: 'tasks',
+    },
+    {
+      title: t('common.service_pricing'),
+      url: '/service-pricing',
+      icon: Tag,
+      resource: 'partners', // Reusing partners permission for pricing as it is related
     },
     {
       title: t('common.financial'),

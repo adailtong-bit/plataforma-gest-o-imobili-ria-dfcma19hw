@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -106,23 +106,30 @@ export function CreateTaskDialog() {
     return true
   })
 
-  // Auto fetch price when assignee changes
-  if (watchAssigneeId && watchType) {
-    const partner = partners.find((p) => p.id === watchAssigneeId)
-    if (partner && partner.serviceRates) {
-      // Simple matching of task title or type with service name
-      const rate = partner.serviceRates.find(
-        (r) =>
-          watchType.toLowerCase().includes(r.serviceName.toLowerCase()) ||
-          r.serviceName.toLowerCase().includes(watchType.toLowerCase()),
-      )
+  // Auto fetch price when assignee/type changes
+  useEffect(() => {
+    if (watchAssigneeId && watchType) {
+      const partner = partners.find((p) => p.id === watchAssigneeId)
+      if (partner && partner.serviceRates) {
+        // Try to find a matching rate based on task type
+        const rate = partner.serviceRates.find(
+          (r) =>
+            watchType.toLowerCase().includes(r.serviceName.toLowerCase()) ||
+            r.serviceName.toLowerCase().includes(watchType.toLowerCase()),
+        )
 
-      // We only auto-set if the price field is empty to allow overrides,
-      // but in this controlled form loop it might fight. Better to just suggest or hint.
-      // For now, we won't force it in the UI loop to avoid infinite re-renders or complexity,
-      // but the store handles it if price is undefined.
+        // Only set price if it's currently empty to allow manual overrides
+        const currentPrice = form.getValues('price')
+        if (rate && (!currentPrice || currentPrice === '')) {
+          form.setValue('price', rate.price.toString())
+          toast({
+            title: 'Preço atualizado',
+            description: `Preço sugerido do catálogo: $${rate.price}`,
+          })
+        }
+      }
     }
-  }
+  }, [watchAssigneeId, watchType, partners, form, toast])
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -140,7 +147,7 @@ export function CreateTaskDialog() {
     const assignee = partners.find((p) => p.id === values.assigneeId)
     let finalPrice = values.price ? parseFloat(values.price) : undefined
 
-    // If price is not set, try to get from catalog
+    // If price is not set manually, try to fallback to catalog one last time
     if (!finalPrice && assignee && assignee.serviceRates) {
       const rate = assignee.serviceRates.find(
         (r) =>
@@ -342,6 +349,20 @@ export function CreateTaskDialog() {
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('tasks.estimated_value')} ($)</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="0.00" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

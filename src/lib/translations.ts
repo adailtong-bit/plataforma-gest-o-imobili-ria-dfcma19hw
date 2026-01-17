@@ -13,6 +13,8 @@ export const translations = {
       financial: 'Financeiro',
       messages: 'Mensagens',
       settings: 'Configurações',
+      service_pricing: 'Catálogo de Preços',
+      service_desc: 'Gerencie serviços, tarifas e preços de parceiros.',
       search: 'Buscar...',
       filter: 'Filtrar',
       status: 'Status',
