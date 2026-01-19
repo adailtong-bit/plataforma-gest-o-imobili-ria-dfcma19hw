@@ -24,6 +24,7 @@ export type Resource =
   | 'portal'
   | 'market_analysis'
   | 'workflows'
+  | 'renewals'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -102,6 +103,8 @@ export interface Condominium {
     guest?: string
     service?: string
     cleaning?: string
+    amenities?: string
+    gate?: string
   }
   hoaFee?: number
   hoaFrequency?: 'monthly' | 'quarterly' | 'semi-annually' | 'annually'
@@ -110,6 +113,12 @@ export interface Condominium {
     url: string
     date: string
   }
+  contacts?: {
+    role: string
+    name: string
+    phone: string
+    email: string
+  }[]
 }
 
 export type PropertyStatus =
@@ -179,6 +188,15 @@ export interface Property {
   ownerId: string
   agentId?: string
   iCalUrl?: string
+
+  // Financial
+  fixedExpenses?: {
+    id: string
+    name: string
+    amount: number
+    dueDay: number
+    frequency: 'monthly' | 'yearly'
+  }[]
 }
 
 export type DocumentCategory =
@@ -188,6 +206,8 @@ export type DocumentCategory =
   | 'Other'
   | 'Deed'
   | 'Inspection'
+  | 'Passport'
+  | 'SSN'
 
 export interface PropertyDocument {
   id: string
@@ -198,6 +218,16 @@ export interface PropertyDocument {
   type?: string
   category: DocumentCategory
   digitalSignatureStatus?: 'signed' | 'pending' | 'none'
+}
+
+export interface GenericDocument {
+  id: string
+  name: string
+  url: string
+  date: string
+  size?: string
+  type?: string
+  category: DocumentCategory
 }
 
 export interface Tenant {
@@ -213,6 +243,7 @@ export interface Tenant {
   status: 'active' | 'past' | 'prospective'
   role: UserRole
   avatar?: string
+  documents?: GenericDocument[]
 }
 
 export interface Owner {
@@ -225,6 +256,7 @@ export interface Owner {
   accountNumber?: string
   role: UserRole
   avatar?: string
+  documents?: GenericDocument[]
 }
 
 export interface ServiceRate {
@@ -271,14 +303,7 @@ export interface Partner {
   serviceRates?: ServiceRate[]
   employees?: PartnerEmployee[]
   linkedPropertyIds?: string[]
-  documents?: {
-    id: string
-    name: string
-    url: string
-    date: string
-    size?: string
-    type?: string
-  }[]
+  documents?: GenericDocument[]
 }
 
 export interface Evidence {
@@ -347,6 +372,7 @@ export interface LedgerEntry {
   referenceId?: string
   beneficiaryId?: string
   status: 'pending' | 'cleared' | 'void'
+  attachments?: { name: string; url: string }[]
 }
 
 export interface AuditLog {

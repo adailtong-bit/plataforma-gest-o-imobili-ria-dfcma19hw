@@ -1,12 +1,6 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
   ArrowLeft,
@@ -35,6 +29,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { OwnerStatement } from '@/components/financial/OwnerStatement'
+import { DocumentVault } from '@/components/documents/DocumentVault'
 
 export default function OwnerDetails() {
   const { id } = useParams()
@@ -68,7 +63,7 @@ export default function OwnerDetails() {
       }),
     })
     if (action === 'Mensagem') {
-      navigate('/messages')
+      navigate(`/messages?contactId=${owner.id}`)
     }
   }
 
@@ -95,6 +90,11 @@ export default function OwnerDetails() {
         variant: 'destructive',
       })
     }
+  }
+
+  const updateOwnerDocs = (newDocs: any) => {
+    owner.documents = newDocs
+    toast({ title: 'Documentos atualizados' })
   }
 
   return (
@@ -210,12 +210,12 @@ export default function OwnerDetails() {
                 {t('owners.linked_properties')}
               </TabsTrigger>
               <TabsTrigger value="financial">Extrato Financeiro</TabsTrigger>
+              <TabsTrigger value="documents">Documentos</TabsTrigger>
             </TabsList>
             <TabsContent value="properties" className="mt-4">
               <Card>
                 <CardHeader>
                   <CardTitle>{t('owners.linked_properties')}</CardTitle>
-                  <CardDescription>{t('owners.linked_desc')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {ownerProperties.length === 0 ? (
@@ -270,6 +270,15 @@ export default function OwnerDetails() {
                 ownerId={owner.id}
                 properties={properties}
                 ledgerEntries={ledgerEntries}
+              />
+            </TabsContent>
+            <TabsContent value="documents" className="mt-4">
+              <DocumentVault
+                documents={owner.documents || []}
+                onUpdate={updateOwnerDocs}
+                canEdit={true}
+                title="Cofre de Documentos"
+                description="Contratos de gestão, procurações e documentos fiscais."
               />
             </TabsContent>
           </Tabs>

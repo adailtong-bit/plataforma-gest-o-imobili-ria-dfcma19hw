@@ -29,6 +29,7 @@ import {
   Trash2,
   Edit,
   X,
+  Users,
 } from 'lucide-react'
 import useCondominiumStore from '@/stores/useCondominiumStore'
 import { useToast } from '@/hooks/use-toast'
@@ -47,6 +48,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Condominium } from '@/lib/types'
 import { isValidEmail } from '@/lib/utils'
+import { AddressInput, AddressData } from '@/components/ui/address-input'
 
 export default function CondominiumDetails() {
   const { id } = useParams()
@@ -138,6 +140,13 @@ export default function CondominiumDetails() {
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }))
+  }
+
+  const handleAddressSelect = (addr: AddressData) => {
+    handleChange(
+      'address',
+      `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
+    )
   }
 
   const handleNestedChange = (
@@ -267,11 +276,11 @@ export default function CondominiumDetails() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>{t('common.address')}</Label>
-                  <Input
-                    value={formData.address}
-                    onChange={(e) => handleChange('address', e.target.value)}
+                  <Label>Buscar Endereço</Label>
+                  <AddressInput
+                    onAddressSelect={handleAddressSelect}
                     disabled={!isEditing}
+                    defaultValue={formData.address}
                   />
                 </div>
                 <div className="grid gap-2">
@@ -343,7 +352,7 @@ export default function CondominiumDetails() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label>{t('properties.guest_code')}</Label>
                   <Input
@@ -384,6 +393,38 @@ export default function CondominiumDetails() {
                       handleNestedChange(
                         'accessCredentials',
                         'cleaning',
+                        e.target.value,
+                      )
+                    }
+                    placeholder="****"
+                    className="font-mono text-lg"
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Amenities Code (Gym/Pool)</Label>
+                  <Input
+                    value={formData.accessCredentials?.amenities || ''}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        'accessCredentials',
+                        'amenities',
+                        e.target.value,
+                      )
+                    }
+                    placeholder="****"
+                    className="font-mono text-lg"
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Gate Code</Label>
+                  <Input
+                    value={formData.accessCredentials?.gate || ''}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        'accessCredentials',
+                        'gate',
                         e.target.value,
                       )
                     }
@@ -451,6 +492,10 @@ export default function CondominiumDetails() {
                     </Select>
                   </div>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  * Este valor será espelhado automaticamente nas despesas das
+                  propriedades vinculadas a este condomínio.
+                </p>
               </CardContent>
             </Card>
 

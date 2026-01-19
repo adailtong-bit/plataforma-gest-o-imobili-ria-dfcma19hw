@@ -35,6 +35,8 @@ import {
   FileText,
   Mail,
   MessageCircle,
+  Eye,
+  AlertCircle,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -42,6 +44,7 @@ import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { PhoneInput } from '@/components/ui/phone-input'
+import { format, differenceInDays } from 'date-fns'
 
 export default function Tenants() {
   const { tenants, addTenant } = useTenantStore()
@@ -155,6 +158,26 @@ export default function Tenants() {
         variant: 'destructive',
       })
     }
+  }
+
+  const getContractStatus = (leaseEnd?: string) => {
+    if (!leaseEnd) return null
+    const days = differenceInDays(new Date(leaseEnd), new Date())
+    if (days < 0) return <Badge variant="destructive">Expirado</Badge>
+    if (days < 90)
+      return (
+        <Badge
+          variant="destructive"
+          className="bg-red-100 text-red-700 hover:bg-red-200"
+        >
+          Renovação ({days}d)
+        </Badge>
+      )
+    return (
+      <span className="text-xs text-muted-foreground">
+        Vence em {days} dias
+      </span>
+    )
   }
 
   return (
@@ -294,7 +317,7 @@ export default function Tenants() {
                 <TableHead>{t('common.name')}</TableHead>
                 <TableHead>{t('tenants.contact')}</TableHead>
                 <TableHead>{t('tenants.property')}</TableHead>
-                <TableHead>{t('tenants.rent_value')}</TableHead>
+                <TableHead>Contrato</TableHead>
                 <TableHead>{t('common.status')}</TableHead>
                 <TableHead className="text-right">
                   {t('common.actions')}
@@ -311,7 +334,12 @@ export default function Tenants() {
               ) : (
                 filteredTenants.map((tenant) => (
                   <TableRow key={tenant.id}>
-                    <TableCell className="font-medium">{tenant.name}</TableCell>
+                    <TableCell
+                      className="font-medium cursor-pointer hover:underline text-trust-blue"
+                      onClick={() => navigate(`/tenants/${tenant.id}`)}
+                    >
+                      {tenant.name}
+                    </TableCell>
                     <TableCell>
                       <div className="flex flex-col text-sm">
                         <span>{tenant.email}</span>
@@ -326,7 +354,16 @@ export default function Tenants() {
                         {getPropertyName(tenant.propertyId)}
                       </div>
                     </TableCell>
-                    <TableCell>${tenant.rentValue.toFixed(2)}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs">
+                          {tenant.leaseEnd
+                            ? format(new Date(tenant.leaseEnd), 'dd/MM/yyyy')
+                            : '-'}
+                        </span>
+                        {getContractStatus(tenant.leaseEnd)}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="bg-green-50">
                         {t(`common.${tenant.status}`)}
@@ -345,26 +382,20 @@ export default function Tenants() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleEmail(tenant.email)}
-                          title="Email"
-                        >
-                          <Mail className="h-4 w-4 text-blue-600" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => generateLease(tenant.id)}
-                          title="Gerar Contrato"
-                        >
-                          <FileText className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => navigate('/messages')}
+                          onClick={() =>
+                            navigate(`/messages?contactId=${tenant.id}`)
+                          }
                           title={t('tenants.send_message')}
                         >
                           <MessageSquare className="h-4 w-4 text-trust-blue" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => navigate(`/tenants/${tenant.id}`)}
+                          title="Detalhes"
+                        >
+                          <Eye className="h-4 w-4" />
                         </Button>
                       </div>
                     </TableCell>

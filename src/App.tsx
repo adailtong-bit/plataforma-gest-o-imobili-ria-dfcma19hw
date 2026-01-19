@@ -13,6 +13,7 @@ import Financial from './pages/Financial'
 import Messages from './pages/Messages'
 import Settings from './pages/Settings'
 import Tenants from './pages/Tenants'
+import TenantDetails from './pages/TenantDetails'
 import Owners from './pages/Owners'
 import OwnerDetails from './pages/OwnerDetails'
 import Partners from './pages/Partners'
@@ -26,6 +27,7 @@ import OwnerPortal from './pages/portal/OwnerPortal'
 import PartnerPortal from './pages/portal/PartnerPortal'
 import MarketAnalysis from './pages/MarketAnalysis'
 import Workflows from './pages/Workflows'
+import Renewals from './pages/Renewals'
 import { AppProvider } from '@/stores/AppContext'
 import { useEffect } from 'react'
 
@@ -53,6 +55,7 @@ const App = () => {
                 element={<CondominiumDetails />}
               />
               <Route path="/tenants" element={<Tenants />} />
+              <Route path="/tenants/:id" element={<TenantDetails />} />
               <Route path="/owners" element={<Owners />} />
               <Route path="/owners/:id" element={<OwnerDetails />} />
               <Route path="/partners" element={<Partners />} />
@@ -66,6 +69,7 @@ const App = () => {
               <Route path="/service-pricing" element={<ServicePricing />} />
               <Route path="/market-analysis" element={<MarketAnalysis />} />
               <Route path="/workflows" element={<Workflows />} />
+              <Route path="/renewals" element={<Renewals />} />
               {/* Portals */}
               <Route path="/portal/tenant" element={<TenantPortal />} />
               <Route path="/portal/owner" element={<OwnerPortal />} />

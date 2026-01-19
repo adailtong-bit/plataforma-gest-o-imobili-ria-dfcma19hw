@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -12,16 +13,33 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   LineChart,
   Line,
 } from 'recharts'
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 import { Badge } from '@/components/ui/badge'
-import { TrendingUp, Users, Home } from 'lucide-react'
+import { TrendingUp, Download, Filter } from 'lucide-react'
 import { marketData } from '@/lib/mockData'
+import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { useToast } from '@/hooks/use-toast'
 
 export default function MarketAnalysis() {
+  const { toast } = useToast()
+  const [filterRegion, setFilterRegion] = useState('all')
+  const [filterSize, setFilterSize] = useState('all')
+
+  const filteredData = marketData.filter((d) => {
+    if (filterRegion !== 'all' && !d.region.includes(filterRegion)) return false
+    return true
+  })
+
   // Mock trend data for charts
   const priceTrendData = [
     { month: 'Jan', avgPrice: 340000, competitors: 110 },
@@ -32,19 +50,54 @@ export default function MarketAnalysis() {
     { month: 'Jun', avgPrice: 355000, competitors: 125 },
   ]
 
+  const handleExportPDF = () => {
+    toast({
+      title: 'Exportando Relatório',
+      description: 'O relatório de mercado (PDF) está sendo gerado.',
+    })
+  }
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-navy">
-          Análise de Mercado
-        </h1>
-        <p className="text-muted-foreground">
-          Inteligência de mercado e dados comparativos.
-        </p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight text-navy">
+            Análise de Mercado
+          </h1>
+          <p className="text-muted-foreground">
+            Inteligência de mercado e dados comparativos.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Select value={filterRegion} onValueChange={setFilterRegion}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Região" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as Regiões</SelectItem>
+              <SelectItem value="Orlando">Orlando, FL</SelectItem>
+              <SelectItem value="Miami">Miami, FL</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filterSize} onValueChange={setFilterSize}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Tamanho" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="2bd">2 Quartos</SelectItem>
+              <SelectItem value="3bd">3 Quartos</SelectItem>
+              <SelectItem value="4bd">4+ Quartos</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" onClick={handleExportPDF}>
+            <Download className="mr-2 h-4 w-4" /> PDF
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {marketData.map((data, idx) => (
+        {filteredData.map((data, idx) => (
           <Card key={idx}>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex justify-between items-center">
@@ -95,7 +148,7 @@ export default function MarketAnalysis() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Tendência de Preços</CardTitle>
+            <CardTitle>Tendência de Preços (STR & LTR)</CardTitle>
             <CardDescription>Evolução do preço médio na região</CardDescription>
           </CardHeader>
           <CardContent>
@@ -124,9 +177,9 @@ export default function MarketAnalysis() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Competitividade</CardTitle>
+            <CardTitle>Saturação de Mercado</CardTitle>
             <CardDescription>
-              Número de propriedades concorrentes
+              Crescimento de propriedades concorrentes
             </CardDescription>
           </CardHeader>
           <CardContent>

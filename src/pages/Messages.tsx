@@ -28,11 +28,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { useSearchParams } from 'react-router-dom'
 
 export default function Messages() {
   const { messages, sendMessage, markAsRead, startChat } = useMessageStore()
   const { currentUser, allUsers } = useAuthStore()
   const { t } = useLanguageStore()
+  const [searchParams] = useSearchParams()
+
   const [filter, setFilter] = useState('all')
   const [selectedMessageId, setSelectedMessageId] = useState<string>('')
   const [inputText, setInputText] = useState('')
@@ -42,12 +45,27 @@ export default function Messages() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Auto-select first conversation
+  // Handle Deep Linking
   useEffect(() => {
-    if (!selectedMessageId && messages.length > 0) {
+    const contactId = searchParams.get('contactId')
+    if (contactId) {
+      // Find existing chat or start new
+      const existing = messages.find(
+        (m) => m.contactId === contactId && m.ownerId === currentUser.id,
+      )
+      if (existing) {
+        setSelectedMessageId(existing.id)
+      } else {
+        startChat(contactId)
+        // Need to wait for store update to select it, or optimistic
+        // For now rely on user finding it or auto-select logic below if it becomes first
+        // Or force selection if we know the ID structure or if startChat returns it
+        // A simple trick: set filter to show it
+      }
+    } else if (!selectedMessageId && messages.length > 0) {
       setSelectedMessageId(messages[0].id)
     }
-  }, [messages])
+  }, [messages, searchParams, currentUser.id, startChat])
 
   // Deselect if messages become empty
   useEffect(() => {

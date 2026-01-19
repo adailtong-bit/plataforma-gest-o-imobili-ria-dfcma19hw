@@ -1,5 +1,15 @@
-import { Bell, Search, Menu, Globe, LayoutTemplate, Circle } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import { useState, useEffect } from 'react'
+import {
+  Bell,
+  Search,
+  Menu,
+  Globe,
+  LayoutTemplate,
+  Circle,
+  Building,
+  User,
+  CheckSquare,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -17,46 +27,156 @@ import useNotificationStore from '@/stores/useNotificationStore'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { format } from 'date-fns'
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '@/components/ui/command'
+import { useNavigate } from 'react-router-dom'
+import usePropertyStore from '@/stores/usePropertyStore'
+import useTenantStore from '@/stores/useTenantStore'
+import useOwnerStore from '@/stores/useOwnerStore'
+import useTaskStore from '@/stores/useTaskStore'
 
 export function AppHeader() {
   const { toggleSidebar } = useSidebar()
   const { currentUser, setCurrentUser, allUsers } = useAuthStore()
   const { language, setLanguage, t } = useLanguageStore()
   const { notifications, markNotificationAsRead } = useNotificationStore()
+  const navigate = useNavigate()
+
+  // Stores for search
+  const { properties } = usePropertyStore()
+  const { tenants } = useTenantStore()
+  const { owners } = useOwnerStore()
+  const { tasks } = useTaskStore()
+
+  const [openSearch, setOpenSearch] = useState(false)
 
   // Simplified test user switch logic for demo purposes
   const demoUsers = allUsers.filter((u) => u.id !== currentUser?.id).slice(0, 8)
-
   const unreadCount = notifications.filter((n) => !n.read).length
 
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setOpenSearch((open) => !open)
+      }
+    }
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
+
+  const handleSearchSelect = (type: string, id: string) => {
+    setOpenSearch(false)
+    switch (type) {
+      case 'property':
+        navigate(`/properties/${id}`)
+        break
+      case 'tenant':
+        navigate(`/tenants`) // Redirect to list, ideally detail but list is simpler for now unless TenantDetails exists
+        // Actually I'm creating TenantDetails so:
+        // navigate(`/tenants/${id}`) - wait, routes need to support this.
+        // I will implement TenantDetails route in App.tsx
+        navigate(`/tenants/${id}`)
+        break
+      case 'owner':
+        navigate(`/owners/${id}`)
+        break
+      case 'task':
+        navigate(`/tasks`)
+        // Ideally highlight task or open sheet
+        break
+    }
+  }
+
   return (
-    <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
+    <header className="flex h-16 items-center gap-4 border-b bg-background px-6 sticky top-0 z-20">
       <Button variant="ghost" size="icon" onClick={toggleSidebar}>
         <Menu className="h-5 w-5" />
       </Button>
       <div className="flex items-center gap-2">
-        {/* Branding: Tiffany Blue #0ABAB5 with Gold #FFD700 icon */}
         <div className="bg-tiffany text-white p-1.5 rounded-md shrink-0 flex items-center justify-center shadow-sm">
           <LayoutTemplate className="h-5 w-5 text-gold stroke-[2]" />
         </div>
-        <h2 className="text-lg font-bold md:text-xl text-navy tracking-tight">
+        <h2 className="text-lg font-bold md:text-xl text-navy tracking-tight hidden sm:block">
           COREPM
         </h2>
-        <Badge
-          variant="outline"
-          className="text-xs hidden md:inline-flex border-tiffany text-tiffany bg-tiffany/5"
-        >
-          Gestão
-        </Badge>
       </div>
+
+      {/* Global Search Button */}
       <div className="relative ml-auto flex-1 md:grow-0">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder={t('common.search')}
-          className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-        />
+        <Button
+          variant="outline"
+          className="relative w-full justify-start text-sm text-muted-foreground sm:pr-12 md:w-64 lg:w-80"
+          onClick={() => setOpenSearch(true)}
+        >
+          <Search className="mr-2 h-4 w-4" />
+          {t('common.search')}...
+          <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+            <span className="text-xs">⌘</span>K
+          </kbd>
+        </Button>
       </div>
+
+      <CommandDialog open={openSearch} onOpenChange={setOpenSearch}>
+        <CommandInput placeholder="Type to search..." />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="Properties">
+            {properties.slice(0, 5).map((p) => (
+              <CommandItem
+                key={p.id}
+                onSelect={() => handleSearchSelect('property', p.id)}
+              >
+                <Building className="mr-2 h-4 w-4" />
+                {p.name}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Tenants">
+            {tenants.slice(0, 5).map((t) => (
+              <CommandItem
+                key={t.id}
+                onSelect={() => handleSearchSelect('tenant', t.id)}
+              >
+                <User className="mr-2 h-4 w-4" />
+                {t.name}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Owners">
+            {owners.slice(0, 5).map((o) => (
+              <CommandItem
+                key={o.id}
+                onSelect={() => handleSearchSelect('owner', o.id)}
+              >
+                <User className="mr-2 h-4 w-4" />
+                {o.name}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Tasks">
+            {tasks.slice(0, 5).map((task) => (
+              <CommandItem
+                key={task.id}
+                onSelect={() => handleSearchSelect('task', task.id)}
+              >
+                <CheckSquare className="mr-2 h-4 w-4" />
+                {task.title}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
