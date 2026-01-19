@@ -19,6 +19,7 @@ import {
   Notification,
   Workflow,
   MarketData,
+  Advertisement,
 } from '@/lib/types'
 
 // --- System-Wide Seeded Test Environment ---
@@ -363,5 +364,39 @@ export const workflows: Workflow[] = [
         description: 'Send welcome pack',
       },
     ],
+  },
+]
+
+// Advertisements Mock Data
+export const advertisements: Advertisement[] = [
+  {
+    id: 'ad1',
+    title: 'Insurance Partners',
+    description: 'Protect your properties with comprehensive coverage.',
+    imageUrl: 'https://img.usecurling.com/p/300/100?q=insurance',
+    linkUrl: 'https://example.com/insurance',
+    active: true,
+    createdAt: new Date().toISOString(),
+    placement: 'footer',
+  },
+  {
+    id: 'ad2',
+    title: 'Maintenance Pro',
+    description: 'Reliable maintenance services 24/7.',
+    imageUrl: 'https://img.usecurling.com/p/300/100?q=tools',
+    linkUrl: 'https://example.com/maintenance',
+    active: true,
+    createdAt: new Date().toISOString(),
+    placement: 'footer',
+  },
+  {
+    id: 'ad3',
+    title: 'Smart Locks Integration',
+    description: 'Automate access with our smart lock partners.',
+    imageUrl: 'https://img.usecurling.com/p/300/100?q=smart%20lock',
+    linkUrl: 'https://example.com/smartlocks',
+    active: false,
+    createdAt: new Date().toISOString(),
+    placement: 'footer',
   },
 ]

@@ -28,6 +28,7 @@ import PartnerPortal from './pages/portal/PartnerPortal'
 import MarketAnalysis from './pages/MarketAnalysis'
 import Workflows from './pages/Workflows'
 import Renewals from './pages/Renewals'
+import PublicityAdmin from './pages/admin/PublicityAdmin'
 import { AppProvider } from '@/stores/AppContext'
 import { useEffect } from 'react'
 
@@ -70,6 +71,10 @@ const App = () => {
               <Route path="/market-analysis" element={<MarketAnalysis />} />
               <Route path="/workflows" element={<Workflows />} />
               <Route path="/renewals" element={<Renewals />} />
+
+              {/* Admin */}
+              <Route path="/admin/publicity" element={<PublicityAdmin />} />
+
               {/* Portals */}
               <Route path="/portal/tenant" element={<TenantPortal />} />
               <Route path="/portal/owner" element={<OwnerPortal />} />

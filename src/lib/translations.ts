@@ -148,7 +148,6 @@ export const translations = {
       close_success: 'Renovação concluída com sucesso.',
       negotiation_started: 'Negociação iniciada.',
     },
-    // ... keep existing other sections ...
     properties: {
       title: 'Propriedades',
       subtitle: 'Gerencie seu portfólio imobiliário',
@@ -370,7 +369,6 @@ export const translations = {
     },
   },
   en: {
-    // ... keep existing translations ...
     common: {
       dashboard: 'Dashboard',
       properties: 'Properties',
@@ -457,7 +455,6 @@ export const translations = {
       export_success: 'Data exported successfully.',
       renewals: 'Contract Renewals',
     },
-    // ... existing ...
     renewals: {
       title: 'Contract Renewals',
       subtitle: 'Manage expirations and negotiations.',
@@ -476,7 +473,6 @@ export const translations = {
       close_success: 'Renewal completed successfully.',
       negotiation_started: 'Negotiation started.',
     },
-    // ... keep existing ...
     status: {
       interested: 'Interested',
       rented: 'Rented',
@@ -704,7 +700,7 @@ export const translations = {
       contact_details: 'Contact Details',
       properties_count: 'Properties',
       workflow_started: 'Workflow Started',
-      workflow_desc: '{action} started for {name}',
+      workflow_desc: '{action} for {name}',
       renew_contract: 'Renew Contract',
       generate_statement: 'Generate Statement',
       linked_properties: 'Linked Properties',
@@ -737,7 +733,6 @@ export const translations = {
     },
   },
   es: {
-    // ... keep existing translations ...
     common: {
       dashboard: 'Tablero',
       properties: 'Propiedades',
@@ -841,7 +836,6 @@ export const translations = {
       close_success: 'Renovación completada con éxito.',
       negotiation_started: 'Negociación iniciada.',
     },
-    // ... keep existing ...
     status: {
       interested: 'Interesado',
       rented: 'Alquilado',
@@ -900,7 +894,7 @@ export const translations = {
       image_access_restricted: 'Acceso restringido',
       hoa_fee: 'Cuota HOA',
       hoa_freq: 'Frecuencia',
-      monthly: 'Mensual',
+      monthly: 'Mensal',
       quarterly: 'Trimestral',
       semiannually: 'Semestral',
       annually: 'Anual',

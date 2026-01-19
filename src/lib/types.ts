@@ -25,6 +25,7 @@ export type Resource =
   | 'market_analysis'
   | 'workflows'
   | 'renewals'
+  | 'publicity'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -418,6 +419,7 @@ export interface AuditLog {
     | 'login'
     | 'approve'
     | 'block'
+    | 'renew'
     | 'other'
   entity: string
   entityId?: string
@@ -499,4 +501,15 @@ export interface ChatMessage {
   sender: 'me' | 'other'
   timestamp: string
   attachments?: string[]
+}
+
+export interface Advertisement {
+  id: string
+  title: string
+  description?: string
+  imageUrl: string
+  linkUrl: string
+  active: boolean
+  createdAt: string
+  placement?: 'footer' | 'sidebar'
 }

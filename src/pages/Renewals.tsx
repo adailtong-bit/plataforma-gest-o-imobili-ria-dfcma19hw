@@ -1,11 +1,5 @@
 import { useState } from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -15,7 +9,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -38,12 +31,13 @@ import usePropertyStore from '@/stores/usePropertyStore'
 import useOwnerStore from '@/stores/useOwnerStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { useNavigate, Link } from 'react-router-dom'
-import { format, differenceInDays, addDays } from 'date-fns'
+import { format, differenceInDays } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { CloseNegotiationDialog } from '@/components/renewals/CloseNegotiationDialog'
+import { GenericDocument } from '@/lib/types'
 
 export default function Renewals() {
-  const { tenants } = useTenantStore()
+  const { tenants, renewTenantContract } = useTenantStore()
   const { properties } = usePropertyStore()
   const { owners } = useOwnerStore()
   const navigate = useNavigate()
@@ -119,12 +113,27 @@ export default function Renewals() {
     newEnd: string
     contractUrl: string
   }) => {
-    // In a real app, update tenant lease here via store action
-    toast({
-      title: t('renewals.close_success'),
-      description: `Contrato renovado. Novo valor: $${data.newValue}. Expira em: ${data.newEnd}`,
-    })
-    setSelectedTenantId(null)
+    if (selectedTenantId) {
+      // Create document object
+      const contractDoc: GenericDocument = {
+        id: `contract-${Date.now()}`,
+        name: 'Renovação de Contrato.pdf',
+        url: data.contractUrl,
+        date: new Date().toISOString(),
+        type: 'application/pdf',
+        category: 'Contract',
+      }
+
+      renewTenantContract(
+        selectedTenantId,
+        data.newEnd,
+        data.newValue,
+        data.newStart,
+        contractDoc,
+      )
+
+      setSelectedTenantId(null)
+    }
   }
 
   const currentTenantValue = selectedTenantId

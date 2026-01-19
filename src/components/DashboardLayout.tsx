@@ -23,6 +23,7 @@ import { useToast } from '@/hooks/use-toast'
 import { User } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { hasPermission } from '@/lib/permissions'
+import { PublicityFooter } from './PublicityFooter'
 
 export default function DashboardLayout() {
   const { currentUser, setCurrentUser } = useAuthStore()
@@ -53,6 +54,7 @@ export default function DashboardLayout() {
       if (path.startsWith('/market-analysis')) resource = 'market_analysis'
       if (path.startsWith('/workflows')) resource = 'workflows'
       if (path.startsWith('/renewals')) resource = 'renewals'
+      if (path.startsWith('/admin/publicity')) resource = 'publicity' // Admin publicity check
       if (
         path.startsWith('/settings') &&
         currentUser.role !== 'platform_owner' &&
@@ -205,8 +207,9 @@ export default function DashboardLayout() {
       <AppSidebar />
       <SidebarInset>
         <AppHeader />
-        <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 max-w-[1600px] w-full mx-auto">
+        <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 max-w-[1600px] w-full mx-auto flex flex-col">
           <Outlet />
+          <PublicityFooter />
         </main>
         <footer className="border-t py-4 px-6 text-center text-xs text-muted-foreground">
           <p>© 2026 COREPM v1.0.0. All rights reserved.</p>

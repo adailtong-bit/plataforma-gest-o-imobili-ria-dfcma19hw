@@ -20,6 +20,8 @@ import {
   AuditLog,
   ServiceRate,
   Notification,
+  Advertisement,
+  GenericDocument,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -39,6 +41,7 @@ import {
   auditLogs as initialAuditLogs,
   genericServiceRates as initialGenericRates,
   notifications as initialNotifications,
+  advertisements as initialAdvertisements,
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
@@ -71,6 +74,7 @@ interface AppContextType {
   auditLogs: AuditLog[]
   genericServiceRates: ServiceRate[]
   notifications: Notification[]
+  advertisements: Advertisement[]
   language: Language
   setLanguage: (lang: Language) => void
   t: (key: string, params?: Record<string, string>) => string
@@ -115,6 +119,16 @@ interface AppContextType {
   markNotificationAsRead: (id: string) => void
   approveUser: (userId: string) => void
   blockUser: (userId: string) => void
+  renewTenantContract: (
+    tenantId: string,
+    newEnd: string,
+    newRent: number,
+    newStart?: string,
+    contractDoc?: GenericDocument,
+  ) => void
+  addAdvertisement: (ad: Advertisement) => void
+  updateAdvertisement: (ad: Advertisement) => void
+  deleteAdvertisement: (adId: string) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -148,6 +162,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     useState<ServiceRate[]>(initialGenericRates)
   const [notifications, setNotifications] =
     useState<Notification[]>(initialNotifications)
+  const [advertisements, setAdvertisements] = useState<Advertisement[]>(
+    initialAdvertisements,
+  )
 
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app_language')
@@ -987,6 +1004,84 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  const renewTenantContract = (
+    tenantId: string,
+    newEnd: string,
+    newRent: number,
+    newStart?: string,
+    contractDoc?: GenericDocument,
+  ) => {
+    setTenants((prev) =>
+      prev.map((t) => {
+        if (t.id === tenantId) {
+          const updatedTenant = {
+            ...t,
+            leaseEnd: newEnd,
+            leaseStart: newStart || t.leaseStart,
+            rentValue: newRent,
+            status: 'active' as const,
+            documents: contractDoc
+              ? [...(t.documents || []), contractDoc]
+              : t.documents,
+          }
+          return updatedTenant
+        }
+        return t
+      }),
+    )
+
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'renew',
+      entity: 'Tenant',
+      entityId: tenantId,
+      details: `Renewed lease for tenant ${tenantId}. New end: ${newEnd}`,
+    })
+
+    addNotification({
+      title: 'Contrato Renovado',
+      message: `O contrato do inquilino ${tenantId} foi renovado com sucesso.`,
+      type: 'success',
+    })
+  }
+
+  const addAdvertisement = (ad: Advertisement) => {
+    setAdvertisements((prev) => [...prev, ad])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Advertisement',
+      entityId: ad.id,
+      details: `Created ad: ${ad.title}`,
+    })
+  }
+
+  const updateAdvertisement = (ad: Advertisement) => {
+    setAdvertisements((prev) => prev.map((a) => (a.id === ad.id ? ad : a)))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Advertisement',
+      entityId: ad.id,
+      details: `Updated ad: ${ad.title}`,
+    })
+  }
+
+  const deleteAdvertisement = (adId: string) => {
+    setAdvertisements((prev) => prev.filter((a) => a.id !== adId))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'Advertisement',
+      entityId: adId,
+      details: `Deleted ad: ${adId}`,
+    })
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -1009,6 +1104,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         auditLogs,
         genericServiceRates,
         notifications,
+        advertisements,
         language,
         setLanguage,
         t,
@@ -1051,6 +1147,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         markNotificationAsRead,
         approveUser,
         blockUser,
+        renewTenantContract,
+        addAdvertisement,
+        updateAdvertisement,
+        deleteAdvertisement,
       }}
     >
       {children}
