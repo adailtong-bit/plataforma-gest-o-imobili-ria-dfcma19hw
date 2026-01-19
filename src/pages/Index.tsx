@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Activity, DollarSign, Home, AlertCircle } from 'lucide-react'
+import { Activity, DollarSign, Home, AlertCircle, Bell } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -29,11 +29,15 @@ import { Badge } from '@/components/ui/badge'
 import useTaskStore from '@/stores/useTaskStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useLanguageStore from '@/stores/useLanguageStore'
+import usePropertyStore from '@/stores/usePropertyStore'
+import useNotificationStore from '@/stores/useNotificationStore'
 
 export default function Index() {
   const [date, setDate] = useState<Date | undefined>(new Date())
   const { tasks } = useTaskStore()
   const { ledgerEntries, financials } = useFinancialStore()
+  const { properties } = usePropertyStore()
+  const { notifications } = useNotificationStore()
   const { t } = useLanguageStore()
 
   // Calculate real metrics from ledger
@@ -58,7 +62,6 @@ export default function Index() {
     [] as { month: string; value: number }[],
   )
 
-  // Use mock data if ledger is empty for demo purposes, otherwise use real data
   const revenueData =
     chartData.length > 0 ? chartData : financials.revenue || []
 
@@ -80,6 +83,14 @@ export default function Index() {
       color: 'hsl(var(--chart-4))',
     },
   }
+
+  const pendingCleanings = tasks.filter(
+    (t) => t.type === 'cleaning' && t.status === 'pending',
+  )
+  const activePropertiesCount = properties.filter(
+    (p) => p.status === 'rented' || p.status === 'available',
+  ).length
+  const unreadNotifications = notifications.filter((n) => !n.read)
 
   return (
     <div className="flex flex-col gap-6">
@@ -111,45 +122,41 @@ export default function Index() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('dashboard.occupancy_rate')}
-            </CardTitle>
-            <Home className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">85%</div>
-            <p className="text-xs text-muted-foreground">
-              +4% {t('dashboard.from_last_week')}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t('dashboard.active_tasks')}
+              {t('dashboard.pending_cleanings')}
             </CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {tasks.filter((t) => t.status !== 'completed').length}
-            </div>
+            <div className="text-2xl font-bold">{pendingCleanings.length}</div>
             <p className="text-xs text-muted-foreground">
-              3 {t('dashboard.high_priority')}
+              {t('dashboard.high_priority')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('dashboard.defaulters')}
+              {t('dashboard.active_properties')}
             </CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
+            <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2.4%</div>
-            <p className="text-xs text-muted-foreground">
-              -0.5% {t('dashboard.from_last_month')}
-            </p>
+            <div className="text-2xl font-bold">{activePropertiesCount}</div>
+            <p className="text-xs text-muted-foreground">Total</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {t('dashboard.new_notifications')}
+            </CardTitle>
+            <Bell className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {unreadNotifications.length}
+            </div>
+            <p className="text-xs text-muted-foreground">Não lidas</p>
           </CardContent>
         </Card>
       </div>

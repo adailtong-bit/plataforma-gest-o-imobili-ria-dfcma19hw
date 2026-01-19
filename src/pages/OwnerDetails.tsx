@@ -17,6 +17,7 @@ import {
   FileText,
   MessageSquare,
   MoreVertical,
+  MessageCircle,
 } from 'lucide-react'
 import useOwnerStore from '@/stores/useOwnerStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -71,6 +72,31 @@ export default function OwnerDetails() {
     }
   }
 
+  const handleWhatsApp = () => {
+    if (owner.phone) {
+      const cleanPhone = owner.phone.replace(/\D/g, '')
+      window.open(`https://wa.me/${cleanPhone}`, '_blank')
+    } else {
+      toast({
+        title: 'Erro',
+        description: 'Telefone não disponível',
+        variant: 'destructive',
+      })
+    }
+  }
+
+  const handleEmail = () => {
+    if (owner.email) {
+      window.location.href = `mailto:${owner.email}`
+    } else {
+      toast({
+        title: 'Erro',
+        description: 'Email não disponível',
+        variant: 'destructive',
+      })
+    }
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
@@ -93,32 +119,44 @@ export default function OwnerDetails() {
             <span className="text-sm">ID: {owner.id}</span>
           </p>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="bg-trust-blue gap-2">
-              {t('common.actions')} <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => handleAction(t('owners.renew_contract'))}
-            >
-              <FileText className="mr-2 h-4 w-4" /> {t('owners.renew_contract')}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleAction(t('owners.generate_statement'))}
-            >
-              <Building2 className="mr-2 h-4 w-4" />{' '}
-              {t('owners.generate_statement')}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleAction('Mensagem')}>
-              <MessageSquare className="mr-2 h-4 w-4" />{' '}
-              {t('tenants.send_message')}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleWhatsApp}
+            className="bg-green-600 hover:bg-green-700 gap-2"
+          >
+            <MessageCircle className="h-4 w-4" /> WhatsApp
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="bg-trust-blue gap-2">
+                {t('common.actions')} <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => handleAction(t('owners.renew_contract'))}
+              >
+                <FileText className="mr-2 h-4 w-4" />{' '}
+                {t('owners.renew_contract')}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleAction(t('owners.generate_statement'))}
+              >
+                <Building2 className="mr-2 h-4 w-4" />{' '}
+                {t('owners.generate_statement')}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleEmail}>
+                <Mail className="mr-2 h-4 w-4" /> Email
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAction('Mensagem')}>
+                <MessageSquare className="mr-2 h-4 w-4" />{' '}
+                {t('tenants.send_message')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

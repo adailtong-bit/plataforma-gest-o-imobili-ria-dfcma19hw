@@ -39,7 +39,7 @@ export default function PartnerPortal() {
   )
 
   if (!partnerRecord) {
-    return <div className="p-8">Partner record not found.</div>
+    return <div className="p-8">Registro de parceiro não encontrado.</div>
   }
 
   // Filter Data

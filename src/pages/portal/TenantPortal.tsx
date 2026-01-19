@@ -29,28 +29,20 @@ export default function TenantPortal() {
   const { tenants } = useTenantStore()
   const { properties } = usePropertyStore()
   const { ledgerEntries } = useFinancialStore()
-  const { messages } = useMessageStore()
   const navigate = useNavigate()
 
-  // In a real app, currentUser.id would link to a Tenant ID.
-  // For this mock, we assume the currentUser IS the tenant object or we find the tenant record by email/id
   const tenantRecord = tenants.find(
     (t) => t.id === currentUser.id || t.email === currentUser.email,
   )
 
   if (!tenantRecord) {
-    return <div className="p-8">Tenant record not found.</div>
+    return <div className="p-8">Inquilino não encontrado.</div>
   }
 
   const property = properties.find((p) => p.id === tenantRecord.propertyId)
 
-  // Filter payments/invoices for this tenant (mock logic: check beneficiaryId or description)
   const myPayments = ledgerEntries.filter(
     (e) => e.beneficiaryId === tenantRecord.id || e.category === 'Rent',
-  )
-
-  const myMessages = messages.filter(
-    (m) => m.contactId === tenantRecord.id || m.ownerId === tenantRecord.id,
   )
 
   return (
@@ -142,7 +134,7 @@ export default function TenantPortal() {
                   <p className="font-medium text-sm text-yellow-800">
                     Próximo Pagamento
                   </p>
-                  <p className="text-xs text-yellow-700">Vence em 5 dias</p>
+                  <p className="text-xs text-yellow-700">Vence em breve</p>
                 </div>
               </div>
               <Button className="w-full" variant="secondary">

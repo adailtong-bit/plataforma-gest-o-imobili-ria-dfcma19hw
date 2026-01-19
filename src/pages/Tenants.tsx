@@ -1,12 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -39,6 +33,8 @@ import {
   Home,
   Phone,
   FileText,
+  Mail,
+  MessageCircle,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -120,6 +116,31 @@ export default function Tenants() {
       title: 'Contrato Gerado',
       description: `O contrato de locação para o inquilino foi gerado e baixado.`,
     })
+  }
+
+  const handleWhatsApp = (phone: string) => {
+    const cleanPhone = phone.replace(/\D/g, '')
+    if (cleanPhone) {
+      window.open(`https://wa.me/${cleanPhone}`, '_blank')
+    } else {
+      toast({
+        title: t('common.error'),
+        description: 'Telefone inválido',
+        variant: 'destructive',
+      })
+    }
+  }
+
+  const handleEmail = (email: string) => {
+    if (email) {
+      window.location.href = `mailto:${email}`
+    } else {
+      toast({
+        title: t('common.error'),
+        description: 'Email inválido',
+        variant: 'destructive',
+      })
+    }
   }
 
   return (
@@ -227,7 +248,10 @@ export default function Tenants() {
                   />
                 </div>
               </div>
-              <Button onClick={handleAddTenant} className="w-full">
+              <Button
+                onClick={handleAddTenant}
+                className="w-full bg-trust-blue"
+              >
                 {t('common.save')}
               </Button>
             </div>
@@ -297,6 +321,22 @@ export default function Tenants() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleWhatsApp(tenant.phone)}
+                          title="WhatsApp"
+                        >
+                          <MessageCircle className="h-4 w-4 text-green-600" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEmail(tenant.email)}
+                          title="Email"
+                        >
+                          <Mail className="h-4 w-4 text-blue-600" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"

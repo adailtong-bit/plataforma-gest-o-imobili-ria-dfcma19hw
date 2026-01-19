@@ -1,3 +1,4 @@
+/* Mock Data including Notifications */
 import { subDays, subMonths, addDays } from 'date-fns'
 import {
   Property,
@@ -16,6 +17,7 @@ import {
   LedgerEntry,
   AuditLog,
   ServiceRate,
+  Notification,
 } from '@/lib/types'
 
 // System Users (Staff/Admins)
@@ -476,5 +478,24 @@ export const genericServiceRates: ServiceRate[] = [
     price: 85.0,
     validFrom: '2024-01-01',
     type: 'generic',
+  },
+]
+
+export const notifications: Notification[] = [
+  {
+    id: 'notif1',
+    title: 'Novo Agendamento',
+    message: 'Agendamento de limpeza criado para Villa Sunshine',
+    timestamp: new Date().toISOString(),
+    read: false,
+    type: 'info',
+  },
+  {
+    id: 'notif2',
+    title: 'Aluguel Recebido',
+    message: 'Pagamento de Michael Scott confirmado',
+    timestamp: subDays(new Date(), 1).toISOString(),
+    read: true,
+    type: 'success',
   },
 ]

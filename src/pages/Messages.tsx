@@ -2,17 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import {
-  Search,
-  Send,
-  Paperclip,
-  Mic,
-  Phone,
-  X,
-  Lock,
-  Users,
-  Plus,
-} from 'lucide-react'
+import { Search, Send, Paperclip, Mic, Phone, X, Plus } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -20,11 +10,6 @@ import useMessageStore from '@/stores/useMessageStore'
 import useAuthStore from '@/stores/useAuthStore'
 import { useState, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 import { canChat } from '@/lib/permissions'
 import {
   Dialog,
@@ -55,7 +40,7 @@ export default function Messages() {
     }
   }, [messages])
 
-  // Deselect if messages become empty (e.g. user switch)
+  // Deselect if messages become empty
   useEffect(() => {
     if (messages.length === 0) {
       setSelectedMessageId('')
@@ -63,7 +48,7 @@ export default function Messages() {
   }, [messages])
 
   const filteredMessages = messages.filter((msg) => {
-    // Basic type filtering if needed
+    if (filter === 'unread' && msg.unread === 0) return false
     return true
   })
 

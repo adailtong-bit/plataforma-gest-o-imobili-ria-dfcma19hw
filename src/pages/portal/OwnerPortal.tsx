@@ -21,15 +21,7 @@ import usePropertyStore from '@/stores/usePropertyStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useTaskStore from '@/stores/useTaskStore'
 import { useNavigate } from 'react-router-dom'
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 import { format } from 'date-fns'
 
@@ -46,7 +38,7 @@ export default function OwnerPortal() {
   )
 
   if (!ownerRecord) {
-    return <div className="p-8">Owner record not found.</div>
+    return <div className="p-8">Registro de proprietário não encontrado.</div>
   }
 
   const myProperties = properties.filter((p) => p.ownerId === ownerRecord.id)

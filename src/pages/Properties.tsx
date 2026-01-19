@@ -101,10 +101,13 @@ export default function Properties() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case 'rented':
       case 'occupied':
         return 'bg-green-100 text-green-800 border-green-200'
+      case 'available':
       case 'vacant':
         return 'bg-blue-100 text-blue-800 border-blue-200'
+      case 'suspended':
       case 'maintenance':
         return 'bg-orange-100 text-orange-800 border-orange-200'
       default:
@@ -127,7 +130,7 @@ export default function Properties() {
       profileType: newProp.profileType || 'short_term',
       community: selectedCondo ? selectedCondo.name : 'Independent',
       condominiumId: newProp.condominiumId,
-      status: 'vacant',
+      status: 'available',
       image: 'https://img.usecurling.com/p/400/300?q=house',
       gallery: [],
       bedrooms: newProp.bedrooms || 0,
@@ -250,6 +253,9 @@ export default function Properties() {
                         <SelectItem value="Condo">
                           {t('properties.condo')}
                         </SelectItem>
+                        <SelectItem value="Townhouse">
+                          {t('properties.townhouse')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -275,7 +281,9 @@ export default function Properties() {
                     </Select>
                   </div>
                 </div>
-                <Button onClick={handleAddProperty}>{t('common.save')}</Button>
+                <Button onClick={handleAddProperty} className="bg-trust-blue">
+                  {t('common.save')}
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -295,8 +303,8 @@ export default function Properties() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('common.all')}</SelectItem>
-            <SelectItem value="occupied">{t('common.occupied')}</SelectItem>
-            <SelectItem value="vacant">{t('common.vacant')}</SelectItem>
+            <SelectItem value="rented">{t('status.rented')}</SelectItem>
+            <SelectItem value="available">{t('status.available')}</SelectItem>
           </SelectContent>
         </Select>
         <Select
@@ -329,7 +337,7 @@ export default function Properties() {
               <Badge
                 className={`absolute top-2 right-2 ${getStatusColor(property.status)}`}
               >
-                {t(`common.${property.status}`)}
+                {t(`status.${property.status}`)}
               </Badge>
               <Badge className="absolute bottom-2 left-2 bg-black/50 text-white">
                 {property.profileType === 'short_term' ? 'STR' : 'LTR'}

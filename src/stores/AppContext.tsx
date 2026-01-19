@@ -19,6 +19,7 @@ import {
   LedgerEntry,
   AuditLog,
   ServiceRate,
+  Notification,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -37,6 +38,7 @@ import {
   ledgerEntries as initialLedgerEntries,
   auditLogs as initialAuditLogs,
   genericServiceRates as initialGenericRates,
+  notifications as initialNotifications,
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
@@ -68,6 +70,7 @@ interface AppContextType {
   ledgerEntries: LedgerEntry[]
   auditLogs: AuditLog[]
   genericServiceRates: ServiceRate[]
+  notifications: Notification[]
   language: Language
   setLanguage: (lang: Language) => void
   t: (key: string, params?: Record<string, string>) => string
@@ -106,6 +109,10 @@ interface AppContextType {
   addGenericServiceRate: (rate: ServiceRate) => void
   updateGenericServiceRate: (rate: ServiceRate) => void
   deleteGenericServiceRate: (rateId: string) => void
+  addNotification: (
+    notification: Omit<Notification, 'id' | 'timestamp' | 'read'>,
+  ) => void
+  markNotificationAsRead: (id: string) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -137,6 +144,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(initialAuditLogs)
   const [genericServiceRates, setGenericServiceRates] =
     useState<ServiceRate[]>(initialGenericRates)
+  const [notifications, setNotifications] =
+    useState<Notification[]>(initialNotifications)
 
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app_language')
@@ -181,6 +190,24 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       ...log,
     }
     setAuditLogs((prev) => [newLog, ...prev])
+  }
+
+  const addNotification = (
+    notification: Omit<Notification, 'id' | 'timestamp' | 'read'>,
+  ) => {
+    const newNotif: Notification = {
+      id: `notif-${Date.now()}-${Math.random()}`,
+      timestamp: new Date().toISOString(),
+      read: false,
+      ...notification,
+    }
+    setNotifications((prev) => [newNotif, ...prev])
+  }
+
+  const markNotificationAsRead = (id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+    )
   }
 
   const addLedgerEntry = (entry: LedgerEntry) => {
@@ -546,6 +573,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       if (partner) {
         const message = `Nova tarefa atribuída: ${task.title} em ${task.propertyName}. Data: ${format(new Date(task.date), 'dd/MM/yyyy')}. Prioridade: ${task.priority}.`
         sendSystemMessage(partnerId, message)
+        addNotification({
+          title: 'Nova Tarefa',
+          message: `Nova tarefa atribuída: ${task.title}`,
+          type: 'info',
+        })
       }
     }
 
@@ -944,6 +976,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         ledgerEntries,
         auditLogs,
         genericServiceRates,
+        notifications,
         language,
         setLanguage,
         t,
@@ -982,6 +1015,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addGenericServiceRate,
         updateGenericServiceRate,
         deleteGenericServiceRate,
+        addNotification,
+        markNotificationAsRead,
       }}
     >
       {children}

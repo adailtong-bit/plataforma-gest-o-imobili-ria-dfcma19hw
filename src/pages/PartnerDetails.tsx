@@ -10,6 +10,9 @@ import {
   Building,
   DollarSign,
   ClipboardList,
+  FileText,
+  MessageCircle,
+  Mail,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import usePartnerStore from '@/stores/usePartnerStore'
@@ -33,6 +36,7 @@ import { PartnerStaff } from '@/components/partners/PartnerStaff'
 import { PartnerProperties } from '@/components/partners/PartnerProperties'
 import { PartnerTasks } from '@/components/partners/PartnerTasks'
 import { PartnerPricing } from '@/components/partners/PartnerPricing'
+import { PartnerDocuments } from '@/components/partners/PartnerDocuments'
 
 export default function PartnerDetails() {
   const { id } = useParams()
@@ -72,8 +76,7 @@ export default function PartnerDetails() {
 
   const handleUpdate = (updatedPartner: Partner) => {
     setFormData(updatedPartner)
-    // Auto-update global state for sub-components that rely on it immediately if needed
-    // or wait for explicit save. For smooth UX in tabs, we update global store too.
+    // Auto-update global store too for immediate reflection in other tabs
     updatePartner(updatedPartner)
   }
 
@@ -82,6 +85,31 @@ export default function PartnerDetails() {
       // Logic to delete partner would go here (add deletePartner to store)
       toast({ title: 'Excluído', description: 'Parceiro removido.' })
       navigate('/partners')
+    }
+  }
+
+  const handleWhatsApp = () => {
+    if (formData.phone) {
+      const cleanPhone = formData.phone.replace(/\D/g, '')
+      window.open(`https://wa.me/${cleanPhone}`, '_blank')
+    } else {
+      toast({
+        title: 'Erro',
+        description: 'Telefone não disponível',
+        variant: 'destructive',
+      })
+    }
+  }
+
+  const handleEmail = () => {
+    if (formData.email) {
+      window.location.href = `mailto:${formData.email}`
+    } else {
+      toast({
+        title: 'Erro',
+        description: 'Email não disponível',
+        variant: 'destructive',
+      })
     }
   }
 
@@ -107,9 +135,29 @@ export default function PartnerDetails() {
             <h1 className="text-3xl font-bold tracking-tight text-navy">
               {formData.name}
             </h1>
-            <p className="text-sm text-muted-foreground">
-              {formData.companyName}
-            </p>
+            <div className="flex gap-2 items-center text-sm text-muted-foreground">
+              <span>{formData.companyName}</span>
+              <div className="flex gap-1 ml-2">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6"
+                  onClick={handleWhatsApp}
+                  title="WhatsApp"
+                >
+                  <MessageCircle className="h-4 w-4 text-green-600" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6"
+                  onClick={handleEmail}
+                  title="Email"
+                >
+                  <Mail className="h-4 w-4 text-blue-600" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
         <div className="flex gap-2">
@@ -125,17 +173,20 @@ export default function PartnerDetails() {
       <Tabs defaultValue="overview">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
+          <TabsTrigger value="documents">
+            <FileText className="h-4 w-4 mr-2" /> {t('common.documents')}
+          </TabsTrigger>
           <TabsTrigger value="staff">
-            <Users className="h-4 w-4 mr-2" /> Equipe
+            <Users className="h-4 w-4 mr-2" /> {t('common.team')}
           </TabsTrigger>
           <TabsTrigger value="properties">
-            <Building className="h-4 w-4 mr-2" /> Propriedades
+            <Building className="h-4 w-4 mr-2" /> {t('common.properties')}
           </TabsTrigger>
           <TabsTrigger value="rates">
             <DollarSign className="h-4 w-4 mr-2" /> Preços
           </TabsTrigger>
           <TabsTrigger value="tasks">
-            <ClipboardList className="h-4 w-4 mr-2" /> Tarefas
+            <ClipboardList className="h-4 w-4 mr-2" /> {t('common.tasks')}
           </TabsTrigger>
           <TabsTrigger value="financial">
             {t('partners.financial_report')}
@@ -268,6 +319,14 @@ export default function PartnerDetails() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="documents">
+          <PartnerDocuments
+            partner={formData}
+            onUpdate={handleUpdate}
+            canEdit={true}
+          />
         </TabsContent>
 
         <TabsContent value="staff">

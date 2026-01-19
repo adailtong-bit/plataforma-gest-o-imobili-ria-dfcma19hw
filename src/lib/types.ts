@@ -4,6 +4,7 @@ export type UserRole =
   | 'internal_user'
   | 'property_owner'
   | 'partner'
+  | 'partner_employee' // Added for RBAC
   | 'tenant'
 
 export type Resource =
@@ -240,6 +241,15 @@ export interface Partner {
   serviceRates?: ServiceRate[]
   employees?: PartnerEmployee[]
   linkedPropertyIds?: string[]
+  documents?: {
+    // Added for Partner Documents
+    id: string
+    name: string
+    url: string
+    date: string
+    size?: string
+    type?: string
+  }[]
 }
 
 export interface Evidence {
@@ -319,6 +329,16 @@ export interface AuditLog {
   entity: string
   entityId?: string
   details?: string
+}
+
+export interface Notification {
+  // Added Notification Type
+  id: string
+  title: string
+  message: string
+  timestamp: string
+  read: boolean
+  type: 'info' | 'warning' | 'success'
 }
 
 export interface Financials {

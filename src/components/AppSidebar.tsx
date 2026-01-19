@@ -125,9 +125,9 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="h-14 flex items-center px-4 border-b">
-        <div className="flex items-center gap-2 font-bold text-xl text-slate-900 overflow-hidden">
-          <div className="bg-slate-900 text-white p-1 rounded-md shrink-0">
-            <Command className="h-5 w-5" />
+        <div className="flex items-center gap-2 font-bold text-xl text-navy overflow-hidden">
+          <div className="bg-tiffany text-white p-1 rounded-md shrink-0 flex items-center justify-center">
+            <Command className="h-5 w-5 text-gold" />
           </div>
           <span className="truncate tracking-tight">COREPM</span>
         </div>

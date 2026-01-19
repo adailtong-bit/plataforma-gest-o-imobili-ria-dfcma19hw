@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, Save, Trash2, CalendarDays } from 'lucide-react'
+import { ArrowLeft, Save, Trash2, CalendarDays, FileText } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -40,6 +40,7 @@ import { PropertyFinancials } from '@/components/properties/PropertyFinancials'
 import { PropertyContent } from '@/components/properties/PropertyContent'
 import { PropertyLedger } from '@/components/financial/PropertyLedger'
 import { PropertyMedia } from '@/components/properties/PropertyMedia'
+import { PropertyDocuments } from '@/components/properties/PropertyDocuments'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -60,8 +61,7 @@ export default function PropertyDetails() {
 
   useEffect(() => {
     if (property) {
-      // Local state persists until save, but we should sync if property changes externally
-      // For this simplified logic we keep as is to avoid overwriting ongoing edits
+      // Keep strictly in sync if external updates happen, or careful not to overwrite local edits
     }
   }, [property])
 
@@ -198,7 +198,10 @@ export default function PropertyDetails() {
       <Tabs defaultValue="overview">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
-          <TabsTrigger value="media">Media & Docs</TabsTrigger>
+          <TabsTrigger value="media">Media</TabsTrigger>
+          <TabsTrigger value="documents">
+            <FileText className="h-4 w-4 mr-2" /> {t('common.documents')}
+          </TabsTrigger>
           <TabsTrigger value="location">Localização</TabsTrigger>
           <TabsTrigger value="features">Características</TabsTrigger>
           <TabsTrigger value="content">Conteúdo</TabsTrigger>
@@ -220,6 +223,13 @@ export default function PropertyDetails() {
           <TabsContent value="media">
             <PropertyMedia
               data={formData}
+              onChange={handleChange}
+              canEdit={canEdit}
+            />
+          </TabsContent>
+          <TabsContent value="documents">
+            <PropertyDocuments
+              property={formData}
               onChange={handleChange}
               canEdit={canEdit}
             />

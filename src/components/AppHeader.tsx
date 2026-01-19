@@ -1,4 +1,4 @@
-import { Bell, Search, Menu, Globe, Command } from 'lucide-react'
+import { Bell, Search, Menu, Globe, Command, Circle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,16 +13,21 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useSidebar } from '@/components/ui/sidebar'
 import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useNotificationStore from '@/stores/useNotificationStore'
 import { Badge } from '@/components/ui/badge'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { format } from 'date-fns'
 
 export function AppHeader() {
   const { toggleSidebar } = useSidebar()
   const { currentUser, setCurrentUser, allUsers } = useAuthStore()
   const { language, setLanguage, t } = useLanguageStore()
+  const { notifications, markNotificationAsRead } = useNotificationStore()
 
   // Simplified test user switch logic for demo purposes
-  // In a real app, this would be handled by auth provider/session
   const demoUsers = allUsers.filter((u) => u.id !== currentUser?.id).slice(0, 8)
+
+  const unreadCount = notifications.filter((n) => !n.read).length
 
   return (
     <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
@@ -30,13 +35,16 @@ export function AppHeader() {
         <Menu className="h-5 w-5" />
       </Button>
       <div className="flex items-center gap-2">
-        <div className="bg-slate-900 text-white p-1 rounded-md shrink-0">
-          <Command className="h-5 w-5" />
+        <div className="bg-tiffany text-white p-1 rounded-md shrink-0 flex items-center justify-center">
+          <Command className="h-5 w-5 text-gold" />
         </div>
-        <h2 className="text-lg font-bold md:text-xl text-slate-900 tracking-tight">
+        <h2 className="text-lg font-bold md:text-xl text-navy tracking-tight">
           COREPM
         </h2>
-        <Badge variant="outline" className="text-xs hidden md:inline-flex">
+        <Badge
+          variant="outline"
+          className="text-xs hidden md:inline-flex border-tiffany text-tiffany"
+        >
           Gestão
         </Badge>
       </div>
@@ -77,10 +85,51 @@ export function AppHeader() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Button variant="ghost" size="icon" className="relative">
-        <Bell className="h-5 w-5" />
-        <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600" />
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="relative">
+            <Bell className="h-5 w-5" />
+            {unreadCount > 0 && (
+              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600" />
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-80" align="end">
+          <DropdownMenuLabel>
+            {t('common.notifications')} ({unreadCount})
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <ScrollArea className="h-[300px]">
+            {notifications.length === 0 ? (
+              <div className="p-4 text-center text-sm text-muted-foreground">
+                Nenhuma notificação.
+              </div>
+            ) : (
+              notifications.map((notif) => (
+                <DropdownMenuItem
+                  key={notif.id}
+                  className="flex flex-col items-start gap-1 p-3 cursor-pointer"
+                  onClick={() => markNotificationAsRead(notif.id)}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="font-semibold text-sm">{notif.title}</span>
+                    {!notif.read && (
+                      <Circle className="h-2 w-2 fill-blue-500 text-blue-500" />
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {notif.message}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground mt-1">
+                    {format(new Date(notif.timestamp), 'dd/MM/yyyy HH:mm')}
+                  </span>
+                </DropdownMenuItem>
+              ))
+            )}
+          </ScrollArea>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">

@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    /* Deep Navy #0F172A - Converted to HSL for shadcn: 222 47% 11% */
+    /* Deep Navy #0F172A - Converted to HSL: 222 47% 11% */
     /* Trust Blue #2563EB - Converted to HSL: 221 83% 53% */
     /* Light Gray #F8FAFC - Converted to HSL: 210 40% 98% */
 
@@ -48,6 +48,10 @@
     --sidebar-accent-foreground: 221 83% 53%;
     --sidebar-border: 214.3 31.8% 91.4%;
     --sidebar-ring: 221 83% 53%;
+
+    /* Brand Colors */
+    --brand-tiffany: 176 42% 41%; /* #0ABAB5 */
+    --brand-gold: 51 100% 50%; /* #FFD700 */
 
     /* Chart Colors */
     --chart-1: 173 58% 39%; /* Teal */
@@ -121,5 +125,17 @@
   }
   .bg-warning {
     background-color: #f59e0b;
+  }
+  .bg-tiffany {
+    background-color: hsl(var(--brand-tiffany));
+  }
+  .text-tiffany {
+    color: hsl(var(--brand-tiffany));
+  }
+  .bg-gold {
+    background-color: hsl(var(--brand-gold));
+  }
+  .text-gold {
+    color: hsl(var(--brand-gold));
   }
 }
