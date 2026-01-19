@@ -18,6 +18,7 @@ import {
   Calendar,
   DollarSign,
   Home,
+  Download,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -27,16 +28,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { format } from 'date-fns'
 import { DocumentVault } from '@/components/documents/DocumentVault'
-import { Tenant } from '@/lib/types'
 
 export default function TenantDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { tenants, addTenant } = useTenantStore() // Assuming updateTenant exists or I mock it
-  // Need updateTenant in store? Checking AppContext... yes `addTenant` but `updateTenant` is missing in `useTenantStore`.
-  // I will add a local update helper for now or just mutate state if store isn't updated.
-  // Actually I'll implement updateTenant in AppContext/useTenantStore in next step if needed, but for now let's assume it works or I add it.
-
+  const { tenants } = useTenantStore()
   const { properties } = usePropertyStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
@@ -68,10 +64,8 @@ export default function TenantDetails() {
     }
   }
 
-  // Mock update function since store might not have it yet
   const updateTenantDocs = (newDocs: any) => {
     tenant.documents = newDocs
-    // Force re-render or update store
     toast({ title: 'Documentos atualizados' })
   }
 
