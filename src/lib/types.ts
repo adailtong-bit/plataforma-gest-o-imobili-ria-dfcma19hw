@@ -4,7 +4,7 @@ export type UserRole =
   | 'internal_user'
   | 'property_owner'
   | 'partner'
-  | 'partner_employee' // Added for RBAC
+  | 'partner_employee'
   | 'tenant'
 
 export type Resource =
@@ -72,6 +72,16 @@ export interface User {
   permissions?: Permission[] // For internal users
   allowedProfileTypes?: ('long_term' | 'short_term')[] // Property profile restrictions
   password?: string
+
+  // New Access & Profile Fields
+  status: 'active' | 'pending_activation' | 'pending_approval' | 'blocked'
+  isFirstLogin: boolean
+  taxId?: string // CPF/CNPJ or SSN/EIN
+  address?: string
+
+  // Monetization Fields (Relevant for software_tenant)
+  hasPaidEntryFee?: boolean
+  subscriptionPlan?: 'free' | 'pay_per_house' | 'unlimited'
 }
 
 export interface Condominium {
@@ -96,7 +106,6 @@ export interface Condominium {
   }
 }
 
-// Updated Property Status
 export type PropertyStatus =
   | 'interested'
   | 'rented'
@@ -133,11 +142,11 @@ export interface Property {
   accessCodeService?: string
   accessCodeCleaning?: string
 
-  // HOA / Condominium Info
+  // HOA
   hoaValue?: number
   hoaFrequency?: 'monthly' | 'quarterly' | 'semi-annually' | 'annually'
 
-  // Multilingual Content
+  // Content
   description?: {
     pt: string
     en: string
@@ -159,7 +168,6 @@ export interface Property {
     type?: string
   }[]
 
-  // Contract Alerts
   contractConfig?: {
     expirationAlertDays: number
     renewalAlertDate?: string
@@ -167,8 +175,6 @@ export interface Property {
 
   ownerId: string
   agentId?: string
-
-  // External Calendar
   iCalUrl?: string
 }
 
@@ -203,7 +209,7 @@ export interface ServiceRate {
   price: number
   validFrom: string
   validTo?: string
-  type?: 'generic' | 'specific' // Optional flag, implied by location usually
+  type?: 'generic' | 'specific'
 }
 
 export interface PartnerEmployee {
@@ -214,9 +220,9 @@ export interface PartnerEmployee {
   phone?: string
   status: 'active' | 'inactive'
   schedule?: {
-    date: string // YYYY-MM-DD
-    slots: string[] // ["09:00", "14:00"]
-    value?: number // Override value for this specific date/schedule
+    date: string
+    slots: string[]
+    value?: number
   }[]
 }
 
@@ -231,7 +237,6 @@ export interface Partner {
   rating?: number
   role: UserRole
   avatar?: string
-  // Enhanced Details
   address?: string
   paymentInfo?: {
     bankName: string
@@ -242,7 +247,6 @@ export interface Partner {
   employees?: PartnerEmployee[]
   linkedPropertyIds?: string[]
   documents?: {
-    // Added for Partner Documents
     id: string
     name: string
     url: string
@@ -276,7 +280,7 @@ export interface Task {
   type: 'cleaning' | 'maintenance' | 'inspection'
   assignee: string
   assigneeId?: string
-  partnerEmployeeId?: string // Assigned internal staff
+  partnerEmployeeId?: string
   date: string
   priority: 'low' | 'medium' | 'high' | 'critical'
   images?: string[]
@@ -316,7 +320,7 @@ export interface LedgerEntry {
   amount: number
   description: string
   referenceId?: string
-  beneficiaryId?: string // Link to Partner/Owner/Tenant
+  beneficiaryId?: string
   status: 'pending' | 'cleared' | 'void'
 }
 
@@ -325,14 +329,20 @@ export interface AuditLog {
   timestamp: string
   userId: string
   userName: string
-  action: 'create' | 'update' | 'delete' | 'login' | 'other'
+  action:
+    | 'create'
+    | 'update'
+    | 'delete'
+    | 'login'
+    | 'approve'
+    | 'block'
+    | 'other'
   entity: string
   entityId?: string
   details?: string
 }
 
 export interface Notification {
-  // Added Notification Type
   id: string
   title: string
   message: string

@@ -10,6 +10,8 @@ const useUserStore = () => {
     addUser: context.addUser,
     updateUser: context.updateUser,
     deleteUser: context.deleteUser,
+    approveUser: context.approveUser,
+    blockUser: context.blockUser,
   }
 }
 

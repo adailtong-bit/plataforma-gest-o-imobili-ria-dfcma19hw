@@ -35,15 +35,16 @@ export function AppHeader() {
         <Menu className="h-5 w-5" />
       </Button>
       <div className="flex items-center gap-2">
-        <div className="bg-tiffany text-white p-1 rounded-md shrink-0 flex items-center justify-center">
-          <Command className="h-5 w-5 text-gold" />
+        {/* Branding: Tiffany Blue #0ABAB5 with Gold #FFD700 icon */}
+        <div className="bg-tiffany text-white p-1.5 rounded-md shrink-0 flex items-center justify-center shadow-sm">
+          <Command className="h-5 w-5 text-gold stroke-[3]" />
         </div>
         <h2 className="text-lg font-bold md:text-xl text-navy tracking-tight">
           COREPM
         </h2>
         <Badge
           variant="outline"
-          className="text-xs hidden md:inline-flex border-tiffany text-tiffany"
+          className="text-xs hidden md:inline-flex border-tiffany text-tiffany bg-tiffany/5"
         >
           Gestão
         </Badge>
@@ -90,7 +91,7 @@ export function AppHeader() {
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600" />
+              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600 animate-pulse" />
             )}
           </Button>
         </DropdownMenuTrigger>
@@ -133,9 +134,11 @@ export function AppHeader() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-            <Avatar className="h-10 w-10 border">
+            <Avatar className="h-10 w-10 border border-tiffany/20">
               <AvatarImage src={currentUser?.avatar} alt={currentUser?.name} />
-              <AvatarFallback>{currentUser?.name?.charAt(0)}</AvatarFallback>
+              <AvatarFallback className="bg-tiffany/10 text-tiffany">
+                {currentUser?.name?.charAt(0)}
+              </AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
@@ -148,7 +151,10 @@ export function AppHeader() {
               <p className="text-xs leading-none text-muted-foreground">
                 {currentUser?.email}
               </p>
-              <Badge className="mt-2 w-fit" variant="secondary">
+              <Badge
+                className="mt-2 w-fit bg-navy hover:bg-navy/90 text-white"
+                variant="secondary"
+              >
                 {t(`roles.${currentUser?.role}`)}
               </Badge>
             </div>

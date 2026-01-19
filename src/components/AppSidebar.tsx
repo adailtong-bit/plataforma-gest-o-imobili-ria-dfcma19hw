@@ -124,12 +124,14 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="h-14 flex items-center px-4 border-b">
+      <SidebarHeader className="h-16 flex items-center px-4 border-b">
         <div className="flex items-center gap-2 font-bold text-xl text-navy overflow-hidden">
-          <div className="bg-tiffany text-white p-1 rounded-md shrink-0 flex items-center justify-center">
-            <Command className="h-5 w-5 text-gold" />
+          <div className="bg-tiffany text-white p-1.5 rounded-md shrink-0 flex items-center justify-center shadow-sm">
+            <Command className="h-5 w-5 text-gold stroke-[3]" />
           </div>
-          <span className="truncate tracking-tight">COREPM</span>
+          <span className="truncate tracking-tight group-data-[collapsible=icon]:hidden">
+            COREPM
+          </span>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -249,9 +251,11 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center gap-2 p-2">
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-8 w-8 border border-tiffany/20">
                 <AvatarImage src={currentUser.avatar} />
-                <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback className="bg-tiffany/10 text-tiffany">
+                  {currentUser.name.charAt(0)}
+                </AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-sm leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="font-semibold truncate w-32">

@@ -1,4 +1,3 @@
-/* Mock Data including Notifications */
 import { subDays, subMonths, addDays } from 'date-fns'
 import {
   Property,
@@ -28,6 +27,10 @@ export const systemUsers: User[] = [
     email: 'admin@platform.com',
     role: 'platform_owner',
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=99',
+    status: 'active',
+    isFirstLogin: false,
+    address: '123 Tech Park, Silicon Valley, CA',
+    taxId: '00-0000000',
   },
   {
     id: 'tenant_realestate',
@@ -36,6 +39,23 @@ export const systemUsers: User[] = [
     role: 'software_tenant',
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=98',
     parentId: 'admin_platform',
+    status: 'active',
+    isFirstLogin: false, // Set to true to test forced password change if needed
+    hasPaidEntryFee: true, // Set to false to test payment wall
+    subscriptionPlan: 'unlimited',
+    taxId: '99-9999999',
+    address: '456 Property Lane, Orlando, FL',
+  },
+  {
+    id: 'pending_user',
+    name: 'New Applicant',
+    email: 'new@applicant.com',
+    role: 'software_tenant',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=55',
+    status: 'pending_approval',
+    isFirstLogin: true,
+    hasPaidEntryFee: false,
+    subscriptionPlan: 'free',
   },
   {
     id: 'staff_view',
@@ -51,6 +71,8 @@ export const systemUsers: User[] = [
       { resource: 'tasks', actions: ['view'] },
     ],
     allowedProfileTypes: ['short_term', 'long_term'],
+    status: 'active',
+    isFirstLogin: false,
   },
   {
     id: 'staff_full',
@@ -69,6 +91,8 @@ export const systemUsers: User[] = [
       { resource: 'portal', actions: ['view'] },
     ],
     allowedProfileTypes: ['short_term'],
+    status: 'active',
+    isFirstLogin: false,
   },
 ]
 

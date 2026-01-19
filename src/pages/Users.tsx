@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/ui/badge'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,7 +39,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Plus, Trash2, Edit, Shield, Share2, Copy } from 'lucide-react'
+import {
+  Plus,
+  Trash2,
+  Edit,
+  Shield,
+  Share2,
+  Copy,
+  CheckCircle2,
+  Ban,
+  Clock,
+} from 'lucide-react'
 import useUserStore from '@/stores/useUserStore'
 import useAuthStore from '@/stores/useAuthStore'
 import { hasPermission } from '@/lib/permissions'
@@ -59,7 +70,8 @@ const RESOURCES: Resource[] = [
 const ACTIONS: Action[] = ['view', 'create', 'edit', 'delete']
 
 export default function Users() {
-  const { users, addUser, updateUser, deleteUser } = useUserStore()
+  const { users, addUser, updateUser, deleteUser, approveUser, blockUser } =
+    useUserStore()
   const { currentUser } = useAuthStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
@@ -78,6 +90,7 @@ export default function Users() {
     allowedProfileTypes: ['long_term', 'short_term'],
     password: '',
     confirmPassword: '',
+    status: 'pending_approval', // Default for new users created by owners
   }
 
   const [formData, setFormData] = useState(initialFormState)
@@ -138,6 +151,9 @@ export default function Users() {
         ...userData,
         id: `user-${Date.now()}`,
         parentId: currentUser.id,
+        status:
+          currentUser.role === 'platform_owner' ? 'active' : 'pending_approval', // Auto approve if platform owner creates
+        isFirstLogin: true,
       } as User)
       toast({ title: 'Sucesso', description: 'Usuário criado.' })
     }
@@ -149,6 +165,20 @@ export default function Users() {
   const handleDelete = (id: string) => {
     deleteUser(id)
     toast({ title: 'Sucesso', description: 'Usuário excluído.' })
+  }
+
+  const handleApprove = (id: string) => {
+    approveUser(id)
+    toast({ title: 'Aprovado', description: 'Acesso concedido ao usuário.' })
+  }
+
+  const handleBlock = (id: string) => {
+    blockUser(id)
+    toast({
+      title: 'Bloqueado',
+      description: 'Acesso do usuário foi revogado.',
+      variant: 'destructive',
+    })
   }
 
   const handlePermissionChange = (
@@ -190,6 +220,33 @@ export default function Users() {
       description: 'O link de acesso foi copiado para a área de transferência.',
     })
     setInviteOpen(false)
+  }
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'active':
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">
+            {t('common.active')}
+          </Badge>
+        )
+      case 'pending_approval':
+        return (
+          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200">
+            {t('common.pending_approval')}
+          </Badge>
+        )
+      case 'pending_activation':
+        return (
+          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 border-blue-200">
+            {t('common.pending_activation')}
+          </Badge>
+        )
+      case 'blocked':
+        return <Badge variant="destructive">{t('common.blocked')}</Badge>
+      default:
+        return <Badge variant="outline">{status}</Badge>
+    }
   }
 
   if (!hasPermission(currentUser as User, 'users', 'view')) {
@@ -471,7 +528,7 @@ export default function Users() {
                 </div>
 
                 <DialogFooter>
-                  <Button onClick={handleSave}>Salvar</Button>
+                  <Button onClick={handleSave}>{t('common.save')}</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -480,76 +537,139 @@ export default function Users() {
       </div>
 
       <Card>
-        <CardContent className="p-0">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-xl font-bold">
+            {t('tenants.list_title')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Nome</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Função</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell className="capitalize">
-                    {t(`roles.${user.role}`)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      {hasPermission(currentUser as User, 'users', 'edit') && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openEdit(user)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      )}
-                      {hasPermission(
-                        currentUser as User,
-                        'users',
-                        'delete',
-                      ) && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-red-500"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                {t('common.delete_title')}
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                {t('common.delete_desc')}
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>
-                                {t('common.cancel')}
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDelete(user.id)}
-                              >
-                                {t('common.delete')}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      )}
-                    </div>
+              {filteredUsers.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    Nenhum usuário encontrado.
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                filteredUsers.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="capitalize">
+                        {t(`roles.${user.role}`)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{getStatusBadge(user.status)}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        {/* Approval Workflow for Platform Owner */}
+                        {currentUser.role === 'platform_owner' && (
+                          <>
+                            {user.status === 'pending_approval' && (
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="text-green-600 border-green-200 hover:bg-green-50"
+                                onClick={() => handleApprove(user.id)}
+                                title={t('common.approve')}
+                              >
+                                <CheckCircle2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                            {user.status !== 'blocked' && (
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="text-orange-600 border-orange-200 hover:bg-orange-50"
+                                onClick={() => handleBlock(user.id)}
+                                title={t('common.block')}
+                              >
+                                <Ban className="h-4 w-4" />
+                              </Button>
+                            )}
+                            {user.status === 'blocked' && (
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                                onClick={() => handleApprove(user.id)}
+                                title={t('common.active')}
+                              >
+                                <CheckCircle2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </>
+                        )}
+
+                        {hasPermission(
+                          currentUser as User,
+                          'users',
+                          'edit',
+                        ) && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openEdit(user)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {hasPermission(
+                          currentUser as User,
+                          'users',
+                          'delete',
+                        ) && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-red-500"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  {t('common.delete_title')}
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  {t('common.delete_desc')}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>
+                                  {t('common.cancel')}
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(user.id)}
+                                >
+                                  {t('common.delete')}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

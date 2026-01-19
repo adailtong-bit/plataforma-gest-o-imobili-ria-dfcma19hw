@@ -113,6 +113,8 @@ interface AppContextType {
     notification: Omit<Notification, 'id' | 'timestamp' | 'read'>,
   ) => void
   markNotificationAsRead: (id: string) => void
+  approveUser: (userId: string) => void
+  blockUser: (userId: string) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -234,6 +236,36 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         details: 'User switched/logged in',
       })
     }
+  }
+
+  const approveUser = (userId: string) => {
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.id === userId ? { ...u, status: 'active', isFirstLogin: true } : u,
+      ),
+    )
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'approve',
+      entity: 'User',
+      entityId: userId,
+      details: 'Approved user access',
+    })
+  }
+
+  const blockUser = (userId: string) => {
+    setUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, status: 'blocked' } : u)),
+    )
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'block',
+      entity: 'User',
+      entityId: userId,
+      details: 'Blocked user access',
+    })
   }
 
   // Filter messages for current user
@@ -1017,6 +1049,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         deleteGenericServiceRate,
         addNotification,
         markNotificationAsRead,
+        approveUser,
+        blockUser,
       }}
     >
       {children}
