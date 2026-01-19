@@ -41,6 +41,7 @@ import usePropertyStore from '@/stores/usePropertyStore'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { PhoneInput } from '@/components/ui/phone-input'
 
 export default function Tenants() {
   const { tenants, addTenant } = useTenantStore()
@@ -186,12 +187,11 @@ export default function Tenants() {
                 </div>
                 <div className="grid gap-2">
                   <Label>{t('common.phone')}</Label>
-                  <Input
+                  <PhoneInput
                     value={newTenant.phone}
                     onChange={(e) =>
                       setNewTenant({ ...newTenant, phone: e.target.value })
                     }
-                    placeholder="+1 (555) 0000"
                   />
                 </div>
               </div>

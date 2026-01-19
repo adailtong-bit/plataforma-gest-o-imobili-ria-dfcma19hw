@@ -83,6 +83,10 @@ export const translations = {
       pending_approval: 'Aguardando Aprovação',
       pending_activation: 'Pendente Ativação',
       blocked: 'Bloqueado',
+      country: 'País',
+      select_country: 'Selecione o País',
+      export_data: 'Exportar Dados',
+      export_success: 'Dados exportados com sucesso.',
     },
     status: {
       interested: 'Interessado',
@@ -125,7 +129,6 @@ export const translations = {
       new_notifications: 'Novas Notificações',
       active_properties: 'Propriedades Ativas',
     },
-    // ... keep existing properties, partners etc
     properties: {
       title: 'Propriedades',
       subtitle: 'Gerencie seu portfólio imobiliário',
@@ -152,6 +155,12 @@ export const translations = {
       cleaning_code: 'Código de Limpeza',
       uploading: 'Enviando...',
       not_assigned: 'Não Atribuído',
+      marketing: 'Marketing',
+      marketing_desc: 'Gerencie a publicação e divulgação do imóvel',
+      listing_price: 'Preço de Listagem',
+      publish_portals: 'Publicar em Portais',
+      public_desc: 'Descrição Pública',
+      listing_gallery: 'Galeria de Listagem',
     },
     partners: {
       title: 'Parceiros',
@@ -230,6 +239,10 @@ export const translations = {
       routing_number: 'Routing Number',
       account_number: 'Número da Conta',
       api_credentials: 'Credenciais de API',
+      integrations: 'Integrações',
+      integrations_desc: 'Conecte serviços externos',
+      crm_provider: 'Provedor CRM',
+      pix_key: 'Chave Pix (Brasil)',
     },
     tasks: {
       title: 'Tarefas',
@@ -417,6 +430,10 @@ export const translations = {
       pending_approval: 'Pending Approval',
       pending_activation: 'Pending Activation',
       blocked: 'Blocked',
+      country: 'Country',
+      select_country: 'Select Country',
+      export_data: 'Export Data',
+      export_success: 'Data exported successfully.',
     },
     status: {
       interested: 'Interested',
@@ -485,8 +502,13 @@ export const translations = {
       cleaning_code: 'Cleaning Code',
       uploading: 'Uploading...',
       not_assigned: 'Not Assigned',
+      marketing: 'Marketing',
+      marketing_desc: 'Manage property listing and exposure',
+      listing_price: 'Listing Price',
+      publish_portals: 'Publish to Portals',
+      public_desc: 'Public Description',
+      listing_gallery: 'Listing Gallery',
     },
-    // ... simplified rest for brevity but ensure keys exist
     partners: {
       title: 'Partners',
       subtitle: 'Manage partners and vendors',
@@ -512,7 +534,6 @@ export const translations = {
       routing: 'Routing Number',
       account: 'Account',
     },
-    // Adding minimal keys to prevent errors in other pages
     condominiums: {
       title: 'Condominiums',
       subtitle: 'Manage HOAs',
@@ -564,6 +585,10 @@ export const translations = {
       routing_number: 'Routing Number',
       account_number: 'Account Number',
       api_credentials: 'API Credentials',
+      integrations: 'Integrations',
+      integrations_desc: 'Connect external services',
+      crm_provider: 'CRM Provider',
+      pix_key: 'Pix Key (Brazil)',
     },
     tasks: {
       title: 'Tasks',
@@ -749,8 +774,11 @@ export const translations = {
       pending_approval: 'Pendiente de Aprobación',
       pending_activation: 'Pendiente de Activación',
       blocked: 'Bloqueado',
+      country: 'País',
+      select_country: 'Seleccionar País',
+      export_data: 'Exportar Datos',
+      export_success: 'Datos exportados con éxito.',
     },
-    // Minimal mapping for ES to avoid crashes, ideally translate all
     status: {
       interested: 'Interesado',
       rented: 'Alquilado',
@@ -818,6 +846,12 @@ export const translations = {
       cleaning_code: 'Código Limpieza',
       uploading: 'Subiendo...',
       not_assigned: 'No Asignado',
+      marketing: 'Marketing',
+      marketing_desc: 'Gestión de listados',
+      listing_price: 'Precio de Lista',
+      publish_portals: 'Publicar en Portales',
+      public_desc: 'Descripción Pública',
+      listing_gallery: 'Galería de Listado',
     },
     partners: {
       title: 'Socios',
@@ -895,6 +929,10 @@ export const translations = {
       routing_number: 'Routing',
       account_number: 'Cuenta',
       api_credentials: 'Credenciales API',
+      integrations: 'Integraciones',
+      integrations_desc: 'Conectar servicios',
+      crm_provider: 'Proveedor CRM',
+      pix_key: 'Clave Pix (Brasil)',
     },
     tasks: {
       title: 'Tareas',

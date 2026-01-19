@@ -37,8 +37,11 @@ export interface FinancialSettings {
   routingNumber: string
   accountNumber: string
   gatewayProvider: 'stripe' | 'plaid' | 'manual'
+  pixKey?: string // Brazil Pix
   apiKey?: string
   apiSecret?: string
+  crmProvider?: 'salesforce' | 'hubspot' | 'zoho' | 'none'
+  crmApiKey?: string
   isProduction: boolean
 }
 
@@ -67,6 +70,7 @@ export interface User {
   role: UserRole
   avatar?: string
   phone?: string
+  country?: string // Geo-standardization
   companyName?: string
   parentId?: string // For hierarchy
   permissions?: Permission[] // For internal users
@@ -121,12 +125,15 @@ export interface Property {
   city?: string
   state?: string
   zipCode?: string
+  country?: string // Geo-standardization
   type: string
   profileType: 'long_term' | 'short_term'
   community: string
   condominiumId?: string
   status: PropertyStatus
   marketingStatus?: 'listed' | 'unlisted'
+  listingPrice?: number // Marketing
+  publishToPortals?: boolean // Marketing
   image: string
   gallery?: string[]
   bedrooms: number
@@ -183,6 +190,7 @@ export interface Tenant {
   name: string
   email: string
   phone: string
+  country?: string
   propertyId?: string
   rentValue: number
   leaseStart?: string
@@ -197,6 +205,7 @@ export interface Owner {
   name: string
   email: string
   phone: string
+  country?: string
   status: 'active' | 'inactive'
   accountNumber?: string
   role: UserRole
@@ -233,6 +242,7 @@ export interface Partner {
   companyName?: string
   email: string
   phone: string
+  country?: string
   status: 'active' | 'inactive'
   rating?: number
   role: UserRole

@@ -42,6 +42,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { PhoneInput } from '@/components/ui/phone-input'
 
 export default function Owners() {
   const { owners, addOwner } = useOwnerStore()
@@ -147,12 +148,11 @@ export default function Owners() {
               </div>
               <div className="grid gap-2">
                 <Label>{t('common.phone')}</Label>
-                <Input
+                <PhoneInput
                   value={newOwner.phone}
                   onChange={(e) =>
                     setNewOwner({ ...newOwner, phone: e.target.value })
                   }
-                  placeholder="+1 (555) 0000"
                 />
               </div>
               <Button onClick={handleAddOwner} className="w-full">

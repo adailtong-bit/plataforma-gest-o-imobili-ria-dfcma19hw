@@ -39,6 +39,8 @@ import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/use-toast'
 import { Partner } from '@/lib/types'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { PhoneInput } from '@/components/ui/phone-input'
+import { AddressInput, AddressData } from '@/components/ui/address-input'
 
 export default function Partners() {
   const { partners, addPartner } = usePartnerStore()
@@ -64,6 +66,14 @@ export default function Partners() {
       p.companyName?.toLowerCase().includes(filter.toLowerCase()),
   )
 
+  const handleAddressSelect = (addr: AddressData) => {
+    setNewPartner((prev) => ({
+      ...prev,
+      address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
+      country: addr.country,
+    }))
+  }
+
   const handleAddPartner = () => {
     if (!newPartner.name || !newPartner.email) {
       toast({
@@ -82,6 +92,7 @@ export default function Partners() {
       email: newPartner.email,
       phone: newPartner.phone || '',
       address: newPartner.address,
+      country: newPartner.country,
       paymentInfo: newPartner.paymentInfo,
       status: 'active',
       rating: 5.0,
@@ -244,14 +255,18 @@ export default function Partners() {
                 </div>
                 <div className="grid gap-2">
                   <Label>{t('common.phone')}</Label>
-                  <Input
-                    value={newPartner.phone}
+                  <PhoneInput
+                    value={newPartner.phone || ''}
                     onChange={(e) =>
                       setNewPartner({ ...newPartner, phone: e.target.value })
                     }
-                    placeholder="+1 (555) 0000"
                   />
                 </div>
+              </div>
+
+              <div className="grid gap-2">
+                <Label>Buscar Endereço</Label>
+                <AddressInput onAddressSelect={handleAddressSelect} />
               </div>
 
               <div className="grid gap-2">

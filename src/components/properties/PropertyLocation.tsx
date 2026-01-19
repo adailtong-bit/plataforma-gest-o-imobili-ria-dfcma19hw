@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { AddressInput, AddressData } from '@/components/ui/address-input'
 
 interface PropertyLocationProps {
   data: Property
@@ -23,6 +24,15 @@ export function PropertyLocation({
   canEdit,
   condominiums,
 }: PropertyLocationProps) {
+  const handleAddressSelect = (addr: AddressData) => {
+    onChange('address', addr.street)
+    onChange('city', addr.city)
+    onChange('state', addr.state)
+    onChange('zipCode', addr.zipCode)
+    onChange('community', addr.community || data.community)
+    onChange('country', addr.country)
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -30,6 +40,14 @@ export function PropertyLocation({
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid gap-2 col-span-1 md:col-span-2">
+          <Label>Buscar Endereço (Auto)</Label>
+          <AddressInput
+            onAddressSelect={handleAddressSelect}
+            defaultValue={data.address}
+            disabled={!canEdit}
+          />
+        </div>
+        <div className="grid gap-2">
           <Label>Endereço</Label>
           <Input
             value={data.address}
@@ -58,6 +76,14 @@ export function PropertyLocation({
           <Input
             value={data.zipCode || ''}
             onChange={(e) => onChange('zipCode', e.target.value)}
+            disabled={!canEdit}
+          />
+        </div>
+        <div className="grid gap-2">
+          <Label>País</Label>
+          <Input
+            value={data.country || ''}
+            onChange={(e) => onChange('country', e.target.value)}
             disabled={!canEdit}
           />
         </div>

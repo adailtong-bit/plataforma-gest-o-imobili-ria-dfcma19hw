@@ -2,7 +2,14 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, Save, Trash2, CalendarDays, FileText } from 'lucide-react'
+import {
+  ArrowLeft,
+  Save,
+  Trash2,
+  CalendarDays,
+  FileText,
+  Megaphone,
+} from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -41,6 +48,7 @@ import { PropertyContent } from '@/components/properties/PropertyContent'
 import { PropertyLedger } from '@/components/financial/PropertyLedger'
 import { PropertyMedia } from '@/components/properties/PropertyMedia'
 import { PropertyDocuments } from '@/components/properties/PropertyDocuments'
+import { PropertyMarketing } from '@/components/properties/PropertyMarketing'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -61,7 +69,7 @@ export default function PropertyDetails() {
 
   useEffect(() => {
     if (property) {
-      // Keep strictly in sync if external updates happen, or careful not to overwrite local edits
+      // Typically avoid overwriting unsaved changes, but for now sync on mount
     }
   }, [property])
 
@@ -198,6 +206,9 @@ export default function PropertyDetails() {
       <Tabs defaultValue="overview">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
+          <TabsTrigger value="marketing">
+            <Megaphone className="h-4 w-4 mr-2" /> {t('properties.marketing')}
+          </TabsTrigger>
           <TabsTrigger value="media">Media</TabsTrigger>
           <TabsTrigger value="documents">
             <FileText className="h-4 w-4 mr-2" /> {t('common.documents')}
@@ -215,6 +226,13 @@ export default function PropertyDetails() {
         <div className="mt-4">
           <TabsContent value="overview">
             <PropertyOverview
+              data={formData}
+              onChange={handleChange}
+              canEdit={canEdit}
+            />
+          </TabsContent>
+          <TabsContent value="marketing">
+            <PropertyMarketing
               data={formData}
               onChange={handleChange}
               canEdit={canEdit}

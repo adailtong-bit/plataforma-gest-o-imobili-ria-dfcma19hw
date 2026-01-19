@@ -31,6 +31,7 @@ export const systemUsers: User[] = [
     isFirstLogin: false,
     address: '123 Tech Park, Silicon Valley, CA',
     taxId: '00-0000000',
+    country: 'US',
   },
   {
     id: 'tenant_realestate',
@@ -40,11 +41,12 @@ export const systemUsers: User[] = [
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=98',
     parentId: 'admin_platform',
     status: 'active',
-    isFirstLogin: false, // Set to true to test forced password change if needed
-    hasPaidEntryFee: true, // Set to false to test payment wall
+    isFirstLogin: false,
+    hasPaidEntryFee: true,
     subscriptionPlan: 'unlimited',
     taxId: '99-9999999',
     address: '456 Property Lane, Orlando, FL',
+    country: 'US',
   },
   {
     id: 'pending_user',
@@ -56,6 +58,7 @@ export const systemUsers: User[] = [
     isFirstLogin: true,
     hasPaidEntryFee: false,
     subscriptionPlan: 'free',
+    country: 'BR',
   },
   {
     id: 'staff_view',
@@ -73,6 +76,7 @@ export const systemUsers: User[] = [
     allowedProfileTypes: ['short_term', 'long_term'],
     status: 'active',
     isFirstLogin: false,
+    country: 'US',
   },
   {
     id: 'staff_full',
@@ -93,6 +97,7 @@ export const systemUsers: User[] = [
     allowedProfileTypes: ['short_term'],
     status: 'active',
     isFirstLogin: false,
+    country: 'US',
   },
 ]
 
@@ -148,6 +153,7 @@ export const owners: Owner[] = [
     status: 'active',
     role: 'property_owner',
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=2',
+    country: 'US',
   },
   {
     id: 'owner2',
@@ -157,6 +163,7 @@ export const owners: Owner[] = [
     status: 'active',
     role: 'property_owner',
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=4',
+    country: 'US',
   },
 ]
 
@@ -187,14 +194,20 @@ export const properties: Property[] = [
     city: 'Orlando',
     state: 'FL',
     zipCode: '32801',
+    country: 'US',
     type: 'House',
     profileType: 'short_term',
     community: 'Sunny Isles HOA',
     condominiumId: 'condo1',
     status: 'rented',
     marketingStatus: 'listed',
+    listingPrice: 350,
+    publishToPortals: true,
     image: 'https://img.usecurling.com/p/400/300?q=modern%20villa',
-    gallery: ['https://img.usecurling.com/p/400/300?q=modern%20villa'],
+    gallery: [
+      'https://img.usecurling.com/p/400/300?q=modern%20villa',
+      'https://img.usecurling.com/p/400/300?q=modern%20pool',
+    ],
     bedrooms: 4,
     bathrooms: 3,
     guests: 8,
@@ -216,12 +229,14 @@ export const properties: Property[] = [
     city: 'Miami',
     state: 'FL',
     zipCode: '33131',
+    country: 'US',
     type: 'Condo',
     profileType: 'long_term',
     community: 'Brickell Heights',
     condominiumId: 'condo2',
     status: 'available',
     marketingStatus: 'unlisted',
+    listingPrice: 3200, // Monthly
     image: 'https://img.usecurling.com/p/400/300?q=luxury%20apartment',
     gallery: ['https://img.usecurling.com/p/400/300?q=luxury%20apartment'],
     bedrooms: 2,
@@ -252,6 +267,7 @@ export const tenants: Tenant[] = [
     status: 'active',
     role: 'tenant',
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=10',
+    country: 'US',
   },
 ]
 
@@ -263,6 +279,7 @@ export const partners: Partner[] = [
     companyName: 'Sparkle Cleaners',
     email: 'maria@sparkle.com',
     phone: '+1 (555) 9991',
+    country: 'US',
     status: 'active',
     rating: 4.8,
     role: 'partner',

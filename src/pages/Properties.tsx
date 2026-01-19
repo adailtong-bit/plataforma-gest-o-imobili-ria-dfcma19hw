@@ -44,6 +44,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { AddressInput, AddressData } from '@/components/ui/address-input'
 
 export default function Properties() {
   const { properties, addProperty, deleteProperty } = usePropertyStore()
@@ -64,6 +65,7 @@ export default function Properties() {
     city: '',
     state: '',
     zipCode: '',
+    country: '',
     type: 'House',
     profileType: 'short_term',
     bedrooms: 3,
@@ -115,6 +117,18 @@ export default function Properties() {
     }
   }
 
+  const handleAddressSelect = (addr: AddressData) => {
+    setNewProp((prev) => ({
+      ...prev,
+      address: addr.street,
+      city: addr.city,
+      state: addr.state,
+      zipCode: addr.zipCode,
+      country: addr.country,
+      community: addr.community || prev.community,
+    }))
+  }
+
   const handleAddProperty = () => {
     const selectedCondo = condominiums.find(
       (c) => c.id === newProp.condominiumId,
@@ -126,9 +140,12 @@ export default function Properties() {
       city: newProp.city || '',
       state: newProp.state || '',
       zipCode: newProp.zipCode || '',
+      country: newProp.country || '',
       type: newProp.type || 'House',
       profileType: newProp.profileType || 'short_term',
-      community: selectedCondo ? selectedCondo.name : 'Independent',
+      community: selectedCondo
+        ? selectedCondo.name
+        : newProp.community || 'Independent',
       condominiumId: newProp.condominiumId,
       status: 'available',
       image: 'https://img.usecurling.com/p/400/300?q=house',
@@ -201,6 +218,12 @@ export default function Properties() {
                     placeholder="Ex: Villa Bella"
                   />
                 </div>
+
+                <div className="grid gap-2">
+                  <Label>Buscar Endereço (Auto)</Label>
+                  <AddressInput onAddressSelect={handleAddressSelect} />
+                </div>
+
                 <div className="grid gap-2">
                   <Label>{t('common.address')}</Label>
                   <Input

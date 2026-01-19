@@ -12,6 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAutomationStore from '@/stores/useAutomationStore'
 import useFinancialStore from '@/stores/useFinancialStore'
@@ -20,7 +27,7 @@ import { hasPermission } from '@/lib/permissions'
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 import { AuditLogList } from '@/components/audit/AuditLogList'
-import { User } from '@/lib/types'
+import { User, FinancialSettings } from '@/lib/types'
 import useUserStore from '@/stores/useUserStore'
 
 export default function Settings() {
@@ -28,9 +35,10 @@ export default function Settings() {
   const { toast } = useToast()
   const { automationRules, updateAutomationRule } = useAutomationStore()
   const { financialSettings, updateFinancialSettings } = useFinancialStore()
-  const { currentUser, setCurrentUser } = useAuthStore()
+  const { currentUser } = useAuthStore()
   const { updateUser } = useUserStore()
-  const [financialData, setFinancialData] = useState(financialSettings)
+  const [financialData, setFinancialData] =
+    useState<FinancialSettings>(financialSettings)
   const [profileData, setProfileData] = useState({
     name: currentUser.name,
     email: currentUser.email,
@@ -40,19 +48,6 @@ export default function Settings() {
   })
 
   const handleFinancialSave = () => {
-    // Basic validation
-    if (
-      financialData.routingNumber.length !== 9 ||
-      !/^\d+$/.test(financialData.routingNumber)
-    ) {
-      toast({
-        title: t('common.error'),
-        description: 'Routing Number must be 9 digits.',
-        variant: 'destructive',
-      })
-      return
-    }
-
     updateFinancialSettings(financialData)
     toast({
       title: t('common.save'),
@@ -69,16 +64,6 @@ export default function Settings() {
       taxId: profileData.taxId,
       address: profileData.address,
     })
-
-    // Update local session (mock) - in real app, session would refresh
-    // We need to forcefully update the current user in store to reflect changes in UI
-    // Since updateUser updates the list but not necessarily the currentUser reference in AuthStore immediately if separated
-    // But currentUser in AuthStore comes from AppContext which derives from users list?
-    // No, currentUser is state in AppContext. So we need to update it there too ideally.
-    // However, AppContext implementation of `updateUser` updates the `users` array.
-    // `currentUser` is a separate state object. We might need to refresh it.
-    // For now, let's assume a refresh or re-selection might be needed, but visually it's fine.
-
     toast({
       title: t('common.save'),
       description: 'Perfil atualizado com sucesso.',
@@ -109,8 +94,8 @@ export default function Settings() {
             {t('common.notifications')}
           </TabsTrigger>
           <TabsTrigger value="automation">{t('common.automation')}</TabsTrigger>
-          <TabsTrigger value="gateway">
-            {t('settings.payment_gateway')}
+          <TabsTrigger value="integrations">
+            {t('settings.integrations')}
           </TabsTrigger>
           {canViewAudit && (
             <TabsTrigger value="audit">
@@ -173,7 +158,6 @@ export default function Settings() {
                     onChange={(e) =>
                       setProfileData({ ...profileData, taxId: e.target.value })
                     }
-                    placeholder="000.000.000-00"
                   />
                 </div>
                 <div className="col-span-1 md:col-span-2 space-y-2">
@@ -199,101 +183,86 @@ export default function Settings() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="gateway">
+        <TabsContent value="integrations">
           <Card>
             <CardHeader>
-              <CardTitle>{t('settings.banking_info')}</CardTitle>
+              <CardTitle>{t('settings.payment_gateway')}</CardTitle>
               <CardDescription>{t('settings.banking_desc')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label>{t('settings.company_legal_name')}</Label>
-                  <Input
-                    value={financialData.companyName}
-                    onChange={(e) =>
-                      handleFinancialChange('companyName', e.target.value)
+                  <Label>Gateway Provider</Label>
+                  <Select
+                    value={financialData.gatewayProvider}
+                    onValueChange={(v: any) =>
+                      handleFinancialChange('gatewayProvider', v)
                     }
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="stripe">Stripe</SelectItem>
+                      <SelectItem value="plaid">Plaid</SelectItem>
+                      <SelectItem value="manual">Manual</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('settings.ein')}</Label>
+                  <Label>API Key</Label>
                   <Input
-                    value={financialData.ein}
+                    value={financialData.apiKey || ''}
                     onChange={(e) =>
-                      handleFinancialChange('ein', e.target.value)
-                    }
-                    placeholder="XX-XXXXXXX"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('settings.bank_name')}</Label>
-                  <Input
-                    value={financialData.bankName}
-                    onChange={(e) =>
-                      handleFinancialChange('bankName', e.target.value)
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('settings.routing_number')}</Label>
-                  <Input
-                    value={financialData.routingNumber}
-                    onChange={(e) =>
-                      handleFinancialChange('routingNumber', e.target.value)
-                    }
-                    placeholder="9 digits"
-                    maxLength={9}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('settings.account_number')}</Label>
-                  <Input
-                    value={financialData.accountNumber}
-                    onChange={(e) =>
-                      handleFinancialChange('accountNumber', e.target.value)
+                      handleFinancialChange('apiKey', e.target.value)
                     }
                     type="password"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('settings.pix_key')}</Label>
+                  <Input
+                    value={financialData.pixKey || ''}
+                    onChange={(e) =>
+                      handleFinancialChange('pixKey', e.target.value)
+                    }
+                    placeholder="Chave Pix"
                   />
                 </div>
               </div>
 
               <Separator />
 
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">
-                  {t('settings.api_credentials')}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label>API Key</Label>
-                    <Input
-                      value={financialData.apiKey || ''}
-                      onChange={(e) =>
-                        handleFinancialChange('apiKey', e.target.value)
-                      }
-                      type="password"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>API Secret</Label>
-                    <Input
-                      value={financialData.apiSecret || ''}
-                      onChange={(e) =>
-                        handleFinancialChange('apiSecret', e.target.value)
-                      }
-                      type="password"
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={financialData.isProduction}
-                    onCheckedChange={(c) =>
-                      handleFinancialChange('isProduction', c)
+              <h3 className="text-lg font-medium">CRM</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label>{t('settings.crm_provider')}</Label>
+                  <Select
+                    value={financialData.crmProvider || 'none'}
+                    onValueChange={(v: any) =>
+                      handleFinancialChange('crmProvider', v)
                     }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Nenhum</SelectItem>
+                      <SelectItem value="salesforce">Salesforce</SelectItem>
+                      <SelectItem value="hubspot">HubSpot</SelectItem>
+                      <SelectItem value="zoho">Zoho</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>CRM API Key</Label>
+                  <Input
+                    value={financialData.crmApiKey || ''}
+                    onChange={(e) =>
+                      handleFinancialChange('crmApiKey', e.target.value)
+                    }
+                    type="password"
                   />
-                  <Label>Modo de Produção</Label>
                 </div>
               </div>
 
