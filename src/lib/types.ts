@@ -91,6 +91,14 @@ export interface User {
   subscriptionPlan?: 'free' | 'pay_per_house' | 'unlimited'
 }
 
+export interface CondoContact {
+  id: string
+  role: string // Service Desk, Maintenance, Security
+  name: string
+  phone: string
+  email: string
+}
+
 export interface Condominium {
   id: string
   name: string
@@ -105,6 +113,10 @@ export interface Condominium {
     cleaning?: string
     amenities?: string
     gate?: string
+    mainGateCar?: string
+    pedestrianGate?: string
+    poolCode?: string
+    qrCodeUrl?: string
   }
   hoaFee?: number
   hoaFrequency?: 'monthly' | 'quarterly' | 'semi-annually' | 'annually'
@@ -113,12 +125,7 @@ export interface Condominium {
     url: string
     date: string
   }
-  contacts?: {
-    role: string
-    name: string
-    phone: string
-    email: string
-  }[]
+  contacts?: CondoContact[]
 }
 
 export type PropertyStatus =
@@ -128,6 +135,14 @@ export type PropertyStatus =
   | 'in_registration'
   | 'suspended'
   | 'released'
+
+export interface FixedExpense {
+  id: string
+  name: string
+  amount: number
+  dueDay: number
+  frequency: 'monthly' | 'yearly'
+}
 
 export interface Property {
   id: string
@@ -190,13 +205,7 @@ export interface Property {
   iCalUrl?: string
 
   // Financial
-  fixedExpenses?: {
-    id: string
-    name: string
-    amount: number
-    dueDay: number
-    frequency: 'monthly' | 'yearly'
-  }[]
+  fixedExpenses?: FixedExpense[]
 }
 
 export type DocumentCategory =
@@ -244,6 +253,17 @@ export interface Tenant {
   role: UserRole
   avatar?: string
   documents?: GenericDocument[]
+
+  // Extended fields
+  idNumber?: string
+  driverLicense?: string
+  socialSecurity?: string
+  references?: string
+  emergencyContact?: {
+    name: string
+    phone: string
+    relation: string
+  }
 }
 
 export interface Owner {
@@ -257,6 +277,15 @@ export interface Owner {
   role: UserRole
   avatar?: string
   documents?: GenericDocument[]
+
+  // Extended fields
+  address?: string
+  secondContact?: {
+    name: string
+    phone: string
+    email?: string
+  }
+  pmAgreementUrl?: string
 }
 
 export interface ServiceRate {
@@ -365,13 +394,15 @@ export interface LedgerEntry {
   id: string
   propertyId: string
   date: string
+  dueDate?: string // New field
+  paymentDate?: string // New field
   type: 'income' | 'expense'
   category: string
   amount: number
   description: string
   referenceId?: string
   beneficiaryId?: string
-  status: 'pending' | 'cleared' | 'void'
+  status: 'pending' | 'cleared' | 'void' | 'overdue' | 'unpaid'
   attachments?: { name: string; url: string }[]
 }
 
@@ -442,6 +473,11 @@ export interface MarketData {
   trend: 'up' | 'down' | 'stable'
   competitorCount: number
   averageDaysOnMarket: number
+  // Expanded fields
+  shortTermRate: number
+  longTermRate: number
+  pricePerSqFt: number
+  saturationIndex: number
 }
 
 export interface Message {

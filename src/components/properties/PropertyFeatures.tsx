@@ -1,18 +1,22 @@
-import { Property } from '@/lib/types'
+import { Property, Condominium } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Lock } from 'lucide-react'
 
 interface PropertyFeaturesProps {
   data: Property
   onChange: (field: keyof Property, value: any) => void
   canEdit: boolean
+  condominium?: Condominium
 }
 
 export function PropertyFeatures({
   data,
   onChange,
   canEdit,
+  condominium,
 }: PropertyFeaturesProps) {
   return (
     <Card>
@@ -93,6 +97,30 @@ export function PropertyFeatures({
             disabled={!canEdit}
           />
         </div>
+
+        {/* Mirrored Condo Access */}
+        {condominium && condominium.accessCredentials && (
+          <div className="md:col-span-3 pt-4 border-t mt-4">
+            <h3 className="font-semibold text-sm flex items-center gap-2 text-muted-foreground mb-3">
+              <Lock className="h-4 w-4" /> Acesso Condomínio (Mirror)
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-muted/20 p-4 rounded-lg">
+              {Object.entries(condominium.accessCredentials).map(
+                ([key, val]) =>
+                  val && (
+                    <div key={key}>
+                      <Label className="text-xs text-muted-foreground uppercase">
+                        {key.replace(/([A-Z])/g, ' $1').trim()}
+                      </Label>
+                      <div className="font-mono text-sm font-semibold">
+                        {val}
+                      </div>
+                    </div>
+                  ),
+              )}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

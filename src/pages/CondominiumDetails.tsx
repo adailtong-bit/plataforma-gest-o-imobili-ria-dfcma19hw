@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import {
@@ -24,45 +24,46 @@ import {
   Lock,
   DollarSign,
   FileText,
-  Upload,
-  Download,
   Trash2,
   Edit,
   X,
+  Plus,
+  QrCode,
   Users,
 } from 'lucide-react'
 import useCondominiumStore from '@/stores/useCondominiumStore'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Condominium } from '@/lib/types'
-import { isValidEmail } from '@/lib/utils'
+import { Condominium, CondoContact } from '@/lib/types'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 export default function CondominiumDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { condominiums, updateCondominium, deleteCondominium } =
-    useCondominiumStore()
+  const { condominiums, updateCondominium } = useCondominiumStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
   const condo = condominiums.find((c) => c.id === id)
   const [formData, setFormData] = useState<Condominium | null>(null)
   const [isEditing, setIsEditing] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Contacts State
+  const [newContact, setNewContact] = useState<Partial<CondoContact>>({
+    role: '',
+    name: '',
+    phone: '',
+    email: '',
+  })
 
   useEffect(() => {
     if (condo) {
@@ -70,72 +71,16 @@ export default function CondominiumDetails() {
     }
   }, [condo])
 
-  if (!condo || !formData) {
-    return (
-      <div className="p-8 text-center">
-        <h2 className="text-xl font-bold">Condomínio não encontrado</h2>
-        <Button onClick={() => navigate('/condominiums')} className="mt-4">
-          {t('common.back')}
-        </Button>
-      </div>
-    )
-  }
+  if (!condo || !formData) return <div>Not Found</div>
 
   const handleSave = () => {
-    // Validation
-    if (!formData.name?.trim()) {
-      toast({
-        title: 'Erro',
-        description: 'Nome do condomínio é obrigatório.',
-        variant: 'destructive',
-      })
-      return
-    }
-    if (!formData.address?.trim()) {
-      toast({
-        title: 'Erro',
-        description: 'Endereço é obrigatório.',
-        variant: 'destructive',
-      })
-      return
-    }
-    if (formData.managerEmail && !isValidEmail(formData.managerEmail)) {
-      toast({
-        title: 'Erro',
-        description: 'Email do gerente inválido.',
-        variant: 'destructive',
-      })
-      return
-    }
-
+    if (!formData.name?.trim()) return
     updateCondominium(formData)
     setIsEditing(false)
     toast({
       title: t('common.save'),
       description: 'Dados do condomínio atualizados.',
     })
-  }
-
-  const handleCancel = () => {
-    setFormData(JSON.parse(JSON.stringify(condo)))
-    setIsEditing(false)
-  }
-
-  const handleDelete = () => {
-    try {
-      deleteCondominium(condo.id)
-      toast({ title: 'Condomínio excluído' })
-      navigate('/condominiums')
-    } catch (error: any) {
-      toast({
-        title: t('common.error'),
-        description:
-          error.message === 'error_linked_condo'
-            ? t('common.delete_linked_error')
-            : 'Erro ao excluir.',
-        variant: 'destructive',
-      })
-    }
   }
 
   const handleChange = (field: string, value: any) => {
@@ -160,26 +105,24 @@ export default function CondominiumDetails() {
     }))
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const addContact = () => {
+    if (newContact.name && newContact.role) {
+      const contact: CondoContact = {
+        id: `cc-${Date.now()}`,
+        name: newContact.name,
+        role: newContact.role,
+        phone: newContact.phone || '',
+        email: newContact.email || '',
+      }
+      const contacts = [...(formData.contacts || []), contact]
+      setFormData({ ...formData, contacts })
+      setNewContact({ role: '', name: '', phone: '', email: '' })
+    }
+  }
 
-    setIsUploading(true)
-    setTimeout(() => {
-      setFormData((prev: any) => ({
-        ...prev,
-        hoaContract: {
-          name: file.name,
-          url: URL.createObjectURL(file),
-          date: new Date().toISOString(),
-        },
-      }))
-      setIsUploading(false)
-      toast({
-        title: t('condominiums.upload_contract'),
-        description: 'Contrato enviado com sucesso. (Não salvo até confirmar)',
-      })
-    }, 1000)
+  const removeContact = (id: string) => {
+    const contacts = (formData.contacts || []).filter((c) => c.id !== id)
+    setFormData({ ...formData, contacts })
   }
 
   return (
@@ -200,43 +143,18 @@ export default function CondominiumDetails() {
         </div>
         <div className="flex gap-2">
           {!isEditing ? (
-            <>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="icon">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      {t('common.delete_title')}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {t('common.delete_desc')}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
-                      {t('common.delete')}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-              <Button
-                onClick={() => setIsEditing(true)}
-                variant="outline"
-                className="gap-2"
-              >
-                <Edit className="h-4 w-4" /> {t('common.edit')}
-              </Button>
-            </>
+            <Button
+              onClick={() => setIsEditing(true)}
+              variant="outline"
+              className="gap-2"
+            >
+              <Edit className="h-4 w-4" /> {t('common.edit')}
+            </Button>
           ) : (
             <>
               <Button
-                onClick={handleCancel}
-                variant="outline"
+                onClick={() => setIsEditing(false)}
+                variant="ghost"
                 className="gap-2"
               >
                 <X className="h-4 w-4" /> {t('common.cancel')}
@@ -255,326 +173,276 @@ export default function CondominiumDetails() {
           <TabsTrigger value="access">
             {t('condominiums.access_credentials')}
           </TabsTrigger>
+          <TabsTrigger value="contacts">Contatos</TabsTrigger>
           <TabsTrigger value="financial">
             {t('condominiums.financial_hoa')}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('common.details')}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-2">
-                  <Label>{t('common.name')}</Label>
-                  <Input
-                    value={formData.name}
-                    onChange={(e) => handleChange('name', e.target.value)}
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Buscar Endereço</Label>
-                  <AddressInput
-                    onAddressSelect={handleAddressSelect}
-                    disabled={!isEditing}
-                    defaultValue={formData.address}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>{t('common.description')}</Label>
-                  <Textarea
-                    value={formData.description || ''}
-                    onChange={(e) =>
-                      handleChange('description', e.target.value)
-                    }
-                    placeholder="Informações gerais sobre o condomínio..."
-                    className="min-h-[100px]"
-                    disabled={!isEditing}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('condominiums.manager')}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-2">
-                  <Label>{t('common.name')}</Label>
-                  <Input
-                    value={formData.managerName || ''}
-                    onChange={(e) =>
-                      handleChange('managerName', e.target.value)
-                    }
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>{t('common.phone')}</Label>
-                    <Input
-                      value={formData.managerPhone || ''}
-                      onChange={(e) =>
-                        handleChange('managerPhone', e.target.value)
-                      }
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>{t('common.email')}</Label>
-                    <Input
-                      value={formData.managerEmail || ''}
-                      onChange={(e) =>
-                        handleChange('managerEmail', e.target.value)
-                      }
-                      disabled={!isEditing}
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('common.details')}</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>{t('common.name')}</Label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) => handleChange('name', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Buscar Endereço</Label>
+                <AddressInput
+                  onAddressSelect={handleAddressSelect}
+                  defaultValue={formData.address}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2 md:col-span-2">
+                <Label>{t('common.description')}</Label>
+                <Textarea
+                  value={formData.description || ''}
+                  onChange={(e) => handleChange('description', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="access">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Lock className="h-5 w-5" />{' '}
-                {t('condominiums.access_credentials')}
+                <Lock className="h-5 w-5" /> Credenciais de Acesso
               </CardTitle>
               <CardDescription>
-                Senhas gerais de acesso ao condomínio.
+                Gerencie senhas, gates e QR codes.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label>{t('properties.guest_code')}</Label>
+                  <Label>Main Gate (Carros)</Label>
                   <Input
-                    value={formData.accessCredentials?.guest || ''}
+                    value={formData.accessCredentials?.mainGateCar || ''}
                     onChange={(e) =>
                       handleNestedChange(
                         'accessCredentials',
-                        'guest',
+                        'mainGateCar',
                         e.target.value,
                       )
                     }
                     placeholder="****"
-                    className="font-mono text-lg"
                     disabled={!isEditing}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('properties.service_code')}</Label>
+                  <Label>Pedestrian Gate</Label>
                   <Input
-                    value={formData.accessCredentials?.service || ''}
+                    value={formData.accessCredentials?.pedestrianGate || ''}
                     onChange={(e) =>
                       handleNestedChange(
                         'accessCredentials',
-                        'service',
+                        'pedestrianGate',
                         e.target.value,
                       )
                     }
                     placeholder="****"
-                    className="font-mono text-lg"
                     disabled={!isEditing}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('properties.cleaning_code')}</Label>
+                  <Label>Pool / Gym / Amenities</Label>
                   <Input
-                    value={formData.accessCredentials?.cleaning || ''}
+                    value={formData.accessCredentials?.poolCode || ''}
                     onChange={(e) =>
                       handleNestedChange(
                         'accessCredentials',
-                        'cleaning',
+                        'poolCode',
                         e.target.value,
                       )
                     }
                     placeholder="****"
-                    className="font-mono text-lg"
                     disabled={!isEditing}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Amenities Code (Gym/Pool)</Label>
-                  <Input
-                    value={formData.accessCredentials?.amenities || ''}
-                    onChange={(e) =>
-                      handleNestedChange(
-                        'accessCredentials',
-                        'amenities',
-                        e.target.value,
-                      )
-                    }
-                    placeholder="****"
-                    className="font-mono text-lg"
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Gate Code</Label>
-                  <Input
-                    value={formData.accessCredentials?.gate || ''}
-                    onChange={(e) =>
-                      handleNestedChange(
-                        'accessCredentials',
-                        'gate',
-                        e.target.value,
-                      )
-                    }
-                    placeholder="****"
-                    className="font-mono text-lg"
-                    disabled={!isEditing}
-                  />
+                  <Label>QR Code URL (Link)</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={formData.accessCredentials?.qrCodeUrl || ''}
+                      onChange={(e) =>
+                        handleNestedChange(
+                          'accessCredentials',
+                          'qrCodeUrl',
+                          e.target.value,
+                        )
+                      }
+                      placeholder="https://..."
+                      disabled={!isEditing}
+                    />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      title="Gerar QR"
+                      disabled={!isEditing}
+                    >
+                      <QrCode className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="financial">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />{' '}
-                  {t('condominiums.financial_hoa')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>{t('properties.hoa_fee')}</Label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        type="number"
-                        value={formData.hoaFee || ''}
-                        onChange={(e) =>
-                          handleChange('hoaFee', parseFloat(e.target.value))
-                        }
-                        className="pl-8"
-                        placeholder="0.00"
-                        disabled={!isEditing}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('properties.hoa_freq')}</Label>
+        <TabsContent value="contacts">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" /> Contatos Importantes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isEditing && (
+                <div className="flex gap-2 mb-6 items-end border p-4 rounded-md bg-muted/20">
+                  <div className="grid gap-2 w-1/4">
+                    <Label>Função</Label>
                     <Select
-                      value={formData.hoaFrequency || 'monthly'}
-                      onValueChange={(val) => handleChange('hoaFrequency', val)}
-                      disabled={!isEditing}
+                      onValueChange={(v) =>
+                        setNewContact({ ...newContact, role: v })
+                      }
                     >
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Selecione" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="monthly">
-                          {t('properties.monthly')}
+                        <SelectItem value="Manager">Manager/Síndico</SelectItem>
+                        <SelectItem value="Service Desk">
+                          Service Desk
                         </SelectItem>
-                        <SelectItem value="quarterly">
-                          {t('properties.quarterly')}
-                        </SelectItem>
-                        <SelectItem value="semi-annually">
-                          {t('properties.semiannually')}
-                        </SelectItem>
-                        <SelectItem value="annually">
-                          {t('properties.annually')}
-                        </SelectItem>
+                        <SelectItem value="Maintenance">Manutenção</SelectItem>
+                        <SelectItem value="Security">Segurança</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
+                  <div className="grid gap-2 w-1/4">
+                    <Label>Nome</Label>
+                    <Input
+                      onChange={(e) =>
+                        setNewContact({ ...newContact, name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2 w-1/4">
+                    <Label>Telefone</Label>
+                    <Input
+                      onChange={(e) =>
+                        setNewContact({ ...newContact, phone: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2 w-1/4">
+                    <Label>Email</Label>
+                    <Input
+                      onChange={(e) =>
+                        setNewContact({ ...newContact, email: e.target.value })
+                      }
+                    />
+                  </div>
+                  <Button onClick={addContact} className="bg-trust-blue">
+                    <Plus className="h-4 w-4" />
+                  </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  * Este valor será espelhado automaticamente nas despesas das
-                  propriedades vinculadas a este condomínio.
-                </p>
-              </CardContent>
-            </Card>
+              )}
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />{' '}
-                  {t('condominiums.hoa_contract')}
-                </CardTitle>
-                <div>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    onChange={handleFileUpload}
-                    accept=".pdf,.doc,.docx"
-                    disabled={!isEditing}
-                  />
-                  {isEditing && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={isUploading}
-                    >
-                      <Upload className="mr-2 h-4 w-4" />
-                      {isUploading
-                        ? t('properties.uploading')
-                        : t('common.upload')}
-                    </Button>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                {formData.hoaContract ? (
-                  <div className="flex items-center justify-between p-3 border rounded-md bg-muted/20">
-                    <div className="flex items-center gap-3 overflow-hidden">
-                      <FileText className="h-8 w-8 text-blue-500 shrink-0" />
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-medium truncate">
-                          {formData.hoaContract.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(
-                            formData.hoaContract.date,
-                          ).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <a
-                        href={formData.hoaContract.url}
-                        download={formData.hoaContract.name}
-                      >
-                        <Button variant="ghost" size="icon">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </a>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Função</TableHead>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Telefone</TableHead>
+                    <TableHead>Email</TableHead>
+                    {isEditing && <TableHead>Ação</TableHead>}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {formData.contacts?.map((c) => (
+                    <TableRow key={c.id}>
+                      <TableCell className="font-medium">{c.role}</TableCell>
+                      <TableCell>{c.name}</TableCell>
+                      <TableCell>{c.phone}</TableCell>
+                      <TableCell>{c.email}</TableCell>
                       {isEditing && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-500 hover:text-red-700"
-                          onClick={() => handleChange('hoaContract', undefined)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeContact(c.id)}
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </TableCell>
                       )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-md">
-                    <p>{t('condominiums.upload_contract')}</p>
-                    <p className="text-xs mt-1">PDF, DOC, DOCX</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="financial">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5" /> Integração Financeira
+              </CardTitle>
+              <CardDescription>
+                Valores configurados aqui serão espelhados nas propriedades.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>{t('properties.hoa_fee')}</Label>
+                <Input
+                  type="number"
+                  value={formData.hoaFee || ''}
+                  onChange={(e) =>
+                    handleChange('hoaFee', parseFloat(e.target.value))
+                  }
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>{t('properties.hoa_freq')}</Label>
+                <Select
+                  value={formData.hoaFrequency || 'monthly'}
+                  onValueChange={(val) => handleChange('hoaFrequency', val)}
+                  disabled={!isEditing}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="monthly">
+                      {t('properties.monthly')}
+                    </SelectItem>
+                    <SelectItem value="quarterly">
+                      {t('properties.quarterly')}
+                    </SelectItem>
+                    <SelectItem value="annually">
+                      {t('properties.annually')}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

@@ -21,6 +21,7 @@ import {
   FileText,
   AlertTriangle,
   CheckCircle2,
+  Clock,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -58,7 +59,7 @@ export default function Renewals() {
       }
     })
     .filter((item) => {
-      if (filter === 'all') return item.status !== 'safe' // Show only relevant renewals by default in dashboard
+      if (filter === 'all') return item.status !== 'safe'
       return item.status === filter
     })
     .sort((a, b) => a.daysLeft - b.daysLeft)
@@ -90,7 +91,10 @@ export default function Renewals() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-red-50 border-red-100">
+        <Card
+          className="bg-red-50 border-red-100 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => setFilter('critical')}
+        >
           <CardHeader className="pb-2">
             <CardTitle className="text-red-700 flex items-center gap-2">
               <AlertTriangle className="h-5 w-5" /> Críticos (&lt; 30 dias)
@@ -98,14 +102,21 @@ export default function Renewals() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-red-800">
-              {renewalData.filter((d) => d.status === 'critical').length}
+              {
+                renewalData.filter(
+                  (d) => d.status === 'critical' || d.daysLeft < 30,
+                ).length // Using raw data count
+              }
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-orange-50 border-orange-100">
+        <Card
+          className="bg-orange-50 border-orange-100 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => setFilter('upcoming')}
+        >
           <CardHeader className="pb-2">
             <CardTitle className="text-orange-700 flex items-center gap-2">
-              <ClockIcon className="h-5 w-5" /> Próximos (30-90 dias)
+              <Clock className="h-5 w-5" /> Próximos (30-90 dias)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -139,6 +150,7 @@ export default function Renewals() {
               <TableRow>
                 <TableHead>Inquilino</TableHead>
                 <TableHead>Propriedade</TableHead>
+                <TableHead>Valor Atual</TableHead>
                 <TableHead>Vencimento</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
@@ -147,18 +159,28 @@ export default function Renewals() {
             <TableBody>
               {renewalData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8">
                     Nenhuma renovação pendente.
                   </TableCell>
                 </TableRow>
               ) : (
                 renewalData.map(({ tenant, property, daysLeft, status }) => (
-                  <TableRow key={tenant.id}>
+                  <TableRow
+                    key={tenant.id}
+                    className={status === 'critical' ? 'bg-red-50/50' : ''}
+                  >
                     <TableCell className="font-medium">{tenant.name}</TableCell>
                     <TableCell>{property?.name}</TableCell>
+                    <TableCell>${tenant.rentValue.toFixed(2)}</TableCell>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span>
+                        <span
+                          className={
+                            status === 'critical'
+                              ? 'text-red-600 font-bold'
+                              : ''
+                          }
+                        >
                           {format(new Date(tenant.leaseEnd!), 'dd/MM/yyyy')}
                         </span>
                         <span className="text-xs text-muted-foreground">
@@ -201,25 +223,5 @@ export default function Renewals() {
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-function ClockIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
   )
 }

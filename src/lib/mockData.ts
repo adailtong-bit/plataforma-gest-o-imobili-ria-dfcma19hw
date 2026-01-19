@@ -93,6 +93,7 @@ export const properties: Property[] = tenantsData.flatMap((tenant, tIdx) =>
     type: pIdx % 3 === 0 ? 'House' : 'Condo',
     profileType: pIdx % 2 === 0 ? 'short_term' : 'long_term',
     community: `Community ${tIdx + 1}`,
+    condominiumId: 'condo1',
     status: pIdx % 4 === 0 ? 'rented' : 'available',
     marketingStatus: 'listed',
     listingPrice: 150 + pIdx * 10,
@@ -110,6 +111,15 @@ export const properties: Property[] = tenantsData.flatMap((tenant, tIdx) =>
     ownerId: `owner_${tIdx}_${pIdx % 2}`, // 2 owners per tenant for mock
     documents: [],
     agentId: `partner_${tIdx}_0`, // 1 agent per tenant
+    fixedExpenses: [
+      {
+        id: `fe-${tIdx}-${pIdx}`,
+        name: 'Internet',
+        amount: 50,
+        dueDay: 5,
+        frequency: 'monthly',
+      },
+    ],
   })),
 )
 
@@ -124,6 +134,11 @@ export const owners: Owner[] = tenantsData.flatMap((tenant, tIdx) =>
     role: 'property_owner',
     avatar: `https://img.usecurling.com/ppl/thumbnail?gender=male&seed=${50 + tIdx + oIdx}`,
     country: 'US',
+    address: '123 Owner Lane',
+    secondContact: {
+      name: 'Spouse Name',
+      phone: '+1 555 1234',
+    },
   })),
 )
 
@@ -137,10 +152,16 @@ export const tenants: Tenant[] = tenantsData.flatMap((manager, tIdx) =>
     propertyId: `prop_${tIdx}_${i}`, // Assign to first few properties
     rentValue: 2000,
     leaseStart: '2024-01-01',
-    leaseEnd: '2024-12-31',
+    leaseEnd: i === 0 ? '2024-02-15' : '2024-12-31', // one expiring soon
     status: 'active',
     role: 'tenant',
     country: 'US',
+    idNumber: `ID-${tIdx}-${i}`,
+    emergencyContact: {
+      name: 'Emergency Person',
+      phone: '+1 555 9999',
+      relation: 'Sibling',
+    },
   })),
 )
 
@@ -176,9 +197,21 @@ export const condominiums: Condominium[] = [
       guest: '9988',
       service: '7766',
       cleaning: '5544',
+      mainGateCar: '1234#',
+      pedestrianGate: '4321',
+      poolCode: '9090',
     },
     hoaFee: 450.0,
     hoaFrequency: 'monthly',
+    contacts: [
+      {
+        id: 'c1',
+        role: 'Security',
+        name: 'Guard Station',
+        phone: '+1 555 1111',
+        email: 'security@sunnyisles.com',
+      },
+    ],
   },
 ]
 
@@ -231,7 +264,30 @@ export const automationRules: AutomationRule[] = [
 
 export const messages: Message[] = []
 
-export const ledgerEntries: LedgerEntry[] = []
+export const ledgerEntries: LedgerEntry[] = [
+  {
+    id: 'l1',
+    propertyId: 'prop_0_0',
+    date: new Date().toISOString(),
+    dueDate: addDays(new Date(), 5).toISOString(),
+    type: 'expense',
+    category: 'Water',
+    amount: 45.0,
+    description: 'Water Bill - Jan',
+    status: 'pending',
+  },
+  {
+    id: 'l2',
+    propertyId: 'prop_0_0',
+    date: subDays(new Date(), 10).toISOString(),
+    dueDate: subDays(new Date(), 5).toISOString(),
+    type: 'income',
+    category: 'Rent',
+    amount: 2000.0,
+    description: 'Rent Payment - Jan',
+    status: 'cleared',
+  },
+]
 
 export const auditLogs: AuditLog[] = []
 
@@ -264,6 +320,10 @@ export const marketData: MarketData[] = [
     trend: 'up',
     competitorCount: 120,
     averageDaysOnMarket: 25,
+    shortTermRate: 180,
+    longTermRate: 2200,
+    pricePerSqFt: 250,
+    saturationIndex: 65,
   },
   {
     region: 'Miami, FL',
@@ -272,6 +332,10 @@ export const marketData: MarketData[] = [
     trend: 'stable',
     competitorCount: 300,
     averageDaysOnMarket: 45,
+    shortTermRate: 250,
+    longTermRate: 3500,
+    pricePerSqFt: 450,
+    saturationIndex: 85,
   },
 ]
 

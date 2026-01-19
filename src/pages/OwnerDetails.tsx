@@ -1,289 +1,204 @@
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { useParams, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import {
-  ArrowLeft,
-  User,
-  Mail,
-  Phone,
-  Building2,
-  FileText,
-  MessageSquare,
-  MoreVertical,
-  MessageCircle,
-} from 'lucide-react'
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ArrowLeft, Save, Edit, X, FileText, Download } from 'lucide-react'
 import useOwnerStore from '@/stores/useOwnerStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useFinancialStore from '@/stores/useFinancialStore'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { useToast } from '@/hooks/use-toast'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import useLanguageStore from '@/stores/useLanguageStore'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { OwnerStatement } from '@/components/financial/OwnerStatement'
+import { Owner } from '@/lib/types'
 import { DocumentVault } from '@/components/documents/DocumentVault'
+import { OwnerStatement } from '@/components/financial/OwnerStatement'
 
 export default function OwnerDetails() {
   const { id } = useParams()
   const { owners } = useOwnerStore()
   const { properties } = usePropertyStore()
   const { ledgerEntries } = useFinancialStore()
-  const navigate = useNavigate()
   const { toast } = useToast()
-  const { t } = useLanguageStore()
 
   const owner = owners.find((o) => o.id === id)
-  const ownerProperties = properties.filter((p) => p.ownerId === id)
+  const [formData, setFormData] = useState<Owner | null>(
+    owner ? { ...owner } : null,
+  )
+  const [isEditing, setIsEditing] = useState(false)
 
-  if (!owner) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[50vh] gap-4">
-        <h2 className="text-2xl font-bold">Proprietário não encontrado</h2>
-        <Link to="/owners">
-          <Button>{t('common.back')}</Button>
-        </Link>
-      </div>
-    )
+  if (!formData) return <div>Not Found</div>
+
+  const handleSave = () => {
+    // In real app, call updateOwner(formData)
+    setIsEditing(false)
+    toast({ title: 'Proprietário atualizado' })
   }
 
-  const handleAction = (action: string) => {
-    toast({
-      title: t('owners.workflow_started'),
-      description: t('owners.workflow_desc', {
-        action: action,
-        name: owner.name,
-      }),
-    })
-    if (action === 'Mensagem') {
-      navigate(`/messages?contactId=${owner.id}`)
-    }
+  const handleChange = (field: string, value: any) => {
+    setFormData((prev: any) => ({ ...prev, [field]: value }))
   }
 
-  const handleWhatsApp = () => {
-    if (owner.phone) {
-      const cleanPhone = owner.phone.replace(/\D/g, '')
-      window.open(`https://wa.me/${cleanPhone}`, '_blank')
-    } else {
-      toast({
-        title: 'Erro',
-        description: 'Telefone não disponível',
-        variant: 'destructive',
-      })
-    }
-  }
-
-  const handleEmail = () => {
-    if (owner.email) {
-      window.location.href = `mailto:${owner.email}`
-    } else {
-      toast({
-        title: 'Erro',
-        description: 'Email não disponível',
-        variant: 'destructive',
-      })
-    }
-  }
-
-  const updateOwnerDocs = (newDocs: any) => {
-    owner.documents = newDocs
-    toast({ title: 'Documentos atualizados' })
+  const handleDocsUpdate = (docs: any) => {
+    handleChange('documents', docs)
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-4">
-        <Link to="/owners">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        </Link>
-        <div className="flex-1">
+    <div className="flex flex-col gap-6 pb-10">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link to="/owners">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            {owner.name}
+            {formData.name}
           </h1>
-          <p className="text-muted-foreground flex items-center gap-2">
-            <Badge
-              variant={owner.status === 'active' ? 'default' : 'secondary'}
-              className={owner.status === 'active' ? 'bg-green-600' : ''}
-            >
-              {t(`common.${owner.status}`)}
-            </Badge>
-            <span className="text-sm">ID: {owner.id}</span>
-          </p>
         </div>
         <div className="flex gap-2">
-          <Button
-            onClick={handleWhatsApp}
-            className="bg-green-600 hover:bg-green-700 gap-2"
-          >
-            <MessageCircle className="h-4 w-4" /> WhatsApp
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="bg-trust-blue gap-2">
-                {t('common.actions')} <MoreVertical className="h-4 w-4" />
+          {isEditing ? (
+            <>
+              <Button onClick={() => setIsEditing(false)} variant="ghost">
+                <X className="mr-2 h-4 w-4" /> Cancelar
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => handleAction(t('owners.renew_contract'))}
-              >
-                <FileText className="mr-2 h-4 w-4" />{' '}
-                {t('owners.renew_contract')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleAction(t('owners.generate_statement'))}
-              >
-                <Building2 className="mr-2 h-4 w-4" />{' '}
-                {t('owners.generate_statement')}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleEmail}>
-                <Mail className="mr-2 h-4 w-4" /> Email
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAction('Mensagem')}>
-                <MessageSquare className="mr-2 h-4 w-4" />{' '}
-                {t('tenants.send_message')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-1 h-fit">
-          <CardHeader>
-            <CardTitle>{t('owners.contact_details')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
-                <AvatarFallback className="text-xl">
-                  {owner.name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-medium">{owner.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {t('roles.property_owner')}
-                </p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-sm">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{owner.email}</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <span>{owner.phone}</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm">
-                <User className="h-4 w-4 text-muted-foreground" />
-                <span>Since 2024</span>
-              </div>
-            </div>
-            <Button
-              className="w-full"
-              variant="outline"
-              onClick={() => handleAction('Mensagem')}
-            >
-              <MessageSquare className="mr-2 h-4 w-4" />{' '}
-              {t('tenants.send_message')}
+              <Button onClick={handleSave} className="bg-trust-blue">
+                <Save className="mr-2 h-4 w-4" /> Salvar
+              </Button>
+            </>
+          ) : (
+            <Button onClick={() => setIsEditing(true)} variant="outline">
+              <Edit className="mr-2 h-4 w-4" /> Editar
             </Button>
-          </CardContent>
-        </Card>
-
-        <div className="md:col-span-2">
-          <Tabs defaultValue="properties">
-            <TabsList>
-              <TabsTrigger value="properties">
-                {t('owners.linked_properties')}
-              </TabsTrigger>
-              <TabsTrigger value="financial">Extrato Financeiro</TabsTrigger>
-              <TabsTrigger value="documents">Documentos</TabsTrigger>
-            </TabsList>
-            <TabsContent value="properties" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('owners.linked_properties')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {ownerProperties.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      {t('owners.no_properties')}
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {ownerProperties.map((prop) => (
-                        <Link
-                          key={prop.id}
-                          to={`/properties/${prop.id}`}
-                          className="block group"
-                        >
-                          <div className="border rounded-lg overflow-hidden hover:shadow-md transition-all bg-card">
-                            <div className="relative h-32">
-                              <img
-                                src={prop.image}
-                                alt={prop.name}
-                                className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                              />
-                              <Badge
-                                className={`absolute top-2 right-2`}
-                                variant="secondary"
-                              >
-                                {t(`common.${prop.status}`)}
-                              </Badge>
-                            </div>
-                            <div className="p-4">
-                              <h4 className="font-semibold group-hover:text-primary transition-colors">
-                                {prop.name}
-                              </h4>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {prop.address}
-                              </p>
-                              <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                                <span className="flex items-center gap-1">
-                                  <Building2 className="h-3 w-3" /> {prop.type}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="financial" className="mt-4">
-              <OwnerStatement
-                ownerId={owner.id}
-                properties={properties}
-                ledgerEntries={ledgerEntries}
-              />
-            </TabsContent>
-            <TabsContent value="documents" className="mt-4">
-              <DocumentVault
-                documents={owner.documents || []}
-                onUpdate={updateOwnerDocs}
-                canEdit={true}
-                title="Cofre de Documentos"
-                description="Contratos de gestão, procurações e documentos fiscais."
-              />
-            </TabsContent>
-          </Tabs>
+          )}
         </div>
       </div>
+
+      <Tabs defaultValue="profile">
+        <TabsList>
+          <TabsTrigger value="profile">Perfil</TabsTrigger>
+          <TabsTrigger value="financial">Extratos</TabsTrigger>
+          <TabsTrigger value="documents">Documentos</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile">
+          <Card>
+            <CardHeader>
+              <CardTitle>Detalhes do Proprietário</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Nome</Label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) => handleChange('name', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Endereço Completo</Label>
+                <Input
+                  value={formData.address || ''}
+                  onChange={(e) => handleChange('address', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Email</Label>
+                <Input
+                  value={formData.email}
+                  onChange={(e) => handleChange('email', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Telefone</Label>
+                <Input
+                  value={formData.phone}
+                  onChange={(e) => handleChange('phone', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2 md:col-span-2">
+                <Label>Link Contrato de Gestão (PM Agreement)</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.pmAgreementUrl || ''}
+                    onChange={(e) =>
+                      handleChange('pmAgreementUrl', e.target.value)
+                    }
+                    disabled={!isEditing}
+                    placeholder="https://..."
+                  />
+                  {formData.pmAgreementUrl && (
+                    <Button variant="outline" size="icon" asChild>
+                      <a
+                        href={formData.pmAgreementUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <Download className="h-4 w-4" />
+                      </a>
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              <div className="md:col-span-2 pt-4 border-t">
+                <h3 className="font-semibold mb-3">Segundo Contato</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <Input
+                    placeholder="Nome"
+                    value={formData.secondContact?.name || ''}
+                    onChange={(e) =>
+                      handleChange('secondContact', {
+                        ...formData.secondContact,
+                        name: e.target.value,
+                      })
+                    }
+                    disabled={!isEditing}
+                  />
+                  <Input
+                    placeholder="Telefone"
+                    value={formData.secondContact?.phone || ''}
+                    onChange={(e) =>
+                      handleChange('secondContact', {
+                        ...formData.secondContact,
+                        phone: e.target.value,
+                      })
+                    }
+                    disabled={!isEditing}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="financial">
+          <OwnerStatement
+            ownerId={formData.id}
+            properties={properties}
+            ledgerEntries={ledgerEntries}
+          />
+        </TabsContent>
+
+        <TabsContent value="documents">
+          <DocumentVault
+            documents={formData.documents || []}
+            onUpdate={handleDocsUpdate}
+            canEdit={true}
+            title="Documentos Pessoais"
+            description="IDs, Passaportes, Procurações."
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

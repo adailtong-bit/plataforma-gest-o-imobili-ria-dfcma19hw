@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import {
@@ -7,221 +8,214 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import {
   ArrowLeft,
   Mail,
   Phone,
-  MessageSquare,
-  MessageCircle,
+  Save,
   FileText,
-  Calendar,
-  DollarSign,
-  Home,
-  Download,
+  User,
+  Edit,
+  X,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { format } from 'date-fns'
 import { DocumentVault } from '@/components/documents/DocumentVault'
+import { Tenant } from '@/lib/types'
 
 export default function TenantDetails() {
   const { id } = useParams()
-  const navigate = useNavigate()
   const { tenants } = useTenantStore()
   const { properties } = usePropertyStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
   const tenant = tenants.find((t) => t.id === id)
-  const property = properties.find((p) => p.id === tenant?.propertyId)
+  const [formData, setFormData] = useState<Tenant | null>(
+    tenant ? { ...tenant } : null,
+  )
+  const [isEditing, setIsEditing] = useState(false)
 
-  if (!tenant) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[50vh] gap-4">
-        <h2 className="text-2xl font-bold">Inquilino não encontrado</h2>
-        <Link to="/tenants">
-          <Button>{t('common.back')}</Button>
-        </Link>
-      </div>
-    )
+  if (!formData) return <div>Not Found</div>
+
+  const handleSave = () => {
+    // In real app, call updateTenant(formData)
+    setIsEditing(false)
+    toast({ title: 'Perfil atualizado com sucesso' })
   }
 
-  const handleWhatsApp = () => {
-    if (tenant.phone) {
-      const cleanPhone = tenant.phone.replace(/\D/g, '')
-      window.open(`https://wa.me/${cleanPhone}`, '_blank')
-    }
+  const handleChange = (field: string, value: any) => {
+    setFormData((prev: any) => ({ ...prev, [field]: value }))
   }
 
-  const handleEmail = () => {
-    if (tenant.email) {
-      window.location.href = `mailto:${tenant.email}`
-    }
-  }
-
-  const updateTenantDocs = (newDocs: any) => {
-    tenant.documents = newDocs
-    toast({ title: 'Documentos atualizados' })
+  const handleDocsUpdate = (docs: any) => {
+    handleChange('documents', docs)
   }
 
   return (
     <div className="flex flex-col gap-6 pb-10">
-      <div className="flex items-center gap-4">
-        <Link to="/tenants">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        </Link>
-        <div className="flex-1">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link to="/tenants">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            {tenant.name}
+            {formData.name}
           </h1>
-          <div className="text-muted-foreground flex items-center gap-2">
-            <Badge variant="outline">{t(`roles.tenant`)}</Badge>
-            <span className="text-sm">ID: {tenant.id}</span>
-          </div>
         </div>
         <div className="flex gap-2">
-          <Button
-            onClick={handleWhatsApp}
-            className="bg-green-600 hover:bg-green-700 gap-2"
-          >
-            <MessageCircle className="h-4 w-4" /> WhatsApp
-          </Button>
-          <Button
-            onClick={() => navigate(`/messages?contactId=${tenant.id}`)}
-            className="bg-trust-blue gap-2"
-          >
-            <MessageSquare className="h-4 w-4" /> Mensagem
-          </Button>
+          {isEditing ? (
+            <>
+              <Button onClick={() => setIsEditing(false)} variant="ghost">
+                <X className="mr-2 h-4 w-4" /> Cancelar
+              </Button>
+              <Button onClick={handleSave} className="bg-trust-blue">
+                <Save className="mr-2 h-4 w-4" /> Salvar
+              </Button>
+            </>
+          ) : (
+            <Button onClick={() => setIsEditing(true)} variant="outline">
+              <Edit className="mr-2 h-4 w-4" /> Editar Perfil
+            </Button>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-1 h-fit">
-          <CardHeader>
-            <CardTitle>{t('tenants.contact')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
-                <AvatarFallback className="text-xl">
-                  {tenant.name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-medium text-lg">{tenant.name}</p>
-                <Badge
-                  variant={tenant.status === 'active' ? 'default' : 'secondary'}
-                >
-                  {t(`common.${tenant.status}`)}
-                </Badge>
-              </div>
-            </div>
+      <Tabs defaultValue="profile">
+        <TabsList>
+          <TabsTrigger value="profile">Perfil</TabsTrigger>
+          <TabsTrigger value="contract">Contrato & Docs</TabsTrigger>
+        </TabsList>
 
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{tenant.email}</span>
+        <TabsContent value="profile">
+          <Card>
+            <CardHeader>
+              <CardTitle>Informações Pessoais</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Nome Completo</Label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) => handleChange('name', e.target.value)}
+                  disabled={!isEditing}
+                />
               </div>
-              <div className="flex items-center gap-3">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{tenant.phone}</span>
+              <div className="grid gap-2">
+                <Label>Email</Label>
+                <Input
+                  value={formData.email}
+                  onChange={(e) => handleChange('email', e.target.value)}
+                  disabled={!isEditing}
+                />
               </div>
-            </div>
+              <div className="grid gap-2">
+                <Label>Telefone</Label>
+                <Input
+                  value={formData.phone}
+                  onChange={(e) => handleChange('phone', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>ID Number / Passport</Label>
+                <Input
+                  value={formData.idNumber || ''}
+                  onChange={(e) => handleChange('idNumber', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Driver License</Label>
+                <Input
+                  value={formData.driverLicense || ''}
+                  onChange={(e) =>
+                    handleChange('driverLicense', e.target.value)
+                  }
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>SSN / Social</Label>
+                <Input
+                  value={formData.socialSecurity || ''}
+                  onChange={(e) =>
+                    handleChange('socialSecurity', e.target.value)
+                  }
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2 md:col-span-2">
+                <Label>Referências</Label>
+                <Textarea
+                  value={formData.references || ''}
+                  onChange={(e) => handleChange('references', e.target.value)}
+                  disabled={!isEditing}
+                  placeholder="Contatos de referência..."
+                />
+              </div>
 
-            {property && (
-              <div className="pt-4 border-t">
-                <h4 className="font-semibold mb-2 flex items-center gap-2">
-                  <Home className="h-4 w-4" /> Propriedade Atual
-                </h4>
-                <div className="bg-muted/30 p-3 rounded-md">
-                  <p className="font-medium text-sm">{property.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {property.address}
-                  </p>
+              <div className="md:col-span-2 pt-4 border-t">
+                <h3 className="font-semibold mb-3">Contato de Emergência</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <Input
+                    placeholder="Nome"
+                    value={formData.emergencyContact?.name || ''}
+                    onChange={(e) =>
+                      handleChange('emergencyContact', {
+                        ...formData.emergencyContact,
+                        name: e.target.value,
+                      })
+                    }
+                    disabled={!isEditing}
+                  />
+                  <Input
+                    placeholder="Telefone"
+                    value={formData.emergencyContact?.phone || ''}
+                    onChange={(e) =>
+                      handleChange('emergencyContact', {
+                        ...formData.emergencyContact,
+                        phone: e.target.value,
+                      })
+                    }
+                    disabled={!isEditing}
+                  />
+                  <Input
+                    placeholder="Relação (Ex: Pai)"
+                    value={formData.emergencyContact?.relation || ''}
+                    onChange={(e) =>
+                      handleChange('emergencyContact', {
+                        ...formData.emergencyContact,
+                        relation: e.target.value,
+                      })
+                    }
+                    disabled={!isEditing}
+                  />
                 </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-        <div className="md:col-span-2">
-          <Tabs defaultValue="contract">
-            <TabsList>
-              <TabsTrigger value="contract">
-                <FileText className="h-4 w-4 mr-2" /> Contrato
-              </TabsTrigger>
-              <TabsTrigger value="documents">Documentos</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="contract" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Detalhes do Contrato</CardTitle>
-                  <CardDescription>
-                    Informações sobre a locação atual.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="grid grid-cols-2 gap-6">
-                  <div className="space-y-1">
-                    <span className="text-sm text-muted-foreground flex items-center gap-1">
-                      <Calendar className="h-3 w-3" /> Início
-                    </span>
-                    <p className="font-medium">
-                      {tenant.leaseStart
-                        ? format(new Date(tenant.leaseStart), 'dd/MM/yyyy')
-                        : '-'}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-sm text-muted-foreground flex items-center gap-1">
-                      <Calendar className="h-3 w-3" /> Término
-                    </span>
-                    <p className="font-medium">
-                      {tenant.leaseEnd
-                        ? format(new Date(tenant.leaseEnd), 'dd/MM/yyyy')
-                        : '-'}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-sm text-muted-foreground flex items-center gap-1">
-                      <DollarSign className="h-3 w-3" /> Aluguel Mensal
-                    </span>
-                    <p className="font-medium text-lg text-green-700">
-                      ${tenant.rentValue.toFixed(2)}
-                    </p>
-                  </div>
-
-                  <div className="col-span-2 mt-4 pt-4 border-t flex gap-2">
-                    <Button variant="outline" className="gap-2">
-                      <Download className="h-4 w-4" /> Baixar Contrato PDF
-                    </Button>
-                    <Button variant="outline" className="gap-2">
-                      Renovar Contrato
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="documents" className="mt-4">
-              <DocumentVault
-                documents={tenant.documents || []}
-                onUpdate={updateTenantDocs}
-                canEdit={true}
-                title="Documentos do Inquilino"
-                description="IDs, Passaportes, Comprovantes de Renda"
-              />
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
+        <TabsContent value="contract">
+          <DocumentVault
+            documents={formData.documents || []}
+            onUpdate={handleDocsUpdate}
+            canEdit={true}
+            title="Documentos & Contratos"
+            description="Contratos assinados, IDs e comprovantes."
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

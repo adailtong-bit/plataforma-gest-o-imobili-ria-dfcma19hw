@@ -26,10 +26,17 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Trash2, Edit, Paperclip, CheckSquare } from 'lucide-react'
+import {
+  Plus,
+  Trash2,
+  Edit,
+  Paperclip,
+  AlertTriangle,
+  FileText,
+} from 'lucide-react'
 import useFinancialStore from '@/stores/useFinancialStore'
 import usePartnerStore from '@/stores/usePartnerStore'
-import { format } from 'date-fns'
+import { format, isPast, isToday } from 'date-fns'
 import { LedgerEntry } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 
@@ -58,6 +65,8 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
     description: '',
     status: 'pending',
     beneficiaryId: 'none',
+    date: new Date().toISOString(),
+    dueDate: '',
   })
 
   const propertyEntries = ledgerEntries.filter(
@@ -68,8 +77,6 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
     setEntryForm({ ...entryForm, beneficiaryId: partnerId })
     const partner = partners.find((p) => p.id === partnerId)
     if (partner && partner.serviceRates && partner.serviceRates.length > 0) {
-      // Auto-populate description/value based on first rate as default or logic
-      // Simplification: Set value if only 1 rate or default rate exists
       const defaultRate = partner.serviceRates[0]
       if (defaultRate) {
         setEntryForm((prev) => ({
@@ -78,10 +85,6 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
           description: `${defaultRate.serviceName} - ${partner.name}`,
           beneficiaryId: partnerId,
         }))
-        toast({
-          title: 'Valor atualizado',
-          description: `Valor sugerido do catálogo do parceiro: $${defaultRate.price}`,
-        })
       }
     }
   }
@@ -93,11 +96,12 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
       id: editingId || `ledg-${Date.now()}`,
       propertyId,
       date: entryForm.date || new Date().toISOString(),
+      dueDate: entryForm.dueDate,
       type: entryForm.type as 'income' | 'expense',
       category: entryForm.category || 'Other',
       amount: Number(entryForm.amount),
       description: entryForm.description,
-      status: entryForm.status as 'pending' | 'cleared' | 'void',
+      status: entryForm.status as any,
       beneficiaryId:
         entryForm.beneficiaryId === 'none'
           ? undefined
@@ -130,7 +134,6 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
   }
 
   const handleAttachment = () => {
-    // Mock attachment upload
     setEntryForm((prev) => ({
       ...prev,
       attachments: [
@@ -151,11 +154,33 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
       status: 'pending',
       beneficiaryId: 'none',
       attachments: [],
+      date: new Date().toISOString(),
+      dueDate: '',
     })
   }
 
   const getTypeColor = (type: string) =>
     type === 'income' ? 'text-green-600' : 'text-red-600'
+
+  const getStatusBadge = (entry: LedgerEntry) => {
+    if (entry.status === 'cleared')
+      return <Badge className="bg-green-600">Pago</Badge>
+    if (entry.status === 'void')
+      return <Badge variant="secondary">Cancelado</Badge>
+
+    if (
+      entry.dueDate &&
+      isPast(new Date(entry.dueDate)) &&
+      !isToday(new Date(entry.dueDate))
+    ) {
+      return (
+        <Badge variant="destructive" className="flex items-center gap-1">
+          <AlertTriangle className="h-3 w-3" /> Atrasado
+        </Badge>
+      )
+    }
+    return <Badge variant="outline">Pendente</Badge>
+  }
 
   return (
     <Card>
@@ -217,6 +242,9 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
                         <SelectItem value="HOA">HOA</SelectItem>
                         <SelectItem value="Taxes">Impostos</SelectItem>
                         <SelectItem value="Utilities">Utilidades</SelectItem>
+                        <SelectItem value="Water">Água</SelectItem>
+                        <SelectItem value="Electricity">Luz</SelectItem>
+                        <SelectItem value="Internet">Internet</SelectItem>
                         <SelectItem value="Management Fee">
                           Taxa de Gestão
                         </SelectItem>
@@ -228,7 +256,7 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
 
                 {entryForm.type === 'expense' && (
                   <div className="grid gap-2">
-                    <Label>Parceiro / Beneficiário (Opcional)</Label>
+                    <Label>Parceiro (Auto-preencher)</Label>
                     <Select
                       value={entryForm.beneficiaryId || 'none'}
                       onValueChange={handlePartnerSelect}
@@ -286,9 +314,47 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
                       <SelectContent>
                         <SelectItem value="pending">Pendente</SelectItem>
                         <SelectItem value="cleared">Pago/Compensado</SelectItem>
+                        <SelectItem value="overdue">Atrasado</SelectItem>
                         <SelectItem value="void">Cancelado</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Data Lançamento</Label>
+                    <Input
+                      type="date"
+                      value={
+                        entryForm.date
+                          ? format(new Date(entryForm.date), 'yyyy-MM-dd')
+                          : ''
+                      }
+                      onChange={(e) =>
+                        setEntryForm({
+                          ...entryForm,
+                          date: new Date(e.target.value).toISOString(),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Vencimento (Opcional)</Label>
+                    <Input
+                      type="date"
+                      value={
+                        entryForm.dueDate
+                          ? format(new Date(entryForm.dueDate), 'yyyy-MM-dd')
+                          : ''
+                      }
+                      onChange={(e) =>
+                        setEntryForm({
+                          ...entryForm,
+                          dueDate: new Date(e.target.value).toISOString(),
+                        })
+                      }
+                    />
                   </div>
                 </div>
 
@@ -299,12 +365,12 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
                       size="sm"
                       onClick={handleAttachment}
                     >
-                      <Paperclip className="h-3 w-3 mr-2" /> Anexar Compovante
+                      <Paperclip className="h-3 w-3 mr-2" /> Anexar
                     </Button>
                     {entryForm.attachments &&
                       entryForm.attachments.length > 0 && (
                         <Badge variant="secondary">
-                          {entryForm.attachments.length} Anexos
+                          {entryForm.attachments.length}
                         </Badge>
                       )}
                   </div>
@@ -319,7 +385,7 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Data</TableHead>
+              <TableHead>Vencimento</TableHead>
               <TableHead>Categoria</TableHead>
               <TableHead>Descrição</TableHead>
               <TableHead>Valor</TableHead>
@@ -338,16 +404,29 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
               propertyEntries.map((entry) => (
                 <TableRow key={entry.id}>
                   <TableCell>
-                    {format(new Date(entry.date), 'dd/MM/yyyy')}
+                    {entry.dueDate ? (
+                      <span
+                        className={
+                          isPast(new Date(entry.dueDate)) &&
+                          entry.status !== 'cleared'
+                            ? 'text-red-500 font-bold'
+                            : ''
+                        }
+                      >
+                        {format(new Date(entry.dueDate), 'dd/MM/yyyy')}
+                      </span>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell>{entry.category}</TableCell>
                   <TableCell>
                     <div className="flex flex-col">
                       <span>{entry.description}</span>
                       {entry.attachments && entry.attachments.length > 0 && (
-                        <span className="text-[10px] text-blue-600 flex items-center gap-1">
-                          <Paperclip className="h-3 w-3" />{' '}
-                          {entry.attachments.length} arquivos
+                        <span className="text-[10px] text-blue-600 flex items-center gap-1 cursor-pointer">
+                          <FileText className="h-3 w-3" />{' '}
+                          {entry.attachments.length} anexo(s)
                         </span>
                       )}
                     </div>
@@ -356,15 +435,7 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
                     {entry.type === 'expense' ? '-' : '+'} $
                     {entry.amount.toFixed(2)}
                   </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        entry.status === 'cleared' ? 'default' : 'outline'
-                      }
-                    >
-                      {entry.status}
-                    </Badge>
-                  </TableCell>
+                  <TableCell>{getStatusBadge(entry)}</TableCell>
                   {canEdit && (
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">

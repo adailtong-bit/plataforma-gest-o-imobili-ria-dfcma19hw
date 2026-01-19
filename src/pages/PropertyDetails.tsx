@@ -62,6 +62,7 @@ export default function PropertyDetails() {
   const { toast } = useToast()
 
   const property = properties.find((p) => p.id === id)
+  const condominium = condominiums.find((c) => c.id === property?.condominiumId)
 
   const [formData, setFormData] = useState<Property | null>(() =>
     property ? JSON.parse(JSON.stringify(property)) : null,
@@ -69,7 +70,7 @@ export default function PropertyDetails() {
 
   useEffect(() => {
     if (property) {
-      // Typically avoid overwriting unsaved changes, but for now sync on mount
+      // Logic to sync only if needed, currently manual sync on mount
     }
   }, [property])
 
@@ -89,18 +90,6 @@ export default function PropertyDetails() {
       toast({
         title: 'Erro de Validação',
         description: 'O endereço é obrigatório.',
-        variant: 'destructive',
-      })
-      return
-    }
-    if (
-      !formData.city?.trim() ||
-      !formData.state?.trim() ||
-      !formData.zipCode?.trim()
-    ) {
-      toast({
-        title: 'Erro de Validação',
-        description: 'Endereço incompleto (Cidade, Estado ou CEP ausente).',
         variant: 'destructive',
       })
       return
@@ -176,7 +165,6 @@ export default function PropertyDetails() {
     'view',
   )
 
-  // Generate Mock iCal URL if missing
   const iCalUrl =
     formData.iCalUrl ||
     `https://api.plataforma.com/ical/${formData.id}/calendar.ics`
@@ -295,6 +283,7 @@ export default function PropertyDetails() {
               data={formData}
               onChange={handleChange}
               canEdit={canEdit}
+              condominium={condominium}
             />
           </TabsContent>
           <TabsContent value="content">
@@ -332,7 +321,7 @@ export default function PropertyDetails() {
                   <CardTitle>Sincronização de Calendário</CardTitle>
                   <CardDescription>
                     Use este link iCal para sincronizar a disponibilidade desta
-                    propriedade com Airbnb, Booking.com ou Google Calendar.
+                    propriedade.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
