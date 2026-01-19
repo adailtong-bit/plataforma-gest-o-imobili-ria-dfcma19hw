@@ -52,6 +52,7 @@ export default function DashboardLayout() {
       // Map paths to resources for basic check
       if (path.startsWith('/market-analysis')) resource = 'market_analysis'
       if (path.startsWith('/workflows')) resource = 'workflows'
+      if (path.startsWith('/renewals')) resource = 'renewals'
       if (
         path.startsWith('/settings') &&
         currentUser.role !== 'platform_owner' &&

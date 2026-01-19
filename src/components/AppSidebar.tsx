@@ -28,6 +28,7 @@ import {
   LayoutTemplate,
   TrendingUp,
   Workflow,
+  RefreshCw,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -54,6 +55,12 @@ export function AppSidebar() {
       url: '/properties',
       icon: Building,
       resource: 'properties',
+    },
+    {
+      title: t('common.renewals'), // Renovação de Contrato
+      url: '/renewals',
+      icon: RefreshCw,
+      resource: 'renewals',
     },
     {
       title: 'Análise de Mercado',

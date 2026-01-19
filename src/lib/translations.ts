@@ -87,6 +87,7 @@ export const translations = {
       select_country: 'Selecione o País',
       export_data: 'Exportar Dados',
       export_success: 'Dados exportados com sucesso.',
+      renewals: 'Renovação de Contrato',
     },
     status: {
       interested: 'Interessado',
@@ -129,6 +130,25 @@ export const translations = {
       new_notifications: 'Novas Notificações',
       active_properties: 'Propriedades Ativas',
     },
+    renewals: {
+      title: 'Renovação de Contratos',
+      subtitle: 'Gestão de vencimentos e negociações.',
+      search_placeholder: 'Buscar por propriedade, inquilino ou proprietário',
+      critical: 'Crítico',
+      upcoming: 'Próximos',
+      safe: 'Seguro',
+      days_left: 'dias restantes',
+      negotiate: 'Negociar',
+      close_negotiation: 'Fechar Negociação',
+      current_value: 'Valor Atual',
+      new_value: 'Novo Valor',
+      new_start_date: 'Nova Data Início',
+      new_end_date: 'Nova Data Fim',
+      contract_upload: 'Upload do Contrato',
+      close_success: 'Renovação concluída com sucesso.',
+      negotiation_started: 'Negociação iniciada.',
+    },
+    // ... keep existing other sections ...
     properties: {
       title: 'Propriedades',
       subtitle: 'Gerencie seu portfólio imobiliário',
@@ -350,6 +370,7 @@ export const translations = {
     },
   },
   en: {
+    // ... keep existing translations ...
     common: {
       dashboard: 'Dashboard',
       properties: 'Properties',
@@ -434,7 +455,28 @@ export const translations = {
       select_country: 'Select Country',
       export_data: 'Export Data',
       export_success: 'Data exported successfully.',
+      renewals: 'Contract Renewals',
     },
+    // ... existing ...
+    renewals: {
+      title: 'Contract Renewals',
+      subtitle: 'Manage expirations and negotiations.',
+      search_placeholder: 'Search by property, tenant or owner',
+      critical: 'Critical',
+      upcoming: 'Upcoming',
+      safe: 'Safe',
+      days_left: 'days left',
+      negotiate: 'Negotiate',
+      close_negotiation: 'Close Negotiation',
+      current_value: 'Current Value',
+      new_value: 'New Value',
+      new_start_date: 'New Start Date',
+      new_end_date: 'New End Date',
+      contract_upload: 'Contract Upload',
+      close_success: 'Renewal completed successfully.',
+      negotiation_started: 'Negotiation started.',
+    },
+    // ... keep existing ...
     status: {
       interested: 'Interested',
       rented: 'Rented',
@@ -695,6 +737,7 @@ export const translations = {
     },
   },
   es: {
+    // ... keep existing translations ...
     common: {
       dashboard: 'Tablero',
       properties: 'Propiedades',
@@ -706,7 +749,7 @@ export const translations = {
       financial: 'Financiero',
       messages: 'Mensajes',
       settings: 'Configuración',
-      service_pricing: 'Catálogo de Precios',
+      service_pricing: 'Catálogo de Preços',
       service_desc: 'Gestionar servicios y precios.',
       search: 'Buscar...',
       filter: 'Filtrar',
@@ -778,7 +821,27 @@ export const translations = {
       select_country: 'Seleccionar País',
       export_data: 'Exportar Datos',
       export_success: 'Datos exportados con éxito.',
+      renewals: 'Renovación de Contratos',
     },
+    renewals: {
+      title: 'Renovación de Contratos',
+      subtitle: 'Gestión de vencimientos y negociaciones.',
+      search_placeholder: 'Buscar propiedad, inquilino o propietario',
+      critical: 'Crítico',
+      upcoming: 'Próximos',
+      safe: 'Seguro',
+      days_left: 'días restantes',
+      negotiate: 'Negociar',
+      close_negotiation: 'Cerrar Negociación',
+      current_value: 'Valor Actual',
+      new_value: 'Nuevo Valor',
+      new_start_date: 'Nueva Fecha Inicio',
+      new_end_date: 'Nueva Fecha Fin',
+      contract_upload: 'Subir Contrato',
+      close_success: 'Renovación completada con éxito.',
+      negotiation_started: 'Negociación iniciada.',
+    },
+    // ... keep existing ...
     status: {
       interested: 'Interesado',
       rented: 'Alquilado',
@@ -860,7 +923,7 @@ export const translations = {
       register_title: 'Registrar Socio',
       contact_name: 'Nombre Contacto',
       company_name: 'Empresa',
-      category: 'Categoría',
+      category: 'Categoria',
       agent: 'Agente',
       cleaning: 'Limpieza',
       maintenance: 'Mantenimiento',
