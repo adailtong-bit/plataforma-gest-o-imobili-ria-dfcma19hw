@@ -81,10 +81,10 @@ export default function TenantDetails() {
           <h1 className="text-3xl font-bold tracking-tight text-navy">
             {tenant.name}
           </h1>
-          <p className="text-muted-foreground flex items-center gap-2">
+          <div className="text-muted-foreground flex items-center gap-2">
             <Badge variant="outline">{t(`roles.tenant`)}</Badge>
             <span className="text-sm">ID: {tenant.id}</span>
-          </p>
+          </div>
         </div>
         <div className="flex gap-2">
           <Button
