@@ -74,13 +74,43 @@ export default function PropertyDetails() {
   }, [property])
 
   const handleSave = () => {
-    if (formData) {
-      updateProperty(formData)
+    if (!formData) return
+
+    // Strict Validation
+    if (!formData.name?.trim()) {
       toast({
-        title: t('common.save'),
-        description: 'Propriedade atualizada com sucesso.',
+        title: 'Erro de Validação',
+        description: 'O nome da propriedade é obrigatório.',
+        variant: 'destructive',
       })
+      return
     }
+    if (!formData.address?.trim()) {
+      toast({
+        title: 'Erro de Validação',
+        description: 'O endereço é obrigatório.',
+        variant: 'destructive',
+      })
+      return
+    }
+    if (
+      !formData.city?.trim() ||
+      !formData.state?.trim() ||
+      !formData.zipCode?.trim()
+    ) {
+      toast({
+        title: 'Erro de Validação',
+        description: 'Endereço incompleto (Cidade, Estado ou CEP ausente).',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    updateProperty(formData)
+    toast({
+      title: t('common.save'),
+      description: 'Propriedade atualizada com sucesso.',
+    })
   }
 
   const handleDelete = () => {

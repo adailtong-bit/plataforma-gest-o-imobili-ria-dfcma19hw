@@ -46,6 +46,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Condominium } from '@/lib/types'
+import { isValidEmail } from '@/lib/utils'
 
 export default function CondominiumDetails() {
   const { id } = useParams()
@@ -79,6 +80,32 @@ export default function CondominiumDetails() {
   }
 
   const handleSave = () => {
+    // Validation
+    if (!formData.name?.trim()) {
+      toast({
+        title: 'Erro',
+        description: 'Nome do condomínio é obrigatório.',
+        variant: 'destructive',
+      })
+      return
+    }
+    if (!formData.address?.trim()) {
+      toast({
+        title: 'Erro',
+        description: 'Endereço é obrigatório.',
+        variant: 'destructive',
+      })
+      return
+    }
+    if (formData.managerEmail && !isValidEmail(formData.managerEmail)) {
+      toast({
+        title: 'Erro',
+        description: 'Email do gerente inválido.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     updateCondominium(formData)
     setIsEditing(false)
     toast({

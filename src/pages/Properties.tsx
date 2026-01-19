@@ -65,6 +65,7 @@ export default function Properties() {
     city: '',
     state: '',
     zipCode: '',
+    neighborhood: '',
     country: 'USA',
     type: 'House',
     profileType: 'short_term',
@@ -126,6 +127,7 @@ export default function Properties() {
       zipCode: addr.zipCode,
       country: addr.country,
       community: addr.community || prev.community,
+      neighborhood: addr.neighborhood,
     }))
   }
 
@@ -133,16 +135,16 @@ export default function Properties() {
     // Strict Validation
     if (!newProp.name?.trim()) {
       toast({
-        title: 'Erro',
-        description: 'Nome é obrigatório.',
+        title: 'Erro de Validação',
+        description: 'O nome da propriedade é obrigatório.',
         variant: 'destructive',
       })
       return
     }
     if (!newProp.address?.trim()) {
       toast({
-        title: 'Erro',
-        description: 'Endereço é obrigatório.',
+        title: 'Erro de Validação',
+        description: 'O endereço é obrigatório.',
         variant: 'destructive',
       })
       return
@@ -153,8 +155,8 @@ export default function Properties() {
       !newProp.zipCode?.trim()
     ) {
       toast({
-        title: 'Erro',
-        description: 'Endereço incompleto (Cidade, Estado, CEP).',
+        title: 'Erro de Validação',
+        description: 'Endereço incompleto (Cidade, Estado ou CEP ausente).',
         variant: 'destructive',
       })
       return
@@ -171,6 +173,7 @@ export default function Properties() {
       state: newProp.state || '',
       zipCode: newProp.zipCode || '',
       country: newProp.country || '',
+      neighborhood: newProp.neighborhood || '',
       type: newProp.type || 'House',
       profileType: newProp.profileType || 'short_term',
       community: selectedCondo
@@ -204,6 +207,7 @@ export default function Properties() {
       city: '',
       state: '',
       zipCode: '',
+      neighborhood: '',
       country: 'USA',
       type: 'House',
       profileType: 'short_term',
@@ -285,7 +289,17 @@ export default function Properties() {
                     placeholder="Ex: 123 Main St"
                   />
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs">Bairro</Label>
+                    <Input
+                      placeholder="Neighborhood"
+                      value={newProp.neighborhood}
+                      onChange={(e) =>
+                        setNewProp({ ...newProp, neighborhood: e.target.value })
+                      }
+                    />
+                  </div>
                   <div>
                     <Label className="text-xs">Cidade</Label>
                     <Input

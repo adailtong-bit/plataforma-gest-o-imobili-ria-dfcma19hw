@@ -29,6 +29,7 @@ export function PropertyLocation({
     onChange('city', addr.city)
     onChange('state', addr.state)
     onChange('zipCode', addr.zipCode)
+    onChange('neighborhood', addr.neighborhood)
     onChange('community', addr.community || data.community)
     onChange('country', addr.country)
   }
@@ -52,6 +53,14 @@ export function PropertyLocation({
           <Input
             value={data.address}
             onChange={(e) => onChange('address', e.target.value)}
+            disabled={!canEdit}
+          />
+        </div>
+        <div className="grid gap-2">
+          <Label>Bairro</Label>
+          <Input
+            value={data.neighborhood || ''}
+            onChange={(e) => onChange('neighborhood', e.target.value)}
             disabled={!canEdit}
           />
         </div>

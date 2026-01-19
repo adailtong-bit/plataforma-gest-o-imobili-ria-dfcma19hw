@@ -37,6 +37,7 @@ import { PartnerProperties } from '@/components/partners/PartnerProperties'
 import { PartnerTasks } from '@/components/partners/PartnerTasks'
 import { PartnerPricing } from '@/components/partners/PartnerPricing'
 import { PartnerDocuments } from '@/components/partners/PartnerDocuments'
+import { isValidEmail } from '@/lib/utils'
 
 export default function PartnerDetails() {
   const { id } = useParams()
@@ -65,13 +66,39 @@ export default function PartnerDetails() {
   }
 
   const handleSave = () => {
-    if (formData) {
-      updatePartner(formData)
+    if (!formData) return
+
+    // Strict Validation
+    if (!formData.name?.trim()) {
       toast({
-        title: t('common.save'),
-        description: 'Dados do parceiro atualizados.',
+        title: 'Erro',
+        description: 'Nome do parceiro é obrigatório.',
+        variant: 'destructive',
       })
+      return
     }
+    if (!formData.email?.trim()) {
+      toast({
+        title: 'Erro',
+        description: 'Email é obrigatório.',
+        variant: 'destructive',
+      })
+      return
+    }
+    if (!isValidEmail(formData.email)) {
+      toast({
+        title: 'Erro',
+        description: 'Email inválido.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    updatePartner(formData)
+    toast({
+      title: t('common.save'),
+      description: 'Dados do parceiro atualizados.',
+    })
   }
 
   const handleUpdate = (updatedPartner: Partner) => {
