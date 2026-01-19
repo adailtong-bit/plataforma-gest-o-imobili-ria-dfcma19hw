@@ -25,7 +25,7 @@ import {
   Building2,
   LayoutDashboard,
   Tag,
-  Command,
+  LayoutTemplate,
   TrendingUp,
   Workflow,
 } from 'lucide-react'
@@ -141,7 +141,7 @@ export function AppSidebar() {
       <SidebarHeader className="h-16 flex items-center px-4 border-b">
         <div className="flex items-center gap-2 font-bold text-xl text-navy overflow-hidden">
           <div className="bg-tiffany text-white p-1.5 rounded-md shrink-0 flex items-center justify-center shadow-sm">
-            <Command className="h-5 w-5 text-gold stroke-[3]" />
+            <LayoutTemplate className="h-5 w-5 text-gold stroke-[2]" />
           </div>
           <span className="truncate tracking-tight group-data-[collapsible=icon]:hidden">
             COREPM

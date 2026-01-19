@@ -1,4 +1,4 @@
-import { Bell, Search, Menu, Globe, Command, Circle } from 'lucide-react'
+import { Bell, Search, Menu, Globe, LayoutTemplate, Circle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -37,7 +37,7 @@ export function AppHeader() {
       <div className="flex items-center gap-2">
         {/* Branding: Tiffany Blue #0ABAB5 with Gold #FFD700 icon */}
         <div className="bg-tiffany text-white p-1.5 rounded-md shrink-0 flex items-center justify-center shadow-sm">
-          <Command className="h-5 w-5 text-gold stroke-[3]" />
+          <LayoutTemplate className="h-5 w-5 text-gold stroke-[2]" />
         </div>
         <h2 className="text-lg font-bold md:text-xl text-navy tracking-tight">
           COREPM

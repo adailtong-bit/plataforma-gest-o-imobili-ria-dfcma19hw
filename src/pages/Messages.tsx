@@ -2,7 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, Send, Paperclip, Mic, Phone, X, Plus } from 'lucide-react'
+import {
+  Search,
+  Send,
+  Paperclip,
+  Mic,
+  Phone,
+  X,
+  Plus,
+  LayoutTemplate,
+} from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -378,7 +387,10 @@ export default function Messages() {
           </div>
         </Card>
       ) : (
-        <Card className="flex-1 flex items-center justify-center bg-muted/20">
+        <Card className="flex-1 flex flex-col items-center justify-center bg-muted/20 gap-4">
+          <div className="bg-background p-4 rounded-full shadow-sm">
+            <LayoutTemplate className="h-12 w-12 text-muted-foreground/50" />
+          </div>
           <p className="text-muted-foreground">{t('messages.select_prompt')}</p>
         </Card>
       )}
