@@ -21,6 +21,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { CheckCircle2, Lock, DollarSign, AlertTriangle } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { User } from '@/lib/types'
+import { Badge } from '@/components/ui/badge'
 
 export default function DashboardLayout() {
   const { currentUser, setCurrentUser } = useAuthStore()
