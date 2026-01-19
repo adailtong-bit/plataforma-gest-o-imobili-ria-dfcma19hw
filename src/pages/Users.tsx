@@ -48,7 +48,6 @@ import {
   Copy,
   CheckCircle2,
   Ban,
-  Clock,
 } from 'lucide-react'
 import useUserStore from '@/stores/useUserStore'
 import useAuthStore from '@/stores/useAuthStore'
@@ -56,6 +55,8 @@ import { hasPermission } from '@/lib/permissions'
 import { User, Resource, Action, UserRole } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { isValidEmail } from '@/lib/utils'
+import { PhoneInput } from '@/components/ui/phone-input'
 
 const RESOURCES: Resource[] = [
   'dashboard',
@@ -90,13 +91,12 @@ export default function Users() {
     allowedProfileTypes: ['long_term', 'short_term'],
     password: '',
     confirmPassword: '',
-    status: 'pending_approval', // Default for new users created by owners
+    status: 'pending_approval',
   }
 
   const [formData, setFormData] = useState(initialFormState)
   const [isEditing, setIsEditing] = useState(false)
 
-  // Determine allowed roles to create based on hierarchy
   const canCreateRole = (role: UserRole) => {
     if (currentUser.role === 'platform_owner')
       return ['software_tenant', 'internal_user'].includes(role)
@@ -104,7 +104,6 @@ export default function Users() {
     return false
   }
 
-  // Filter users based on hierarchy
   const filteredUsers = users.filter((u) => {
     if (currentUser.role === 'platform_owner') return true
     if (currentUser.role === 'software_tenant')
@@ -113,10 +112,34 @@ export default function Users() {
   })
 
   const handleSave = () => {
-    if (!formData.name || !formData.email) {
+    // Strict Validation
+    if (!formData.name?.trim()) {
       toast({
-        title: t('common.error'),
-        description: 'Nome e Email são obrigatórios',
+        title: 'Erro',
+        description: 'Nome é obrigatório.',
+        variant: 'destructive',
+      })
+      return
+    }
+    if (!formData.email?.trim() || !isValidEmail(formData.email)) {
+      toast({
+        title: 'Erro',
+        description: 'Email inválido.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    // Check for duplicate email (except self)
+    const duplicate = users.find(
+      (u) =>
+        u.email.toLowerCase() === formData.email?.toLowerCase() &&
+        u.id !== formData.id,
+    )
+    if (duplicate) {
+      toast({
+        title: 'Erro',
+        description: 'Este email já está em uso.',
         variant: 'destructive',
       })
       return
@@ -152,7 +175,7 @@ export default function Users() {
         id: `user-${Date.now()}`,
         parentId: currentUser.id,
         status:
-          currentUser.role === 'platform_owner' ? 'active' : 'pending_approval', // Auto approve if platform owner creates
+          currentUser.role === 'platform_owner' ? 'active' : 'pending_approval',
         isFirstLogin: true,
       } as User)
       toast({ title: 'Sucesso', description: 'Usuário criado.' })
@@ -267,7 +290,7 @@ export default function Users() {
           <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" className="gap-2">
-                <Share2 className="h-4 w-4" /> Convidar Testador
+                <Share2 className="h-4 w-4" /> Convidar
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -277,8 +300,7 @@ export default function Users() {
               <div className="py-4 space-y-4">
                 <p className="text-sm text-muted-foreground">
                   Compartilhe o link abaixo para permitir que testadores
-                  externos acessem a plataforma. Eles poderão usar a conta de
-                  demonstração pública.
+                  externos acessem a plataforma.
                 </p>
                 <div className="flex gap-2">
                   <Input readOnly value={window.location.origin} />
@@ -316,7 +338,10 @@ export default function Users() {
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label>{t('common.name')}</Label>
+                      <Label>
+                        {t('common.name')}{' '}
+                        <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         value={formData.name}
                         onChange={(e) =>
@@ -325,17 +350,21 @@ export default function Users() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>{t('common.email')}</Label>
+                      <Label>
+                        {t('common.email')}{' '}
+                        <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         value={formData.email}
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
                         }
+                        type="email"
                       />
                     </div>
                     <div className="grid gap-2">
                       <Label>{t('common.phone')}</Label>
-                      <Input
+                      <PhoneInput
                         value={formData.phone || ''}
                         onChange={(e) =>
                           setFormData({ ...formData, phone: e.target.value })
@@ -343,7 +372,9 @@ export default function Users() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>Função (Role)</Label>
+                      <Label>
+                        Função (Role) <span className="text-red-500">*</span>
+                      </Label>
                       <Select
                         value={formData.role}
                         onValueChange={(val: UserRole) =>
@@ -369,7 +400,10 @@ export default function Users() {
 
                   <div className="grid grid-cols-2 gap-4 border-t pt-4">
                     <div className="grid gap-2">
-                      <Label>{t('common.password')}</Label>
+                      <Label>
+                        {t('common.password')}{' '}
+                        {!isEditing && <span className="text-red-500">*</span>}
+                      </Label>
                       <Input
                         type="password"
                         value={formData.password}
@@ -378,14 +412,12 @@ export default function Users() {
                         }
                         placeholder={isEditing ? '••••••' : ''}
                       />
-                      {isEditing && (
-                        <span className="text-xs text-muted-foreground">
-                          Deixe em branco para manter a atual
-                        </span>
-                      )}
                     </div>
                     <div className="grid gap-2">
-                      <Label>{t('common.confirm_password')}</Label>
+                      <Label>
+                        {t('common.confirm_password')}{' '}
+                        {!isEditing && <span className="text-red-500">*</span>}
+                      </Label>
                       <Input
                         type="password"
                         value={formData.confirmPassword}
@@ -457,72 +489,6 @@ export default function Users() {
                           </TableBody>
                         </Table>
                       </div>
-
-                      <div className="border rounded-md p-4 bg-muted/20">
-                        <h4 className="font-medium mb-2">
-                          Acesso a Propriedades
-                        </h4>
-                        <div className="flex gap-4">
-                          <div className="flex items-center space-x-2">
-                            <Checkbox
-                              id="long_term"
-                              checked={formData.allowedProfileTypes?.includes(
-                                'long_term',
-                              )}
-                              onCheckedChange={(c) => {
-                                const types = formData.allowedProfileTypes || []
-                                if (c) {
-                                  if (!types.includes('long_term'))
-                                    setFormData({
-                                      ...formData,
-                                      allowedProfileTypes: [
-                                        ...types,
-                                        'long_term',
-                                      ],
-                                    })
-                                } else {
-                                  setFormData({
-                                    ...formData,
-                                    allowedProfileTypes: types.filter(
-                                      (t) => t !== 'long_term',
-                                    ),
-                                  })
-                                }
-                              }}
-                            />
-                            <Label htmlFor="long_term">Long Term</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox
-                              id="short_term"
-                              checked={formData.allowedProfileTypes?.includes(
-                                'short_term',
-                              )}
-                              onCheckedChange={(c) => {
-                                const types = formData.allowedProfileTypes || []
-                                if (c) {
-                                  if (!types.includes('short_term'))
-                                    setFormData({
-                                      ...formData,
-                                      allowedProfileTypes: [
-                                        ...types,
-                                        'short_term',
-                                      ],
-                                    })
-                                } else {
-                                  setFormData({
-                                    ...formData,
-                                    allowedProfileTypes: types.filter(
-                                      (t) => t !== 'short_term',
-                                    ),
-                                  })
-                                }
-                              }}
-                            />
-                            <Label htmlFor="short_term">Short Term</Label>
-                          </div>
-                        </div>
-                      </div>
                     </>
                   )}
                 </div>
@@ -537,10 +503,8 @@ export default function Users() {
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xl font-bold">
-            {t('tenants.list_title')}
-          </CardTitle>
+        <CardHeader>
+          <CardTitle>{t('tenants.list_title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
@@ -576,7 +540,6 @@ export default function Users() {
                     <TableCell>{getStatusBadge(user.status)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        {/* Approval Workflow for Platform Owner */}
                         {currentUser.role === 'platform_owner' && (
                           <>
                             {user.status === 'pending_approval' && (
@@ -599,17 +562,6 @@ export default function Users() {
                                 title={t('common.block')}
                               >
                                 <Ban className="h-4 w-4" />
-                              </Button>
-                            )}
-                            {user.status === 'blocked' && (
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="text-blue-600 border-blue-200 hover:bg-blue-50"
-                                onClick={() => handleApprove(user.id)}
-                                title={t('common.active')}
-                              >
-                                <CheckCircle2 className="h-4 w-4" />
                               </Button>
                             )}
                           </>

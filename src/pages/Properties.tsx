@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Trash2 } from 'lucide-react'
+import { MapPin, Trash2, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -65,7 +65,7 @@ export default function Properties() {
     city: '',
     state: '',
     zipCode: '',
-    country: '',
+    country: 'USA',
     type: 'House',
     profileType: 'short_term',
     bedrooms: 3,
@@ -130,6 +130,36 @@ export default function Properties() {
   }
 
   const handleAddProperty = () => {
+    // Strict Validation
+    if (!newProp.name?.trim()) {
+      toast({
+        title: 'Erro',
+        description: 'Nome é obrigatório.',
+        variant: 'destructive',
+      })
+      return
+    }
+    if (!newProp.address?.trim()) {
+      toast({
+        title: 'Erro',
+        description: 'Endereço é obrigatório.',
+        variant: 'destructive',
+      })
+      return
+    }
+    if (
+      !newProp.city?.trim() ||
+      !newProp.state?.trim() ||
+      !newProp.zipCode?.trim()
+    ) {
+      toast({
+        title: 'Erro',
+        description: 'Endereço incompleto (Cidade, Estado, CEP).',
+        variant: 'destructive',
+      })
+      return
+    }
+
     const selectedCondo = condominiums.find(
       (c) => c.id === newProp.condominiumId,
     )
@@ -160,7 +190,7 @@ export default function Properties() {
       description: { pt: '', en: '', es: '' },
       hoaRules: { pt: '', en: '', es: '' },
       documents: [],
-      ownerId: newProp.ownerId || 'owner1',
+      ownerId: newProp.ownerId || 'owner1', // Default owner for mockup
       agentId: newProp.agentId,
     } as Property)
     toast({
@@ -168,6 +198,19 @@ export default function Properties() {
       description: `${newProp.name} ${t('properties.property_added_desc')}`,
     })
     setOpen(false)
+    setNewProp({
+      name: '',
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      country: 'USA',
+      type: 'House',
+      profileType: 'short_term',
+      bedrooms: 3,
+      bathrooms: 2,
+      guests: 6,
+    })
   }
 
   const handleDelete = (id: string) => {
@@ -199,17 +242,19 @@ export default function Properties() {
         {hasPermission(currentUser as User, 'properties', 'create') && (
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-trust-blue hover:bg-blue-700">
-                {t('properties.new_property')}
+              <Button className="bg-trust-blue hover:bg-blue-700 gap-2">
+                <Plus className="h-4 w-4" /> {t('properties.new_property')}
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>{t('properties.add_title')}</DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label>{t('common.name')}</Label>
+                  <Label>
+                    {t('common.name')} <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     value={newProp.name}
                     onChange={(e) =>
@@ -220,12 +265,18 @@ export default function Properties() {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>Buscar Endereço (Smart)</Label>
+                  <Label>
+                    Buscar Endereço (Smart){' '}
+                    <span className="text-red-500">*</span>
+                  </Label>
                   <AddressInput onAddressSelect={handleAddressSelect} />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>{t('common.address')}</Label>
+                  <Label>
+                    {t('common.address')}{' '}
+                    <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     value={newProp.address}
                     onChange={(e) =>
@@ -235,27 +286,36 @@ export default function Properties() {
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <Input
-                    placeholder="City"
-                    value={newProp.city}
-                    onChange={(e) =>
-                      setNewProp({ ...newProp, city: e.target.value })
-                    }
-                  />
-                  <Input
-                    placeholder="State"
-                    value={newProp.state}
-                    onChange={(e) =>
-                      setNewProp({ ...newProp, state: e.target.value })
-                    }
-                  />
-                  <Input
-                    placeholder="Zip"
-                    value={newProp.zipCode}
-                    onChange={(e) =>
-                      setNewProp({ ...newProp, zipCode: e.target.value })
-                    }
-                  />
+                  <div>
+                    <Label className="text-xs">Cidade</Label>
+                    <Input
+                      placeholder="City"
+                      value={newProp.city}
+                      onChange={(e) =>
+                        setNewProp({ ...newProp, city: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Estado</Label>
+                    <Input
+                      placeholder="State"
+                      value={newProp.state}
+                      onChange={(e) =>
+                        setNewProp({ ...newProp, state: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">ZIP/CEP</Label>
+                    <Input
+                      placeholder="Zip"
+                      value={newProp.zipCode}
+                      onChange={(e) =>
+                        setNewProp({ ...newProp, zipCode: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
@@ -304,7 +364,53 @@ export default function Properties() {
                     </Select>
                   </div>
                 </div>
-                <Button onClick={handleAddProperty} className="bg-trust-blue">
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="grid gap-1">
+                    <Label>Quartos</Label>
+                    <Input
+                      type="number"
+                      value={newProp.bedrooms}
+                      onChange={(e) =>
+                        setNewProp({
+                          ...newProp,
+                          bedrooms: parseInt(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-1">
+                    <Label>Banheiros</Label>
+                    <Input
+                      type="number"
+                      value={newProp.bathrooms}
+                      onChange={(e) =>
+                        setNewProp({
+                          ...newProp,
+                          bathrooms: parseInt(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-1">
+                    <Label>Hóspedes</Label>
+                    <Input
+                      type="number"
+                      value={newProp.guests}
+                      onChange={(e) =>
+                        setNewProp({
+                          ...newProp,
+                          guests: parseInt(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handleAddProperty}
+                  className="bg-trust-blue w-full"
+                >
                   {t('common.save')}
                 </Button>
               </div>

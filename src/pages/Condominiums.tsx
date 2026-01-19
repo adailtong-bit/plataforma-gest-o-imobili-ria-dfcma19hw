@@ -49,6 +49,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
+import { isValidEmail } from '@/lib/utils'
 
 export default function Condominiums() {
   const { condominiums, addCondominium, deleteCondominium } =
@@ -73,10 +74,6 @@ export default function Condominiums() {
       c.address.toLowerCase().includes(filter.toLowerCase()),
   )
 
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  }
-
   const handleAddressSelect = (addr: AddressData) => {
     setFormData((prev) => ({
       ...prev,
@@ -85,7 +82,7 @@ export default function Condominiums() {
   }
 
   const handleSave = () => {
-    if (!formData.name || !formData.address) {
+    if (!formData.name?.trim() || !formData.address?.trim()) {
       toast({
         title: t('common.error'),
         description: 'Nome e Endereço são obrigatórios',
@@ -94,7 +91,7 @@ export default function Condominiums() {
       return
     }
 
-    if (formData.managerEmail && !validateEmail(formData.managerEmail)) {
+    if (formData.managerEmail && !isValidEmail(formData.managerEmail)) {
       toast({
         title: t('common.error'),
         description: 'Email do gerente inválido',
@@ -166,7 +163,9 @@ export default function Condominiums() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label>{t('common.name')}</Label>
+                <Label>
+                  {t('common.name')} <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   value={formData.name}
                   onChange={(e) =>
@@ -180,7 +179,9 @@ export default function Condominiums() {
                 <AddressInput onAddressSelect={handleAddressSelect} />
               </div>
               <div className="grid gap-2">
-                <Label>{t('common.address')}</Label>
+                <Label>
+                  {t('common.address')} <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   value={formData.address}
                   onChange={(e) =>
@@ -217,7 +218,7 @@ export default function Condominiums() {
                   />
                 </div>
               </div>
-              <Button onClick={handleSave} className="w-full">
+              <Button onClick={handleSave} className="w-full bg-trust-blue">
                 {t('common.save')}
               </Button>
             </div>

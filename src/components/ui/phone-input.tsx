@@ -7,9 +7,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
+import { cn, applyPhoneMask } from '@/lib/utils'
 
-interface PhoneInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface PhoneInputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'onChange'
+> {
   value: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   defaultCountry?: 'US' | 'BR' | 'ES'
@@ -33,13 +36,23 @@ export function PhoneInput({
 
   const handleCountryChange = (val: string) => {
     setCountry(val as keyof typeof COUNTRIES)
-    // Optionally clear value or adjust format
   }
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Simple mask logic could go here or rely on raw input for now
-    // For MVP, just standard input
-    onChange(e)
+    const rawValue = e.target.value
+    // Apply mask based on country
+    const maskedValue = applyPhoneMask(rawValue, country)
+
+    // Create a synthetic event to pass back
+    const syntheticEvent = {
+      ...e,
+      target: {
+        ...e.target,
+        value: maskedValue,
+      },
+    }
+
+    onChange(syntheticEvent)
   }
 
   return (
@@ -65,6 +78,7 @@ export function PhoneInput({
         value={value}
         onChange={handlePhoneChange}
         placeholder={COUNTRIES[country].mask}
+        maxLength={country === 'US' ? 14 : country === 'BR' ? 15 : 13}
         className="flex-1"
       />
     </div>

@@ -39,11 +39,13 @@ import useFinancialStore from '@/stores/useFinancialStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns'
+import { useToast } from '@/hooks/use-toast'
 
 export function FinancialReports() {
   const { ledgerEntries } = useFinancialStore()
   const { properties } = usePropertyStore()
   const { t } = useLanguageStore()
+  const { toast } = useToast()
 
   const [period, setPeriod] = useState('6m') // 1m, 3m, 6m, ytd
   const [propertyFilter, setPropertyFilter] = useState('all')
@@ -103,9 +105,15 @@ export function FinancialReports() {
     [] as { month: string; income: number; expense: number }[],
   )
 
-  // Sort chart data chronologically (simple version assuming format MMM yyyy works well or use real dates)
-  // For proper sort, we might need a hidden timestamp or sort based on month index
-  chartData.reverse() // Simple reversal if they come in reverse, but better to sort by date value
+  chartData.reverse()
+
+  const handleExport = () => {
+    // Mock export function
+    toast({
+      title: t('common.export_success'),
+      description: 'Relatório financeiro (CSV/PDF) gerado e baixado.',
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -143,8 +151,8 @@ export function FinancialReports() {
                   <SelectItem value="ytd">Ano Atual (YTD)</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline">
-                <Download className="mr-2 h-4 w-4" /> Exportar
+              <Button variant="outline" onClick={handleExport}>
+                <Download className="mr-2 h-4 w-4" /> {t('common.export_data')}
               </Button>
             </div>
           </div>

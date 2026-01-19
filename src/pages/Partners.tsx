@@ -41,6 +41,7 @@ import { Partner } from '@/lib/types'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
+import { isValidEmail } from '@/lib/utils'
 
 export default function Partners() {
   const { partners, addPartner } = usePartnerStore()
@@ -74,23 +75,19 @@ export default function Partners() {
     }))
   }
 
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  }
-
   const handleAddPartner = () => {
-    if (!newPartner.name || !newPartner.email) {
+    if (!newPartner.name?.trim() || !newPartner.email?.trim()) {
       toast({
-        title: t('tenants.error_title'),
-        description: t('tenants.error_desc'),
+        title: 'Erro',
+        description: 'Nome e Email são obrigatórios.',
         variant: 'destructive',
       })
       return
     }
 
-    if (!validateEmail(newPartner.email)) {
+    if (!isValidEmail(newPartner.email)) {
       toast({
-        title: t('tenants.error_title'),
+        title: 'Erro',
         description: 'Email inválido',
         variant: 'destructive',
       })
@@ -114,7 +111,7 @@ export default function Partners() {
     })
 
     toast({
-      title: t('tenants.success_title'),
+      title: 'Sucesso',
       description: 'Parceiro registrado.',
     })
     setOpen(false)
@@ -208,7 +205,10 @@ export default function Partners() {
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>{t('partners.contact_name')}</Label>
+                  <Label>
+                    {t('partners.contact_name')}{' '}
+                    <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     value={newPartner.name}
                     onChange={(e) =>
@@ -257,7 +257,9 @@ export default function Partners() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>{t('common.email')}</Label>
+                  <Label>
+                    {t('common.email')} <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     value={newPartner.email}
                     onChange={(e) =>
@@ -340,7 +342,10 @@ export default function Partners() {
                 </div>
               </div>
 
-              <Button onClick={handleAddPartner} className="w-full">
+              <Button
+                onClick={handleAddPartner}
+                className="w-full bg-trust-blue"
+              >
                 {t('common.save')}
               </Button>
             </div>
