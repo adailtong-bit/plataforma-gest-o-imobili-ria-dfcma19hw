@@ -65,11 +65,24 @@ export default function Owners() {
       o.email.toLowerCase().includes(filter.toLowerCase()),
   )
 
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
+
   const handleAddOwner = () => {
     if (!newOwner.name || !newOwner.email) {
       toast({
         title: t('tenants.error_title'),
         description: t('tenants.error_desc'),
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (!validateEmail(newOwner.email)) {
+      toast({
+        title: t('tenants.error_title'),
+        description: 'Email inválido',
         variant: 'destructive',
       })
       return

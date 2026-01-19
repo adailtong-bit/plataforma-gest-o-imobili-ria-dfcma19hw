@@ -22,6 +22,8 @@ export type Resource =
   | 'settings'
   | 'audit_logs'
   | 'portal'
+  | 'market_analysis'
+  | 'workflows'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -122,6 +124,7 @@ export interface Property {
   id: string
   name: string
   address: string
+  neighborhood?: string
   city?: string
   state?: string
   zipCode?: string
@@ -166,14 +169,7 @@ export interface Property {
   }
 
   // Documents
-  documents?: {
-    id: string
-    name: string
-    url: string
-    date: string
-    size?: string
-    type?: string
-  }[]
+  documents?: PropertyDocument[]
 
   contractConfig?: {
     expirationAlertDays: number
@@ -183,6 +179,25 @@ export interface Property {
   ownerId: string
   agentId?: string
   iCalUrl?: string
+}
+
+export type DocumentCategory =
+  | 'Contract'
+  | 'Insurance'
+  | 'ID'
+  | 'Other'
+  | 'Deed'
+  | 'Inspection'
+
+export interface PropertyDocument {
+  id: string
+  name: string
+  url: string
+  date: string
+  size?: string
+  type?: string
+  category: DocumentCategory
+  digitalSignatureStatus?: 'signed' | 'pending' | 'none'
 }
 
 export interface Tenant {
@@ -374,6 +389,33 @@ export interface AutomationRule {
   enabled: boolean
   daysBefore: number
   template: string
+}
+
+export interface WorkflowStep {
+  id: string
+  name: string
+  description?: string
+  role: UserRole
+  actionType: 'task' | 'notification' | 'email' | 'approval'
+  config?: Record<string, any>
+}
+
+export interface Workflow {
+  id: string
+  name: string
+  description: string
+  trigger: 'manual' | 'lease_start' | 'lease_end' | 'maintenance_request'
+  steps: WorkflowStep[]
+  active: boolean
+}
+
+export interface MarketData {
+  region: string
+  averagePrice: number
+  occupancyRate: number
+  trend: 'up' | 'down' | 'stable'
+  competitorCount: number
+  averageDaysOnMarket: number
 }
 
 export interface Message {

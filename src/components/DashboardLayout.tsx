@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { AppSidebar } from './AppSidebar'
 import { AppHeader } from './AppHeader'
@@ -22,12 +22,14 @@ import { CheckCircle2, Lock, DollarSign, AlertTriangle } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { User } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
+import { hasPermission } from '@/lib/permissions'
 
 export default function DashboardLayout() {
   const { currentUser, setCurrentUser } = useAuthStore()
   const { updateUser } = useUserStore()
   const { properties } = usePropertyStore()
   const navigate = useNavigate()
+  const location = useLocation()
   const { toast } = useToast()
 
   const [passwordModalOpen, setPasswordModalOpen] = useState(false)
@@ -38,18 +40,45 @@ export default function DashboardLayout() {
   const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false)
   const [processing, setProcessing] = useState(false)
 
-  // Status Check & Enforcement
+  // Status Check & Enforcement & RBAC Redirection
   useEffect(() => {
     if (!currentUser) return
+
+    // RBAC Security Check
+    const checkAccess = () => {
+      const path = location.pathname
+      let resource = ''
+
+      // Map paths to resources for basic check
+      if (path.startsWith('/market-analysis')) resource = 'market_analysis'
+      if (path.startsWith('/workflows')) resource = 'workflows'
+      if (
+        path.startsWith('/settings') &&
+        currentUser.role !== 'platform_owner' &&
+        currentUser.role !== 'software_tenant'
+      )
+        resource = 'settings' // Strict settings
+
+      if (
+        resource &&
+        !hasPermission(currentUser as User, resource as any, 'view')
+      ) {
+        toast({
+          title: 'Acesso Negado',
+          description: 'User not permitted for this function',
+          variant: 'destructive',
+        })
+        navigate('/')
+      }
+    }
+
+    checkAccess()
 
     // 1. Check for Pending Approval
     if (
       currentUser.status === 'pending_approval' ||
       currentUser.status === 'blocked'
     ) {
-      // In a real app, we would redirect to a "Locked" page.
-      // For this demo, we might just show a blocking toast or restrict navigation,
-      // but usually the Router handles this. Here we'll just alert.
       return
     }
 
@@ -76,7 +105,7 @@ export default function DashboardLayout() {
     ) {
       setSubscriptionModalOpen(true)
     }
-  }, [currentUser, properties.length])
+  }, [currentUser, properties.length, location.pathname])
 
   const handlePasswordUpdate = () => {
     if (newPassword.length < 6) {

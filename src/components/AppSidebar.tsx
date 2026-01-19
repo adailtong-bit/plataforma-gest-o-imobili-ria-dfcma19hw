@@ -26,6 +26,8 @@ import {
   LayoutDashboard,
   Tag,
   Command,
+  TrendingUp,
+  Workflow,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -52,6 +54,12 @@ export function AppSidebar() {
       url: '/properties',
       icon: Building,
       resource: 'properties',
+    },
+    {
+      title: 'Análise de Mercado',
+      url: '/market-analysis',
+      icon: TrendingUp,
+      resource: 'market_analysis',
     },
     {
       title: t('common.condominiums'),
@@ -90,10 +98,16 @@ export function AppSidebar() {
       resource: 'tasks',
     },
     {
+      title: 'Workflows',
+      url: '/workflows',
+      icon: Workflow,
+      resource: 'workflows',
+    },
+    {
       title: t('common.service_pricing'),
       url: '/service-pricing',
       icon: Tag,
-      resource: 'partners', // Reusing partners permission for pricing as it is related
+      resource: 'partners',
     },
     {
       title: t('common.financial'),

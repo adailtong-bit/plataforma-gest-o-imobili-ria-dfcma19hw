@@ -74,11 +74,24 @@ export default function Partners() {
     }))
   }
 
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
+
   const handleAddPartner = () => {
     if (!newPartner.name || !newPartner.email) {
       toast({
         title: t('tenants.error_title'),
         description: t('tenants.error_desc'),
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (!validateEmail(newPartner.email)) {
+      toast({
+        title: t('tenants.error_title'),
+        description: 'Email inválido',
         variant: 'destructive',
       })
       return

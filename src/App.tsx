@@ -24,6 +24,8 @@ import ServicePricing from './pages/ServicePricing'
 import TenantPortal from './pages/portal/TenantPortal'
 import OwnerPortal from './pages/portal/OwnerPortal'
 import PartnerPortal from './pages/portal/PartnerPortal'
+import MarketAnalysis from './pages/MarketAnalysis'
+import Workflows from './pages/Workflows'
 import { AppProvider } from '@/stores/AppContext'
 import { useEffect } from 'react'
 
@@ -62,7 +64,9 @@ const App = () => {
               <Route path="/settings" element={<Settings />} />
               <Route path="/users" element={<Users />} />
               <Route path="/service-pricing" element={<ServicePricing />} />
-              {/* Portals - In real app, might use different layout */}
+              <Route path="/market-analysis" element={<MarketAnalysis />} />
+              <Route path="/workflows" element={<Workflows />} />
+              {/* Portals */}
               <Route path="/portal/tenant" element={<TenantPortal />} />
               <Route path="/portal/owner" element={<OwnerPortal />} />
               <Route path="/portal/partner" element={<PartnerPortal />} />

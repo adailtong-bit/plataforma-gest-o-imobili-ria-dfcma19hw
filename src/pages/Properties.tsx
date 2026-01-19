@@ -220,7 +220,7 @@ export default function Properties() {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>Buscar Endereço (Auto)</Label>
+                  <Label>Buscar Endereço (Smart)</Label>
                   <AddressInput onAddressSelect={handleAddressSelect} />
                 </div>
 

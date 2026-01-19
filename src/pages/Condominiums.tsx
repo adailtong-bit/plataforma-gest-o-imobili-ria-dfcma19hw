@@ -47,6 +47,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { useNavigate } from 'react-router-dom'
+import { PhoneInput } from '@/components/ui/phone-input'
+import { AddressInput, AddressData } from '@/components/ui/address-input'
 
 export default function Condominiums() {
   const { condominiums, addCondominium, deleteCondominium } =
@@ -71,11 +73,31 @@ export default function Condominiums() {
       c.address.toLowerCase().includes(filter.toLowerCase()),
   )
 
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
+
+  const handleAddressSelect = (addr: AddressData) => {
+    setFormData((prev) => ({
+      ...prev,
+      address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
+    }))
+  }
+
   const handleSave = () => {
     if (!formData.name || !formData.address) {
       toast({
         title: t('common.error'),
         description: 'Nome e Endereço são obrigatórios',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (formData.managerEmail && !validateEmail(formData.managerEmail)) {
+      toast({
+        title: t('common.error'),
+        description: 'Email do gerente inválido',
         variant: 'destructive',
       })
       return
@@ -154,6 +176,10 @@ export default function Condominiums() {
                 />
               </div>
               <div className="grid gap-2">
+                <Label>Buscar Endereço</Label>
+                <AddressInput onAddressSelect={handleAddressSelect} />
+              </div>
+              <div className="grid gap-2">
                 <Label>{t('common.address')}</Label>
                 <Input
                   value={formData.address}
@@ -174,7 +200,7 @@ export default function Condominiums() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label>{t('common.phone')}</Label>
-                  <Input
+                  <PhoneInput
                     value={formData.managerPhone}
                     onChange={(e) =>
                       setFormData({ ...formData, managerPhone: e.target.value })

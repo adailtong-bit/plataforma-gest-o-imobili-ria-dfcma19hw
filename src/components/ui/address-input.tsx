@@ -23,6 +23,7 @@ export interface AddressData {
   zipCode: string
   country: string
   community?: string
+  neighborhood?: string // Added per user story
 }
 
 interface AddressInputProps {
@@ -32,7 +33,7 @@ interface AddressInputProps {
   disabled?: boolean
 }
 
-// Mock addresses for simulation
+// Mock addresses for simulation - Smart autocomplete
 const MOCK_ADDRESSES = [
   {
     label: '123 Palm Street, Orlando, FL',
@@ -43,6 +44,7 @@ const MOCK_ADDRESSES = [
       zipCode: '32801',
       country: 'USA',
       community: 'Sunny Isles',
+      neighborhood: 'Downtown',
     },
   },
   {
@@ -54,6 +56,7 @@ const MOCK_ADDRESSES = [
       zipCode: '33131',
       country: 'USA',
       community: 'Brickell Heights',
+      neighborhood: 'Brickell',
     },
   },
   {
@@ -65,6 +68,7 @@ const MOCK_ADDRESSES = [
       zipCode: '01310-100',
       country: 'Brazil',
       community: 'Bela Vista',
+      neighborhood: 'Bela Vista',
     },
   },
 ]

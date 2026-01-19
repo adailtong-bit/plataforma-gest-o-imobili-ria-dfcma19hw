@@ -68,11 +68,24 @@ export default function Tenants() {
       t.email.toLowerCase().includes(filter.toLowerCase()),
   )
 
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
+
   const handleAddTenant = () => {
     if (!newTenant.name || !newTenant.email) {
       toast({
         title: t('tenants.error_title'),
         description: t('tenants.error_desc'),
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (!validateEmail(newTenant.email)) {
+      toast({
+        title: t('tenants.error_title'),
+        description: 'Email inválido',
         variant: 'destructive',
       })
       return

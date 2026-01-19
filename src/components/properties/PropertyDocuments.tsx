@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Property } from '@/lib/types'
+import { Property, DocumentCategory } from '@/lib/types'
 import {
   Card,
   CardContent,
@@ -22,6 +22,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '@/components/ui/dialog'
 
 interface PropertyDocumentsProps {
   property: Property
@@ -38,30 +54,45 @@ export function PropertyDocuments({
   const { toast } = useToast()
   const docInputRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedCategory, setSelectedCategory] =
+    useState<DocumentCategory>('Other')
 
-  const handleDocUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setIsUploading(true)
-      setTimeout(() => {
-        const newDoc = {
-          id: `doc-${Date.now()}`,
-          name: file.name,
-          url: URL.createObjectURL(file),
-          date: new Date().toISOString(),
-          type: file.type,
-          size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-        }
-        const currentDocs = property.documents || []
-        onChange('documents', [...currentDocs, newDoc])
-        setIsUploading(false)
-        if (docInputRef.current) docInputRef.current.value = ''
-        toast({
-          title: t('tenants.success_title'),
-          description: 'Documento anexado à propriedade.',
-        })
-      }, 1000)
+      setSelectedFile(file)
+      setUploadDialogOpen(true)
     }
+  }
+
+  const handleConfirmUpload = () => {
+    if (!selectedFile) return
+
+    setIsUploading(true)
+    setTimeout(() => {
+      const newDoc = {
+        id: `doc-${Date.now()}`,
+        name: selectedFile.name,
+        url: URL.createObjectURL(selectedFile),
+        date: new Date().toISOString(),
+        type: selectedFile.type,
+        size: `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`,
+        category: selectedCategory,
+        digitalSignatureStatus: 'pending' as const,
+      }
+      const currentDocs = property.documents || []
+      onChange('documents', [...currentDocs, newDoc])
+      setIsUploading(false)
+      setUploadDialogOpen(false)
+      setSelectedFile(null)
+      if (docInputRef.current) docInputRef.current.value = ''
+      toast({
+        title: 'Sucesso',
+        description: 'Documento categorizado e anexado.',
+      })
+    }, 1000)
   }
 
   const handleRemoveDoc = (docId: string) => {
@@ -78,9 +109,9 @@ export function PropertyDocuments({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Repositório de Documentos</CardTitle>
+          <CardTitle>Gestão de Documentos</CardTitle>
           <CardDescription>
-            Contratos, manuais, plantas e outros arquivos.
+            Organize contratos, seguros e documentos legais.
           </CardDescription>
         </div>
         {canEdit && (
@@ -90,20 +121,68 @@ export function PropertyDocuments({
               ref={docInputRef}
               className="hidden"
               accept=".pdf,.doc,.docx,.txt,.jpg,.png"
-              onChange={handleDocUpload}
+              onChange={handleFileSelect}
             />
             <Button
               onClick={() => docInputRef.current?.click()}
-              disabled={isUploading}
               className="bg-trust-blue"
             >
               <Upload className="mr-2 h-4 w-4" />
-              {isUploading ? t('properties.uploading') : t('common.add_title')}
+              {t('common.add_title')}
             </Button>
           </div>
         )}
       </CardHeader>
       <CardContent>
+        {/* Upload Dialog */}
+        <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Classificar Documento</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label>Arquivo Selecionado</Label>
+                <div className="p-2 border rounded bg-muted text-sm">
+                  {selectedFile?.name}
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Label>Categoria</Label>
+                <Select
+                  value={selectedCategory}
+                  onValueChange={(v) =>
+                    setSelectedCategory(v as DocumentCategory)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Contract">Contrato</SelectItem>
+                    <SelectItem value="Insurance">Seguro</SelectItem>
+                    <SelectItem value="ID">Identificação</SelectItem>
+                    <SelectItem value="Deed">Escritura</SelectItem>
+                    <SelectItem value="Inspection">Inspeção</SelectItem>
+                    <SelectItem value="Other">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setUploadDialogOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button onClick={handleConfirmUpload} disabled={isUploading}>
+                {isUploading ? 'Salvando...' : 'Confirmar Upload'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         <div className="space-y-4">
           {!property.documents || property.documents.length === 0 ? (
             <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
@@ -120,10 +199,16 @@ export function PropertyDocuments({
                     <FileText className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm">{doc.name}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-sm">{doc.name}</p>
+                      <span className="text-[10px] bg-secondary px-1.5 py-0.5 rounded text-secondary-foreground font-semibold">
+                        {doc.category}
+                      </span>
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       {new Date(doc.date).toLocaleDateString()} •{' '}
-                      {doc.size || 'Unknown size'}
+                      {doc.size || 'Unknown size'} • Status:{' '}
+                      {doc.digitalSignatureStatus}
                     </p>
                   </div>
                 </div>
