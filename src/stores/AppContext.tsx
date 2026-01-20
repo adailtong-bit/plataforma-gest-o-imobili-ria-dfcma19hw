@@ -263,6 +263,71 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  const updateLedgerEntry = (entry: LedgerEntry) => {
+    setLedgerEntries((prev) => prev.map((e) => (e.id === entry.id ? entry : e)))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Ledger',
+      entityId: entry.id,
+      details: `Updated ledger entry: ${entry.id}`,
+    })
+
+    // Automated Financial Recurring Logic
+    if (entry.status === 'cleared' && entry.referenceId) {
+      // Find the property to access fixed expenses
+      const property = properties.find((p) => p.id === entry.propertyId)
+      if (property && property.fixedExpenses) {
+        const fixedExpense = property.fixedExpenses.find(
+          (fe) => fe.id === entry.referenceId,
+        )
+        if (fixedExpense) {
+          // Check if next month's entry already exists to avoid duplicates (naive check)
+          const nextDueDate = addMonths(
+            new Date(entry.dueDate || new Date()),
+            1,
+          )
+          const existingNext = ledgerEntries.find(
+            (e) =>
+              e.referenceId === entry.referenceId &&
+              e.status === 'pending' &&
+              new Date(e.dueDate!).getMonth() === nextDueDate.getMonth() &&
+              new Date(e.dueDate!).getFullYear() === nextDueDate.getFullYear(),
+          )
+
+          if (!existingNext) {
+            const nextEntry: LedgerEntry = {
+              id: `auto-fe-${fixedExpense.id}-${Date.now()}`,
+              propertyId: property.id,
+              date: new Date().toISOString(),
+              dueDate: nextDueDate.toISOString(),
+              type: 'expense',
+              category: fixedExpense.name,
+              amount: fixedExpense.amount,
+              description: `${fixedExpense.name} - ${fixedExpense.provider || ''} (Auto)`,
+              referenceId: fixedExpense.id,
+              status: 'pending',
+            }
+            setTimeout(() => addLedgerEntry(nextEntry), 100) // Small delay
+          }
+        }
+      }
+    }
+  }
+
+  const deleteLedgerEntry = (entryId: string) => {
+    setLedgerEntries((prev) => prev.filter((e) => e.id !== entryId))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'Ledger',
+      entityId: entryId,
+      details: 'Deleted ledger entry',
+    })
+  }
+
   const setCurrentUser = (userId: string) => {
     const user = allUsers.find((u) => u.id === userId)
     if (user) {
@@ -950,30 +1015,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       action: 'create',
       entity: 'BankStatement',
       details: `Uploaded statement: ${statement.fileName}`,
-    })
-  }
-
-  const updateLedgerEntry = (entry: LedgerEntry) => {
-    setLedgerEntries(ledgerEntries.map((e) => (e.id === entry.id ? entry : e)))
-    addAuditLog({
-      userId: currentUser.id,
-      userName: currentUser.name,
-      action: 'update',
-      entity: 'Ledger',
-      entityId: entry.id,
-      details: `Updated ledger entry: ${entry.id}`,
-    })
-  }
-
-  const deleteLedgerEntry = (entryId: string) => {
-    setLedgerEntries(ledgerEntries.filter((e) => e.id !== entryId))
-    addAuditLog({
-      userId: currentUser.id,
-      userName: currentUser.name,
-      action: 'delete',
-      entity: 'Ledger',
-      entityId: entryId,
-      details: 'Deleted ledger entry',
     })
   }
 

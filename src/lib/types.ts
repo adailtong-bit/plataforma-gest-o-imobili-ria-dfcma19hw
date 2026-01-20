@@ -151,6 +151,8 @@ export interface FixedExpense {
   amount: number
   dueDay: number
   frequency: 'monthly' | 'yearly'
+  provider?: string // New Field
+  accountNumber?: string // New Field
 }
 
 export interface SocialMediaLinks {
@@ -436,8 +438,8 @@ export interface LedgerEntry {
   id: string
   propertyId: string
   date: string
-  dueDate?: string // New field
-  paymentDate?: string // New field
+  dueDate?: string
+  paymentDate?: string
   type: 'income' | 'expense'
   category: string
   amount: number

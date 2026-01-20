@@ -3,6 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
+import { Copy } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
 
 interface PropertyContentProps {
   data: Property
@@ -15,6 +18,29 @@ export function PropertyContent({
   onNestedChange,
   canEdit,
 }: PropertyContentProps) {
+  const { toast } = useToast()
+
+  const copyContent = (
+    field: 'description' | 'hoaRules',
+    from: 'pt' | 'en' | 'es',
+    to: 'pt' | 'en' | 'es',
+  ) => {
+    const content = data[field]?.[from]
+    if (content) {
+      onNestedChange(field, to, content)
+      toast({
+        title: 'Copiado',
+        description: `Conteúdo copiado de ${from.toUpperCase()} para ${to.toUpperCase()}.`,
+      })
+    } else {
+      toast({
+        title: 'Vazio',
+        description: `O conteúdo em ${from.toUpperCase()} está vazio.`,
+        variant: 'destructive',
+      })
+    }
+  }
+
   return (
     <div className="space-y-6">
       <Card>
@@ -44,7 +70,18 @@ export function PropertyContent({
             </TabsContent>
             <TabsContent value="en">
               <div className="grid gap-2 mt-2">
-                <Label>Description (EN)</Label>
+                <div className="flex justify-between items-center">
+                  <Label>Description (EN)</Label>
+                  {canEdit && !data.description?.en && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyContent('description', 'pt', 'en')}
+                    >
+                      <Copy className="h-3 w-3 mr-1" /> Copiar de PT
+                    </Button>
+                  )}
+                </div>
                 <Textarea
                   value={data.description?.en || ''}
                   onChange={(e) =>
@@ -58,7 +95,18 @@ export function PropertyContent({
             </TabsContent>
             <TabsContent value="es">
               <div className="grid gap-2 mt-2">
-                <Label>Descripción (ES)</Label>
+                <div className="flex justify-between items-center">
+                  <Label>Descripción (ES)</Label>
+                  {canEdit && !data.description?.es && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyContent('description', 'pt', 'es')}
+                    >
+                      <Copy className="h-3 w-3 mr-1" /> Copiar de PT
+                    </Button>
+                  )}
+                </div>
                 <Textarea
                   value={data.description?.es || ''}
                   onChange={(e) =>
@@ -101,7 +149,18 @@ export function PropertyContent({
             </TabsContent>
             <TabsContent value="en">
               <div className="grid gap-2 mt-2">
-                <Label>Rules (EN)</Label>
+                <div className="flex justify-between items-center">
+                  <Label>Rules (EN)</Label>
+                  {canEdit && !data.hoaRules?.en && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyContent('hoaRules', 'pt', 'en')}
+                    >
+                      <Copy className="h-3 w-3 mr-1" /> Copiar de PT
+                    </Button>
+                  )}
+                </div>
                 <Textarea
                   value={data.hoaRules?.en || ''}
                   onChange={(e) =>
@@ -115,7 +174,18 @@ export function PropertyContent({
             </TabsContent>
             <TabsContent value="es">
               <div className="grid gap-2 mt-2">
-                <Label>Reglas (ES)</Label>
+                <div className="flex justify-between items-center">
+                  <Label>Reglas (ES)</Label>
+                  {canEdit && !data.hoaRules?.es && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyContent('hoaRules', 'pt', 'es')}
+                    >
+                      <Copy className="h-3 w-3 mr-1" /> Copiar de PT
+                    </Button>
+                  )}
+                </div>
                 <Textarea
                   value={data.hoaRules?.es || ''}
                   onChange={(e) =>

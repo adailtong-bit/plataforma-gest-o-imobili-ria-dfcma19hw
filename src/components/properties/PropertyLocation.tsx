@@ -35,6 +35,10 @@ export function PropertyLocation({
     onChange('country', addr.country)
   }
 
+  const encodedAddress = encodeURIComponent(
+    `${data.address}, ${data.city}, ${data.state}, ${data.zipCode}, ${data.country}`,
+  )
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
@@ -78,6 +82,8 @@ export function PropertyLocation({
                 onChange={(e) => onChange('zipCode', e.target.value)}
                 disabled={!canEdit}
                 required
+                className={!data.zipCode ? 'border-red-300' : ''}
+                placeholder="Required"
               />
             </div>
           </div>
@@ -146,24 +152,24 @@ export function PropertyLocation({
         </CardHeader>
         <CardContent>
           <div className="w-full aspect-square bg-muted rounded-lg flex flex-col items-center justify-center relative overflow-hidden border">
-            <div className="absolute inset-0 bg-blue-50/50" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-              <MapPin className="h-10 w-10 text-red-600 animate-bounce" />
-            </div>
-            {/* Mock markers for other properties */}
-            <MapPin className="absolute top-1/4 left-1/4 h-6 w-6 text-blue-400 opacity-60" />
-            <MapPin className="absolute bottom-1/3 right-1/4 h-6 w-6 text-blue-400 opacity-60" />
-            <MapPin className="absolute top-1/3 right-1/3 h-6 w-6 text-blue-400 opacity-60" />
-
-            <div className="z-10 bg-white/80 p-4 rounded-md shadow-sm backdrop-blur-sm text-center">
-              <p className="font-semibold text-sm">Visualização de Mapa Mock</p>
-              <p className="text-xs text-muted-foreground">
-                Exibindo: {data.address}
-              </p>
-              <p className="text-xs text-muted-foreground mt-2">
-                +3 outras propriedades do proprietário próximas
-              </p>
-            </div>
+            {data.address ? (
+              <iframe
+                title="Property Location"
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                style={{ border: 0 }}
+                src={`https://www.google.com/maps?q=${encodedAddress}&output=embed`}
+                allowFullScreen
+              ></iframe>
+            ) : (
+              <div className="flex flex-col items-center justify-center">
+                <MapPin className="h-10 w-10 text-muted-foreground mb-2" />
+                <p className="text-sm text-muted-foreground">
+                  Insira um endereço para visualizar o mapa.
+                </p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -1,4 +1,10 @@
-import { Property, Owner, Partner, FixedExpense } from '@/lib/types'
+import {
+  Property,
+  Owner,
+  Partner,
+  FixedExpense,
+  LedgerEntry,
+} from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -52,8 +58,10 @@ export function PropertyFinancials({
     amount: 0,
     dueDay: 1,
     frequency: 'monthly',
+    provider: '',
+    accountNumber: '',
   })
-  const { ledgerEntries } = useFinancialStore()
+  const { ledgerEntries, addLedgerEntry } = useFinancialStore()
 
   const propertyEntries = ledgerEntries.filter((e) => e.propertyId === data.id)
 
@@ -65,10 +73,37 @@ export function PropertyFinancials({
         amount: Number(newExpense.amount),
         dueDay: Number(newExpense.dueDay),
         frequency: newExpense.frequency as 'monthly' | 'yearly',
+        provider: newExpense.provider,
+        accountNumber: newExpense.accountNumber,
       }
+
+      // Add to property
       onChange('fixedExpenses', [...(data.fixedExpenses || []), expense])
+
+      // Add to Ledger Immediately (Current Month)
+      const entry: LedgerEntry = {
+        id: `auto-fe-${expense.id}-initial`,
+        propertyId: data.id,
+        date: new Date().toISOString(),
+        dueDate: new Date().toISOString(), // Simplified for demo
+        type: 'expense',
+        category: expense.name,
+        amount: expense.amount,
+        description: `${expense.name} - ${expense.provider || ''} (Auto)`,
+        referenceId: expense.id,
+        status: 'pending',
+      }
+      addLedgerEntry(entry)
+
       setOpenExpense(false)
-      setNewExpense({ name: '', amount: 0, dueDay: 1, frequency: 'monthly' })
+      setNewExpense({
+        name: '',
+        amount: 0,
+        dueDay: 1,
+        frequency: 'monthly',
+        provider: '',
+        accountNumber: '',
+      })
     }
   }
 
@@ -172,7 +207,7 @@ export function PropertyFinancials({
                   <Plus className="h-4 w-4 mr-2" /> Adicionar
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>Nova Despesa Fixa</DialogTitle>
                   <DialogDescription>
@@ -181,17 +216,45 @@ export function PropertyFinancials({
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label>Nome</Label>
-                    <Input
-                      value={newExpense.name}
-                      onChange={(e) =>
-                        setNewExpense({ ...newExpense, name: e.target.value })
-                      }
-                      placeholder="Ex: Internet"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>Nome da Despesa</Label>
+                      <Input
+                        value={newExpense.name}
+                        onChange={(e) =>
+                          setNewExpense({ ...newExpense, name: e.target.value })
+                        }
+                        placeholder="Ex: Internet, Luz, Água"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Provedor / Empresa</Label>
+                      <Input
+                        value={newExpense.provider}
+                        onChange={(e) =>
+                          setNewExpense({
+                            ...newExpense,
+                            provider: e.target.value,
+                          })
+                        }
+                        placeholder="Ex: AT&T, Duke Energy"
+                      />
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>Número da Conta / Instalação</Label>
+                      <Input
+                        value={newExpense.accountNumber}
+                        onChange={(e) =>
+                          setNewExpense({
+                            ...newExpense,
+                            accountNumber: e.target.value,
+                          })
+                        }
+                        placeholder="Ex: 000-123-456"
+                      />
+                    </div>
                     <div className="grid gap-2">
                       <Label>Valor ($)</Label>
                       <Input
@@ -205,6 +268,8 @@ export function PropertyFinancials({
                         }
                       />
                     </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <Label>Dia Vencimento</Label>
                       <Input
@@ -220,26 +285,26 @@ export function PropertyFinancials({
                         }
                       />
                     </div>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Frequência</Label>
-                    <Select
-                      value={newExpense.frequency}
-                      onValueChange={(v: any) =>
-                        setNewExpense({ ...newExpense, frequency: v })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="monthly">Mensal</SelectItem>
-                        <SelectItem value="yearly">Anual</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="grid gap-2">
+                      <Label>Frequência</Label>
+                      <Select
+                        value={newExpense.frequency}
+                        onValueChange={(v: any) =>
+                          setNewExpense({ ...newExpense, frequency: v })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="monthly">Mensal</SelectItem>
+                          <SelectItem value="yearly">Anual</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <Button onClick={handleAddExpense} className="bg-trust-blue">
-                    Adicionar
+                    Adicionar e Gerar Lançamento
                   </Button>
                 </div>
               </DialogContent>
@@ -251,9 +316,11 @@ export function PropertyFinancials({
             <TableHeader>
               <TableRow>
                 <TableHead>Despesa</TableHead>
+                <TableHead>Provedor</TableHead>
+                <TableHead>Conta</TableHead>
                 <TableHead>Valor</TableHead>
-                <TableHead>Dia Vencimento</TableHead>
-                <TableHead>Frequência</TableHead>
+                <TableHead>Dia Venc.</TableHead>
+                <TableHead>Freq.</TableHead>
                 {canEdit && <TableHead className="text-right">Ação</TableHead>}
               </TableRow>
             </TableHeader>
@@ -261,7 +328,7 @@ export function PropertyFinancials({
               {(!data.fixedExpenses || data.fixedExpenses.length === 0) && (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={7}
                     className="text-center py-4 text-muted-foreground"
                   >
                     Nenhuma despesa fixa cadastrada.
@@ -271,8 +338,10 @@ export function PropertyFinancials({
               {data.fixedExpenses?.map((expense) => (
                 <TableRow key={expense.id}>
                   <TableCell className="font-medium">{expense.name}</TableCell>
+                  <TableCell>{expense.provider || '-'}</TableCell>
+                  <TableCell>{expense.accountNumber || '-'}</TableCell>
                   <TableCell>${expense.amount.toFixed(2)}</TableCell>
-                  <TableCell>Dia {expense.dueDay}</TableCell>
+                  <TableCell>{expense.dueDay}</TableCell>
                   <TableCell className="capitalize">
                     {expense.frequency}
                   </TableCell>
