@@ -10,6 +10,7 @@ const useTenantStore = () => {
     tenants: context.tenants,
     addTenant: context.addTenant,
     renewTenantContract: context.renewTenantContract,
+    updateTenantNegotiation: context.updateTenantNegotiation,
   }
 }
 

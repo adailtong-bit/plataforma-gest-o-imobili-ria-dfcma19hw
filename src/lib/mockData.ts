@@ -160,8 +160,17 @@ export const tenants: Tenant[] = tenantsData.flatMap((manager, tIdx) =>
     phone: `+1 (555) 99${tIdx}${i}`,
     propertyId: `prop_${tIdx}_${i}`, // Assign to first few properties
     rentValue: 2000,
-    leaseStart: '2024-01-01',
-    leaseEnd: i === 0 ? '2024-02-15' : '2024-12-31', // one expiring soon
+    leaseStart: subDays(new Date(), 300).toISOString(),
+    // Logic for demo purposes:
+    // i=0: Expiring soon (Critical < 30) - Status: negotiating
+    // i=1: Renewed (Future Date) - Status: closed
+    // i=2: Upcoming Expiring (30-90) - Status: undefined (pending)
+    leaseEnd:
+      i === 0
+        ? addDays(new Date(), 25).toISOString()
+        : i === 1
+          ? addDays(new Date(), 365).toISOString()
+          : addDays(new Date(), 60).toISOString(),
     status: 'active',
     role: 'tenant',
     country: 'US',
@@ -171,8 +180,8 @@ export const tenants: Tenant[] = tenantsData.flatMap((manager, tIdx) =>
       phone: '+1 555 9999',
       relation: 'Sibling',
     },
-    negotiationStatus: i === 0 ? 'negotiating' : undefined,
-    suggestedRenewalPrice: 2200,
+    negotiationStatus: i === 0 ? 'negotiating' : i === 1 ? 'closed' : undefined,
+    suggestedRenewalPrice: i === 0 ? 2200 : undefined,
     negotiationLogs:
       i === 0
         ? [

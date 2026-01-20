@@ -24,6 +24,8 @@ import {
   GenericDocument,
   Advertiser,
   AdPricing,
+  NegotiationStatus,
+  NegotiationLogEntry,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -131,6 +133,14 @@ interface AppContextType {
     newRent: number,
     newStart?: string,
     contractDoc?: GenericDocument,
+  ) => void
+  updateTenantNegotiation: (
+    tenantId: string,
+    data: {
+      status?: NegotiationStatus
+      suggestedPrice?: number
+      log?: NegotiationLogEntry
+    },
   ) => void
   addAdvertisement: (ad: Advertisement) => void
   updateAdvertisement: (ad: Advertisement) => void
@@ -297,7 +307,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
-  // Filter messages for current user
   const visibleMessages = allMessages.filter(
     (m) =>
       m.ownerId === currentUser.id ||
@@ -317,7 +326,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const newMessageId = Date.now().toString()
 
     setAllMessages((prev) => {
-      // Logic for sender
       const senderThread = prev.find(
         (m) => m.ownerId === currentUser.id && m.contactId === contactId,
       )
@@ -369,7 +377,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         }
       }
 
-      // Logic for recipient (simulating backend)
       const recipientThread = prev.find(
         (m) => m.ownerId === contactId && m.contactId === currentUser.id,
       )
@@ -422,9 +429,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
-  // Helper to send automated system message
   const sendSystemMessage = (toUserId: string, text: string) => {
-    // We act as 'admin_platform' for system messages
     const systemId = 'admin_platform'
     const timestamp = new Date().toLocaleTimeString([], {
       hour: '2-digit',
@@ -530,7 +535,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setTasks((prevTasks) => {
       const task = prevTasks.find((t) => t.id === taskId)
 
-      // Recurring Task Logic
       if (task && status === 'completed' && task.status !== 'completed') {
         if (task.recurrence && task.recurrence !== 'none') {
           let nextDate = new Date(task.date)
@@ -546,14 +550,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             status: 'pending',
             images: [],
             evidence: [],
-            // Preserve recurrence
           }
-          // Schedule task creation (avoid state update inside state update)
           setTimeout(() => addTask(nextTask), 0)
         }
       }
 
-      // Integrated Financial Automation
       if (
         task &&
         status === 'completed' &&
@@ -628,7 +629,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       details: `Created task: ${task.title}`,
     })
 
-    // Automated Task Notifications for Partners
     const notifyPartner = (partnerId: string) => {
       const partner = partners.find((p) => p.id === partnerId)
       if (partner) {
@@ -645,14 +645,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (task.assigneeId) {
       notifyPartner(task.assigneeId)
     } else {
-      // Check linked properties if no assignee set yet
       const linkedPartner = partners.find((p) =>
         p.linkedPropertyIds?.includes(task.propertyId),
       )
       if (
         linkedPartner &&
-        (task.type === 'cleaning' || task.type === 'maintenance') && // Filter by type if needed
-        linkedPartner.type === task.type // Simple matching
+        (task.type === 'cleaning' || task.type === 'maintenance') &&
+        linkedPartner.type === task.type
       ) {
         notifyPartner(linkedPartner.id)
       }
@@ -791,13 +790,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateProperty({ ...property, status: 'rented' })
       }
 
-      // Billing Automation
       if (tenant.leaseStart && tenant.leaseEnd && tenant.rentValue > 0) {
         const start = new Date(tenant.leaseStart)
         const end = new Date(tenant.leaseEnd)
         const months = eachMonthOfInterval({ start, end })
 
-        // Generate future ledger entries
         const newEntries: LedgerEntry[] = months.map((date) => ({
           id: `auto-rent-${tenant.id}-${date.getTime()}`,
           propertyId: tenant.propertyId!,
@@ -810,7 +807,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           status: 'pending',
         }))
 
-        // We use setTimeout to break the render cycle update
         setTimeout(() => {
           setLedgerEntries((prev) => [...prev, ...newEntries])
           addAuditLog({
@@ -1032,6 +1028,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             leaseStart: newStart || t.leaseStart,
             rentValue: newRent,
             status: 'active' as const,
+            negotiationStatus: 'closed' as const,
             documents: contractDoc
               ? [...(t.documents || []), contractDoc]
               : t.documents,
@@ -1056,6 +1053,32 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       message: `O contrato do inquilino ${tenantId} foi renovado com sucesso.`,
       type: 'success',
     })
+  }
+
+  const updateTenantNegotiation = (
+    tenantId: string,
+    data: {
+      status?: NegotiationStatus
+      suggestedPrice?: number
+      log?: NegotiationLogEntry
+    },
+  ) => {
+    setTenants((prev) =>
+      prev.map((t) => {
+        if (t.id === tenantId) {
+          return {
+            ...t,
+            negotiationStatus: data.status ?? t.negotiationStatus,
+            suggestedRenewalPrice:
+              data.suggestedPrice ?? t.suggestedRenewalPrice,
+            negotiationLogs: data.log
+              ? [...(t.negotiationLogs || []), data.log]
+              : t.negotiationLogs,
+          }
+        }
+        return t
+      }),
+    )
   }
 
   const addAdvertisement = (ad: Advertisement) => {
@@ -1211,6 +1234,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         approveUser,
         blockUser,
         renewTenantContract,
+        updateTenantNegotiation,
         addAdvertisement,
         updateAdvertisement,
         deleteAdvertisement,

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -20,12 +20,9 @@ import {
 import {
   MessageSquare,
   FileText,
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
   Search,
   Building,
-  History,
+  ClipboardList,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -35,16 +32,10 @@ import { useNavigate, Link } from 'react-router-dom'
 import { format, differenceInDays } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { CloseNegotiationDialog } from '@/components/renewals/CloseNegotiationDialog'
-import { GenericDocument, NegotiationStatus } from '@/lib/types'
+import { NegotiationSheet } from '@/components/renewals/NegotiationSheet'
+import { GenericDocument } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { cn } from '@/lib/utils'
 
 export default function Renewals() {
   const { tenants, renewTenantContract } = useTenantStore()
@@ -60,25 +51,36 @@ export default function Renewals() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedOwner, setSelectedOwner] = useState<string>('all')
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [sheetOpen, setSheetOpen] = useState(false)
   const [selectedTenantId, setSelectedTenantId] = useState<string | null>(null)
 
-  // Filter tenants with active leases or recently renewed
-  const activeTenants = tenants.filter(
-    (t) => t.status === 'active' && t.leaseEnd,
+  // Filter tenants active or recently renewed
+  const relevantTenants = tenants.filter(
+    (t) => t.status === 'active' || t.negotiationStatus === 'closed',
   )
 
-  const renewalData = activeTenants
+  const renewalData = relevantTenants
     .map((t) => {
-      const daysLeft = differenceInDays(new Date(t.leaseEnd!), new Date())
+      let daysLeft = 0
+      try {
+        if (t.leaseEnd) {
+          daysLeft = differenceInDays(new Date(t.leaseEnd), new Date())
+        }
+      } catch (e) {
+        console.error('Invalid date', e)
+      }
+
       const property = properties.find((p) => p.id === t.propertyId)
       const owner = owners.find((o) => o.id === property?.ownerId)
 
       let status: 'critical' | 'upcoming' | 'safe' | 'renewed' = 'safe'
-      if (daysLeft < 30) status = 'critical'
-      else if (daysLeft < 90) status = 'upcoming'
 
-      // Simple logic for 'renewed' - if daysLeft > 180 and was recently updated (mock)
-      if (daysLeft > 180) status = 'renewed'
+      if (t.negotiationStatus === 'closed') {
+        status = 'renewed'
+      } else {
+        if (daysLeft < 30) status = 'critical'
+        else if (daysLeft < 90) status = 'upcoming'
+      }
 
       return {
         tenant: t,
@@ -121,6 +123,11 @@ export default function Renewals() {
     setDialogOpen(true)
   }
 
+  const handleOpenSheet = (tenantId: string) => {
+    setSelectedTenantId(tenantId)
+    setSheetOpen(true)
+  }
+
   const handleCloseNegotiation = (data: {
     newValue: number
     newStart: string
@@ -128,7 +135,6 @@ export default function Renewals() {
     contractUrl: string
   }) => {
     if (selectedTenantId) {
-      // Create document object
       const contractDoc: GenericDocument = {
         id: `contract-${Date.now()}`,
         name: 'Renovação de Contrato.pdf',
@@ -154,42 +160,50 @@ export default function Renewals() {
     ? tenants.find((t) => t.id === selectedTenantId)?.rentValue || 0
     : 0
 
-  // Count metrics for cards
-  const criticalCount = renewalData.filter(
-    (d) => d.status === 'critical',
-  ).length
-  const upcomingCount = renewalData.filter(
-    (d) => d.status === 'upcoming',
-  ).length
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'negotiating':
         return (
-          <Badge variant="outline" className="bg-yellow-50">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
             Em Negociação
           </Badge>
         )
       case 'owner_contacted':
         return (
-          <Badge variant="outline" className="bg-blue-50">
+          <Badge variant="outline" className="bg-blue-50 text-blue-700">
             Proprietário Contatado
           </Badge>
         )
       case 'tenant_contacted':
         return (
-          <Badge variant="outline" className="bg-purple-50">
+          <Badge variant="outline" className="bg-purple-50 text-purple-700">
             Inquilino Contatado
           </Badge>
         )
       case 'vacating':
-        return <Badge variant="destructive">Desocupando</Badge>
+        return <Badge variant="destructive">Inquilino vai desocupar</Badge>
       case 'closed':
         return <Badge className="bg-green-600">Fechado</Badge>
       default:
         return <Badge variant="secondary">Pendente</Badge>
     }
   }
+
+  // Count metrics based on the full mapped data (ignoring filters for counts)
+  const fullData = relevantTenants.map((t) => {
+    let daysLeft = 0
+    if (t.leaseEnd)
+      daysLeft = differenceInDays(new Date(t.leaseEnd), new Date())
+    let status = 'safe'
+    if (t.negotiationStatus === 'closed') status = 'renewed'
+    else if (daysLeft < 30) status = 'critical'
+    else if (daysLeft < 90) status = 'upcoming'
+    return { status }
+  })
+
+  const criticalCount = fullData.filter((d) => d.status === 'critical').length
+  const upcomingCount = fullData.filter((d) => d.status === 'upcoming').length
+  const renewedCount = fullData.filter((d) => d.status === 'renewed').length
 
   return (
     <div className="flex flex-col gap-6">
@@ -200,54 +214,64 @@ export default function Renewals() {
         <p className="text-muted-foreground">{t('renewals.subtitle')}</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card
-          className="bg-red-50 border-red-100 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => setFilterStatus('critical')}
+      <div className="flex flex-wrap gap-4 items-center">
+        <Button
+          variant={filterStatus === 'critical' ? 'default' : 'outline'}
+          className={cn(
+            'gap-2',
+            filterStatus === 'critical' && 'bg-red-600 hover:bg-red-700',
+          )}
+          onClick={() =>
+            setFilterStatus(filterStatus === 'critical' ? 'all' : 'critical')
+          }
         >
-          <CardHeader className="pb-2">
-            <CardTitle className="text-red-700 flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5" /> {t('renewals.critical')} (
-              &lt; 30 dias)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-red-800">
-              {criticalCount}
-            </div>
-          </CardContent>
-        </Card>
-        <Card
-          className="bg-orange-50 border-orange-100 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => setFilterStatus('upcoming')}
+          Menos de 30
+          <Badge
+            variant="secondary"
+            className="ml-1 bg-white/20 text-current hover:bg-white/30"
+          >
+            {criticalCount}
+          </Badge>
+        </Button>
+
+        <Button
+          variant={filterStatus === 'upcoming' ? 'default' : 'outline'}
+          className={cn(
+            'gap-2',
+            filterStatus === 'upcoming' &&
+              'bg-orange-500 hover:bg-orange-600 text-white',
+          )}
+          onClick={() =>
+            setFilterStatus(filterStatus === 'upcoming' ? 'all' : 'upcoming')
+          }
         >
-          <CardHeader className="pb-2">
-            <CardTitle className="text-orange-700 flex items-center gap-2">
-              <Clock className="h-5 w-5" /> {t('renewals.upcoming')} (30-90
-              dias)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-orange-800">
-              {upcomingCount}
-            </div>
-          </CardContent>
-        </Card>
-        <Card
-          className="bg-green-50 border-green-100 cursor-pointer hover:shadow-md"
-          onClick={() => setFilterStatus('renewed')}
+          Menos de 90
+          <Badge
+            variant="secondary"
+            className="ml-1 bg-white/20 text-current hover:bg-white/30"
+          >
+            {upcomingCount}
+          </Badge>
+        </Button>
+
+        <Button
+          variant={filterStatus === 'renewed' ? 'default' : 'outline'}
+          className={cn(
+            'gap-2',
+            filterStatus === 'renewed' && 'bg-green-600 hover:bg-green-700',
+          )}
+          onClick={() =>
+            setFilterStatus(filterStatus === 'renewed' ? 'all' : 'renewed')
+          }
         >
-          <CardHeader className="pb-2">
-            <CardTitle className="text-green-700 flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5" /> Renovados
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-green-800">
-              {activeTenants.length - criticalCount - upcomingCount}
-            </div>
-          </CardContent>
-        </Card>
+          Renovar
+          <Badge
+            variant="secondary"
+            className="ml-1 bg-white/20 text-current hover:bg-white/30"
+          >
+            {renewedCount}
+          </Badge>
+        </Button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 items-center bg-card p-4 rounded-lg border shadow-sm">
@@ -260,20 +284,6 @@ export default function Renewals() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Select
-          value={filterStatus}
-          onValueChange={(v: any) => setFilterStatus(v)}
-        >
-          <SelectTrigger className="w-full md:w-[200px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('common.all')}</SelectItem>
-            <SelectItem value="critical">{t('renewals.critical')}</SelectItem>
-            <SelectItem value="upcoming">{t('renewals.upcoming')}</SelectItem>
-            <SelectItem value="renewed">Renovados</SelectItem>
-          </SelectContent>
-        </Select>
         <Select value={selectedOwner} onValueChange={setSelectedOwner}>
           <SelectTrigger className="w-full md:w-[200px]">
             <SelectValue placeholder={t('common.owners')} />
@@ -309,7 +319,7 @@ export default function Renewals() {
               {renewalData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8">
-                    Nenhuma renovação pendente.
+                    Nenhuma renovação correspondente aos filtros.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -356,80 +366,50 @@ export default function Renewals() {
                                 : 'font-medium'
                             }
                           >
-                            {format(new Date(tenant.leaseEnd!), 'dd/MM/yyyy')}
+                            {tenant.leaseEnd
+                              ? format(new Date(tenant.leaseEnd), 'dd/MM/yyyy')
+                              : 'N/A'}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            {daysLeft > 0
-                              ? `${daysLeft} dias restantes`
-                              : 'Vencido'}
+                            {status === 'renewed'
+                              ? 'Renovado'
+                              : daysLeft > 0
+                                ? `${daysLeft} dias restantes`
+                                : 'Vencido'}
                           </span>
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                title="Logs de Negociação"
-                              >
-                                <History className="h-4 w-4" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>
-                                  Histórico de Negociação
-                                </DialogTitle>
-                              </DialogHeader>
-                              <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-                                {tenant.negotiationLogs &&
-                                tenant.negotiationLogs.length > 0 ? (
-                                  tenant.negotiationLogs.map((log) => (
-                                    <div key={log.id} className="mb-4 text-sm">
-                                      <div className="flex justify-between font-semibold">
-                                        <span>{log.action}</span>
-                                        <span className="text-xs text-muted-foreground">
-                                          {format(
-                                            new Date(log.date),
-                                            'dd/MM/yyyy HH:mm',
-                                          )}
-                                        </span>
-                                      </div>
-                                      <p className="text-muted-foreground">
-                                        {log.note}
-                                      </p>
-                                      <span className="text-xs italic">
-                                        Por: {log.user}
-                                      </span>
-                                    </div>
-                                  ))
-                                ) : (
-                                  <p className="text-muted-foreground text-center">
-                                    Nenhum registro.
-                                  </p>
-                                )}
-                              </ScrollArea>
-                            </DialogContent>
-                          </Dialog>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleOpenSheet(tenant.id)}
+                            title="Detalhes da Negociação"
+                          >
+                            <ClipboardList className="h-4 w-4" />
+                          </Button>
+
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleStartNegotiation(tenant.id)}
                             title={t('renewals.negotiate')}
                           >
-                            <MessageSquare className="h-4 w-4 mr-2" />{' '}
-                            {t('renewals.negotiate')}
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                            Chat
                           </Button>
-                          <Button
-                            size="sm"
-                            className="bg-trust-blue"
-                            onClick={() => handleOpenCloseDialog(tenant.id)}
-                            title={t('renewals.close_negotiation')}
-                          >
-                            <FileText className="h-4 w-4 mr-2" /> Fechar
-                          </Button>
+
+                          {negotiationStatus !== 'closed' && (
+                            <Button
+                              size="sm"
+                              className="bg-trust-blue"
+                              onClick={() => handleOpenCloseDialog(tenant.id)}
+                              title={t('renewals.close_negotiation')}
+                            >
+                              <FileText className="h-4 w-4 mr-2" /> Fechar
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -446,6 +426,12 @@ export default function Renewals() {
         onOpenChange={setDialogOpen}
         onConfirm={handleCloseNegotiation}
         currentValue={currentTenantValue}
+      />
+
+      <NegotiationSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        tenantId={selectedTenantId}
       />
     </div>
   )

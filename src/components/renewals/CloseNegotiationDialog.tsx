@@ -100,6 +100,7 @@ export function CloseNegotiationDialog({
               value={contractUrl}
               onChange={setContractUrl}
               label="Upload PDF/Doc"
+              accept=".pdf,.doc,.docx"
             />
           </div>
         </div>
