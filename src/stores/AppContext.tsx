@@ -433,7 +433,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const contact = allUsers.find((u) => u.id === contactId)
         if (contact) {
           newPrev.push({
-            id: `${currentUser.id}_${contactId}_${Date.now()}`,
+            id: `${currentUser.id}_${contactId}_new`,
             ownerId: currentUser.id,
             contact: contact.name,
             contactId: contact.id,
@@ -482,7 +482,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         )
       } else {
         newPrev.push({
-          id: `${contactId}_${currentUser.id}_${Date.now()}`,
+          id: `${contactId}_${currentUser.id}_new`,
           ownerId: contactId,
           contact: currentUser.name,
           contactId: currentUser.id,
@@ -543,7 +543,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         return [
           ...prev,
           {
-            id: `${toUserId}_${systemId}_${Date.now()}`,
+            id: `${toUserId}_${systemId}_new`,
             ownerId: toUserId,
             contact: 'System Admin',
             contactId: systemId,

@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { CurrencyInput } from '@/components/ui/currency-input'
 import {
   Select,
   SelectContent,
@@ -76,6 +77,7 @@ export default function Properties() {
     agentId: '',
     condominiumId: '',
     image: '',
+    listingPrice: 0,
   })
 
   // Filter properties based on user permissions
@@ -190,6 +192,7 @@ export default function Properties() {
       ownerId: newProp.ownerId || 'owner1',
       agentId: newProp.agentId,
       fixedExpenses: [],
+      listingPrice: newProp.listingPrice || 0,
     } as Property)
     toast({
       title: t('properties.property_added'),
@@ -211,6 +214,7 @@ export default function Properties() {
       bathrooms: 2,
       guests: 6,
       image: '',
+      listingPrice: 0,
     })
   }
 
@@ -329,6 +333,18 @@ export default function Properties() {
                     />
                   </div>
                 </div>
+
+                <div className="grid gap-2">
+                  <Label>Valor do Imóvel ($)</Label>
+                  <CurrencyInput
+                    value={newProp.listingPrice}
+                    onChange={(val) =>
+                      setNewProp({ ...newProp, listingPrice: val })
+                    }
+                    placeholder="0.00"
+                  />
+                </div>
+
                 <div className="grid gap-2">
                   <Label>Imagem de Capa (Opcional na criação)</Label>
                   <Input
