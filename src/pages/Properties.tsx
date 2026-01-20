@@ -44,7 +44,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { AddressInput, AddressData } from '@/components/ui/address-input'
+// removed AddressInput import per requirement
 
 export default function Properties() {
   const { properties, addProperty, deleteProperty } = usePropertyStore()
@@ -66,6 +66,7 @@ export default function Properties() {
     state: '',
     zipCode: '',
     neighborhood: '',
+    additionalInfo: '', // Added field
     country: 'USA',
     type: 'House',
     profileType: 'short_term',
@@ -75,7 +76,7 @@ export default function Properties() {
     ownerId: '',
     agentId: '',
     condominiumId: '',
-    image: '', // Registration Fix: Initialize empty
+    image: '',
   })
 
   // Filter properties based on user permissions
@@ -119,19 +120,6 @@ export default function Properties() {
     }
   }
 
-  const handleAddressSelect = (addr: AddressData) => {
-    setNewProp((prev) => ({
-      ...prev,
-      address: addr.street,
-      city: addr.city,
-      state: addr.state,
-      zipCode: addr.zipCode,
-      country: addr.country,
-      community: addr.community || prev.community,
-      neighborhood: addr.neighborhood,
-    }))
-  }
-
   const handleAddProperty = () => {
     // Strict Validation
     if (!newProp.name?.trim()) {
@@ -150,14 +138,19 @@ export default function Properties() {
       })
       return
     }
-    if (
-      !newProp.city?.trim() ||
-      !newProp.state?.trim() ||
-      !newProp.zipCode?.trim()
-    ) {
+    // Check mandatory Zip Code
+    if (!newProp.zipCode?.trim()) {
       toast({
         title: 'Erro de Validação',
-        description: 'Endereço incompleto (Cidade, Estado ou CEP ausente).',
+        description: 'O CEP/Zip Code é obrigatório.',
+        variant: 'destructive',
+      })
+      return
+    }
+    if (!newProp.city?.trim() || !newProp.state?.trim()) {
+      toast({
+        title: 'Erro de Validação',
+        description: 'Cidade e Estado são obrigatórios.',
         variant: 'destructive',
       })
       return
@@ -173,6 +166,7 @@ export default function Properties() {
       city: newProp.city || '',
       state: newProp.state || '',
       zipCode: newProp.zipCode || '',
+      additionalInfo: newProp.additionalInfo || '',
       country: newProp.country || '',
       neighborhood: newProp.neighborhood || '',
       type: newProp.type || 'House',
@@ -182,7 +176,7 @@ export default function Properties() {
         : newProp.community || 'Independent',
       condominiumId: newProp.condominiumId,
       status: 'available',
-      image: newProp.image || 'https://img.usecurling.com/p/400/300?q=house', // Default fallback only at creation if user didn't pick, though instructions say "remain empty". I'll respect instruction strictly but allow fallback if app breaks without image. For now, empty string is valid in type but might break <img src>. I'll use a placeholder if empty for rendering, but store empty.
+      image: newProp.image || 'https://img.usecurling.com/p/400/300?q=house',
       gallery: [],
       bedrooms: newProp.bedrooms || 0,
       bathrooms: newProp.bathrooms || 0,
@@ -210,6 +204,7 @@ export default function Properties() {
       state: '',
       zipCode: '',
       neighborhood: '',
+      additionalInfo: '',
       country: 'USA',
       type: 'House',
       profileType: 'short_term',
@@ -271,13 +266,7 @@ export default function Properties() {
                   />
                 </div>
 
-                <div className="grid gap-2">
-                  <Label>
-                    Buscar Endereço (Smart){' '}
-                    <span className="text-red-500">*</span>
-                  </Label>
-                  <AddressInput onAddressSelect={handleAddressSelect} />
-                </div>
+                {/* Removed AddressInput search button per user story */}
 
                 <div className="grid gap-2">
                   <Label>
@@ -289,10 +278,38 @@ export default function Properties() {
                     onChange={(e) =>
                       setNewProp({ ...newProp, address: e.target.value })
                     }
-                    placeholder="Ex: 123 Main St"
+                    placeholder="Rua, Número"
                   />
                 </div>
-                {/* Simplified form for brevity, assuming modal scrolls */}
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="grid gap-1">
+                    <Label className="text-xs">
+                      CEP/Zip Code <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      value={newProp.zipCode}
+                      onChange={(e) =>
+                        setNewProp({ ...newProp, zipCode: e.target.value })
+                      }
+                      placeholder="00000"
+                    />
+                  </div>
+                  <div className="grid gap-1">
+                    <Label className="text-xs">Complemento</Label>
+                    <Input
+                      value={newProp.additionalInfo}
+                      onChange={(e) =>
+                        setNewProp({
+                          ...newProp,
+                          additionalInfo: e.target.value,
+                        })
+                      }
+                      placeholder="Apto/Bloco"
+                    />
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-2">
                   <div className="grid gap-1">
                     <Label className="text-xs">Cidade</Label>

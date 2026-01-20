@@ -25,7 +25,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, Edit2 } from 'lucide-react'
 import { useState } from 'react'
 import {
   Dialog,
@@ -34,6 +34,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
+  DialogFooter,
 } from '@/components/ui/dialog'
 import {
   AlertDialog,
@@ -67,7 +68,11 @@ export function PropertyFinancials({
 }: PropertyFinancialsProps) {
   const { toast } = useToast()
   const [openExpense, setOpenExpense] = useState(false)
-  const [newExpense, setNewExpense] = useState<Partial<FixedExpense>>({
+  const [confirmActionOpen, setConfirmActionOpen] = useState(false)
+  const [actionType, setActionType] = useState<'add' | 'edit'>('add')
+
+  // State for expense being edited or created
+  const [currentExpense, setCurrentExpense] = useState<Partial<FixedExpense>>({
     name: '',
     amount: 0,
     dueDay: 1,
@@ -75,31 +80,63 @@ export function PropertyFinancials({
     provider: '',
     accountNumber: '',
   })
-  const { ledgerEntries, addLedgerEntry } = useFinancialStore()
 
+  const { ledgerEntries, addLedgerEntry } = useFinancialStore()
   const propertyEntries = ledgerEntries.filter((e) => e.propertyId === data.id)
 
-  const handleAddExpense = () => {
-    if (newExpense.name && newExpense.amount) {
-      const expense: FixedExpense = {
-        id: `fe-${Date.now()}`,
-        name: newExpense.name,
-        amount: Number(newExpense.amount),
-        dueDay: Number(newExpense.dueDay),
-        frequency: newExpense.frequency as 'monthly' | 'yearly',
-        provider: newExpense.provider,
-        accountNumber: newExpense.accountNumber,
-      }
+  const handleOpenAdd = () => {
+    setCurrentExpense({
+      name: '',
+      amount: 0,
+      dueDay: 1,
+      frequency: 'monthly',
+      provider: '',
+      accountNumber: '',
+    })
+    setActionType('add')
+    setOpenExpense(true)
+  }
 
-      // Add to property
-      onChange('fixedExpenses', [...(data.fixedExpenses || []), expense])
+  const handleOpenEdit = (expense: FixedExpense) => {
+    setCurrentExpense({ ...expense })
+    setActionType('edit')
+    setOpenExpense(true)
+  }
 
+  const handleSubmitExpense = () => {
+    // Basic validation
+    if (!currentExpense.name || !currentExpense.amount) {
+      toast({
+        title: 'Erro',
+        description: 'Nome e Valor são obrigatórios.',
+        variant: 'destructive',
+      })
+      return
+    }
+    setConfirmActionOpen(true)
+  }
+
+  const handleConfirmSubmit = () => {
+    const expense: FixedExpense = {
+      id: currentExpense.id || `fe-${Date.now()}`,
+      name: currentExpense.name!,
+      amount: Number(currentExpense.amount),
+      dueDay: Number(currentExpense.dueDay),
+      frequency: currentExpense.frequency as 'monthly' | 'yearly',
+      provider: currentExpense.provider,
+      accountNumber: currentExpense.accountNumber,
+    }
+
+    let updatedExpenses = [...(data.fixedExpenses || [])]
+
+    if (actionType === 'add') {
+      updatedExpenses.push(expense)
       // Add to Ledger Immediately (Current Month)
       const entry: LedgerEntry = {
         id: `auto-fe-${expense.id}-initial`,
         propertyId: data.id,
         date: new Date().toISOString(),
-        dueDate: new Date().toISOString(), // Simplified for demo
+        dueDate: new Date().toISOString(),
         type: 'expense',
         category: expense.name,
         amount: expense.amount,
@@ -108,21 +145,24 @@ export function PropertyFinancials({
         status: 'pending',
       }
       addLedgerEntry(entry)
-
-      setOpenExpense(false)
-      setNewExpense({
-        name: '',
-        amount: 0,
-        dueDay: 1,
-        frequency: 'monthly',
-        provider: '',
-        accountNumber: '',
-      })
       toast({
         title: 'Despesa Adicionada',
         description: 'Despesa fixa cadastrada e lançada no financeiro.',
       })
+    } else {
+      // Edit
+      updatedExpenses = updatedExpenses.map((e) =>
+        e.id === expense.id ? expense : e,
+      )
+      toast({
+        title: 'Despesa Atualizada',
+        description: 'Informações atualizadas com sucesso.',
+      })
     }
+
+    onChange('fixedExpenses', updatedExpenses)
+    setConfirmActionOpen(false)
+    setOpenExpense(false)
   }
 
   const handleRemoveExpense = (id: string) => {
@@ -130,7 +170,10 @@ export function PropertyFinancials({
       'fixedExpenses',
       (data.fixedExpenses || []).filter((e) => e.id !== id),
     )
-    toast({ title: 'Despesa Removida', description: 'Registro excluído.' })
+    toast({
+      title: 'Despesa Removida',
+      description: 'Registro excluído permanentemente.',
+    })
   }
 
   return (
@@ -219,122 +262,157 @@ export function PropertyFinancials({
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Despesas Fixas</CardTitle>
           {canEdit && (
-            <Dialog open={openExpense} onOpenChange={setOpenExpense}>
-              <DialogTrigger asChild>
-                <Button size="sm" variant="outline">
-                  <Plus className="h-4 w-4 mr-2" /> Adicionar Despesa
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Nova Despesa Fixa</DialogTitle>
-                  <DialogDescription>
-                    Configure uma despesa que se repete periodicamente.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label>Nome da Despesa</Label>
-                      <Input
-                        value={newExpense.name}
-                        onChange={(e) =>
-                          setNewExpense({ ...newExpense, name: e.target.value })
-                        }
-                        placeholder="Ex: Internet, Luz, Água"
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Provedor / Empresa</Label>
-                      <Input
-                        value={newExpense.provider}
-                        onChange={(e) =>
-                          setNewExpense({
-                            ...newExpense,
-                            provider: e.target.value,
-                          })
-                        }
-                        placeholder="Ex: AT&T, Duke Energy"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label>Número da Conta / Instalação</Label>
-                      <Input
-                        value={newExpense.accountNumber}
-                        onChange={(e) =>
-                          setNewExpense({
-                            ...newExpense,
-                            accountNumber: e.target.value,
-                          })
-                        }
-                        placeholder="Ex: 000-123-456"
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Valor ($)</Label>
-                      <CurrencyInput
-                        value={newExpense.amount}
-                        onChange={(val) =>
-                          setNewExpense({
-                            ...newExpense,
-                            amount: val,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label>Dia Vencimento</Label>
-                      <Input
-                        type="number"
-                        min={1}
-                        max={31}
-                        value={newExpense.dueDay}
-                        onChange={(e) =>
-                          setNewExpense({
-                            ...newExpense,
-                            dueDay: Number(e.target.value),
-                          })
-                        }
-                        className="no-spinner"
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Frequência</Label>
-                      <Select
-                        value={newExpense.frequency}
-                        onValueChange={(v: any) =>
-                          setNewExpense({ ...newExpense, frequency: v })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="monthly">Mensal</SelectItem>
-                          <SelectItem value="yearly">Anual</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <Button onClick={handleAddExpense} className="bg-trust-blue">
-                    Adicionar e Gerar Lançamento
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button size="sm" variant="outline" onClick={handleOpenAdd}>
+              <Plus className="h-4 w-4 mr-2" /> Adicionar Despesa
+            </Button>
           )}
         </CardHeader>
         <CardContent>
+          {/* Expense Dialog */}
+          <Dialog open={openExpense} onOpenChange={setOpenExpense}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>
+                  {actionType === 'add'
+                    ? 'Nova Despesa Fixa'
+                    : 'Editar Despesa'}
+                </DialogTitle>
+                <DialogDescription>
+                  Configure uma despesa que se repete periodicamente.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Nome da Despesa</Label>
+                    <Input
+                      value={currentExpense.name}
+                      onChange={(e) =>
+                        setCurrentExpense({
+                          ...currentExpense,
+                          name: e.target.value,
+                        })
+                      }
+                      placeholder="Ex: Internet, Luz, Água"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Fornecedor (Empresa)</Label>
+                    <Input
+                      value={currentExpense.provider}
+                      onChange={(e) =>
+                        setCurrentExpense({
+                          ...currentExpense,
+                          provider: e.target.value,
+                        })
+                      }
+                      placeholder="Ex: AT&T, Duke Energy"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Número da Conta / Registro</Label>
+                    <Input
+                      value={currentExpense.accountNumber}
+                      onChange={(e) =>
+                        setCurrentExpense({
+                          ...currentExpense,
+                          accountNumber: e.target.value,
+                        })
+                      }
+                      placeholder="Ex: 000-123-456"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Valor ($)</Label>
+                    <CurrencyInput
+                      value={currentExpense.amount}
+                      onChange={(val) =>
+                        setCurrentExpense({
+                          ...currentExpense,
+                          amount: val,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Dia Vencimento</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={31}
+                      value={currentExpense.dueDay}
+                      onChange={(e) =>
+                        setCurrentExpense({
+                          ...currentExpense,
+                          dueDay: Number(e.target.value),
+                        })
+                      }
+                      className="no-spinner"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Frequência</Label>
+                    <Select
+                      value={currentExpense.frequency}
+                      onValueChange={(v: any) =>
+                        setCurrentExpense({ ...currentExpense, frequency: v })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="monthly">Mensal</SelectItem>
+                        <SelectItem value="yearly">Anual</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setOpenExpense(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleSubmitExpense} className="bg-trust-blue">
+                  {actionType === 'add' ? 'Adicionar' : 'Salvar'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Confirmation Alert Dialog */}
+          <AlertDialog
+            open={confirmActionOpen}
+            onOpenChange={setConfirmActionOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirmar Ação</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {actionType === 'add'
+                    ? 'Isso criará uma nova despesa fixa e gerará um lançamento financeiro para o mês atual. Deseja continuar?'
+                    : 'Tem certeza que deseja alterar os dados desta despesa fixa? Isso afetará lançamentos futuros.'}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleConfirmSubmit}>
+                  Confirmar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Despesa</TableHead>
-                <TableHead>Provedor</TableHead>
-                <TableHead>Conta</TableHead>
+                <TableHead>Fornecedor</TableHead>
+                <TableHead>Conta/Reg.</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>Dia Venc.</TableHead>
                 <TableHead>Freq.</TableHead>
@@ -363,7 +441,14 @@ export function PropertyFinancials({
                     {expense.frequency}
                   </TableCell>
                   {canEdit && (
-                    <TableCell className="text-right">
+                    <TableCell className="text-right flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleOpenEdit(expense)}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button

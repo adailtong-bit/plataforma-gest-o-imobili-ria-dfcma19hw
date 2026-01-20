@@ -41,22 +41,9 @@ export function PropertyContent({
     }
   }
 
-  // Fallback values for mirroring content if empty
-  const getDescription = (lang: 'pt' | 'en' | 'es') => {
-    const val = data.description?.[lang]
-    if (val) return val
-    // Mirror from PT if available and current is empty
-    if (lang !== 'pt' && data.description?.pt) return data.description.pt
-    return ''
-  }
-
-  const getHoaRules = (lang: 'pt' | 'en' | 'es') => {
-    const val = data.hoaRules?.[lang]
-    if (val) return val
-    // Mirror from PT if available
-    if (lang !== 'pt' && data.hoaRules?.pt) return data.hoaRules.pt
-    return ''
-  }
+  // Helper to safely access nested properties
+  const getDesc = (lang: 'pt' | 'en' | 'es') => data.description?.[lang] || ''
+  const getRules = (lang: 'pt' | 'en' | 'es') => data.hoaRules?.[lang] || ''
 
   return (
     <div className="space-y-6">
@@ -75,7 +62,7 @@ export function PropertyContent({
               <div className="grid gap-2 mt-2">
                 <Label>Descrição (PT)</Label>
                 <Textarea
-                  value={data.description?.pt || ''}
+                  value={getDesc('pt')}
                   onChange={(e) =>
                     onNestedChange('description', 'pt', e.target.value)
                   }
@@ -89,7 +76,7 @@ export function PropertyContent({
               <div className="grid gap-2 mt-2">
                 <div className="flex justify-between items-center">
                   <Label>Description (EN)</Label>
-                  {canEdit && !data.description?.en && (
+                  {canEdit && !getDesc('en') && getDesc('pt') && (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -100,14 +87,13 @@ export function PropertyContent({
                   )}
                 </div>
                 <Textarea
-                  value={getDescription('en')}
+                  value={getDesc('en')}
                   onChange={(e) =>
                     onNestedChange('description', 'en', e.target.value)
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="Full description in English (Mirrored from PT if empty)..."
-                  className={!data.description?.en ? 'opacity-70' : ''}
+                  placeholder="Full description in English..."
                 />
               </div>
             </TabsContent>
@@ -115,7 +101,7 @@ export function PropertyContent({
               <div className="grid gap-2 mt-2">
                 <div className="flex justify-between items-center">
                   <Label>Descripción (ES)</Label>
-                  {canEdit && !data.description?.es && (
+                  {canEdit && !getDesc('es') && getDesc('pt') && (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -126,14 +112,13 @@ export function PropertyContent({
                   )}
                 </div>
                 <Textarea
-                  value={getDescription('es')}
+                  value={getDesc('es')}
                   onChange={(e) =>
                     onNestedChange('description', 'es', e.target.value)
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="Descripción completa en Español (Mirrored from PT if empty)..."
-                  className={!data.description?.es ? 'opacity-70' : ''}
+                  placeholder="Descripción completa en Español..."
                 />
               </div>
             </TabsContent>
@@ -156,7 +141,7 @@ export function PropertyContent({
               <div className="grid gap-2 mt-2">
                 <Label>Regras (PT)</Label>
                 <Textarea
-                  value={data.hoaRules?.pt || ''}
+                  value={getRules('pt')}
                   onChange={(e) =>
                     onNestedChange('hoaRules', 'pt', e.target.value)
                   }
@@ -170,7 +155,7 @@ export function PropertyContent({
               <div className="grid gap-2 mt-2">
                 <div className="flex justify-between items-center">
                   <Label>Rules (EN)</Label>
-                  {canEdit && !data.hoaRules?.en && (
+                  {canEdit && !getRules('en') && getRules('pt') && (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -181,14 +166,13 @@ export function PropertyContent({
                   )}
                 </div>
                 <Textarea
-                  value={getHoaRules('en')}
+                  value={getRules('en')}
                   onChange={(e) =>
                     onNestedChange('hoaRules', 'en', e.target.value)
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="HOA Rules (Mirrored from PT if empty)..."
-                  className={!data.hoaRules?.en ? 'opacity-70' : ''}
+                  placeholder="HOA Rules..."
                 />
               </div>
             </TabsContent>
@@ -196,7 +180,7 @@ export function PropertyContent({
               <div className="grid gap-2 mt-2">
                 <div className="flex justify-between items-center">
                   <Label>Reglas (ES)</Label>
-                  {canEdit && !data.hoaRules?.es && (
+                  {canEdit && !getRules('es') && getRules('pt') && (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -207,14 +191,13 @@ export function PropertyContent({
                   )}
                 </div>
                 <Textarea
-                  value={getHoaRules('es')}
+                  value={getRules('es')}
                   onChange={(e) =>
                     onNestedChange('hoaRules', 'es', e.target.value)
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="Reglas del condominio (Mirrored from PT if empty)..."
-                  className={!data.hoaRules?.es ? 'opacity-70' : ''}
+                  placeholder="Reglas del condominio..."
                 />
               </div>
             </TabsContent>

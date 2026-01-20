@@ -24,8 +24,6 @@ import {
   Briefcase,
   UserCheck,
   Building2,
-  LayoutDashboard,
-  Tag,
   LayoutTemplate,
   TrendingUp,
   Workflow,
@@ -46,7 +44,7 @@ export function AppSidebar() {
   const { currentUser } = useAuthStore()
   const { setOpenMobile, isMobile } = useSidebar()
 
-  const handleMobileClick = () => {
+  const handleLinkClick = () => {
     if (isMobile) {
       setOpenMobile(false)
     }
@@ -120,12 +118,6 @@ export function AppSidebar() {
       resource: 'workflows',
     },
     {
-      title: t('common.service_pricing'),
-      url: '/service-pricing',
-      icon: Tag,
-      resource: 'partners',
-    },
-    {
       title: t('common.financial'),
       url: '/financial',
       icon: DollarSign,
@@ -182,8 +174,8 @@ export function AppSidebar() {
                       asChild
                       isActive={isActive('/portal/tenant')}
                     >
-                      <Link to="/portal/tenant" onClick={handleMobileClick}>
-                        <LayoutDashboard />
+                      <Link to="/portal/tenant" onClick={handleLinkClick}>
+                        <LayoutTemplate />
                         <span>Portal Inquilino</span>
                       </Link>
                     </SidebarMenuButton>
@@ -195,8 +187,8 @@ export function AppSidebar() {
                       asChild
                       isActive={isActive('/portal/owner')}
                     >
-                      <Link to="/portal/owner" onClick={handleMobileClick}>
-                        <LayoutDashboard />
+                      <Link to="/portal/owner" onClick={handleLinkClick}>
+                        <LayoutTemplate />
                         <span>Portal Proprietário</span>
                       </Link>
                     </SidebarMenuButton>
@@ -208,8 +200,8 @@ export function AppSidebar() {
                       asChild
                       isActive={isActive('/portal/partner')}
                     >
-                      <Link to="/portal/partner" onClick={handleMobileClick}>
-                        <LayoutDashboard />
+                      <Link to="/portal/partner" onClick={handleLinkClick}>
+                        <LayoutTemplate />
                         <span>Portal Parceiro</span>
                       </Link>
                     </SidebarMenuButton>
@@ -232,7 +224,7 @@ export function AppSidebar() {
                       isActive={isActive(item.url)}
                       tooltip={item.title}
                     >
-                      <Link to={item.url} onClick={handleMobileClick}>
+                      <Link to={item.url} onClick={handleLinkClick}>
                         <item.icon />
                         <span>{item.title}</span>
                       </Link>
@@ -255,7 +247,7 @@ export function AppSidebar() {
                     isActive={isActive('/admin/publicity')}
                     tooltip="Publicity Admin"
                   >
-                    <Link to="/admin/publicity" onClick={handleMobileClick}>
+                    <Link to="/admin/publicity" onClick={handleLinkClick}>
                       <Megaphone />
                       <span>Publicity Admin</span>
                     </Link>
@@ -269,7 +261,7 @@ export function AppSidebar() {
                     isActive={isActive('/users')}
                     tooltip="Usuários"
                   >
-                    <Link to="/users" onClick={handleMobileClick}>
+                    <Link to="/users" onClick={handleLinkClick}>
                       <Users />
                       <span>Usuários</span>
                     </Link>
@@ -283,7 +275,7 @@ export function AppSidebar() {
                     isActive={isActive('/settings')}
                     tooltip={t('common.settings')}
                   >
-                    <Link to="/settings" onClick={handleMobileClick}>
+                    <Link to="/settings" onClick={handleLinkClick}>
                       <Settings />
                       <span>{t('common.settings')}</span>
                     </Link>

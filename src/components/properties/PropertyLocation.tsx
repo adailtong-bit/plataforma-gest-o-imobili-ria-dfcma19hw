@@ -27,6 +27,7 @@ export function PropertyLocation({
   // Construct a full address string for the map query to be more precise
   const fullAddress = [
     data.address,
+    data.additionalInfo,
     data.neighborhood,
     data.city,
     data.state,
@@ -53,7 +54,7 @@ export function PropertyLocation({
               value={data.address}
               onChange={(e) => onChange('address', e.target.value)}
               disabled={!canEdit}
-              placeholder="Rua, Número, Apto"
+              placeholder="Rua, Número"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -71,12 +72,12 @@ export function PropertyLocation({
               />
             </div>
             <div className="grid gap-2">
-              <Label>Informações Adicionais</Label>
+              <Label>Complemento (Info Adicional)</Label>
               <Input
                 value={data.additionalInfo || ''}
                 onChange={(e) => onChange('additionalInfo', e.target.value)}
                 disabled={!canEdit}
-                placeholder="Bloco, Referência..."
+                placeholder="Apto, Bloco, Referência"
               />
             </div>
           </div>
@@ -155,7 +156,7 @@ export function PropertyLocation({
         </CardHeader>
         <CardContent>
           <div className="w-full aspect-square bg-muted rounded-lg flex flex-col items-center justify-center relative overflow-hidden border">
-            {data.address ? (
+            {data.address && data.city ? (
               <iframe
                 title="Property Location"
                 width="100%"
@@ -166,10 +167,11 @@ export function PropertyLocation({
                 allowFullScreen
               ></iframe>
             ) : (
-              <div className="flex flex-col items-center justify-center">
+              <div className="flex flex-col items-center justify-center text-center p-4">
                 <MapPin className="h-10 w-10 text-muted-foreground mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  Insira um endereço para visualizar o mapa.
+                  Insira o endereço completo (Rua, Cidade) para visualizar o
+                  mapa.
                 </p>
               </div>
             )}

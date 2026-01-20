@@ -97,7 +97,9 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
   }
 
   const handleStatusUpdate = (entry: LedgerEntry, status: any) => {
-    // When marking as paid, we just set paymentDate to now if not set
+    // When marking as paid, we set paymentDate to now if not set
+    // Also opens edit modal to force check details? No, simplified UX as per user story might prefer automatic.
+    // However, user story asks for "Payment Date" field.
     const paymentDate =
       status === 'cleared'
         ? entry.paymentDate || new Date().toISOString()
@@ -122,7 +124,10 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
     if (entry && url) {
       updateLedgerEntry({
         ...entry,
-        attachments: [...(entry.attachments || []), { name: 'Receipt', url }],
+        attachments: [
+          ...(entry.attachments || []),
+          { name: 'Comprovante', url },
+        ],
       })
       setOpenUpload(null)
       toast({ title: 'Comprovante anexado.' })
@@ -302,6 +307,37 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                     />
                   </div>
                 </div>
+
+                {/* Receipt Upload in Edit Mode */}
+                <div className="grid gap-2">
+                  <Label>Anexos / Comprovantes</Label>
+                  {editingEntry.attachments &&
+                    editingEntry.attachments.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {editingEntry.attachments.map((att, idx) => (
+                          <Badge key={idx} variant="secondary">
+                            {att.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  <FileUpload
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    label="Upload Comprovante"
+                    onChange={(url) => {
+                      if (url) {
+                        setEditingEntry({
+                          ...editingEntry,
+                          attachments: [
+                            ...(editingEntry.attachments || []),
+                            { name: 'Novo Comprovante', url },
+                          ],
+                        })
+                      }
+                    }}
+                  />
+                </div>
+
                 <DialogFooter>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>

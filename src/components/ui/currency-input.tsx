@@ -22,14 +22,22 @@ export function CurrencyInput({
 }: CurrencyInputProps) {
   const [displayValue, setDisplayValue] = React.useState('')
 
-  // Format value on mount or change
+  // Format value on mount or external update
   React.useEffect(() => {
     if (value !== undefined && value !== null) {
+      // Check if current input matches the numeric value to prevent cursor jump during typing if we were to format constantly
+      // But here we format only on mount/update from prop
       const formatted = new Intl.NumberFormat(locale, {
         style: 'currency',
         currency: currency,
       }).format(value)
-      setDisplayValue(formatted)
+
+      // If the parsed display value is different from the prop value, update display
+      // This allows free typing without aggressive re-formatting while typing
+      const currentNumeric = parseFloat(displayValue.replace(/[^0-9.-]/g, ''))
+      if (currentNumeric !== value || !displayValue) {
+        setDisplayValue(formatted)
+      }
     } else {
       setDisplayValue('')
     }
@@ -37,27 +45,28 @@ export function CurrencyInput({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
+    // Allow digits, dots, commas, minus
+    if (/^[0-9.,$-]*$/.test(inputValue) || inputValue === '') {
+      setDisplayValue(inputValue)
 
-    // Remove non-numeric chars except dot/comma
-    const cleanValue = inputValue.replace(/[^0-9.,]/g, '')
-
-    // This is a naive implementation to support typing "1000" -> "$ 1,000.00"
-    // For "as user types" experience, it's best to allow free typing and format on blur
-    // or use a specialized library. Here we do free typing and format only on blur to avoid cursor jumping.
-    setDisplayValue(inputValue)
+      // Try to parse for the parent
+      // Remove currency symbols and non-numeric characters except dot/comma/minus
+      // Simplified parsing logic
+      const numericString = inputValue.replace(/[^0-9.-]/g, '')
+      const parsed = parseFloat(numericString)
+      if (!isNaN(parsed)) {
+        onChange(parsed)
+      }
+    }
   }
 
   const handleBlur = () => {
-    // Parse the display value to a number
-    // Remove currency symbol and group separators, normalize decimal separator
-    const numericString = displayValue
-      .replace(/[^0-9.,-]/g, '')
-      .replace(/,/g, '') // remove thousands separator (assuming en-US logic mostly)
-
+    // On blur, format nicely
+    const numericString = displayValue.replace(/[^0-9.-]/g, '')
     const parsed = parseFloat(numericString)
+
     if (!isNaN(parsed)) {
       onChange(parsed)
-      // Re-format for display
       const formatted = new Intl.NumberFormat(locale, {
         style: 'currency',
         currency: currency,
@@ -67,12 +76,6 @@ export function CurrencyInput({
       onChange(0)
       setDisplayValue('')
     }
-  }
-
-  const handleFocus = () => {
-    // When focused, show raw number for editing if needed, or keep formatted
-    // Standard UX: keep formatted but allow editing.
-    // Simpler: select all
   }
 
   return (
