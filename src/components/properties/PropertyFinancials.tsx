@@ -25,6 +25,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog'
 
@@ -169,6 +170,10 @@ export function PropertyFinancials({
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Nova Despesa Fixa</DialogTitle>
+                  <DialogDescription>
+                    Configure uma despesa que se repete periodicamente para esta
+                    propriedade.
+                  </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">

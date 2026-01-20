@@ -14,6 +14,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -204,6 +205,10 @@ export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
                 <DialogTitle>
                   {editingId ? 'Editar' : 'Novo'} Lançamento
                 </DialogTitle>
+                <DialogDescription>
+                  Preencha os campos abaixo para registrar ou editar a transação
+                  financeira.
+                </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-2 gap-4">

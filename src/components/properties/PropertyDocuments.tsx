@@ -35,6 +35,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
@@ -139,6 +140,10 @@ export function PropertyDocuments({
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Classificar Documento</DialogTitle>
+              <DialogDescription>
+                Escolha a categoria apropriada para o documento enviado para
+                organizar a documentação.
+              </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
