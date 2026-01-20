@@ -50,7 +50,7 @@ import {
 import { PropertyLedger } from '@/components/financial/PropertyLedger'
 import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
-import { setDate, getDaysInMonth } from 'date-fns'
+import { setDate, getDaysInMonth, parseISO } from 'date-fns'
 import { FileUpload } from '@/components/ui/file-upload'
 
 interface PropertyFinancialsProps {
@@ -87,8 +87,12 @@ export function PropertyFinancials({
   const [initialPaymentDate, setInitialPaymentDate] = useState<string>('')
   const [initialReceipt, setInitialReceipt] = useState<string>('')
 
-  const { ledgerEntries, addLedgerEntry, deleteLedgerEntry } =
-    useFinancialStore()
+  const {
+    ledgerEntries,
+    addLedgerEntry,
+    updateLedgerEntry,
+    deleteLedgerEntry,
+  } = useFinancialStore()
   const propertyEntries = ledgerEntries.filter((e) => e.propertyId === data.id)
 
   const handleOpenAdd = () => {
@@ -117,8 +121,8 @@ export function PropertyFinancials({
     // Basic validation
     if (!currentExpense.name || !currentExpense.amount) {
       toast({
-        title: 'Erro',
-        description: 'Nome e Valor são obrigatórios.',
+        title: 'Erro de Validação',
+        description: 'Nome da Despesa e Valor são obrigatórios.',
         variant: 'destructive',
       })
       return
@@ -176,9 +180,32 @@ export function PropertyFinancials({
       updatedExpenses = updatedExpenses.map((e) =>
         e.id === expense.id ? expense : e,
       )
+
+      // Sync pending ledger entries for Data Consistency
+      const pendingEntries = ledgerEntries.filter(
+        (e) => e.referenceId === expense.id && e.status === 'pending',
+      )
+
+      pendingEntries.forEach((entry) => {
+        const entryDate = parseISO(entry.dueDate || entry.date)
+        const daysInMonth = getDaysInMonth(entryDate)
+        const validDay = Math.min(expense.dueDay, daysInMonth)
+        const newDueDate = setDate(entryDate, validDay)
+
+        const updatedEntry: LedgerEntry = {
+          ...entry,
+          category: expense.name,
+          amount: expense.amount,
+          description: `${expense.name} - ${expense.provider || ''} (Auto)`,
+          dueDate: newDueDate.toISOString(),
+        }
+        updateLedgerEntry(updatedEntry)
+      })
+
       toast({
         title: 'Despesa Atualizada',
-        description: 'Informações atualizadas com sucesso.',
+        description:
+          'Informações atualizadas com sucesso e sincronizadas com o financeiro.',
       })
     }
 
@@ -293,7 +320,7 @@ export function PropertyFinancials({
           {canEdit && (
             <Button
               size="sm"
-              variant="outline"
+              variant="default"
               onClick={handleOpenAdd}
               className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
@@ -331,7 +358,7 @@ export function PropertyFinancials({
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Fornecedor (Service Provider)</Label>
+                    <Label>Nome do Fornecedor</Label>
                     <Input
                       value={currentExpense.provider}
                       onChange={(e) =>
@@ -346,7 +373,7 @@ export function PropertyFinancials({
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Company Registration Number (Conta/ID)</Label>
+                    <Label>Número de Registro da Empresa/Conta</Label>
                     <Input
                       value={currentExpense.accountNumber}
                       onChange={(e) =>
@@ -373,7 +400,7 @@ export function PropertyFinancials({
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Dia Vencimento</Label>
+                    <Label>Dia de Vencimento</Label>
                     <Input
                       type="number"
                       min={1}
@@ -456,7 +483,7 @@ export function PropertyFinancials({
                 <AlertDialogDescription>
                   {actionType === 'add'
                     ? 'Isso criará uma nova despesa fixa e gerará um lançamento financeiro para o mês atual. Deseja continuar?'
-                    : 'Tem certeza que deseja alterar os dados desta despesa fixa? Isso afetará lançamentos futuros.'}
+                    : 'Tem certeza que deseja alterar os dados desta despesa fixa? Isso atualizará automaticamente os lançamentos futuros pendentes.'}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -472,8 +499,8 @@ export function PropertyFinancials({
             <TableHeader>
               <TableRow>
                 <TableHead>Despesa</TableHead>
-                <TableHead>Company Name</TableHead>
-                <TableHead>Reg. Number</TableHead>
+                <TableHead>Fornecedor</TableHead>
+                <TableHead>Nº Registro/Conta</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>Dia Venc.</TableHead>
                 <TableHead>Freq.</TableHead>
@@ -504,31 +531,14 @@ export function PropertyFinancials({
                   {canEdit && (
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <Edit2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Editar Despesa
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Deseja editar esta despesa fixa?
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleOpenEdit(expense)}
-                              >
-                                Continuar
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleOpenEdit(expense)}
+                          title="Editar"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
 
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
@@ -536,6 +546,7 @@ export function PropertyFinancials({
                               variant="ghost"
                               size="icon"
                               className="text-red-500 hover:text-red-700"
+                              title="Excluir"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
