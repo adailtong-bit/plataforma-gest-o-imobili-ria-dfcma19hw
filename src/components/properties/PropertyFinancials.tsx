@@ -8,6 +8,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { CurrencyInput } from '@/components/ui/currency-input'
 import {
   Select,
   SelectContent,
@@ -34,8 +35,20 @@ import {
   DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { PropertyLedger } from '@/components/financial/PropertyLedger'
 import useFinancialStore from '@/stores/useFinancialStore'
+import { useToast } from '@/hooks/use-toast'
 
 interface PropertyFinancialsProps {
   data: Property
@@ -52,6 +65,7 @@ export function PropertyFinancials({
   owners,
   partners,
 }: PropertyFinancialsProps) {
+  const { toast } = useToast()
   const [openExpense, setOpenExpense] = useState(false)
   const [newExpense, setNewExpense] = useState<Partial<FixedExpense>>({
     name: '',
@@ -104,6 +118,10 @@ export function PropertyFinancials({
         provider: '',
         accountNumber: '',
       })
+      toast({
+        title: 'Despesa Adicionada',
+        description: 'Despesa fixa cadastrada e lançada no financeiro.',
+      })
     }
   }
 
@@ -112,6 +130,7 @@ export function PropertyFinancials({
       'fixedExpenses',
       (data.fixedExpenses || []).filter((e) => e.id !== id),
     )
+    toast({ title: 'Despesa Removida', description: 'Registro excluído.' })
   }
 
   return (
@@ -169,10 +188,9 @@ export function PropertyFinancials({
           </div>
           <div className="grid gap-2">
             <Label>Valor HOA ($)</Label>
-            <Input
-              type="number"
+            <CurrencyInput
               value={data.hoaValue || 0}
-              onChange={(e) => onChange('hoaValue', Number(e.target.value))}
+              onChange={(val) => onChange('hoaValue', val)}
               disabled={!canEdit}
             />
           </div>
@@ -204,15 +222,14 @@ export function PropertyFinancials({
             <Dialog open={openExpense} onOpenChange={setOpenExpense}>
               <DialogTrigger asChild>
                 <Button size="sm" variant="outline">
-                  <Plus className="h-4 w-4 mr-2" /> Adicionar
+                  <Plus className="h-4 w-4 mr-2" /> Adicionar Despesa
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>Nova Despesa Fixa</DialogTitle>
                   <DialogDescription>
-                    Configure uma despesa que se repete periodicamente para esta
-                    propriedade.
+                    Configure uma despesa que se repete periodicamente.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -257,13 +274,12 @@ export function PropertyFinancials({
                     </div>
                     <div className="grid gap-2">
                       <Label>Valor ($)</Label>
-                      <Input
-                        type="number"
+                      <CurrencyInput
                         value={newExpense.amount}
-                        onChange={(e) =>
+                        onChange={(val) =>
                           setNewExpense({
                             ...newExpense,
-                            amount: Number(e.target.value),
+                            amount: val,
                           })
                         }
                       />
@@ -283,6 +299,7 @@ export function PropertyFinancials({
                             dueDay: Number(e.target.value),
                           })
                         }
+                        className="no-spinner"
                       />
                     </div>
                     <div className="grid gap-2">
@@ -347,14 +364,35 @@ export function PropertyFinancials({
                   </TableCell>
                   {canEdit && (
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-red-500 hover:text-red-700"
-                        onClick={() => handleRemoveExpense(expense.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Confirmar Exclusão
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir esta despesa fixa?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleRemoveExpense(expense.id)}
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </TableCell>
                   )}
                 </TableRow>

@@ -283,11 +283,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           (fe) => fe.id === entry.referenceId,
         )
         if (fixedExpense) {
-          // Check if next month's entry already exists to avoid duplicates (naive check)
-          const nextDueDate = addMonths(
-            new Date(entry.dueDate || new Date()),
-            1,
-          )
+          // Create next month entry based on the *current* entry due date plus 1 month
+          const currentDueDate = new Date(entry.dueDate || new Date())
+          const nextDueDate = addMonths(currentDueDate, 1)
+
+          // Check if next month's entry already exists to avoid duplicates
           const existingNext = ledgerEntries.find(
             (e) =>
               e.referenceId === entry.referenceId &&
@@ -309,7 +309,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
               referenceId: fixedExpense.id,
               status: 'pending',
             }
-            setTimeout(() => addLedgerEntry(nextEntry), 100) // Small delay
+            setTimeout(() => addLedgerEntry(nextEntry), 100) // Small delay to avoid state conflict
           }
         }
       }

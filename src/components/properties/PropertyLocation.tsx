@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { AddressInput, AddressData } from '@/components/ui/address-input'
 import { MapPin } from 'lucide-react'
 
 interface PropertyLocationProps {
@@ -25,35 +24,27 @@ export function PropertyLocation({
   canEdit,
   condominiums,
 }: PropertyLocationProps) {
-  const handleAddressSelect = (addr: AddressData) => {
-    onChange('address', addr.street)
-    onChange('city', addr.city)
-    onChange('state', addr.state)
-    onChange('zipCode', addr.zipCode)
-    onChange('neighborhood', addr.neighborhood)
-    onChange('community', addr.community || data.community)
-    onChange('country', addr.country)
-  }
+  // Construct a full address string for the map query to be more precise
+  const fullAddress = [
+    data.address,
+    data.neighborhood,
+    data.city,
+    data.state,
+    data.zipCode,
+    data.country,
+  ]
+    .filter(Boolean)
+    .join(', ')
 
-  const encodedAddress = encodeURIComponent(
-    `${data.address}, ${data.city}, ${data.state}, ${data.zipCode}, ${data.country}`,
-  )
+  const encodedAddress = encodeURIComponent(fullAddress)
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>Endereço</CardTitle>
+          <CardTitle>Endereço e Localização</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <div className="grid gap-2">
-            <Label>Buscar Endereço (Auto)</Label>
-            <AddressInput
-              onAddressSelect={handleAddressSelect}
-              defaultValue={data.address}
-              disabled={!canEdit}
-            />
-          </div>
           <div className="grid gap-2">
             <Label>
               Endereço <span className="text-red-500">*</span>
@@ -62,7 +53,32 @@ export function PropertyLocation({
               value={data.address}
               onChange={(e) => onChange('address', e.target.value)}
               disabled={!canEdit}
+              placeholder="Rua, Número, Apto"
             />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label>
+                CEP / Zip Code <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                value={data.zipCode || ''}
+                onChange={(e) => onChange('zipCode', e.target.value)}
+                disabled={!canEdit}
+                required
+                className={!data.zipCode ? 'border-red-300' : ''}
+                placeholder="00000-000"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Informações Adicionais</Label>
+              <Input
+                value={data.additionalInfo || ''}
+                onChange={(e) => onChange('additionalInfo', e.target.value)}
+                disabled={!canEdit}
+                placeholder="Bloco, Referência..."
+              />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
@@ -74,16 +90,11 @@ export function PropertyLocation({
               />
             </div>
             <div className="grid gap-2">
-              <Label>
-                CEP / Zip Code <span className="text-red-500">*</span>
-              </Label>
+              <Label>Comunidade</Label>
               <Input
-                value={data.zipCode || ''}
-                onChange={(e) => onChange('zipCode', e.target.value)}
+                value={data.community}
+                onChange={(e) => onChange('community', e.target.value)}
                 disabled={!canEdit}
-                required
-                className={!data.zipCode ? 'border-red-300' : ''}
-                placeholder="Required"
               />
             </div>
           </div>
@@ -110,14 +121,6 @@ export function PropertyLocation({
             <Input
               value={data.country || ''}
               onChange={(e) => onChange('country', e.target.value)}
-              disabled={!canEdit}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label>Comunidade</Label>
-            <Input
-              value={data.community}
-              onChange={(e) => onChange('community', e.target.value)}
               disabled={!canEdit}
             />
           </div>

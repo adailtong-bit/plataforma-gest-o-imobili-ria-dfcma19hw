@@ -41,6 +41,23 @@ export function PropertyContent({
     }
   }
 
+  // Fallback values for mirroring content if empty
+  const getDescription = (lang: 'pt' | 'en' | 'es') => {
+    const val = data.description?.[lang]
+    if (val) return val
+    // Mirror from PT if available and current is empty
+    if (lang !== 'pt' && data.description?.pt) return data.description.pt
+    return ''
+  }
+
+  const getHoaRules = (lang: 'pt' | 'en' | 'es') => {
+    const val = data.hoaRules?.[lang]
+    if (val) return val
+    // Mirror from PT if available
+    if (lang !== 'pt' && data.hoaRules?.pt) return data.hoaRules.pt
+    return ''
+  }
+
   return (
     <div className="space-y-6">
       <Card>
@@ -83,13 +100,14 @@ export function PropertyContent({
                   )}
                 </div>
                 <Textarea
-                  value={data.description?.en || ''}
+                  value={getDescription('en')}
                   onChange={(e) =>
                     onNestedChange('description', 'en', e.target.value)
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="Full description in English..."
+                  placeholder="Full description in English (Mirrored from PT if empty)..."
+                  className={!data.description?.en ? 'opacity-70' : ''}
                 />
               </div>
             </TabsContent>
@@ -108,13 +126,14 @@ export function PropertyContent({
                   )}
                 </div>
                 <Textarea
-                  value={data.description?.es || ''}
+                  value={getDescription('es')}
                   onChange={(e) =>
                     onNestedChange('description', 'es', e.target.value)
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="Descripción completa en Español..."
+                  placeholder="Descripción completa en Español (Mirrored from PT if empty)..."
+                  className={!data.description?.es ? 'opacity-70' : ''}
                 />
               </div>
             </TabsContent>
@@ -162,13 +181,14 @@ export function PropertyContent({
                   )}
                 </div>
                 <Textarea
-                  value={data.hoaRules?.en || ''}
+                  value={getHoaRules('en')}
                   onChange={(e) =>
                     onNestedChange('hoaRules', 'en', e.target.value)
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="HOA Rules..."
+                  placeholder="HOA Rules (Mirrored from PT if empty)..."
+                  className={!data.hoaRules?.en ? 'opacity-70' : ''}
                 />
               </div>
             </TabsContent>
@@ -187,13 +207,14 @@ export function PropertyContent({
                   )}
                 </div>
                 <Textarea
-                  value={data.hoaRules?.es || ''}
+                  value={getHoaRules('es')}
                   onChange={(e) =>
                     onNestedChange('hoaRules', 'es', e.target.value)
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="Reglas del condominio..."
+                  placeholder="Reglas del condominio (Mirrored from PT if empty)..."
+                  className={!data.hoaRules?.es ? 'opacity-70' : ''}
                 />
               </div>
             </TabsContent>

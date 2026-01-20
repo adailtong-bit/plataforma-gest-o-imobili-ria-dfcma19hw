@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { CurrencyInput } from '@/components/ui/currency-input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -27,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Plus, Upload, Trash2, Paperclip, Save } from 'lucide-react'
+import { Plus, Upload, Trash2, Paperclip } from 'lucide-react'
 import { format, isPast, parseISO } from 'date-fns'
 import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
@@ -55,6 +56,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
   const [openUpload, setOpenUpload] = useState<string | null>(null)
+  const [editingEntry, setEditingEntry] = useState<LedgerEntry | null>(null)
   const [newEntry, setNewEntry] = useState<Partial<LedgerEntry>>({
     type: 'expense',
     amount: 0,
@@ -86,28 +88,27 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
     toast({ title: 'Lançamento adicionado com sucesso.' })
   }
 
-  const handleStatusUpdate = (entry: LedgerEntry, status: any) => {
-    // Confirmation is implicitly handled by the fact this is a critical action, but we can add a dialog wrapper if needed.
-    // For dropdowns, standard practice is immediate, but user story asks for confirmation.
-    // Implementing a custom confirmation flow for dropdown is tricky, so we will do it optimistically or wrap the select.
-    // Given the constraints, I will assume the select change triggers a confirm dialog logic if I could interrupt it,
-    // but React select doesn't easily support "confirm before change".
-    // I will implement the update directly here as per standard UX, but ensuring the critical "Mark as Paid" automation works.
-
-    // Actually, user story says: "Any action button (Delete, Save Changes, etc.) must trigger a Shadcn UI Dialog/AlertDialog".
-    // The status change is via Select. I'll add a confirmation step inside the update function? No, I'll assume the requirement applies to buttons.
-
-    const isPaying = status === 'cleared'
-    if (isPaying) {
-      // Logic handled in Store
+  const handleUpdate = () => {
+    if (editingEntry) {
+      updateLedgerEntry(editingEntry)
+      setEditingEntry(null)
+      toast({ title: 'Lançamento atualizado.' })
     }
+  }
 
-    updateLedgerEntry({
+  const handleStatusUpdate = (entry: LedgerEntry, status: any) => {
+    // When marking as paid, we just set paymentDate to now if not set
+    const paymentDate =
+      status === 'cleared'
+        ? entry.paymentDate || new Date().toISOString()
+        : undefined
+
+    const updated = {
       ...entry,
       status,
-      paymentDate: status === 'cleared' ? new Date().toISOString() : undefined,
-    })
-
+      paymentDate,
+    }
+    updateLedgerEntry(updated)
     toast({ title: `Status atualizado para ${status}` })
   }
 
@@ -169,7 +170,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
           </AlertDialogContent>
         </AlertDialog>
 
-        {/* Create Dialog (Opened after confirmation) */}
+        {/* Create Dialog */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent>
             <DialogHeader>
@@ -217,23 +218,15 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label>Valor ($)</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2.5 text-muted-foreground">
-                      $
-                    </span>
-                    <Input
-                      type="number" // Free text entry, browser handles validation
-                      className="pl-7"
-                      value={newEntry.amount}
-                      onChange={(e) =>
-                        setNewEntry({
-                          ...newEntry,
-                          amount: Number(e.target.value),
-                        })
-                      }
-                      placeholder="0.00"
-                    />
-                  </div>
+                  <CurrencyInput
+                    value={newEntry.amount}
+                    onChange={(val) =>
+                      setNewEntry({
+                        ...newEntry,
+                        amount: val,
+                      })
+                    }
+                  />
                 </div>
                 <div className="grid gap-2">
                   <Label>Vencimento</Label>
@@ -246,20 +239,92 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                   />
                 </div>
               </div>
-              <div className="grid gap-2">
-                <Label>Comprovante (Inicial)</Label>
-                <FileUpload
-                  label="Anexar Recibo (PDF/IMG)"
-                  onChange={(url) =>
-                    console.log('Upload handled via logic later')
-                  }
-                  accept=".pdf,.jpg,.png,.jpeg"
-                />
-              </div>
               <DialogFooter>
                 <Button onClick={handleSave}>Salvar Lançamento</Button>
               </DialogFooter>
             </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Dialog */}
+        <Dialog
+          open={!!editingEntry}
+          onOpenChange={(open) => !open && setEditingEntry(null)}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Editar Lançamento</DialogTitle>
+            </DialogHeader>
+            {editingEntry && (
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label>Descrição</Label>
+                  <Input
+                    value={editingEntry.description}
+                    onChange={(e) =>
+                      setEditingEntry({
+                        ...editingEntry,
+                        description: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Valor ($)</Label>
+                    <CurrencyInput
+                      value={editingEntry.amount}
+                      onChange={(val) =>
+                        setEditingEntry({
+                          ...editingEntry,
+                          amount: val,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Data Pagamento</Label>
+                    <Input
+                      type="date"
+                      value={
+                        editingEntry.paymentDate
+                          ? editingEntry.paymentDate.split('T')[0]
+                          : ''
+                      }
+                      onChange={(e) =>
+                        setEditingEntry({
+                          ...editingEntry,
+                          paymentDate: e.target.value
+                            ? new Date(e.target.value).toISOString()
+                            : undefined,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button>Salvar Alterações</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirmar Alteração</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Deseja salvar as alterações neste lançamento?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleUpdate}>
+                          Confirmar
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </DialogFooter>
+              </div>
+            )}
           </DialogContent>
         </Dialog>
       </div>
@@ -298,7 +363,10 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                       : '-'}
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-col">
+                    <div
+                      className="flex flex-col cursor-pointer hover:underline"
+                      onClick={() => setEditingEntry(entry)}
+                    >
                       <span>{entry.description}</span>
                       {entry.attachments && entry.attachments.length > 0 && (
                         <span className="text-xs text-blue-600 flex items-center gap-1">

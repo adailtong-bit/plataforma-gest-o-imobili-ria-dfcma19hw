@@ -173,6 +173,7 @@ export interface Property {
   state?: string
   zipCode?: string
   country?: string // Geo-standardization
+  additionalInfo?: string // New field for address refinement
   type: string
   profileType: 'long_term' | 'short_term'
   community: string
