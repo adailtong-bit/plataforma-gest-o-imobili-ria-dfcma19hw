@@ -25,7 +25,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { Plus, Trash2, Edit2 } from 'lucide-react'
+import { Plus, Trash2, Edit2, Upload, FileCheck } from 'lucide-react'
 import { useState } from 'react'
 import {
   Dialog,
@@ -33,7 +33,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
 import {
@@ -50,8 +49,9 @@ import {
 import { PropertyLedger } from '@/components/financial/PropertyLedger'
 import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
-import { setDate, getDaysInMonth, parseISO } from 'date-fns'
+import { setDate, getDaysInMonth, parseISO, addMonths } from 'date-fns'
 import { FileUpload } from '@/components/ui/file-upload'
+import { Badge } from '@/components/ui/badge'
 
 interface PropertyFinancialsProps {
   data: Property
@@ -73,19 +73,16 @@ export function PropertyFinancials({
   const [confirmActionOpen, setConfirmActionOpen] = useState(false)
   const [actionType, setActionType] = useState<'add' | 'edit'>('add')
 
-  // State for expense being edited or created
-  const [currentExpense, setCurrentExpense] = useState<Partial<FixedExpense>>({
+  // Form State
+  const [formData, setFormData] = useState({
     name: '',
-    amount: 0,
-    dueDay: 1,
-    frequency: 'monthly',
     provider: '',
     accountNumber: '',
+    amount: 0,
+    paymentDate: '',
+    receiptUrl: '',
   })
-
-  // Additional fields for initial creation (not part of FixedExpense type)
-  const [initialPaymentDate, setInitialPaymentDate] = useState<string>('')
-  const [initialReceipt, setInitialReceipt] = useState<string>('')
+  const [currentExpenseId, setCurrentExpenseId] = useState<string | null>(null)
 
   const {
     ledgerEntries,
@@ -96,33 +93,49 @@ export function PropertyFinancials({
   const propertyEntries = ledgerEntries.filter((e) => e.propertyId === data.id)
 
   const handleOpenAdd = () => {
-    setCurrentExpense({
+    setFormData({
       name: '',
-      amount: 0,
-      dueDay: 1,
-      frequency: 'monthly',
       provider: '',
       accountNumber: '',
+      amount: 0,
+      paymentDate: new Date().toISOString().split('T')[0],
+      receiptUrl: '',
     })
-    setInitialPaymentDate('')
-    setInitialReceipt('')
+    setCurrentExpenseId(null)
     setActionType('add')
     setOpenExpense(true)
   }
 
   const handleOpenEdit = (expense: FixedExpense) => {
-    setCurrentExpense({ ...expense })
-    // When editing, we don't handle initial payment date/receipt as those are for the instance
+    // Estimate current month date based on dueDay
+    const today = new Date()
+    const daysInMonth = getDaysInMonth(today)
+    const validDay = Math.min(expense.dueDay, daysInMonth)
+    const estimatedDate = setDate(today, validDay).toISOString().split('T')[0]
+
+    setFormData({
+      name: expense.name,
+      provider: expense.provider || '',
+      accountNumber: expense.accountNumber || '',
+      amount: expense.amount,
+      paymentDate: estimatedDate,
+      receiptUrl: '',
+    })
+    setCurrentExpenseId(expense.id)
     setActionType('edit')
     setOpenExpense(true)
   }
 
   const handleSubmitExpense = () => {
-    // Basic validation
-    if (!currentExpense.name || !currentExpense.amount) {
+    if (
+      !formData.name ||
+      !formData.amount ||
+      !formData.provider ||
+      !formData.paymentDate
+    ) {
       toast({
-        title: 'Erro de Validação',
-        description: 'Nome da Despesa e Valor são obrigatórios.',
+        title: 'Campos Obrigatórios',
+        description: 'Preencha Nome, Fornecedor, Valor e Data.',
         variant: 'destructive',
       })
       return
@@ -130,15 +143,26 @@ export function PropertyFinancials({
     setConfirmActionOpen(true)
   }
 
+  const getNextDueDate = (currentDate: Date, fixedDay: number) => {
+    const nextMonth = addMonths(currentDate, 1)
+    const daysInNext = getDaysInMonth(nextMonth)
+    const day = Math.min(fixedDay, daysInNext)
+    return setDate(nextMonth, day)
+  }
+
   const handleConfirmSubmit = () => {
+    // Extract Due Day from payment date
+    const parts = formData.paymentDate.split('-')
+    const dueDay = parseInt(parts[2])
+
     const expense: FixedExpense = {
-      id: currentExpense.id || `fe-${Date.now()}`,
-      name: currentExpense.name!,
-      amount: Number(currentExpense.amount),
-      dueDay: Number(currentExpense.dueDay),
-      frequency: currentExpense.frequency as 'monthly' | 'yearly',
-      provider: currentExpense.provider,
-      accountNumber: currentExpense.accountNumber,
+      id: currentExpenseId || `fe-${Date.now()}`,
+      name: formData.name,
+      amount: formData.amount,
+      dueDay: dueDay,
+      frequency: 'monthly',
+      provider: formData.provider,
+      accountNumber: formData.accountNumber,
     }
 
     let updatedExpenses = [...(data.fixedExpenses || [])]
@@ -146,42 +170,58 @@ export function PropertyFinancials({
     if (actionType === 'add') {
       updatedExpenses.push(expense)
 
-      // Calculate immediate due date
-      const today = new Date()
-      const daysInMonth = getDaysInMonth(today)
-      const targetDay = Math.min(expense.dueDay, daysInMonth)
-      let initialDueDate = setDate(today, targetDay)
+      // Initial Ledger Entry Logic
+      const isPaid = !!formData.receiptUrl
+      const initialDate = new Date(formData.paymentDate)
 
       const entry: LedgerEntry = {
-        id: `auto-fe-${expense.id}-initial`,
+        id: `auto-fe-${expense.id}-${Date.now()}`,
         propertyId: data.id,
         date: new Date().toISOString(),
-        dueDate: initialDueDate.toISOString(),
+        dueDate: initialDate.toISOString(),
         type: 'expense',
         category: expense.name,
         amount: expense.amount,
-        description: `${expense.name} - ${expense.provider || ''} (Auto)`,
+        description: `${expense.name} - ${expense.provider || ''}`,
         referenceId: expense.id,
-        status: initialPaymentDate ? 'cleared' : 'pending',
-        paymentDate: initialPaymentDate
-          ? new Date(initialPaymentDate).toISOString()
-          : undefined,
-        attachments: initialReceipt
-          ? [{ name: 'Comprovante', url: initialReceipt }]
+        status: isPaid ? 'cleared' : 'pending',
+        paymentDate: isPaid ? initialDate.toISOString() : undefined,
+        attachments: formData.receiptUrl
+          ? [{ name: 'Comprovante', url: formData.receiptUrl }]
           : [],
       }
+
       addLedgerEntry(entry)
+
+      // If initial entry is PAID, schedule next month immediately
+      if (isPaid) {
+        const nextDate = getNextDueDate(initialDate, dueDay)
+        const nextEntry: LedgerEntry = {
+          id: `auto-fe-${expense.id}-${Date.now() + 1}`,
+          propertyId: data.id,
+          date: new Date().toISOString(),
+          dueDate: nextDate.toISOString(),
+          type: 'expense',
+          category: expense.name,
+          amount: expense.amount,
+          description: `${expense.name} - ${expense.provider || ''} (Auto)`,
+          referenceId: expense.id,
+          status: 'pending',
+        }
+        setTimeout(() => addLedgerEntry(nextEntry), 100)
+      }
+
       toast({
-        title: 'Despesa Adicionada',
-        description: 'Despesa fixa cadastrada e lançada no financeiro.',
+        title: 'Despesa Fixa Criada',
+        description: 'Despesa adicionada e lançada no financeiro.',
       })
     } else {
-      // Edit
+      // Edit Mode
       updatedExpenses = updatedExpenses.map((e) =>
         e.id === expense.id ? expense : e,
       )
 
-      // Sync pending ledger entries for Data Consistency
+      // Update pending entries to reflect new amount/day
       const pendingEntries = ledgerEntries.filter(
         (e) => e.referenceId === expense.id && e.status === 'pending',
       )
@@ -189,14 +229,14 @@ export function PropertyFinancials({
       pendingEntries.forEach((entry) => {
         const entryDate = parseISO(entry.dueDate || entry.date)
         const daysInMonth = getDaysInMonth(entryDate)
-        const validDay = Math.min(expense.dueDay, daysInMonth)
+        const validDay = Math.min(dueDay, daysInMonth)
         const newDueDate = setDate(entryDate, validDay)
 
         const updatedEntry: LedgerEntry = {
           ...entry,
           category: expense.name,
           amount: expense.amount,
-          description: `${expense.name} - ${expense.provider || ''} (Auto)`,
+          description: `${expense.name} - ${expense.provider || ''}`,
           dueDate: newDueDate.toISOString(),
         }
         updateLedgerEntry(updatedEntry)
@@ -204,8 +244,7 @@ export function PropertyFinancials({
 
       toast({
         title: 'Despesa Atualizada',
-        description:
-          'Informações atualizadas com sucesso e sincronizadas com o financeiro.',
+        description: 'Informações e lançamentos pendentes atualizados.',
       })
     }
 
@@ -220,7 +259,6 @@ export function PropertyFinancials({
       (data.fixedExpenses || []).filter((e) => e.id !== id),
     )
 
-    // Also remove pending ledger entries for this expense to keep sync
     const pendingEntries = ledgerEntries.filter(
       (e) => e.referenceId === id && e.status === 'pending',
     )
@@ -318,192 +356,20 @@ export function PropertyFinancials({
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Despesas Fixas</CardTitle>
           {canEdit && (
-            <Button
-              size="sm"
-              variant="default"
-              onClick={handleOpenAdd}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              <Plus className="h-4 w-4 mr-2" /> Adicionar Despesa Fixa
+            <Button onClick={handleOpenAdd} className="bg-trust-blue gap-2">
+              <Plus className="h-4 w-4" /> Adicionar Despesa Fixa
             </Button>
           )}
         </CardHeader>
         <CardContent>
-          {/* Expense Dialog */}
-          <Dialog open={openExpense} onOpenChange={setOpenExpense}>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>
-                  {actionType === 'add'
-                    ? 'Nova Despesa Fixa'
-                    : 'Editar Despesa'}
-                </DialogTitle>
-                <DialogDescription>
-                  Configure uma despesa que se repete periodicamente.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Nome da Despesa</Label>
-                    <Input
-                      value={currentExpense.name}
-                      onChange={(e) =>
-                        setCurrentExpense({
-                          ...currentExpense,
-                          name: e.target.value,
-                        })
-                      }
-                      placeholder="Ex: Internet, Luz, Água"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Nome do Fornecedor</Label>
-                    <Input
-                      value={currentExpense.provider}
-                      onChange={(e) =>
-                        setCurrentExpense({
-                          ...currentExpense,
-                          provider: e.target.value,
-                        })
-                      }
-                      placeholder="Ex: AT&T, Duke Energy"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Número de Registro da Empresa/Conta</Label>
-                    <Input
-                      value={currentExpense.accountNumber}
-                      onChange={(e) =>
-                        setCurrentExpense({
-                          ...currentExpense,
-                          accountNumber: e.target.value,
-                        })
-                      }
-                      placeholder="Ex: 000-123-456"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Valor ($)</Label>
-                    <CurrencyInput
-                      value={currentExpense.amount}
-                      onChange={(val) =>
-                        setCurrentExpense({
-                          ...currentExpense,
-                          amount: val,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Dia de Vencimento</Label>
-                    <Input
-                      type="number"
-                      min={1}
-                      max={31}
-                      value={currentExpense.dueDay}
-                      onChange={(e) =>
-                        setCurrentExpense({
-                          ...currentExpense,
-                          dueDay: Number(e.target.value),
-                        })
-                      }
-                      className="no-spinner"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Frequência</Label>
-                    <Select
-                      value={currentExpense.frequency}
-                      onValueChange={(v: any) =>
-                        setCurrentExpense({ ...currentExpense, frequency: v })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="monthly">Mensal</SelectItem>
-                        <SelectItem value="yearly">Anual</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                {actionType === 'add' && (
-                  <div className="grid grid-cols-1 gap-4 pt-4 border-t">
-                    <h4 className="text-sm font-medium">
-                      Dados do Lançamento Inicial (Opcional)
-                    </h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label>Data de Pagamento</Label>
-                        <Input
-                          type="date"
-                          value={initialPaymentDate}
-                          onChange={(e) =>
-                            setInitialPaymentDate(e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label>Comprovante (Upload)</Label>
-                        <FileUpload
-                          accept=".pdf,.png,.jpg,.jpeg"
-                          onChange={(url) => setInitialReceipt(url)}
-                          label="Anexar Recibo"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setOpenExpense(false)}>
-                  Cancelar
-                </Button>
-                <Button onClick={handleSubmitExpense} className="bg-trust-blue">
-                  {actionType === 'add' ? 'Adicionar' : 'Salvar'}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-
-          {/* Confirmation Alert Dialog */}
-          <AlertDialog
-            open={confirmActionOpen}
-            onOpenChange={setConfirmActionOpen}
-          >
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Confirmar Ação</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {actionType === 'add'
-                    ? 'Isso criará uma nova despesa fixa e gerará um lançamento financeiro para o mês atual. Deseja continuar?'
-                    : 'Tem certeza que deseja alterar os dados desta despesa fixa? Isso atualizará automaticamente os lançamentos futuros pendentes.'}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleConfirmSubmit}>
-                  Confirmar
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Despesa</TableHead>
                 <TableHead>Fornecedor</TableHead>
-                <TableHead>Nº Registro/Conta</TableHead>
+                <TableHead>Nº Registro</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>Dia Venc.</TableHead>
-                <TableHead>Freq.</TableHead>
                 {canEdit && <TableHead className="text-right">Ação</TableHead>}
               </TableRow>
             </TableHeader>
@@ -511,8 +377,8 @@ export function PropertyFinancials({
               {(!data.fixedExpenses || data.fixedExpenses.length === 0) && (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
-                    className="text-center py-4 text-muted-foreground"
+                    colSpan={6}
+                    className="text-center py-6 text-muted-foreground"
                   >
                     Nenhuma despesa fixa cadastrada.
                   </TableCell>
@@ -525,9 +391,6 @@ export function PropertyFinancials({
                   <TableCell>{expense.accountNumber || '-'}</TableCell>
                   <TableCell>${expense.amount.toFixed(2)}</TableCell>
                   <TableCell>{expense.dueDay}</TableCell>
-                  <TableCell className="capitalize">
-                    {expense.frequency}
-                  </TableCell>
                   {canEdit && (
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -535,18 +398,15 @@ export function PropertyFinancials({
                           variant="ghost"
                           size="icon"
                           onClick={() => handleOpenEdit(expense)}
-                          title="Editar"
                         >
                           <Edit2 className="h-4 w-4" />
                         </Button>
-
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="text-red-500 hover:text-red-700"
-                              title="Excluir"
+                              className="text-red-500"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -557,9 +417,8 @@ export function PropertyFinancials({
                                 Confirmar Exclusão
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                Tem certeza que deseja excluir esta despesa
-                                fixa? Isso removerá também os lançamentos
-                                pendentes.
+                                Excluir esta despesa fixa removerá também os
+                                lançamentos futuros pendentes.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -587,6 +446,124 @@ export function PropertyFinancials({
           <PropertyLedger propertyId={data.id} entries={propertyEntries} />
         </CardContent>
       </Card>
+
+      {/* Expense Modal */}
+      <Dialog open={openExpense} onOpenChange={setOpenExpense}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>
+              {actionType === 'add' ? 'Nova Despesa Fixa' : 'Editar Despesa'}
+            </DialogTitle>
+            <DialogDescription>
+              Configure os detalhes da despesa recorrente.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label>Nome da Despesa (Ex: Internet)</Label>
+              <Input
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                placeholder="Identificação da despesa"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Nome da Companhia Fornecedora</Label>
+                <Input
+                  value={formData.provider}
+                  onChange={(e) =>
+                    setFormData({ ...formData, provider: e.target.value })
+                  }
+                  placeholder="Ex: Duke Energy"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Número de Registro/Cadastro</Label>
+                <Input
+                  value={formData.accountNumber}
+                  onChange={(e) =>
+                    setFormData({ ...formData, accountNumber: e.target.value })
+                  }
+                  placeholder="ID do Cliente / Conta"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Valor ($)</Label>
+                <CurrencyInput
+                  value={formData.amount}
+                  onChange={(val) => setFormData({ ...formData, amount: val })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Data de Pagamento / Vencimento</Label>
+                <Input
+                  type="date"
+                  value={formData.paymentDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, paymentDate: e.target.value })
+                  }
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  Define o dia de vencimento mensal.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-2 pt-2">
+              <Label className="flex items-center gap-2">
+                <Upload className="h-4 w-4" /> Comprovante (Opcional)
+              </Label>
+              <FileUpload
+                value={formData.receiptUrl}
+                onChange={(url) =>
+                  setFormData({ ...formData, receiptUrl: url })
+                }
+                accept=".pdf,.jpg,.png,.jpeg"
+                label="Carregar Recibo/Fatura"
+              />
+              {actionType === 'add' && formData.receiptUrl && (
+                <div className="bg-green-50 text-green-700 p-2 rounded text-xs flex items-center gap-2 border border-green-200">
+                  <FileCheck className="h-4 w-4" />O envio do comprovante
+                  marcará a conta atual como PAGA e agendará a do próximo mês.
+                </div>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenExpense(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSubmitExpense} className="bg-trust-blue">
+              {actionType === 'add' ? 'Adicionar' : 'Salvar Alterações'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmation Alert */}
+      <AlertDialog open={confirmActionOpen} onOpenChange={setConfirmActionOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Ação</AlertDialogTitle>
+            <AlertDialogDescription>
+              {actionType === 'add'
+                ? 'Isso criará uma despesa recorrente e lançará o valor no financeiro automaticamente.'
+                : 'Alterar esta despesa atualizará automaticamente os lançamentos futuros pendentes.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmSubmit}>
+              Confirmar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
