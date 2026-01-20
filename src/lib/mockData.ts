@@ -20,6 +20,8 @@ import {
   Workflow,
   MarketData,
   Advertisement,
+  Advertiser,
+  AdPricing,
 } from '@/lib/types'
 
 // --- System-Wide Seeded Test Environment ---
@@ -367,6 +369,33 @@ export const workflows: Workflow[] = [
   },
 ]
 
+// Mock Advertisers
+export const mockAdvertisers: Advertiser[] = [
+  {
+    id: 'adv1',
+    name: 'SafeGuard Insurance',
+    email: 'contact@safeguard.com',
+    phone: '+1 555 999 8888',
+    address: '123 Insurance Blvd, NY',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'adv2',
+    name: 'ProFix Maintenance',
+    email: 'sales@profix.com',
+    phone: '+1 555 777 6666',
+    address: '456 Fix St, FL',
+    createdAt: new Date().toISOString(),
+  },
+]
+
+// Mock Ad Pricing
+export const mockAdPricing: AdPricing = {
+  weekly: 50,
+  biWeekly: 90,
+  monthly: 150,
+}
+
 // Advertisements Mock Data
 export const advertisements: Advertisement[] = [
   {
@@ -378,6 +407,12 @@ export const advertisements: Advertisement[] = [
     active: true,
     createdAt: new Date().toISOString(),
     placement: 'footer',
+    advertiserId: 'adv1',
+    validity: 'monthly',
+    renewable: true,
+    price: 150,
+    startDate: '2024-01-01',
+    endDate: '2024-02-01',
   },
   {
     id: 'ad2',
@@ -388,15 +423,11 @@ export const advertisements: Advertisement[] = [
     active: true,
     createdAt: new Date().toISOString(),
     placement: 'footer',
-  },
-  {
-    id: 'ad3',
-    title: 'Smart Locks Integration',
-    description: 'Automate access with our smart lock partners.',
-    imageUrl: 'https://img.usecurling.com/p/300/100?q=smart%20lock',
-    linkUrl: 'https://example.com/smartlocks',
-    active: false,
-    createdAt: new Date().toISOString(),
-    placement: 'footer',
+    advertiserId: 'adv2',
+    validity: 'weekly',
+    renewable: false,
+    price: 50,
+    startDate: '2024-01-15',
+    endDate: '2024-01-22',
   },
 ]

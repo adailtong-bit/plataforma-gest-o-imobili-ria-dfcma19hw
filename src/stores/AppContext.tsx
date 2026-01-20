@@ -22,6 +22,8 @@ import {
   Notification,
   Advertisement,
   GenericDocument,
+  Advertiser,
+  AdPricing,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -42,6 +44,8 @@ import {
   genericServiceRates as initialGenericRates,
   notifications as initialNotifications,
   advertisements as initialAdvertisements,
+  mockAdvertisers,
+  mockAdPricing,
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
@@ -75,6 +79,8 @@ interface AppContextType {
   genericServiceRates: ServiceRate[]
   notifications: Notification[]
   advertisements: Advertisement[]
+  advertisers: Advertiser[]
+  adPricing: AdPricing
   language: Language
   setLanguage: (lang: Language) => void
   t: (key: string, params?: Record<string, string>) => string
@@ -129,6 +135,10 @@ interface AppContextType {
   addAdvertisement: (ad: Advertisement) => void
   updateAdvertisement: (ad: Advertisement) => void
   deleteAdvertisement: (adId: string) => void
+  addAdvertiser: (advertiser: Advertiser) => void
+  updateAdvertiser: (advertiser: Advertiser) => void
+  deleteAdvertiser: (id: string) => void
+  updateAdPricing: (pricing: AdPricing) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -165,6 +175,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [advertisements, setAdvertisements] = useState<Advertisement[]>(
     initialAdvertisements,
   )
+  const [advertisers, setAdvertisers] = useState<Advertiser[]>(mockAdvertisers)
+  const [adPricing, setAdPricingState] = useState<AdPricing>(mockAdPricing)
 
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app_language')
@@ -1082,6 +1094,55 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  const addAdvertiser = (advertiser: Advertiser) => {
+    setAdvertisers((prev) => [...prev, advertiser])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Advertiser',
+      entityId: advertiser.id,
+      details: `Created advertiser: ${advertiser.name}`,
+    })
+  }
+
+  const updateAdvertiser = (advertiser: Advertiser) => {
+    setAdvertisers((prev) =>
+      prev.map((a) => (a.id === advertiser.id ? advertiser : a)),
+    )
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Advertiser',
+      entityId: advertiser.id,
+      details: `Updated advertiser: ${advertiser.name}`,
+    })
+  }
+
+  const deleteAdvertiser = (id: string) => {
+    setAdvertisers((prev) => prev.filter((a) => a.id !== id))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'Advertiser',
+      entityId: id,
+      details: `Deleted advertiser: ${id}`,
+    })
+  }
+
+  const updateAdPricing = (pricing: AdPricing) => {
+    setAdPricingState(pricing)
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'AdPricing',
+      details: 'Updated advertisement pricing configuration',
+    })
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -1105,6 +1166,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         genericServiceRates,
         notifications,
         advertisements,
+        advertisers,
+        adPricing,
         language,
         setLanguage,
         t,
@@ -1151,6 +1214,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addAdvertisement,
         updateAdvertisement,
         deleteAdvertisement,
+        addAdvertiser,
+        updateAdvertiser,
+        deleteAdvertiser,
+        updateAdPricing,
       }}
     >
       {children}

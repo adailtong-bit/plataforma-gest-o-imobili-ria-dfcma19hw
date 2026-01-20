@@ -8,9 +8,15 @@ const usePublicityStore = () => {
 
   return {
     advertisements: context.advertisements,
+    advertisers: context.advertisers,
+    adPricing: context.adPricing,
     addAdvertisement: context.addAdvertisement,
     updateAdvertisement: context.updateAdvertisement,
     deleteAdvertisement: context.deleteAdvertisement,
+    addAdvertiser: context.addAdvertiser,
+    updateAdvertiser: context.updateAdvertiser,
+    deleteAdvertiser: context.deleteAdvertiser,
+    updateAdPricing: context.updateAdPricing,
   }
 }
 

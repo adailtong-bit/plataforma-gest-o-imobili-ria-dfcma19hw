@@ -29,6 +29,7 @@ import {
   TrendingUp,
   Workflow,
   RefreshCw,
+  Megaphone,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -142,6 +143,9 @@ export function AppSidebar() {
 
   const showUsers = hasPermission(currentUser as User, 'users', 'view')
   const showSettings = hasPermission(currentUser as User, 'settings', 'view')
+  const showPublicity =
+    currentUser.role === 'platform_owner' ||
+    hasPermission(currentUser as User, 'publicity', 'view')
 
   return (
     <Sidebar collapsible="icon">
@@ -236,6 +240,20 @@ export function AppSidebar() {
           <SidebarGroupLabel>Sistema</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              {showPublicity && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive('/admin/publicity')}
+                    tooltip="Publicity Admin"
+                  >
+                    <Link to="/admin/publicity">
+                      <Megaphone />
+                      <span>Publicity Admin</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
               {showUsers && (
                 <SidebarMenuItem>
                   <SidebarMenuButton

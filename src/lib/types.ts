@@ -503,6 +503,21 @@ export interface ChatMessage {
   attachments?: string[]
 }
 
+export interface Advertiser {
+  id: string
+  name: string
+  email: string
+  phone: string
+  address: string
+  createdAt: string
+}
+
+export interface AdPricing {
+  weekly: number
+  biWeekly: number
+  monthly: number
+}
+
 export interface Advertisement {
   id: string
   title: string
@@ -512,4 +527,10 @@ export interface Advertisement {
   active: boolean
   createdAt: string
   placement?: 'footer' | 'sidebar'
+  advertiserId?: string
+  validity?: 'weekly' | 'bi-weekly' | 'monthly'
+  renewable?: boolean
+  price?: number
+  startDate?: string
+  endDate?: string
 }
