@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Plus, Upload, Trash2, Paperclip } from 'lucide-react'
+import { Plus, Upload, Trash2, Paperclip, FileText } from 'lucide-react'
 import { format, isPast, parseISO } from 'date-fns'
 import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
@@ -153,14 +153,15 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button size="sm" className="bg-trust-blue">
-              <Plus className="mr-2 h-4 w-4" /> Criar Despesa
+              <Plus className="mr-2 h-4 w-4" /> Lançamento Manual
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Criar Despesa (Lançamento)</AlertDialogTitle>
+              <AlertDialogTitle>Criar Lançamento Manual</AlertDialogTitle>
               <AlertDialogDescription>
-                Confirme se deseja criar um novo registro financeiro manual.
+                Deseja criar um registro financeiro avulso? Para despesas
+                mensais (como internet), use a aba "Despesas Fixas" acima.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

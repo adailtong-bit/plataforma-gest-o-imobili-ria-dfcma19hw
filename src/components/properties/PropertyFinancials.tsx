@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Property,
   Owner,
@@ -26,7 +27,6 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Plus, Trash2, Edit2, Upload, FileCheck } from 'lucide-react'
-import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -48,10 +48,10 @@ import {
 } from '@/components/ui/alert-dialog'
 import { PropertyLedger } from '@/components/financial/PropertyLedger'
 import useFinancialStore from '@/stores/useFinancialStore'
+import usePropertyStore from '@/stores/usePropertyStore'
 import { useToast } from '@/hooks/use-toast'
 import { setDate, getDaysInMonth, parseISO, addMonths } from 'date-fns'
 import { FileUpload } from '@/components/ui/file-upload'
-import { Badge } from '@/components/ui/badge'
 
 interface PropertyFinancialsProps {
   data: Property
@@ -69,9 +69,19 @@ export function PropertyFinancials({
   partners,
 }: PropertyFinancialsProps) {
   const { toast } = useToast()
+  const { properties, updateProperty } = usePropertyStore()
+  const {
+    ledgerEntries,
+    addLedgerEntry,
+    updateLedgerEntry,
+    deleteLedgerEntry,
+  } = useFinancialStore()
+
+  // Local state for Fixed Expense Dialog
   const [openExpense, setOpenExpense] = useState(false)
   const [confirmActionOpen, setConfirmActionOpen] = useState(false)
   const [actionType, setActionType] = useState<'add' | 'edit'>('add')
+  const [currentExpenseId, setCurrentExpenseId] = useState<string | null>(null)
 
   // Form State
   const [formData, setFormData] = useState({
@@ -82,14 +92,9 @@ export function PropertyFinancials({
     paymentDate: '',
     receiptUrl: '',
   })
-  const [currentExpenseId, setCurrentExpenseId] = useState<string | null>(null)
 
-  const {
-    ledgerEntries,
-    addLedgerEntry,
-    updateLedgerEntry,
-    deleteLedgerEntry,
-  } = useFinancialStore()
+  // Get fresh property data to ensure we don't overwrite with stale data during immediate saves
+  const currentProperty = properties.find((p) => p.id === data.id) || data
   const propertyEntries = ledgerEntries.filter((e) => e.propertyId === data.id)
 
   const handleOpenAdd = () => {
@@ -107,7 +112,7 @@ export function PropertyFinancials({
   }
 
   const handleOpenEdit = (expense: FixedExpense) => {
-    // Estimate current month date based on dueDay
+    // Calculate estimated payment date based on dueDay
     const today = new Date()
     const daysInMonth = getDaysInMonth(today)
     const validDay = Math.min(expense.dueDay, daysInMonth)
@@ -126,7 +131,7 @@ export function PropertyFinancials({
     setOpenExpense(true)
   }
 
-  const handleSubmitExpense = () => {
+  const validateForm = () => {
     if (
       !formData.name ||
       !formData.amount ||
@@ -138,9 +143,20 @@ export function PropertyFinancials({
         description: 'Preencha Nome, Fornecedor, Valor e Data.',
         variant: 'destructive',
       })
-      return
+      return false
     }
-    setConfirmActionOpen(true)
+    return true
+  }
+
+  const handlePreSubmit = () => {
+    if (!validateForm()) return
+
+    // If adding, save directly. If editing, require confirmation.
+    if (actionType === 'add') {
+      executeSave()
+    } else {
+      setConfirmActionOpen(true)
+    }
   }
 
   const getNextDueDate = (currentDate: Date, fixedDay: number) => {
@@ -150,13 +166,16 @@ export function PropertyFinancials({
     return setDate(nextMonth, day)
   }
 
-  const handleConfirmSubmit = () => {
+  const executeSave = () => {
     // Extract Due Day from payment date
-    const parts = formData.paymentDate.split('-')
+    const parts = formData.paymentDate.split('-') // YYYY-MM-DD
     const dueDay = parseInt(parts[2])
+    const initialDate = new Date(formData.paymentDate)
+
+    const expenseId = currentExpenseId || `fe-${Date.now()}`
 
     const expense: FixedExpense = {
-      id: currentExpenseId || `fe-${Date.now()}`,
+      id: expenseId,
       name: formData.name,
       amount: formData.amount,
       dueDay: dueDay,
@@ -165,14 +184,13 @@ export function PropertyFinancials({
       accountNumber: formData.accountNumber,
     }
 
-    let updatedExpenses = [...(data.fixedExpenses || [])]
+    let updatedExpenses = [...(currentProperty.fixedExpenses || [])]
 
     if (actionType === 'add') {
       updatedExpenses.push(expense)
 
       // Initial Ledger Entry Logic
       const isPaid = !!formData.receiptUrl
-      const initialDate = new Date(formData.paymentDate)
 
       const entry: LedgerEntry = {
         id: `auto-fe-${expense.id}-${Date.now()}`,
@@ -193,7 +211,7 @@ export function PropertyFinancials({
 
       addLedgerEntry(entry)
 
-      // If initial entry is PAID, schedule next month immediately
+      // Automatic Recurrence: If initial entry is PAID, schedule next month immediately
       if (isPaid) {
         const nextDate = getNextDueDate(initialDate, dueDay)
         const nextEntry: LedgerEntry = {
@@ -221,7 +239,7 @@ export function PropertyFinancials({
         e.id === expense.id ? expense : e,
       )
 
-      // Update pending entries to reflect new amount/day
+      // Update pending entries to reflect new amount/day/provider
       const pendingEntries = ledgerEntries.filter(
         (e) => e.referenceId === expense.id && e.status === 'pending',
       )
@@ -248,17 +266,27 @@ export function PropertyFinancials({
       })
     }
 
-    onChange('fixedExpenses', updatedExpenses)
+    // Persist changes to Property Store immediately
+    updateProperty({
+      ...currentProperty,
+      fixedExpenses: updatedExpenses,
+    })
+
     setConfirmActionOpen(false)
     setOpenExpense(false)
   }
 
   const handleRemoveExpense = (id: string) => {
-    onChange(
-      'fixedExpenses',
-      (data.fixedExpenses || []).filter((e) => e.id !== id),
+    const updatedExpenses = (currentProperty.fixedExpenses || []).filter(
+      (e) => e.id !== id,
     )
 
+    updateProperty({
+      ...currentProperty,
+      fixedExpenses: updatedExpenses,
+    })
+
+    // Cleanup pending entries linked to this expense
     const pendingEntries = ledgerEntries.filter(
       (e) => e.referenceId === id && e.status === 'pending',
     )
@@ -272,9 +300,10 @@ export function PropertyFinancials({
 
   return (
     <div className="space-y-6">
+      {/* Settings Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Financeiro e Gestão</CardTitle>
+          <CardTitle>Configurações Financeiras</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid gap-2">
@@ -352,14 +381,13 @@ export function PropertyFinancials({
         </CardContent>
       </Card>
 
+      {/* Fixed Expenses List */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Despesas Fixas</CardTitle>
-          {canEdit && (
-            <Button onClick={handleOpenAdd} className="bg-trust-blue gap-2">
-              <Plus className="h-4 w-4" /> Adicionar Despesa Fixa
-            </Button>
-          )}
+          <Button onClick={handleOpenAdd} className="bg-trust-blue gap-2">
+            <Plus className="h-4 w-4" /> Adicionar Despesa Fixa
+          </Button>
         </CardHeader>
         <CardContent>
           <Table>
@@ -370,11 +398,12 @@ export function PropertyFinancials({
                 <TableHead>Nº Registro</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>Dia Venc.</TableHead>
-                {canEdit && <TableHead className="text-right">Ação</TableHead>}
+                <TableHead className="text-right">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(!data.fixedExpenses || data.fixedExpenses.length === 0) && (
+              {(!currentProperty.fixedExpenses ||
+                currentProperty.fixedExpenses.length === 0) && (
                 <TableRow>
                   <TableCell
                     colSpan={6}
@@ -384,56 +413,54 @@ export function PropertyFinancials({
                   </TableCell>
                 </TableRow>
               )}
-              {data.fixedExpenses?.map((expense) => (
+              {currentProperty.fixedExpenses?.map((expense) => (
                 <TableRow key={expense.id}>
                   <TableCell className="font-medium">{expense.name}</TableCell>
                   <TableCell>{expense.provider || '-'}</TableCell>
                   <TableCell>{expense.accountNumber || '-'}</TableCell>
                   <TableCell>${expense.amount.toFixed(2)}</TableCell>
                   <TableCell>{expense.dueDay}</TableCell>
-                  {canEdit && (
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleOpenEdit(expense)}
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-red-500"
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleOpenEdit(expense)}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-red-500"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Confirmar Exclusão
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza? Excluir esta despesa removerá também
+                              os lançamentos futuros pendentes do financeiro.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleRemoveExpense(expense.id)}
                             >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Confirmar Exclusão
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Excluir esta despesa fixa removerá também os
-                                lançamentos futuros pendentes.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleRemoveExpense(expense.id)}
-                              >
-                                Excluir
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </TableCell>
-                  )}
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -441,6 +468,7 @@ export function PropertyFinancials({
         </CardContent>
       </Card>
 
+      {/* Ledger */}
       <Card>
         <CardContent className="pt-6">
           <PropertyLedger propertyId={data.id} entries={propertyEntries} />
@@ -460,18 +488,22 @@ export function PropertyFinancials({
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label>Nome da Despesa (Ex: Internet)</Label>
+              <Label>
+                Nome da Despesa <span className="text-red-500">*</span>
+              </Label>
               <Input
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                placeholder="Identificação da despesa"
+                placeholder="Ex: Internet, Luz, Água"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Nome da Companhia Fornecedora</Label>
+                <Label>
+                  Fornecedor / Empresa <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   value={formData.provider}
                   onChange={(e) =>
@@ -481,26 +513,30 @@ export function PropertyFinancials({
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Número de Registro/Cadastro</Label>
+                <Label>Nº Registro / Conta</Label>
                 <Input
                   value={formData.accountNumber}
                   onChange={(e) =>
                     setFormData({ ...formData, accountNumber: e.target.value })
                   }
-                  placeholder="ID do Cliente / Conta"
+                  placeholder="ID da Fatura ou Cliente"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Valor ($)</Label>
+                <Label>
+                  Valor ($) <span className="text-red-500">*</span>
+                </Label>
                 <CurrencyInput
                   value={formData.amount}
                   onChange={(val) => setFormData({ ...formData, amount: val })}
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Data de Pagamento / Vencimento</Label>
+                <Label>
+                  Data de Pagamento <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   type="date"
                   value={formData.paymentDate}
@@ -509,7 +545,7 @@ export function PropertyFinancials({
                   }
                 />
                 <p className="text-[10px] text-muted-foreground">
-                  Define o dia de vencimento mensal.
+                  O dia selecionado será usado como dia de vencimento mensal.
                 </p>
               </div>
             </div>
@@ -524,12 +560,13 @@ export function PropertyFinancials({
                   setFormData({ ...formData, receiptUrl: url })
                 }
                 accept=".pdf,.jpg,.png,.jpeg"
-                label="Carregar Recibo/Fatura"
+                label="Carregar Fatura/Recibo (PDF ou Imagem)"
               />
               {actionType === 'add' && formData.receiptUrl && (
                 <div className="bg-green-50 text-green-700 p-2 rounded text-xs flex items-center gap-2 border border-green-200">
-                  <FileCheck className="h-4 w-4" />O envio do comprovante
-                  marcará a conta atual como PAGA e agendará a do próximo mês.
+                  <FileCheck className="h-4 w-4" />
+                  Como você anexou um comprovante, esta conta será marcada como
+                  PAGA e o sistema agendará a do próximo mês automaticamente.
                 </div>
               )}
             </div>
@@ -538,27 +575,27 @@ export function PropertyFinancials({
             <Button variant="outline" onClick={() => setOpenExpense(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSubmitExpense} className="bg-trust-blue">
-              {actionType === 'add' ? 'Adicionar' : 'Salvar Alterações'}
+            <Button onClick={handlePreSubmit} className="bg-trust-blue">
+              {actionType === 'add' ? 'Adicionar Despesa' : 'Salvar Alterações'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Confirmation Alert */}
+      {/* Confirmation Alert (Only for Edit) */}
       <AlertDialog open={confirmActionOpen} onOpenChange={setConfirmActionOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar Ação</AlertDialogTitle>
+            <AlertDialogTitle>Confirmar Alteração</AlertDialogTitle>
             <AlertDialogDescription>
-              {actionType === 'add'
-                ? 'Isso criará uma despesa recorrente e lançará o valor no financeiro automaticamente.'
-                : 'Alterar esta despesa atualizará automaticamente os lançamentos futuros pendentes.'}
+              Você está alterando uma despesa fixa. Isso atualizará
+              automaticamente todos os lançamentos futuros que ainda estão
+              pendentes. Deseja continuar?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmSubmit}>
+            <AlertDialogAction onClick={executeSave}>
               Confirmar
             </AlertDialogAction>
           </AlertDialogFooter>
