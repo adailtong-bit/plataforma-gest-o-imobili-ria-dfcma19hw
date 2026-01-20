@@ -58,6 +58,9 @@ import {
   addYears,
   eachMonthOfInterval,
   format,
+  parseISO,
+  setDate,
+  getDaysInMonth,
 } from 'date-fns'
 
 interface AppContextType {
@@ -283,17 +286,26 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           (fe) => fe.id === entry.referenceId,
         )
         if (fixedExpense) {
-          // Create next month entry based on the *current* entry due date plus 1 month
-          const currentDueDate = new Date(entry.dueDate || new Date())
-          const nextDueDate = addMonths(currentDueDate, 1)
+          // Determine next due date using fixedExpense.dueDay and next month
+          // 1. Get current due date or entry date
+          const currentEntryDate = entry.dueDate
+            ? parseISO(entry.dueDate)
+            : new Date()
+          // 2. Add 1 month to get the target month
+          const nextMonthDate = addMonths(currentEntryDate, 1)
+          // 3. Set the day to the fixed expense due day, capped by days in month
+          const daysInNextMonth = getDaysInMonth(nextMonthDate)
+          const targetDay = Math.min(fixedExpense.dueDay, daysInNextMonth)
+          const nextDueDate = setDate(nextMonthDate, targetDay)
 
           // Check if next month's entry already exists to avoid duplicates
+          // We check for same referenceId, pending status, and matching Month/Year
           const existingNext = ledgerEntries.find(
             (e) =>
               e.referenceId === entry.referenceId &&
               e.status === 'pending' &&
-              new Date(e.dueDate!).getMonth() === nextDueDate.getMonth() &&
-              new Date(e.dueDate!).getFullYear() === nextDueDate.getFullYear(),
+              parseISO(e.dueDate!).getMonth() === nextDueDate.getMonth() &&
+              parseISO(e.dueDate!).getFullYear() === nextDueDate.getFullYear(),
           )
 
           if (!existingNext) {
@@ -309,7 +321,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
               referenceId: fixedExpense.id,
               status: 'pending',
             }
-            setTimeout(() => addLedgerEntry(nextEntry), 100) // Small delay to avoid state conflict
+            // Small delay to ensure state updates don't conflict, though in React 18+ batching handles this usually
+            setTimeout(() => addLedgerEntry(nextEntry), 100)
           }
         }
       }

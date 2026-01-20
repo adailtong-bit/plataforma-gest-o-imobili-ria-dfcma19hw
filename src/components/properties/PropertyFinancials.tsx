@@ -50,6 +50,7 @@ import {
 import { PropertyLedger } from '@/components/financial/PropertyLedger'
 import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
+import { setDate, getDaysInMonth } from 'date-fns'
 
 interface PropertyFinancialsProps {
   data: Property
@@ -81,7 +82,8 @@ export function PropertyFinancials({
     accountNumber: '',
   })
 
-  const { ledgerEntries, addLedgerEntry } = useFinancialStore()
+  const { ledgerEntries, addLedgerEntry, deleteLedgerEntry } =
+    useFinancialStore()
   const propertyEntries = ledgerEntries.filter((e) => e.propertyId === data.id)
 
   const handleOpenAdd = () => {
@@ -131,12 +133,22 @@ export function PropertyFinancials({
 
     if (actionType === 'add') {
       updatedExpenses.push(expense)
-      // Add to Ledger Immediately (Current Month)
+
+      // Calculate immediate due date
+      const today = new Date()
+      const daysInMonth = getDaysInMonth(today)
+      const targetDay = Math.min(expense.dueDay, daysInMonth)
+      let initialDueDate = setDate(today, targetDay)
+
+      // If due date has passed for this month, maybe set for next month?
+      // For simplicity and immediate visibility, we use current month as requested
+      // "Once the current one is marked as paid... generate next"
+
       const entry: LedgerEntry = {
         id: `auto-fe-${expense.id}-initial`,
         propertyId: data.id,
         date: new Date().toISOString(),
-        dueDate: new Date().toISOString(),
+        dueDate: initialDueDate.toISOString(),
         type: 'expense',
         category: expense.name,
         amount: expense.amount,
@@ -170,9 +182,16 @@ export function PropertyFinancials({
       'fixedExpenses',
       (data.fixedExpenses || []).filter((e) => e.id !== id),
     )
+
+    // Also remove pending ledger entries for this expense to keep sync
+    const pendingEntries = ledgerEntries.filter(
+      (e) => e.referenceId === id && e.status === 'pending',
+    )
+    pendingEntries.forEach((entry) => deleteLedgerEntry(entry.id))
+
     toast({
       title: 'Despesa Removida',
-      description: 'Registro excluído permanentemente.',
+      description: 'Registro e lançamentos pendentes excluídos.',
     })
   }
 
@@ -297,7 +316,7 @@ export function PropertyFinancials({
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Fornecedor (Empresa)</Label>
+                    <Label>Company Name (Fornecedor)</Label>
                     <Input
                       value={currentExpense.provider}
                       onChange={(e) =>
@@ -312,7 +331,7 @@ export function PropertyFinancials({
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Número da Conta / Registro</Label>
+                    <Label>Registration Number (Conta/ID)</Label>
                     <Input
                       value={currentExpense.accountNumber}
                       onChange={(e) =>
@@ -411,8 +430,8 @@ export function PropertyFinancials({
             <TableHeader>
               <TableRow>
                 <TableHead>Despesa</TableHead>
-                <TableHead>Fornecedor</TableHead>
-                <TableHead>Conta/Reg.</TableHead>
+                <TableHead>Company Name</TableHead>
+                <TableHead>Reg. Number</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>Dia Venc.</TableHead>
                 <TableHead>Freq.</TableHead>
@@ -466,6 +485,7 @@ export function PropertyFinancials({
                             </AlertDialogTitle>
                             <AlertDialogDescription>
                               Tem certeza que deseja excluir esta despesa fixa?
+                              Isso removerá também os lançamentos pendentes.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>

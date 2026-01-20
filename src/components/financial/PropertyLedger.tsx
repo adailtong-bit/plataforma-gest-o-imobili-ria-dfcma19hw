@@ -97,9 +97,6 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
   }
 
   const handleStatusUpdate = (entry: LedgerEntry, status: any) => {
-    // When marking as paid, we set paymentDate to now if not set
-    // Also opens edit modal to force check details? No, simplified UX as per user story might prefer automatic.
-    // However, user story asks for "Payment Date" field.
     const paymentDate =
       status === 'cleared'
         ? entry.paymentDate || new Date().toISOString()
