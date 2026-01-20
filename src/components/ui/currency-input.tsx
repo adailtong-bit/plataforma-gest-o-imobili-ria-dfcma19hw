@@ -25,15 +25,13 @@ export function CurrencyInput({
   // Format value on mount or external update
   React.useEffect(() => {
     if (value !== undefined && value !== null) {
-      // Check if current input matches the numeric value to prevent cursor jump during typing if we were to format constantly
-      // But here we format only on mount/update from prop
       const formatted = new Intl.NumberFormat(locale, {
         style: 'currency',
         currency: currency,
       }).format(value)
 
-      // If the parsed display value is different from the prop value, update display
-      // This allows free typing without aggressive re-formatting while typing
+      // Only update display if logic matches numeric
+      // We allow the user to type freely
       const currentNumeric = parseFloat(displayValue.replace(/[^0-9.-]/g, ''))
       if (currentNumeric !== value || !displayValue) {
         setDisplayValue(formatted)
@@ -45,13 +43,11 @@ export function CurrencyInput({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
-    // Allow digits, dots, commas, minus
+    // Allow digits, dots, commas, minus, and currency symbols briefly
+    // But we mostly care about digits
     if (/^[0-9.,$-]*$/.test(inputValue) || inputValue === '') {
       setDisplayValue(inputValue)
 
-      // Try to parse for the parent
-      // Remove currency symbols and non-numeric characters except dot/comma/minus
-      // Simplified parsing logic
       const numericString = inputValue.replace(/[^0-9.-]/g, '')
       const parsed = parseFloat(numericString)
       if (!isNaN(parsed)) {
@@ -61,7 +57,6 @@ export function CurrencyInput({
   }
 
   const handleBlur = () => {
-    // On blur, format nicely
     const numericString = displayValue.replace(/[^0-9.-]/g, '')
     const parsed = parseFloat(numericString)
 
@@ -73,8 +68,10 @@ export function CurrencyInput({
       }).format(parsed)
       setDisplayValue(formatted)
     } else {
-      onChange(0)
-      setDisplayValue('')
+      if (displayValue.trim() === '') {
+        onChange(0)
+      }
+      // If invalid, we might revert or clear. Here we revert to 0 if empty
     }
   }
 

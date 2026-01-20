@@ -153,12 +153,12 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button size="sm" className="bg-trust-blue">
-              <Plus className="mr-2 h-4 w-4" /> Novo Lançamento
+              <Plus className="mr-2 h-4 w-4" /> Criar Despesa
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Adicionar Lançamento</AlertDialogTitle>
+              <AlertDialogTitle>Criar Despesa (Lançamento)</AlertDialogTitle>
               <AlertDialogDescription>
                 Confirme se deseja criar um novo registro financeiro manual.
               </AlertDialogDescription>

@@ -44,7 +44,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-// removed AddressInput import per requirement
 
 export default function Properties() {
   const { properties, addProperty, deleteProperty } = usePropertyStore()
@@ -65,8 +64,8 @@ export default function Properties() {
     city: '',
     state: '',
     zipCode: '',
+    additionalInfo: '',
     neighborhood: '',
-    additionalInfo: '', // Added field
     country: 'USA',
     type: 'House',
     profileType: 'short_term',
@@ -203,8 +202,8 @@ export default function Properties() {
       city: '',
       state: '',
       zipCode: '',
-      neighborhood: '',
       additionalInfo: '',
+      neighborhood: '',
       country: 'USA',
       type: 'House',
       profileType: 'short_term',
@@ -266,8 +265,6 @@ export default function Properties() {
                   />
                 </div>
 
-                {/* Removed AddressInput search button per user story */}
-
                 <div className="grid gap-2">
                   <Label>
                     {t('common.address')}{' '}
@@ -285,7 +282,7 @@ export default function Properties() {
                 <div className="grid grid-cols-2 gap-2">
                   <div className="grid gap-1">
                     <Label className="text-xs">
-                      CEP/Zip Code <span className="text-red-500">*</span>
+                      CEP / Zip Code <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       value={newProp.zipCode}
@@ -296,7 +293,7 @@ export default function Properties() {
                     />
                   </div>
                   <div className="grid gap-1">
-                    <Label className="text-xs">Complemento</Label>
+                    <Label className="text-xs">Informações Adicionais</Label>
                     <Input
                       value={newProp.additionalInfo}
                       onChange={(e) =>
@@ -305,7 +302,7 @@ export default function Properties() {
                           additionalInfo: e.target.value,
                         })
                       }
-                      placeholder="Apto/Bloco"
+                      placeholder="Apto, Bloco, etc."
                     />
                   </div>
                 </div>

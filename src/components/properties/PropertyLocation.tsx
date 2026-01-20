@@ -72,7 +72,7 @@ export function PropertyLocation({
               />
             </div>
             <div className="grid gap-2">
-              <Label>Complemento (Info Adicional)</Label>
+              <Label>Informações Adicionais</Label>
               <Input
                 value={data.additionalInfo || ''}
                 onChange={(e) => onChange('additionalInfo', e.target.value)}

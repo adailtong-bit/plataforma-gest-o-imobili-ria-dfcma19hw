@@ -51,6 +51,7 @@ import { PropertyLedger } from '@/components/financial/PropertyLedger'
 import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
 import { setDate, getDaysInMonth } from 'date-fns'
+import { FileUpload } from '@/components/ui/file-upload'
 
 interface PropertyFinancialsProps {
   data: Property
@@ -82,6 +83,10 @@ export function PropertyFinancials({
     accountNumber: '',
   })
 
+  // Additional fields for initial creation (not part of FixedExpense type)
+  const [initialPaymentDate, setInitialPaymentDate] = useState<string>('')
+  const [initialReceipt, setInitialReceipt] = useState<string>('')
+
   const { ledgerEntries, addLedgerEntry, deleteLedgerEntry } =
     useFinancialStore()
   const propertyEntries = ledgerEntries.filter((e) => e.propertyId === data.id)
@@ -95,12 +100,15 @@ export function PropertyFinancials({
       provider: '',
       accountNumber: '',
     })
+    setInitialPaymentDate('')
+    setInitialReceipt('')
     setActionType('add')
     setOpenExpense(true)
   }
 
   const handleOpenEdit = (expense: FixedExpense) => {
     setCurrentExpense({ ...expense })
+    // When editing, we don't handle initial payment date/receipt as those are for the instance
     setActionType('edit')
     setOpenExpense(true)
   }
@@ -140,10 +148,6 @@ export function PropertyFinancials({
       const targetDay = Math.min(expense.dueDay, daysInMonth)
       let initialDueDate = setDate(today, targetDay)
 
-      // If due date has passed for this month, maybe set for next month?
-      // For simplicity and immediate visibility, we use current month as requested
-      // "Once the current one is marked as paid... generate next"
-
       const entry: LedgerEntry = {
         id: `auto-fe-${expense.id}-initial`,
         propertyId: data.id,
@@ -154,7 +158,13 @@ export function PropertyFinancials({
         amount: expense.amount,
         description: `${expense.name} - ${expense.provider || ''} (Auto)`,
         referenceId: expense.id,
-        status: 'pending',
+        status: initialPaymentDate ? 'cleared' : 'pending',
+        paymentDate: initialPaymentDate
+          ? new Date(initialPaymentDate).toISOString()
+          : undefined,
+        attachments: initialReceipt
+          ? [{ name: 'Comprovante', url: initialReceipt }]
+          : [],
       }
       addLedgerEntry(entry)
       toast({
@@ -281,8 +291,13 @@ export function PropertyFinancials({
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Despesas Fixas</CardTitle>
           {canEdit && (
-            <Button size="sm" variant="outline" onClick={handleOpenAdd}>
-              <Plus className="h-4 w-4 mr-2" /> Adicionar Despesa
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleOpenAdd}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4 mr-2" /> Adicionar Despesa Fixa
             </Button>
           )}
         </CardHeader>
@@ -316,7 +331,7 @@ export function PropertyFinancials({
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Company Name (Fornecedor)</Label>
+                    <Label>Fornecedor (Service Provider)</Label>
                     <Input
                       value={currentExpense.provider}
                       onChange={(e) =>
@@ -331,7 +346,7 @@ export function PropertyFinancials({
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Registration Number (Conta/ID)</Label>
+                    <Label>Company Registration Number (Conta/ID)</Label>
                     <Input
                       value={currentExpense.accountNumber}
                       onChange={(e) =>
@@ -391,6 +406,33 @@ export function PropertyFinancials({
                     </Select>
                   </div>
                 </div>
+                {actionType === 'add' && (
+                  <div className="grid grid-cols-1 gap-4 pt-4 border-t">
+                    <h4 className="text-sm font-medium">
+                      Dados do Lançamento Inicial (Opcional)
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label>Data de Pagamento</Label>
+                        <Input
+                          type="date"
+                          value={initialPaymentDate}
+                          onChange={(e) =>
+                            setInitialPaymentDate(e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>Comprovante (Upload)</Label>
+                        <FileUpload
+                          accept=".pdf,.png,.jpg,.jpeg"
+                          onChange={(url) => setInitialReceipt(url)}
+                          label="Anexar Recibo"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setOpenExpense(false)}>
@@ -460,44 +502,66 @@ export function PropertyFinancials({
                     {expense.frequency}
                   </TableCell>
                   {canEdit && (
-                    <TableCell className="text-right flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleOpenEdit(expense)}
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Confirmar Exclusão
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Tem certeza que deseja excluir esta despesa fixa?
-                              Isso removerá também os lançamentos pendentes.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleRemoveExpense(expense.id)}
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <Edit2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Editar Despesa
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Deseja editar esta despesa fixa?
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleOpenEdit(expense)}
+                              >
+                                Continuar
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-red-500 hover:text-red-700"
                             >
-                              Excluir
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Confirmar Exclusão
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Tem certeza que deseja excluir esta despesa
+                                fixa? Isso removerá também os lançamentos
+                                pendentes.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleRemoveExpense(expense.id)}
+                              >
+                                Excluir
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </TableCell>
                   )}
                 </TableRow>
