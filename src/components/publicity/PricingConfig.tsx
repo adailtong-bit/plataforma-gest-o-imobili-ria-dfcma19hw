@@ -42,7 +42,7 @@ export function PricingConfig() {
             <Label>Weekly Rate ($)</Label>
             <Input
               type="number"
-              value={prices.weekly}
+              value={prices.weekly ?? 0}
               onChange={(e) => handleChange('weekly', e.target.value)}
             />
           </div>
@@ -50,7 +50,7 @@ export function PricingConfig() {
             <Label>Bi-Weekly Rate ($)</Label>
             <Input
               type="number"
-              value={prices.biWeekly}
+              value={prices.biWeekly ?? 0}
               onChange={(e) => handleChange('biWeekly', e.target.value)}
             />
           </div>
@@ -58,7 +58,7 @@ export function PricingConfig() {
             <Label>Monthly Rate ($)</Label>
             <Input
               type="number"
-              value={prices.monthly}
+              value={prices.monthly ?? 0}
               onChange={(e) => handleChange('monthly', e.target.value)}
             />
           </div>

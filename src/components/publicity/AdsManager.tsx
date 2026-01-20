@@ -192,7 +192,7 @@ export function AdsManager() {
               <div className="grid gap-2">
                 <Label>Advertiser</Label>
                 <Select
-                  value={formData.advertiserId}
+                  value={formData.advertiserId || ''}
                   onValueChange={(v) =>
                     setFormData({ ...formData, advertiserId: v })
                   }
@@ -213,7 +213,7 @@ export function AdsManager() {
               <div className="grid gap-2">
                 <Label>Title</Label>
                 <Input
-                  value={formData.title}
+                  value={formData.title || ''}
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
@@ -224,7 +224,7 @@ export function AdsManager() {
                 <div className="grid gap-2">
                   <Label>Validity Period</Label>
                   <Select
-                    value={formData.validity}
+                    value={formData.validity || 'monthly'}
                     onValueChange={updatePricingAndDates}
                   >
                     <SelectTrigger>
@@ -241,7 +241,7 @@ export function AdsManager() {
                   <Label>Price ($)</Label>
                   <Input
                     type="number"
-                    value={formData.price}
+                    value={formData.price ?? 0}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -257,7 +257,7 @@ export function AdsManager() {
                   <Label>Start Date</Label>
                   <Input
                     type="date"
-                    value={formData.startDate}
+                    value={formData.startDate || ''}
                     onChange={(e) =>
                       setFormData({ ...formData, startDate: e.target.value })
                     }
@@ -267,7 +267,7 @@ export function AdsManager() {
                   <Label>End Date</Label>
                   <Input
                     type="date"
-                    value={formData.endDate}
+                    value={formData.endDate || ''}
                     onChange={(e) =>
                       setFormData({ ...formData, endDate: e.target.value })
                     }
@@ -277,7 +277,7 @@ export function AdsManager() {
 
               <div className="flex items-center space-x-2 border p-3 rounded-md">
                 <Switch
-                  checked={formData.renewable}
+                  checked={formData.renewable || false}
                   onCheckedChange={(c) =>
                     setFormData({ ...formData, renewable: c })
                   }
@@ -291,7 +291,7 @@ export function AdsManager() {
                   <ExternalLink className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     className="pl-9"
-                    value={formData.linkUrl}
+                    value={formData.linkUrl || ''}
                     onChange={(e) =>
                       setFormData({ ...formData, linkUrl: e.target.value })
                     }
@@ -302,7 +302,7 @@ export function AdsManager() {
               <div className="grid gap-2">
                 <Label>Banner Image</Label>
                 <FileUpload
-                  value={formData.imageUrl}
+                  value={formData.imageUrl || ''}
                   onChange={(url) =>
                     setFormData({ ...formData, imageUrl: url })
                   }
@@ -313,7 +313,7 @@ export function AdsManager() {
               <div className="grid gap-2">
                 <Label>Description</Label>
                 <Textarea
-                  value={formData.description}
+                  value={formData.description || ''}
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
@@ -322,7 +322,7 @@ export function AdsManager() {
 
               <div className="flex items-center space-x-2">
                 <Switch
-                  checked={formData.active}
+                  checked={formData.active ?? true}
                   onCheckedChange={(c) =>
                     setFormData({ ...formData, active: c })
                   }

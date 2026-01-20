@@ -123,7 +123,7 @@ export function AdvertiserList() {
               <div className="grid gap-2">
                 <Label>Name</Label>
                 <Input
-                  value={formData.name}
+                  value={formData.name || ''}
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
@@ -134,7 +134,7 @@ export function AdvertiserList() {
                 <div className="grid gap-2">
                   <Label>Email</Label>
                   <Input
-                    value={formData.email}
+                    value={formData.email || ''}
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
@@ -158,7 +158,7 @@ export function AdvertiserList() {
               <div className="grid gap-2">
                 <Label>Full Address</Label>
                 <Input
-                  value={formData.address}
+                  value={formData.address || ''}
                   onChange={(e) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
