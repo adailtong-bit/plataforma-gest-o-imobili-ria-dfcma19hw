@@ -20,6 +20,7 @@ import { Download } from 'lucide-react'
 import { Property, LedgerEntry } from '@/lib/types'
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
+import { Badge } from '@/components/ui/badge'
 
 interface OwnerStatementProps {
   ownerId: string
@@ -73,7 +74,7 @@ export function OwnerStatement({
   const handleDownload = () => {
     toast({
       title: 'Download iniciado',
-      description: 'O extrato está sendo gerado e baixado.',
+      description: 'O extrato (PDF) está sendo gerado e baixado.',
     })
   }
 
@@ -126,13 +127,14 @@ export function OwnerStatement({
               <TableHead>Propriedade</TableHead>
               <TableHead>Descrição</TableHead>
               <TableHead>Categoria</TableHead>
+              <TableHead>Pagamento</TableHead>
               <TableHead className="text-right">Valor</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredEntries.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
+                <TableCell colSpan={6} className="text-center py-8">
                   Nenhum lançamento no período.
                 </TableCell>
               </TableRow>
@@ -150,6 +152,18 @@ export function OwnerStatement({
                     <TableCell>{entry.description}</TableCell>
                     <TableCell>
                       <span className="capitalize">{entry.category}</span>
+                    </TableCell>
+                    <TableCell>
+                      {entry.status === 'cleared' ? (
+                        <Badge className="bg-green-600">Pago</Badge>
+                      ) : (
+                        <Badge variant="outline">Pendente</Badge>
+                      )}
+                      {entry.paymentDate && (
+                        <span className="text-xs text-muted-foreground ml-2">
+                          {format(new Date(entry.paymentDate), 'dd/MM')}
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell
                       className={`text-right font-medium ${

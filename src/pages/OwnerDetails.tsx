@@ -107,6 +107,7 @@ export default function OwnerDetails() {
                   value={formData.address || ''}
                   onChange={(e) => handleChange('address', e.target.value)}
                   disabled={!isEditing}
+                  placeholder="Street, City, State, ZIP"
                 />
               </div>
               <div className="grid gap-2">
@@ -171,6 +172,17 @@ export default function OwnerDetails() {
                       handleChange('secondContact', {
                         ...formData.secondContact,
                         phone: e.target.value,
+                      })
+                    }
+                    disabled={!isEditing}
+                  />
+                  <Input
+                    placeholder="Email"
+                    value={formData.secondContact?.email || ''}
+                    onChange={(e) =>
+                      handleChange('secondContact', {
+                        ...formData.secondContact,
+                        email: e.target.value,
                       })
                     }
                     disabled={!isEditing}

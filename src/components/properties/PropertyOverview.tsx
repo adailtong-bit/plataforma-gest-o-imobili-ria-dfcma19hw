@@ -49,6 +49,7 @@ export function PropertyOverview({
             value={data.name}
             onChange={(e) => onChange('name', e.target.value)}
             disabled={!canEdit}
+            placeholder="Ex: Villa Sol"
           />
         </div>
         <div className="grid gap-2">
@@ -129,12 +130,32 @@ export function PropertyOverview({
         <div className="grid gap-2 col-span-1 md:col-span-2">
           <Label>Imagem Principal</Label>
           {canViewMedia ? (
-            <FileUpload
-              value={data.image}
-              onChange={(url) => onChange('image', url)}
-              disabled={!canEdit}
-              label={t('properties.upload_image')}
-            />
+            <div className="space-y-2">
+              {data.image ? (
+                <div className="relative w-full aspect-video rounded-md overflow-hidden bg-muted">
+                  <img
+                    src={data.image}
+                    alt="Property"
+                    className="w-full h-full object-cover"
+                  />
+                  {canEdit && (
+                    <button
+                      className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full text-xs hover:bg-red-600 transition-colors"
+                      onClick={() => onChange('image', '')}
+                    >
+                      Remover
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <FileUpload
+                  value={data.image}
+                  onChange={(url) => onChange('image', url)}
+                  disabled={!canEdit}
+                  label={t('properties.upload_image')}
+                />
+              )}
+            </div>
           ) : (
             <div className="p-4 border border-dashed rounded bg-muted text-muted-foreground text-center text-sm">
               {t('properties.image_access_restricted')}

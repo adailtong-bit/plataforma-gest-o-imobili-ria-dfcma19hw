@@ -35,7 +35,7 @@ import useCondominiumStore from '@/stores/useCondominiumStore'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Condominium, CondoContact } from '@/lib/types'
+import { Condominium, CondoContact, HoaFeeHistory } from '@/lib/types'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
 import {
   Table,
@@ -45,6 +45,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { isValidEmail } from '@/lib/utils'
 
 export default function CondominiumDetails() {
   const { id } = useParams()
@@ -63,6 +64,12 @@ export default function CondominiumDetails() {
     name: '',
     phone: '',
     email: '',
+  })
+
+  // Fee History State
+  const [newFee, setNewFee] = useState<Partial<HoaFeeHistory>>({
+    amount: 0,
+    validFrom: '',
   })
 
   useEffect(() => {
@@ -106,23 +113,56 @@ export default function CondominiumDetails() {
   }
 
   const addContact = () => {
-    if (newContact.name && newContact.role) {
-      const contact: CondoContact = {
-        id: `cc-${Date.now()}`,
-        name: newContact.name,
-        role: newContact.role,
-        phone: newContact.phone || '',
-        email: newContact.email || '',
-      }
-      const contacts = [...(formData.contacts || []), contact]
-      setFormData({ ...formData, contacts })
-      setNewContact({ role: '', name: '', phone: '', email: '' })
+    if (!newContact.name || !newContact.role) {
+      toast({
+        title: 'Erro',
+        description: 'Nome e Função são obrigatórios',
+        variant: 'destructive',
+      })
+      return
     }
+
+    if (newContact.email && !isValidEmail(newContact.email)) {
+      toast({
+        title: 'Erro',
+        description: 'Email inválido',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    const contact: CondoContact = {
+      id: `cc-${Date.now()}`,
+      name: newContact.name!,
+      role: newContact.role!,
+      phone: newContact.phone || '',
+      email: newContact.email || '',
+    }
+    const contacts = [...(formData.contacts || []), contact]
+    setFormData({ ...formData, contacts })
+    setNewContact({ role: '', name: '', phone: '', email: '' })
   }
 
   const removeContact = (id: string) => {
     const contacts = (formData.contacts || []).filter((c) => c.id !== id)
     setFormData({ ...formData, contacts })
+  }
+
+  const addFeeHistory = () => {
+    if (!newFee.amount || !newFee.validFrom) return
+
+    const historyItem: HoaFeeHistory = {
+      id: `fh-${Date.now()}`,
+      amount: Number(newFee.amount),
+      validFrom: newFee.validFrom!,
+      validTo: newFee.validTo,
+    }
+
+    setFormData({
+      ...formData,
+      feeHistory: [...(formData.feeHistory || []), historyItem],
+    })
+    setNewFee({ amount: 0, validFrom: '', validTo: '' })
   }
 
   return (
@@ -256,7 +296,7 @@ export default function CondominiumDetails() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Pool / Gym / Amenities</Label>
+                  <Label>Amenities / Game Room / Water Park</Label>
                   <Input
                     value={formData.accessCredentials?.poolCode || ''}
                     onChange={(e) =>
@@ -313,6 +353,7 @@ export default function CondominiumDetails() {
                   <div className="grid gap-2 w-1/4">
                     <Label>Função</Label>
                     <Select
+                      value={newContact.role}
                       onValueChange={(v) =>
                         setNewContact({ ...newContact, role: v })
                       }
@@ -333,6 +374,7 @@ export default function CondominiumDetails() {
                   <div className="grid gap-2 w-1/4">
                     <Label>Nome</Label>
                     <Input
+                      value={newContact.name}
                       onChange={(e) =>
                         setNewContact({ ...newContact, name: e.target.value })
                       }
@@ -341,6 +383,7 @@ export default function CondominiumDetails() {
                   <div className="grid gap-2 w-1/4">
                     <Label>Telefone</Label>
                     <Input
+                      value={newContact.phone}
                       onChange={(e) =>
                         setNewContact({ ...newContact, phone: e.target.value })
                       }
@@ -349,6 +392,7 @@ export default function CondominiumDetails() {
                   <div className="grid gap-2 w-1/4">
                     <Label>Email</Label>
                     <Input
+                      value={newContact.email}
                       onChange={(e) =>
                         setNewContact({ ...newContact, email: e.target.value })
                       }
@@ -408,7 +452,7 @@ export default function CondominiumDetails() {
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>{t('properties.hoa_fee')}</Label>
+                <Label>{t('properties.hoa_fee')} (Atual)</Label>
                 <Input
                   type="number"
                   value={formData.hoaFee || ''}
@@ -440,6 +484,79 @@ export default function CondominiumDetails() {
                     </SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="col-span-2 pt-6">
+                <h3 className="font-semibold mb-2">Histórico de Ajustes</h3>
+                {isEditing && (
+                  <div className="flex gap-2 items-end mb-4 border p-2 rounded bg-muted/20">
+                    <div className="grid gap-2">
+                      <Label>Valor ($)</Label>
+                      <Input
+                        type="number"
+                        value={newFee.amount}
+                        onChange={(e) =>
+                          setNewFee({
+                            ...newFee,
+                            amount: Number(e.target.value),
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Válido De</Label>
+                      <Input
+                        type="date"
+                        value={newFee.validFrom}
+                        onChange={(e) =>
+                          setNewFee({ ...newFee, validFrom: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Válido Até</Label>
+                      <Input
+                        type="date"
+                        value={newFee.validTo || ''}
+                        onChange={(e) =>
+                          setNewFee({ ...newFee, validTo: e.target.value })
+                        }
+                      />
+                    </div>
+                    <Button onClick={addFeeHistory}>
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Valor</TableHead>
+                      <TableHead>De</TableHead>
+                      <TableHead>Até</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {formData.feeHistory?.map((fh) => (
+                      <TableRow key={fh.id}>
+                        <TableCell>${fh.amount}</TableCell>
+                        <TableCell>{fh.validFrom}</TableCell>
+                        <TableCell>{fh.validTo || 'Atual'}</TableCell>
+                      </TableRow>
+                    ))}
+                    {(!formData.feeHistory ||
+                      formData.feeHistory.length === 0) && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={3}
+                          className="text-center text-muted-foreground"
+                        >
+                          Sem histórico.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
               </div>
             </CardContent>
           </Card>

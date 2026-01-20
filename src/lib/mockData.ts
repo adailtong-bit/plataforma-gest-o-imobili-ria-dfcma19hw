@@ -123,6 +123,11 @@ export const properties: Property[] = tenantsData.flatMap((tenant, tIdx) =>
         frequency: 'monthly',
       },
     ],
+    socialMedia: {
+      facebook: 'https://facebook.com/property',
+      instagram: 'https://instagram.com/property',
+    },
+    leadContact: 'sales@agency.com',
   })),
 )
 
@@ -137,11 +142,12 @@ export const owners: Owner[] = tenantsData.flatMap((tenant, tIdx) =>
     role: 'property_owner',
     avatar: `https://img.usecurling.com/ppl/thumbnail?gender=male&seed=${50 + tIdx + oIdx}`,
     country: 'US',
-    address: '123 Owner Lane',
+    address: '123 Owner Lane, Orlando, FL 32801',
     secondContact: {
       name: 'Spouse Name',
       phone: '+1 555 1234',
     },
+    pmAgreementUrl: 'https://example.com/agreement.pdf',
   })),
 )
 
@@ -165,6 +171,20 @@ export const tenants: Tenant[] = tenantsData.flatMap((manager, tIdx) =>
       phone: '+1 555 9999',
       relation: 'Sibling',
     },
+    negotiationStatus: i === 0 ? 'negotiating' : undefined,
+    suggestedRenewalPrice: 2200,
+    negotiationLogs:
+      i === 0
+        ? [
+            {
+              id: 'log1',
+              date: new Date().toISOString(),
+              action: 'Contacted Owner',
+              note: 'Owner agreed to negotiate',
+              user: 'Staff Member',
+            },
+          ]
+        : [],
   })),
 )
 
@@ -213,6 +233,26 @@ export const condominiums: Condominium[] = [
         name: 'Guard Station',
         phone: '+1 555 1111',
         email: 'security@sunnyisles.com',
+      },
+      {
+        id: 'c2',
+        role: 'Maintenance',
+        name: 'Fix It All',
+        phone: '+1 555 2222',
+        email: 'maint@sunnyisles.com',
+      },
+    ],
+    feeHistory: [
+      {
+        id: 'fh1',
+        amount: 400,
+        validFrom: '2023-01-01',
+        validTo: '2023-12-31',
+      },
+      {
+        id: 'fh2',
+        amount: 450,
+        validFrom: '2024-01-01',
       },
     ],
   },
@@ -327,6 +367,8 @@ export const marketData: MarketData[] = [
     longTermRate: 2200,
     pricePerSqFt: 250,
     saturationIndex: 65,
+    propertyTaxAvg: 3500,
+    hoaAvg: 400,
   },
   {
     region: 'Miami, FL',
@@ -339,6 +381,8 @@ export const marketData: MarketData[] = [
     longTermRate: 3500,
     pricePerSqFt: 450,
     saturationIndex: 85,
+    propertyTaxAvg: 6000,
+    hoaAvg: 800,
   },
 ]
 

@@ -100,6 +100,13 @@ export interface CondoContact {
   email: string
 }
 
+export interface HoaFeeHistory {
+  id: string
+  amount: number
+  validFrom: string
+  validTo?: string
+}
+
 export interface Condominium {
   id: string
   name: string
@@ -127,6 +134,7 @@ export interface Condominium {
     date: string
   }
   contacts?: CondoContact[]
+  feeHistory?: HoaFeeHistory[]
 }
 
 export type PropertyStatus =
@@ -143,6 +151,15 @@ export interface FixedExpense {
   amount: number
   dueDay: number
   frequency: 'monthly' | 'yearly'
+}
+
+export interface SocialMediaLinks {
+  facebook?: string
+  instagram?: string
+  tiktok?: string
+  youtube?: string
+  linkedin?: string
+  other?: string
 }
 
 export interface Property {
@@ -207,6 +224,10 @@ export interface Property {
 
   // Financial
   fixedExpenses?: FixedExpense[]
+
+  // New Marketing Fields
+  socialMedia?: SocialMediaLinks
+  leadContact?: string
 }
 
 export type DocumentCategory =
@@ -240,6 +261,21 @@ export interface GenericDocument {
   category: DocumentCategory
 }
 
+export type NegotiationStatus =
+  | 'negotiating'
+  | 'owner_contacted'
+  | 'tenant_contacted'
+  | 'vacating'
+  | 'closed'
+
+export interface NegotiationLogEntry {
+  id: string
+  date: string
+  action: string
+  note: string
+  user: string
+}
+
 export interface Tenant {
   id: string
   name: string
@@ -265,6 +301,11 @@ export interface Tenant {
     phone: string
     relation: string
   }
+
+  // Renewals
+  negotiationStatus?: NegotiationStatus
+  negotiationLogs?: NegotiationLogEntry[]
+  suggestedRenewalPrice?: number
 }
 
 export interface Owner {
@@ -480,6 +521,8 @@ export interface MarketData {
   longTermRate: number
   pricePerSqFt: number
   saturationIndex: number
+  propertyTaxAvg?: number
+  hoaAvg?: number
 }
 
 export interface Message {

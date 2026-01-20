@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { LedgerEntry } from '@/lib/types'
 import {
   Table,
   TableBody,
@@ -7,18 +8,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -26,448 +26,219 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import {
-  Plus,
-  Trash2,
-  Edit,
-  Paperclip,
-  AlertTriangle,
-  FileText,
-} from 'lucide-react'
+import { Plus, Upload, CheckCircle2, AlertCircle } from 'lucide-react'
+import { format, isPast, parseISO } from 'date-fns'
 import useFinancialStore from '@/stores/useFinancialStore'
-import usePartnerStore from '@/stores/usePartnerStore'
-import { format, isPast, isToday } from 'date-fns'
-import { LedgerEntry } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 
 interface PropertyLedgerProps {
   propertyId: string
-  canEdit: boolean
+  entries: LedgerEntry[]
 }
 
-export function PropertyLedger({ propertyId, canEdit }: PropertyLedgerProps) {
-  const {
-    ledgerEntries,
-    addLedgerEntry,
-    updateLedgerEntry,
-    deleteLedgerEntry,
-  } = useFinancialStore()
-  const { partners } = usePartnerStore()
+export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
+  const { addLedgerEntry, updateLedgerEntry } = useFinancialStore()
   const { toast } = useToast()
-
   const [open, setOpen] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
-
-  const [entryForm, setEntryForm] = useState<Partial<LedgerEntry>>({
+  const [newEntry, setNewEntry] = useState<Partial<LedgerEntry>>({
     type: 'expense',
-    category: 'Maintenance',
     amount: 0,
     description: '',
-    status: 'pending',
-    beneficiaryId: 'none',
-    date: new Date().toISOString(),
-    dueDate: '',
+    category: '',
+    dueDate: new Date().toISOString().split('T')[0],
   })
 
-  const propertyEntries = ledgerEntries.filter(
-    (e) => e.propertyId === propertyId,
-  )
-
-  const handlePartnerSelect = (partnerId: string) => {
-    setEntryForm({ ...entryForm, beneficiaryId: partnerId })
-    const partner = partners.find((p) => p.id === partnerId)
-    if (partner && partner.serviceRates && partner.serviceRates.length > 0) {
-      const defaultRate = partner.serviceRates[0]
-      if (defaultRate) {
-        setEntryForm((prev) => ({
-          ...prev,
-          amount: defaultRate.price,
-          description: `${defaultRate.serviceName} - ${partner.name}`,
-          beneficiaryId: partnerId,
-        }))
-      }
-    }
-  }
-
   const handleSave = () => {
-    if (!entryForm.amount || !entryForm.description) return
+    if (!newEntry.amount || !newEntry.description || !newEntry.category) return
 
-    const entryData: LedgerEntry = {
-      id: editingId || `ledg-${Date.now()}`,
+    addLedgerEntry({
+      id: `led-${Date.now()}`,
       propertyId,
-      date: entryForm.date || new Date().toISOString(),
-      dueDate: entryForm.dueDate,
-      type: entryForm.type as 'income' | 'expense',
-      category: entryForm.category || 'Other',
-      amount: Number(entryForm.amount),
-      description: entryForm.description,
-      status: entryForm.status as any,
-      beneficiaryId:
-        entryForm.beneficiaryId === 'none'
-          ? undefined
-          : entryForm.beneficiaryId,
-      attachments: entryForm.attachments || [],
-    }
-
-    if (editingId) {
-      updateLedgerEntry(entryData)
-      toast({ title: 'Lançamento atualizado' })
-    } else {
-      addLedgerEntry(entryData)
-      toast({ title: 'Lançamento criado' })
-    }
+      date: new Date().toISOString(),
+      status: 'pending',
+      ...newEntry,
+      amount: Number(newEntry.amount),
+    } as LedgerEntry)
 
     setOpen(false)
-    resetForm()
+    toast({ title: 'Lançamento adicionado' })
   }
 
-  const handleEdit = (entry: LedgerEntry) => {
-    setEditingId(entry.id)
-    setEntryForm(entry)
-    setOpen(true)
+  const handleStatusUpdate = (entry: LedgerEntry, status: any) => {
+    updateLedgerEntry({ ...entry, status })
+    toast({ title: `Status atualizado para ${status}` })
   }
-
-  const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this entry?')) {
-      deleteLedgerEntry(id)
-    }
-  }
-
-  const handleAttachment = () => {
-    setEntryForm((prev) => ({
-      ...prev,
-      attachments: [
-        ...(prev.attachments || []),
-        { name: 'Recibo.pdf', url: '#' },
-      ],
-    }))
-    toast({ title: 'Comprovante anexado' })
-  }
-
-  const resetForm = () => {
-    setEditingId(null)
-    setEntryForm({
-      type: 'expense',
-      category: 'Maintenance',
-      amount: 0,
-      description: '',
-      status: 'pending',
-      beneficiaryId: 'none',
-      attachments: [],
-      date: new Date().toISOString(),
-      dueDate: '',
-    })
-  }
-
-  const getTypeColor = (type: string) =>
-    type === 'income' ? 'text-green-600' : 'text-red-600'
 
   const getStatusBadge = (entry: LedgerEntry) => {
     if (entry.status === 'cleared')
       return <Badge className="bg-green-600">Pago</Badge>
-    if (entry.status === 'void')
-      return <Badge variant="secondary">Cancelado</Badge>
-
     if (
+      entry.status === 'pending' &&
       entry.dueDate &&
-      isPast(new Date(entry.dueDate)) &&
-      !isToday(new Date(entry.dueDate))
+      isPast(parseISO(entry.dueDate))
     ) {
-      return (
-        <Badge variant="destructive" className="flex items-center gap-1">
-          <AlertTriangle className="h-3 w-3" /> Atrasado
-        </Badge>
-      )
+      return <Badge variant="destructive">Atrasado</Badge>
     }
-    return <Badge variant="outline">Pendente</Badge>
+    if (entry.status === 'pending')
+      return <Badge variant="secondary">Pendente</Badge>
+    return <Badge variant="outline">{entry.status}</Badge>
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Ledger Financeiro</CardTitle>
-        {canEdit && (
-          <Dialog
-            open={open}
-            onOpenChange={(val) => {
-              setOpen(val)
-              if (!val) resetForm()
-            }}
-          >
-            <DialogTrigger asChild>
-              <Button size="sm" className="bg-trust-blue">
-                <Plus className="h-4 w-4 mr-2" /> Novo Lançamento
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingId ? 'Editar' : 'Novo'} Lançamento
-                </DialogTitle>
-                <DialogDescription>
-                  Preencha os campos abaixo para registrar ou editar a transação
-                  financeira.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Tipo</Label>
-                    <Select
-                      value={entryForm.type}
-                      onValueChange={(v: any) =>
-                        setEntryForm({ ...entryForm, type: v })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="income">Receita</SelectItem>
-                        <SelectItem value="expense">Despesa</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Categoria</Label>
-                    <Select
-                      value={entryForm.category}
-                      onValueChange={(v) =>
-                        setEntryForm({ ...entryForm, category: v })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Rent">Aluguel</SelectItem>
-                        <SelectItem value="Maintenance">Manutenção</SelectItem>
-                        <SelectItem value="Cleaning">Limpeza</SelectItem>
-                        <SelectItem value="HOA">HOA</SelectItem>
-                        <SelectItem value="Taxes">Impostos</SelectItem>
-                        <SelectItem value="Utilities">Utilidades</SelectItem>
-                        <SelectItem value="Water">Água</SelectItem>
-                        <SelectItem value="Electricity">Luz</SelectItem>
-                        <SelectItem value="Internet">Internet</SelectItem>
-                        <SelectItem value="Management Fee">
-                          Taxa de Gestão
-                        </SelectItem>
-                        <SelectItem value="Other">Outro</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {entryForm.type === 'expense' && (
-                  <div className="grid gap-2">
-                    <Label>Parceiro (Auto-preencher)</Label>
-                    <Select
-                      value={entryForm.beneficiaryId || 'none'}
-                      onValueChange={handlePartnerSelect}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione um parceiro" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">Nenhum</SelectItem>
-                        {partners.map((p) => (
-                          <SelectItem key={p.id} value={p.id}>
-                            {p.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-medium">Extrato Financeiro Detalhado</h3>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" className="bg-trust-blue">
+              <Plus className="mr-2 h-4 w-4" /> Novo Lançamento
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Adicionar Lançamento</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>Descrição</Label>
+                  <Label>Tipo</Label>
+                  <Select
+                    value={newEntry.type}
+                    onValueChange={(v: any) =>
+                      setNewEntry({ ...newEntry, type: v })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="income">Receita</SelectItem>
+                      <SelectItem value="expense">Despesa</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Categoria</Label>
                   <Input
-                    value={entryForm.description}
+                    value={newEntry.category}
                     onChange={(e) =>
-                      setEntryForm({
-                        ...entryForm,
-                        description: e.target.value,
+                      setNewEntry({ ...newEntry, category: e.target.value })
+                    }
+                    placeholder="Ex: Aluguel, Manutenção"
+                  />
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Label>Descrição</Label>
+                <Input
+                  value={newEntry.description}
+                  onChange={(e) =>
+                    setNewEntry({ ...newEntry, description: e.target.value })
+                  }
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label>Valor ($)</Label>
+                  <Input
+                    type="number"
+                    value={newEntry.amount}
+                    onChange={(e) =>
+                      setNewEntry({
+                        ...newEntry,
+                        amount: e.target.value as any,
                       })
                     }
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Valor ($)</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={entryForm.amount}
-                      onChange={(e) =>
-                        setEntryForm({ ...entryForm, amount: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Status</Label>
+                <div className="grid gap-2">
+                  <Label>Vencimento</Label>
+                  <Input
+                    type="date"
+                    value={newEntry.dueDate}
+                    onChange={(e) =>
+                      setNewEntry({ ...newEntry, dueDate: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Label>Comprovante (Upload Mock)</Label>
+                <Button variant="outline" className="w-full">
+                  <Upload className="mr-2 h-4 w-4" /> Anexar Arquivo
+                </Button>
+              </div>
+              <Button onClick={handleSave}>Salvar</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="border rounded-md">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Data</TableHead>
+              <TableHead>Vencimento</TableHead>
+              <TableHead>Descrição</TableHead>
+              <TableHead>Categoria</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Valor</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {entries.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-6">
+                  Nenhum registro financeiro.
+                </TableCell>
+              </TableRow>
+            ) : (
+              entries.map((entry) => (
+                <TableRow key={entry.id}>
+                  <TableCell>
+                    {format(new Date(entry.date), 'dd/MM/yyyy')}
+                  </TableCell>
+                  <TableCell>
+                    {entry.dueDate
+                      ? format(new Date(entry.dueDate), 'dd/MM/yyyy')
+                      : '-'}
+                  </TableCell>
+                  <TableCell>{entry.description}</TableCell>
+                  <TableCell>{entry.category}</TableCell>
+                  <TableCell>{getStatusBadge(entry)}</TableCell>
+                  <TableCell
+                    className={`text-right font-medium ${
+                      entry.type === 'income'
+                        ? 'text-green-600'
+                        : 'text-red-600'
+                    }`}
+                  >
+                    {entry.type === 'income' ? '+' : '-'}${entry.amount}
+                  </TableCell>
+                  <TableCell className="text-right">
                     <Select
-                      value={entryForm.status}
-                      onValueChange={(v: any) =>
-                        setEntryForm({ ...entryForm, status: v })
-                      }
+                      defaultValue={entry.status}
+                      onValueChange={(v) => handleStatusUpdate(entry, v)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-8 w-[100px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="pending">Pendente</SelectItem>
-                        <SelectItem value="cleared">Pago/Compensado</SelectItem>
+                        <SelectItem value="cleared">Pago</SelectItem>
                         <SelectItem value="overdue">Atrasado</SelectItem>
                         <SelectItem value="void">Cancelado</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Data Lançamento</Label>
-                    <Input
-                      type="date"
-                      value={
-                        entryForm.date
-                          ? format(new Date(entryForm.date), 'yyyy-MM-dd')
-                          : ''
-                      }
-                      onChange={(e) =>
-                        setEntryForm({
-                          ...entryForm,
-                          date: new Date(e.target.value).toISOString(),
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Vencimento (Opcional)</Label>
-                    <Input
-                      type="date"
-                      value={
-                        entryForm.dueDate
-                          ? format(new Date(entryForm.dueDate), 'yyyy-MM-dd')
-                          : ''
-                      }
-                      onChange={(e) =>
-                        setEntryForm({
-                          ...entryForm,
-                          dueDate: new Date(e.target.value).toISOString(),
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between border-t pt-4">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleAttachment}
-                    >
-                      <Paperclip className="h-3 w-3 mr-2" /> Anexar
-                    </Button>
-                    {entryForm.attachments &&
-                      entryForm.attachments.length > 0 && (
-                        <Badge variant="secondary">
-                          {entryForm.attachments.length}
-                        </Badge>
-                      )}
-                  </div>
-                  <Button onClick={handleSave}>Salvar</Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Vencimento</TableHead>
-              <TableHead>Categoria</TableHead>
-              <TableHead>Descrição</TableHead>
-              <TableHead>Valor</TableHead>
-              <TableHead>Status</TableHead>
-              {canEdit && <TableHead className="text-right">Ações</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {propertyEntries.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
-                  Nenhum lançamento registrado.
-                </TableCell>
-              </TableRow>
-            ) : (
-              propertyEntries.map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell>
-                    {entry.dueDate ? (
-                      <span
-                        className={
-                          isPast(new Date(entry.dueDate)) &&
-                          entry.status !== 'cleared'
-                            ? 'text-red-500 font-bold'
-                            : ''
-                        }
-                      >
-                        {format(new Date(entry.dueDate), 'dd/MM/yyyy')}
-                      </span>
-                    ) : (
-                      '-'
-                    )}
                   </TableCell>
-                  <TableCell>{entry.category}</TableCell>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <span>{entry.description}</span>
-                      {entry.attachments && entry.attachments.length > 0 && (
-                        <span className="text-[10px] text-blue-600 flex items-center gap-1 cursor-pointer">
-                          <FileText className="h-3 w-3" />{' '}
-                          {entry.attachments.length} anexo(s)
-                        </span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className={getTypeColor(entry.type)}>
-                    {entry.type === 'expense' ? '-' : '+'} $
-                    {entry.amount.toFixed(2)}
-                  </TableCell>
-                  <TableCell>{getStatusBadge(entry)}</TableCell>
-                  {canEdit && (
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(entry)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(entry.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  )}
                 </TableRow>
               ))
             )}
           </TableBody>
         </Table>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

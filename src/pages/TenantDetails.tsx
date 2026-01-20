@@ -21,6 +21,7 @@ import {
   User,
   Edit,
   X,
+  Home,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -36,8 +37,11 @@ export default function TenantDetails() {
   const { properties } = usePropertyStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
+  const navigate = useNavigate()
 
   const tenant = tenants.find((t) => t.id === id)
+  const property = properties.find((p) => p.id === tenant?.propertyId)
+
   const [formData, setFormData] = useState<Tenant | null>(
     tenant ? { ...tenant } : null,
   )
@@ -59,6 +63,17 @@ export default function TenantDetails() {
     handleChange('documents', docs)
   }
 
+  const handleGenerateContract = () => {
+    toast({
+      title: 'Contrato Gerado',
+      description: `Contrato para o período ${formData.leaseStart} a ${formData.leaseEnd} com valor ${formData.rentValue}.`,
+    })
+  }
+
+  const handleSendMessage = () => {
+    navigate(`/messages?contactId=${formData.id}`)
+  }
+
   return (
     <div className="flex flex-col gap-6 pb-10">
       <div className="flex items-center justify-between">
@@ -68,9 +83,12 @@ export default function TenantDetails() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
-            {formData.name}
-          </h1>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-navy">
+              {formData.name}
+            </h1>
+            <p className="text-muted-foreground">{formData.email}</p>
+          </div>
         </div>
         <div className="flex gap-2">
           {isEditing ? (
@@ -83,139 +101,175 @@ export default function TenantDetails() {
               </Button>
             </>
           ) : (
-            <Button onClick={() => setIsEditing(true)} variant="outline">
-              <Edit className="mr-2 h-4 w-4" /> Editar Perfil
-            </Button>
+            <>
+              <Button onClick={handleSendMessage} variant="ghost">
+                <Mail className="mr-2 h-4 w-4" /> Mensagem
+              </Button>
+              <Button onClick={() => setIsEditing(true)} variant="outline">
+                <Edit className="mr-2 h-4 w-4" /> Editar Perfil
+              </Button>
+            </>
           )}
         </div>
       </div>
 
-      <Tabs defaultValue="profile">
-        <TabsList>
-          <TabsTrigger value="profile">Perfil</TabsTrigger>
-          <TabsTrigger value="contract">Contrato & Docs</TabsTrigger>
-        </TabsList>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle>Informações Pessoais</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label>Nome Completo</Label>
+              <Input
+                value={formData.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                disabled={!isEditing}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Email</Label>
+              <Input
+                value={formData.email}
+                onChange={(e) => handleChange('email', e.target.value)}
+                disabled={!isEditing}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Telefone</Label>
+              <Input
+                value={formData.phone}
+                onChange={(e) => handleChange('phone', e.target.value)}
+                disabled={!isEditing}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>ID Number / Passport</Label>
+              <Input
+                value={formData.idNumber || ''}
+                onChange={(e) => handleChange('idNumber', e.target.value)}
+                disabled={!isEditing}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Driver License</Label>
+              <Input
+                value={formData.driverLicense || ''}
+                onChange={(e) => handleChange('driverLicense', e.target.value)}
+                disabled={!isEditing}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>SSN / Social</Label>
+              <Input
+                value={formData.socialSecurity || ''}
+                onChange={(e) => handleChange('socialSecurity', e.target.value)}
+                disabled={!isEditing}
+              />
+            </div>
+            <div className="grid gap-2 md:col-span-2">
+              <Label>Referências</Label>
+              <Textarea
+                value={formData.references || ''}
+                onChange={(e) => handleChange('references', e.target.value)}
+                disabled={!isEditing}
+                placeholder="Contatos de referência..."
+              />
+            </div>
 
-        <TabsContent value="profile">
-          <Card>
-            <CardHeader>
-              <CardTitle>Informações Pessoais</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>Nome Completo</Label>
+            <div className="md:col-span-2 pt-4 border-t">
+              <h3 className="font-semibold mb-3">Contato de Emergência</h3>
+              <div className="grid grid-cols-3 gap-4">
                 <Input
-                  value={formData.name}
-                  onChange={(e) => handleChange('name', e.target.value)}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Email</Label>
-                <Input
-                  value={formData.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Telefone</Label>
-                <Input
-                  value={formData.phone}
-                  onChange={(e) => handleChange('phone', e.target.value)}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>ID Number / Passport</Label>
-                <Input
-                  value={formData.idNumber || ''}
-                  onChange={(e) => handleChange('idNumber', e.target.value)}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Driver License</Label>
-                <Input
-                  value={formData.driverLicense || ''}
+                  placeholder="Nome"
+                  value={formData.emergencyContact?.name || ''}
                   onChange={(e) =>
-                    handleChange('driverLicense', e.target.value)
+                    handleChange('emergencyContact', {
+                      ...formData.emergencyContact,
+                      name: e.target.value,
+                    })
+                  }
+                  disabled={!isEditing}
+                />
+                <Input
+                  placeholder="Telefone"
+                  value={formData.emergencyContact?.phone || ''}
+                  onChange={(e) =>
+                    handleChange('emergencyContact', {
+                      ...formData.emergencyContact,
+                      phone: e.target.value,
+                    })
+                  }
+                  disabled={!isEditing}
+                />
+                <Input
+                  placeholder="Relação (Ex: Pai)"
+                  value={formData.emergencyContact?.relation || ''}
+                  onChange={(e) =>
+                    handleChange('emergencyContact', {
+                      ...formData.emergencyContact,
+                      relation: e.target.value,
+                    })
                   }
                   disabled={!isEditing}
                 />
               </div>
-              <div className="grid gap-2">
-                <Label>SSN / Social</Label>
-                <Input
-                  value={formData.socialSecurity || ''}
-                  onChange={(e) =>
-                    handleChange('socialSecurity', e.target.value)
-                  }
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="grid gap-2 md:col-span-2">
-                <Label>Referências</Label>
-                <Textarea
-                  value={formData.references || ''}
-                  onChange={(e) => handleChange('references', e.target.value)}
-                  disabled={!isEditing}
-                  placeholder="Contatos de referência..."
-                />
-              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-              <div className="md:col-span-2 pt-4 border-t">
-                <h3 className="font-semibold mb-3">Contato de Emergência</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <Input
-                    placeholder="Nome"
-                    value={formData.emergencyContact?.name || ''}
-                    onChange={(e) =>
-                      handleChange('emergencyContact', {
-                        ...formData.emergencyContact,
-                        name: e.target.value,
-                      })
-                    }
-                    disabled={!isEditing}
-                  />
-                  <Input
-                    placeholder="Telefone"
-                    value={formData.emergencyContact?.phone || ''}
-                    onChange={(e) =>
-                      handleChange('emergencyContact', {
-                        ...formData.emergencyContact,
-                        phone: e.target.value,
-                      })
-                    }
-                    disabled={!isEditing}
-                  />
-                  <Input
-                    placeholder="Relação (Ex: Pai)"
-                    value={formData.emergencyContact?.relation || ''}
-                    onChange={(e) =>
-                      handleChange('emergencyContact', {
-                        ...formData.emergencyContact,
-                        relation: e.target.value,
-                      })
-                    }
-                    disabled={!isEditing}
-                  />
+        <div className="space-y-6">
+          {property && (
+            <Card className="border-blue-200 bg-blue-50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg flex items-center gap-2 text-blue-800">
+                  <Home className="h-5 w-5" /> Propriedade Atual
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <p
+                    className="font-medium text-lg hover:underline cursor-pointer"
+                    onClick={() => navigate(`/properties/${property.id}`)}
+                  >
+                    {property.name}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {property.address}
+                  </p>
+                  <div className="pt-2 border-t border-blue-200 mt-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Aluguel:</span>
+                      <span className="font-bold">${formData.rentValue}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Fim Contrato:</span>
+                      <span className="font-bold text-red-600">
+                        {formData.leaseEnd}
+                      </span>
+                    </div>
+                  </div>
+                  <Button
+                    className="w-full mt-4 bg-white text-blue-700 border-blue-200 hover:bg-blue-100"
+                    variant="outline"
+                    onClick={handleGenerateContract}
+                  >
+                    <FileText className="mr-2 h-4 w-4" /> Gerar Contrato
+                  </Button>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              </CardContent>
+            </Card>
+          )}
 
-        <TabsContent value="contract">
           <DocumentVault
             documents={formData.documents || []}
             onUpdate={handleDocsUpdate}
             canEdit={true}
-            title="Documentos & Contratos"
-            description="Contratos assinados, IDs e comprovantes."
+            title="Documentos"
+            description="Contratos, IDs e comprovantes."
           />
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
     </div>
   )
 }

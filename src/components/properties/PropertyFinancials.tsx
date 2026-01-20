@@ -28,6 +28,8 @@ import {
   DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { PropertyLedger } from '@/components/financial/PropertyLedger'
+import useFinancialStore from '@/stores/useFinancialStore'
 
 interface PropertyFinancialsProps {
   data: Property
@@ -51,6 +53,9 @@ export function PropertyFinancials({
     dueDay: 1,
     frequency: 'monthly',
   })
+  const { ledgerEntries } = useFinancialStore()
+
+  const propertyEntries = ledgerEntries.filter((e) => e.propertyId === data.id)
 
   const handleAddExpense = () => {
     if (newExpense.name && newExpense.amount) {
@@ -287,6 +292,12 @@ export function PropertyFinancials({
               ))}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="pt-6">
+          <PropertyLedger propertyId={data.id} entries={propertyEntries} />
         </CardContent>
       </Card>
     </div>

@@ -38,6 +38,7 @@ export function PropertyContent({
                   }
                   disabled={!canEdit}
                   rows={6}
+                  placeholder="Descrição completa em Português..."
                 />
               </div>
             </TabsContent>
@@ -51,6 +52,7 @@ export function PropertyContent({
                   }
                   disabled={!canEdit}
                   rows={6}
+                  placeholder="Full description in English..."
                 />
               </div>
             </TabsContent>
@@ -64,6 +66,7 @@ export function PropertyContent({
                   }
                   disabled={!canEdit}
                   rows={6}
+                  placeholder="Descripción completa en Español..."
                 />
               </div>
             </TabsContent>
@@ -92,6 +95,7 @@ export function PropertyContent({
                   }
                   disabled={!canEdit}
                   rows={6}
+                  placeholder="Regras do condomínio..."
                 />
               </div>
             </TabsContent>
@@ -105,6 +109,7 @@ export function PropertyContent({
                   }
                   disabled={!canEdit}
                   rows={6}
+                  placeholder="HOA Rules..."
                 />
               </div>
             </TabsContent>
@@ -118,6 +123,7 @@ export function PropertyContent({
                   }
                   disabled={!canEdit}
                   rows={6}
+                  placeholder="Reglas del condominio..."
                 />
               </div>
             </TabsContent>

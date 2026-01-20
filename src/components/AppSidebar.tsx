@@ -10,6 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from '@/components/ui/sidebar'
 import {
   Home,
@@ -43,6 +44,13 @@ export function AppSidebar() {
   const pathname = location.pathname
   const { t } = useLanguageStore()
   const { currentUser } = useAuthStore()
+  const { setOpenMobile, isMobile } = useSidebar()
+
+  const handleMobileClick = () => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
 
   const allMenuItems = [
     {
@@ -174,7 +182,7 @@ export function AppSidebar() {
                       asChild
                       isActive={isActive('/portal/tenant')}
                     >
-                      <Link to="/portal/tenant">
+                      <Link to="/portal/tenant" onClick={handleMobileClick}>
                         <LayoutDashboard />
                         <span>Portal Inquilino</span>
                       </Link>
@@ -187,7 +195,7 @@ export function AppSidebar() {
                       asChild
                       isActive={isActive('/portal/owner')}
                     >
-                      <Link to="/portal/owner">
+                      <Link to="/portal/owner" onClick={handleMobileClick}>
                         <LayoutDashboard />
                         <span>Portal Proprietário</span>
                       </Link>
@@ -200,7 +208,7 @@ export function AppSidebar() {
                       asChild
                       isActive={isActive('/portal/partner')}
                     >
-                      <Link to="/portal/partner">
+                      <Link to="/portal/partner" onClick={handleMobileClick}>
                         <LayoutDashboard />
                         <span>Portal Parceiro</span>
                       </Link>
@@ -224,7 +232,7 @@ export function AppSidebar() {
                       isActive={isActive(item.url)}
                       tooltip={item.title}
                     >
-                      <Link to={item.url}>
+                      <Link to={item.url} onClick={handleMobileClick}>
                         <item.icon />
                         <span>{item.title}</span>
                       </Link>
@@ -247,7 +255,7 @@ export function AppSidebar() {
                     isActive={isActive('/admin/publicity')}
                     tooltip="Publicity Admin"
                   >
-                    <Link to="/admin/publicity">
+                    <Link to="/admin/publicity" onClick={handleMobileClick}>
                       <Megaphone />
                       <span>Publicity Admin</span>
                     </Link>
@@ -261,7 +269,7 @@ export function AppSidebar() {
                     isActive={isActive('/users')}
                     tooltip="Usuários"
                   >
-                    <Link to="/users">
+                    <Link to="/users" onClick={handleMobileClick}>
                       <Users />
                       <span>Usuários</span>
                     </Link>
@@ -275,7 +283,7 @@ export function AppSidebar() {
                     isActive={isActive('/settings')}
                     tooltip={t('common.settings')}
                   >
-                    <Link to="/settings">
+                    <Link to="/settings" onClick={handleMobileClick}>
                       <Settings />
                       <span>{t('common.settings')}</span>
                     </Link>

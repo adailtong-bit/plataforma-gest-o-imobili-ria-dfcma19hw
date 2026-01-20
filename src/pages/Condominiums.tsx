@@ -68,10 +68,13 @@ export default function Condominiums() {
     managerEmail: '',
   })
 
+  // Expanded Search: Name, Address, Manager Name, Manager Email
   const filteredCondos = condominiums.filter(
     (c) =>
       c.name.toLowerCase().includes(filter.toLowerCase()) ||
-      c.address.toLowerCase().includes(filter.toLowerCase()),
+      c.address.toLowerCase().includes(filter.toLowerCase()) ||
+      c.managerName?.toLowerCase().includes(filter.toLowerCase()) ||
+      c.managerEmail?.toLowerCase().includes(filter.toLowerCase()),
   )
 
   const handleAddressSelect = (addr: AddressData) => {
@@ -163,9 +166,7 @@ export default function Condominiums() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label>
-                  {t('common.name')} <span className="text-red-500">*</span>
-                </Label>
+                <Label>{t('common.name')}</Label>
                 <Input
                   value={formData.name}
                   onChange={(e) =>
@@ -179,9 +180,7 @@ export default function Condominiums() {
                 <AddressInput onAddressSelect={handleAddressSelect} />
               </div>
               <div className="grid gap-2">
-                <Label>
-                  {t('common.address')} <span className="text-red-500">*</span>
-                </Label>
+                <Label>{t('common.address')}</Label>
                 <Input
                   value={formData.address}
                   onChange={(e) =>
@@ -233,7 +232,7 @@ export default function Condominiums() {
             <div className="relative w-64">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder={t('common.search')}
+                placeholder="Buscar por nome, endereço, gerente..."
                 className="pl-8"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}

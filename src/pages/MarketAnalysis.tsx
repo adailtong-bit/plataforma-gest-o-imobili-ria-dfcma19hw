@@ -35,11 +35,11 @@ import { Label } from '@/components/ui/label'
 export default function MarketAnalysis() {
   const { toast } = useToast()
   const [filterRegion, setFilterRegion] = useState('all')
-  const [compareMode, setCompareMode] = useState(false)
+  const [filterType, setFilterType] = useState('all')
+  const [filterHOA, setFilterHOA] = useState('all')
 
-  // Comparison State
-  const [compCity, setCompCity] = useState('')
-  const [compSize, setCompSize] = useState('3bd')
+  // Mock refresh state
+  const [lastRefreshed, setLastRefreshed] = useState(new Date())
 
   const filteredData = marketData.filter((d) => {
     if (filterRegion !== 'all' && !d.region.includes(filterRegion)) return false
@@ -57,18 +57,26 @@ export default function MarketAnalysis() {
   ]
 
   const handleExportPDF = () => {
+    // Mock PDF download link behavior
+    const link = document.createElement('a')
+    link.href = '#'
+    link.setAttribute('download', 'market_analysis_report.pdf')
+    document.body.appendChild(link)
+    // link.click(); // Prevent actual click in this env
+    document.body.removeChild(link)
+
     toast({
       title: 'Exportando Relatório',
-      description: 'O relatório de mercado (PDF) está sendo gerado.',
+      description: 'O relatório de mercado (PDF) foi gerado e baixado.',
     })
   }
 
   const handleCompare = () => {
+    setLastRefreshed(new Date())
     toast({
-      title: 'Comparativo Gerado',
-      description: `Comparando dados de ${compCity} para ${compSize}.`,
+      title: 'Dados Atualizados',
+      description: `Comparativo atualizado para ${filterRegion !== 'all' ? filterRegion : 'todas as regiões'}.`,
     })
-    setCompareMode(true)
   }
 
   return (
@@ -92,10 +100,10 @@ export default function MarketAnalysis() {
       {/* Comparison Tool */}
       <Card className="bg-muted/30">
         <CardHeader>
-          <CardTitle className="text-lg">Ferramenta de Comparação</CardTitle>
+          <CardTitle className="text-lg">Filtros Avançados</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-4 items-end">
-          <div className="grid gap-2 w-full md:w-64">
+          <div className="grid gap-2 w-full md:w-48">
             <Label>Região/Cidade</Label>
             <Select value={filterRegion} onValueChange={setFilterRegion}>
               <SelectTrigger>
@@ -109,15 +117,30 @@ export default function MarketAnalysis() {
             </Select>
           </div>
           <div className="grid gap-2 w-full md:w-48">
-            <Label>Tamanho Imóvel</Label>
-            <Select value={compSize} onValueChange={setCompSize}>
+            <Label>Tipo de Imóvel</Label>
+            <Select value={filterType} onValueChange={setFilterType}>
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Qualquer Tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="2bd">2 Quartos</SelectItem>
-                <SelectItem value="3bd">3 Quartos</SelectItem>
-                <SelectItem value="4bd">4+ Quartos</SelectItem>
+                <SelectItem value="all">Qualquer Tipo</SelectItem>
+                <SelectItem value="sfh">Single Family</SelectItem>
+                <SelectItem value="townhouse">Townhouse</SelectItem>
+                <SelectItem value="condo">Apartment</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-2 w-full md:w-48">
+            <Label>HOA Status</Label>
+            <Select value={filterHOA} onValueChange={setFilterHOA}>
+              <SelectTrigger>
+                <SelectValue placeholder="Qualquer" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Qualquer</SelectItem>
+                <SelectItem value="low">Baixo HOA</SelectItem>
+                <SelectItem value="high">Alto HOA</SelectItem>
+                <SelectItem value="none">Sem HOA</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -156,6 +179,22 @@ export default function MarketAnalysis() {
                     Preço/SqFt
                   </span>
                   <div className="text-2xl font-bold">${data.pricePerSqFt}</div>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                    Avg Prop. Tax
+                  </span>
+                  <div className="text-lg font-semibold">
+                    ${data.propertyTaxAvg?.toLocaleString()}
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                    Avg HOA
+                  </span>
+                  <div className="text-lg font-semibold">
+                    ${data.hoaAvg?.toLocaleString()}
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">

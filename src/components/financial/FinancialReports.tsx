@@ -22,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
 import { Download } from 'lucide-react'
 import {
   BarChart,
@@ -35,7 +34,6 @@ import {
 } from 'recharts'
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 import useFinancialStore from '@/stores/useFinancialStore'
-import usePropertyStore from '@/stores/usePropertyStore'
 import {
   format,
   subMonths,
@@ -47,7 +45,6 @@ import { useToast } from '@/hooks/use-toast'
 
 export function FinancialReports() {
   const { ledgerEntries } = useFinancialStore()
-  const { properties } = usePropertyStore()
   const { toast } = useToast()
 
   const [period, setPeriod] = useState('1m') // 1m, 3m, 6m, ytd, 1y
@@ -102,8 +99,50 @@ export function FinancialReports() {
     toast({ title: 'Exportado', description: 'Relatório baixado.' })
   }
 
+  const totalIncome = filteredEntries
+    .filter((e) => e.type === 'income')
+    .reduce((acc, curr) => acc + curr.amount, 0)
+  const totalExpenses = filteredEntries
+    .filter((e) => e.type === 'expense')
+    .reduce((acc, curr) => acc + curr.amount, 0)
+  const netProfit = totalIncome - totalExpenses
+
   return (
     <div className="space-y-6">
+      {/* P&L Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-green-50 border-green-200">
+          <CardContent className="pt-6">
+            <div className="text-sm font-medium text-muted-foreground">
+              Receita Total
+            </div>
+            <div className="text-2xl font-bold text-green-700">
+              ${totalIncome.toLocaleString()}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-red-50 border-red-200">
+          <CardContent className="pt-6">
+            <div className="text-sm font-medium text-muted-foreground">
+              Despesas Totais
+            </div>
+            <div className="text-2xl font-bold text-red-700">
+              ${totalExpenses.toLocaleString()}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="pt-6">
+            <div className="text-sm font-medium text-muted-foreground">
+              Lucro Líquido
+            </div>
+            <div className="text-2xl font-bold text-blue-700">
+              ${netProfit.toLocaleString()}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">

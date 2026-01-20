@@ -15,7 +15,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Upload, FileText, CheckCircle2 } from 'lucide-react'
+import { Upload, FileText, CheckCircle2, AlertCircle } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
 import useFinancialStore from '@/stores/useFinancialStore'
@@ -61,7 +61,8 @@ export default function Financial() {
       setIsUploading(false)
       toast({
         title: 'Sucesso',
-        description: 'Extrato enviado para conciliação.',
+        description:
+          'Extrato enviado para conciliação. Sistema tentando conciliar entradas...',
       })
       if (fileInputRef.current) fileInputRef.current.value = ''
     }, 1500)
@@ -125,12 +126,13 @@ export default function Financial() {
                     <TableHead>Status</TableHead>
                     <TableHead>Itens</TableHead>
                     <TableHead>Valor Total</TableHead>
+                    <TableHead className="text-right">Ação</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {bankStatements.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8">
+                      <TableCell colSpan={6} className="text-center py-8">
                         {t('financial.no_statements')}
                       </TableCell>
                     </TableRow>
@@ -151,7 +153,11 @@ export default function Financial() {
                               {t('financial.reconciled')}
                             </Badge>
                           ) : (
-                            <Badge variant="secondary">
+                            <Badge
+                              variant="secondary"
+                              className="bg-yellow-100 text-yellow-800"
+                            >
+                              <AlertCircle className="w-3 h-3 mr-1" />
                               {t('financial.pending_reconciliation')}
                             </Badge>
                           )}
@@ -159,6 +165,13 @@ export default function Financial() {
                         <TableCell>{stmt.itemsCount}</TableCell>
                         <TableCell>
                           ${stmt.totalAmount.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {stmt.status === 'pending' && (
+                            <Button size="sm" variant="outline">
+                              Conciliar
+                            </Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))
