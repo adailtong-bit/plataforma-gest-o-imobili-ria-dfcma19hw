@@ -16,12 +16,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Download, ExternalLink } from 'lucide-react'
-import { Property, LedgerEntry } from '@/lib/types'
+import { Download, ExternalLink, ClipboardList } from 'lucide-react'
+import { Property, LedgerEntry, Task } from '@/lib/types'
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
 import { Link } from 'react-router-dom'
+import useTaskStore from '@/stores/useTaskStore'
+import { TaskDetailsSheet } from '@/components/tasks/TaskDetailsSheet'
 
 interface OwnerStatementProps {
   ownerId: string
@@ -35,7 +37,9 @@ export function OwnerStatement({
   ledgerEntries,
 }: OwnerStatementProps) {
   const { toast } = useToast()
+  const { tasks } = useTaskStore()
   const [period, setPeriod] = useState('current') // current, last, last3
+  const [viewingTask, setViewingTask] = useState<Task | null>(null)
 
   const ownerPropertyIds = properties
     .filter((p) => p.ownerId === ownerId)
@@ -81,6 +85,12 @@ export function OwnerStatement({
 
   return (
     <Card>
+      <TaskDetailsSheet
+        task={viewingTask}
+        open={!!viewingTask}
+        onOpenChange={(open) => !open && setViewingTask(null)}
+      />
+
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Extrato do Proprietário</CardTitle>
         <div className="flex gap-2">
@@ -142,6 +152,10 @@ export function OwnerStatement({
             ) : (
               filteredEntries.map((entry) => {
                 const prop = properties.find((p) => p.id === entry.propertyId)
+                const associatedTask = tasks.find(
+                  (t) => t.id === entry.referenceId,
+                )
+
                 return (
                   <TableRow key={entry.id}>
                     <TableCell>
@@ -160,7 +174,20 @@ export function OwnerStatement({
                         'N/A'
                       )}
                     </TableCell>
-                    <TableCell>{entry.description}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span>{entry.description}</span>
+                        {associatedTask && (
+                          <div
+                            className="flex items-center gap-1 text-xs text-blue-600 cursor-pointer hover:text-blue-800 mt-0.5 w-fit"
+                            onClick={() => setViewingTask(associatedTask)}
+                          >
+                            <ClipboardList className="h-3 w-3" />
+                            Ver Tarefa
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <span className="capitalize">{entry.category}</span>
                     </TableCell>

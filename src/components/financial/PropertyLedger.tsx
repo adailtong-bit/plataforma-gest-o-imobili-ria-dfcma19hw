@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { LedgerEntry } from '@/lib/types'
+import { LedgerEntry, Task } from '@/lib/types'
 import {
   Table,
   TableBody,
@@ -28,11 +28,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Plus, Upload, Trash2, Paperclip, FileText } from 'lucide-react'
+import {
+  Plus,
+  Upload,
+  Trash2,
+  Paperclip,
+  ClipboardList,
+  ExternalLink,
+} from 'lucide-react'
 import { format, isPast, parseISO } from 'date-fns'
 import useFinancialStore from '@/stores/useFinancialStore'
+import useTaskStore from '@/stores/useTaskStore'
 import { useToast } from '@/hooks/use-toast'
 import { FileUpload } from '@/components/ui/file-upload'
+import { TaskDetailsSheet } from '@/components/tasks/TaskDetailsSheet'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,10 +62,12 @@ interface PropertyLedgerProps {
 export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
   const { addLedgerEntry, updateLedgerEntry, deleteLedgerEntry } =
     useFinancialStore()
+  const { tasks } = useTaskStore()
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
   const [openUpload, setOpenUpload] = useState<string | null>(null)
   const [editingEntry, setEditingEntry] = useState<LedgerEntry | null>(null)
+  const [viewingTask, setViewingTask] = useState<Task | null>(null)
   const [newEntry, setNewEntry] = useState<Partial<LedgerEntry>>({
     type: 'expense',
     amount: 0,
@@ -148,6 +159,12 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
 
   return (
     <div className="space-y-4">
+      <TaskDetailsSheet
+        task={viewingTask}
+        open={!!viewingTask}
+        onOpenChange={(open) => !open && setViewingTask(null)}
+      />
+
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Extrato Financeiro Detalhado</h3>
         <AlertDialog>
@@ -384,116 +401,142 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                 </TableCell>
               </TableRow>
             ) : (
-              entries.map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell>
-                    {entry.dueDate
-                      ? format(new Date(entry.dueDate), 'dd/MM/yyyy')
-                      : '-'}
-                  </TableCell>
-                  <TableCell>
-                    {entry.paymentDate
-                      ? format(new Date(entry.paymentDate), 'dd/MM/yyyy')
-                      : '-'}
-                  </TableCell>
-                  <TableCell>
-                    <div
-                      className="flex flex-col cursor-pointer hover:underline"
-                      onClick={() => setEditingEntry(entry)}
-                    >
-                      <span>{entry.description}</span>
-                      {entry.attachments && entry.attachments.length > 0 && (
-                        <span className="text-xs text-blue-600 flex items-center gap-1">
-                          <Paperclip className="h-3 w-3" />{' '}
-                          {entry.attachments.length} anexo(s)
+              entries.map((entry) => {
+                // Find associated task if any
+                const associatedTask = tasks.find(
+                  (t) => t.id === entry.referenceId,
+                )
+
+                return (
+                  <TableRow key={entry.id}>
+                    <TableCell>
+                      {entry.dueDate
+                        ? format(new Date(entry.dueDate), 'dd/MM/yyyy')
+                        : '-'}
+                    </TableCell>
+                    <TableCell>
+                      {entry.paymentDate
+                        ? format(new Date(entry.paymentDate), 'dd/MM/yyyy')
+                        : '-'}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span
+                          className="cursor-pointer hover:underline font-medium"
+                          onClick={() => setEditingEntry(entry)}
+                        >
+                          {entry.description}
                         </span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>{entry.category}</TableCell>
-                  <TableCell>{getStatusBadge(entry)}</TableCell>
-                  <TableCell
-                    className={`text-right font-medium ${
-                      entry.type === 'income'
-                        ? 'text-green-600'
-                        : 'text-red-600'
-                    }`}
-                  >
-                    {entry.type === 'income' ? '+' : '-'}$
-                    {entry.amount.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2 items-center">
-                      <Dialog
-                        open={openUpload === entry.id}
-                        onOpenChange={(o) => setOpenUpload(o ? entry.id : null)}
-                      >
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Upload Comprovante"
+                        {/* Task Link */}
+                        {associatedTask && (
+                          <div
+                            className="flex items-center gap-1 text-xs text-blue-600 cursor-pointer hover:text-blue-800 mt-1 w-fit"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setViewingTask(associatedTask)
+                            }}
                           >
-                            <Upload className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Anexar Comprovante</DialogTitle>
-                          </DialogHeader>
-                          <FileUpload
-                            accept=".pdf,.jpg,.png,.jpeg"
-                            onChange={(url) => handleUploadFile(entry.id, url)}
-                          />
-                        </DialogContent>
-                      </Dialog>
-
-                      <Select
-                        defaultValue={entry.status}
-                        onValueChange={(v) => handleStatusUpdate(entry, v)}
-                      >
-                        <SelectTrigger className="h-8 w-[100px]">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pending">Pendente</SelectItem>
-                          <SelectItem value="cleared">Pago</SelectItem>
-                          <SelectItem value="overdue">Atrasado</SelectItem>
-                          <SelectItem value="void">Cancelado</SelectItem>
-                        </SelectContent>
-                      </Select>
-
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-red-500"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <DialogTitle>Confirmar Exclusão</DialogTitle>
-                            <AlertDialogDescription>
-                              Tem certeza que deseja excluir este lançamento?
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDelete(entry.id)}
+                            <ClipboardList className="h-3 w-3" />
+                            Ver Tarefa
+                          </div>
+                        )}
+                        {entry.attachments && entry.attachments.length > 0 && (
+                          <span className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                            <Paperclip className="h-3 w-3" />{' '}
+                            {entry.attachments.length} anexo(s)
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>{entry.category}</TableCell>
+                    <TableCell>{getStatusBadge(entry)}</TableCell>
+                    <TableCell
+                      className={`text-right font-medium ${
+                        entry.type === 'income'
+                          ? 'text-green-600'
+                          : 'text-red-600'
+                      }`}
+                    >
+                      {entry.type === 'income' ? '+' : '-'}$
+                      {entry.amount.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2 items-center">
+                        <Dialog
+                          open={openUpload === entry.id}
+                          onOpenChange={(o) =>
+                            setOpenUpload(o ? entry.id : null)
+                          }
+                        >
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              title="Upload Comprovante"
                             >
-                              Excluir
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
+                              <Upload className="h-4 w-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Anexar Comprovante</DialogTitle>
+                            </DialogHeader>
+                            <FileUpload
+                              accept=".pdf,.jpg,.png,.jpeg"
+                              onChange={(url) =>
+                                handleUploadFile(entry.id, url)
+                              }
+                            />
+                          </DialogContent>
+                        </Dialog>
+
+                        <Select
+                          defaultValue={entry.status}
+                          onValueChange={(v) => handleStatusUpdate(entry, v)}
+                        >
+                          <SelectTrigger className="h-8 w-[100px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pending">Pendente</SelectItem>
+                            <SelectItem value="cleared">Pago</SelectItem>
+                            <SelectItem value="overdue">Atrasado</SelectItem>
+                            <SelectItem value="void">Cancelado</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-red-500"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <DialogTitle>Confirmar Exclusão</DialogTitle>
+                              <AlertDialogDescription>
+                                Tem certeza que deseja excluir este lançamento?
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(entry.id)}
+                              >
+                                Excluir
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
+              })
             )}
           </TableBody>
         </Table>
