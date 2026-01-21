@@ -20,12 +20,14 @@ import {
 } from '@/components/ui/select'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useTenantStore from '@/stores/useTenantStore'
+import usePropertyStore from '@/stores/usePropertyStore'
+import useOwnerStore from '@/stores/useOwnerStore'
 import { NegotiationStatus } from '@/lib/types'
 import { format } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Lock, MessageCircle, User } from 'lucide-react'
+import { Lock, MessageCircle, User, Building, Users } from 'lucide-react'
 
 interface NegotiationSheetProps {
   open: boolean
@@ -39,9 +41,15 @@ export function NegotiationSheet({
   tenantId,
 }: NegotiationSheetProps) {
   const { tenants, updateTenantNegotiation } = useTenantStore()
+  const { properties } = usePropertyStore()
+  const { owners } = useOwnerStore()
   const { toast } = useToast()
 
   const tenant = tenants.find((t) => t.id === tenantId)
+  const property = tenant
+    ? properties.find((p) => p.id === tenant.propertyId)
+    : null
+  const owner = property ? owners.find((o) => o.id === property.ownerId) : null
 
   const [status, setStatus] = useState<NegotiationStatus>('negotiating')
   const [suggestedPrice, setSuggestedPrice] = useState<string>('')
@@ -82,32 +90,32 @@ export function NegotiationSheet({
     onOpenChange(false)
   }
 
-  // Mock chat messages for demonstration of the unified environment
+  // Mock chat messages representing the centralized history
   const mockChat = [
     {
       id: 1,
-      sender: 'Tenant',
+      sender: tenant.name,
       msg: 'Can we lower the rent?',
       time: '10:00 AM',
       role: 'tenant',
     },
     {
       id: 2,
-      sender: 'Me (PM)',
+      sender: 'Property Manager (Me)',
       msg: 'I will ask the owner.',
       time: '10:05 AM',
       role: 'software_tenant',
     },
     {
       id: 3,
-      sender: 'Owner',
+      sender: owner ? owner.name : 'Owner',
       msg: 'No, market rate is higher.',
       time: '11:00 AM',
       role: 'property_owner',
     },
     {
       id: 4,
-      sender: 'Me (PM)',
+      sender: 'Property Manager (Me)',
       msg: 'Understood.',
       time: '11:05 AM',
       role: 'software_tenant',
@@ -118,25 +126,45 @@ export function NegotiationSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[400px] sm:w-[600px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Unified Negotiation Environment</SheetTitle>
+          <SheetTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Unified Negotiation Environment
+          </SheetTitle>
           <SheetDescription>
-            Manage communication with all parties in one place.
+            Manage communication between Tenant, Owner, and PM in one place.
           </SheetDescription>
         </SheetHeader>
 
         <div className="grid gap-6 py-6">
-          <div className="flex gap-4 p-4 bg-muted/20 rounded-lg">
-            <div className="flex-1">
-              <Label className="text-xs text-muted-foreground">Tenant</Label>
-              <div className="font-medium">{tenant.name}</div>
-            </div>
-            <div className="flex-1">
-              <Label className="text-xs text-muted-foreground">
-                Current Rent
+          <div className="grid grid-cols-2 gap-4 p-4 bg-muted/20 rounded-lg">
+            <div className="flex flex-col gap-1">
+              <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                <User className="h-3 w-3" /> Tenant
               </Label>
-              <div className="font-medium">${tenant.rentValue}</div>
+              <div className="font-medium text-sm truncate" title={tenant.name}>
+                {tenant.name}
+              </div>
             </div>
-            <div className="flex-1">
+            <div className="flex flex-col gap-1">
+              <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                <User className="h-3 w-3" /> Owner
+              </Label>
+              <div className="font-medium text-sm truncate" title={owner?.name}>
+                {owner?.name || 'Unknown'}
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                <Building className="h-3 w-3" /> Property
+              </Label>
+              <div
+                className="font-medium text-sm truncate"
+                title={property?.name}
+              >
+                {property?.name}
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
               <Label className="text-xs text-muted-foreground">Status</Label>
               <BadgeStatus status={status} />
             </div>
@@ -145,24 +173,27 @@ export function NegotiationSheet({
           <Tabs defaultValue="aggregated" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="aggregated" className="text-xs">
-                All
+                All (Unified)
               </TabsTrigger>
               <TabsTrigger value="tenant" className="text-xs">
-                Tenant
+                Tenant Chat
               </TabsTrigger>
               <TabsTrigger value="owner" className="text-xs">
-                Owner
+                Owner Chat
               </TabsTrigger>
               <TabsTrigger value="internal" className="text-xs">
-                Notes
+                Internal Notes
               </TabsTrigger>
             </TabsList>
 
-            {/* Aggregated View (Supervisor Only Concept) */}
+            {/* Aggregated View */}
             <TabsContent value="aggregated" className="mt-4 space-y-4">
               <div className="flex items-center gap-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded border border-yellow-200">
                 <Lock className="h-4 w-4" />
-                <span>Confidential: Visible only to Property Managers.</span>
+                <span>
+                  Confidential: Complete history visible only to Property
+                  Managers.
+                </span>
               </div>
               <ScrollArea className="h-[300px] border rounded-md p-4 bg-background">
                 {mockChat.map((msg) => (
@@ -175,6 +206,9 @@ export function NegotiationSheet({
                         {msg.role === 'property_owner' && (
                           <User className="h-3 w-3 text-green-500" />
                         )}
+                        {msg.role === 'software_tenant' && (
+                          <User className="h-3 w-3 text-purple-500" />
+                        )}
                         {msg.sender}
                       </span>
                       <span className="text-xs text-muted-foreground">
@@ -185,7 +219,9 @@ export function NegotiationSheet({
                       className={`p-2 rounded-lg ${
                         msg.role === 'software_tenant'
                           ? 'bg-blue-100 ml-8'
-                          : 'bg-gray-100 mr-8'
+                          : msg.role === 'property_owner'
+                            ? 'bg-green-50 mr-8 border border-green-100'
+                            : 'bg-gray-100 mr-8'
                       }`}
                     >
                       {msg.msg}
@@ -335,6 +371,8 @@ function BadgeStatus({ status }: { status: string }) {
     negotiating: 'bg-yellow-100 text-yellow-800',
     closed: 'bg-green-100 text-green-800',
     vacating: 'bg-red-100 text-red-800',
+    owner_contacted: 'bg-blue-100 text-blue-800',
+    tenant_contacted: 'bg-purple-100 text-purple-800',
   }
   return (
     <span

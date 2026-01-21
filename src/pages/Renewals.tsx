@@ -23,6 +23,7 @@ import {
   Search,
   Building,
   ClipboardList,
+  User,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -45,7 +46,7 @@ export default function Renewals() {
   const { toast } = useToast()
   const { t } = useLanguageStore()
 
-  // New Filter Status 'year' added for < 365 days
+  // Filter Status
   const [filterStatus, setFilterStatus] = useState<
     'all' | 'critical' | 'upcoming' | 'year' | 'renewed'
   >('all')
@@ -60,46 +61,62 @@ export default function Renewals() {
     (t) => t.status === 'active' || t.negotiationStatus === 'closed',
   )
 
-  const renewalData = relevantTenants
-    .map((t) => {
-      let daysLeft = 0
-      try {
-        if (t.leaseEnd) {
-          daysLeft = differenceInDays(new Date(t.leaseEnd), new Date())
-        }
-      } catch (e) {
-        console.error('Invalid date', e)
+  // Pre-calculate data
+  const mappedData = relevantTenants.map((t) => {
+    let daysLeft = 9999
+    try {
+      if (t.leaseEnd) {
+        daysLeft = differenceInDays(new Date(t.leaseEnd), new Date())
       }
+    } catch (e) {
+      console.error('Invalid date', e)
+    }
 
-      const property = properties.find((p) => p.id === t.propertyId)
-      const owner = owners.find((o) => o.id === property?.ownerId)
+    const property = properties.find((p) => p.id === t.propertyId)
+    const owner = owners.find((o) => o.id === property?.ownerId)
 
-      // Extended status logic to support 'year'
-      let status: 'critical' | 'upcoming' | 'year' | 'safe' | 'renewed' = 'safe'
+    // Display Status (Exclusive for Badge Color)
+    let displayStatus: 'critical' | 'upcoming' | 'year' | 'safe' | 'renewed' =
+      'safe'
 
-      if (t.negotiationStatus === 'closed') {
-        status = 'renewed'
-      } else {
-        if (daysLeft < 30) status = 'critical'
-        else if (daysLeft < 90) status = 'upcoming'
-        else if (daysLeft < 365) status = 'year'
-      }
+    if (t.negotiationStatus === 'closed') {
+      displayStatus = 'renewed'
+    } else {
+      if (daysLeft < 30) displayStatus = 'critical'
+      else if (daysLeft < 90) displayStatus = 'upcoming'
+      else if (daysLeft < 365) displayStatus = 'year'
+    }
 
-      return {
-        tenant: t,
-        property,
-        owner,
-        daysLeft,
-        status,
-        negotiationStatus: t.negotiationStatus || 'negotiating',
-      }
-    })
+    return {
+      tenant: t,
+      property,
+      owner,
+      daysLeft,
+      displayStatus,
+      negotiationStatus: t.negotiationStatus || 'negotiating',
+    }
+  })
+
+  const renewalData = mappedData
     .filter((item) => {
-      // Status Filter
-      if (filterStatus !== 'all' && item.status !== filterStatus) return false
+      // Cumulative Filter Logic
+      if (filterStatus !== 'all') {
+        if (filterStatus === 'renewed') {
+          if (item.displayStatus !== 'renewed') return false
+        } else if (item.displayStatus === 'renewed') {
+          return false // Don't show renewed in day-based filters
+        } else {
+          // Day based filters
+          if (filterStatus === 'critical' && item.daysLeft >= 30) return false
+          if (filterStatus === 'upcoming' && item.daysLeft >= 90) return false
+          if (filterStatus === 'year' && item.daysLeft >= 365) return false
+        }
+      }
+
       // Owner Filter
       if (selectedOwner !== 'all' && item.owner?.id !== selectedOwner)
         return false
+
       // Search Term
       if (
         searchTerm &&
@@ -192,23 +209,19 @@ export default function Renewals() {
     }
   }
 
-  // Count metrics based on the full mapped data
-  const fullData = relevantTenants.map((t) => {
-    let daysLeft = 0
-    if (t.leaseEnd)
-      daysLeft = differenceInDays(new Date(t.leaseEnd), new Date())
-    let status = 'safe'
-    if (t.negotiationStatus === 'closed') status = 'renewed'
-    else if (daysLeft < 30) status = 'critical'
-    else if (daysLeft < 90) status = 'upcoming'
-    else if (daysLeft < 365) status = 'year'
-    return { status }
-  })
-
-  const criticalCount = fullData.filter((d) => d.status === 'critical').length
-  const upcomingCount = fullData.filter((d) => d.status === 'upcoming').length
-  const yearCount = fullData.filter((d) => d.status === 'year').length
-  const renewedCount = fullData.filter((d) => d.status === 'renewed').length
+  // Calculate cumulative counts
+  const criticalCount = mappedData.filter(
+    (d) => d.displayStatus !== 'renewed' && d.daysLeft < 30,
+  ).length
+  const upcomingCount = mappedData.filter(
+    (d) => d.displayStatus !== 'renewed' && d.daysLeft < 90,
+  ).length
+  const yearCount = mappedData.filter(
+    (d) => d.displayStatus !== 'renewed' && d.daysLeft < 365,
+  ).length
+  const renewedCount = mappedData.filter(
+    (d) => d.displayStatus === 'renewed',
+  ).length
 
   return (
     <div className="flex flex-col gap-6">
@@ -230,7 +243,7 @@ export default function Renewals() {
             setFilterStatus(filterStatus === 'critical' ? 'all' : 'critical')
           }
         >
-          Menos de 30 dias
+          {t('renewals.critical')} (&lt; 30d)
           <Badge
             variant="secondary"
             className="ml-1 bg-white/20 text-current hover:bg-white/30"
@@ -250,7 +263,7 @@ export default function Renewals() {
             setFilterStatus(filterStatus === 'upcoming' ? 'all' : 'upcoming')
           }
         >
-          Menos de 90 dias
+          {t('renewals.upcoming')} (&lt; 90d)
           <Badge
             variant="secondary"
             className="ml-1 bg-white/20 text-current hover:bg-white/30"
@@ -269,7 +282,7 @@ export default function Renewals() {
             setFilterStatus(filterStatus === 'year' ? 'all' : 'year')
           }
         >
-          Menos de 1 Ano
+          1 Ano (&lt; 365d)
           <Badge
             variant="secondary"
             className="ml-1 bg-white/20 text-current hover:bg-white/30"
@@ -329,6 +342,7 @@ export default function Renewals() {
             <TableHeader>
               <TableRow>
                 <TableHead>{t('common.property')}</TableHead>
+                <TableHead>{t('common.owners')}</TableHead>
                 <TableHead>{t('tenants.new_tenant')}</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Sugestão ($)</TableHead>
@@ -342,7 +356,7 @@ export default function Renewals() {
             <TableBody>
               {renewalData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={8} className="text-center py-8">
                     Nenhuma renovação correspondente aos filtros.
                   </TableCell>
                 </TableRow>
@@ -353,12 +367,14 @@ export default function Renewals() {
                     property,
                     owner,
                     daysLeft,
-                    status,
+                    displayStatus,
                     negotiationStatus,
                   }) => (
                     <TableRow
                       key={tenant.id}
-                      className={status === 'critical' ? 'bg-red-50/30' : ''}
+                      className={
+                        displayStatus === 'critical' ? 'bg-red-50/30' : ''
+                      }
                     >
                       <TableCell>
                         {property ? (
@@ -373,6 +389,16 @@ export default function Renewals() {
                           'N/A'
                         )}
                       </TableCell>
+                      <TableCell>
+                        {owner ? (
+                          <div className="flex items-center gap-2">
+                            <User className="h-3 w-3 text-muted-foreground" />
+                            <span>{owner.name}</span>
+                          </div>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
                       <TableCell>{tenant.name}</TableCell>
                       <TableCell>{getStatusBadge(negotiationStatus)}</TableCell>
                       <TableCell>
@@ -385,7 +411,7 @@ export default function Renewals() {
                         <div className="flex flex-col">
                           <span
                             className={
-                              status === 'critical'
+                              displayStatus === 'critical'
                                 ? 'text-red-600 font-bold'
                                 : 'font-medium'
                             }
@@ -395,7 +421,7 @@ export default function Renewals() {
                               : 'N/A'}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            {status === 'renewed'
+                            {displayStatus === 'renewed'
                               ? 'Renovado'
                               : daysLeft > 0
                                 ? `${daysLeft} dias restantes`
