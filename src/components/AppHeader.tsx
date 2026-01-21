@@ -4,7 +4,6 @@ import {
   Search,
   Menu,
   Globe,
-  LayoutTemplate,
   Circle,
   Building,
   User,
@@ -99,9 +98,11 @@ export function AppHeader() {
         to="/"
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
       >
-        <div className="bg-tiffany text-white p-1.5 rounded-md shrink-0 flex items-center justify-center shadow-sm">
-          <LayoutTemplate className="h-5 w-5 text-gold stroke-[2]" />
-        </div>
+        <img
+          src="/skip.png"
+          alt="COREPM Logo"
+          className="h-8 w-8 rounded-md shrink-0 object-contain bg-white"
+        />
         <h2 className="text-lg font-bold md:text-xl text-navy tracking-tight hidden sm:block">
           COREPM
         </h2>
@@ -252,9 +253,9 @@ export function AppHeader() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-            <Avatar className="h-10 w-10 border border-tiffany/20">
+            <Avatar className="h-10 w-10 border border-muted/20">
               <AvatarImage src={currentUser?.avatar} alt={currentUser?.name} />
-              <AvatarFallback className="bg-tiffany/10 text-tiffany">
+              <AvatarFallback className="bg-muted text-muted-foreground">
                 {currentUser?.name?.charAt(0)}
               </AvatarFallback>
             </Avatar>

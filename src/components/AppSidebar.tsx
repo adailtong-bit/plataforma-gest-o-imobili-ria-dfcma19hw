@@ -155,9 +155,11 @@ export function AppSidebar() {
           className="flex items-center gap-2 font-bold text-xl text-navy overflow-hidden hover:opacity-80 transition-opacity"
           onClick={handleLinkClick}
         >
-          <div className="bg-tiffany text-white p-1.5 rounded-md shrink-0 flex items-center justify-center shadow-sm">
-            <LayoutTemplate className="h-5 w-5 text-gold stroke-[2]" />
-          </div>
+          <img
+            src="/skip.png"
+            alt="COREPM Logo"
+            className="h-8 w-8 rounded-md shrink-0 object-contain bg-white"
+          />
           <span className="truncate tracking-tight group-data-[collapsible=icon]:hidden">
             COREPM
           </span>
@@ -294,9 +296,9 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center gap-2 p-2">
-              <Avatar className="h-8 w-8 border border-tiffany/20">
+              <Avatar className="h-8 w-8 border border-muted/20">
                 <AvatarImage src={currentUser.avatar} />
-                <AvatarFallback className="bg-tiffany/10 text-tiffany">
+                <AvatarFallback className="bg-muted text-muted-foreground">
                   {currentUser.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
