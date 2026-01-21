@@ -156,9 +156,9 @@ export function AppSidebar() {
           onClick={handleLinkClick}
         >
           <img
-            src="/skip.png"
+            src="https://img.usecurling.com/i?q=real%20estate&color=blue"
             alt="COREPM Logo"
-            className="h-8 w-8 rounded-md shrink-0 object-contain bg-white"
+            className="h-8 w-8 rounded-md shrink-0 object-contain"
           />
           <span className="truncate tracking-tight group-data-[collapsible=icon]:hidden">
             COREPM

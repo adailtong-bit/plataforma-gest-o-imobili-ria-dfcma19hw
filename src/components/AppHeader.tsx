@@ -99,9 +99,9 @@ export function AppHeader() {
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
       >
         <img
-          src="/skip.png"
+          src="https://img.usecurling.com/i?q=real%20estate&color=blue"
           alt="COREPM Logo"
-          className="h-8 w-8 rounded-md shrink-0 object-contain bg-white"
+          className="h-8 w-8 rounded-md shrink-0 object-contain"
         />
         <h2 className="text-lg font-bold md:text-xl text-navy tracking-tight hidden sm:block">
           COREPM
