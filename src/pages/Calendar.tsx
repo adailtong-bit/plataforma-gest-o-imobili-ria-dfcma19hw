@@ -166,8 +166,8 @@ export default function CalendarPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 h-[calc(100vh-8rem)]">
-      <div className="flex justify-between items-start">
+    <div className="flex flex-col gap-6 lg:h-[calc(100vh-10rem)] h-auto">
+      <div className="flex justify-between items-start flex-wrap gap-4">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-navy">
             {t('calendar.title')}
@@ -175,7 +175,7 @@ export default function CalendarPage() {
           <p className="text-muted-foreground">{t('calendar.subtitle')}</p>
         </div>
 
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center flex-wrap">
           <Filter className="h-4 w-4 text-muted-foreground" />
           <Select value={filterPartner} onValueChange={setFilterPartner}>
             <SelectTrigger className="w-[180px]">
@@ -207,9 +207,9 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:h-full h-auto">
         {/* Calendar View */}
-        <Card className="lg:col-span-8 h-full flex flex-col">
+        <Card className="lg:col-span-8 h-[500px] lg:h-full flex flex-col">
           <CardHeader>
             <div className="flex flex-wrap justify-between items-center gap-2">
               <CardTitle>Visão Integrada</CardTitle>
@@ -264,7 +264,7 @@ export default function CalendarPage() {
         </Card>
 
         {/* Daily Details */}
-        <Card className="lg:col-span-4 h-full flex flex-col">
+        <Card className="lg:col-span-4 h-[500px] lg:h-full flex flex-col">
           <CardHeader>
             <CardTitle>
               {date ? format(date, 'EEEE, d MMM') : 'Selecione uma data'}

@@ -543,30 +543,39 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const updateTaskStatus = (taskId: string, status: Task['status']) => {
-    // Logic to automatically create financial entry on completion
     const task = tasks.find((t) => t.id === taskId)
-    if (task && status === 'completed' && task.status !== 'completed') {
-      if (task.price && task.price > 0) {
-        const entry: LedgerEntry = {
-          id: `auto-task-${taskId}-${Date.now()}`,
-          propertyId: task.propertyId,
-          date: new Date().toISOString(),
-          dueDate: new Date().toISOString(), // Assuming due upon completion
-          type: 'expense',
-          category: task.type === 'cleaning' ? 'Limpeza' : 'Manutenção',
-          amount: task.price,
-          description: `Serviço: ${task.title}`,
-          referenceId: taskId,
-          status: 'pending',
-          payee: task.assignee,
-        }
-        addLedgerEntry(entry)
 
-        addNotification({
-          title: 'Custo Registrado',
-          message: `O serviço "${task.title}" foi concluído e gerou uma despesa de $${task.price}.`,
-          type: 'info',
-        })
+    // Check if task exists and is moving to 'completed'
+    if (task && status === 'completed' && task.status !== 'completed') {
+      // Ensure we have a price to book
+      if (task.price && task.price > 0) {
+        // Check for duplicate entry to ensure data integrity
+        const existingEntry = ledgerEntries.find(
+          (e) => e.referenceId === taskId,
+        )
+
+        if (!existingEntry) {
+          const entry: LedgerEntry = {
+            id: `auto-task-${taskId}-${Date.now()}`,
+            propertyId: task.propertyId,
+            date: new Date().toISOString(),
+            dueDate: new Date().toISOString(), // Assuming due upon completion
+            type: 'expense',
+            category: task.type === 'cleaning' ? 'Limpeza' : 'Manutenção',
+            amount: task.price,
+            description: `Serviço: ${task.title}`,
+            referenceId: taskId,
+            status: 'pending',
+            payee: task.assignee,
+          }
+          addLedgerEntry(entry)
+
+          addNotification({
+            title: 'Custo Registrado',
+            message: `O serviço "${task.title}" foi concluído e gerou uma despesa de $${task.price}.`,
+            type: 'info',
+          })
+        }
       }
     }
 
