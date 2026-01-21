@@ -18,6 +18,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useSidebar } from '@/components/ui/sidebar'
 import useAuthStore from '@/stores/useAuthStore'
@@ -40,6 +45,7 @@ import usePropertyStore from '@/stores/usePropertyStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useOwnerStore from '@/stores/useOwnerStore'
 import useTaskStore from '@/stores/useTaskStore'
+import { ThemeCustomizer } from '@/components/ThemeCustomizer'
 
 export function AppHeader() {
   const { toggleSidebar } = useSidebar()
@@ -87,6 +93,11 @@ export function AppHeader() {
         navigate(`/tasks`)
         break
     }
+  }
+
+  const handleNotificationClick = (id: string) => {
+    markNotificationAsRead(id)
+    // Optional: navigate to specific detail if notification payload supported it
   }
 
   return (
@@ -177,126 +188,141 @@ export function AppHeader() {
         </CommandList>
       </CommandDialog>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Globe className="h-5 w-5 text-muted-foreground" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={() => setLanguage('pt')}
-            className={language === 'pt' ? 'bg-accent' : ''}
-          >
-            🇵🇹 Português
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => setLanguage('en')}
-            className={language === 'en' ? 'bg-accent' : ''}
-          >
-            🇺🇸 English
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => setLanguage('es')}
-            className={language === 'es' ? 'bg-accent' : ''}
-          >
-            🇪🇸 Español
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex items-center gap-2">
+        <ThemeCustomizer />
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600 animate-pulse" />
-            )}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-80" align="end">
-          <DropdownMenuLabel>
-            {t('common.notifications')} ({unreadCount})
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <ScrollArea className="h-[300px]">
-            {notifications.length === 0 ? (
-              <div className="p-4 text-center text-sm text-muted-foreground">
-                Nenhuma notificação.
-              </div>
-            ) : (
-              notifications.map((notif) => (
-                <DropdownMenuItem
-                  key={notif.id}
-                  className="flex flex-col items-start gap-1 p-3 cursor-pointer"
-                  onClick={() => markNotificationAsRead(notif.id)}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <span className="font-semibold text-sm">{notif.title}</span>
-                    {!notif.read && (
-                      <Circle className="h-2 w-2 fill-blue-500 text-blue-500" />
-                    )}
-                  </div>
-                  <span className="text-xs text-muted-foreground">
-                    {notif.message}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground mt-1">
-                    {format(new Date(notif.timestamp), 'dd/MM/yyyy HH:mm')}
-                  </span>
-                </DropdownMenuItem>
-              ))
-            )}
-          </ScrollArea>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-            <Avatar className="h-10 w-10 border border-muted/20">
-              <AvatarImage src={currentUser?.avatar} alt={currentUser?.name} />
-              <AvatarFallback className="bg-muted text-muted-foreground">
-                {currentUser?.name?.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {currentUser?.name}
-              </p>
-              <p className="text-xs leading-none text-muted-foreground">
-                {currentUser?.email}
-              </p>
-              <Badge
-                className="mt-2 w-fit bg-navy hover:bg-navy/90 text-white"
-                variant="secondary"
-              >
-                {t(`roles.${currentUser?.role}`)}
-              </Badge>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel>Alternar Usuário (Demo)</DropdownMenuLabel>
-          {demoUsers.map((user) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Globe className="h-5 w-5 text-muted-foreground" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
             <DropdownMenuItem
-              key={user.id}
-              onClick={() => setCurrentUser(user.id)}
+              onClick={() => setLanguage('pt')}
+              className={language === 'pt' ? 'bg-accent' : ''}
             >
-              <div className="flex flex-col">
-                <span>{user.name}</span>
-                <span className="text-[10px] text-muted-foreground">
-                  {t(`roles.${user.role}`)}
-                </span>
-              </div>
+              🇵🇹 Português
             </DropdownMenuItem>
-          ))}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>{t('common.logout')}</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+            <DropdownMenuItem
+              onClick={() => setLanguage('en')}
+              className={language === 'en' ? 'bg-accent' : ''}
+            >
+              🇺🇸 English
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setLanguage('es')}
+              className={language === 'es' ? 'bg-accent' : ''}
+            >
+              🇪🇸 Español
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon" className="relative">
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600 animate-pulse ring-2 ring-background" />
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80 p-0" align="end">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h4 className="font-semibold leading-none">
+                {t('common.notifications')}
+              </h4>
+              <Badge variant="secondary">{unreadCount} novas</Badge>
+            </div>
+            <ScrollArea className="h-[300px]">
+              {notifications.length === 0 ? (
+                <div className="p-8 text-center text-sm text-muted-foreground">
+                  Nenhuma notificação.
+                </div>
+              ) : (
+                <div className="flex flex-col">
+                  {notifications.map((notif) => (
+                    <button
+                      key={notif.id}
+                      className={`flex flex-col items-start gap-1 p-4 text-left hover:bg-muted/50 transition-colors border-b last:border-0 ${!notif.read ? 'bg-blue-50/50' : ''}`}
+                      onClick={() => handleNotificationClick(notif.id)}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <span
+                          className={`text-sm ${!notif.read ? 'font-semibold' : 'font-medium'}`}
+                        >
+                          {notif.title}
+                        </span>
+                        {!notif.read && (
+                          <Circle className="h-2 w-2 fill-blue-500 text-blue-500" />
+                        )}
+                      </div>
+                      <span className="text-xs text-muted-foreground line-clamp-2">
+                        {notif.message}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground mt-1">
+                        {format(new Date(notif.timestamp), 'dd/MM HH:mm')}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
+          </PopoverContent>
+        </Popover>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Avatar className="h-10 w-10 border border-muted/20">
+                <AvatarImage
+                  src={currentUser?.avatar}
+                  alt={currentUser?.name}
+                />
+                <AvatarFallback className="bg-muted text-muted-foreground">
+                  {currentUser?.name?.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">
+                  {currentUser?.name}
+                </p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {currentUser?.email}
+                </p>
+                <Badge
+                  className="mt-2 w-fit bg-navy hover:bg-navy/90 text-white"
+                  variant="secondary"
+                >
+                  {t(`roles.${currentUser?.role}`)}
+                </Badge>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>Alternar Usuário (Demo)</DropdownMenuLabel>
+            {demoUsers.map((user) => (
+              <DropdownMenuItem
+                key={user.id}
+                onClick={() => setCurrentUser(user.id)}
+              >
+                <div className="flex flex-col">
+                  <span>{user.name}</span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {t(`roles.${user.role}`)}
+                  </span>
+                </div>
+              </DropdownMenuItem>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>{t('common.logout')}</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   )
 }

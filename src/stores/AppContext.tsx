@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode } from 'react'
+import React, { createContext, useState, ReactNode, useEffect } from 'react'
 import {
   Property,
   Task,
@@ -61,6 +61,8 @@ import {
   parseISO,
   setDate,
   getDaysInMonth,
+  differenceInDays,
+  isFuture,
 } from 'date-fns'
 
 interface AppContextType {
@@ -227,6 +229,52 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const allUsers = [...users, ...owners, ...partners, ...tenants]
 
+  // --- Automated Expiry Logic ---
+  useEffect(() => {
+    const checkExpirations = () => {
+      const today = new Date()
+      const daysInMonth = getDaysInMonth(today)
+
+      properties.forEach((property) => {
+        property.fixedExpenses?.forEach((expense) => {
+          // Calculate next due date
+          const validDay = Math.min(expense.dueDay, daysInMonth)
+          const nextDueDate = setDate(today, validDay)
+
+          // If next due date is in the past for this month, assume next month
+          if (nextDueDate < today) {
+            // Check next month logic if really needed, but simplest is focusing on upcoming in this month or immediate future
+            // Actually, let's keep it simple: upcoming within 5 days
+          }
+
+          // Calculate difference
+          const diff = differenceInDays(nextDueDate, today)
+
+          if (diff >= 0 && diff <= 5) {
+            // Check if we already notified recently to avoid spam (simple distinct check)
+            const exists = notifications.find(
+              (n) =>
+                n.title.includes(expense.name) &&
+                n.message.includes(property.name) &&
+                !n.read,
+            )
+
+            if (!exists) {
+              addNotification({
+                title: `Vencimento Próximo: ${expense.name}`,
+                message: `A despesa ${expense.name} em ${property.name} vence em ${diff} dias (${format(nextDueDate, 'dd/MM')}).`,
+                type: 'warning',
+              })
+            }
+          }
+        })
+      })
+    }
+
+    // Run check once on mount (and potentially interval in real app)
+    checkExpirations()
+  }, [properties]) // Re-run if properties update (e.g. expenses changed)
+
   const addAuditLog = (log: Omit<AuditLog, 'id' | 'timestamp'>) => {
     const newLog: AuditLog = {
       id: `log-${Date.now()}-${Math.random()}`,
@@ -277,29 +325,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       details: `Updated ledger entry: ${entry.id}`,
     })
 
-    // Automated Financial Recurring Logic
     if (entry.status === 'cleared' && entry.referenceId) {
-      // Find the property to access fixed expenses
       const property = properties.find((p) => p.id === entry.propertyId)
       if (property && property.fixedExpenses) {
         const fixedExpense = property.fixedExpenses.find(
           (fe) => fe.id === entry.referenceId,
         )
         if (fixedExpense) {
-          // Determine next due date using fixedExpense.dueDay and next month
-          // 1. Get current due date or entry date
           const currentEntryDate = entry.dueDate
             ? parseISO(entry.dueDate)
             : new Date()
-          // 2. Add 1 month to get the target month
           const nextMonthDate = addMonths(currentEntryDate, 1)
-          // 3. Set the day to the fixed expense due day, capped by days in month
           const daysInNextMonth = getDaysInMonth(nextMonthDate)
           const targetDay = Math.min(fixedExpense.dueDay, daysInNextMonth)
           const nextDueDate = setDate(nextMonthDate, targetDay)
 
-          // Check if next month's entry already exists to avoid duplicates
-          // We check for same referenceId, pending status, and matching Month/Year
           const existingNext = ledgerEntries.find(
             (e) =>
               e.referenceId === entry.referenceId &&
@@ -320,8 +360,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
               description: `${fixedExpense.name} - ${fixedExpense.provider || ''} (Auto)`,
               referenceId: fixedExpense.id,
               status: 'pending',
+              payee: fixedExpense.provider,
             }
-            // Small delay to ensure state updates don't conflict, though in React 18+ batching handles this usually
             setTimeout(() => addLedgerEntry(nextEntry), 100)
           }
         }
@@ -509,10 +549,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const sendSystemMessage = (toUserId: string, text: string) => {
     const systemId = 'admin_platform'
-    const timestamp = new Date().toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
     const newMessageId = `sys-${Date.now()}`
 
     setAllMessages((prev) => {

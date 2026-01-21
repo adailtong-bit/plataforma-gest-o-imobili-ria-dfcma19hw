@@ -151,8 +151,12 @@ export interface FixedExpense {
   amount: number
   dueDay: number
   frequency: 'monthly' | 'yearly'
-  provider?: string // New Field
-  accountNumber?: string // New Field
+  provider?: string
+  accountNumber?: string
+  // Enhanced Contract Fields
+  contractStartDate?: string
+  contractEndDate?: string
+  recurringValue?: number // Explicit recurring value if different from amount
 }
 
 export interface SocialMediaLinks {
@@ -449,6 +453,7 @@ export interface LedgerEntry {
   beneficiaryId?: string
   status: 'pending' | 'cleared' | 'void' | 'overdue' | 'unpaid'
   attachments?: { name: string; url: string }[]
+  payee?: string // Added for advanced reporting
 }
 
 export interface AuditLog {

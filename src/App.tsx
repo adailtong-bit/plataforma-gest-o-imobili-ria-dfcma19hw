@@ -30,6 +30,7 @@ import Workflows from './pages/Workflows'
 import Renewals from './pages/Renewals'
 import PublicityAdmin from './pages/admin/PublicityAdmin'
 import { AppProvider } from '@/stores/AppContext'
+import { ThemeProvider } from '@/components/theme-provider'
 import { useEffect } from 'react'
 
 const App = () => {
@@ -38,53 +39,55 @@ const App = () => {
   }, [])
 
   return (
-    <AppProvider>
-      <BrowserRouter
-        future={{ v7_startTransition: false, v7_relativeSplatPath: false }}
-      >
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <Routes>
-            <Route element={<DashboardLayout />}>
-              <Route path="/" element={<Index />} />
-              <Route path="/properties" element={<Properties />} />
-              <Route path="/properties/:id" element={<PropertyDetails />} />
-              <Route path="/condominiums" element={<Condominiums />} />
-              <Route
-                path="/condominiums/:id"
-                element={<CondominiumDetails />}
-              />
-              <Route path="/tenants" element={<Tenants />} />
-              <Route path="/tenants/:id" element={<TenantDetails />} />
-              <Route path="/owners" element={<Owners />} />
-              <Route path="/owners/:id" element={<OwnerDetails />} />
-              <Route path="/partners" element={<Partners />} />
-              <Route path="/partners/:id" element={<PartnerDetails />} />
-              <Route path="/calendar" element={<CalendarPage />} />
-              <Route path="/tasks" element={<Tasks />} />
-              <Route path="/financial" element={<Financial />} />
-              <Route path="/messages" element={<Messages />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/users" element={<Users />} />
-              <Route path="/service-pricing" element={<ServicePricing />} />
-              <Route path="/market-analysis" element={<MarketAnalysis />} />
-              <Route path="/workflows" element={<Workflows />} />
-              <Route path="/renewals" element={<Renewals />} />
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <AppProvider>
+        <BrowserRouter
+          future={{ v7_startTransition: false, v7_relativeSplatPath: false }}
+        >
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <Routes>
+              <Route element={<DashboardLayout />}>
+                <Route path="/" element={<Index />} />
+                <Route path="/properties" element={<Properties />} />
+                <Route path="/properties/:id" element={<PropertyDetails />} />
+                <Route path="/condominiums" element={<Condominiums />} />
+                <Route
+                  path="/condominiums/:id"
+                  element={<CondominiumDetails />}
+                />
+                <Route path="/tenants" element={<Tenants />} />
+                <Route path="/tenants/:id" element={<TenantDetails />} />
+                <Route path="/owners" element={<Owners />} />
+                <Route path="/owners/:id" element={<OwnerDetails />} />
+                <Route path="/partners" element={<Partners />} />
+                <Route path="/partners/:id" element={<PartnerDetails />} />
+                <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/tasks" element={<Tasks />} />
+                <Route path="/financial" element={<Financial />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/users" element={<Users />} />
+                <Route path="/service-pricing" element={<ServicePricing />} />
+                <Route path="/market-analysis" element={<MarketAnalysis />} />
+                <Route path="/workflows" element={<Workflows />} />
+                <Route path="/renewals" element={<Renewals />} />
 
-              {/* Admin */}
-              <Route path="/admin/publicity" element={<PublicityAdmin />} />
+                {/* Admin */}
+                <Route path="/admin/publicity" element={<PublicityAdmin />} />
 
-              {/* Portals */}
-              <Route path="/portal/tenant" element={<TenantPortal />} />
-              <Route path="/portal/owner" element={<OwnerPortal />} />
-              <Route path="/portal/partner" element={<PartnerPortal />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </TooltipProvider>
-      </BrowserRouter>
-    </AppProvider>
+                {/* Portals */}
+                <Route path="/portal/tenant" element={<TenantPortal />} />
+                <Route path="/portal/owner" element={<OwnerPortal />} />
+                <Route path="/portal/partner" element={<PartnerPortal />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </TooltipProvider>
+        </BrowserRouter>
+      </AppProvider>
+    </ThemeProvider>
   )
 }
 

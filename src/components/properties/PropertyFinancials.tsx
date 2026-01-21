@@ -83,7 +83,7 @@ export function PropertyFinancials({
   const [actionType, setActionType] = useState<'add' | 'edit'>('add')
   const [currentExpenseId, setCurrentExpenseId] = useState<string | null>(null)
 
-  // Form State
+  // Form State - Expanded for Contracts
   const [formData, setFormData] = useState({
     name: '',
     provider: '',
@@ -91,9 +91,11 @@ export function PropertyFinancials({
     amount: 0,
     paymentDate: '',
     receiptUrl: '',
+    contractStartDate: '',
+    contractEndDate: '',
+    recurringValue: 0,
   })
 
-  // Get fresh property data to ensure we don't overwrite with stale data during immediate saves
   const currentProperty = properties.find((p) => p.id === data.id) || data
   const propertyEntries = ledgerEntries.filter((e) => e.propertyId === data.id)
 
@@ -105,6 +107,9 @@ export function PropertyFinancials({
       amount: 0,
       paymentDate: new Date().toISOString().split('T')[0],
       receiptUrl: '',
+      contractStartDate: '',
+      contractEndDate: '',
+      recurringValue: 0,
     })
     setCurrentExpenseId(null)
     setActionType('add')
@@ -112,7 +117,6 @@ export function PropertyFinancials({
   }
 
   const handleOpenEdit = (expense: FixedExpense) => {
-    // Calculate estimated payment date based on dueDay
     const today = new Date()
     const daysInMonth = getDaysInMonth(today)
     const validDay = Math.min(expense.dueDay, daysInMonth)
@@ -125,6 +129,9 @@ export function PropertyFinancials({
       amount: expense.amount,
       paymentDate: estimatedDate,
       receiptUrl: '',
+      contractStartDate: expense.contractStartDate || '',
+      contractEndDate: expense.contractEndDate || '',
+      recurringValue: expense.recurringValue || expense.amount,
     })
     setCurrentExpenseId(expense.id)
     setActionType('edit')
@@ -150,8 +157,6 @@ export function PropertyFinancials({
 
   const handlePreSubmit = () => {
     if (!validateForm()) return
-
-    // If adding, save directly. If editing, require confirmation.
     if (actionType === 'add') {
       executeSave()
     } else {
@@ -167,8 +172,7 @@ export function PropertyFinancials({
   }
 
   const executeSave = () => {
-    // Extract Due Day from payment date
-    const parts = formData.paymentDate.split('-') // YYYY-MM-DD
+    const parts = formData.paymentDate.split('-')
     const dueDay = parseInt(parts[2])
     const initialDate = new Date(formData.paymentDate)
 
@@ -182,6 +186,9 @@ export function PropertyFinancials({
       frequency: 'monthly',
       provider: formData.provider,
       accountNumber: formData.accountNumber,
+      contractStartDate: formData.contractStartDate,
+      contractEndDate: formData.contractEndDate,
+      recurringValue: formData.recurringValue || formData.amount,
     }
 
     let updatedExpenses = [...(currentProperty.fixedExpenses || [])]
@@ -189,7 +196,6 @@ export function PropertyFinancials({
     if (actionType === 'add') {
       updatedExpenses.push(expense)
 
-      // Initial Ledger Entry Logic
       const isPaid = !!formData.receiptUrl
 
       const entry: LedgerEntry = {
@@ -207,11 +213,11 @@ export function PropertyFinancials({
         attachments: formData.receiptUrl
           ? [{ name: 'Comprovante', url: formData.receiptUrl }]
           : [],
+        payee: expense.provider, // Added payee
       }
 
       addLedgerEntry(entry)
 
-      // Automatic Recurrence: If initial entry is PAID, schedule next month immediately
       if (isPaid) {
         const nextDate = getNextDueDate(initialDate, dueDay)
         const nextEntry: LedgerEntry = {
@@ -225,6 +231,7 @@ export function PropertyFinancials({
           description: `${expense.name} - ${expense.provider || ''} (Auto)`,
           referenceId: expense.id,
           status: 'pending',
+          payee: expense.provider, // Added payee
         }
         setTimeout(() => addLedgerEntry(nextEntry), 100)
       }
@@ -234,12 +241,10 @@ export function PropertyFinancials({
         description: 'Despesa adicionada e lançada no financeiro.',
       })
     } else {
-      // Edit Mode
       updatedExpenses = updatedExpenses.map((e) =>
         e.id === expense.id ? expense : e,
       )
 
-      // Update pending entries to reflect new amount/day/provider
       const pendingEntries = ledgerEntries.filter(
         (e) => e.referenceId === expense.id && e.status === 'pending',
       )
@@ -256,6 +261,7 @@ export function PropertyFinancials({
           amount: expense.amount,
           description: `${expense.name} - ${expense.provider || ''}`,
           dueDate: newDueDate.toISOString(),
+          payee: expense.provider, // Update payee
         }
         updateLedgerEntry(updatedEntry)
       })
@@ -266,7 +272,6 @@ export function PropertyFinancials({
       })
     }
 
-    // Persist changes to Property Store immediately
     updateProperty({
       ...currentProperty,
       fixedExpenses: updatedExpenses,
@@ -286,7 +291,6 @@ export function PropertyFinancials({
       fixedExpenses: updatedExpenses,
     })
 
-    // Cleanup pending entries linked to this expense
     const pendingEntries = ledgerEntries.filter(
       (e) => e.referenceId === id && e.status === 'pending',
     )
@@ -300,7 +304,6 @@ export function PropertyFinancials({
 
   return (
     <div className="space-y-6">
-      {/* Settings Card */}
       <Card>
         <CardHeader>
           <CardTitle>Configurações Financeiras</CardTitle>
@@ -381,7 +384,6 @@ export function PropertyFinancials({
         </CardContent>
       </Card>
 
-      {/* Fixed Expenses List */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Despesas Fixas</CardTitle>
@@ -395,7 +397,7 @@ export function PropertyFinancials({
               <TableRow>
                 <TableHead>Despesa</TableHead>
                 <TableHead>Fornecedor</TableHead>
-                <TableHead>Nº Registro</TableHead>
+                <TableHead>Contrato</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>Dia Venc.</TableHead>
                 <TableHead className="text-right">Ação</TableHead>
@@ -417,7 +419,15 @@ export function PropertyFinancials({
                 <TableRow key={expense.id}>
                   <TableCell className="font-medium">{expense.name}</TableCell>
                   <TableCell>{expense.provider || '-'}</TableCell>
-                  <TableCell>{expense.accountNumber || '-'}</TableCell>
+                  <TableCell>
+                    {expense.contractEndDate ? (
+                      <span className="text-xs">
+                        Até {expense.contractEndDate}
+                      </span>
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
                   <TableCell>${expense.amount.toFixed(2)}</TableCell>
                   <TableCell>{expense.dueDay}</TableCell>
                   <TableCell className="text-right">
@@ -468,14 +478,12 @@ export function PropertyFinancials({
         </CardContent>
       </Card>
 
-      {/* Ledger */}
       <Card>
         <CardContent className="pt-6">
           <PropertyLedger propertyId={data.id} entries={propertyEntries} />
         </CardContent>
       </Card>
 
-      {/* Expense Modal */}
       <Dialog open={openExpense} onOpenChange={setOpenExpense}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
@@ -483,7 +491,7 @@ export function PropertyFinancials({
               {actionType === 'add' ? 'Nova Despesa Fixa' : 'Editar Despesa'}
             </DialogTitle>
             <DialogDescription>
-              Configure os detalhes da despesa recorrente.
+              Configure os detalhes da despesa recorrente e contrato.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -530,7 +538,13 @@ export function PropertyFinancials({
                 </Label>
                 <CurrencyInput
                   value={formData.amount}
-                  onChange={(val) => setFormData({ ...formData, amount: val })}
+                  onChange={(val) =>
+                    setFormData({
+                      ...formData,
+                      amount: val,
+                      recurringValue: val,
+                    })
+                  }
                 />
               </div>
               <div className="grid gap-2">
@@ -544,9 +558,48 @@ export function PropertyFinancials({
                     setFormData({ ...formData, paymentDate: e.target.value })
                   }
                 />
-                <p className="text-[10px] text-muted-foreground">
-                  O dia selecionado será usado como dia de vencimento mensal.
-                </p>
+              </div>
+            </div>
+
+            {/* Contract Fields */}
+            <div className="border-t pt-4 mt-2">
+              <h4 className="text-sm font-medium mb-3">Detalhes do Contrato</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label>Início do Contrato</Label>
+                  <Input
+                    type="date"
+                    value={formData.contractStartDate}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        contractStartDate: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Fim do Contrato</Label>
+                  <Input
+                    type="date"
+                    value={formData.contractEndDate}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        contractEndDate: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Valor Recorrente Mensal</Label>
+                  <CurrencyInput
+                    value={formData.recurringValue}
+                    onChange={(val) =>
+                      setFormData({ ...formData, recurringValue: val })
+                    }
+                  />
+                </div>
               </div>
             </div>
 
@@ -582,7 +635,6 @@ export function PropertyFinancials({
         </DialogContent>
       </Dialog>
 
-      {/* Confirmation Alert (Only for Edit) */}
       <AlertDialog open={confirmActionOpen} onOpenChange={setConfirmActionOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

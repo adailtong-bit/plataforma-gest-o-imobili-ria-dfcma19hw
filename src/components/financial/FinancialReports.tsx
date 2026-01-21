@@ -48,7 +48,9 @@ export function FinancialReports() {
   const { toast } = useToast()
 
   const [period, setPeriod] = useState('1m') // 1m, 3m, 6m, ytd, 1y
-  const [grouping, setGrouping] = useState<'category' | 'month'>('category')
+  const [grouping, setGrouping] = useState<'category' | 'month' | 'supplier'>(
+    'category',
+  )
 
   const getStartDate = () => {
     const now = new Date()
@@ -78,10 +80,14 @@ export function FinancialReports() {
   // Consolidate data based on grouping
   const consolidatedData = filteredEntries.reduce(
     (acc, entry) => {
-      const key =
-        grouping === 'month'
-          ? format(new Date(entry.date), 'MMM yyyy')
-          : entry.category
+      let key = ''
+      if (grouping === 'month') {
+        key = format(new Date(entry.date), 'MMM yyyy')
+      } else if (grouping === 'category') {
+        key = entry.category || 'Uncategorized'
+      } else if (grouping === 'supplier') {
+        key = entry.payee || entry.description || 'Unknown'
+      }
 
       if (!acc[key]) acc[key] = { name: key, income: 0, expense: 0 }
 
@@ -170,6 +176,7 @@ export function FinancialReports() {
                 <SelectContent>
                   <SelectItem value="category">Por Categoria</SelectItem>
                   <SelectItem value="month">Por Mês</SelectItem>
+                  <SelectItem value="supplier">Por Fornecedor</SelectItem>
                 </SelectContent>
               </Select>
               <Button variant="outline" onClick={handleExport}>
@@ -214,7 +221,11 @@ export function FinancialReports() {
               <TableHeader>
                 <TableRow>
                   <TableHead>
-                    {grouping === 'month' ? 'Mês' : 'Categoria'}
+                    {grouping === 'month'
+                      ? 'Mês'
+                      : grouping === 'category'
+                        ? 'Categoria'
+                        : 'Fornecedor'}
                   </TableHead>
                   <TableHead className="text-right">Receita</TableHead>
                   <TableHead className="text-right">Despesa</TableHead>
