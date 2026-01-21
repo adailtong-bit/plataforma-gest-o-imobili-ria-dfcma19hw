@@ -16,11 +16,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Download } from 'lucide-react'
+import { Download, ExternalLink } from 'lucide-react'
 import { Property, LedgerEntry } from '@/lib/types'
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
+import { Link } from 'react-router-dom'
 
 interface OwnerStatementProps {
   ownerId: string
@@ -147,7 +148,17 @@ export function OwnerStatement({
                       {format(new Date(entry.date), 'dd/MM/yyyy')}
                     </TableCell>
                     <TableCell className="font-medium">
-                      {prop?.name || 'N/A'}
+                      {prop ? (
+                        <Link
+                          to={`/properties/${prop.id}`}
+                          className="flex items-center gap-2 hover:text-blue-600 hover:underline"
+                        >
+                          {prop.name}
+                          <ExternalLink className="h-3 w-3 opacity-50" />
+                        </Link>
+                      ) : (
+                        'N/A'
+                      )}
                     </TableCell>
                     <TableCell>{entry.description}</TableCell>
                     <TableCell>

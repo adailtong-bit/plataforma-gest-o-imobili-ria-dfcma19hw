@@ -41,6 +41,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { PhoneInput } from '@/components/ui/phone-input'
 
@@ -231,11 +236,42 @@ export default function Owners() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="gap-1">
-                        <Building2 className="h-3 w-3" />
-                        {getPropertyCount(owner.id)}{' '}
-                        {t('owners.properties_count')}
-                      </Badge>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Badge
+                            variant="secondary"
+                            className="gap-1 cursor-pointer hover:bg-secondary/80"
+                          >
+                            <Building2 className="h-3 w-3" />
+                            {getPropertyCount(owner.id)}{' '}
+                            {t('owners.properties_count')}
+                          </Badge>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 p-0" align="start">
+                          <div className="p-2 font-medium border-b text-xs text-muted-foreground">
+                            Propriedades de {owner.name}
+                          </div>
+                          <div className="flex flex-col max-h-60 overflow-y-auto">
+                            {properties
+                              .filter((p) => p.ownerId === owner.id)
+                              .map((p) => (
+                                <Link
+                                  key={p.id}
+                                  to={`/properties/${p.id}`}
+                                  className="px-3 py-2 text-sm hover:bg-muted transition-colors truncate block border-b last:border-0"
+                                >
+                                  {p.name}
+                                </Link>
+                              ))}
+                            {properties.filter((p) => p.ownerId === owner.id)
+                              .length === 0 && (
+                              <div className="p-3 text-sm text-center text-muted-foreground">
+                                Nenhuma propriedade vinculada.
+                              </div>
+                            )}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                     </TableCell>
                     <TableCell>
                       <Badge

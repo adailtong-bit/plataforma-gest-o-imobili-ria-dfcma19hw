@@ -1,17 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, Save, Edit, X, Download } from 'lucide-react'
+import { ArrowLeft, Save, Edit, X, Download, Building } from 'lucide-react'
 import useOwnerStore from '@/stores/useOwnerStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useFinancialStore from '@/stores/useFinancialStore'
@@ -19,6 +13,7 @@ import { useToast } from '@/hooks/use-toast'
 import { Owner, GenericDocument } from '@/lib/types'
 import { DocumentVault } from '@/components/documents/DocumentVault'
 import { OwnerStatement } from '@/components/financial/OwnerStatement'
+import { OwnerProperties } from '@/components/owners/OwnerProperties'
 
 export default function OwnerDetails() {
   const { id } = useParams()
@@ -38,7 +33,6 @@ export default function OwnerDetails() {
     if (owner) {
       setFormData((prev) => {
         // Only update if we are not editing, or if the update is from documents (handled via handleDocsUpdate which also updates local state)
-        // Actually simplest is to just sync if not editing, BUT for docs we want immediate sync.
         // For simplicity and consistency with TenantDetails, we sync.
         return { ...owner }
       })
@@ -71,7 +65,6 @@ export default function OwnerDetails() {
     const updatedOwner = { ...formData!, documents: docs }
     setFormData(updatedOwner)
     updateOwner(updatedOwner)
-    // DocumentVault handles its own toast, but we can ensure persistence here.
   }
 
   return (
@@ -108,6 +101,9 @@ export default function OwnerDetails() {
       <Tabs defaultValue="profile">
         <TabsList>
           <TabsTrigger value="profile">Perfil</TabsTrigger>
+          <TabsTrigger value="properties">
+            <Building className="h-4 w-4 mr-2" /> Propriedades
+          </TabsTrigger>
           <TabsTrigger value="financial">Extratos</TabsTrigger>
           <TabsTrigger value="documents">Documentos</TabsTrigger>
         </TabsList>
@@ -216,6 +212,10 @@ export default function OwnerDetails() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="properties">
+          <OwnerProperties ownerId={formData.id} properties={properties} />
         </TabsContent>
 
         <TabsContent value="financial">
