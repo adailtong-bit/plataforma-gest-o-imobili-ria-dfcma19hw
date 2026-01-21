@@ -555,13 +555,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         )
 
         if (!existingEntry) {
+          const categoryMap: Record<string, string> = {
+            cleaning: 'Limpeza',
+            maintenance: 'Manutenção',
+            inspection: 'Inspeção',
+          }
+
           const entry: LedgerEntry = {
             id: `auto-task-${taskId}-${Date.now()}`,
             propertyId: task.propertyId,
             date: new Date().toISOString(),
             dueDate: new Date().toISOString(), // Assuming due upon completion
             type: 'expense',
-            category: task.type === 'cleaning' ? 'Limpeza' : 'Manutenção',
+            category: categoryMap[task.type] || 'Despesa de Serviço',
             amount: task.price,
             description: `Serviço: ${task.title}`,
             referenceId: taskId,

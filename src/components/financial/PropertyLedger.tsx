@@ -28,14 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Plus,
-  Upload,
-  Trash2,
-  Paperclip,
-  ClipboardList,
-  ExternalLink,
-} from 'lucide-react'
+import { Plus, Upload, Trash2, Paperclip, ClipboardList } from 'lucide-react'
 import { format, isPast, parseISO } from 'date-fns'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useTaskStore from '@/stores/useTaskStore'
