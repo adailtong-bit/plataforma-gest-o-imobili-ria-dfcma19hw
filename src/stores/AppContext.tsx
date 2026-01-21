@@ -436,11 +436,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     text: string,
     attachments: string[] = [],
   ) => {
-    const timestamp = new Date().toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-
+    // UPDATED: Use ISO string for proper sorting, format it on display
+    const timestamp = new Date().toISOString()
     const newMessageId = Date.now().toString()
 
     setAllMessages((prev) => {
@@ -550,6 +547,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const sendSystemMessage = (toUserId: string, text: string) => {
     const systemId = 'admin_platform'
     const newMessageId = `sys-${Date.now()}`
+    const timestamp = new Date().toISOString()
 
     setAllMessages((prev) => {
       const existingThread = prev.find(

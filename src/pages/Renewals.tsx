@@ -37,6 +37,11 @@ import { NegotiationSheet } from '@/components/renewals/NegotiationSheet'
 import { GenericDocument } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 export default function Renewals() {
   const { tenants, renewTenantContract } = useTenantStore()
@@ -431,14 +436,21 @@ export default function Renewals() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleOpenSheet(tenant.id)}
-                            title="Detalhes da Negociação"
-                          >
-                            <ClipboardList className="h-4 w-4" />
-                          </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleOpenSheet(tenant.id)}
+                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                              >
+                                <ClipboardList className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Unified Negotiation Details & Chat</p>
+                            </TooltipContent>
+                          </Tooltip>
 
                           <Button
                             variant="outline"
