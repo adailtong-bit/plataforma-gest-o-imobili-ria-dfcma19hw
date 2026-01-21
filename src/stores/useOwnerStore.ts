@@ -8,6 +8,7 @@ const useOwnerStore = () => {
   return {
     owners: context.owners,
     addOwner: context.addOwner,
+    updateOwner: context.updateOwner,
   }
 }
 

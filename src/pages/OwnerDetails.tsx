@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,18 +11,18 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, Save, Edit, X, FileText, Download } from 'lucide-react'
+import { ArrowLeft, Save, Edit, X, Download } from 'lucide-react'
 import useOwnerStore from '@/stores/useOwnerStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
-import { Owner } from '@/lib/types'
+import { Owner, GenericDocument } from '@/lib/types'
 import { DocumentVault } from '@/components/documents/DocumentVault'
 import { OwnerStatement } from '@/components/financial/OwnerStatement'
 
 export default function OwnerDetails() {
   const { id } = useParams()
-  const { owners } = useOwnerStore()
+  const { owners, updateOwner } = useOwnerStore()
   const { properties } = usePropertyStore()
   const { ledgerEntries } = useFinancialStore()
   const { toast } = useToast()
@@ -33,20 +33,45 @@ export default function OwnerDetails() {
   )
   const [isEditing, setIsEditing] = useState(false)
 
-  if (!formData) return <div>Not Found</div>
+  // Sync formData when owner changes in store (e.g. from document update)
+  useEffect(() => {
+    if (owner) {
+      setFormData((prev) => {
+        // Only update if we are not editing, or if the update is from documents (handled via handleDocsUpdate which also updates local state)
+        // Actually simplest is to just sync if not editing, BUT for docs we want immediate sync.
+        // For simplicity and consistency with TenantDetails, we sync.
+        return { ...owner }
+      })
+    }
+  }, [owner])
+
+  if (!formData)
+    return (
+      <div className="p-10 text-center text-muted-foreground">
+        Proprietário não encontrado.
+      </div>
+    )
 
   const handleSave = () => {
-    // In real app, call updateOwner(formData)
+    if (!formData) return
+    updateOwner(formData)
     setIsEditing(false)
-    toast({ title: 'Proprietário atualizado' })
+    toast({
+      title: 'Proprietário atualizado',
+      description: 'As informações foram salvas com sucesso.',
+    })
   }
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }))
   }
 
-  const handleDocsUpdate = (docs: any) => {
-    handleChange('documents', docs)
+  const handleDocsUpdate = (docs: GenericDocument[]) => {
+    // Immediate persistence for documents as requested in User Story
+    const updatedOwner = { ...formData!, documents: docs }
+    setFormData(updatedOwner)
+    updateOwner(updatedOwner)
+    // DocumentVault handles its own toast, but we can ensure persistence here.
   }
 
   return (
@@ -207,7 +232,7 @@ export default function OwnerDetails() {
             onUpdate={handleDocsUpdate}
             canEdit={true}
             title="Documentos Pessoais"
-            description="IDs, Passaportes, Procurações."
+            description="IDs, Passaportes, Procurações e outros documentos do proprietário."
           />
         </TabsContent>
       </Tabs>

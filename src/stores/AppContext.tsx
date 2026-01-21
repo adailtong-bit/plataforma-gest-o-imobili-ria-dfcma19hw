@@ -51,18 +51,7 @@ import {
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
-import {
-  addDays,
-  addWeeks,
-  addMonths,
-  addYears,
-  eachMonthOfInterval,
-  format,
-  parseISO,
-  setDate,
-  getDaysInMonth,
-  differenceInDays,
-} from 'date-fns'
+import { format, setDate, getDaysInMonth, differenceInDays } from 'date-fns'
 
 interface AppContextType {
   properties: Property[]
@@ -108,6 +97,7 @@ interface AppContextType {
   addTenant: (tenant: Tenant) => void
   updateTenant: (tenant: Tenant) => void
   addOwner: (owner: Owner) => void
+  updateOwner: (owner: Owner) => void
   addPartner: (partner: Partner) => void
   updatePartner: (partner: Partner) => void
   setCurrentUser: (userId: string) => void
@@ -176,7 +166,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('app_tenants', JSON.stringify(tenants))
   }, [tenants])
 
-  const [owners, setOwners] = useState<Owner[]>(initialOwners)
+  // Initialize owners with localStorage to ensure persistence after refresh
+  const [owners, setOwners] = useState<Owner[]>(() => {
+    const saved = localStorage.getItem('app_owners')
+    return saved ? JSON.parse(saved) : initialOwners
+  })
+
+  // Persist owners to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('app_owners', JSON.stringify(owners))
+  }, [owners])
+
   const [partners, setPartners] = useState<Partner[]>(initialPartners)
   const [automationRules, setAutomationRules] = useState<AutomationRule[]>(
     initialAutomationRules,
@@ -397,23 +397,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const newMessageId = Date.now().toString()
 
     setAllMessages((prev) => {
-      // Implementation abbreviated for brevity as it is unchanged from original except state setter
-      return prev // In real update, logic is same as original file
-    })
-    // NOTE: Full logic from original file should be here. For this task I'm focusing on addTenant/updateTenant
-    // But to respect "write full code", I will paste the original logic back.
-  }
-
-  // Re-implementing sendMessage fully to avoid missing code
-  const sendMessageFull = (
-    contactId: string,
-    text: string,
-    attachments: string[] = [],
-  ) => {
-    const timestamp = new Date().toISOString()
-    const newMessageId = Date.now().toString()
-
-    setAllMessages((prev) => {
       const senderThread = prev.find(
         (m) => m.ownerId === currentUser.id && m.contactId === contactId,
       )
@@ -515,11 +498,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
       return newPrev
     })
-  }
-
-  const sendSystemMessage = (toUserId: string, text: string) => {
-    // Keeping this mocked for system messages
-    // ... logic same as before
   }
 
   const addProperty = (property: Property) => {
@@ -693,7 +671,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const startChat = (contactId: string) => {
-    // same logic as before
     const contact = allUsers.find((u) => u.id === contactId)
     if (!contact) return
     if (visibleMessages.find((m) => m.contactId === contactId)) return
@@ -723,7 +700,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const addTenant = (tenant: Tenant) => {
     setTenants([...tenants, tenant])
-    // Side effects...
     addAuditLog({
       userId: currentUser.id,
       userName: currentUser.name,
@@ -734,7 +710,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
-  // NEW FUNCTION: updateTenant
   const updateTenant = (tenant: Tenant) => {
     setTenants((prev) => prev.map((t) => (t.id === tenant.id ? tenant : t)))
     addAuditLog({
@@ -756,6 +731,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       entity: 'Owner',
       entityId: owner.id,
       details: `Registered owner: ${owner.name}`,
+    })
+  }
+
+  const updateOwner = (owner: Owner) => {
+    setOwners((prev) => prev.map((o) => (o.id === owner.id ? owner : o)))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Owner',
+      entityId: owner.id,
+      details: `Updated owner: ${owner.name}`,
     })
   }
 
@@ -1100,11 +1087,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         markPaymentAs,
         addTaskImage,
         addTaskEvidence,
-        sendMessage: sendMessageFull,
+        sendMessage,
         markAsRead,
         addTenant,
         updateTenant,
         addOwner,
+        updateOwner,
         addPartner,
         updatePartner,
         setCurrentUser,
