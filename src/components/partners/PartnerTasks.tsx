@@ -52,6 +52,7 @@ export function PartnerTasks({ partnerId, canEdit }: PartnerTasksProps) {
               onStatusChange={(status) => updateTaskStatus(task.id, status)}
               onUpload={canEdit ? addTaskImage : undefined}
               onAddEvidence={canEdit ? addTaskEvidence : undefined}
+              canEdit={canEdit}
             />
           ))}
         </div>

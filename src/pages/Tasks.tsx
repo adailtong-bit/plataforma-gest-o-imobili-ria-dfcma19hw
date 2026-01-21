@@ -51,6 +51,7 @@ export default function Tasks() {
                       updateTaskStatus(task.id, status)
                     }
                     onAddEvidence={addTaskEvidence}
+                    canEdit={true}
                   />
                 ))}
             </div>
@@ -76,6 +77,7 @@ export default function Tasks() {
                     }
                     onUpload={addTaskImage}
                     onAddEvidence={addTaskEvidence}
+                    canEdit={true}
                   />
                 ))}
             </div>
@@ -100,6 +102,7 @@ export default function Tasks() {
                       updateTaskStatus(task.id, status)
                     }
                     onAddEvidence={addTaskEvidence}
+                    canEdit={true}
                   />
                 ))}
             </div>
@@ -124,6 +127,7 @@ export default function Tasks() {
                       updateTaskStatus(task.id, status)
                     }
                     onAddEvidence={addTaskEvidence}
+                    canEdit={true}
                   />
                 ))}
             </div>

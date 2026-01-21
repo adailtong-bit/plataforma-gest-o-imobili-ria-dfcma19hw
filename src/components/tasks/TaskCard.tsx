@@ -28,11 +28,13 @@ import {
   Receipt,
   User,
   Edit,
+  Pencil,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
 import { TaskDetailsSheet } from './TaskDetailsSheet'
 import { EvidenceUploadDialog } from './EvidenceUploadDialog'
+import { EditTaskDialog } from './EditTaskDialog'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useAuthStore from '@/stores/useAuthStore'
@@ -51,6 +53,7 @@ interface TaskCardProps {
   onStatusChange: (status: Task['status']) => void
   onUpload?: (taskId: string, img: string) => void
   onAddEvidence?: (taskId: string, evidence: Evidence) => void
+  canEdit?: boolean
 }
 
 export function TaskCard({
@@ -58,6 +61,7 @@ export function TaskCard({
   onStatusChange,
   onUpload,
   onAddEvidence,
+  canEdit = false,
 }: TaskCardProps) {
   const { toast } = useToast()
   const { t } = useLanguageStore()
@@ -67,6 +71,7 @@ export function TaskCard({
   const { updateTask } = useTaskStore()
 
   const [detailsOpen, setDetailsOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
 
   const [checkInOpen, setCheckInOpen] = useState(false)
@@ -162,6 +167,8 @@ export function TaskCard({
         onOpenChange={setDetailsOpen}
       />
 
+      <EditTaskDialog task={task} open={editOpen} onOpenChange={setEditOpen} />
+
       <EvidenceUploadDialog
         open={checkInOpen}
         onOpenChange={setCheckInOpen}
@@ -178,7 +185,7 @@ export function TaskCard({
         onConfirm={handleEvidenceUpload}
       />
 
-      <Card className="hover:shadow-md transition-shadow group flex flex-col h-full">
+      <Card className="hover:shadow-md transition-shadow group flex flex-col h-full relative">
         <CardHeader className="p-4 pb-2 space-y-2">
           <div className="flex justify-between items-start">
             <Badge
@@ -210,9 +217,21 @@ export function TaskCard({
               )}
             </div>
           </div>
-          <CardTitle className="text-sm font-semibold leading-tight line-clamp-2">
-            {task.title}
-          </CardTitle>
+          <div className="flex justify-between items-start gap-2">
+            <CardTitle className="text-sm font-semibold leading-tight line-clamp-2">
+              {task.title}
+            </CardTitle>
+            {canEdit && task.status !== 'completed' && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 -mr-2 -mt-1 text-muted-foreground hover:text-foreground"
+                onClick={() => setEditOpen(true)}
+              >
+                <Pencil className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
           <div className="text-xs text-muted-foreground space-y-0.5">
             <div className="font-medium truncate">{task.propertyName}</div>
             {(task.propertyAddress || task.propertyCommunity) && (

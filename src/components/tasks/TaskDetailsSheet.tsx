@@ -262,7 +262,7 @@ export function TaskDetailsSheet({
                 <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
                   {t('common.description')}
                 </h3>
-                <p className="text-sm leading-relaxed">
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">
                   {task.description || 'Sem descrição detalhada.'}
                 </p>
               </div>
