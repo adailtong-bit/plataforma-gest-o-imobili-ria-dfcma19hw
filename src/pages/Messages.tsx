@@ -1,24 +1,41 @@
-import { useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { useState, useEffect } from 'react'
+import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Search, Send, User, Paperclip, MessageCircle } from 'lucide-react'
+import {
+  Search,
+  Send,
+  User,
+  Paperclip,
+  MessageCircle,
+  Users,
+  Building,
+} from 'lucide-react'
 import useMessageStore from '@/stores/useMessageStore'
 import useAuthStore from '@/stores/useAuthStore'
+import useTenantStore from '@/stores/useTenantStore'
+import usePropertyStore from '@/stores/usePropertyStore'
+import useOwnerStore from '@/stores/useOwnerStore'
 import { cn } from '@/lib/utils'
 import { useLocation } from 'react-router-dom'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { format, parseISO, isValid } from 'date-fns'
+import { Badge } from '@/components/ui/badge'
 
 export default function Messages() {
-  const { messages, sendMessage, markAsRead } = useMessageStore()
+  const { messages, sendMessage, markAsRead, startChat } = useMessageStore()
   const { currentUser } = useAuthStore()
+  const { tenants } = useTenantStore()
+  const { properties } = usePropertyStore()
+  const { owners } = useOwnerStore()
+
   const location = useLocation()
   const { t } = useLanguageStore()
   const searchParams = new URLSearchParams(location.search)
   const initialContactId = searchParams.get('contactId')
+  const context = searchParams.get('context')
 
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
     () => {
@@ -31,6 +48,44 @@ export default function Messages() {
   )
   const [inputText, setInputText] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+
+  // Resolve Context Data (Renewal)
+  const contextTenant =
+    context === 'renewal' && initialContactId
+      ? tenants.find((t) => t.id === initialContactId)
+      : null
+  const contextProperty = contextTenant
+    ? properties.find((p) => p.id === contextTenant.propertyId)
+    : null
+  const contextOwner = contextProperty
+    ? owners.find((o) => o.id === contextProperty.ownerId)
+    : null
+
+  // Ensure chats exist and are selected
+  useEffect(() => {
+    if (initialContactId) {
+      const found = messages.find((m) => m.contactId === initialContactId)
+
+      if (found) {
+        if (!selectedMessageId) {
+          setSelectedMessageId(found.id)
+        }
+      } else {
+        // Create chat if it doesn't exist
+        startChat(initialContactId)
+      }
+    }
+  }, [initialContactId, messages, selectedMessageId, startChat])
+
+  // Ensure Owner chat exists for renewal context
+  useEffect(() => {
+    if (context === 'renewal' && contextOwner) {
+      const found = messages.find((m) => m.contactId === contextOwner.id)
+      if (!found) {
+        startChat(contextOwner.id)
+      }
+    }
+  }, [context, contextOwner, messages, startChat])
 
   const selectedMessage = messages.find((m) => m.id === selectedMessageId)
 
@@ -170,6 +225,61 @@ export default function Messages() {
                   </div>
                 </div>
               </div>
+
+              {/* Renewal Context Header (If Active) */}
+              {context === 'renewal' && contextTenant && contextProperty && (
+                <div className="bg-muted/30 border-b p-3 flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-xs font-medium text-trust-blue">
+                    <Users className="h-3 w-3" />
+                    Renewal Negotiation Context
+                  </div>
+                  <div className="flex flex-wrap items-center gap-4 text-sm">
+                    {/* Property Manager (Me) */}
+                    <div
+                      className="flex items-center gap-2"
+                      title="Property Manager (You)"
+                    >
+                      <Avatar className="h-6 w-6 border-2 border-trust-blue">
+                        <AvatarImage src={currentUser.avatar} />
+                        <AvatarFallback>PM</AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs font-semibold">Me (PM)</span>
+                    </div>
+                    <span className="text-muted-foreground">/</span>
+
+                    {/* Tenant */}
+                    <div className="flex items-center gap-2" title="Tenant">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={contextTenant.avatar} />
+                        <AvatarFallback>T</AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs">{contextTenant.name}</span>
+                      <Badge variant="outline" className="text-[10px] h-4 px-1">
+                        Tenant
+                      </Badge>
+                    </div>
+                    <span className="text-muted-foreground">/</span>
+
+                    {/* Owner */}
+                    <div className="flex items-center gap-2" title="Owner">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={contextOwner?.avatar} />
+                        <AvatarFallback>O</AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs">
+                        {contextOwner?.name || 'Owner'}
+                      </span>
+                      <Badge variant="outline" className="text-[10px] h-4 px-1">
+                        Owner
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                    <Building className="h-3 w-3" />
+                    <span>Property: {contextProperty.name}</span>
+                  </div>
+                </div>
+              )}
 
               {/* Messages Area */}
               <ScrollArea className="flex-1 p-4 bg-slate-50/50">

@@ -29,7 +29,15 @@ import { format, parseISO, isValid } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Lock, MessageCircle, User, Building, Users, Send } from 'lucide-react'
+import {
+  Lock,
+  MessageCircle,
+  User,
+  Building,
+  Users,
+  Send,
+  ShieldCheck,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface NegotiationSheetProps {
@@ -188,6 +196,29 @@ export function NegotiationSheet({
 
         <div className="grid gap-6 py-6">
           <div className="grid grid-cols-2 gap-4 p-4 bg-muted/20 rounded-lg">
+            {/* Property Manager (You) */}
+            <div className="flex flex-col gap-1">
+              <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                <ShieldCheck className="h-3 w-3" /> Property Manager
+              </Label>
+              <div
+                className="font-medium text-sm truncate flex items-center gap-2"
+                title={currentUser.name}
+              >
+                {currentUser.name} (You)
+                <div className="h-2 w-2 rounded-full bg-purple-500" />
+              </div>
+            </div>
+
+            {/* Status */}
+            <div className="flex flex-col gap-1">
+              <Label className="text-xs text-muted-foreground">Status</Label>
+              <BadgeStatus status={status} />
+            </div>
+
+            <Separator className="col-span-2 my-2" />
+
+            {/* Tenant */}
             <div className="flex flex-col gap-1">
               <Label className="text-xs text-muted-foreground flex items-center gap-1">
                 <User className="h-3 w-3" /> Tenant
@@ -200,6 +231,8 @@ export function NegotiationSheet({
                 <div className="h-2 w-2 rounded-full bg-blue-500" />
               </div>
             </div>
+
+            {/* Owner */}
             <div className="flex flex-col gap-1">
               <Label className="text-xs text-muted-foreground flex items-center gap-1">
                 <User className="h-3 w-3" /> Owner
@@ -212,7 +245,9 @@ export function NegotiationSheet({
                 <div className="h-2 w-2 rounded-full bg-green-500" />
               </div>
             </div>
-            <div className="flex flex-col gap-1">
+
+            {/* Property */}
+            <div className="col-span-2 flex flex-col gap-1 mt-2">
               <Label className="text-xs text-muted-foreground flex items-center gap-1">
                 <Building className="h-3 w-3" /> Property
               </Label>
@@ -222,10 +257,6 @@ export function NegotiationSheet({
               >
                 {property?.name}
               </div>
-            </div>
-            <div className="flex flex-col gap-1">
-              <Label className="text-xs text-muted-foreground">Status</Label>
-              <BadgeStatus status={status} />
             </div>
           </div>
 
@@ -268,7 +299,7 @@ export function NegotiationSheet({
                             <User className="h-3 w-3 text-green-500" />
                           )}
                           {msg.role === 'manager' && (
-                            <User className="h-3 w-3 text-purple-500" />
+                            <ShieldCheck className="h-3 w-3 text-purple-500" />
                           )}
                           {msg.senderName}
                           {msg.role === 'manager' && (
