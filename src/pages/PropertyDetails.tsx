@@ -8,7 +8,7 @@ import {
   X,
   Trash2,
   User,
-  ExternalLink,
+  ClipboardList,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -38,6 +38,7 @@ import { PropertyFinancials } from '@/components/properties/PropertyFinancials'
 import { PropertyMarketing } from '@/components/properties/PropertyMarketing'
 import { PropertyContent } from '@/components/properties/PropertyContent'
 import { DocumentVault } from '@/components/documents/DocumentVault'
+import { PropertyTasks } from '@/components/properties/PropertyTasks'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -229,10 +230,13 @@ export default function PropertyDetails() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
           <TabsTrigger value="location">Localização</TabsTrigger>
           <TabsTrigger value="financial">{t('common.financial')}</TabsTrigger>
+          <TabsTrigger value="tasks">
+            <ClipboardList className="h-4 w-4 mr-2" /> {t('common.tasks')}
+          </TabsTrigger>
           <TabsTrigger value="marketing">
             {t('properties.marketing')}
           </TabsTrigger>
@@ -265,6 +269,10 @@ export default function PropertyDetails() {
             owners={owners}
             partners={partners}
           />
+        </TabsContent>
+
+        <TabsContent value="tasks">
+          <PropertyTasks propertyId={formData.id} canEdit={true} />
         </TabsContent>
 
         <TabsContent value="marketing">

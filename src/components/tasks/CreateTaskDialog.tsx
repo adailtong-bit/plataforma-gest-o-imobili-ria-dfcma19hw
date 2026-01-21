@@ -9,6 +9,7 @@ import {
   Building,
   Image as ImageIcon,
   X,
+  User,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
@@ -61,6 +62,7 @@ const formSchema = z.object({
     required_error: 'Selecione o tipo de serviço.',
   }),
   assigneeId: z.string().min(2, 'Selecione o responsável.'),
+  partnerEmployeeId: z.string().optional(),
   priority: z.enum(['low', 'medium', 'high', 'critical']),
   date: z.date({ required_error: 'Selecione uma data.' }),
   price: z.string().optional(),
@@ -85,6 +87,7 @@ export function CreateTaskDialog() {
     defaultValues: {
       title: '',
       assigneeId: '',
+      partnerEmployeeId: 'none',
       priority: 'medium',
       backToBack: false,
       description: '',
@@ -105,6 +108,10 @@ export function CreateTaskDialog() {
     if (watchType === 'inspection') return p.type === 'agent'
     return true
   })
+
+  // Determine available employees for selected partner
+  const selectedPartner = partners.find((p) => p.id === watchAssigneeId)
+  const availableEmployees = selectedPartner?.employees || []
 
   // Auto fetch price when assignee/type changes
   useEffect(() => {
@@ -157,6 +164,9 @@ export function CreateTaskDialog() {
       if (rate) finalPrice = rate.price
     }
 
+    const employeeId =
+      values.partnerEmployeeId === 'none' ? undefined : values.partnerEmployeeId
+
     addTask({
       id: Math.random().toString(36).substr(2, 9),
       title: values.title,
@@ -168,6 +178,7 @@ export function CreateTaskDialog() {
       type: values.type,
       assignee: assignee ? assignee.name : 'Desconhecido',
       assigneeId: values.assigneeId,
+      partnerEmployeeId: employeeId,
       date: values.date.toISOString(),
       priority: values.priority,
       description: values.description,
@@ -353,6 +364,40 @@ export function CreateTaskDialog() {
                     </FormItem>
                   )}
                 />
+
+                {watchAssigneeId && (
+                  <FormField
+                    control={form.control}
+                    name="partnerEmployeeId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-1">
+                          <User className="h-3 w-3" /> Membro da Equipe
+                          (Opcional)
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Atribuir a..." />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="none">Nenhum (Geral)</SelectItem>
+                            {availableEmployees.map((e) => (
+                              <SelectItem key={e.id} value={e.id}>
+                                {e.name} ({e.role})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}

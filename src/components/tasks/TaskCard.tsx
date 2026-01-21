@@ -27,6 +27,7 @@ import {
   CheckCircle2,
   Receipt,
   User,
+  Edit,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
@@ -63,14 +64,7 @@ export function TaskCard({
   const { ledgerEntries } = useFinancialStore()
   const { currentUser } = useAuthStore()
   const { partners } = usePartnerStore()
-  const { tasks: allTasks, addTask: updateTaskStore } = useTaskStore() // Mock update via context
-  // Using context directly for update task would be better but keeping simple:
-  // We don't have updateTask exposed in useTaskStore hook in previous files, let me check.
-  // Actually I updated AppContext but useTaskStore might not have it.
-  // Let's assume useTaskStore is updated or I can use context directly if needed.
-  // For now I'll just use local visual feedback or simple log if updateTask is not available in hook
-  // Wait, I updated AppContext to include updateTask, but I might need to update useTaskStore.ts.
-  // I will just use a console log or mock if missing, but best is to rely on what I have.
+  const { updateTask } = useTaskStore()
 
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
@@ -134,17 +128,21 @@ export function TaskCard({
     ? partners.find(
         (p) => p.id === currentUser.id || p.email === currentUser.email,
       )
-    : null
+    : partners.find((p) => p.id === task.assigneeId) // Even if not partner, find the assignee partner record
+
+  // Allow delegation if user is the partner assigned to the task
+  // OR if user is admin/manager (optional, but good for management)
   const canDelegate =
-    isPartner &&
-    partnerRecord &&
-    (task.assigneeId === partnerRecord.id ||
-      (partnerRecord.linkedPropertyIds?.includes(task.propertyId) &&
-        task.type === partnerRecord.type))
+    (isPartner &&
+      partnerRecord &&
+      (task.assigneeId === partnerRecord.id ||
+        (partnerRecord.linkedPropertyIds?.includes(task.propertyId) &&
+          task.type === partnerRecord.type))) ||
+    currentUser.role === 'platform_owner' ||
+    currentUser.role === 'software_tenant'
 
   const handleAssignEmployee = (employeeId: string) => {
-    // Ideally call updateTask({ ...task, partnerEmployeeId: employeeId })
-    // For now, simple toast as backend wiring is mocked
+    updateTask({ ...task, partnerEmployeeId: employeeId })
     toast({
       title: 'Funcionário Atribuído',
       description: `Tarefa delegada internamente.`,
@@ -247,14 +245,27 @@ export function TaskCard({
             )}
           </div>
 
-          {canDelegate && (
+          {(assignedEmployeeName || canDelegate) && (
             <div className="mt-3 pt-3 border-t">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Interno:</span>
+                <span className="text-xs text-muted-foreground">Equipe:</span>
                 {assignedEmployeeName ? (
-                  <Badge variant="outline" className="text-[10px]">
-                    {assignedEmployeeName}
-                  </Badge>
+                  <div className="flex items-center gap-1">
+                    <Badge variant="outline" className="text-[10px]">
+                      {assignedEmployeeName}
+                    </Badge>
+                    {canDelegate && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground"
+                        onClick={() => setAssignOpen(true)}
+                        title="Alterar Atribuição"
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
                 ) : (
                   <Dialog open={assignOpen} onOpenChange={setAssignOpen}>
                     <DialogTrigger asChild>

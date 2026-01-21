@@ -5,7 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, Save, Edit, X, Download, Building } from 'lucide-react'
+import {
+  ArrowLeft,
+  Save,
+  Edit,
+  X,
+  Download,
+  Building,
+  ClipboardList,
+} from 'lucide-react'
 import useOwnerStore from '@/stores/useOwnerStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useFinancialStore from '@/stores/useFinancialStore'
@@ -14,6 +22,7 @@ import { Owner, GenericDocument } from '@/lib/types'
 import { DocumentVault } from '@/components/documents/DocumentVault'
 import { OwnerStatement } from '@/components/financial/OwnerStatement'
 import { OwnerProperties } from '@/components/owners/OwnerProperties'
+import { OwnerTasks } from '@/components/owners/OwnerTasks'
 
 export default function OwnerDetails() {
   const { id } = useParams()
@@ -103,6 +112,9 @@ export default function OwnerDetails() {
           <TabsTrigger value="profile">Perfil</TabsTrigger>
           <TabsTrigger value="properties">
             <Building className="h-4 w-4 mr-2" /> Propriedades
+          </TabsTrigger>
+          <TabsTrigger value="tasks">
+            <ClipboardList className="h-4 w-4 mr-2" /> Tarefas
           </TabsTrigger>
           <TabsTrigger value="financial">Extratos</TabsTrigger>
           <TabsTrigger value="documents">Documentos</TabsTrigger>
@@ -216,6 +228,10 @@ export default function OwnerDetails() {
 
         <TabsContent value="properties">
           <OwnerProperties ownerId={formData.id} properties={properties} />
+        </TabsContent>
+
+        <TabsContent value="tasks">
+          <OwnerTasks ownerId={formData.id} properties={properties} />
         </TabsContent>
 
         <TabsContent value="financial">

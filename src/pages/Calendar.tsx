@@ -12,6 +12,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import useTaskStore from '@/stores/useTaskStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useFinancialStore from '@/stores/useFinancialStore'
+import usePropertyStore from '@/stores/usePropertyStore'
+import usePartnerStore from '@/stores/usePartnerStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { TaskDetailsSheet } from '@/components/tasks/TaskDetailsSheet'
 import { Task } from '@/lib/types'
@@ -22,8 +24,15 @@ import {
   DollarSign,
   FileText,
   AlertTriangle,
-  Info,
+  Filter,
 } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 // Define event types for consolidation
 type CalendarEvent =
@@ -44,29 +53,55 @@ export default function CalendarPage() {
   const { tasks } = useTaskStore()
   const { tenants } = useTenantStore()
   const { ledgerEntries } = useFinancialStore()
+  const { properties } = usePropertyStore()
+  const { partners } = usePartnerStore()
   const { t } = useLanguageStore()
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
 
-  // 1. Process Tasks
-  const taskEvents: CalendarEvent[] = tasks.map((t) => ({
-    type: 'task',
-    data: t,
-    date: new Date(t.date),
-  }))
+  // Filters
+  const [filterPartner, setFilterPartner] = useState<string>('all')
+  const [filterProperty, setFilterProperty] = useState<string>('all')
 
-  // 2. Process Contracts (Tenants Lease End)
+  // 1. Process Tasks
+  const taskEvents: CalendarEvent[] = tasks
+    .filter((t) => {
+      if (filterPartner !== 'all' && t.assigneeId !== filterPartner)
+        return false
+      if (filterProperty !== 'all' && t.propertyId !== filterProperty)
+        return false
+      return true
+    })
+    .map((t) => ({
+      type: 'task',
+      data: t,
+      date: new Date(t.date),
+    }))
+
+  // 2. Process Contracts (Tenants Lease End) - filtered by property
   const contractEvents: CalendarEvent[] = tenants
     .filter((t) => t.leaseEnd && t.status === 'active')
+    .filter((t) => {
+      if (filterProperty !== 'all' && t.propertyId !== filterProperty)
+        return false
+      if (filterPartner !== 'all') return false // Contracts not linked to partners directly in this view
+      return true
+    })
     .map((t) => ({
       type: 'contract',
       data: { id: t.id, name: t.name, type: 'Lease Expiry' },
       date: parseISO(t.leaseEnd!),
     }))
 
-  // 3. Process Financials (Due Dates)
+  // 3. Process Financials (Due Dates) - filtered by property
   const financialEvents: CalendarEvent[] = ledgerEntries
     .filter((e) => e.dueDate && e.status === 'pending')
+    .filter((e) => {
+      if (filterProperty !== 'all' && e.propertyId !== filterProperty)
+        return false
+      if (filterPartner !== 'all') return false // Financials usually not direct partner link in this simple view unless extended
+      return true
+    })
     .map((e) => ({
       type: 'financial',
       data: {
@@ -101,11 +136,44 @@ export default function CalendarPage() {
 
   return (
     <div className="flex flex-col gap-6 h-[calc(100vh-8rem)]">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-navy">
-          {t('calendar.title')}
-        </h1>
-        <p className="text-muted-foreground">{t('calendar.subtitle')}</p>
+      <div className="flex justify-between items-start">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight text-navy">
+            {t('calendar.title')}
+          </h1>
+          <p className="text-muted-foreground">{t('calendar.subtitle')}</p>
+        </div>
+
+        <div className="flex gap-2 items-center">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Select value={filterPartner} onValueChange={setFilterPartner}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Parceiro" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos Parceiros</SelectItem>
+              {partners.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={filterProperty} onValueChange={setFilterProperty}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Propriedade" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas Propriedades</SelectItem>
+              {properties.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
@@ -208,6 +276,9 @@ export default function CalendarPage() {
                             </p>
                             <p className="text-xs text-muted-foreground line-clamp-1">
                               {event.data.propertyName}
+                            </p>
+                            <p className="text-xs text-blue-600 mt-1">
+                              {event.data.assignee}
                             </p>
                           </div>
                         </div>
