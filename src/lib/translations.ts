@@ -352,6 +352,7 @@ export const translations = {
       occupied: 'Ocupado',
       back_to_back_warn:
         'Atenção: Existem check-ins e check-outs no mesmo dia (B2B).',
+      no_activities: 'Nenhuma atividade agendada para esta data.',
     },
     messages: {
       title: 'Mensagens',
@@ -716,6 +717,7 @@ export const translations = {
       check_in: 'Check-in',
       occupied: 'Occupied',
       back_to_back_warn: 'Warning: B2B detected.',
+      no_activities: 'No activities scheduled for this date.',
     },
     messages: {
       title: 'Messages',
@@ -1079,6 +1081,7 @@ export const translations = {
       check_in: 'Check-in',
       occupied: 'Ocupado',
       back_to_back_warn: 'Alerta: B2B detectado.',
+      no_activities: 'No hay actividades programadas para esta fecha.',
     },
     messages: {
       title: 'Mensajes',

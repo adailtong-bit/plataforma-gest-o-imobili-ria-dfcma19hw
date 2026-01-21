@@ -25,6 +25,7 @@ import {
   FileText,
   AlertTriangle,
   Filter,
+  Building,
 } from 'lucide-react'
 import {
   Select,
@@ -33,18 +34,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
+import { useNavigate } from 'react-router-dom'
 
 // Define event types for consolidation
 type CalendarEvent =
   | { type: 'task'; data: Task; date: Date }
   | {
       type: 'contract'
-      data: { id: string; name: string; type: string }
+      data: { id: string; name: string; type: string; propertyId?: string }
       date: Date
     }
   | {
       type: 'financial'
-      data: { id: string; description: string; amount: number; type: string }
+      data: {
+        id: string
+        description: string
+        amount: number
+        type: string
+        propertyId?: string
+      }
       date: Date
     }
 
@@ -58,6 +67,7 @@ export default function CalendarPage() {
   const { t } = useLanguageStore()
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
+  const navigate = useNavigate()
 
   // Filters
   const [filterPartner, setFilterPartner] = useState<string>('all')
@@ -89,7 +99,12 @@ export default function CalendarPage() {
     })
     .map((t) => ({
       type: 'contract',
-      data: { id: t.id, name: t.name, type: 'Lease Expiry' },
+      data: {
+        id: t.id,
+        name: t.name,
+        type: 'Lease Expiry',
+        propertyId: t.propertyId,
+      },
       date: parseISO(t.leaseEnd!),
     }))
 
@@ -109,6 +124,7 @@ export default function CalendarPage() {
         description: e.description,
         amount: e.amount,
         type: e.type,
+        propertyId: e.propertyId,
       },
       date: parseISO(e.dueDate!),
     }))
@@ -132,6 +148,21 @@ export default function CalendarPage() {
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task)
     setSheetOpen(true)
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'text-gray-600 border-gray-200 bg-gray-50'
+      case 'in_progress':
+        return 'text-blue-600 border-blue-200 bg-blue-50'
+      case 'completed':
+        return 'text-green-600 border-green-200 bg-green-50'
+      case 'approved':
+        return 'text-orange-600 border-orange-200 bg-orange-50'
+      default:
+        return 'text-gray-600 border-gray-200'
+    }
   }
 
   return (
@@ -247,7 +278,8 @@ export default function CalendarPage() {
               <div className="space-y-4 pb-6">
                 {dayEvents.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-8">
-                    Nenhum evento.
+                    {t('calendar.no_activities') ||
+                      'No activities scheduled for this date.'}
                   </p>
                 ) : (
                   dayEvents.map((event, idx) => {
@@ -255,32 +287,67 @@ export default function CalendarPage() {
                       return (
                         <div
                           key={`task-${event.data.id}`}
-                          className="flex flex-col gap-2 p-3 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer border-l-4 border-l-blue-500"
-                          onClick={() => handleTaskClick(event.data)}
+                          className="flex flex-col gap-2 p-3 border rounded-lg hover:bg-accent/50 transition-colors border-l-4 border-l-blue-500 group relative"
                         >
-                          <div className="flex justify-between items-start">
-                            <Badge
-                              variant="outline"
-                              className="text-[10px] uppercase bg-blue-50 text-blue-700 border-blue-200"
-                            >
-                              {t(`partners.${event.data.type}`) ||
-                                event.data.type}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground font-mono">
-                              Task
-                            </span>
+                          <div
+                            className="cursor-pointer"
+                            onClick={() => handleTaskClick(event.data)}
+                          >
+                            <div className="flex justify-between items-start mb-1">
+                              <Badge
+                                variant="outline"
+                                className="text-[10px] uppercase bg-blue-50 text-blue-700 border-blue-200"
+                              >
+                                {t(`partners.${event.data.type}`) ||
+                                  event.data.type}
+                              </Badge>
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  'text-[10px] uppercase',
+                                  getStatusColor(event.data.status),
+                                )}
+                              >
+                                {t(`common.${event.data.status}`) ||
+                                  event.data.status}
+                              </Badge>
+                            </div>
+                            <div>
+                              <p className="font-semibold text-sm">
+                                {event.data.title}
+                              </p>
+                              <p className="text-xs text-muted-foreground line-clamp-1">
+                                {event.data.propertyName}
+                              </p>
+                              <div className="flex justify-between items-center mt-1">
+                                <p className="text-xs text-blue-600">
+                                  {event.data.assignee}
+                                </p>
+                                {event.data.price && (
+                                  <p className="text-xs font-medium text-green-700">
+                                    ${event.data.price.toFixed(2)}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-semibold text-sm">
-                              {event.data.title}
-                            </p>
-                            <p className="text-xs text-muted-foreground line-clamp-1">
-                              {event.data.propertyName}
-                            </p>
-                            <p className="text-xs text-blue-600 mt-1">
-                              {event.data.assignee}
-                            </p>
-                          </div>
+                          {event.data.propertyId && (
+                            <div className="mt-2 pt-2 border-t flex justify-end">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-xs h-7 gap-1"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  navigate(
+                                    `/properties/${event.data.propertyId}`,
+                                  )
+                                }}
+                              >
+                                <Building className="h-3 w-3" /> Property
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       )
                     }
@@ -307,6 +374,22 @@ export default function CalendarPage() {
                               Inquilino: {event.data.name}
                             </p>
                           </div>
+                          {event.data.propertyId && (
+                            <div className="mt-2 pt-2 border-t border-red-200 flex justify-end">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-xs h-7 gap-1 text-red-800 hover:text-red-900 hover:bg-red-100"
+                                onClick={() =>
+                                  navigate(
+                                    `/properties/${event.data.propertyId}`,
+                                  )
+                                }
+                              >
+                                <Building className="h-3 w-3" /> Property
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       )
                     }
@@ -333,6 +416,22 @@ export default function CalendarPage() {
                               ${event.data.amount.toFixed(2)}
                             </p>
                           </div>
+                          {event.data.propertyId && (
+                            <div className="mt-2 pt-2 border-t border-green-200 flex justify-end">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-xs h-7 gap-1 text-green-800 hover:text-green-900 hover:bg-green-100"
+                                onClick={() =>
+                                  navigate(
+                                    `/properties/${event.data.propertyId}`,
+                                  )
+                                }
+                              >
+                                <Building className="h-3 w-3" /> Property
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       )
                     }
