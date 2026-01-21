@@ -36,7 +36,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useOwnerStore from '@/stores/useOwnerStore'
@@ -79,10 +79,6 @@ export function AppHeader() {
         navigate(`/properties/${id}`)
         break
       case 'tenant':
-        navigate(`/tenants`) // Redirect to list, ideally detail but list is simpler for now unless TenantDetails exists
-        // Actually I'm creating TenantDetails so:
-        // navigate(`/tenants/${id}`) - wait, routes need to support this.
-        // I will implement TenantDetails route in App.tsx
         navigate(`/tenants/${id}`)
         break
       case 'owner':
@@ -90,24 +86,26 @@ export function AppHeader() {
         break
       case 'task':
         navigate(`/tasks`)
-        // Ideally highlight task or open sheet
         break
     }
   }
 
   return (
-    <header className="flex h-16 items-center gap-4 border-b bg-background px-6 sticky top-0 z-20">
+    <header className="flex h-16 items-center gap-4 border-b bg-background px-6 sticky top-0 z-20 shadow-sm">
       <Button variant="ghost" size="icon" onClick={toggleSidebar}>
         <Menu className="h-5 w-5" />
       </Button>
-      <div className="flex items-center gap-2">
+      <Link
+        to="/"
+        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+      >
         <div className="bg-tiffany text-white p-1.5 rounded-md shrink-0 flex items-center justify-center shadow-sm">
           <LayoutTemplate className="h-5 w-5 text-gold stroke-[2]" />
         </div>
         <h2 className="text-lg font-bold md:text-xl text-navy tracking-tight hidden sm:block">
           COREPM
         </h2>
-      </div>
+      </Link>
 
       {/* Global Search Button */}
       <div className="relative ml-auto flex-1 md:grow-0">

@@ -150,14 +150,18 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="h-16 flex items-center px-4 border-b">
-        <div className="flex items-center gap-2 font-bold text-xl text-navy overflow-hidden">
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-bold text-xl text-navy overflow-hidden hover:opacity-80 transition-opacity"
+          onClick={handleLinkClick}
+        >
           <div className="bg-tiffany text-white p-1.5 rounded-md shrink-0 flex items-center justify-center shadow-sm">
             <LayoutTemplate className="h-5 w-5 text-gold stroke-[2]" />
           </div>
           <span className="truncate tracking-tight group-data-[collapsible=icon]:hidden">
             COREPM
           </span>
-        </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         {/* Special Portal Links for specific roles */}
