@@ -73,7 +73,7 @@ export function TaskCard({
   const [checkOutOpen, setCheckOutOpen] = useState(false)
   const [assignOpen, setAssignOpen] = useState(false)
 
-  // Auto-posted via AppContext, check if exists
+  // Auto-posted via AppContext, check if exists to show billing status
   const isBilled = ledgerEntries.some((e) => e.referenceId === task.id)
 
   const getPriorityColor = (priority: string) => {
@@ -128,10 +128,10 @@ export function TaskCard({
     ? partners.find(
         (p) => p.id === currentUser.id || p.email === currentUser.email,
       )
-    : partners.find((p) => p.id === task.assigneeId) // Even if not partner, find the assignee partner record
+    : partners.find((p) => p.id === task.assigneeId)
 
   // Allow delegation if user is the partner assigned to the task
-  // OR if user is admin/manager (optional, but good for management)
+  // OR if user is admin/manager
   const canDelegate =
     (isPartner &&
       partnerRecord &&

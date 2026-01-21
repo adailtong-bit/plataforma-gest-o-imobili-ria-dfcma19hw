@@ -51,7 +51,13 @@ import {
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
-import { format, setDate, getDaysInMonth, differenceInDays } from 'date-fns'
+import {
+  format,
+  setDate,
+  getDaysInMonth,
+  differenceInDays,
+  addDays,
+} from 'date-fns'
 
 interface AppContextType {
   properties: Property[]
@@ -155,24 +161,20 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
   const [financials, setFinancials] = useState<Financials>(initialFinancials)
 
-  // Initialize tenants with localStorage to ensure persistence after refresh
   const [tenants, setTenants] = useState<Tenant[]>(() => {
     const saved = localStorage.getItem('app_tenants')
     return saved ? JSON.parse(saved) : initialTenants
   })
 
-  // Persist tenants to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('app_tenants', JSON.stringify(tenants))
   }, [tenants])
 
-  // Initialize owners with localStorage to ensure persistence after refresh
   const [owners, setOwners] = useState<Owner[]>(() => {
     const saved = localStorage.getItem('app_owners')
     return saved ? JSON.parse(saved) : initialOwners
   })
 
-  // Persist owners to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('app_owners', JSON.stringify(owners))
   }, [owners])
@@ -240,7 +242,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const allUsers = [...users, ...owners, ...partners, ...tenants]
 
-  // --- Automated Expiry Logic ---
   useEffect(() => {
     const checkExpirations = () => {
       const today = new Date()
@@ -565,7 +566,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             id: `auto-task-${taskId}-${Date.now()}`,
             propertyId: task.propertyId,
             date: new Date().toISOString(),
-            dueDate: new Date().toISOString(), // Assuming due upon completion
+            // Give 14 days for payment, so it doesn't show as overdue immediately
+            dueDate: addDays(new Date(), 14).toISOString(),
             type: 'expense',
             category: categoryMap[task.type] || 'Despesa de Serviço',
             amount: task.price,
