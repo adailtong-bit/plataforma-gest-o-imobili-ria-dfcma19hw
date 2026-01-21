@@ -1,7 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Save, Edit, X, Trash2 } from 'lucide-react'
+import {
+  ArrowLeft,
+  Save,
+  Edit,
+  X,
+  Trash2,
+  User,
+  ExternalLink,
+} from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useOwnerStore from '@/stores/useOwnerStore'
 import usePartnerStore from '@/stores/usePartnerStore'
+import useTenantStore from '@/stores/useTenantStore'
 import useCondominiumStore from '@/stores/useCondominiumStore'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -36,6 +45,7 @@ export default function PropertyDetails() {
   const { properties, updateProperty, deleteProperty } = usePropertyStore()
   const { owners } = useOwnerStore()
   const { partners } = usePartnerStore()
+  const { tenants } = useTenantStore()
   const { condominiums } = useCondominiumStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
@@ -43,6 +53,12 @@ export default function PropertyDetails() {
   const property = properties.find((p) => p.id === id)
   const [formData, setFormData] = useState<Property | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+
+  // Link resolution
+  const owner = owners.find((o) => o.id === property?.ownerId)
+  const activeTenant = tenants.find(
+    (t) => t.propertyId === property?.id && t.status === 'active',
+  )
 
   useEffect(() => {
     if (property) {
@@ -62,7 +78,6 @@ export default function PropertyDetails() {
       return
     }
 
-    // Check mandatory ZIP per user story
     if (!formData.zipCode?.trim()) {
       toast({
         title: 'Erro de Validação',
@@ -114,71 +129,102 @@ export default function PropertyDetails() {
 
   return (
     <div className="flex flex-col gap-6 pb-10">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link to="/properties">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-navy">
-              {formData.name}
-            </h1>
-            <p className="text-muted-foreground">{formData.address}</p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          {!isEditing ? (
-            <>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="ghost" className="text-red-500">
-                    <Trash2 className="h-4 w-4 mr-2" /> {t('common.delete')}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      {t('common.delete_title')}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {t('common.delete_desc')}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
-                      {t('common.delete')}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-              <Button
-                onClick={() => setIsEditing(true)}
-                variant="outline"
-                className="gap-2"
-              >
-                <Edit className="h-4 w-4" /> {t('common.edit')}
-              </Button>
-            </>
+      {/* Header with Traceability */}
+      <div className="flex flex-col gap-4">
+        {/* Breadcrumb / Relations */}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-md border w-fit">
+          <span className="font-medium">Relacionamentos:</span>
+          {owner ? (
+            <Link
+              to={`/owners/${owner.id}`}
+              className="flex items-center gap-1 hover:text-blue-600 underline"
+            >
+              <User className="h-3 w-3" /> {owner.name} (Proprietário)
+            </Link>
           ) : (
-            <>
-              <Button
-                onClick={() => {
-                  setIsEditing(false)
-                  setFormData(JSON.parse(JSON.stringify(property))) // Reset
-                }}
-                variant="ghost"
-                className="gap-2"
-              >
-                <X className="h-4 w-4" /> {t('common.cancel')}
-              </Button>
-              <Button onClick={handleSave} className="bg-trust-blue gap-2">
-                <Save className="h-4 w-4" /> {t('common.save')}
-              </Button>
-            </>
+            <span className="text-gray-400">Sem Proprietário</span>
           )}
+          <span>/</span>
+          {activeTenant ? (
+            <Link
+              to={`/tenants/${activeTenant.id}`}
+              className="flex items-center gap-1 hover:text-blue-600 underline"
+            >
+              <User className="h-3 w-3" /> {activeTenant.name} (Inquilino)
+            </Link>
+          ) : (
+            <span className="text-gray-400">Sem Inquilino Ativo</span>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link to="/properties">
+              <Button variant="ghost" size="icon">
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-navy">
+                {formData.name}
+              </h1>
+              <p className="text-muted-foreground">{formData.address}</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            {!isEditing ? (
+              <>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" className="text-red-500">
+                      <Trash2 className="h-4 w-4 mr-2" /> {t('common.delete')}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {t('common.delete_title')}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {t('common.delete_desc')}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>
+                        {t('common.cancel')}
+                      </AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelete}>
+                        {t('common.delete')}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <Button
+                  onClick={() => setIsEditing(true)}
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <Edit className="h-4 w-4" /> {t('common.edit')}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  onClick={() => {
+                    setIsEditing(false)
+                    setFormData(JSON.parse(JSON.stringify(property))) // Reset
+                  }}
+                  variant="ghost"
+                  className="gap-2"
+                >
+                  <X className="h-4 w-4" /> {t('common.cancel')}
+                </Button>
+                <Button onClick={handleSave} className="bg-trust-blue gap-2">
+                  <Save className="h-4 w-4" /> {t('common.save')}
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

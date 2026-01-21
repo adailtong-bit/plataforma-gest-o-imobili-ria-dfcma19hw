@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import {
   Card,
@@ -10,40 +10,89 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useTaskStore from '@/stores/useTaskStore'
+import useTenantStore from '@/stores/useTenantStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { TaskDetailsSheet } from '@/components/tasks/TaskDetailsSheet'
 import { Task } from '@/lib/types'
-import { format, isSameDay } from 'date-fns'
+import { format, isSameDay, parseISO } from 'date-fns'
 import { cn } from '@/lib/utils'
+import {
+  Briefcase,
+  DollarSign,
+  FileText,
+  AlertTriangle,
+  Info,
+} from 'lucide-react'
+
+// Define event types for consolidation
+type CalendarEvent =
+  | { type: 'task'; data: Task; date: Date }
+  | {
+      type: 'contract'
+      data: { id: string; name: string; type: string }
+      date: Date
+    }
+  | {
+      type: 'financial'
+      data: { id: string; description: string; amount: number; type: string }
+      date: Date
+    }
 
 export default function CalendarPage() {
   const [date, setDate] = useState<Date | undefined>(new Date())
   const { tasks } = useTaskStore()
+  const { tenants } = useTenantStore()
+  const { ledgerEntries } = useFinancialStore()
   const { t } = useLanguageStore()
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
 
-  const activeTasks = tasks.filter(
-    (t) => t.status !== 'completed' && t.status !== 'approved',
-  )
-  const completedTasks = tasks.filter(
-    (t) => t.status === 'completed' || t.status === 'approved',
-  )
+  // 1. Process Tasks
+  const taskEvents: CalendarEvent[] = tasks.map((t) => ({
+    type: 'task',
+    data: t,
+    date: new Date(t.date),
+  }))
 
-  const dayTasks = tasks.filter(
-    (t) => date && isSameDay(new Date(t.date), date),
-  )
+  // 2. Process Contracts (Tenants Lease End)
+  const contractEvents: CalendarEvent[] = tenants
+    .filter((t) => t.leaseEnd && t.status === 'active')
+    .map((t) => ({
+      type: 'contract',
+      data: { id: t.id, name: t.name, type: 'Lease Expiry' },
+      date: parseISO(t.leaseEnd!),
+    }))
 
-  // Determine days with tasks for calendar modifiers
-  const cleaningDays = tasks
-    .filter((t) => t.type === 'cleaning')
-    .map((t) => new Date(t.date))
-  const maintenanceDays = tasks
-    .filter((t) => t.type === 'maintenance')
-    .map((t) => new Date(t.date))
-  const inspectionDays = tasks
-    .filter((t) => t.type === 'inspection')
-    .map((t) => new Date(t.date))
+  // 3. Process Financials (Due Dates)
+  const financialEvents: CalendarEvent[] = ledgerEntries
+    .filter((e) => e.dueDate && e.status === 'pending')
+    .map((e) => ({
+      type: 'financial',
+      data: {
+        id: e.id,
+        description: e.description,
+        amount: e.amount,
+        type: e.type,
+      },
+      date: parseISO(e.dueDate!),
+    }))
+
+  // Combine all events
+  const allEvents = [...taskEvents, ...contractEvents, ...financialEvents]
+
+  // Events for selected day
+  const dayEvents = useMemo(() => {
+    if (!date) return []
+    return allEvents.filter((e) => isSameDay(e.date, date))
+  }, [date, allEvents])
+
+  // Modifiers for Calendar dates
+  const modifiers = {
+    task: taskEvents.map((e) => e.date),
+    contract: contractEvents.map((e) => e.date),
+    financial: financialEvents.map((e) => e.date),
+  }
 
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task)
@@ -63,17 +112,26 @@ export default function CalendarPage() {
         {/* Calendar View */}
         <Card className="lg:col-span-8 h-full flex flex-col">
           <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>Operações</CardTitle>
-              <div className="flex gap-2">
-                <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 border-blue-200">
-                  {t('partners.cleaning')}
+            <div className="flex flex-wrap justify-between items-center gap-2">
+              <CardTitle>Visão Integrada</CardTitle>
+              <div className="flex flex-wrap gap-2">
+                <Badge
+                  variant="outline"
+                  className="bg-blue-50 text-blue-700 border-blue-200"
+                >
+                  <Briefcase className="w-3 h-3 mr-1" /> Operações
                 </Badge>
-                <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100 border-orange-200">
-                  {t('partners.maintenance')}
+                <Badge
+                  variant="outline"
+                  className="bg-red-50 text-red-700 border-red-200"
+                >
+                  <FileText className="w-3 h-3 mr-1" /> Contratos
                 </Badge>
-                <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-100 border-purple-200">
-                  Inspeção
+                <Badge
+                  variant="outline"
+                  className="bg-green-50 text-green-700 border-green-200"
+                >
+                  <DollarSign className="w-3 h-3 mr-1" /> Financeiro
                 </Badge>
               </div>
             </div>
@@ -94,18 +152,13 @@ export default function CalendarPage() {
                 cell: 'h-full w-full text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
                 day: 'h-full w-full p-0 font-normal aria-selected:opacity-100 flex flex-col items-center justify-start pt-2 hover:bg-accent hover:text-accent-foreground',
               }}
-              modifiers={{
-                cleaning: cleaningDays,
-                maintenance: maintenanceDays,
-                inspection: inspectionDays,
-              }}
+              modifiers={modifiers}
               modifiersClassNames={{
-                cleaning:
-                  'font-bold text-blue-600 after:content-["•"] after:text-blue-600 after:block after:text-lg after:leading-[0]',
-                maintenance:
-                  'font-bold text-orange-600 after:content-["•"] after:text-orange-600 after:block after:text-lg after:leading-[0]',
-                inspection:
-                  'font-bold text-purple-600 after:content-["•"] after:text-purple-600 after:block after:text-lg after:leading-[0]',
+                task: 'after:content-["•"] after:text-blue-500 after:block after:text-lg after:leading-[0]',
+                contract:
+                  'after:content-["•"] after:text-red-500 after:block after:text-lg after:leading-[0]',
+                financial:
+                  'after:content-["•"] after:text-green-500 after:block after:text-lg after:leading-[0]',
               }}
             />
           </CardContent>
@@ -118,57 +171,102 @@ export default function CalendarPage() {
               {date ? format(date, 'EEEE, d MMM') : 'Selecione uma data'}
             </CardTitle>
             <CardDescription>
-              {dayTasks.length} tarefas agendadas para este dia.
+              {dayEvents.length} eventos para este dia.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-1 overflow-hidden p-0">
             <ScrollArea className="h-full px-6">
               <div className="space-y-4 pb-6">
-                {dayTasks.length === 0 ? (
+                {dayEvents.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-8">
-                    Nenhuma tarefa para este dia.
+                    Nenhum evento.
                   </p>
                 ) : (
-                  dayTasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="flex flex-col gap-2 p-3 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
-                      onClick={() => handleTaskClick(task)}
-                    >
-                      <div className="flex justify-between items-start">
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            'text-[10px] uppercase',
-                            task.type === 'cleaning'
-                              ? 'border-blue-200 text-blue-700 bg-blue-50'
-                              : task.type === 'maintenance'
-                                ? 'border-orange-200 text-orange-700 bg-orange-50'
-                                : 'border-purple-200 text-purple-700 bg-purple-50',
-                          )}
+                  dayEvents.map((event, idx) => {
+                    if (event.type === 'task') {
+                      return (
+                        <div
+                          key={`task-${event.data.id}`}
+                          className="flex flex-col gap-2 p-3 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer border-l-4 border-l-blue-500"
+                          onClick={() => handleTaskClick(event.data)}
                         >
-                          {t(`partners.${task.type}`) || task.type}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground font-mono">
-                          {format(new Date(task.date), 'HH:mm')}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="font-semibold text-sm">{task.title}</p>
-                        <p className="text-xs text-muted-foreground line-clamp-1">
-                          {task.propertyName}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="h-5 w-5 rounded-full bg-gray-200 flex items-center justify-center text-[10px]">
-                          {task.assignee.charAt(0)}
+                          <div className="flex justify-between items-start">
+                            <Badge
+                              variant="outline"
+                              className="text-[10px] uppercase bg-blue-50 text-blue-700 border-blue-200"
+                            >
+                              {t(`partners.${event.data.type}`) ||
+                                event.data.type}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground font-mono">
+                              Task
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-semibold text-sm">
+                              {event.data.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground line-clamp-1">
+                              {event.data.propertyName}
+                            </p>
+                          </div>
                         </div>
-                        <span className="text-xs text-muted-foreground truncate">
-                          {task.assignee}
-                        </span>
-                      </div>
-                    </div>
-                  ))
+                      )
+                    }
+                    if (event.type === 'contract') {
+                      return (
+                        <div
+                          key={`contract-${event.data.id}`}
+                          className="flex flex-col gap-2 p-3 border rounded-lg border-l-4 border-l-red-500 bg-red-50/10"
+                        >
+                          <div className="flex justify-between items-start">
+                            <Badge
+                              variant="outline"
+                              className="text-[10px] uppercase bg-red-50 text-red-700 border-red-200"
+                            >
+                              Expiração
+                            </Badge>
+                            <AlertTriangle className="h-4 w-4 text-red-500" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-sm text-red-900">
+                              Fim de Contrato
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Inquilino: {event.data.name}
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    }
+                    if (event.type === 'financial') {
+                      return (
+                        <div
+                          key={`fin-${event.data.id}`}
+                          className="flex flex-col gap-2 p-3 border rounded-lg border-l-4 border-l-green-500 bg-green-50/10"
+                        >
+                          <div className="flex justify-between items-start">
+                            <Badge
+                              variant="outline"
+                              className="text-[10px] uppercase bg-green-50 text-green-700 border-green-200"
+                            >
+                              Vencimento
+                            </Badge>
+                            <DollarSign className="h-4 w-4 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-sm">
+                              {event.data.description}
+                            </p>
+                            <p className="text-xs font-bold text-green-800">
+                              ${event.data.amount.toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    }
+                    return null
+                  })
                 )}
               </div>
             </ScrollArea>

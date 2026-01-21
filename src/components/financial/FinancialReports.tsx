@@ -1,11 +1,5 @@
 import { useState } from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -34,6 +28,8 @@ import {
 } from 'recharts'
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 import useFinancialStore from '@/stores/useFinancialStore'
+import usePropertyStore from '@/stores/usePropertyStore'
+import useTenantStore from '@/stores/useTenantStore'
 import {
   format,
   subMonths,
@@ -45,6 +41,8 @@ import { useToast } from '@/hooks/use-toast'
 
 export function FinancialReports() {
   const { ledgerEntries } = useFinancialStore()
+  const { properties } = usePropertyStore()
+  const { tenants } = useTenantStore()
   const { toast } = useToast()
 
   const [period, setPeriod] = useState('1m') // 1m, 3m, 6m, ytd, 1y
@@ -102,7 +100,45 @@ export function FinancialReports() {
   const chartData = Object.values(consolidatedData)
 
   const handleExport = () => {
-    toast({ title: 'Exportado', description: 'Relatório baixado.' })
+    const headers = [
+      'Date',
+      'Value',
+      'Category',
+      'Type',
+      'Description',
+      'Property Code',
+      'Tenant Name',
+    ]
+
+    const rows = filteredEntries.map((entry) => {
+      const property = properties.find((p) => p.id === entry.propertyId)
+      // Attempt to find related tenant via beneficiaryId or other logic if needed
+      // Here we assume beneficiaryId points to a tenant for income
+      const tenant = tenants.find((t) => t.id === entry.beneficiaryId)
+
+      return [
+        format(new Date(entry.date), 'yyyy-MM-dd'),
+        entry.amount.toFixed(2),
+        entry.category,
+        entry.type,
+        `"${entry.description.replace(/"/g, '""')}"`, // Escape quotes
+        property?.id || 'N/A',
+        tenant?.name || 'N/A',
+      ].join(',')
+    })
+
+    const csvContent = [headers.join(','), ...rows].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `financial_report_${Date.now()}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    toast({ title: 'Exportado', description: 'Relatório CSV baixado.' })
   }
 
   const totalIncome = filteredEntries
@@ -180,7 +216,7 @@ export function FinancialReports() {
                 </SelectContent>
               </Select>
               <Button variant="outline" onClick={handleExport}>
-                <Download className="h-4 w-4" />
+                <Download className="h-4 w-4 mr-2" /> CSV
               </Button>
             </div>
           </div>

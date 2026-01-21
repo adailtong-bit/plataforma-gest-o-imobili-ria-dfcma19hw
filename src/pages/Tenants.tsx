@@ -10,26 +10,20 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import {
   Plus,
   Search,
   MessageSquare,
   Home,
-  Phone,
   MessageCircle,
   Eye,
   Calendar,
+  Download,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
+import useOwnerStore from '@/stores/useOwnerStore'
 import { useNavigate, Link } from 'react-router-dom'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -41,11 +35,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
 
 export default function Tenants() {
   const { tenants, addTenant } = useTenantStore()
   const { properties } = usePropertyStore()
+  const { owners } = useOwnerStore()
   const navigate = useNavigate()
   const { toast } = useToast()
   const { t } = useLanguageStore()
@@ -69,7 +63,6 @@ export default function Tenants() {
   )
 
   const handleAddTenant = () => {
-    // Basic Add logic (simplified for list view focus)
     if (!newTenant.name) return
     addTenant({
       id: `t-${Date.now()}`,
@@ -87,41 +80,97 @@ export default function Tenants() {
     if (cleanPhone) window.open(`https://wa.me/${cleanPhone}`, '_blank')
   }
 
+  const handleExportCSV = () => {
+    const headers = [
+      'Tenant ID',
+      'Tenant Name',
+      'Email',
+      'Property ID',
+      'Property Name',
+      'Owner ID',
+      'Lease Start',
+      'Lease End',
+      'Recurring Value',
+    ]
+
+    const rows = filteredTenants.map((tenant) => {
+      const property = properties.find((p) => p.id === tenant.propertyId)
+      const owner = owners.find((o) => o.id === property?.ownerId)
+
+      return [
+        tenant.id,
+        tenant.name,
+        tenant.email,
+        tenant.propertyId || 'N/A',
+        property?.name || 'N/A',
+        owner?.id || 'N/A',
+        tenant.leaseStart
+          ? format(new Date(tenant.leaseStart), 'yyyy-MM-dd')
+          : 'N/A',
+        tenant.leaseEnd
+          ? format(new Date(tenant.leaseEnd), 'yyyy-MM-dd')
+          : 'N/A',
+        tenant.rentValue.toFixed(2),
+      ].join(',')
+    })
+
+    const csvContent = [headers.join(','), ...rows].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `contracts_export_${Date.now()}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    toast({
+      title: 'Exportação Concluída',
+      description: 'Arquivo CSV gerado com sucesso.',
+    })
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight text-navy">
           {t('tenants.title')}
         </h1>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-trust-blue gap-2">
-              <Plus className="h-4 w-4" /> {t('tenants.new_tenant')}
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{t('tenants.register_title')}</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <Input
-                placeholder="Name"
-                value={newTenant.name}
-                onChange={(e) =>
-                  setNewTenant({ ...newTenant, name: e.target.value })
-                }
-              />
-              <Input
-                placeholder="Email"
-                value={newTenant.email}
-                onChange={(e) =>
-                  setNewTenant({ ...newTenant, email: e.target.value })
-                }
-              />
-              <Button onClick={handleAddTenant}>Save</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExportCSV}>
+            <Download className="mr-2 h-4 w-4" /> Export CSV
+          </Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-trust-blue gap-2">
+                <Plus className="h-4 w-4" /> {t('tenants.new_tenant')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t('tenants.register_title')}</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <Input
+                  placeholder="Name"
+                  value={newTenant.name}
+                  onChange={(e) =>
+                    setNewTenant({ ...newTenant, name: e.target.value })
+                  }
+                />
+                <Input
+                  placeholder="Email"
+                  value={newTenant.email}
+                  onChange={(e) =>
+                    setNewTenant({ ...newTenant, email: e.target.value })
+                  }
+                />
+                <Button onClick={handleAddTenant}>Save</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <Card>

@@ -22,9 +22,11 @@ import {
   Edit,
   X,
   Home,
+  Building,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
+import useOwnerStore from '@/stores/useOwnerStore'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -35,12 +37,14 @@ export default function TenantDetails() {
   const { id } = useParams()
   const { tenants } = useTenantStore()
   const { properties } = usePropertyStore()
+  const { owners } = useOwnerStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
   const navigate = useNavigate()
 
   const tenant = tenants.find((t) => t.id === id)
   const property = properties.find((p) => p.id === tenant?.propertyId)
+  const owner = owners.find((o) => o.id === property?.ownerId)
 
   const [formData, setFormData] = useState<Tenant | null>(
     tenant ? { ...tenant } : null,
@@ -76,40 +80,69 @@ export default function TenantDetails() {
 
   return (
     <div className="flex flex-col gap-6 pb-10">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link to="/tenants">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-navy">
-              {formData.name}
-            </h1>
-            <p className="text-muted-foreground">{formData.email}</p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          {isEditing ? (
-            <>
-              <Button onClick={() => setIsEditing(false)} variant="ghost">
-                <X className="mr-2 h-4 w-4" /> Cancelar
-              </Button>
-              <Button onClick={handleSave} className="bg-trust-blue">
-                <Save className="mr-2 h-4 w-4" /> Salvar
-              </Button>
-            </>
+      {/* Header with Traceability */}
+      <div className="flex flex-col gap-4">
+        {/* Relations Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-md border w-fit">
+          <span className="font-medium">Vinculado a:</span>
+          {property ? (
+            <Link
+              to={`/properties/${property.id}`}
+              className="flex items-center gap-1 hover:text-blue-600 underline"
+            >
+              <Home className="h-3 w-3" /> {property.name}
+            </Link>
           ) : (
+            <span className="text-gray-400">Sem Propriedade</span>
+          )}
+          {owner && (
             <>
-              <Button onClick={handleSendMessage} variant="ghost">
-                <Mail className="mr-2 h-4 w-4" /> Mensagem
-              </Button>
-              <Button onClick={() => setIsEditing(true)} variant="outline">
-                <Edit className="mr-2 h-4 w-4" /> Editar Perfil
-              </Button>
+              <span>/</span>
+              <Link
+                to={`/owners/${owner.id}`}
+                className="flex items-center gap-1 hover:text-blue-600 underline"
+              >
+                <User className="h-3 w-3" /> {owner.name} (Proprietário)
+              </Link>
             </>
           )}
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link to="/tenants">
+              <Button variant="ghost" size="icon">
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-navy">
+                {formData.name}
+              </h1>
+              <p className="text-muted-foreground">{formData.email}</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            {isEditing ? (
+              <>
+                <Button onClick={() => setIsEditing(false)} variant="ghost">
+                  <X className="mr-2 h-4 w-4" /> Cancelar
+                </Button>
+                <Button onClick={handleSave} className="bg-trust-blue">
+                  <Save className="mr-2 h-4 w-4" /> Salvar
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={handleSendMessage} variant="ghost">
+                  <Mail className="mr-2 h-4 w-4" /> Mensagem
+                </Button>
+                <Button onClick={() => setIsEditing(true)} variant="outline">
+                  <Edit className="mr-2 h-4 w-4" /> Editar Perfil
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
