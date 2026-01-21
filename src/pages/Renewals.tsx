@@ -45,8 +45,9 @@ export default function Renewals() {
   const { toast } = useToast()
   const { t } = useLanguageStore()
 
+  // New Filter Status 'year' added for < 365 days
   const [filterStatus, setFilterStatus] = useState<
-    'all' | 'critical' | 'upcoming' | 'renewed'
+    'all' | 'critical' | 'upcoming' | 'year' | 'renewed'
   >('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedOwner, setSelectedOwner] = useState<string>('all')
@@ -73,13 +74,15 @@ export default function Renewals() {
       const property = properties.find((p) => p.id === t.propertyId)
       const owner = owners.find((o) => o.id === property?.ownerId)
 
-      let status: 'critical' | 'upcoming' | 'safe' | 'renewed' = 'safe'
+      // Extended status logic to support 'year'
+      let status: 'critical' | 'upcoming' | 'year' | 'safe' | 'renewed' = 'safe'
 
       if (t.negotiationStatus === 'closed') {
         status = 'renewed'
       } else {
         if (daysLeft < 30) status = 'critical'
         else if (daysLeft < 90) status = 'upcoming'
+        else if (daysLeft < 365) status = 'year'
       }
 
       return {
@@ -189,7 +192,7 @@ export default function Renewals() {
     }
   }
 
-  // Count metrics based on the full mapped data (ignoring filters for counts)
+  // Count metrics based on the full mapped data
   const fullData = relevantTenants.map((t) => {
     let daysLeft = 0
     if (t.leaseEnd)
@@ -198,11 +201,13 @@ export default function Renewals() {
     if (t.negotiationStatus === 'closed') status = 'renewed'
     else if (daysLeft < 30) status = 'critical'
     else if (daysLeft < 90) status = 'upcoming'
+    else if (daysLeft < 365) status = 'year'
     return { status }
   })
 
   const criticalCount = fullData.filter((d) => d.status === 'critical').length
   const upcomingCount = fullData.filter((d) => d.status === 'upcoming').length
+  const yearCount = fullData.filter((d) => d.status === 'year').length
   const renewedCount = fullData.filter((d) => d.status === 'renewed').length
 
   return (
@@ -225,7 +230,7 @@ export default function Renewals() {
             setFilterStatus(filterStatus === 'critical' ? 'all' : 'critical')
           }
         >
-          Menos de 30
+          Menos de 30 dias
           <Badge
             variant="secondary"
             className="ml-1 bg-white/20 text-current hover:bg-white/30"
@@ -245,12 +250,31 @@ export default function Renewals() {
             setFilterStatus(filterStatus === 'upcoming' ? 'all' : 'upcoming')
           }
         >
-          Menos de 90
+          Menos de 90 dias
           <Badge
             variant="secondary"
             className="ml-1 bg-white/20 text-current hover:bg-white/30"
           >
             {upcomingCount}
+          </Badge>
+        </Button>
+
+        <Button
+          variant={filterStatus === 'year' ? 'default' : 'outline'}
+          className={cn(
+            'gap-2',
+            filterStatus === 'year' && 'bg-blue-600 hover:bg-blue-700',
+          )}
+          onClick={() =>
+            setFilterStatus(filterStatus === 'year' ? 'all' : 'year')
+          }
+        >
+          Menos de 1 Ano
+          <Badge
+            variant="secondary"
+            className="ml-1 bg-white/20 text-current hover:bg-white/30"
+          >
+            {yearCount}
           </Badge>
         </Button>
 
@@ -264,7 +288,7 @@ export default function Renewals() {
             setFilterStatus(filterStatus === 'renewed' ? 'all' : 'renewed')
           }
         >
-          Renovar
+          Renovados
           <Badge
             variant="secondary"
             className="ml-1 bg-white/20 text-current hover:bg-white/30"

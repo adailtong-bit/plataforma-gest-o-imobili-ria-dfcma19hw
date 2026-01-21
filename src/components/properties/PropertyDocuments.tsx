@@ -8,7 +8,7 @@ import {
   CardDescription,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { FileText, Download, Trash2, Upload } from 'lucide-react'
+import { FileText, Download, Trash2, Upload, File } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import {
@@ -36,9 +36,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
+import { Badge } from '@/components/ui/badge'
 
 interface PropertyDocumentsProps {
   property: Property
@@ -148,7 +148,8 @@ export function PropertyDocuments({
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label>Arquivo Selecionado</Label>
-                <div className="p-2 border rounded bg-muted text-sm">
+                <div className="p-2 border rounded bg-muted text-sm flex items-center gap-2">
+                  <File className="h-4 w-4 text-blue-500" />
                   {selectedFile?.name}
                 </div>
               </div>
@@ -170,6 +171,7 @@ export function PropertyDocuments({
                     <SelectItem value="Deed">Escritura</SelectItem>
                     <SelectItem value="Inspection">Inspeção</SelectItem>
                     <SelectItem value="Other">Outro</SelectItem>
+                    <SelectItem value="Others">Outros (Others)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -206,9 +208,9 @@ export function PropertyDocuments({
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-sm">{doc.name}</p>
-                      <span className="text-[10px] bg-secondary px-1.5 py-0.5 rounded text-secondary-foreground font-semibold">
+                      <Badge variant="secondary" className="text-xs">
                         {doc.category}
-                      </span>
+                      </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {new Date(doc.date).toLocaleDateString()} •{' '}

@@ -242,6 +242,7 @@ export type DocumentCategory =
   | 'Insurance'
   | 'ID'
   | 'Other'
+  | 'Others' // Added as per requirement
   | 'Deed'
   | 'Inspection'
   | 'Passport'

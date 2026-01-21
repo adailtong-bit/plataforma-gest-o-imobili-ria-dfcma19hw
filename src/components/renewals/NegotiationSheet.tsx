@@ -20,11 +20,12 @@ import {
 } from '@/components/ui/select'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useTenantStore from '@/stores/useTenantStore'
-import useLanguageStore from '@/stores/useLanguageStore'
 import { NegotiationStatus } from '@/lib/types'
 import { format } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { Separator } from '@/components/ui/separator'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Lock, MessageCircle, User } from 'lucide-react'
 
 interface NegotiationSheetProps {
   open: boolean
@@ -38,7 +39,6 @@ export function NegotiationSheet({
   tenantId,
 }: NegotiationSheetProps) {
   const { tenants, updateTenantNegotiation } = useTenantStore()
-  const { t } = useLanguageStore()
   const { toast } = useToast()
 
   const tenant = tenants.find((t) => t.id === tenantId)
@@ -69,7 +69,7 @@ export function NegotiationSheet({
         date: new Date().toISOString(),
         action: 'Update',
         note: newLogNote,
-        user: 'User', // In a real app, this would be current user name
+        user: 'User',
       }
       updateTenantNegotiation(tenant.id, { log })
       setNewLogNote('')
@@ -82,76 +82,177 @@ export function NegotiationSheet({
     onOpenChange(false)
   }
 
-  const handleAddLog = () => {
-    if (!newLogNote.trim()) return
-    const log = {
-      id: Date.now().toString(),
-      date: new Date().toISOString(),
-      action: 'Note',
-      note: newLogNote,
-      user: 'User',
-    }
-    updateTenantNegotiation(tenant.id, { log })
-    setNewLogNote('')
-  }
+  // Mock chat messages for demonstration of the unified environment
+  const mockChat = [
+    {
+      id: 1,
+      sender: 'Tenant',
+      msg: 'Can we lower the rent?',
+      time: '10:00 AM',
+      role: 'tenant',
+    },
+    {
+      id: 2,
+      sender: 'Me (PM)',
+      msg: 'I will ask the owner.',
+      time: '10:05 AM',
+      role: 'software_tenant',
+    },
+    {
+      id: 3,
+      sender: 'Owner',
+      msg: 'No, market rate is higher.',
+      time: '11:00 AM',
+      role: 'property_owner',
+    },
+    {
+      id: 4,
+      sender: 'Me (PM)',
+      msg: 'Understood.',
+      time: '11:05 AM',
+      role: 'software_tenant',
+    },
+  ]
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+      <SheetContent className="w-[400px] sm:w-[600px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Negociação: {tenant.name}</SheetTitle>
+          <SheetTitle>Unified Negotiation Environment</SheetTitle>
           <SheetDescription>
-            Gerencie o processo de renovação e histórico.
+            Manage communication with all parties in one place.
           </SheetDescription>
         </SheetHeader>
 
         <div className="grid gap-6 py-6">
-          <div className="grid gap-2">
-            <Label>Status da Negociação</Label>
-            <Select
-              value={status}
-              onValueChange={(v: NegotiationStatus) => setStatus(v)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="negotiating">Em negociação</SelectItem>
-                <SelectItem value="owner_contacted">
-                  Proprietário contatado
-                </SelectItem>
-                <SelectItem value="tenant_contacted">
-                  Inquilino contatado
-                </SelectItem>
-                <SelectItem value="vacating">
-                  Inquilino vai desocupar
-                </SelectItem>
-                <SelectItem value="closed">Fechado</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex gap-4 p-4 bg-muted/20 rounded-lg">
+            <div className="flex-1">
+              <Label className="text-xs text-muted-foreground">Tenant</Label>
+              <div className="font-medium">{tenant.name}</div>
+            </div>
+            <div className="flex-1">
+              <Label className="text-xs text-muted-foreground">
+                Current Rent
+              </Label>
+              <div className="font-medium">${tenant.rentValue}</div>
+            </div>
+            <div className="flex-1">
+              <Label className="text-xs text-muted-foreground">Status</Label>
+              <BadgeStatus status={status} />
+            </div>
           </div>
 
-          <div className="grid gap-2">
-            <Label>Preço Sugerido de Renovação ($)</Label>
-            <Input
-              type="number"
-              value={suggestedPrice}
-              onChange={(e) => setSuggestedPrice(e.target.value)}
-              placeholder="Ex: 2500.00"
-            />
-          </div>
+          <Tabs defaultValue="aggregated" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="aggregated" className="text-xs">
+                All
+              </TabsTrigger>
+              <TabsTrigger value="tenant" className="text-xs">
+                Tenant
+              </TabsTrigger>
+              <TabsTrigger value="owner" className="text-xs">
+                Owner
+              </TabsTrigger>
+              <TabsTrigger value="internal" className="text-xs">
+                Notes
+              </TabsTrigger>
+            </TabsList>
 
-          <Separator />
+            {/* Aggregated View (Supervisor Only Concept) */}
+            <TabsContent value="aggregated" className="mt-4 space-y-4">
+              <div className="flex items-center gap-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded border border-yellow-200">
+                <Lock className="h-4 w-4" />
+                <span>Confidential: Visible only to Property Managers.</span>
+              </div>
+              <ScrollArea className="h-[300px] border rounded-md p-4 bg-background">
+                {mockChat.map((msg) => (
+                  <div key={msg.id} className="mb-4 text-sm">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-bold flex items-center gap-1">
+                        {msg.role === 'tenant' && (
+                          <User className="h-3 w-3 text-blue-500" />
+                        )}
+                        {msg.role === 'property_owner' && (
+                          <User className="h-3 w-3 text-green-500" />
+                        )}
+                        {msg.sender}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {msg.time}
+                      </span>
+                    </div>
+                    <div
+                      className={`p-2 rounded-lg ${
+                        msg.role === 'software_tenant'
+                          ? 'bg-blue-100 ml-8'
+                          : 'bg-gray-100 mr-8'
+                      }`}
+                    >
+                      {msg.msg}
+                    </div>
+                  </div>
+                ))}
+              </ScrollArea>
+            </TabsContent>
 
-          <div className="grid gap-2">
-            <Label>Histórico de Negociação</Label>
-            <ScrollArea className="h-[200px] border rounded-md p-4">
-              {tenant.negotiationLogs?.length ? (
-                <div className="flex flex-col gap-4">
-                  {tenant.negotiationLogs.map((log) => (
+            {/* Tenant Chat */}
+            <TabsContent value="tenant" className="mt-4 space-y-4">
+              <ScrollArea className="h-[300px] border rounded-md p-4">
+                {mockChat
+                  .filter(
+                    (m) => m.role === 'tenant' || m.role === 'software_tenant',
+                  )
+                  .map((msg) => (
+                    <div key={msg.id} className="mb-4 text-sm">
+                      <div className="font-bold mb-1">{msg.sender}</div>
+                      <div className="bg-gray-100 p-2 rounded-lg">
+                        {msg.msg}
+                      </div>
+                    </div>
+                  ))}
+              </ScrollArea>
+              <div className="flex gap-2">
+                <Input placeholder="Message to tenant..." />
+                <Button size="icon">
+                  <MessageCircle className="h-4 w-4" />
+                </Button>
+              </div>
+            </TabsContent>
+
+            {/* Owner Chat */}
+            <TabsContent value="owner" className="mt-4 space-y-4">
+              <ScrollArea className="h-[300px] border rounded-md p-4">
+                {mockChat
+                  .filter(
+                    (m) =>
+                      m.role === 'property_owner' ||
+                      m.role === 'software_tenant',
+                  )
+                  .map((msg) => (
+                    <div key={msg.id} className="mb-4 text-sm">
+                      <div className="font-bold mb-1">{msg.sender}</div>
+                      <div className="bg-gray-100 p-2 rounded-lg">
+                        {msg.msg}
+                      </div>
+                    </div>
+                  ))}
+              </ScrollArea>
+              <div className="flex gap-2">
+                <Input placeholder="Message to owner..." />
+                <Button size="icon">
+                  <MessageCircle className="h-4 w-4" />
+                </Button>
+              </div>
+            </TabsContent>
+
+            {/* Internal Notes */}
+            <TabsContent value="internal" className="mt-4 space-y-4">
+              <ScrollArea className="h-[200px] border rounded-md p-4">
+                {tenant.negotiationLogs?.length ? (
+                  tenant.negotiationLogs.map((log) => (
                     <div
                       key={log.id}
-                      className="text-sm flex flex-col gap-1 bg-muted/30 p-2 rounded"
+                      className="text-sm flex flex-col gap-1 bg-muted/30 p-2 rounded mb-2"
                     >
                       <div className="flex justify-between text-xs text-muted-foreground">
                         <span className="font-semibold">{log.user}</span>
@@ -161,47 +262,85 @@ export function NegotiationSheet({
                       </div>
                       <p>{log.note}</p>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  Nenhum registro.
-                </p>
-              )}
-            </ScrollArea>
-          </div>
+                  ))
+                ) : (
+                  <p className="text-center text-muted-foreground py-4">
+                    No notes.
+                  </p>
+                )}
+              </ScrollArea>
+              <div className="gap-2 flex flex-col">
+                <Label>Internal Note</Label>
+                <Textarea
+                  value={newLogNote}
+                  onChange={(e) => setNewLogNote(e.target.value)}
+                  placeholder="Private internal note..."
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
 
-          <div className="grid gap-2">
-            <Label>Adicionar Nota</Label>
-            <div className="flex flex-col gap-2">
-              <Textarea
-                value={newLogNote}
-                onChange={(e) => setNewLogNote(e.target.value)}
-                placeholder="Descreva a interação..."
-                className="min-h-[80px]"
-              />
-              <Button
-                variant="secondary"
-                onClick={handleAddLog}
-                disabled={!newLogNote.trim()}
-                size="sm"
-                className="w-full"
+          <Separator />
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label>Update Status</Label>
+              <Select
+                value={status}
+                onValueChange={(v: NegotiationStatus) => setStatus(v)}
               >
-                Adicionar ao Histórico
-              </Button>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="negotiating">Negotiating</SelectItem>
+                  <SelectItem value="owner_contacted">
+                    Owner Contacted
+                  </SelectItem>
+                  <SelectItem value="tenant_contacted">
+                    Tenant Contacted
+                  </SelectItem>
+                  <SelectItem value="vacating">Vacating</SelectItem>
+                  <SelectItem value="closed">Closed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Suggested Price</Label>
+              <Input
+                type="number"
+                value={suggestedPrice}
+                onChange={(e) => setSuggestedPrice(e.target.value)}
+              />
             </div>
           </div>
         </div>
 
         <SheetFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancelar
+            Close
           </Button>
           <Button onClick={handleSave} className="bg-trust-blue">
-            Salvar Alterações
+            Save Updates
           </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
+  )
+}
+
+function BadgeStatus({ status }: { status: string }) {
+  const colors: Record<string, string> = {
+    negotiating: 'bg-yellow-100 text-yellow-800',
+    closed: 'bg-green-100 text-green-800',
+    vacating: 'bg-red-100 text-red-800',
+  }
+  return (
+    <span
+      className={`px-2 py-1 rounded text-xs font-semibold ${colors[status] || 'bg-gray-100 text-gray-800'}`}
+    >
+      {status}
+    </span>
   )
 }

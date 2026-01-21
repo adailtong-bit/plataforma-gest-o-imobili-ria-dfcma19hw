@@ -37,6 +37,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
+import { Badge } from '@/components/ui/badge'
 
 interface DocumentVaultProps {
   documents: GenericDocument[]
@@ -164,7 +165,9 @@ export function DocumentVault({
                     <SelectItem value="SSN">SSN / Tax ID</SelectItem>
                     <SelectItem value="Insurance">Seguro</SelectItem>
                     <SelectItem value="Deed">Escritura</SelectItem>
+                    <SelectItem value="Inspection">Inspeção</SelectItem>
                     <SelectItem value="Other">Outro</SelectItem>
+                    <SelectItem value="Others">Outros (Others)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -201,9 +204,9 @@ export function DocumentVault({
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-sm">{doc.name}</p>
-                      <span className="text-[10px] bg-secondary px-1.5 py-0.5 rounded text-secondary-foreground font-semibold">
+                      <Badge variant="secondary" className="text-xs">
                         {doc.category}
-                      </span>
+                      </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {new Date(doc.date).toLocaleDateString()} •{' '}
