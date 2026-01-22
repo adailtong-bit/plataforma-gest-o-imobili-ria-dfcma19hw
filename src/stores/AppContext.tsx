@@ -334,14 +334,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       prev.map((u) => (u.id === id ? { ...u, status: 'blocked' } : u)),
     )
 
-  // Messaging Logic
+  // Messaging Logic - Bidirectional Sync
   const sendMessage = (
     contactId: string,
     text: string,
     attachments: string[] = [],
   ) => {
     const newMessage: ChatMessage = {
-      id: `msg-${Date.now()}`,
+      id: `msg-${Date.now()}-${Math.random()}`,
       text,
       senderId: currentUser.id,
       timestamp: new Date().toISOString(),
@@ -351,58 +351,56 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setAllMessages((prev) => {
       let nextMessages = [...prev]
 
-      // 1. Update/Create Sender's Thread (Owner: CurrentUser, Contact: contactId)
+      // 1. Sender Side (Me -> Contact)
       const senderThreadIndex = nextMessages.findIndex(
         (m) => m.ownerId === currentUser.id && m.contactId === contactId,
       )
-
       if (senderThreadIndex >= 0) {
+        // Update existing thread for sender
         nextMessages[senderThreadIndex] = {
           ...nextMessages[senderThreadIndex],
           lastMessage: text,
-          time: new Date().toISOString(),
+          time: newMessage.timestamp,
           history: [...nextMessages[senderThreadIndex].history, newMessage],
         }
       } else {
+        // Create new thread for sender
         const contact = allUsers.find((u) => u.id === contactId)
-        if (contact) {
-          nextMessages.push({
-            id: `chat-${currentUser.id}-${contactId}`,
-            contact: contact.name,
-            contactId: contact.id,
-            ownerId: currentUser.id,
-            lastMessage: text,
-            time: new Date().toISOString(),
-            unread: 0,
-            avatar: contact.avatar || '',
-            history: [newMessage],
-          })
-        }
+        nextMessages.push({
+          id: `chat-${currentUser.id}-${contactId}`,
+          contact: contact?.name || 'Unknown',
+          contactId: contactId,
+          ownerId: currentUser.id,
+          lastMessage: text,
+          time: newMessage.timestamp,
+          unread: 0,
+          avatar: contact?.avatar || '',
+          history: [newMessage],
+        })
       }
 
-      // 2. Update/Create Recipient's Thread (Owner: contactId, Contact: CurrentUser)
-      // We need to check if a thread for the recipient exists with the sender
+      // 2. Recipient Side (Contact -> Me)
       const recipientThreadIndex = nextMessages.findIndex(
         (m) => m.ownerId === contactId && m.contactId === currentUser.id,
       )
-
       if (recipientThreadIndex >= 0) {
+        // Update existing thread for recipient
         nextMessages[recipientThreadIndex] = {
           ...nextMessages[recipientThreadIndex],
           lastMessage: text,
-          time: new Date().toISOString(),
+          time: newMessage.timestamp,
           unread: nextMessages[recipientThreadIndex].unread + 1,
           history: [...nextMessages[recipientThreadIndex].history, newMessage],
         }
       } else {
-        // Create thread for recipient
+        // Create new thread for recipient
         nextMessages.push({
           id: `chat-${contactId}-${currentUser.id}`,
           contact: currentUser.name,
           contactId: currentUser.id,
           ownerId: contactId,
           lastMessage: text,
-          time: new Date().toISOString(),
+          time: newMessage.timestamp,
           unread: 1,
           avatar: currentUser.avatar || '',
           history: [newMessage],
@@ -420,7 +418,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const startChat = (contactId: string) => {
-    // Check if thread exists for current user
+    // Check if thread exists for current user (Sender)
     if (
       allMessages.some(
         (m) => m.ownerId === currentUser.id && m.contactId === contactId,
@@ -434,7 +432,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       setAllMessages((prev) => [
         ...prev,
         {
-          id: `chat-${currentUser.id}-${contactId}-${Date.now()}`,
+          id: `chat-${currentUser.id}-${contactId}`, // Consistent ID format
           contact: contact.name,
           contactId: contact.id,
           ownerId: currentUser.id,

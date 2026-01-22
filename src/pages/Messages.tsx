@@ -23,7 +23,7 @@ import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useOwnerStore from '@/stores/useOwnerStore'
 import { cn } from '@/lib/utils'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { format, parseISO, isValid, isToday, isYesterday } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
@@ -45,6 +45,7 @@ export default function Messages() {
   const { owners } = useOwnerStore()
 
   const location = useLocation()
+  const navigate = useNavigate()
   const { t } = useLanguageStore()
   const searchParams = new URLSearchParams(location.search)
   const initialContactId = searchParams.get('contactId')
@@ -82,7 +83,7 @@ export default function Messages() {
       const found = messages.find((m) => m.contactId === initialContactId)
 
       if (found) {
-        if (!selectedMessageId) {
+        if (selectedMessageId !== found.id) {
           setSelectedMessageId(found.id)
         }
       } else {
@@ -170,11 +171,15 @@ export default function Messages() {
   }, [allUsers])
 
   const handleStartNewChat = (userId: string) => {
-    startChat(userId)
-    setNewChatOpen(false)
-    const newChat = messages.find((m) => m.contactId === userId)
-    if (newChat) {
-      setSelectedMessageId(newChat.id)
+    const existing = messages.find((m) => m.contactId === userId)
+    if (existing) {
+      setSelectedMessageId(existing.id)
+      setNewChatOpen(false)
+      navigate(`/messages?contactId=${userId}`)
+    } else {
+      startChat(userId)
+      setNewChatOpen(false)
+      navigate(`/messages?contactId=${userId}`)
     }
   }
 
