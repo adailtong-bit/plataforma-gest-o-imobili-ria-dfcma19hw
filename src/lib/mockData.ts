@@ -1,4 +1,4 @@
-import { subDays, subMonths, addDays } from 'date-fns'
+import { subDays, addDays } from 'date-fns'
 import {
   Property,
   Task,
@@ -26,8 +26,6 @@ import {
   CalendarBlock,
   MessageTemplate,
 } from '@/lib/types'
-
-// ... (keep previous imports and user data)
 
 // 1 Master Admin
 const masterAdmin: User = {
@@ -80,11 +78,27 @@ const internalUsers: User[] = Array.from({ length: 3 }).map((_, i) => ({
   country: 'US',
 }))
 
+// Team Member (Partner Employee) Mock
+const partnerEmployees: User[] = [
+  {
+    id: 'emp_1',
+    name: 'Team Member 1',
+    email: 'team1@service.com',
+    role: 'partner_employee',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=30',
+    parentId: 'partner_0_0', // Assuming partner 0-0 is the employer
+    status: 'active',
+    isFirstLogin: false,
+    country: 'US',
+  },
+]
+
 // Combine Users
 export const systemUsers: User[] = [
   masterAdmin,
   ...tenantsData,
   ...internalUsers,
+  ...partnerEmployees,
 ]
 
 // 50 Properties (10 per tenant)
@@ -291,6 +305,18 @@ export const partners: Partner[] = tenantsData.flatMap((manager, tIdx) =>
     role: 'partner',
     address: '123 Service Rd',
     serviceRates: [],
+    employees:
+      i === 0
+        ? [
+            {
+              id: 'emp_1', // Linked to user above
+              name: 'Team Member 1',
+              role: 'Cleaner',
+              email: 'team1@service.com',
+              status: 'active',
+            },
+          ]
+        : [],
     documents: [],
   })),
 )
@@ -358,10 +384,12 @@ export const tasks: Task[] = [
     type: 'cleaning',
     assignee: 'Partner 0-1',
     assigneeId: 'partner_0_1',
+    partnerEmployeeId: 'emp_1',
     date: subDays(new Date(), 1).toISOString(),
     priority: 'high',
     images: ['https://img.usecurling.com/p/300/200?q=clean%20bedroom'],
     price: 150.0,
+    teamMemberPayout: 50.0,
     recurrence: 'none',
     bookingId: 'bk_1',
   },

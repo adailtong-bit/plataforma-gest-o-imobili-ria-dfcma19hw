@@ -61,6 +61,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useTaskStore from '@/stores/useTaskStore'
 import usePartnerStore from '@/stores/usePartnerStore'
+import useAuthStore from '@/stores/useAuthStore'
 import { useToast } from '@/hooks/use-toast'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -76,6 +77,7 @@ const formSchema = z.object({
   priority: z.enum(['low', 'medium', 'high', 'critical']),
   date: z.date({ required_error: 'Selecione uma data.' }),
   price: z.string().optional(),
+  teamMemberPayout: z.string().optional(),
   description: z.string().optional(),
   backToBack: z.boolean().default(false),
   recurrence: z
@@ -88,6 +90,7 @@ export function CreateTaskDialog() {
   const { properties } = usePropertyStore()
   const { addTask } = useTaskStore()
   const { partners } = usePartnerStore()
+  const { currentUser } = useAuthStore()
   const { toast } = useToast()
   const { t } = useLanguageStore()
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
@@ -106,6 +109,7 @@ export function CreateTaskDialog() {
       backToBack: false,
       description: '',
       price: '',
+      teamMemberPayout: '',
       recurrence: 'none',
     },
   })
@@ -126,10 +130,14 @@ export function CreateTaskDialog() {
   const selectedPartner = partners.find((p) => p.id === watchAssigneeId)
   const availableEmployees = selectedPartner?.employees || []
 
+  const isAdminOrPM = ['platform_owner', 'software_tenant'].includes(
+    currentUser.role,
+  )
+  const isPartner = currentUser.role === 'partner'
+
   // Update available templates when partner changes
   useEffect(() => {
     if (selectedPartner && selectedPartner.serviceRates) {
-      // Filter rates that match the selected type if possible, or just show all
       const templates = selectedPartner.serviceRates.map((rate) => ({
         label: rate.serviceName,
         value: rate.serviceName,
@@ -174,6 +182,9 @@ export function CreateTaskDialog() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     const assignee = partners.find((p) => p.id === values.assigneeId)
     let finalPrice = values.price ? parseFloat(values.price) : undefined
+    const finalPayout = values.teamMemberPayout
+      ? parseFloat(values.teamMemberPayout)
+      : undefined
 
     if (!finalPrice && assignee && assignee.serviceRates) {
       const rate = assignee.serviceRates.find(
@@ -203,6 +214,7 @@ export function CreateTaskDialog() {
       priority: values.priority,
       description: values.description,
       price: finalPrice,
+      teamMemberPayout: finalPayout,
       backToBack: values.backToBack,
       recurrence: values.recurrence,
       images: uploadedImages,
@@ -384,20 +396,8 @@ export function CreateTaskDialog() {
                             <CommandInput placeholder="Buscar template ou criar novo..." />
                             <CommandList>
                               <CommandEmpty>
-                                <div
-                                  className="p-2 text-sm cursor-pointer hover:bg-accent rounded-sm"
-                                  onClick={() => {
-                                    // Manual entry via typing if no match
-                                    // Note: CommandInput doesn't expose typed value easily in Shadcn default
-                                    // So we rely on the user picking a template or we might need a different approach
-                                    // Simple approach: Allow user to click 'Use custom' if we could capture it.
-                                    // Alternative: Just use Input for manual and this Combobox for templates.
-                                    // For this solution, we assume the user can type in the input.
-                                    // But CommandInput captures focus.
-                                  }}
-                                >
-                                  Use título personalizado (digite e pressione
-                                  Enter)
+                                <div className="p-2 text-sm cursor-pointer hover:bg-accent rounded-sm">
+                                  Use título personalizado
                                 </div>
                               </CommandEmpty>
                               {taskTemplates.length > 0 && (
@@ -435,20 +435,6 @@ export function CreateTaskDialog() {
                                   ))}
                                 </CommandGroup>
                               )}
-                              <CommandGroup heading="Ações">
-                                <CommandItem
-                                  onSelect={() => {
-                                    // Reset to manual input mode?
-                                    // Currently this dialog replaces Input with Combobox.
-                                    // To allow true manual entry with Command, we need to capture `onValueChange` of Input.
-                                    // But Shadcn CommandInput `onValueChange` is internal search.
-                                    // Workaround: We add an Input field below if they want manual,
-                                    // OR we render a "Custom" item that uses the current search.
-                                  }}
-                                >
-                                  Digite acima para filtrar
-                                </CommandItem>
-                              </CommandGroup>
                             </CommandList>
                           </Command>
                         </PopoverContent>
@@ -505,19 +491,41 @@ export function CreateTaskDialog() {
                   />
                 )}
 
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('tasks.estimated_value')} ($)</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="0.00" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* Financial Fields - Hierarchy Based */}
+                {isAdminOrPM && (
+                  <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Valor Pago ao Parceiro ($)</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="0.00" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {(isAdminOrPM || isPartner) && (
+                  <FormField
+                    control={form.control}
+                    name="teamMemberPayout"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Pagamento Equipe ($)</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="0.00" {...field} />
+                        </FormControl>
+                        <FormDescription className="text-xs">
+                          Quanto o membro da equipe recebe.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}

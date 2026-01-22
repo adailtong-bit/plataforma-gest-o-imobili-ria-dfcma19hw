@@ -23,7 +23,6 @@ import {
   Upload,
   MapPin,
   Eye,
-  Camera,
   CheckCircle2,
   Receipt,
   User,
@@ -31,6 +30,7 @@ import {
   Pencil,
   Play,
   Square,
+  DollarSign,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
@@ -135,6 +135,11 @@ export function TaskCard({
 
   // Internal Delegation Logic
   const isPartner = currentUser.role === 'partner'
+  const isTeamMember = currentUser.role === 'partner_employee'
+  const isAdminOrPM = ['platform_owner', 'software_tenant'].includes(
+    currentUser.role,
+  )
+
   const partnerRecord = isPartner
     ? partners.find(
         (p) => p.id === currentUser.id || p.email === currentUser.email,
@@ -149,8 +154,7 @@ export function TaskCard({
       (task.assigneeId === partnerRecord.id ||
         (partnerRecord.linkedPropertyIds?.includes(task.propertyId) &&
           task.type === partnerRecord.type))) ||
-    currentUser.role === 'platform_owner' ||
-    currentUser.role === 'software_tenant'
+    isAdminOrPM
 
   const handleAssignEmployee = (employeeId: string) => {
     updateTask({ ...task, partnerEmployeeId: employeeId })
@@ -164,6 +168,10 @@ export function TaskCard({
   const assignedEmployeeName = partnerRecord?.employees?.find(
     (e) => e.id === task.partnerEmployeeId,
   )?.name
+
+  // Financial Visibility Logic
+  const showPartnerPrice = isAdminOrPM || isPartner
+  const showTeamPayout = isAdminOrPM || isPartner || isTeamMember
 
   return (
     <>
@@ -227,7 +235,7 @@ export function TaskCard({
             <CardTitle className="text-sm font-semibold leading-tight line-clamp-2">
               {task.title}
             </CardTitle>
-            {canEdit && task.status !== 'completed' && (
+            {canEdit && task.status !== 'completed' && !isTeamMember && (
               <Button
                 variant="ghost"
                 size="icon"
@@ -255,6 +263,26 @@ export function TaskCard({
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
             <Clock className="h-3 w-3" />
             <span>{format(new Date(task.date), 'dd/MM/yyyy')}</span>
+          </div>
+
+          {/* Financial Display based on Roles */}
+          <div className="flex flex-col gap-1 mb-3">
+            {showPartnerPrice && task.price && (
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Valor (Partner):</span>
+                <span className="font-semibold text-green-700">
+                  ${task.price.toFixed(2)}
+                </span>
+              </div>
+            )}
+            {showTeamPayout && task.teamMemberPayout && (
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Payout (Team):</span>
+                <span className="font-semibold text-blue-700">
+                  ${task.teamMemberPayout.toFixed(2)}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between mt-auto">

@@ -18,13 +18,13 @@ import {
   Clock,
   Navigation,
   Briefcase,
-  ExternalLink,
 } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useShortTermStore from '@/stores/useShortTermStore'
+import useAuthStore from '@/stores/useAuthStore'
 import { Card, CardContent } from '@/components/ui/card'
 
 interface TaskDetailsSheetProps {
@@ -40,6 +40,7 @@ export function TaskDetailsSheet({
 }: TaskDetailsSheetProps) {
   const { t } = useLanguageStore()
   const { bookings } = useShortTermStore()
+  const { currentUser } = useAuthStore()
 
   if (!task) return null
 
@@ -88,6 +89,16 @@ export function TaskDetailsSheet({
   const linkedBooking = task.bookingId
     ? bookings.find((b) => b.id === task.bookingId)
     : null
+
+  // Financial Visibility
+  const isAdminOrPM = ['platform_owner', 'software_tenant'].includes(
+    currentUser.role,
+  )
+  const isPartner = currentUser.role === 'partner'
+  const isTeamMember = currentUser.role === 'partner_employee'
+
+  const showPartnerPrice = isAdminOrPM || isPartner
+  const showTeamPayout = isAdminOrPM || isPartner || isTeamMember
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -269,7 +280,7 @@ export function TaskDetailsSheet({
                     {format(new Date(task.date), 'dd/MM/yyyy')}
                   </p>
                 </div>
-                {task.price && (
+                {showPartnerPrice && task.price && (
                   <div className="space-y-1">
                     <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1">
                       <DollarSign className="h-3 w-3" />{' '}
@@ -278,12 +289,14 @@ export function TaskDetailsSheet({
                     <p className="font-medium">${task.price.toFixed(2)}</p>
                   </div>
                 )}
-                {task.backToBack && (
+                {showTeamPayout && task.teamMemberPayout && (
                   <div className="space-y-1">
                     <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                      <CheckCircle2 className="h-3 w-3" /> {t('common.type')}
+                      <DollarSign className="h-3 w-3" /> Payout Equipe
                     </h4>
-                    <Badge variant="destructive">Back-to-Back</Badge>
+                    <p className="font-medium text-blue-600">
+                      ${task.teamMemberPayout.toFixed(2)}
+                    </p>
                   </div>
                 )}
               </div>

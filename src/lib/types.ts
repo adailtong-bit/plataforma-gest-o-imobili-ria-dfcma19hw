@@ -425,13 +425,14 @@ export interface Task {
   type: 'cleaning' | 'maintenance' | 'inspection'
   assignee: string
   assigneeId?: string
-  partnerEmployeeId?: string
+  partnerEmployeeId?: string // Team Member ID
   date: string
   priority: 'low' | 'medium' | 'high' | 'critical'
   images?: string[]
   evidence?: Evidence[]
   description?: string
-  price?: number
+  price?: number // Value paid to Partner (Revenue for Partner, Cost for PM)
+  teamMemberPayout?: number // Value paid to Team Member (Cost for Partner, Revenue for Team Member)
   backToBack?: boolean
   recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
   bookingId?: string
@@ -443,6 +444,9 @@ export interface Invoice {
   amount: number
   status: 'pending' | 'paid' | 'approved'
   date: string
+  fromId?: string
+  toId?: string
+  type?: 'team_to_partner' | 'partner_to_pm' | 'admin_to_pm' | 'generic'
 }
 
 export interface Payment {

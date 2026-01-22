@@ -24,7 +24,13 @@ import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import { TaskCard } from '@/components/tasks/TaskCard'
 import { PartnerStaff } from '@/components/partners/PartnerStaff'
-import { Building, ClipboardList, Users } from 'lucide-react'
+import {
+  Building,
+  ClipboardList,
+  Users,
+  DollarSign,
+  Wallet,
+} from 'lucide-react'
 
 export default function PartnerPortal() {
   const { currentUser } = useAuthStore()
@@ -58,7 +64,18 @@ export default function PartnerPortal() {
 
   const pendingTasks = myTasks.filter((t) => t.status === 'pending')
   const activeTasks = myTasks.filter((t) => t.status === 'in_progress')
+
+  // Financial Calcs
   const completedTasks = myTasks.filter((t) => t.status === 'completed')
+  const totalRevenue = completedTasks.reduce(
+    (acc, t) => acc + (t.price || 0),
+    0,
+  )
+  const totalPayout = completedTasks.reduce(
+    (acc, t) => acc + (t.teamMemberPayout || 0),
+    0,
+  )
+  const netProfit = totalRevenue - totalPayout
 
   const handleUpdatePartner = (updated: any) => {
     updatePartner(updated)
@@ -73,7 +90,7 @@ export default function PartnerPortal() {
         <p className="text-muted-foreground">Bem-vindo, {partnerRecord.name}</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">
@@ -98,10 +115,32 @@ export default function PartnerPortal() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Propriedades</CardTitle>
+            <CardTitle className="text-sm font-medium text-green-700">
+              Receita Total
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{myProperties.length}</div>
+            <div className="text-2xl font-bold text-green-700">
+              ${totalRevenue.toFixed(2)}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Completed Tasks
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-purple-700">
+              Lucro Estimado
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-purple-700">
+              ${netProfit.toFixed(2)}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              After Team Payouts
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -116,6 +155,9 @@ export default function PartnerPortal() {
           </TabsTrigger>
           <TabsTrigger value="properties">
             <Building className="h-4 w-4 mr-2" /> Propriedades
+          </TabsTrigger>
+          <TabsTrigger value="financial">
+            <Wallet className="h-4 w-4 mr-2" /> Financeiro Detalhado
           </TabsTrigger>
         </TabsList>
 
@@ -186,6 +228,60 @@ export default function PartnerPortal() {
                       </TableCell>
                     </TableRow>
                   ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="financial">
+          <Card>
+            <CardHeader>
+              <CardTitle>Detalhamento por Tarefa</CardTitle>
+              <CardDescription>
+                Análise de margem por serviço executado.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Data</TableHead>
+                    <TableHead>Tarefa</TableHead>
+                    <TableHead>Funcionário</TableHead>
+                    <TableHead className="text-right">Receita ($)</TableHead>
+                    <TableHead className="text-right">
+                      Custo Pessoal ($)
+                    </TableHead>
+                    <TableHead className="text-right">Margem ($)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {completedTasks.map((t) => {
+                    const empName =
+                      partnerRecord.employees?.find(
+                        (e) => e.id === t.partnerEmployeeId,
+                      )?.name || 'N/A'
+                    const margin = (t.price || 0) - (t.teamMemberPayout || 0)
+                    return (
+                      <TableRow key={t.id}>
+                        <TableCell>
+                          {format(new Date(t.date), 'dd/MM/yyyy')}
+                        </TableCell>
+                        <TableCell>{t.title}</TableCell>
+                        <TableCell>{empName}</TableCell>
+                        <TableCell className="text-right font-medium text-green-700">
+                          ${(t.price || 0).toFixed(2)}
+                        </TableCell>
+                        <TableCell className="text-right text-red-600">
+                          -${(t.teamMemberPayout || 0).toFixed(2)}
+                        </TableCell>
+                        <TableCell className="text-right font-bold">
+                          ${margin.toFixed(2)}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </CardContent>

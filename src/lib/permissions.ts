@@ -11,7 +11,7 @@ export const hasPermission = (
   // 2. Software Tenant has full access to their tenant scope
   if (user.role === 'software_tenant') {
     // Restricted from master admin features
-    if (resource === 'market_analysis' && action === 'delete') return false // Example restriction
+    if (resource === 'market_analysis' && action === 'delete') return false
     return true
   }
 
@@ -22,16 +22,25 @@ export const hasPermission = (
     return permission.actions.includes(action)
   }
 
-  // 4. Other roles (Owner, Partner, Tenant) - very restricted
+  // 4. Other roles
   if (user.role === 'property_owner') {
     if (resource === 'portal' && action === 'view') return true
     if (resource === 'messages' && action === 'view') return true
-    if (resource === 'short_term' && action === 'view') return true // Can view booking cal if needed
+    if (resource === 'short_term' && action === 'view') return true
     return false
   }
 
   if (user.role === 'partner') {
     if (resource === 'portal' && action === 'view') return true
+    if (resource === 'messages' && action === 'view') return true
+    if (resource === 'tasks' && action === 'edit') return true // Can update status
+    return false
+  }
+
+  if (user.role === 'partner_employee') {
+    if (resource === 'portal' && action === 'view') return true
+    if (resource === 'tasks' && action === 'view') return true // Restricted view
+    if (resource === 'tasks' && action === 'edit') return true // Can update status
     if (resource === 'messages' && action === 'view') return true
     return false
   }
@@ -53,7 +62,7 @@ export const canChat = (
   if (initiatorRole === 'software_tenant') return true
   if (initiatorRole === 'internal_user') return true
 
-  // Tenants/Owners can chat with staff
+  // Tenants/Owners/Partners can chat with staff
   const staffRoles = ['platform_owner', 'software_tenant', 'internal_user']
   if (staffRoles.includes(targetRole)) return true
 
@@ -72,6 +81,8 @@ export const getRoleLabel = (role: UserRole): string => {
       return 'Proprietário'
     case 'partner':
       return 'Parceiro'
+    case 'partner_employee':
+      return 'Membro da Equipe'
     case 'tenant':
       return 'Inquilino'
     default:

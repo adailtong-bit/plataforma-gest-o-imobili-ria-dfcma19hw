@@ -10,7 +10,6 @@ import {
   X,
   User,
   Save,
-  Trash2,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
@@ -48,20 +47,10 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useTaskStore from '@/stores/useTaskStore'
 import usePartnerStore from '@/stores/usePartnerStore'
+import useAuthStore from '@/stores/useAuthStore'
 import { useToast } from '@/hooks/use-toast'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -78,6 +67,7 @@ const formSchema = z.object({
   priority: z.enum(['low', 'medium', 'high', 'critical']),
   date: z.date({ required_error: 'Selecione uma data.' }),
   price: z.string().optional(),
+  teamMemberPayout: z.string().optional(),
   description: z.string().optional(),
   backToBack: z.boolean().default(false),
   recurrence: z
@@ -97,11 +87,17 @@ export function EditTaskDialog({
   onOpenChange,
 }: EditTaskDialogProps) {
   const { properties } = usePropertyStore()
-  const { updateTask, deleteTask } = useTaskStore()
+  const { updateTask } = useTaskStore()
   const { partners } = usePartnerStore()
+  const { currentUser } = useAuthStore()
   const { toast } = useToast()
   const { t } = useLanguageStore()
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
+
+  const isAdminOrPM = ['platform_owner', 'software_tenant'].includes(
+    currentUser.role,
+  )
+  const isPartner = currentUser.role === 'partner'
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -114,6 +110,9 @@ export function EditTaskDialog({
       priority: task.priority,
       date: new Date(task.date),
       price: task.price ? task.price.toString() : '',
+      teamMemberPayout: task.teamMemberPayout
+        ? task.teamMemberPayout.toString()
+        : '',
       description: task.description || '',
       backToBack: task.backToBack || false,
       recurrence: task.recurrence || 'none',
@@ -131,6 +130,9 @@ export function EditTaskDialog({
         priority: task.priority,
         date: new Date(task.date),
         price: task.price ? task.price.toString() : '',
+        teamMemberPayout: task.teamMemberPayout
+          ? task.teamMemberPayout.toString()
+          : '',
         description: task.description || '',
         backToBack: task.backToBack || false,
         recurrence: task.recurrence || 'none',
@@ -170,6 +172,9 @@ export function EditTaskDialog({
   function onSubmit(values: z.infer<typeof formSchema>) {
     const assignee = partners.find((p) => p.id === values.assigneeId)
     const finalPrice = values.price ? parseFloat(values.price) : undefined
+    const finalPayout = values.teamMemberPayout
+      ? parseFloat(values.teamMemberPayout)
+      : undefined
 
     const employeeId =
       values.partnerEmployeeId === 'none' ? undefined : values.partnerEmployeeId
@@ -189,6 +194,7 @@ export function EditTaskDialog({
       priority: values.priority,
       description: values.description,
       price: finalPrice,
+      teamMemberPayout: finalPayout,
       backToBack: values.backToBack,
       recurrence: values.recurrence,
       images: uploadedImages,
@@ -199,16 +205,6 @@ export function EditTaskDialog({
       description: 'Tarefa atualizada com sucesso.',
     })
 
-    onOpenChange(false)
-  }
-
-  const handleDelete = () => {
-    deleteTask(task.id)
-    toast({
-      title: 'Tarefa removida',
-      description: 'A tarefa e seus registros financeiros foram removidos.',
-      variant: 'destructive',
-    })
     onOpenChange(false)
   }
 
@@ -404,19 +400,41 @@ export function EditTaskDialog({
                   />
                 )}
 
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('tasks.estimated_value')} ($)</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="0.00" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* Financial Fields - Hierarchy Based */}
+                {isAdminOrPM && (
+                  <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Valor Pago ao Parceiro ($)</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="0.00" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {(isAdminOrPM || isPartner) && (
+                  <FormField
+                    control={form.control}
+                    name="teamMemberPayout"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Pagamento Equipe ($)</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="0.00" {...field} />
+                        </FormControl>
+                        <FormDescription className="text-xs">
+                          Quanto o membro da equipe recebe.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}
@@ -456,55 +474,6 @@ export function EditTaskDialog({
                     </FormItem>
                   )}
                 />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="recurrence"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Recorrência</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Não recorrente" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">Nenhuma</SelectItem>
-                          <SelectItem value="daily">Diária</SelectItem>
-                          <SelectItem value="weekly">Semanal</SelectItem>
-                          <SelectItem value="monthly">Mensal</SelectItem>
-                          <SelectItem value="yearly">Anual</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {watchType === 'cleaning' && (
-                  <FormField
-                    control={form.control}
-                    name="backToBack"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-end space-x-3 space-y-0 p-2">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>{t('tasks.b2b_label')}</FormLabel>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                )}
               </div>
 
               <div className="space-y-3">
@@ -560,38 +529,9 @@ export function EditTaskDialog({
                 )}
               />
 
-              <div className="flex items-center justify-between gap-4">
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive" type="button">
-                      <Trash2 className="h-4 w-4 mr-2" /> Excluir
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Esta ação não pode ser desfeita. Isso excluirá
-                        permanentemente a tarefa e todos os registros
-                        financeiros associados.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={handleDelete}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      >
-                        Excluir
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-
-                <Button type="submit" className="bg-trust-blue flex-1">
-                  <Save className="h-4 w-4 mr-2" /> Salvar Alterações
-                </Button>
-              </div>
+              <Button type="submit" className="w-full bg-trust-blue">
+                <Save className="h-4 w-4 mr-2" /> Salvar Alterações
+              </Button>
             </form>
           </Form>
         </ScrollArea>

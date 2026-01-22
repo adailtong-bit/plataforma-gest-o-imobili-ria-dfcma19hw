@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -5,11 +6,15 @@ import useTaskStore from '@/stores/useTaskStore'
 import { TaskCard } from '@/components/tasks/TaskCard'
 import { CreateTaskDialog } from '@/components/tasks/CreateTaskDialog'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { Button } from '@/components/ui/button'
+import { FileText } from 'lucide-react'
+import { TaskInvoiceDialog } from '@/components/financial/TaskInvoiceDialog'
 
 export default function Tasks() {
   const { tasks, updateTaskStatus, addTaskImage, addTaskEvidence } =
     useTaskStore()
   const { t } = useLanguageStore()
+  const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
 
   return (
     <div className="flex flex-col gap-6">
@@ -20,8 +25,22 @@ export default function Tasks() {
           </h1>
           <p className="text-muted-foreground">{t('tasks.subtitle')}</p>
         </div>
-        <CreateTaskDialog />
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => setInvoiceDialogOpen(true)}
+          >
+            <FileText className="h-4 w-4" /> Generate Invoice
+          </Button>
+          <CreateTaskDialog />
+        </div>
       </div>
+
+      <TaskInvoiceDialog
+        open={invoiceDialogOpen}
+        onOpenChange={setInvoiceDialogOpen}
+      />
 
       <Tabs defaultValue="board" className="space-y-4">
         <TabsList>
