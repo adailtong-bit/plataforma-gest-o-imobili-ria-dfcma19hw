@@ -30,6 +30,7 @@ import {
   RefreshCw,
   Megaphone,
   BriefcaseBusiness,
+  FileText,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -130,6 +131,12 @@ export function AppSidebar() {
       url: '/financial',
       icon: DollarSign,
       resource: 'financial',
+    },
+    {
+      title: t('common.invoices'),
+      url: '/invoices',
+      icon: FileText,
+      resource: 'financial', // Assuming invoices are under financial permissions
     },
     {
       title: t('common.messages'),

@@ -10,6 +10,7 @@ import PropertyDetails from './pages/PropertyDetails'
 import CalendarPage from './pages/Calendar'
 import Tasks from './pages/Tasks'
 import Financial from './pages/Financial'
+import Invoices from './pages/Invoices'
 import Messages from './pages/Messages'
 import Settings from './pages/Settings'
 import Tenants from './pages/Tenants'
@@ -68,6 +69,7 @@ const App = () => {
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/tasks" element={<Tasks />} />
                 <Route path="/financial" element={<Financial />} />
+                <Route path="/invoices" element={<Invoices />} />
                 <Route path="/messages" element={<Messages />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/users" element={<Users />} />

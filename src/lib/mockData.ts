@@ -592,7 +592,28 @@ export const financials: Financials = {
     { category: 'Manutenção', value: 4500, fill: 'var(--color-maintenance)' },
     { category: 'Limpeza', value: 3200, fill: 'var(--color-cleaning)' },
   ],
-  invoices: [],
+  invoices: [
+    {
+      id: 'inv-001',
+      description: 'Cleaning Services - Jan 2024',
+      amount: 1250.0,
+      status: 'pending',
+      date: subDays(new Date(), 5).toISOString(),
+      fromId: 'tenant_manager_1',
+      toId: 'owner_0_0',
+      type: 'generic',
+    },
+    {
+      id: 'inv-002',
+      description: 'Plumbing Repair',
+      amount: 450.0,
+      status: 'paid',
+      date: subDays(new Date(), 15).toISOString(),
+      fromId: 'partner_0_2',
+      toId: 'tenant_manager_1',
+      type: 'partner_to_pm',
+    },
+  ],
   payments: [],
 }
 

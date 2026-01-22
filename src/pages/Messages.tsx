@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,7 @@ import {
   MessageCircle,
   Users,
   Building,
+  Plus,
 } from 'lucide-react'
 import useMessageStore from '@/stores/useMessageStore'
 import useAuthStore from '@/stores/useAuthStore'
@@ -23,10 +24,18 @@ import { useLocation } from 'react-router-dom'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { format, parseISO, isValid } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function Messages() {
   const { messages, sendMessage, markAsRead, startChat } = useMessageStore()
-  const { currentUser } = useAuthStore()
+  const { currentUser, allUsers } = useAuthStore()
   const { tenants } = useTenantStore()
   const { properties } = usePropertyStore()
   const { owners } = useOwnerStore()
@@ -48,6 +57,7 @@ export default function Messages() {
   )
   const [inputText, setInputText] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [newChatOpen, setNewChatOpen] = useState(false)
 
   // Resolve Context Data (Renewal)
   const contextTenant =
@@ -129,13 +139,117 @@ export default function Messages() {
     }
   }
 
+  // Users Grouping for New Chat
+  const groupedUsers = useMemo(() => {
+    return {
+      tenants: allUsers.filter((u) => u.role === 'tenant'),
+      owners: allUsers.filter((u) => u.role === 'property_owner'),
+      partners: allUsers.filter((u) => u.role === 'partner'),
+      team: allUsers.filter((u) => u.role === 'partner_employee'),
+      internal: allUsers.filter((u) => u.role === 'internal_user'),
+    }
+  }, [allUsers])
+
+  const handleStartNewChat = (userId: string) => {
+    startChat(userId)
+    setNewChatOpen(false)
+    // Select the new chat
+    const newChat = messages.find((m) => m.contactId === userId)
+    if (newChat) {
+      setSelectedMessageId(newChat.id)
+    }
+  }
+
+  const UserList = ({ list }: { list: typeof allUsers }) => (
+    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+      {list.length === 0 ? (
+        <p className="text-sm text-muted-foreground text-center py-4">
+          Nenhum usuário encontrado.
+        </p>
+      ) : (
+        list.map((u) => (
+          <button
+            key={u.id}
+            className="flex items-center gap-3 w-full p-2 hover:bg-muted rounded-md text-left transition-colors"
+            onClick={() => handleStartNewChat(u.id)}
+          >
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={u.avatar} />
+              <AvatarFallback>{u.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 overflow-hidden">
+              <p className="text-sm font-medium truncate">{u.name}</p>
+              <p className="text-xs text-muted-foreground truncate">
+                {u.email}
+              </p>
+            </div>
+          </button>
+        ))
+      )}
+    </div>
+  )
+
   return (
     <div className="flex flex-col gap-6 h-[calc(100vh-10rem)]">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-navy">
-          {t('messages.title')}
-        </h1>
-        <p className="text-muted-foreground">{t('messages.subtitle')}</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-navy">
+            {t('messages.title')}
+          </h1>
+          <p className="text-muted-foreground">{t('messages.subtitle')}</p>
+        </div>
+        <Dialog open={newChatOpen} onOpenChange={setNewChatOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-trust-blue gap-2">
+              <Plus className="h-4 w-4" /> {t('messages.new_message')}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>{t('messages.select_user')}</DialogTitle>
+            </DialogHeader>
+            <Tabs defaultValue="team" className="w-full">
+              <TabsList className="w-full justify-start overflow-x-auto flex-wrap h-auto gap-1 bg-transparent p-0 mb-4">
+                <TabsTrigger
+                  value="team"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border"
+                >
+                  {t('messages.group_team')}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="tenants"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border"
+                >
+                  {t('messages.group_tenants')}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="owners"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border"
+                >
+                  {t('messages.group_owners')}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="partners"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border"
+                >
+                  {t('messages.group_partners')}
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="team">
+                <UserList list={groupedUsers.team} />
+              </TabsContent>
+              <TabsContent value="tenants">
+                <UserList list={groupedUsers.tenants} />
+              </TabsContent>
+              <TabsContent value="owners">
+                <UserList list={groupedUsers.owners} />
+              </TabsContent>
+              <TabsContent value="partners">
+                <UserList list={groupedUsers.partners} />
+              </TabsContent>
+            </Tabs>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
@@ -342,6 +456,13 @@ export default function Messages() {
                 {t('messages.new_chat_prompt')}
               </h3>
               <p>{t('messages.select_prompt')}</p>
+              <Button
+                className="mt-4 gap-2"
+                variant="outline"
+                onClick={() => setNewChatOpen(true)}
+              >
+                <Plus className="h-4 w-4" /> {t('messages.start_chat_desc')}
+              </Button>
             </div>
           )}
         </Card>
