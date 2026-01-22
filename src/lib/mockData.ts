@@ -429,7 +429,7 @@ export const messageTemplates: MessageTemplate[] = [
 ]
 
 // Partners (3 per manager)
-export const partners: Partner[] = tenantsData.flatMap((manager, tIdx) =>
+const generatedPartners: Partner[] = tenantsData.flatMap((manager, tIdx) =>
   Array.from({ length: 3 }).map((_, i) => ({
     id: `partner_${tIdx}_${i}`,
     name: `Partner ${tIdx}-${i}`,
@@ -461,7 +461,7 @@ export const partners: Partner[] = tenantsData.flatMap((manager, tIdx) =>
 )
 
 // Add Demo Partner Entity
-partners.push({
+const demoPartner: Partner = {
   id: demoPartnerUser.id,
   name: demoPartnerUser.name,
   type: 'maintenance',
@@ -483,7 +483,9 @@ partners.push({
     },
   ],
   linkedPropertyIds: ['demo_property_1'],
-})
+}
+
+export const partners: Partner[] = [...generatedPartners, demoPartner]
 
 export const condominiums: Condominium[] = [
   {

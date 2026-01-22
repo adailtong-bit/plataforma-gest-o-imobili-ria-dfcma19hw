@@ -120,12 +120,14 @@ export function CreateTaskDialog() {
 
   const selectedProperty = properties.find((p) => p.id === watchPropertyId)
 
-  const relevantPartners = partners.filter((p) => {
-    if (watchType === 'cleaning') return p.type === 'cleaning'
-    if (watchType === 'maintenance') return p.type === 'maintenance'
-    if (watchType === 'inspection') return p.type === 'agent'
-    return true
-  })
+  const relevantPartners = partners
+    .filter((p) => {
+      if (watchType === 'cleaning') return p.type === 'cleaning'
+      if (watchType === 'maintenance') return p.type === 'maintenance'
+      if (watchType === 'inspection') return p.type === 'agent'
+      return true
+    })
+    .filter((p, index, self) => index === self.findIndex((t) => t.id === p.id)) // Deduplicate by ID to prevent key errors
 
   const selectedPartner = partners.find((p) => p.id === watchAssigneeId)
   const availableEmployees = selectedPartner?.employees || []
