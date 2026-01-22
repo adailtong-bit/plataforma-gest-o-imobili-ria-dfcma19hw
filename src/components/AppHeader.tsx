@@ -119,7 +119,7 @@ export function AppHeader() {
           alt="COREPM Logo"
           className="h-8 w-8 rounded-md shrink-0 object-contain"
         />
-        <h2 className="text-lg font-bold md:text-xl text-navy tracking-tight hidden sm:block">
+        <h2 className="text-lg font-bold md:text-xl text-brand font-display tracking-tight hidden sm:block">
           COREPM
         </h2>
       </Link>

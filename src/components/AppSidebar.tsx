@@ -160,7 +160,7 @@ export function AppSidebar() {
       <SidebarHeader className="h-16 flex items-center px-4 border-b">
         <Link
           to="/"
-          className="flex items-center gap-2 font-bold text-xl text-navy overflow-hidden hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 font-bold text-xl text-brand font-display overflow-hidden hover:opacity-80 transition-opacity"
           onClick={handleLinkClick}
         >
           <img
