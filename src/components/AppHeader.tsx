@@ -46,6 +46,7 @@ import useTenantStore from '@/stores/useTenantStore'
 import useOwnerStore from '@/stores/useOwnerStore'
 import useTaskStore from '@/stores/useTaskStore'
 import { ThemeCustomizer } from '@/components/ThemeCustomizer'
+import logo from '@/assets/logo-estilizado.jpg'
 
 export function AppHeader() {
   const { toggleSidebar } = useSidebar()
@@ -114,7 +115,7 @@ export function AppHeader() {
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
       >
         <img
-          src="https://img.usecurling.com/i?q=real%20estate&color=blue"
+          src={logo}
           alt="COREPM Logo"
           className="h-8 w-8 rounded-md shrink-0 object-contain"
         />

@@ -37,6 +37,7 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
 import { hasPermission } from '@/lib/permissions'
 import { User, Resource } from '@/lib/types'
+import logo from '@/assets/logo-estilizado.jpg'
 
 export function AppSidebar() {
   const location = useLocation()
@@ -163,7 +164,7 @@ export function AppSidebar() {
           onClick={handleLinkClick}
         >
           <img
-            src="https://img.usecurling.com/i?q=real%20estate&color=blue"
+            src={logo}
             alt="COREPM Logo"
             className="h-8 w-8 rounded-md shrink-0 object-contain"
           />
