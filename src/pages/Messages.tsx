@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -13,6 +13,9 @@ import {
   Users,
   Building,
   Plus,
+  MoreVertical,
+  Phone,
+  Video,
 } from 'lucide-react'
 import useMessageStore from '@/stores/useMessageStore'
 import useAuthStore from '@/stores/useAuthStore'
@@ -22,7 +25,7 @@ import useOwnerStore from '@/stores/useOwnerStore'
 import { cn } from '@/lib/utils'
 import { useLocation } from 'react-router-dom'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { format, parseISO, isValid } from 'date-fns'
+import { format, parseISO, isValid, isToday, isYesterday } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
@@ -32,6 +35,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Separator } from '@/components/ui/separator'
 
 export default function Messages() {
   const { messages, sendMessage, markAsRead, startChat } = useMessageStore()
@@ -45,6 +49,7 @@ export default function Messages() {
   const searchParams = new URLSearchParams(location.search)
   const initialContactId = searchParams.get('contactId')
   const context = searchParams.get('context')
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
     () => {
@@ -81,7 +86,6 @@ export default function Messages() {
           setSelectedMessageId(found.id)
         }
       } else {
-        // Create chat if it doesn't exist
         startChat(initialContactId)
       }
     }
@@ -97,7 +101,23 @@ export default function Messages() {
     }
   }, [context, contextOwner, messages, startChat])
 
-  const selectedMessage = messages.find((m) => m.id === selectedMessageId)
+  const selectedMessage = useMemo(
+    () => messages.find((m) => m.id === selectedMessageId),
+    [messages, selectedMessageId],
+  )
+
+  // Get Contact User Details
+  const contactUser = useMemo(() => {
+    if (!selectedMessage) return null
+    return allUsers.find((u) => u.id === selectedMessage.contactId)
+  }, [selectedMessage, allUsers])
+
+  // Scroll to bottom on new message
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [selectedMessage?.history])
 
   const handleSend = () => {
     if (inputText.trim() && selectedMessage) {
@@ -127,13 +147,12 @@ export default function Messages() {
   const formatMessageTime = (timestamp: string) => {
     try {
       if (!timestamp) return ''
-      // Attempt to parse ISO
       const date = parseISO(timestamp)
-      if (isValid(date)) {
-        return format(date, 'HH:mm')
-      }
-      // Fallback for old data or just time string
-      return timestamp
+      if (!isValid(date)) return timestamp
+
+      if (isToday(date)) return format(date, 'HH:mm')
+      if (isYesterday(date)) return `Yesterday ${format(date, 'HH:mm')}`
+      return format(date, 'MMM d, HH:mm')
     } catch (e) {
       return timestamp
     }
@@ -153,7 +172,6 @@ export default function Messages() {
   const handleStartNewChat = (userId: string) => {
     startChat(userId)
     setNewChatOpen(false)
-    // Select the new chat
     const newChat = messages.find((m) => m.contactId === userId)
     if (newChat) {
       setSelectedMessageId(newChat.id)
@@ -164,7 +182,7 @@ export default function Messages() {
     <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
       {list.length === 0 ? (
         <p className="text-sm text-muted-foreground text-center py-4">
-          Nenhum usuário encontrado.
+          {t('messages.no_contacts')}
         </p>
       ) : (
         list.map((u) => (
@@ -179,9 +197,17 @@ export default function Messages() {
             </Avatar>
             <div className="flex-1 overflow-hidden">
               <p className="text-sm font-medium truncate">{u.name}</p>
-              <p className="text-xs text-muted-foreground truncate">
-                {u.email}
-              </p>
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant="outline"
+                  className="text-[10px] px-1 py-0 h-auto"
+                >
+                  {t(`roles.${u.role}`)}
+                </Badge>
+                <p className="text-xs text-muted-foreground truncate flex-1">
+                  {u.email}
+                </p>
+              </div>
             </div>
           </button>
         ))
@@ -193,14 +219,14 @@ export default function Messages() {
     <div className="flex flex-col gap-6 h-[calc(100vh-10rem)]">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
+          <h1 className="text-3xl font-bold tracking-tight text-primary">
             {t('messages.title')}
           </h1>
           <p className="text-muted-foreground">{t('messages.subtitle')}</p>
         </div>
         <Dialog open={newChatOpen} onOpenChange={setNewChatOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-trust-blue gap-2">
+            <Button className="gap-2">
               <Plus className="h-4 w-4" /> {t('messages.new_message')}
             </Button>
           </DialogTrigger>
@@ -254,7 +280,7 @@ export default function Messages() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
         {/* Contact List */}
-        <Card className="col-span-1 h-full flex flex-col">
+        <Card className="col-span-1 h-full flex flex-col border-border/60">
           <div className="p-4 border-b">
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -267,9 +293,9 @@ export default function Messages() {
             </div>
           </div>
           <ScrollArea className="flex-1">
-            <div className="flex flex-col">
+            <div className="flex flex-col p-2 gap-1">
               {filteredMessages.length === 0 ? (
-                <div className="p-4 text-center text-muted-foreground">
+                <div className="p-4 text-center text-muted-foreground text-sm">
                   {t('messages.no_conv')}
                 </div>
               ) : (
@@ -277,12 +303,14 @@ export default function Messages() {
                   <button
                     key={msg.id}
                     className={cn(
-                      'flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors text-left border-b last:border-0',
-                      selectedMessageId === msg.id && 'bg-muted',
+                      'flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-all text-left group',
+                      selectedMessageId === msg.id
+                        ? 'bg-muted shadow-sm'
+                        : 'hover:shadow-sm',
                     )}
                     onClick={() => handleSelectMessage(msg.id)}
                   >
-                    <Avatar>
+                    <Avatar className="border-2 border-background shadow-sm">
                       <AvatarImage src={msg.avatar} />
                       <AvatarFallback>
                         <User className="h-4 w-4" />
@@ -290,19 +318,26 @@ export default function Messages() {
                     </Avatar>
                     <div className="flex-1 overflow-hidden">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="font-semibold truncate">
+                        <span
+                          className={cn(
+                            'font-semibold truncate text-sm',
+                            selectedMessageId === msg.id
+                              ? 'text-foreground'
+                              : 'text-foreground/90',
+                          )}
+                        >
                           {msg.contact}
                         </span>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-[10px] text-muted-foreground tabular-nums">
                           {msg.time}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground truncate max-w-[150px]">
+                        <span className="text-xs text-muted-foreground truncate max-w-[150px] group-hover:text-foreground/80 transition-colors">
                           {msg.lastMessage}
                         </span>
                         {msg.unread > 0 && (
-                          <span className="bg-trust-blue text-white text-xs px-2 py-0.5 rounded-full">
+                          <span className="bg-primary text-primary-foreground text-[10px] font-bold h-5 min-w-5 flex items-center justify-center rounded-full px-1.5 shadow-sm">
                             {msg.unread}
                           </span>
                         )}
@@ -316,21 +351,33 @@ export default function Messages() {
         </Card>
 
         {/* Chat Area */}
-        <Card className="col-span-1 md:col-span-2 h-full flex flex-col">
+        <Card className="col-span-1 md:col-span-2 h-full flex flex-col shadow-md overflow-hidden border-border/60">
           {selectedMessage ? (
             <>
               {/* Chat Header */}
-              <div className="p-4 border-b flex items-center justify-between bg-card rounded-t-lg">
+              <div className="p-4 border-b flex items-center justify-between bg-card z-10 shadow-sm">
                 <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src={selectedMessage.avatar} />
+                  <Avatar className="h-10 w-10 border-2 border-background shadow-sm">
+                    <AvatarImage
+                      src={contactUser?.avatar || selectedMessage.avatar}
+                    />
                     <AvatarFallback>
-                      <User className="h-4 w-4" />
+                      <User className="h-5 w-5" />
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold">{selectedMessage.contact}</h3>
-                    <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-sm flex items-center gap-2">
+                      {contactUser?.name || selectedMessage.contact}
+                      {contactUser && (
+                        <Badge
+                          variant="secondary"
+                          className="text-[10px] px-1.5 h-5 font-normal"
+                        >
+                          {t(`roles.${contactUser.role}`)}
+                        </Badge>
+                      )}
+                    </h3>
+                    <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                       <span className="text-xs text-muted-foreground">
                         {t('messages.online')}
@@ -338,12 +385,36 @@ export default function Messages() {
                     </div>
                   </div>
                 </div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <Phone className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <Video className="h-4 w-4" />
+                  </Button>
+                  <Separator orientation="vertical" className="h-6 mx-1" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
 
               {/* Renewal Context Header (If Active) */}
               {context === 'renewal' && contextTenant && contextProperty && (
-                <div className="bg-muted/30 border-b p-3 flex flex-col gap-2">
-                  <div className="flex items-center gap-2 text-xs font-medium text-trust-blue">
+                <div className="bg-blue-50/50 dark:bg-blue-950/20 border-b p-3 flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-xs font-medium text-primary">
                     <Users className="h-3 w-3" />
                     Renewal Negotiation Context
                   </div>
@@ -353,7 +424,7 @@ export default function Messages() {
                       className="flex items-center gap-2"
                       title="Property Manager (You)"
                     >
-                      <Avatar className="h-6 w-6 border-2 border-trust-blue">
+                      <Avatar className="h-6 w-6 border-2 border-primary">
                         <AvatarImage src={currentUser.avatar} />
                         <AvatarFallback>PM</AvatarFallback>
                       </Avatar>
@@ -396,40 +467,91 @@ export default function Messages() {
               )}
 
               {/* Messages Area */}
-              <ScrollArea className="flex-1 p-4 bg-slate-50/50">
-                <div className="flex flex-col gap-4">
-                  {selectedMessage.history.map((msg, index) => (
-                    <div
-                      key={msg.id || index}
-                      className={cn(
-                        'flex flex-col max-w-[80%]',
-                        msg.sender === 'me'
-                          ? 'self-end items-end'
-                          : 'self-start items-start',
-                      )}
-                    >
+              <ScrollArea className="flex-1 bg-slate-50/50 dark:bg-background/50 p-4">
+                <div className="flex flex-col gap-6 pb-4">
+                  {selectedMessage.history.map((msg, index) => {
+                    const isMe = msg.sender === 'me'
+                    const senderName = isMe
+                      ? currentUser.name
+                      : contactUser?.name || selectedMessage.contact
+                    const senderAvatar = isMe
+                      ? currentUser.avatar
+                      : contactUser?.avatar || selectedMessage.avatar
+                    const senderRole = isMe
+                      ? currentUser.role
+                      : contactUser?.role || 'user'
+
+                    return (
                       <div
+                        key={msg.id || index}
                         className={cn(
-                          'p-3 rounded-lg text-sm shadow-sm',
-                          msg.sender === 'me'
-                            ? 'bg-trust-blue text-white rounded-br-none'
-                            : 'bg-white border rounded-bl-none',
+                          'flex w-full',
+                          isMe ? 'justify-end' : 'justify-start',
                         )}
                       >
-                        <p>{msg.text}</p>
+                        <div
+                          className={cn(
+                            'flex gap-3 max-w-[85%] md:max-w-[70%]',
+                            isMe ? 'flex-row-reverse' : 'flex-row',
+                          )}
+                        >
+                          <Avatar className="h-8 w-8 mt-1 border shadow-sm">
+                            <AvatarImage src={senderAvatar} />
+                            <AvatarFallback>
+                              {senderName?.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+
+                          <div
+                            className={cn(
+                              'flex flex-col',
+                              isMe ? 'items-end' : 'items-start',
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                'flex items-center gap-2 mb-1',
+                                isMe ? 'flex-row-reverse' : 'flex-row',
+                              )}
+                            >
+                              <span className="text-xs font-semibold text-foreground">
+                                {senderName}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full border">
+                                {t(`roles.${senderRole}`)}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground tabular-nums opacity-70">
+                                {formatMessageTime(msg.timestamp)}
+                              </span>
+                            </div>
+
+                            <div
+                              className={cn(
+                                'p-3.5 text-sm shadow-sm whitespace-pre-wrap break-words leading-relaxed',
+                                isMe
+                                  ? 'bg-primary text-primary-foreground rounded-2xl rounded-tr-sm'
+                                  : 'bg-white dark:bg-muted text-foreground border rounded-2xl rounded-tl-sm',
+                              )}
+                            >
+                              {msg.text}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-[10px] text-muted-foreground mt-1 px-1">
-                        {formatMessageTime(msg.timestamp)}
-                      </span>
-                    </div>
-                  ))}
+                    )
+                  })}
+                  <div ref={scrollRef} />
                 </div>
               </ScrollArea>
 
               {/* Input Area */}
-              <div className="p-4 border-t bg-card rounded-b-lg">
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="icon" className="shrink-0">
+              <div className="p-4 border-t bg-card z-10">
+                <div className="flex gap-2 items-end">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 h-10 w-10 rounded-full"
+                  >
                     <Paperclip className="h-5 w-5 text-muted-foreground" />
                   </Button>
                   <Input
@@ -437,12 +559,13 @@ export default function Messages() {
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyDown={handleKeyPress}
-                    className="flex-1"
+                    className="flex-1 min-h-[40px] max-h-[120px] py-2 resize-none"
                   />
                   <Button
                     onClick={handleSend}
                     size="icon"
-                    className="bg-trust-blue shrink-0"
+                    className="shrink-0 h-10 w-10 rounded-full shadow-md transition-transform active:scale-95"
+                    disabled={!inputText.trim()}
                   >
                     <Send className="h-4 w-4" />
                   </Button>
@@ -450,15 +573,18 @@ export default function Messages() {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center">
-              <MessageCircle className="h-16 w-16 mb-4 opacity-20" />
-              <h3 className="text-lg font-medium">
+            <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center bg-muted/10">
+              <div className="bg-muted p-4 rounded-full mb-4">
+                <MessageCircle className="h-12 w-12 text-muted-foreground/50" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">
                 {t('messages.new_chat_prompt')}
               </h3>
-              <p>{t('messages.select_prompt')}</p>
+              <p className="max-w-xs mx-auto mt-2 text-sm text-muted-foreground">
+                {t('messages.select_prompt')}
+              </p>
               <Button
-                className="mt-4 gap-2"
-                variant="outline"
+                className="mt-6 gap-2"
                 onClick={() => setNewChatOpen(true)}
               >
                 <Plus className="h-4 w-4" /> {t('messages.start_chat_desc')}
