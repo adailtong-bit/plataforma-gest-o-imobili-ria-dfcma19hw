@@ -1,4 +1,10 @@
-import React, { createContext, useState, ReactNode, useEffect } from 'react'
+import React, {
+  createContext,
+  useState,
+  ReactNode,
+  useEffect,
+  useMemo,
+} from 'react'
 import {
   Property,
   Task,
@@ -254,7 +260,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     User | Owner | Partner | Tenant
   >(systemUsers[0])
 
-  const allUsers = [...users, ...owners, ...partners, ...tenants]
+  // Memoize and deduplicate allUsers to avoid duplicate keys when rendering lists
+  const allUsers = useMemo(() => {
+    const combined = [...users, ...owners, ...partners, ...tenants]
+    const uniqueMap = new Map()
+
+    combined.forEach((u) => {
+      if (uniqueMap.has(u.id)) {
+        // Merge with existing to ensure we capture all properties (e.g. User permissions + Partner serviceRates)
+        uniqueMap.set(u.id, { ...uniqueMap.get(u.id), ...u })
+      } else {
+        uniqueMap.set(u.id, u)
+      }
+    })
+
+    return Array.from(uniqueMap.values())
+  }, [users, owners, partners, tenants])
 
   const addAuditLog = (log: Omit<AuditLog, 'id' | 'timestamp'>) => {
     const newLog: AuditLog = {
