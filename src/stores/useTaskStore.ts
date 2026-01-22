@@ -10,6 +10,7 @@ const useTaskStore = () => {
     updateTaskStatus: context.updateTaskStatus,
     updateTask: context.updateTask,
     addTask: context.addTask,
+    deleteTask: context.deleteTask,
     addTaskImage: context.addTaskImage,
     addTaskEvidence: context.addTaskEvidence,
   }

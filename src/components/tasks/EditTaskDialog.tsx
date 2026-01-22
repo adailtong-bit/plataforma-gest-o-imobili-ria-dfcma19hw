@@ -10,6 +10,7 @@ import {
   X,
   User,
   Save,
+  Trash2,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
@@ -21,7 +22,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import {
   Form,
@@ -48,6 +48,17 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useTaskStore from '@/stores/useTaskStore'
 import usePartnerStore from '@/stores/usePartnerStore'
@@ -86,7 +97,7 @@ export function EditTaskDialog({
   onOpenChange,
 }: EditTaskDialogProps) {
   const { properties } = usePropertyStore()
-  const { updateTask } = useTaskStore()
+  const { updateTask, deleteTask } = useTaskStore()
   const { partners } = usePartnerStore()
   const { toast } = useToast()
   const { t } = useLanguageStore()
@@ -188,6 +199,16 @@ export function EditTaskDialog({
       description: 'Tarefa atualizada com sucesso.',
     })
 
+    onOpenChange(false)
+  }
+
+  const handleDelete = () => {
+    deleteTask(task.id)
+    toast({
+      title: 'Tarefa removida',
+      description: 'A tarefa e seus registros financeiros foram removidos.',
+      variant: 'destructive',
+    })
     onOpenChange(false)
   }
 
@@ -539,9 +560,38 @@ export function EditTaskDialog({
                 )}
               />
 
-              <Button type="submit" className="w-full bg-trust-blue">
-                <Save className="h-4 w-4 mr-2" /> Salvar Alterações
-              </Button>
+              <div className="flex items-center justify-between gap-4">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" type="button">
+                      <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta ação não pode ser desfeita. Isso excluirá
+                        permanentemente a tarefa e todos os registros
+                        financeiros associados.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDelete}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Excluir
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
+                <Button type="submit" className="bg-trust-blue flex-1">
+                  <Save className="h-4 w-4 mr-2" /> Salvar Alterações
+                </Button>
+              </div>
             </form>
           </Form>
         </ScrollArea>

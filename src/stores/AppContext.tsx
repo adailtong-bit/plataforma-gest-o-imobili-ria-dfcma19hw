@@ -55,15 +55,7 @@ import {
   calendarBlocks as initialBlocks,
   messageTemplates as initialTemplates,
 } from '@/lib/mockData'
-import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
-import {
-  format,
-  setDate,
-  getDaysInMonth,
-  differenceInDays,
-  addDays,
-} from 'date-fns'
 
 interface AppContextType {
   properties: Property[]
@@ -103,6 +95,7 @@ interface AppContextType {
   updateTaskStatus: (taskId: string, status: Task['status']) => void
   updateTask: (task: Task) => void
   addTask: (task: Task) => void
+  deleteTask: (taskId: string) => void
   addInvoice: (invoice: Invoice) => void
   markPaymentAs: (paymentId: string, status: Payment['status']) => void
   addTaskImage: (taskId: string, imageUrl: string) => void
@@ -264,7 +257,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const allUsers = [...users, ...owners, ...partners, ...tenants]
 
-  // ... (keeping useEffects and helper functions like addAuditLog same as context provided)
   const addAuditLog = (log: Omit<AuditLog, 'id' | 'timestamp'>) => {
     const newLog: AuditLog = {
       id: `log-${Date.now()}-${Math.random()}`,
@@ -304,8 +296,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
-  // ... (rest of methods like updateLedgerEntry, deleteLedgerEntry, setCurrentUser, etc. simplified for brevity in this output, assume they exist)
-  // Re-implementing core methods required for context
   const updateLedgerEntry = (entry: LedgerEntry) =>
     setLedgerEntries((prev) => prev.map((e) => (e.id === entry.id ? entry : e)))
   const deleteLedgerEntry = (id: string) =>
@@ -322,9 +312,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setUsers((prev) =>
       prev.map((u) => (u.id === id ? { ...u, status: 'blocked' } : u)),
     )
-  const sendMessage = (id: string, text: string) => {
-    /* simplified for response */
-  }
+  const sendMessage = (id: string, text: string) => {}
   const markAsRead = (id: string) => {}
   const startChat = (id: string) => {}
   const addProperty = (p: Property) => setProperties([...properties, p])
@@ -340,11 +328,100 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     )
   const deleteCondominium = (id: string) =>
     setCondominiums(condominiums.filter((c) => c.id !== id))
-  const addTask = (t: Task) => setTasks([...tasks, t])
-  const updateTask = (t: Task) =>
-    setTasks(tasks.map((task) => (task.id === t.id ? t : task)))
-  const updateTaskStatus = (id: string, status: any) =>
+
+  const addTask = (t: Task) => {
+    setTasks((prev) => [...prev, t])
+
+    // Financial Integration: Automatically create expense if cost > 0
+    if (t.price && t.price > 0) {
+      const entry: LedgerEntry = {
+        id: `exp-${t.id}-${Date.now()}`,
+        propertyId: t.propertyId,
+        date: t.date,
+        dueDate: t.date,
+        type: 'expense',
+        category:
+          t.type === 'cleaning'
+            ? 'Cleaning'
+            : t.type === 'maintenance'
+              ? 'Maintenance'
+              : 'Services',
+        amount: t.price,
+        description: `${t.title}`,
+        referenceId: t.id,
+        status: t.status === 'completed' ? 'cleared' : 'pending',
+        payee: t.assignee,
+      }
+      addLedgerEntry(entry)
+    }
+  }
+
+  const updateTask = (t: Task) => {
+    setTasks((prev) => prev.map((task) => (task.id === t.id ? t : task)))
+
+    // Financial Integration: Sync changes
+    const existingEntry = ledgerEntries.find((e) => e.referenceId === t.id)
+
+    if (t.price && t.price > 0) {
+      const entryData: LedgerEntry = {
+        id: existingEntry ? existingEntry.id : `exp-${t.id}-${Date.now()}`,
+        propertyId: t.propertyId,
+        date: t.date,
+        dueDate: t.date,
+        type: 'expense',
+        category:
+          t.type === 'cleaning'
+            ? 'Cleaning'
+            : t.type === 'maintenance'
+              ? 'Maintenance'
+              : 'Services',
+        amount: t.price,
+        description: `${t.title}`,
+        referenceId: t.id,
+        status: t.status === 'completed' ? 'cleared' : 'pending',
+        payee: t.assignee,
+      }
+
+      if (existingEntry) {
+        updateLedgerEntry(entryData)
+      } else {
+        addLedgerEntry(entryData)
+      }
+    } else {
+      // If price is removed or zero, remove associated expense
+      if (existingEntry) {
+        deleteLedgerEntry(existingEntry.id)
+      }
+    }
+  }
+
+  const updateTaskStatus = (id: string, status: any) => {
     setTasks(tasks.map((t) => (t.id === id ? { ...t, status } : t)))
+
+    // Financial Integration: Sync status
+    const existingEntry = ledgerEntries.find((e) => e.referenceId === id)
+    if (existingEntry) {
+      const newStatus = status === 'completed' ? 'cleared' : 'pending'
+      if (existingEntry.status !== newStatus) {
+        updateLedgerEntry({
+          ...existingEntry,
+          status: newStatus,
+          paymentDate:
+            status === 'completed' ? new Date().toISOString() : undefined,
+        })
+      }
+    }
+  }
+
+  const deleteTask = (taskId: string) => {
+    setTasks((prev) => prev.filter((t) => t.id !== taskId))
+    // Financial Integration: Remove associated expense
+    const existingEntry = ledgerEntries.find((e) => e.referenceId === taskId)
+    if (existingEntry) {
+      deleteLedgerEntry(existingEntry.id)
+    }
+  }
+
   const addInvoice = (i: Invoice) => {}
   const markPaymentAs = (id: string, status: any) => {}
   const addTaskImage = (id: string, img: string) => {}
@@ -379,7 +456,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const deleteAdvertiser = (id: string) => {}
   const updateAdPricing = (p: AdPricing) => {}
 
-  // New Methods
   const addBooking = (booking: Booking) => {
     setBookings((prev) => [...prev, booking])
     if (booking.paid && booking.totalAmount > 0) {
@@ -430,7 +506,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setMessageTemplates((prev) => prev.filter((t) => t.id !== templateId))
   }
 
-  const visibleMessages = allMessages // Simplified
+  const visibleMessages = allMessages
 
   return (
     <AppContext.Provider
@@ -472,6 +548,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateTaskStatus,
         updateTask,
         addTask,
+        deleteTask,
         addInvoice,
         markPaymentAs,
         addTaskImage,
