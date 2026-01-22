@@ -94,12 +94,93 @@ const partnerEmployees: User[] = [
   },
 ]
 
+// DEMO USERS IMPLEMENTATION
+const demoPartnerUser: User = {
+  id: 'demo_partner',
+  name: 'Demo Partner (Company)',
+  email: 'partner@demo.com',
+  role: 'partner',
+  avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=demo1',
+  status: 'active',
+  isFirstLogin: false,
+  permissions: [
+    { resource: 'tasks', actions: ['view', 'edit'] },
+    { resource: 'financial', actions: ['view'] },
+    { resource: 'portal', actions: ['view'] },
+    { resource: 'messages', actions: ['view'] },
+  ],
+  companyName: 'Demo Services LLC',
+  country: 'US',
+  isDemo: true,
+  parentId: 'tenant_manager_1',
+}
+
+const demoTeamUser: User = {
+  id: 'demo_team',
+  name: 'Demo Team Member',
+  email: 'team@demo.com',
+  role: 'partner_employee',
+  parentId: 'tenant_manager_1', // Managed by PM
+  parentPartnerId: 'demo_partner', // Linked to partner
+  avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=demo2',
+  status: 'active',
+  isFirstLogin: false,
+  permissions: [
+    { resource: 'tasks', actions: ['view', 'edit'] }, // Restricted view
+    { resource: 'portal', actions: ['view'] },
+    { resource: 'messages', actions: ['view'] },
+  ],
+  country: 'US',
+  isDemo: true,
+}
+
+const demoOwnerUser: User = {
+  id: 'demo_owner',
+  name: 'Demo Owner',
+  email: 'owner@demo.com',
+  role: 'property_owner',
+  avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=demo3',
+  status: 'active',
+  isFirstLogin: false,
+  permissions: [
+    { resource: 'properties', actions: ['view'] },
+    { resource: 'financial', actions: ['view'] },
+    { resource: 'portal', actions: ['view'] },
+    { resource: 'messages', actions: ['view'] },
+  ],
+  country: 'US',
+  isDemo: true,
+  parentId: 'tenant_manager_1',
+}
+
+const demoTenantUser: User = {
+  id: 'demo_tenant',
+  name: 'Demo Tenant',
+  email: 'tenant@demo.com',
+  role: 'tenant',
+  avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=demo4',
+  status: 'active',
+  isFirstLogin: false,
+  permissions: [
+    { resource: 'portal', actions: ['view'] },
+    { resource: 'messages', actions: ['view'] },
+    { resource: 'tasks', actions: ['create'] }, // Request maintenance
+  ],
+  country: 'US',
+  isDemo: true,
+  parentId: 'tenant_manager_1',
+}
+
 // Combine Users
 export const systemUsers: User[] = [
   masterAdmin,
   ...tenantsData,
   ...internalUsers,
   ...partnerEmployees,
+  demoPartnerUser,
+  demoTeamUser,
+  demoOwnerUser,
+  demoTenantUser,
 ]
 
 // 50 Properties (10 per tenant)
@@ -150,6 +231,31 @@ export const properties: Property[] = tenantsData.flatMap((tenant, tIdx) =>
   })),
 )
 
+// Add Demo Property for Demo Owner
+properties.push({
+  id: 'demo_property_1',
+  name: 'Demo Oceanview Villa',
+  address: '1 Demo Way, Miami, FL',
+  city: 'Miami',
+  state: 'FL',
+  zipCode: '33139',
+  country: 'US',
+  type: 'House',
+  profileType: 'short_term',
+  community: 'Demo Community',
+  status: 'available',
+  marketingStatus: 'listed',
+  listingPrice: 500,
+  publishToPortals: true,
+  image: 'https://img.usecurling.com/p/400/300?q=luxury%20villa',
+  gallery: ['https://img.usecurling.com/p/400/300?q=villa%20interior'],
+  bedrooms: 4,
+  bathrooms: 3,
+  guests: 8,
+  ownerId: demoOwnerUser.id,
+  documents: [],
+})
+
 // Owners (2 per tenant approx)
 export const owners: Owner[] = tenantsData.flatMap((tenant, tIdx) =>
   Array.from({ length: 2 }).map((_, oIdx) => ({
@@ -169,6 +275,20 @@ export const owners: Owner[] = tenantsData.flatMap((tenant, tIdx) =>
     pmAgreementUrl: 'https://example.com/agreement.pdf',
   })),
 )
+
+// Add Demo Owner Entity
+owners.push({
+  id: demoOwnerUser.id,
+  name: demoOwnerUser.name,
+  email: demoOwnerUser.email,
+  phone: '+1 (555) 999 8888',
+  status: 'active',
+  role: 'property_owner',
+  avatar: demoOwnerUser.avatar,
+  country: 'US',
+  address: 'Demo Address 123',
+  isDemo: true,
+})
 
 // Tenants (Occupants - 3 per manager)
 export const tenants: Tenant[] = tenantsData.flatMap((manager, tIdx) =>
@@ -211,6 +331,23 @@ export const tenants: Tenant[] = tenantsData.flatMap((manager, tIdx) =>
         : [],
   })),
 )
+
+// Add Demo Tenant Entity
+tenants.push({
+  id: demoTenantUser.id,
+  name: demoTenantUser.name,
+  email: demoTenantUser.email,
+  phone: '+1 (555) 777 6666',
+  propertyId: 'demo_property_1',
+  rentValue: 4500,
+  leaseStart: subDays(new Date(), 10).toISOString(),
+  leaseEnd: addDays(new Date(), 355).toISOString(),
+  status: 'active',
+  role: 'tenant',
+  country: 'US',
+  avatar: demoTenantUser.avatar,
+  isDemo: true,
+})
 
 // Bookings (Short Term)
 export const bookings: Booking[] = [
@@ -323,6 +460,31 @@ export const partners: Partner[] = tenantsData.flatMap((manager, tIdx) =>
   })),
 )
 
+// Add Demo Partner Entity
+partners.push({
+  id: demoPartnerUser.id,
+  name: demoPartnerUser.name,
+  type: 'maintenance',
+  companyName: demoPartnerUser.companyName,
+  email: demoPartnerUser.email,
+  phone: '+1 (555) 123 4567',
+  country: 'US',
+  status: 'active',
+  role: 'partner',
+  address: 'Demo Partner HQ',
+  isDemo: true,
+  employees: [
+    {
+      id: demoTeamUser.id,
+      name: demoTeamUser.name,
+      role: 'Technician',
+      email: demoTeamUser.email,
+      status: 'active',
+    },
+  ],
+  linkedPropertyIds: ['demo_property_1'],
+})
+
 export const condominiums: Condominium[] = [
   {
     id: 'condo1',
@@ -394,6 +556,24 @@ export const tasks: Task[] = [
     teamMemberPayout: 50.0,
     recurrence: 'none',
     bookingId: 'bk_1',
+  },
+  // Add Task for Demo Team
+  {
+    id: 'demo_task_1',
+    title: 'Demo Maintenance Task',
+    propertyId: 'demo_property_1',
+    propertyName: 'Demo Oceanview Villa',
+    propertyAddress: '1 Demo Way',
+    status: 'in_progress',
+    type: 'maintenance',
+    assignee: 'Demo Services LLC',
+    assigneeId: demoPartnerUser.id,
+    partnerEmployeeId: demoTeamUser.id,
+    date: new Date().toISOString(),
+    priority: 'medium',
+    price: 200.0,
+    teamMemberPayout: 80.0,
+    description: 'Fix the AC unit in the master bedroom.',
   },
 ]
 

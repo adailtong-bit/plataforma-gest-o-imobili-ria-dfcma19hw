@@ -62,8 +62,12 @@ export function AppHeader() {
 
   const [openSearch, setOpenSearch] = useState(false)
 
-  // Simplified test user switch logic for demo purposes
-  const demoUsers = allUsers.filter((u) => u.id !== currentUser?.id).slice(0, 8)
+  // Prioritize Demo Users
+  const demoUsers = allUsers.filter((u) => u.isDemo)
+  const otherDemoUsers = allUsers
+    .filter((u) => u.id !== currentUser?.id && !u.isDemo)
+    .slice(0, 4)
+
   const unreadCount = notifications.filter((n) => !n.read).length
 
   useEffect(() => {
@@ -304,8 +308,32 @@ export function AppHeader() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel>Alternar Usuário (Demo)</DropdownMenuLabel>
-            {demoUsers.map((user) => (
+
+            {demoUsers.length > 0 && (
+              <>
+                <DropdownMenuLabel className="text-xs font-semibold text-blue-600">
+                  Demo Profiles
+                </DropdownMenuLabel>
+                {demoUsers.map((user) => (
+                  <DropdownMenuItem
+                    key={user.id}
+                    onClick={() => setCurrentUser(user.id)}
+                    className="cursor-pointer bg-blue-50/50 hover:bg-blue-50"
+                  >
+                    <div className="flex flex-col w-full">
+                      <span className="font-medium">{user.name}</span>
+                      <span className="text-[10px] text-muted-foreground capitalize">
+                        {t(`roles.${user.role}`)}
+                      </span>
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+              </>
+            )}
+
+            <DropdownMenuLabel>Other Users (Test)</DropdownMenuLabel>
+            {otherDemoUsers.map((user) => (
               <DropdownMenuItem
                 key={user.id}
                 onClick={() => setCurrentUser(user.id)}

@@ -90,6 +90,7 @@ export interface User {
   hasPaidEntryFee?: boolean
   subscriptionPlan?: 'free' | 'pay_per_house' | 'unlimited'
   mirrorAdmin?: boolean
+  isDemo?: boolean
 }
 
 export interface CondoContact {
@@ -296,6 +297,7 @@ export interface Tenant {
   negotiationStatus?: NegotiationStatus
   negotiationLogs?: NegotiationLogEntry[]
   suggestedRenewalPrice?: number
+  isDemo?: boolean
 }
 
 export interface Booking {
@@ -355,6 +357,7 @@ export interface Owner {
     email?: string
   }
   pmAgreementUrl?: string
+  isDemo?: boolean
 }
 
 export interface ServiceRate {
@@ -402,6 +405,7 @@ export interface Partner {
   employees?: PartnerEmployee[]
   linkedPropertyIds?: string[]
   documents?: GenericDocument[]
+  isDemo?: boolean
 }
 
 export interface Evidence {

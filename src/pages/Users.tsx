@@ -195,11 +195,19 @@ export default function Users() {
   }
 
   const filteredUsers = users.filter((u) => {
+    if (u.isDemo) return true // Always show demo users for visibility in this suite
     if (currentUser.role === 'platform_owner') return true
     if (currentUser.role === 'software_tenant')
       return u.parentId === currentUser.id || u.role === 'partner_employee' // PMs see their staff and partner teams
     if (currentUser.role === 'partner') return u.parentId === currentUser.id
     return false
+  })
+
+  // Sort: Demo users first, then by name
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    if (a.isDemo && !b.isDemo) return -1
+    if (!a.isDemo && b.isDemo) return 1
+    return a.name.localeCompare(b.name)
   })
 
   const handleSave = () => {
@@ -707,6 +715,8 @@ export default function Users() {
                     'partner',
                     'partner_employee',
                     'software_tenant',
+                    'property_owner',
+                    'tenant',
                   ].includes(formData.role || '') && (
                     <div className="border rounded-md mt-2">
                       <div className="p-4 bg-muted/20 border-b flex justify-between items-center">
@@ -809,7 +819,7 @@ export default function Users() {
         <CardHeader>
           <CardTitle>Usuários Registrados</CardTitle>
           <CardDescription>
-            {filteredUsers.length} usuários cadastrados no sistema.
+            {sortedUsers.length} usuários cadastrados no sistema.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -823,7 +833,7 @@ export default function Users() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.length === 0 ? (
+              {sortedUsers.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={4}
@@ -833,11 +843,26 @@ export default function Users() {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
+                sortedUsers.map((user) => (
+                  <TableRow
+                    key={user.id}
+                    className={
+                      user.isDemo ? 'bg-blue-50/50 hover:bg-blue-50/80' : ''
+                    }
+                  >
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-medium">{user.name}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{user.name}</span>
+                          {user.isDemo && (
+                            <Badge
+                              variant="secondary"
+                              className="bg-blue-100 text-blue-700 hover:bg-blue-100 text-[10px] h-5 px-1.5"
+                            >
+                              DEMO
+                            </Badge>
+                          )}
+                        </div>
                         <span className="text-xs text-muted-foreground">
                           {user.email}
                         </span>
@@ -910,7 +935,8 @@ export default function Users() {
                           'delete',
                         ) ||
                           currentUser.role === 'partner') &&
-                          currentUser.id !== user.id && (
+                          currentUser.id !== user.id &&
+                          !user.isDemo && (
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <Button
