@@ -15,9 +15,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Clock,
   Upload,
@@ -30,7 +32,8 @@ import {
   Pencil,
   Play,
   Square,
-  DollarSign,
+  Star,
+  ThumbsUp,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
@@ -79,6 +82,9 @@ export function TaskCard({
   const [checkInOpen, setCheckInOpen] = useState(false)
   const [checkOutOpen, setCheckOutOpen] = useState(false)
   const [assignOpen, setAssignOpen] = useState(false)
+  const [rateOpen, setRateOpen] = useState(false)
+  const [rating, setRating] = useState(5)
+  const [feedback, setFeedback] = useState('')
 
   // Auto-posted via AppContext, check if exists to show billing status
   const isBilled = ledgerEntries.some((e) => e.referenceId === task.id)
@@ -98,7 +104,6 @@ export function TaskCard({
 
   const handleGenericUpload = () => {
     if (onUpload) {
-      // Mock upload
       onUpload(task.id, 'https://img.usecurling.com/p/200/150?q=maintenance')
       toast({
         title: 'Foto enviada',
@@ -109,10 +114,7 @@ export function TaskCard({
 
   const handleEvidenceUpload = (evidenceList: Evidence[]) => {
     if (onAddEvidence) {
-      // Upload all evidence items
       evidenceList.forEach((ev) => onAddEvidence(task.id, ev))
-
-      // Check the type of the first evidence to determine action
       const type = evidenceList[0]?.type
 
       if (type === 'arrival') {
@@ -133,6 +135,27 @@ export function TaskCard({
     }
   }
 
+  const handleRate = () => {
+    updateTask({
+      ...task,
+      rating,
+      feedback,
+    })
+    setRateOpen(false)
+    toast({
+      title: 'Avaliação Enviada',
+      description: 'Obrigado pelo feedback!',
+    })
+  }
+
+  const handleApprove = () => {
+    onStatusChange('pending') // Moves from pending_approval to pending (ready to be picked up)
+    toast({
+      title: 'Aprovado',
+      description: 'Tarefa autorizada para execução.',
+    })
+  }
+
   // Internal Delegation Logic
   const isPartner = currentUser.role === 'partner'
   const isTeamMember = currentUser.role === 'partner_employee'
@@ -146,8 +169,6 @@ export function TaskCard({
       )
     : partners.find((p) => p.id === task.assigneeId)
 
-  // Allow delegation if user is the partner assigned to the task
-  // OR if user is admin/manager
   const canDelegate =
     (isPartner &&
       partnerRecord &&
@@ -169,7 +190,6 @@ export function TaskCard({
     (e) => e.id === task.partnerEmployeeId,
   )?.name
 
-  // Financial Visibility Logic
   const showPartnerPrice = isAdminOrPM || isPartner
   const showTeamPayout = isAdminOrPM || isPartner || isTeamMember
 
@@ -199,6 +219,40 @@ export function TaskCard({
         onConfirm={handleEvidenceUpload}
       />
 
+      <Dialog open={rateOpen} onOpenChange={setRateOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Avaliar Serviço</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="flex justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`h-8 w-8 cursor-pointer transition-colors ${
+                    star <= rating
+                      ? 'fill-yellow-400 text-yellow-400'
+                      : 'text-gray-300'
+                  }`}
+                  onClick={() => setRating(star)}
+                />
+              ))}
+            </div>
+            <div className="grid gap-2">
+              <Label>Comentário</Label>
+              <Textarea
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="Como foi o serviço?"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleRate}>Enviar Avaliação</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Card className="hover:shadow-md transition-shadow group flex flex-col h-full relative">
         <CardHeader className="p-4 pb-2 space-y-2">
           <div className="flex justify-between items-start">
@@ -209,6 +263,11 @@ export function TaskCard({
               {task.priority.toUpperCase()}
             </Badge>
             <div className="flex gap-1 flex-wrap justify-end">
+              {task.status === 'pending_approval' && (
+                <Badge className="bg-orange-500 text-white text-[10px] h-5">
+                  Approval Req
+                </Badge>
+              )}
               {task.type === 'cleaning' && (
                 <Badge variant="secondary" className="text-[10px] h-5">
                   {t('partners.cleaning')}
@@ -235,16 +294,19 @@ export function TaskCard({
             <CardTitle className="text-sm font-semibold leading-tight line-clamp-2">
               {task.title}
             </CardTitle>
-            {canEdit && task.status !== 'completed' && !isTeamMember && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 -mr-2 -mt-1 text-muted-foreground hover:text-foreground"
-                onClick={() => setEditOpen(true)}
-              >
-                <Pencil className="h-3 w-3" />
-              </Button>
-            )}
+            {canEdit &&
+              task.status !== 'completed' &&
+              task.status !== 'pending_approval' &&
+              !isTeamMember && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 -mr-2 -mt-1 text-muted-foreground hover:text-foreground"
+                  onClick={() => setEditOpen(true)}
+                >
+                  <Pencil className="h-3 w-3" />
+                </Button>
+              )}
           </div>
           <div className="text-xs text-muted-foreground space-y-0.5">
             <div className="font-medium truncate">{task.propertyName}</div>
@@ -265,7 +327,6 @@ export function TaskCard({
             <span>{format(new Date(task.date), 'dd/MM/yyyy')}</span>
           </div>
 
-          {/* Financial Display based on Roles */}
           <div className="flex flex-col gap-1 mb-3">
             {showPartnerPrice && task.price && (
               <div className="flex justify-between text-xs">
@@ -357,6 +418,16 @@ export function TaskCard({
           )}
         </CardContent>
         <CardFooter className="p-4 pt-0 mt-auto grid gap-2">
+          {task.status === 'pending_approval' && isAdminOrPM && (
+            <Button
+              size="sm"
+              className="w-full h-9 text-xs bg-orange-600 hover:bg-orange-700"
+              onClick={handleApprove}
+            >
+              <ThumbsUp className="h-3 w-3 mr-2" /> Aprovar Orçamento
+            </Button>
+          )}
+
           {task.status === 'pending' && (
             <Button
               size="sm"
@@ -409,7 +480,7 @@ export function TaskCard({
             </div>
           )}
           {task.status === 'completed' && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full">
               <Button
                 variant="secondary"
                 size="sm"
@@ -418,16 +489,22 @@ export function TaskCard({
                 <CheckCircle2 className="h-3 w-3 mr-2 text-green-600" />
                 {t('common.completed')}
               </Button>
-              {isBilled && (
+              {isAdminOrPM && !task.rating && (
                 <Button
                   size="sm"
-                  variant="ghost"
-                  className="h-9 w-9 p-0 text-green-600"
-                  title="Faturado Automaticamente"
-                  disabled
+                  variant="outline"
+                  className="h-9 px-2 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
+                  onClick={() => setRateOpen(true)}
+                  title="Avaliar"
                 >
-                  <Receipt className="h-4 w-4" />
+                  <Star className="h-4 w-4" />
                 </Button>
+              )}
+              {task.rating && (
+                <div className="flex items-center gap-1 px-2 border rounded-md bg-yellow-50 text-yellow-700">
+                  <Star className="h-3 w-3 fill-yellow-500" />
+                  <span className="text-xs font-bold">{task.rating}</span>
+                </div>
               )}
             </div>
           )}

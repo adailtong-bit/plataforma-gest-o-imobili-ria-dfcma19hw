@@ -13,11 +13,13 @@ import {
   FileText,
   MessageCircle,
   Mail,
+  Star,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import usePartnerStore from '@/stores/usePartnerStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useFinancialStore from '@/stores/useFinancialStore'
+import useTaskStore from '@/stores/useTaskStore'
 import { Partner } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -44,12 +46,12 @@ export default function PartnerDetails() {
   const navigate = useNavigate()
   const { partners, updatePartner } = usePartnerStore()
   const { ledgerEntries } = useFinancialStore()
+  const { tasks } = useTaskStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
   const partner = partners.find((p) => p.id === id)
 
-  // Use local state but initialize from store. Sync on save.
   const [formData, setFormData] = useState<Partner | null>(() =>
     partner ? JSON.parse(JSON.stringify(partner)) : null,
   )
@@ -65,10 +67,17 @@ export default function PartnerDetails() {
     )
   }
 
+  // Calculate Average Rating
+  const partnerTasks = tasks.filter((t) => t.assigneeId === id && t.rating)
+  const averageRating =
+    partnerTasks.length > 0
+      ? partnerTasks.reduce((acc, t) => acc + (t.rating || 0), 0) /
+        partnerTasks.length
+      : partner.rating || 5.0
+
   const handleSave = () => {
     if (!formData) return
 
-    // Strict Validation
     if (!formData.name?.trim()) {
       toast({
         title: 'Erro',
@@ -77,15 +86,7 @@ export default function PartnerDetails() {
       })
       return
     }
-    if (!formData.email?.trim()) {
-      toast({
-        title: 'Erro',
-        description: 'Email é obrigatório.',
-        variant: 'destructive',
-      })
-      return
-    }
-    if (!isValidEmail(formData.email)) {
+    if (!formData.email?.trim() || !isValidEmail(formData.email)) {
       toast({
         title: 'Erro',
         description: 'Email inválido.',
@@ -103,13 +104,11 @@ export default function PartnerDetails() {
 
   const handleUpdate = (updatedPartner: Partner) => {
     setFormData(updatedPartner)
-    // Auto-update global store too for immediate reflection in other tabs
     updatePartner(updatedPartner)
   }
 
   const handleDelete = () => {
     if (confirm('Tem certeza que deseja excluir este parceiro?')) {
-      // Logic to delete partner would go here (add deletePartner to store)
       toast({ title: 'Excluído', description: 'Parceiro removido.' })
       navigate('/partners')
     }
@@ -119,28 +118,15 @@ export default function PartnerDetails() {
     if (formData.phone) {
       const cleanPhone = formData.phone.replace(/\D/g, '')
       window.open(`https://wa.me/${cleanPhone}`, '_blank')
-    } else {
-      toast({
-        title: 'Erro',
-        description: 'Telefone não disponível',
-        variant: 'destructive',
-      })
     }
   }
 
   const handleEmail = () => {
     if (formData.email) {
       window.location.href = `mailto:${formData.email}`
-    } else {
-      toast({
-        title: 'Erro',
-        description: 'Email não disponível',
-        variant: 'destructive',
-      })
     }
   }
 
-  // Financial Report
   const partnerEntries = ledgerEntries.filter((e) => e.beneficiaryId === id)
   const totalPaid = partnerEntries
     .filter((e) => e.status === 'cleared')
@@ -159,9 +145,17 @@ export default function PartnerDetails() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-navy">
-              {formData.name}
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold tracking-tight text-navy">
+                {formData.name}
+              </h1>
+              <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-2 py-1 rounded-md border border-yellow-200">
+                <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                <span className="font-bold text-sm">
+                  {averageRating.toFixed(1)}
+                </span>
+              </div>
+            </div>
             <div className="flex gap-2 items-center text-sm text-muted-foreground">
               <span>{formData.companyName}</span>
               <div className="flex gap-1 ml-2">

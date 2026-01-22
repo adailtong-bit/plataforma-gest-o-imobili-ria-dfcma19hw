@@ -18,6 +18,7 @@ import {
   Clock,
   Navigation,
   Briefcase,
+  Star,
 } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -81,7 +82,6 @@ export function TaskDetailsSheet({
     })) || []),
   ]
 
-  // Filter out duplicates if evidence url is same as image url
   const uniqueGallery = galleryImages.filter(
     (img, index, self) => index === self.findIndex((t) => t.url === img.url),
   )
@@ -90,7 +90,6 @@ export function TaskDetailsSheet({
     ? bookings.find((b) => b.id === task.bookingId)
     : null
 
-  // Financial Visibility
   const isAdminOrPM = ['platform_owner', 'software_tenant'].includes(
     currentUser.role,
   )
@@ -127,6 +126,24 @@ export function TaskDetailsSheet({
             </SheetHeader>
 
             <div className="space-y-6">
+              {/* Rating Section */}
+              {task.rating && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" />
+                    <span className="font-bold text-lg">{task.rating}/5</span>
+                    <span className="text-sm text-yellow-700 font-medium">
+                      Avaliação do Cliente
+                    </span>
+                  </div>
+                  {task.feedback && (
+                    <p className="text-sm text-yellow-800 italic">
+                      "{task.feedback}"
+                    </p>
+                  )}
+                </div>
+              )}
+
               {/* Booking Link Section */}
               {linkedBooking && (
                 <Card className="bg-purple-50/50 border-purple-100">
@@ -213,7 +230,6 @@ export function TaskDetailsSheet({
                   <CheckCircle2 className="h-4 w-4" /> {t('tasks.activity_log')}
                 </h3>
 
-                {/* Arrival Status */}
                 <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden mb-4">
                   <div className="p-3 bg-muted/50 border-b flex items-center justify-between">
                     <span className="font-semibold text-xs uppercase tracking-wider text-blue-600">
@@ -303,7 +319,6 @@ export function TaskDetailsSheet({
 
               <Separator />
 
-              {/* Description */}
               <div className="space-y-2">
                 <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
                   {t('common.description')}
@@ -313,7 +328,6 @@ export function TaskDetailsSheet({
                 </p>
               </div>
 
-              {/* Gallery */}
               {uniqueGallery.length > 0 && (
                 <div className="space-y-3">
                   <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">

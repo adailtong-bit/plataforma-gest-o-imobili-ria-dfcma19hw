@@ -42,12 +42,13 @@ export interface FinancialSettings {
   routingNumber: string
   accountNumber: string
   gatewayProvider: 'stripe' | 'plaid' | 'manual'
-  pixKey?: string // Brazil Pix
+  pixKey?: string
   apiKey?: string
   apiSecret?: string
   crmProvider?: 'salesforce' | 'hubspot' | 'zoho' | 'none'
   crmApiKey?: string
   isProduction: boolean
+  approvalThreshold?: number
 }
 
 export interface BankStatement {
@@ -189,12 +190,12 @@ export interface Property {
   guests: number
   wifiSsid?: string
   wifiPassword?: string
-  accessCodeBuilding?: string // Condominium Access Code
-  accessCodeUnit?: string // House/Door Code
+  accessCodeBuilding?: string
+  accessCodeUnit?: string
   accessCodeGuest?: string
   accessCodeService?: string
   accessCodeCleaning?: string
-  accessCodePool?: string // Pool Access Code
+  accessCodePool?: string
   hoaValue?: number
   hoaFrequency?: 'monthly' | 'quarterly' | 'semi-annually' | 'annually'
   description?: {
@@ -421,21 +422,28 @@ export interface Task {
   propertyName: string
   propertyAddress?: string
   propertyCommunity?: string
-  status: 'pending' | 'in_progress' | 'completed' | 'approved'
+  status:
+    | 'pending'
+    | 'in_progress'
+    | 'completed'
+    | 'approved'
+    | 'pending_approval'
   type: 'cleaning' | 'maintenance' | 'inspection'
   assignee: string
   assigneeId?: string
-  partnerEmployeeId?: string // Team Member ID
+  partnerEmployeeId?: string
   date: string
   priority: 'low' | 'medium' | 'high' | 'critical'
   images?: string[]
   evidence?: Evidence[]
   description?: string
-  price?: number // Value paid to Partner (Revenue for Partner, Cost for PM)
-  teamMemberPayout?: number // Value paid to Team Member (Cost for Partner, Revenue for Team Member)
+  price?: number
+  teamMemberPayout?: number
   backToBack?: boolean
   recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
   bookingId?: string
+  rating?: number
+  feedback?: string
 }
 
 export interface Invoice {

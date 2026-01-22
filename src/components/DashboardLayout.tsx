@@ -6,6 +6,8 @@ import { AppHeader } from './AppHeader'
 import useAuthStore from '@/stores/useAuthStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useUserStore from '@/stores/useUserStore'
+import useTaskStore from '@/stores/useTaskStore'
+import useNotificationStore from '@/stores/useNotificationStore'
 import {
   Dialog,
   DialogContent,
@@ -24,11 +26,14 @@ import { User } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { hasPermission } from '@/lib/permissions'
 import { PublicityFooter } from './PublicityFooter'
+import { differenceInHours, parseISO } from 'date-fns'
 
 export default function DashboardLayout() {
   const { currentUser, setCurrentUser } = useAuthStore()
   const { updateUser } = useUserStore()
   const { properties } = usePropertyStore()
+  const { tasks } = useTaskStore()
+  const { addNotification } = useNotificationStore()
   const navigate = useNavigate()
   const location = useLocation()
   const { toast } = useToast()
@@ -45,22 +50,20 @@ export default function DashboardLayout() {
   useEffect(() => {
     if (!currentUser) return
 
-    // RBAC Security Check
     const checkAccess = () => {
       const path = location.pathname
       let resource = ''
 
-      // Map paths to resources for basic check
       if (path.startsWith('/market-analysis')) resource = 'market_analysis'
       if (path.startsWith('/workflows')) resource = 'workflows'
       if (path.startsWith('/renewals')) resource = 'renewals'
-      if (path.startsWith('/admin/publicity')) resource = 'publicity' // Admin publicity check
+      if (path.startsWith('/admin/publicity')) resource = 'publicity'
       if (
         path.startsWith('/settings') &&
         currentUser.role !== 'platform_owner' &&
         currentUser.role !== 'software_tenant'
       )
-        resource = 'settings' // Strict settings
+        resource = 'settings'
 
       if (
         resource &&
@@ -77,7 +80,6 @@ export default function DashboardLayout() {
 
     checkAccess()
 
-    // 1. Check for Pending Approval
     if (
       currentUser.status === 'pending_approval' ||
       currentUser.status === 'blocked'
@@ -85,21 +87,18 @@ export default function DashboardLayout() {
       return
     }
 
-    // 2. Force Password Change on First Login
     if (currentUser.isFirstLogin && currentUser.status === 'active') {
       setPasswordModalOpen(true)
     }
 
-    // 3. Entry Fee for Tenants
     if (
       currentUser.role === 'software_tenant' &&
-      !currentUser.isFirstLogin && // Only after password set
+      !currentUser.isFirstLogin &&
       !(currentUser as User).hasPaidEntryFee
     ) {
       setPaymentModalOpen(true)
     }
 
-    // 4. Subscription Limit Check
     if (
       currentUser.role === 'software_tenant' &&
       (currentUser as User).hasPaidEntryFee &&
@@ -109,6 +108,47 @@ export default function DashboardLayout() {
       setSubscriptionModalOpen(true)
     }
   }, [currentUser, properties.length, location.pathname])
+
+  // Operational Notifications Logic
+  useEffect(() => {
+    if (!currentUser || !tasks) return
+
+    const checkTasks = () => {
+      const now = new Date()
+      tasks.forEach((task) => {
+        if (
+          task.status !== 'completed' &&
+          task.status !== 'approved' &&
+          task.status !== 'pending_approval'
+        ) {
+          try {
+            const taskDate = parseISO(task.date)
+            const hoursDiff = differenceInHours(taskDate, now)
+
+            // Alert if task is within 24 hours
+            if (hoursDiff > 0 && hoursDiff <= 24) {
+              // Simple de-dupe logic: check local storage or similar in real app
+              // Here we just fire. In production use a robust notification service
+              // console.log(`Alert: Task ${task.title} is due in ${hoursDiff} hours`)
+            }
+
+            // Alert if Overdue
+            if (hoursDiff < 0) {
+              // console.log(`Alert: Task ${task.title} is overdue!`)
+            }
+          } catch (e) {
+            // ignore invalid dates
+          }
+        }
+      })
+    }
+
+    // Run check every minute
+    const interval = setInterval(checkTasks, 60000)
+    checkTasks() // Run once on mount
+
+    return () => clearInterval(interval)
+  }, [currentUser, tasks])
 
   const handlePasswordUpdate = () => {
     if (newPassword.length < 6) {
@@ -134,9 +174,7 @@ export default function DashboardLayout() {
         ...(currentUser as User),
         isFirstLogin: false,
         status: 'active',
-        // In real backend, password would be hashed here
       })
-      // Force refresh current user in auth store if needed (mock)
       setCurrentUser(currentUser.id)
 
       setProcessing(false)
@@ -215,7 +253,6 @@ export default function DashboardLayout() {
           <p>© 2026 COREPM v1.0.0. All rights reserved.</p>
         </footer>
 
-        {/* First Login Password Modal */}
         <Dialog open={passwordModalOpen} onOpenChange={() => {}}>
           <DialogContent
             className="sm:max-w-md"
@@ -259,7 +296,6 @@ export default function DashboardLayout() {
           </DialogContent>
         </Dialog>
 
-        {/* Entry Fee Modal */}
         <Dialog open={paymentModalOpen} onOpenChange={() => {}}>
           <DialogContent
             className="sm:max-w-md"
@@ -304,7 +340,6 @@ export default function DashboardLayout() {
           </DialogContent>
         </Dialog>
 
-        {/* Subscription Upgrade Modal */}
         <Dialog open={subscriptionModalOpen} onOpenChange={() => {}}>
           <DialogContent
             className="sm:max-w-lg"

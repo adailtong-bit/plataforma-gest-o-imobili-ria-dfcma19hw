@@ -5,8 +5,6 @@ import * as z from 'zod'
 import {
   CalendarIcon,
   Plus,
-  MapPin,
-  Building,
   Image as ImageIcon,
   X,
   User,
@@ -62,6 +60,7 @@ import usePropertyStore from '@/stores/usePropertyStore'
 import useTaskStore from '@/stores/useTaskStore'
 import usePartnerStore from '@/stores/usePartnerStore'
 import useAuthStore from '@/stores/useAuthStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -91,6 +90,7 @@ export function CreateTaskDialog() {
   const { addTask } = useTaskStore()
   const { partners } = usePartnerStore()
   const { currentUser } = useAuthStore()
+  const { financialSettings } = useFinancialStore()
   const { toast } = useToast()
   const { t } = useLanguageStore()
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
@@ -198,6 +198,11 @@ export function CreateTaskDialog() {
     const employeeId =
       values.partnerEmployeeId === 'none' ? undefined : values.partnerEmployeeId
 
+    // Budget Approval Logic
+    const threshold = financialSettings.approvalThreshold || 500
+    const isHighValue = finalPrice && finalPrice > threshold
+    const initialStatus = isHighValue ? 'pending_approval' : 'pending'
+
     addTask({
       id: Math.random().toString(36).substr(2, 9),
       title: values.title,
@@ -205,7 +210,7 @@ export function CreateTaskDialog() {
       propertyName: selectedProperty?.name || 'Desconhecido',
       propertyAddress: selectedProperty?.address,
       propertyCommunity: selectedProperty?.community,
-      status: 'pending',
+      status: initialStatus,
       type: values.type,
       assignee: assignee ? assignee.name : 'Desconhecido',
       assigneeId: values.assigneeId,
@@ -220,12 +225,17 @@ export function CreateTaskDialog() {
       images: uploadedImages,
     })
 
+    const desc = isHighValue
+      ? `Task exceeds $${threshold} and requires approval.`
+      : t('tasks.assigned_to', {
+          title: values.title,
+          name: assignee?.name || '',
+        })
+
     toast({
-      title: t('tasks.success_created'),
-      description: t('tasks.assigned_to', {
-        title: values.title,
-        name: assignee?.name || '',
-      }),
+      title: isHighValue ? 'Pending Approval' : t('tasks.success_created'),
+      description: desc,
+      variant: isHighValue ? 'default' : 'default',
     })
 
     setOpen(false)

@@ -98,9 +98,14 @@ export default function Users() {
   const [isEditing, setIsEditing] = useState(false)
 
   const canCreateRole = (role: UserRole) => {
+    // Platform Owner can create Tenants and Internal Users
     if (currentUser.role === 'platform_owner')
       return ['software_tenant', 'internal_user'].includes(role)
-    if (currentUser.role === 'software_tenant') return role === 'internal_user'
+    // Tenants (PMs) can create Internal Users and Partners
+    if (currentUser.role === 'software_tenant')
+      return ['internal_user', 'partner'].includes(role)
+    // Partners can create Partner Employees
+    if (currentUser.role === 'partner') return role === 'partner_employee'
     return false
   }
 
@@ -108,11 +113,11 @@ export default function Users() {
     if (currentUser.role === 'platform_owner') return true
     if (currentUser.role === 'software_tenant')
       return u.parentId === currentUser.id
+    if (currentUser.role === 'partner') return u.parentId === currentUser.id
     return false
   })
 
   const handleSave = () => {
-    // Strict Validation
     if (!formData.name?.trim()) {
       toast({
         title: 'Erro',
@@ -130,7 +135,6 @@ export default function Users() {
       return
     }
 
-    // Check for duplicate email (except self)
     const duplicate = users.find(
       (u) =>
         u.email.toLowerCase() === formData.email?.toLowerCase() &&
@@ -272,7 +276,11 @@ export default function Users() {
     }
   }
 
-  if (!hasPermission(currentUser as User, 'users', 'view')) {
+  // Permission Check
+  if (
+    !hasPermission(currentUser as User, 'users', 'view') &&
+    currentUser.role !== 'partner' // Allow partners to view their employees
+  ) {
     return <div className="p-8 text-center">Acesso negado.</div>
   }
 
@@ -312,7 +320,8 @@ export default function Users() {
             </DialogContent>
           </Dialog>
 
-          {hasPermission(currentUser as User, 'users', 'create') && (
+          {(hasPermission(currentUser as User, 'users', 'create') ||
+            currentUser.role === 'partner') && (
             <Dialog
               open={open}
               onOpenChange={(val) => {
@@ -390,9 +399,19 @@ export default function Users() {
                               Locador (Cliente)
                             </SelectItem>
                           )}
-                          <SelectItem value="internal_user">
-                            Usuário Interno
-                          </SelectItem>
+                          {canCreateRole('internal_user') && (
+                            <SelectItem value="internal_user">
+                              Usuário Interno
+                            </SelectItem>
+                          )}
+                          {canCreateRole('partner') && (
+                            <SelectItem value="partner">Parceiro</SelectItem>
+                          )}
+                          {canCreateRole('partner_employee') && (
+                            <SelectItem value="partner_employee">
+                              Funcionário
+                            </SelectItem>
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
@@ -567,11 +586,8 @@ export default function Users() {
                           </>
                         )}
 
-                        {hasPermission(
-                          currentUser as User,
-                          'users',
-                          'edit',
-                        ) && (
+                        {(hasPermission(currentUser as User, 'users', 'edit') ||
+                          currentUser.role === 'partner') && (
                           <Button
                             variant="ghost"
                             size="icon"
@@ -580,11 +596,12 @@ export default function Users() {
                             <Edit className="h-4 w-4" />
                           </Button>
                         )}
-                        {hasPermission(
+                        {(hasPermission(
                           currentUser as User,
                           'users',
                           'delete',
-                        ) && (
+                        ) ||
+                          currentUser.role === 'partner') && (
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button

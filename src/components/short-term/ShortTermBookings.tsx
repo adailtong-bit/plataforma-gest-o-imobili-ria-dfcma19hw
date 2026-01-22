@@ -104,7 +104,7 @@ export function ShortTermBookings() {
       format(parseISO(booking.checkOut), 'dd/MM/yyyy'),
     )
 
-    // New double braces
+    // New double braces support
     text = text.replace(
       /{{property_address}}/g,
       property?.address || 'Address Not Available',
@@ -118,28 +118,23 @@ export function ShortTermBookings() {
       property?.accessCodeBuilding || 'Code Not Available',
     )
 
-    // Pool Code Logic (Property > Condo > Fallback)
     const poolCode =
       property?.accessCodePool || condo?.accessCredentials?.poolCode
 
     if (poolCode) {
       text = text.replace(/{{pool_code}}/g, poolCode)
     } else {
-      // Graceful Omission: Remove lines containing the placeholder if empty
       const lineRegex = /^.*{{pool_code}}.*$/gm
       text = text.replace(lineRegex, '')
-      // Cleanup inline remnants just in case
       text = text.replace(/{{pool_code}}/g, '')
     }
 
-    // Condo Code cleanup if empty
     if (!property?.accessCodeBuilding) {
       const lineRegex = /^.*{{condo_code}}.*$/gm
       text = text.replace(lineRegex, '')
       text = text.replace(/{{condo_code}}/g, '')
     }
 
-    // Trim excessive newlines
     return text.replace(/\n{3,}/g, '\n\n').trim()
   }
 
@@ -163,7 +158,6 @@ export function ShortTermBookings() {
     const prop = properties.find((p) => p.id === selectedBooking.propertyId)
     const condo = condominiums.find((c) => c.id === prop?.condominiumId)
 
-    // Hardcoded Access Info Block Pattern
     const accessTemplate = `Hello {GuestName},
 
 Here is everything you need for your check-in at {{property_address}}:

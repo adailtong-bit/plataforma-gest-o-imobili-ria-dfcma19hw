@@ -44,13 +44,13 @@ export function ShortTermCalendar() {
   )
   const [selectedProperty, setSelectedProperty] = useState('')
   const [blockNotes, setBlockNotes] = useState('')
+  const [linkedTaskId, setLinkedTaskId] = useState('')
   const [daysCount, setDaysCount] = useState(1)
 
   const shortTermProperties = properties.filter(
     (p) => p.profileType === 'short_term',
   )
 
-  // Modifiers
   const bookedDays = bookings.flatMap((b) => {
     const days = []
     let current = parseISO(b.checkIn)
@@ -75,8 +75,6 @@ export function ShortTermCalendar() {
 
   const handleDateSelect = (selected: Date | undefined) => {
     setDate(selected)
-    // If user clicks a date, we could open the dialog to add block
-    // Or just update selection. Let's provide a button to add block on selected date
   }
 
   const handleAddBlock = () => {
@@ -91,12 +89,13 @@ export function ShortTermCalendar() {
       endDate: endDate.toISOString(),
       type: blockType,
       notes: blockNotes,
+      taskId: linkedTaskId || undefined,
     })
 
     setDialogOpen(false)
     toast({ title: 'Period Blocked' })
-    // Reset form
     setBlockNotes('')
+    setLinkedTaskId('')
     setDaysCount(1)
   }
 
@@ -221,7 +220,14 @@ export function ShortTermCalendar() {
                       <p className="text-sm text-muted-foreground">
                         {prop?.name}
                       </p>
-                      <p className="text-xs text-muted-foreground">{b.notes}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {b.notes}
+                        {b.taskId && (
+                          <span className="block text-[10px] text-red-600">
+                            Linked Task ID: {b.taskId}
+                          </span>
+                        )}
+                      </p>
                     </div>
                     <div className="flex flex-col gap-2">
                       <Badge variant="destructive">Blocked</Badge>
@@ -304,6 +310,16 @@ export function ShortTermCalendar() {
                 placeholder="Reason for blocking..."
               />
             </div>
+            {blockType === 'maintenance' && (
+              <div className="grid gap-2">
+                <Label>Link Task (Optional)</Label>
+                <Input
+                  value={linkedTaskId}
+                  onChange={(e) => setLinkedTaskId(e.target.value)}
+                  placeholder="Task ID"
+                />
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button onClick={handleAddBlock}>Save Block</Button>
