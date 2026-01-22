@@ -26,7 +26,6 @@ import {
   MapPin,
   Eye,
   CheckCircle2,
-  Receipt,
   User,
   Edit,
   Pencil,
@@ -85,9 +84,6 @@ export function TaskCard({
   const [rateOpen, setRateOpen] = useState(false)
   const [rating, setRating] = useState(5)
   const [feedback, setFeedback] = useState('')
-
-  // Auto-posted via AppContext, check if exists to show billing status
-  const isBilled = ledgerEntries.some((e) => e.referenceId === task.id)
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -149,19 +145,25 @@ export function TaskCard({
   }
 
   const handleApprove = () => {
-    onStatusChange('pending') // Moves from pending_approval to pending (ready to be picked up)
+    onStatusChange('pending')
     toast({
       title: 'Aprovado',
       description: 'Tarefa autorizada para execução.',
     })
   }
 
-  // Internal Delegation Logic
-  const isPartner = currentUser.role === 'partner'
+  // Hierarchical Visibility Logic
   const isTeamMember = currentUser.role === 'partner_employee'
-  const isAdminOrPM = ['platform_owner', 'software_tenant'].includes(
-    currentUser.role,
-  )
+  const isPartner = currentUser.role === 'partner'
+  const isAdminOrPM = [
+    'platform_owner',
+    'software_tenant',
+    'internal_user',
+  ].includes(currentUser.role)
+
+  // Determine which financial values to show
+  const showPartnerPrice = isAdminOrPM || isPartner
+  const showTeamPayout = isAdminOrPM || isPartner || isTeamMember
 
   const partnerRecord = isPartner
     ? partners.find(
@@ -189,9 +191,6 @@ export function TaskCard({
   const assignedEmployeeName = partnerRecord?.employees?.find(
     (e) => e.id === task.partnerEmployeeId,
   )?.name
-
-  const showPartnerPrice = isAdminOrPM || isPartner
-  const showTeamPayout = isAdminOrPM || isPartner || isTeamMember
 
   return (
     <>
@@ -338,7 +337,7 @@ export function TaskCard({
             )}
             {showTeamPayout && task.teamMemberPayout && (
               <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Payout (Team):</span>
+                <span className="text-muted-foreground">Payout (Equipe):</span>
                 <span className="font-semibold text-blue-700">
                   ${task.teamMemberPayout.toFixed(2)}
                 </span>

@@ -24,13 +24,8 @@ import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import { TaskCard } from '@/components/tasks/TaskCard'
 import { PartnerStaff } from '@/components/partners/PartnerStaff'
-import {
-  Building,
-  ClipboardList,
-  Users,
-  DollarSign,
-  Wallet,
-} from 'lucide-react'
+import { Building, ClipboardList, Users, Wallet } from 'lucide-react'
+import { User } from '@/lib/types'
 
 export default function PartnerPortal() {
   const { currentUser } = useAuthStore()
@@ -40,12 +35,29 @@ export default function PartnerPortal() {
   const { properties } = usePropertyStore()
   const navigate = useNavigate()
 
-  const partnerRecord = partners.find(
-    (p) => p.id === currentUser.id || p.email === currentUser.email,
-  )
+  // Determine if it's a Partner (Company) or Team Member (Employee)
+  const isTeamMember = currentUser.role === 'partner_employee'
+
+  // Logic to find the main Partner Record
+  // If Team Member, look up parent Partner by ID
+  // If Partner, look up by ID
+  const partnerRecord = isTeamMember
+    ? partners.find(
+        (p) =>
+          p.id === (currentUser as User).parentPartnerId ||
+          p.id === (currentUser as User).parentId,
+      )
+    : partners.find(
+        (p) => p.id === currentUser.id || p.email === currentUser.email,
+      )
 
   if (!partnerRecord) {
-    return <div className="p-8">Registro de parceiro não encontrado.</div>
+    return (
+      <div className="p-8 text-center text-muted-foreground">
+        Registro de parceiro não encontrado. Verifique se o vínculo com a
+        empresa parceira está correto.
+      </div>
+    )
   }
 
   // Filter Data
@@ -54,27 +66,37 @@ export default function PartnerPortal() {
     linkedPropertyIds.includes(p.id),
   )
 
-  const myTasks = tasks.filter(
-    (t) =>
-      t.assigneeId === partnerRecord.id || // Explicit assignment
+  const myTasks = tasks.filter((t) => {
+    // If Team Member, ONLY see assigned tasks
+    if (isTeamMember) {
+      return t.partnerEmployeeId === currentUser.id
+    }
+    // If Partner, see all tasks assigned to the company OR unassigned but valid for this partner
+    return (
+      t.assigneeId === partnerRecord.id ||
       (linkedPropertyIds.includes(t.propertyId) &&
         t.type === partnerRecord.type &&
-        !t.assigneeId), // Or linked property + correct type + unassigned
-  )
+        !t.assigneeId)
+    )
+  })
 
   const pendingTasks = myTasks.filter((t) => t.status === 'pending')
   const activeTasks = myTasks.filter((t) => t.status === 'in_progress')
 
-  // Financial Calcs
+  // Financial Calcs with Hierarchical Visibility
   const completedTasks = myTasks.filter((t) => t.status === 'completed')
-  const totalRevenue = completedTasks.reduce(
-    (acc, t) => acc + (t.price || 0),
-    0,
-  )
-  const totalPayout = completedTasks.reduce(
-    (acc, t) => acc + (t.teamMemberPayout || 0),
-    0,
-  )
+
+  // For Team Member: Revenue = Their Payout
+  // For Partner: Revenue = Task Price, Expense = Team Payout
+  const totalRevenue = completedTasks.reduce((acc, t) => {
+    if (isTeamMember) return acc + (t.teamMemberPayout || 0)
+    return acc + (t.price || 0)
+  }, 0)
+
+  const totalPayout = isTeamMember
+    ? 0 // No payout expense for team member
+    : completedTasks.reduce((acc, t) => acc + (t.teamMemberPayout || 0), 0)
+
   const netProfit = totalRevenue - totalPayout
 
   const handleUpdatePartner = (updated: any) => {
@@ -85,9 +107,16 @@ export default function PartnerPortal() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-navy">
-          Portal do Parceiro
+          Portal {isTeamMember ? 'da Equipe' : 'do Parceiro'}
         </h1>
-        <p className="text-muted-foreground">Bem-vindo, {partnerRecord.name}</p>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <p>Bem-vindo, {currentUser.name}</p>
+          {isTeamMember && (
+            <Badge variant="outline" className="text-xs">
+              {partnerRecord.companyName || partnerRecord.name}
+            </Badge>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -116,48 +145,52 @@ export default function PartnerPortal() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-green-700">
-              Receita Total
+              {isTeamMember ? 'Meus Ganhos' : 'Receita Bruta'}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-700">
               ${totalRevenue.toFixed(2)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Completed Tasks
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Concluídas</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-purple-700">
-              Lucro Estimado
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-700">
-              ${netProfit.toFixed(2)}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              After Team Payouts
-            </p>
-          </CardContent>
-        </Card>
+
+        {/* Only show Profit/Margin for Partners (Companies) */}
+        {!isTeamMember && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-purple-700">
+                Lucro Estimado
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-700">
+                ${netProfit.toFixed(2)}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Após pagamentos equipe
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <Tabs defaultValue="tasks" className="space-y-4">
         <TabsList>
           <TabsTrigger value="tasks">
-            <ClipboardList className="h-4 w-4 mr-2" /> Tarefas
+            <ClipboardList className="h-4 w-4 mr-2" /> Minhas Tarefas
           </TabsTrigger>
-          <TabsTrigger value="staff">
-            <Users className="h-4 w-4 mr-2" /> Minha Equipe
-          </TabsTrigger>
+          {!isTeamMember && (
+            <TabsTrigger value="staff">
+              <Users className="h-4 w-4 mr-2" /> Minha Equipe
+            </TabsTrigger>
+          )}
           <TabsTrigger value="properties">
             <Building className="h-4 w-4 mr-2" /> Propriedades
           </TabsTrigger>
           <TabsTrigger value="financial">
-            <Wallet className="h-4 w-4 mr-2" /> Financeiro Detalhado
+            <Wallet className="h-4 w-4 mr-2" /> Extrato
           </TabsTrigger>
         </TabsList>
 
@@ -175,26 +208,30 @@ export default function PartnerPortal() {
                   onStatusChange={(status) => updateTaskStatus(task.id, status)}
                   onUpload={addTaskImage}
                   onAddEvidence={addTaskEvidence}
+                  canEdit={!isTeamMember || task.status === 'in_progress'} // Limit editing
                 />
               ))
             )}
           </div>
         </TabsContent>
 
-        <TabsContent value="staff">
-          <PartnerStaff
-            partner={partnerRecord}
-            onUpdate={handleUpdatePartner}
-            canEdit={true}
-          />
-        </TabsContent>
+        {!isTeamMember && (
+          <TabsContent value="staff">
+            <PartnerStaff
+              partner={partnerRecord}
+              onUpdate={handleUpdatePartner}
+              canEdit={true}
+            />
+          </TabsContent>
+        )}
 
         <TabsContent value="properties">
           <Card>
             <CardHeader>
               <CardTitle>Propriedades Vinculadas</CardTitle>
               <CardDescription>
-                Lista de propriedades que você atende.
+                Lista de propriedades que{' '}
+                {isTeamMember ? 'sua empresa atende' : 'você atende'}.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -239,7 +276,7 @@ export default function PartnerPortal() {
             <CardHeader>
               <CardTitle>Detalhamento por Tarefa</CardTitle>
               <CardDescription>
-                Análise de margem por serviço executado.
+                Registro financeiro dos serviços.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -248,12 +285,14 @@ export default function PartnerPortal() {
                   <TableRow>
                     <TableHead>Data</TableHead>
                     <TableHead>Tarefa</TableHead>
-                    <TableHead>Funcionário</TableHead>
-                    <TableHead className="text-right">Receita ($)</TableHead>
-                    <TableHead className="text-right">
-                      Custo Pessoal ($)
-                    </TableHead>
-                    <TableHead className="text-right">Margem ($)</TableHead>
+                    {!isTeamMember && <TableHead>Funcionário</TableHead>}
+                    <TableHead className="text-right">Valor</TableHead>
+                    {!isTeamMember && (
+                      <TableHead className="text-right">Custo</TableHead>
+                    )}
+                    {!isTeamMember && (
+                      <TableHead className="text-right">Margem</TableHead>
+                    )}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -262,23 +301,32 @@ export default function PartnerPortal() {
                       partnerRecord.employees?.find(
                         (e) => e.id === t.partnerEmployeeId,
                       )?.name || 'N/A'
-                    const margin = (t.price || 0) - (t.teamMemberPayout || 0)
+                    const value = isTeamMember
+                      ? t.teamMemberPayout || 0
+                      : t.price || 0
+                    const cost = isTeamMember ? 0 : t.teamMemberPayout || 0
+                    const margin = value - cost
+
                     return (
                       <TableRow key={t.id}>
                         <TableCell>
                           {format(new Date(t.date), 'dd/MM/yyyy')}
                         </TableCell>
                         <TableCell>{t.title}</TableCell>
-                        <TableCell>{empName}</TableCell>
+                        {!isTeamMember && <TableCell>{empName}</TableCell>}
                         <TableCell className="text-right font-medium text-green-700">
-                          ${(t.price || 0).toFixed(2)}
+                          ${value.toFixed(2)}
                         </TableCell>
-                        <TableCell className="text-right text-red-600">
-                          -${(t.teamMemberPayout || 0).toFixed(2)}
-                        </TableCell>
-                        <TableCell className="text-right font-bold">
-                          ${margin.toFixed(2)}
-                        </TableCell>
+                        {!isTeamMember && (
+                          <TableCell className="text-right text-red-600">
+                            -${cost.toFixed(2)}
+                          </TableCell>
+                        )}
+                        {!isTeamMember && (
+                          <TableCell className="text-right font-bold">
+                            ${margin.toFixed(2)}
+                          </TableCell>
+                        )}
                       </TableRow>
                     )
                   })}

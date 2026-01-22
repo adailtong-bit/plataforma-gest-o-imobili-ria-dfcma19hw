@@ -67,7 +67,7 @@ export function AppSidebar() {
     {
       title: t('common.short_term'),
       url: '/short-term',
-      icon: BriefcaseBusiness, // Using BriefcaseBusiness for Short Term business nature
+      icon: BriefcaseBusiness,
       resource: 'short_term',
     },
     {
@@ -173,10 +173,11 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        {/* Special Portal Links for specific roles */}
+        {/* Special Portal Links for specific roles - Usually these are the ONLY links they see, but if they have broader perms, they might see menu items too */}
         {(currentUser.role === 'tenant' ||
           currentUser.role === 'property_owner' ||
-          currentUser.role === 'partner') && (
+          currentUser.role === 'partner' ||
+          currentUser.role === 'partner_employee') && (
           <SidebarGroup>
             <SidebarGroupLabel>Portal</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -207,7 +208,8 @@ export function AppSidebar() {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
-                {currentUser.role === 'partner' && (
+                {(currentUser.role === 'partner' ||
+                  currentUser.role === 'partner_employee') && (
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild

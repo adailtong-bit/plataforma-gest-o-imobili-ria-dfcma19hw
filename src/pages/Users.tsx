@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -65,6 +65,7 @@ import {
 } from 'lucide-react'
 import useUserStore from '@/stores/useUserStore'
 import useAuthStore from '@/stores/useAuthStore'
+import usePartnerStore from '@/stores/usePartnerStore'
 import { hasPermission } from '@/lib/permissions'
 import { User, Resource, Action, UserRole, Permission } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
@@ -73,7 +74,6 @@ import { isValidEmail } from '@/lib/utils'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { Switch } from '@/components/ui/switch'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
 
 const RESOURCES: Resource[] = [
   'dashboard',
@@ -99,6 +99,7 @@ export default function Users() {
   const { users, addUser, updateUser, deleteUser, approveUser, blockUser } =
     useUserStore()
   const { currentUser } = useAuthStore()
+  const { partners } = usePartnerStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
@@ -112,6 +113,7 @@ export default function Users() {
     password?: string
     confirmPassword?: string
     mirrorAdmin?: boolean
+    parentPartnerId?: string
   } = {
     name: '',
     email: '',
@@ -126,18 +128,67 @@ export default function Users() {
     companyName: '',
     taxId: '',
     address: '',
+    parentPartnerId: '',
   }
 
   const [formData, setFormData] = useState(initialFormState)
   const [isEditing, setIsEditing] = useState(false)
 
+  // Default Permission Sets
+  const getDefaultPermissions = (role: UserRole): Permission[] => {
+    switch (role) {
+      case 'partner_employee':
+        return [
+          { resource: 'tasks', actions: ['view', 'edit'] },
+          { resource: 'portal', actions: ['view'] },
+          { resource: 'messages', actions: ['view'] },
+        ]
+      case 'partner':
+        return [
+          { resource: 'tasks', actions: ['view', 'edit'] },
+          { resource: 'financial', actions: ['view'] },
+          { resource: 'portal', actions: ['view'] },
+          { resource: 'messages', actions: ['view'] },
+        ]
+      case 'property_owner':
+        return [
+          { resource: 'properties', actions: ['view'] },
+          { resource: 'financial', actions: ['view'] },
+          { resource: 'portal', actions: ['view'] },
+        ]
+      default:
+        return []
+    }
+  }
+
+  useEffect(() => {
+    // When role changes in creation mode, set default permissions
+    if (!isEditing && formData.role) {
+      const defaults = getDefaultPermissions(formData.role)
+      if (defaults.length > 0) {
+        setFormData((prev) => ({ ...prev, permissions: defaults }))
+      }
+    }
+  }, [formData.role, isEditing])
+
   const canCreateRole = (role: UserRole) => {
     // Platform Owner can create Tenants and Internal Users
     if (currentUser.role === 'platform_owner')
-      return ['software_tenant', 'internal_user'].includes(role)
-    // Tenants (PMs) can create Internal Users, Partners and Owners
+      return [
+        'software_tenant',
+        'internal_user',
+        'partner',
+        'partner_employee',
+      ].includes(role)
+    // Tenants (PMs) can create Internal Users, Partners, Owners, Team Members
     if (currentUser.role === 'software_tenant')
-      return ['internal_user', 'partner', 'property_owner'].includes(role)
+      return [
+        'internal_user',
+        'partner',
+        'property_owner',
+        'partner_employee',
+        'tenant',
+      ].includes(role)
     // Partners can create Partner Employees
     if (currentUser.role === 'partner') return role === 'partner_employee'
     return false
@@ -146,7 +197,7 @@ export default function Users() {
   const filteredUsers = users.filter((u) => {
     if (currentUser.role === 'platform_owner') return true
     if (currentUser.role === 'software_tenant')
-      return u.parentId === currentUser.id
+      return u.parentId === currentUser.id || u.role === 'partner_employee' // PMs see their staff and partner teams
     if (currentUser.role === 'partner') return u.parentId === currentUser.id
     return false
   })
@@ -202,7 +253,13 @@ export default function Users() {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, confirmPassword, mirrorAdmin, ...userData } = formData
+    const {
+      password,
+      confirmPassword,
+      mirrorAdmin,
+      parentPartnerId,
+      ...userData
+    } = formData
 
     // Handle Mirror Admin Logic
     let finalPermissions = userData.permissions
@@ -213,8 +270,15 @@ export default function Users() {
       }))
     }
 
+    // Determine Parent ID
+    let finalParentId = currentUser.id
+    if (userData.role === 'partner_employee' && parentPartnerId) {
+      finalParentId = parentPartnerId
+    }
+
     const finalUserData = {
       ...userData,
+      parentId: isEditing ? userData.parentId : finalParentId,
       permissions: finalPermissions,
     }
 
@@ -225,7 +289,6 @@ export default function Users() {
       addUser({
         ...finalUserData,
         id: `user-${Date.now()}`,
-        parentId: currentUser.id,
         status:
           currentUser.role === 'platform_owner' ? 'active' : 'pending_approval',
         isFirstLogin: true,
@@ -275,11 +338,9 @@ export default function Users() {
       let resourcePerm = perms.find((p) => p.resource === resource)
 
       if (!resourcePerm) {
-        // Create new permission entry if it doesn't exist
         resourcePerm = { resource, actions: [] }
         perms.push(resourcePerm)
       } else {
-        // Create a copy to avoid mutation
         const index = perms.indexOf(resourcePerm)
         resourcePerm = { ...resourcePerm, actions: [...resourcePerm.actions] }
         perms[index] = resourcePerm
@@ -292,17 +353,12 @@ export default function Users() {
         resourcePerm.actions = resourcePerm.actions.filter((a) => a !== action)
       }
 
-      // If no actions left, we can remove the permission object or keep it empty
-      // Keeping it empty is fine
-
-      // Disable Mirror Admin if custom changes are made
       return { ...prev, permissions: [...perms], mirrorAdmin: false }
     })
   }
 
   const toggleMirrorAdmin = (checked: boolean) => {
     if (checked) {
-      // Set all permissions
       const allPerms: Permission[] = RESOURCES.map((res) => ({
         resource: res,
         actions: [...ACTIONS],
@@ -313,7 +369,6 @@ export default function Users() {
         permissions: allPerms,
       }))
     } else {
-      // Clear or keep? Better to clear to allow custom
       setFormData((prev) => ({ ...prev, mirrorAdmin: false, permissions: [] }))
     }
   }
@@ -323,8 +378,9 @@ export default function Users() {
       ...user,
       password: '',
       confirmPassword: '',
-      mirrorAdmin: false,
-    }) // Reset password fields and mirror flag on edit
+      mirrorAdmin: !!user.mirrorAdmin,
+      parentPartnerId: user.parentId, // For display purposes if editing a partner employee
+    })
     setIsEditing(true)
     setOpen(true)
   }
@@ -377,10 +433,9 @@ export default function Users() {
     }
   }
 
-  // Permission Check
   if (
     !hasPermission(currentUser as User, 'users', 'view') &&
-    currentUser.role !== 'partner' // Allow partners to view their employees
+    currentUser.role !== 'partner'
   ) {
     return <div className="p-8 text-center">Acesso negado.</div>
   }
@@ -499,7 +554,7 @@ export default function Users() {
                         onValueChange={(val: UserRole) =>
                           setFormData({ ...formData, role: val })
                         }
-                        disabled={isEditing} // Prevent role change on edit to avoid permission mismatch issues for now
+                        disabled={isEditing}
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -509,14 +564,14 @@ export default function Users() {
                             <SelectItem value="software_tenant">
                               <div className="flex items-center gap-2">
                                 <Building className="h-4 w-4" /> Locador
-                                (Cliente)
+                                (Gestor)
                               </div>
                             </SelectItem>
                           )}
                           {canCreateRole('internal_user') && (
                             <SelectItem value="internal_user">
                               <div className="flex items-center gap-2">
-                                <UserCog className="h-4 w-4" /> Internal / Staff
+                                <UserCog className="h-4 w-4" /> Interno (Staff)
                               </div>
                             </SelectItem>
                           )}
@@ -531,14 +586,22 @@ export default function Users() {
                             <SelectItem value="partner">
                               <div className="flex items-center gap-2">
                                 <Briefcase className="h-4 w-4" /> Parceiro
-                                (Fornecedor)
+                                (Empresa)
                               </div>
                             </SelectItem>
                           )}
                           {canCreateRole('partner_employee') && (
                             <SelectItem value="partner_employee">
                               <div className="flex items-center gap-2">
-                                <UsersIcon className="h-4 w-4" /> Equipe (Staff)
+                                <UsersIcon className="h-4 w-4" /> Equipe
+                                (Técnico)
+                              </div>
+                            </SelectItem>
+                          )}
+                          {canCreateRole('tenant') && (
+                            <SelectItem value="tenant">
+                              <div className="flex items-center gap-2">
+                                <UserIcon className="h-4 w-4" /> Inquilino
                               </div>
                             </SelectItem>
                           )}
@@ -547,7 +610,34 @@ export default function Users() {
                     </div>
                   </div>
 
-                  {/* Additional Info for Owners/Partners */}
+                  {/* Partner Link for Employees */}
+                  {formData.role === 'partner_employee' &&
+                    !isEditing &&
+                    (currentUser.role === 'software_tenant' ||
+                      currentUser.role === 'platform_owner') && (
+                      <div className="grid gap-2">
+                        <Label>Empresa Parceira (Empregador)</Label>
+                        <Select
+                          value={formData.parentPartnerId}
+                          onValueChange={(val) =>
+                            setFormData({ ...formData, parentPartnerId: val })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o Parceiro" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {partners.map((p) => (
+                              <SelectItem key={p.id} value={p.id}>
+                                {p.name} ({p.companyName})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                  {/* Additional Info */}
                   {(formData.role === 'partner' ||
                     formData.role === 'property_owner') && (
                     <div className="grid grid-cols-2 gap-4 border-t pt-4">
@@ -611,14 +701,18 @@ export default function Users() {
                     </div>
                   </div>
 
-                  {/* Permissions Section - Only for Staff roles */}
-                  {(formData.role === 'internal_user' ||
-                    formData.role === 'partner_employee') && (
+                  {/* Permissions Section - Granular Skills */}
+                  {[
+                    'internal_user',
+                    'partner',
+                    'partner_employee',
+                    'software_tenant',
+                  ].includes(formData.role || '') && (
                     <div className="border rounded-md mt-2">
                       <div className="p-4 bg-muted/20 border-b flex justify-between items-center">
                         <h4 className="font-medium flex items-center gap-2">
-                          <Shield className="h-4 w-4" /> Permissões de Acesso
-                          (Skills)
+                          <Shield className="h-4 w-4" /> Skills & Permissões
+                          (Menu Visibility)
                         </h4>
                         {formData.role === 'internal_user' && (
                           <div className="flex items-center gap-2">
@@ -683,7 +777,7 @@ export default function Users() {
                                             c as boolean,
                                           )
                                         }
-                                        disabled={formData.mirrorAdmin} // Disable explicit selection if Mirror Admin is on
+                                        disabled={formData.mirrorAdmin}
                                       />
                                     </TableCell>
                                   )
@@ -713,7 +807,7 @@ export default function Users() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('tenants.list_title')}</CardTitle>
+          <CardTitle>Usuários Registrados</CardTitle>
           <CardDescription>
             {filteredUsers.length} usuários cadastrados no sistema.
           </CardDescription>
@@ -869,7 +963,8 @@ export default function Users() {
             </AlertDialogTitle>
             <AlertDialogDescription>
               Tem certeza que deseja bloquear este usuário? Ele perderá acesso
-              imediato ao sistema. Você poderá reativá-lo posteriormente.
+              imediato ao sistema. Você poderá reativá-lo posteriormente através
+              do botão de desbloqueio.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

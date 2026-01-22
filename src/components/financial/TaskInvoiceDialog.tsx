@@ -23,7 +23,6 @@ import useAuthStore from '@/stores/useAuthStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import { format } from 'date-fns'
 import { Invoice } from '@/lib/types'
-import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface TaskInvoiceDialogProps {
@@ -72,7 +71,7 @@ export function TaskInvoiceDialog({
       }
 
       if (isAdminOrPM) {
-        // PM sees all completed tasks with price
+        // PM sees all completed tasks with price, can invoice on behalf of anyone
         return task.price && task.price > 0
       }
 
@@ -164,7 +163,7 @@ export function TaskInvoiceDialog({
             </div>
           </div>
 
-          <ScrollArea className="flex-1 border rounded-md">
+          <ScrollArea className="flex-1 border rounded-md h-[300px]">
             <Table>
               <TableHeader>
                 <TableRow>

@@ -79,6 +79,7 @@ export interface User {
   country?: string
   companyName?: string
   parentId?: string
+  parentPartnerId?: string // Link employee to partner entity
   permissions?: Permission[]
   allowedProfileTypes?: ('long_term' | 'short_term')[]
   password?: string

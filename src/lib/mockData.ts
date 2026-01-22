@@ -86,7 +86,8 @@ const partnerEmployees: User[] = [
     email: 'team1@service.com',
     role: 'partner_employee',
     avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=30',
-    parentId: 'partner_0_0', // Assuming partner 0-0 is the employer
+    parentId: 'tenant_manager_1', // Managed by PM
+    parentPartnerId: 'partner_0_0', // Employed by Partner 0-0
     status: 'active',
     isFirstLogin: false,
     country: 'US',
@@ -317,6 +318,7 @@ export const partners: Partner[] = tenantsData.flatMap((manager, tIdx) =>
             },
           ]
         : [],
+    linkedPropertyIds: [`prop_${tIdx}_0`, `prop_${tIdx}_1`],
     documents: [],
   })),
 )
@@ -382,9 +384,9 @@ export const tasks: Task[] = [
     propertyCommunity: 'Community 1',
     status: 'completed',
     type: 'cleaning',
-    assignee: 'Partner 0-1',
-    assigneeId: 'partner_0_1',
-    partnerEmployeeId: 'emp_1',
+    assignee: 'Partner 0-0', // Assigned to Partner company
+    assigneeId: 'partner_0_0',
+    partnerEmployeeId: 'emp_1', // Assigned to Team Member
     date: subDays(new Date(), 1).toISOString(),
     priority: 'high',
     images: ['https://img.usecurling.com/p/300/200?q=clean%20bedroom'],
