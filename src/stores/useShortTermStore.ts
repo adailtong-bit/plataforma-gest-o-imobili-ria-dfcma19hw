@@ -8,9 +8,16 @@ const useShortTermStore = () => {
 
   return {
     bookings: context.bookings,
+    calendarBlocks: context.calendarBlocks,
+    messageTemplates: context.messageTemplates,
     addBooking: context.addBooking,
     updateBooking: context.updateBooking,
     deleteBooking: context.deleteBooking,
+    addCalendarBlock: context.addCalendarBlock,
+    deleteCalendarBlock: context.deleteCalendarBlock,
+    addMessageTemplate: context.addMessageTemplate,
+    updateMessageTemplate: context.updateMessageTemplate,
+    deleteMessageTemplate: context.deleteMessageTemplate,
   }
 }
 

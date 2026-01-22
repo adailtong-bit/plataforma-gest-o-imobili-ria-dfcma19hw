@@ -26,7 +26,7 @@ export type Resource =
   | 'workflows'
   | 'renewals'
   | 'publicity'
-  | 'short_term' // Added resource
+  | 'short_term'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -75,27 +75,23 @@ export interface User {
   role: UserRole
   avatar?: string
   phone?: string
-  country?: string // Geo-standardization
+  country?: string
   companyName?: string
-  parentId?: string // For hierarchy
-  permissions?: Permission[] // For internal users
-  allowedProfileTypes?: ('long_term' | 'short_term')[] // Property profile restrictions
+  parentId?: string
+  permissions?: Permission[]
+  allowedProfileTypes?: ('long_term' | 'short_term')[]
   password?: string
-
-  // New Access & Profile Fields
   status: 'active' | 'pending_activation' | 'pending_approval' | 'blocked'
   isFirstLogin: boolean
-  taxId?: string // CPF/CNPJ or SSN/EIN
+  taxId?: string
   address?: string
-
-  // Monetization Fields (Relevant for software_tenant)
   hasPaidEntryFee?: boolean
   subscriptionPlan?: 'free' | 'pay_per_house' | 'unlimited'
 }
 
 export interface CondoContact {
   id: string
-  role: string // Service Desk, Maintenance, Security
+  role: string
   name: string
   phone: string
   email: string
@@ -154,10 +150,9 @@ export interface FixedExpense {
   frequency: 'monthly' | 'yearly'
   provider?: string
   accountNumber?: string
-  // Enhanced Contract Fields
   contractStartDate?: string
   contractEndDate?: string
-  recurringValue?: number // Explicit recurring value if different from amount
+  recurringValue?: number
 }
 
 export interface SocialMediaLinks {
@@ -177,23 +172,21 @@ export interface Property {
   city?: string
   state?: string
   zipCode?: string
-  country?: string // Geo-standardization
-  additionalInfo?: string // New field for address refinement
+  country?: string
+  additionalInfo?: string
   type: string
   profileType: 'long_term' | 'short_term'
   community: string
   condominiumId?: string
   status: PropertyStatus
   marketingStatus?: 'listed' | 'unlisted'
-  listingPrice?: number // Marketing
-  publishToPortals?: boolean // Marketing
+  listingPrice?: number
+  publishToPortals?: boolean
   image: string
   gallery?: string[]
   bedrooms: number
   bathrooms: number
   guests: number
-
-  // Access
   wifiSsid?: string
   wifiPassword?: string
   accessCodeBuilding?: string
@@ -201,12 +194,8 @@ export interface Property {
   accessCodeGuest?: string
   accessCodeService?: string
   accessCodeCleaning?: string
-
-  // HOA
   hoaValue?: number
   hoaFrequency?: 'monthly' | 'quarterly' | 'semi-annually' | 'annually'
-
-  // Content
   description?: {
     pt: string
     en: string
@@ -217,23 +206,15 @@ export interface Property {
     en: string
     es: string
   }
-
-  // Documents
   documents?: PropertyDocument[]
-
   contractConfig?: {
     expirationAlertDays: number
     renewalAlertDate?: string
   }
-
   ownerId: string
   agentId?: string
   iCalUrl?: string
-
-  // Financial
   fixedExpenses?: FixedExpense[]
-
-  // New Marketing Fields
   socialMedia?: SocialMediaLinks
   leadContact?: string
 }
@@ -243,7 +224,7 @@ export type DocumentCategory =
   | 'Insurance'
   | 'ID'
   | 'Other'
-  | 'Others' // Added as per requirement
+  | 'Others'
   | 'Deed'
   | 'Inspection'
   | 'Passport'
@@ -299,8 +280,6 @@ export interface Tenant {
   role: UserRole
   avatar?: string
   documents?: GenericDocument[]
-
-  // Extended fields
   idNumber?: string
   driverLicense?: string
   socialSecurity?: string
@@ -310,8 +289,6 @@ export interface Tenant {
     phone: string
     relation: string
   }
-
-  // Renewals
   negotiationStatus?: NegotiationStatus
   negotiationLogs?: NegotiationLogEntry[]
   suggestedRenewalPrice?: number
@@ -320,21 +297,40 @@ export interface Tenant {
 export interface Booking {
   id: string
   propertyId: string
-  propertyName?: string // For denormalization convenience in lists
+  propertyName?: string
   guestName: string
   guestEmail: string
   guestPhone?: string
-  checkIn: string // ISO Date
-  checkOut: string // ISO Date
+  checkIn: string
+  checkOut: string
   status: 'confirmed' | 'checked_in' | 'checked_out' | 'cancelled'
   totalAmount: number
   paid: boolean
   platform: 'airbnb' | 'vrbo' | 'direct' | 'booking.com' | 'other'
   notes?: string
-  ledgerEntryId?: string // Link to financial record
-  generatedTasks?: string[] // IDs of cleaning/inspection tasks
+  ledgerEntryId?: string
+  generatedTasks?: string[]
   adults?: number
   children?: number
+}
+
+export interface CalendarBlock {
+  id: string
+  propertyId: string
+  startDate: string
+  endDate: string
+  type: 'manual_block' | 'maintenance'
+  notes?: string
+  taskId?: string
+}
+
+export interface MessageTemplate {
+  id: string
+  name: string
+  trigger: 'confirmation' | 'check_in_24h' | 'check_out_instructions' | 'manual'
+  subject: string
+  content: string
+  active: boolean
 }
 
 export interface Owner {
@@ -348,8 +344,6 @@ export interface Owner {
   role: UserRole
   avatar?: string
   documents?: GenericDocument[]
-
-  // Extended fields
   address?: string
   secondContact?: {
     name: string
@@ -439,7 +433,7 @@ export interface Task {
   price?: number
   backToBack?: boolean
   recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
-  bookingId?: string // Link to Short Term Booking
+  bookingId?: string
 }
 
 export interface Invoice {
@@ -476,7 +470,7 @@ export interface LedgerEntry {
   beneficiaryId?: string
   status: 'pending' | 'cleared' | 'void' | 'overdue' | 'unpaid'
   attachments?: { name: string; url: string }[]
-  payee?: string // Added for advanced reporting
+  payee?: string
 }
 
 export interface AuditLog {
@@ -547,7 +541,6 @@ export interface MarketData {
   trend: 'up' | 'down' | 'stable'
   competitorCount: number
   averageDaysOnMarket: number
-  // Expanded fields
   shortTermRate: number
   longTermRate: number
   pricePerSqFt: number

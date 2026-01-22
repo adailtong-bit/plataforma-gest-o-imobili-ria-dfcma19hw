@@ -23,9 +23,11 @@ import {
   Advertiser,
   AdPricing,
   Booking,
+  CalendarBlock,
+  MessageTemplate,
 } from '@/lib/types'
 
-// --- System-Wide Seeded Test Environment ---
+// ... (keep previous imports and user data)
 
 // 1 Master Admin
 const masterAdmin: User = {
@@ -163,10 +165,6 @@ export const tenants: Tenant[] = tenantsData.flatMap((manager, tIdx) =>
     propertyId: `prop_${tIdx}_${i}`, // Assign to first few properties
     rentValue: 2000,
     leaseStart: subDays(new Date(), 300).toISOString(),
-    // Logic for demo purposes:
-    // i=0: Expiring soon (Critical < 30) - Status: negotiating
-    // i=1: Renewed (Future Date) - Status: closed
-    // i=2: Upcoming Expiring (30-90) - Status: undefined (pending)
     leaseEnd:
       i === 0
         ? addDays(new Date(), 25).toISOString()
@@ -242,6 +240,39 @@ export const bookings: Booking[] = [
     platform: 'vrbo',
     adults: 4,
     children: 2,
+  },
+]
+
+// Calendar Blocks
+export const calendarBlocks: CalendarBlock[] = [
+  {
+    id: 'blk_1',
+    propertyId: 'prop_0_0',
+    startDate: addDays(new Date(), 20).toISOString(),
+    endDate: addDays(new Date(), 25).toISOString(),
+    type: 'manual_block',
+    notes: 'Owner usage',
+  },
+]
+
+// Message Templates
+export const messageTemplates: MessageTemplate[] = [
+  {
+    id: 'tmpl_1',
+    name: 'Booking Confirmation',
+    trigger: 'confirmation',
+    subject: 'Booking Confirmed!',
+    content: 'Hi {GuestName}, your booking is confirmed for {CheckInDate}.',
+    active: true,
+  },
+  {
+    id: 'tmpl_2',
+    name: 'Check-in Instructions',
+    trigger: 'check_in_24h',
+    subject: 'Check-in Instructions for Tomorrow',
+    content:
+      'Hi {GuestName}, you can check in tomorrow after 4 PM. Code: 1234.',
+    active: true,
   },
 ]
 
@@ -332,6 +363,7 @@ export const tasks: Task[] = [
     images: ['https://img.usecurling.com/p/300/200?q=clean%20bedroom'],
     price: 150.0,
     recurrence: 'none',
+    bookingId: 'bk_1',
   },
 ]
 
