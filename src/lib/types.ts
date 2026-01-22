@@ -88,6 +88,7 @@ export interface User {
   address?: string
   hasPaidEntryFee?: boolean
   subscriptionPlan?: 'free' | 'pay_per_house' | 'unlimited'
+  mirrorAdmin?: boolean
 }
 
 export interface CondoContact {

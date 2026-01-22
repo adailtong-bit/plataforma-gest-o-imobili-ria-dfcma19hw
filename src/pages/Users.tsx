@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -16,6 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -48,25 +55,43 @@ import {
   Copy,
   CheckCircle2,
   Ban,
+  Unlock,
+  ShieldCheck,
+  UserCog,
+  Briefcase,
+  Users as UsersIcon,
+  User as UserIcon,
+  Building,
 } from 'lucide-react'
 import useUserStore from '@/stores/useUserStore'
 import useAuthStore from '@/stores/useAuthStore'
 import { hasPermission } from '@/lib/permissions'
-import { User, Resource, Action, UserRole } from '@/lib/types'
+import { User, Resource, Action, UserRole, Permission } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { isValidEmail } from '@/lib/utils'
 import { PhoneInput } from '@/components/ui/phone-input'
+import { Switch } from '@/components/ui/switch'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
 
 const RESOURCES: Resource[] = [
   'dashboard',
   'properties',
+  'short_term',
+  'renewals',
+  'market_analysis',
   'condominiums',
+  'tenants',
+  'owners',
+  'partners',
+  'calendar',
+  'tasks',
+  'workflows',
   'financial',
+  'messages',
   'users',
   'settings',
-  'tasks',
-  'calendar',
 ]
 const ACTIONS: Action[] = ['view', 'create', 'edit', 'delete']
 
@@ -76,12 +101,17 @@ export default function Users() {
   const { currentUser } = useAuthStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
+
+  // Dialog States
   const [open, setOpen] = useState(false)
   const [inviteOpen, setInviteOpen] = useState(false)
+  const [blockDialogOpen, setBlockDialogOpen] = useState(false)
+  const [userToBlock, setUserToBlock] = useState<string | null>(null)
 
   const initialFormState: Partial<User> & {
     password?: string
     confirmPassword?: string
+    mirrorAdmin?: boolean
   } = {
     name: '',
     email: '',
@@ -91,7 +121,11 @@ export default function Users() {
     allowedProfileTypes: ['long_term', 'short_term'],
     password: '',
     confirmPassword: '',
-    status: 'pending_approval',
+    status: 'active',
+    mirrorAdmin: false,
+    companyName: '',
+    taxId: '',
+    address: '',
   }
 
   const [formData, setFormData] = useState(initialFormState)
@@ -101,9 +135,9 @@ export default function Users() {
     // Platform Owner can create Tenants and Internal Users
     if (currentUser.role === 'platform_owner')
       return ['software_tenant', 'internal_user'].includes(role)
-    // Tenants (PMs) can create Internal Users and Partners
+    // Tenants (PMs) can create Internal Users, Partners and Owners
     if (currentUser.role === 'software_tenant')
-      return ['internal_user', 'partner'].includes(role)
+      return ['internal_user', 'partner', 'property_owner'].includes(role)
     // Partners can create Partner Employees
     if (currentUser.role === 'partner') return role === 'partner_employee'
     return false
@@ -168,14 +202,28 @@ export default function Users() {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, confirmPassword, ...userData } = formData
+    const { password, confirmPassword, mirrorAdmin, ...userData } = formData
+
+    // Handle Mirror Admin Logic
+    let finalPermissions = userData.permissions
+    if (mirrorAdmin) {
+      finalPermissions = RESOURCES.map((res) => ({
+        resource: res,
+        actions: [...ACTIONS],
+      }))
+    }
+
+    const finalUserData = {
+      ...userData,
+      permissions: finalPermissions,
+    }
 
     if (isEditing && formData.id) {
-      updateUser(userData as User)
+      updateUser(finalUserData as User)
       toast({ title: 'Sucesso', description: 'Usuário atualizado.' })
     } else {
       addUser({
-        ...userData,
+        ...finalUserData,
         id: `user-${Date.now()}`,
         parentId: currentUser.id,
         status:
@@ -196,16 +244,25 @@ export default function Users() {
 
   const handleApprove = (id: string) => {
     approveUser(id)
-    toast({ title: 'Aprovado', description: 'Acesso concedido ao usuário.' })
+    toast({ title: 'Ativado', description: 'Acesso concedido ao usuário.' })
   }
 
-  const handleBlock = (id: string) => {
-    blockUser(id)
-    toast({
-      title: 'Bloqueado',
-      description: 'Acesso do usuário foi revogado.',
-      variant: 'destructive',
-    })
+  const initiateBlock = (id: string) => {
+    setUserToBlock(id)
+    setBlockDialogOpen(true)
+  }
+
+  const confirmBlock = () => {
+    if (userToBlock) {
+      blockUser(userToBlock)
+      toast({
+        title: 'Bloqueado',
+        description: 'Acesso do usuário foi revogado.',
+        variant: 'destructive',
+      })
+    }
+    setBlockDialogOpen(false)
+    setUserToBlock(null)
   }
 
   const handlePermissionChange = (
@@ -218,8 +275,14 @@ export default function Users() {
       let resourcePerm = perms.find((p) => p.resource === resource)
 
       if (!resourcePerm) {
+        // Create new permission entry if it doesn't exist
         resourcePerm = { resource, actions: [] }
         perms.push(resourcePerm)
+      } else {
+        // Create a copy to avoid mutation
+        const index = perms.indexOf(resourcePerm)
+        resourcePerm = { ...resourcePerm, actions: [...resourcePerm.actions] }
+        perms[index] = resourcePerm
       }
 
       if (checked) {
@@ -229,12 +292,39 @@ export default function Users() {
         resourcePerm.actions = resourcePerm.actions.filter((a) => a !== action)
       }
 
-      return { ...prev, permissions: [...perms] }
+      // If no actions left, we can remove the permission object or keep it empty
+      // Keeping it empty is fine
+
+      // Disable Mirror Admin if custom changes are made
+      return { ...prev, permissions: [...perms], mirrorAdmin: false }
     })
   }
 
+  const toggleMirrorAdmin = (checked: boolean) => {
+    if (checked) {
+      // Set all permissions
+      const allPerms: Permission[] = RESOURCES.map((res) => ({
+        resource: res,
+        actions: [...ACTIONS],
+      }))
+      setFormData((prev) => ({
+        ...prev,
+        mirrorAdmin: true,
+        permissions: allPerms,
+      }))
+    } else {
+      // Clear or keep? Better to clear to allow custom
+      setFormData((prev) => ({ ...prev, mirrorAdmin: false, permissions: [] }))
+    }
+  }
+
   const openEdit = (user: User) => {
-    setFormData({ ...user, password: '', confirmPassword: '' })
+    setFormData({
+      ...user,
+      password: '',
+      confirmPassword: '',
+      mirrorAdmin: false,
+    }) // Reset password fields and mirror flag on edit
     setIsEditing(true)
     setOpen(true)
   }
@@ -263,16 +353,27 @@ export default function Users() {
             {t('common.pending_approval')}
           </Badge>
         )
-      case 'pending_activation':
-        return (
-          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 border-blue-200">
-            {t('common.pending_activation')}
-          </Badge>
-        )
       case 'blocked':
         return <Badge variant="destructive">{t('common.blocked')}</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
+    }
+  }
+
+  const getRoleIcon = (role: UserRole) => {
+    switch (role) {
+      case 'software_tenant':
+        return <Building className="h-4 w-4" />
+      case 'internal_user':
+        return <UserCog className="h-4 w-4" />
+      case 'partner':
+        return <Briefcase className="h-4 w-4" />
+      case 'property_owner':
+        return <UserIcon className="h-4 w-4" />
+      case 'partner_employee':
+        return <UsersIcon className="h-4 w-4" />
+      default:
+        return <UserIcon className="h-4 w-4" />
     }
   }
 
@@ -291,7 +392,9 @@ export default function Users() {
           <h1 className="text-3xl font-bold tracking-tight text-navy">
             Gerenciamento de Usuários
           </h1>
-          <p className="text-muted-foreground">Gerencie acesso e permissões.</p>
+          <p className="text-muted-foreground">
+            Gerencie acesso, funções e permissões do sistema.
+          </p>
         </div>
 
         <div className="flex gap-2">
@@ -307,11 +410,11 @@ export default function Users() {
               </DialogHeader>
               <div className="py-4 space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Compartilhe o link abaixo para permitir que testadores
-                  externos acessem a plataforma.
+                  Compartilhe o link abaixo para permitir que novos usuários se
+                  cadastrem.
                 </p>
                 <div className="flex gap-2">
-                  <Input readOnly value={window.location.origin} />
+                  <Input readOnly value={`${window.location.origin}/signup`} />
                   <Button size="icon" onClick={copyInviteLink}>
                     <Copy className="h-4 w-4" />
                   </Button>
@@ -337,14 +440,19 @@ export default function Users() {
                   <Plus className="mr-2 h-4 w-4" /> {t('common.new')} Usuário
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>
                     {isEditing ? 'Editar Usuário' : 'Novo Usuário'}
                   </DialogTitle>
+                  <DialogDescription>
+                    Preencha os detalhes do usuário e defina suas permissões de
+                    acesso.
+                  </DialogDescription>
                 </DialogHeader>
 
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-6 py-4">
+                  {/* Basic Info */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <Label>
@@ -356,6 +464,7 @@ export default function Users() {
                         onChange={(e) =>
                           setFormData({ ...formData, name: e.target.value })
                         }
+                        placeholder="Nome completo"
                       />
                     </div>
                     <div className="grid gap-2">
@@ -369,6 +478,7 @@ export default function Users() {
                           setFormData({ ...formData, email: e.target.value })
                         }
                         type="email"
+                        placeholder="email@exemplo.com"
                       />
                     </div>
                     <div className="grid gap-2">
@@ -389,6 +499,7 @@ export default function Users() {
                         onValueChange={(val: UserRole) =>
                           setFormData({ ...formData, role: val })
                         }
+                        disabled={isEditing} // Prevent role change on edit to avoid permission mismatch issues for now
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -396,20 +507,39 @@ export default function Users() {
                         <SelectContent>
                           {canCreateRole('software_tenant') && (
                             <SelectItem value="software_tenant">
-                              Locador (Cliente)
+                              <div className="flex items-center gap-2">
+                                <Building className="h-4 w-4" /> Locador
+                                (Cliente)
+                              </div>
                             </SelectItem>
                           )}
                           {canCreateRole('internal_user') && (
                             <SelectItem value="internal_user">
-                              Usuário Interno
+                              <div className="flex items-center gap-2">
+                                <UserCog className="h-4 w-4" /> Internal / Staff
+                              </div>
+                            </SelectItem>
+                          )}
+                          {canCreateRole('property_owner') && (
+                            <SelectItem value="property_owner">
+                              <div className="flex items-center gap-2">
+                                <UserIcon className="h-4 w-4" /> Proprietário
+                              </div>
                             </SelectItem>
                           )}
                           {canCreateRole('partner') && (
-                            <SelectItem value="partner">Parceiro</SelectItem>
+                            <SelectItem value="partner">
+                              <div className="flex items-center gap-2">
+                                <Briefcase className="h-4 w-4" /> Parceiro
+                                (Fornecedor)
+                              </div>
+                            </SelectItem>
                           )}
                           {canCreateRole('partner_employee') && (
                             <SelectItem value="partner_employee">
-                              Funcionário
+                              <div className="flex items-center gap-2">
+                                <UsersIcon className="h-4 w-4" /> Equipe (Staff)
+                              </div>
                             </SelectItem>
                           )}
                         </SelectContent>
@@ -417,6 +547,37 @@ export default function Users() {
                     </div>
                   </div>
 
+                  {/* Additional Info for Owners/Partners */}
+                  {(formData.role === 'partner' ||
+                    formData.role === 'property_owner') && (
+                    <div className="grid grid-cols-2 gap-4 border-t pt-4">
+                      <div className="grid gap-2">
+                        <Label>{t('common.tax_id')}</Label>
+                        <Input
+                          value={formData.taxId || ''}
+                          onChange={(e) =>
+                            setFormData({ ...formData, taxId: e.target.value })
+                          }
+                          placeholder="CPF/CNPJ/SSN"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>{t('common.address')}</Label>
+                        <Input
+                          value={formData.address || ''}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              address: e.target.value,
+                            })
+                          }
+                          placeholder="Endereço completo"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Password Section */}
                   <div className="grid grid-cols-2 gap-4 border-t pt-4">
                     <div className="grid gap-2">
                       <Label>
@@ -450,24 +611,47 @@ export default function Users() {
                     </div>
                   </div>
 
-                  {formData.role === 'internal_user' && (
-                    <>
-                      <div className="border rounded-md p-4 bg-muted/20">
-                        <h4 className="font-medium mb-3 flex items-center gap-2">
-                          <Shield className="h-4 w-4" /> Permissões (Skills)
+                  {/* Permissions Section - Only for Staff roles */}
+                  {(formData.role === 'internal_user' ||
+                    formData.role === 'partner_employee') && (
+                    <div className="border rounded-md mt-2">
+                      <div className="p-4 bg-muted/20 border-b flex justify-between items-center">
+                        <h4 className="font-medium flex items-center gap-2">
+                          <Shield className="h-4 w-4" /> Permissões de Acesso
+                          (Skills)
                         </h4>
+                        {formData.role === 'internal_user' && (
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              id="mirror-admin"
+                              checked={formData.mirrorAdmin}
+                              onCheckedChange={toggleMirrorAdmin}
+                            />
+                            <Label
+                              htmlFor="mirror-admin"
+                              className="flex items-center gap-1 cursor-pointer"
+                            >
+                              <ShieldCheck className="h-4 w-4 text-trust-blue" />
+                              Admin Total (Mirror PM)
+                            </Label>
+                          </div>
+                        )}
+                      </div>
+                      <ScrollArea className="h-[300px]">
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Recurso</TableHead>
-                              <TableHead className="text-center">Ver</TableHead>
-                              <TableHead className="text-center">
+                              <TableHead>Módulo / Recurso</TableHead>
+                              <TableHead className="text-center w-[80px]">
+                                Ver
+                              </TableHead>
+                              <TableHead className="text-center w-[80px]">
                                 Criar
                               </TableHead>
-                              <TableHead className="text-center">
+                              <TableHead className="text-center w-[80px]">
                                 Editar
                               </TableHead>
-                              <TableHead className="text-center">
+                              <TableHead className="text-center w-[80px]">
                                 Excluir
                               </TableHead>
                             </TableRow>
@@ -475,10 +659,10 @@ export default function Users() {
                           <TableBody>
                             {RESOURCES.map((res) => (
                               <TableRow key={res}>
-                                <TableCell className="capitalize">
+                                <TableCell className="capitalize font-medium">
                                   {t(`common.${res}`) !== `common.${res}`
                                     ? t(`common.${res}`)
-                                    : res}
+                                    : res.replace('_', ' ')}
                                 </TableCell>
                                 {ACTIONS.map((action) => {
                                   const checked =
@@ -499,6 +683,7 @@ export default function Users() {
                                             c as boolean,
                                           )
                                         }
+                                        disabled={formData.mirrorAdmin} // Disable explicit selection if Mirror Admin is on
                                       />
                                     </TableCell>
                                   )
@@ -507,13 +692,18 @@ export default function Users() {
                             ))}
                           </TableBody>
                         </Table>
-                      </div>
-                    </>
+                      </ScrollArea>
+                    </div>
                   )}
                 </div>
 
                 <DialogFooter>
-                  <Button onClick={handleSave}>{t('common.save')}</Button>
+                  <Button
+                    onClick={handleSave}
+                    className="bg-trust-blue w-full sm:w-auto"
+                  >
+                    {t('common.save')}
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -524,13 +714,15 @@ export default function Users() {
       <Card>
         <CardHeader>
           <CardTitle>{t('tenants.list_title')}</CardTitle>
+          <CardDescription>
+            {filteredUsers.length} usuários cadastrados no sistema.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Email</TableHead>
+                <TableHead>Nome / Email</TableHead>
                 <TableHead>Função</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
@@ -540,7 +732,7 @@ export default function Users() {
               {filteredUsers.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={4}
                     className="text-center py-8 text-muted-foreground"
                   >
                     Nenhum usuário encontrado.
@@ -549,43 +741,63 @@ export default function Users() {
               ) : (
                 filteredUsers.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="capitalize">
-                        {t(`roles.${user.role}`)}
-                      </Badge>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{user.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {user.email}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {getRoleIcon(user.role)}
+                        <span className="capitalize">
+                          {t(`roles.${user.role}`)}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell>{getStatusBadge(user.status)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        {currentUser.role === 'platform_owner' && (
-                          <>
-                            {user.status === 'pending_approval' && (
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="text-green-600 border-green-200 hover:bg-green-50"
-                                onClick={() => handleApprove(user.id)}
-                                title={t('common.approve')}
-                              >
-                                <CheckCircle2 className="h-4 w-4" />
-                              </Button>
+                        {/* Approval / Reactivation */}
+                        {(user.status === 'pending_approval' ||
+                          user.status === 'blocked') && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-green-600 border-green-200 hover:bg-green-50 h-8"
+                            onClick={() => handleApprove(user.id)}
+                            title={
+                              user.status === 'blocked'
+                                ? 'Reativar Usuário'
+                                : t('common.approve')
+                            }
+                          >
+                            {user.status === 'blocked' ? (
+                              <Unlock className="h-3 w-3 mr-1" />
+                            ) : (
+                              <CheckCircle2 className="h-3 w-3 mr-1" />
                             )}
-                            {user.status !== 'blocked' && (
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="text-orange-600 border-orange-200 hover:bg-orange-50"
-                                onClick={() => handleBlock(user.id)}
-                                title={t('common.block')}
-                              >
-                                <Ban className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </>
+                            {user.status === 'blocked' ? 'Reativar' : 'Aprovar'}
+                          </Button>
                         )}
 
+                        {/* Blocking */}
+                        {user.status === 'active' &&
+                          currentUser.id !== user.id && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                              onClick={() => initiateBlock(user.id)}
+                              title={t('common.block')}
+                            >
+                              <Ban className="h-4 w-4" />
+                            </Button>
+                          )}
+
+                        {/* Editing */}
                         {(hasPermission(currentUser as User, 'users', 'edit') ||
                           currentUser.role === 'partner') && (
                           <Button
@@ -596,44 +808,48 @@ export default function Users() {
                             <Edit className="h-4 w-4" />
                           </Button>
                         )}
+
+                        {/* Deleting */}
                         {(hasPermission(
                           currentUser as User,
                           'users',
                           'delete',
                         ) ||
-                          currentUser.role === 'partner') && (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-red-500"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  {t('common.delete_title')}
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  {t('common.delete_desc')}
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>
-                                  {t('common.cancel')}
-                                </AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDelete(user.id)}
+                          currentUser.role === 'partner') &&
+                          currentUser.id !== user.id && (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
                                 >
-                                  {t('common.delete')}
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        )}
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    {t('common.delete_title')}
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    {t('common.delete_desc')}
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>
+                                    {t('common.cancel')}
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDelete(user.id)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    {t('common.delete')}
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -643,6 +859,32 @@ export default function Users() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Block Confirmation Dialog */}
+      <AlertDialog open={blockDialogOpen} onOpenChange={setBlockDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <Ban className="h-5 w-5" /> Bloquear Acesso
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja bloquear este usuário? Ele perderá acesso
+              imediato ao sistema. Você poderá reativá-lo posteriormente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setBlockDialogOpen(false)}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmBlock}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Confirmar Bloqueio
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

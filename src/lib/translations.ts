@@ -89,6 +89,11 @@ export const translations = {
       export_success: 'Dados exportados com sucesso.',
       renewals: 'Renovação de Contrato',
       short_term: 'Short Term',
+      market_analysis: 'Análise de Mercado',
+      workflows: 'Workflows',
+      audit_logs: 'Logs de Auditoria',
+      portal: 'Portal',
+      publicity: 'Publicidade',
     },
     short_term: {
       title: 'Gestão de Temporada',
@@ -113,7 +118,6 @@ export const translations = {
       mark_paid: 'Marcar como Pago',
       payment_recorded: 'Pagamento registrado e integrado ao financeiro.',
     },
-    // ... existing translations ...
     status: {
       interested: 'Interessado',
       rented: 'Alugado',
@@ -125,11 +129,11 @@ export const translations = {
     roles: {
       platform_owner: 'Dono da Plataforma',
       software_tenant: 'Locador (Cliente)',
-      internal_user: 'Usuário Interno',
+      internal_user: 'Internal / Staff',
       property_owner: 'Proprietário',
       partner: 'Parceiro',
       tenant: 'Inquilino',
-      partner_employee: 'Funcionário',
+      partner_employee: 'Equipe (Staff)',
     },
     dashboard: {
       title: 'Painel',
@@ -481,6 +485,11 @@ export const translations = {
       export_success: 'Data exported successfully.',
       renewals: 'Contract Renewals',
       short_term: 'Short Term',
+      market_analysis: 'Market Analysis',
+      workflows: 'Workflows',
+      audit_logs: 'Audit Logs',
+      portal: 'Portal',
+      publicity: 'Publicity',
     },
     short_term: {
       title: 'Short Term Management',
@@ -505,7 +514,6 @@ export const translations = {
       mark_paid: 'Mark as Paid',
       payment_recorded: 'Payment recorded and synced to financial ledger.',
     },
-    // ... existing translations ...
     renewals: {
       title: 'Contract Renewals',
       subtitle: 'Manage expirations and negotiations.',
@@ -535,11 +543,11 @@ export const translations = {
     roles: {
       platform_owner: 'Platform Owner',
       software_tenant: 'Property Manager',
-      internal_user: 'Internal User',
+      internal_user: 'Internal / Staff',
       property_owner: 'Property Owner',
       partner: 'Partner',
       tenant: 'Tenant',
-      partner_employee: 'Employee',
+      partner_employee: 'Team (Staff)',
     },
     dashboard: {
       title: 'Dashboard',
