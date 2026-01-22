@@ -584,7 +584,7 @@ export interface Message {
 export interface ChatMessage {
   id: string
   text: string
-  sender: 'me' | 'other'
+  senderId: string // Changed from 'sender' literal to 'senderId' string for robust attribution
   timestamp: string
   attachments?: string[]
 }

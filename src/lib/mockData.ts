@@ -132,6 +132,7 @@ const demoTeamUser: User = {
   ],
   country: 'US',
   isDemo: true,
+  parentId: 'tenant_manager_1',
 }
 
 const demoOwnerUser: User = {
@@ -627,7 +628,57 @@ export const automationRules: AutomationRule[] = [
   },
 ]
 
-export const messages: Message[] = []
+// Seed messages with correct senderId attribution for testing
+export const messages: Message[] = [
+  {
+    id: 'msg_thread_1_pm',
+    contact: 'Demo Owner',
+    contactId: 'demo_owner',
+    ownerId: 'tenant_manager_1',
+    lastMessage: 'Hello, how is my property?',
+    time: new Date().toISOString(),
+    unread: 1,
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=demo3',
+    history: [
+      {
+        id: 'm1',
+        text: 'Hi there! Just checking in.',
+        senderId: 'tenant_manager_1',
+        timestamp: subDays(new Date(), 1).toISOString(),
+      },
+      {
+        id: 'm2',
+        text: 'Hello, how is my property?',
+        senderId: 'demo_owner',
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  },
+  {
+    id: 'msg_thread_1_owner',
+    contact: 'Property Manager 1',
+    contactId: 'tenant_manager_1',
+    ownerId: 'demo_owner',
+    lastMessage: 'Hello, how is my property?',
+    time: new Date().toISOString(),
+    unread: 0,
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=11',
+    history: [
+      {
+        id: 'm1',
+        text: 'Hi there! Just checking in.',
+        senderId: 'tenant_manager_1',
+        timestamp: subDays(new Date(), 1).toISOString(),
+      },
+      {
+        id: 'm2',
+        text: 'Hello, how is my property?',
+        senderId: 'demo_owner',
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  },
+]
 
 export const ledgerEntries: LedgerEntry[] = [
   {

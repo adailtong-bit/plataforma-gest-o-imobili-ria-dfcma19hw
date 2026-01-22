@@ -329,7 +329,7 @@ export default function Messages() {
                           {msg.contact}
                         </span>
                         <span className="text-[10px] text-muted-foreground tabular-nums">
-                          {msg.time}
+                          {formatMessageTime(msg.time)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -470,16 +470,14 @@ export default function Messages() {
               <ScrollArea className="flex-1 bg-slate-50/50 dark:bg-background/50 p-4">
                 <div className="flex flex-col gap-6 pb-4">
                   {selectedMessage.history.map((msg, index) => {
-                    const isMe = msg.sender === 'me'
-                    const senderName = isMe
-                      ? currentUser.name
-                      : contactUser?.name || selectedMessage.contact
-                    const senderAvatar = isMe
-                      ? currentUser.avatar
-                      : contactUser?.avatar || selectedMessage.avatar
-                    const senderRole = isMe
-                      ? currentUser.role
-                      : contactUser?.role || 'user'
+                    // Identify if the message was sent by the currently logged-in user
+                    const isMe = msg.senderId === currentUser.id
+
+                    // Find sender details from allUsers to ensure consistent data
+                    const sender = allUsers.find((u) => u.id === msg.senderId)
+                    const senderName = sender ? sender.name : 'Unknown'
+                    const senderAvatar = sender ? sender.avatar : ''
+                    const senderRole = sender ? sender.role : 'user'
 
                     return (
                       <div

@@ -35,6 +35,7 @@ import {
   Booking,
   CalendarBlock,
   MessageTemplate,
+  ChatMessage,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -106,7 +107,7 @@ interface AppContextType {
   addTaskImage: (taskId: string, imageUrl: string) => void
   addTaskEvidence: (taskId: string, evidence: Evidence) => void
   sendMessage: (contactId: string, text: string, attachments?: string[]) => void
-  markAsRead: (contactId: string) => void
+  markAsRead: (threadId: string) => void
   addTenant: (tenant: Tenant) => void
   updateTenant: (tenant: Tenant) => void
   addOwner: (owner: Owner) => void
@@ -332,47 +333,113 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setUsers((prev) =>
       prev.map((u) => (u.id === id ? { ...u, status: 'blocked' } : u)),
     )
-  const sendMessage = (id: string, text: string) => {
-    // Basic implementation for mock
+
+  // Messaging Logic
+  const sendMessage = (
+    contactId: string,
+    text: string,
+    attachments: string[] = [],
+  ) => {
+    const newMessage: ChatMessage = {
+      id: `msg-${Date.now()}`,
+      text,
+      senderId: currentUser.id,
+      timestamp: new Date().toISOString(),
+      attachments,
+    }
+
     setAllMessages((prev) => {
-      const existing = prev.find((m) => m.contactId === id)
-      if (existing) {
-        return prev.map((m) =>
-          m.contactId === id
-            ? {
-                ...m,
-                lastMessage: text,
-                time: 'Just now',
-                history: [
-                  ...m.history,
-                  {
-                    id: `msg-${Date.now()}`,
-                    text,
-                    sender: 'me',
-                    timestamp: new Date().toISOString(),
-                  },
-                ],
-              }
-            : m,
-        )
+      let nextMessages = [...prev]
+
+      // 1. Update/Create Sender's Thread (Owner: CurrentUser, Contact: contactId)
+      const senderThreadIndex = nextMessages.findIndex(
+        (m) => m.ownerId === currentUser.id && m.contactId === contactId,
+      )
+
+      if (senderThreadIndex >= 0) {
+        nextMessages[senderThreadIndex] = {
+          ...nextMessages[senderThreadIndex],
+          lastMessage: text,
+          time: new Date().toISOString(),
+          history: [...nextMessages[senderThreadIndex].history, newMessage],
+        }
+      } else {
+        const contact = allUsers.find((u) => u.id === contactId)
+        if (contact) {
+          nextMessages.push({
+            id: `chat-${currentUser.id}-${contactId}`,
+            contact: contact.name,
+            contactId: contact.id,
+            ownerId: currentUser.id,
+            lastMessage: text,
+            time: new Date().toISOString(),
+            unread: 0,
+            avatar: contact.avatar || '',
+            history: [newMessage],
+          })
+        }
       }
-      return prev
+
+      // 2. Update/Create Recipient's Thread (Owner: contactId, Contact: CurrentUser)
+      // We need to check if a thread for the recipient exists with the sender
+      const recipientThreadIndex = nextMessages.findIndex(
+        (m) => m.ownerId === contactId && m.contactId === currentUser.id,
+      )
+
+      if (recipientThreadIndex >= 0) {
+        nextMessages[recipientThreadIndex] = {
+          ...nextMessages[recipientThreadIndex],
+          lastMessage: text,
+          time: new Date().toISOString(),
+          unread: nextMessages[recipientThreadIndex].unread + 1,
+          history: [...nextMessages[recipientThreadIndex].history, newMessage],
+        }
+      } else {
+        // Create thread for recipient
+        nextMessages.push({
+          id: `chat-${contactId}-${currentUser.id}`,
+          contact: currentUser.name,
+          contactId: currentUser.id,
+          ownerId: contactId,
+          lastMessage: text,
+          time: new Date().toISOString(),
+          unread: 1,
+          avatar: currentUser.avatar || '',
+          history: [newMessage],
+        })
+      }
+
+      return nextMessages
     })
   }
-  const markAsRead = (id: string) => {}
-  const startChat = (id: string) => {
-    // Basic implementation for mock
-    const contact = allUsers.find((u) => u.id === id)
-    if (contact && !allMessages.find((m) => m.contactId === id)) {
+
+  const markAsRead = (threadId: string) => {
+    setAllMessages((prev) =>
+      prev.map((m) => (m.id === threadId ? { ...m, unread: 0 } : m)),
+    )
+  }
+
+  const startChat = (contactId: string) => {
+    // Check if thread exists for current user
+    if (
+      allMessages.some(
+        (m) => m.ownerId === currentUser.id && m.contactId === contactId,
+      )
+    ) {
+      return // Already exists
+    }
+
+    const contact = allUsers.find((u) => u.id === contactId)
+    if (contact) {
       setAllMessages((prev) => [
         ...prev,
         {
-          id: `chat-${Date.now()}`,
+          id: `chat-${currentUser.id}-${contactId}-${Date.now()}`,
           contact: contact.name,
           contactId: contact.id,
           ownerId: currentUser.id,
           lastMessage: '',
-          time: 'New',
+          time: new Date().toISOString(),
           unread: 0,
           avatar: contact.avatar || '',
           history: [],
@@ -380,6 +447,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       ])
     }
   }
+
   const addProperty = (p: Property) => setProperties([...properties, p])
   const updateProperty = (p: Property) =>
     setProperties(properties.map((prop) => (prop.id === p.id ? p : prop)))
@@ -485,7 +553,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setMessageTemplates((prev) => prev.filter((t) => t.id !== templateId))
   }
 
-  const visibleMessages = allMessages // Simplified
+  // Filter messages for current user perspective
+  const visibleMessages = useMemo(
+    () => allMessages.filter((m) => m.ownerId === currentUser.id),
+    [allMessages, currentUser.id],
+  )
 
   return (
     <AppContext.Provider
