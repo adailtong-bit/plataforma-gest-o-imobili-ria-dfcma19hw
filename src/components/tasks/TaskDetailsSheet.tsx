@@ -17,11 +17,15 @@ import {
   CheckCircle2,
   Clock,
   Navigation,
+  Briefcase,
+  ExternalLink,
 } from 'lucide-react'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useShortTermStore from '@/stores/useShortTermStore'
+import { Card, CardContent } from '@/components/ui/card'
 
 interface TaskDetailsSheetProps {
   task: Task | null
@@ -35,6 +39,8 @@ export function TaskDetailsSheet({
   onOpenChange,
 }: TaskDetailsSheetProps) {
   const { t } = useLanguageStore()
+  const { bookings } = useShortTermStore()
+
   if (!task) return null
 
   const getPriorityColor = (priority: string) => {
@@ -58,6 +64,10 @@ export function TaskDetailsSheet({
     task.images?.filter((img) => !task.evidence?.some((e) => e.url === img)) ||
     []
 
+  const linkedBooking = task.bookingId
+    ? bookings.find((b) => b.id === task.bookingId)
+    : null
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-xl overflow-y-auto p-0">
@@ -72,6 +82,11 @@ export function TaskDetailsSheet({
                   {task.priority.toUpperCase()}
                 </Badge>
                 <Badge variant="secondary">{t(`common.${task.status}`)}</Badge>
+                {linkedBooking && (
+                  <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 border-purple-200">
+                    <Briefcase className="w-3 h-3 mr-1" /> Booking Linked
+                  </Badge>
+                )}
               </div>
               <SheetTitle className="text-2xl">{task.title}</SheetTitle>
               <SheetDescription className="text-base">
@@ -80,6 +95,53 @@ export function TaskDetailsSheet({
             </SheetHeader>
 
             <div className="space-y-6">
+              {/* Booking Link Section */}
+              {linkedBooking && (
+                <Card className="bg-purple-50/50 border-purple-100">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2 text-purple-800 font-semibold text-sm uppercase tracking-wide">
+                      <Briefcase className="h-4 w-4" /> {t('short_term.title')}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-muted-foreground text-xs">
+                          {t('short_term.guest')}
+                        </span>
+                        <p className="font-medium">{linkedBooking.guestName}</p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground text-xs">
+                          {t('short_term.platform')}
+                        </span>
+                        <p className="capitalize">{linkedBooking.platform}</p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground text-xs">
+                          Check-in
+                        </span>
+                        <p className="font-medium">
+                          {format(
+                            parseISO(linkedBooking.checkIn),
+                            'dd/MM/yyyy',
+                          )}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground text-xs">
+                          Check-out
+                        </span>
+                        <p className="font-medium">
+                          {format(
+                            parseISO(linkedBooking.checkOut),
+                            'dd/MM/yyyy',
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Location Section */}
               <div className="bg-muted/30 p-4 rounded-lg border space-y-3">
                 <h3 className="font-semibold flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wide">
@@ -113,7 +175,7 @@ export function TaskDetailsSheet({
 
               <Separator />
 
-              {/* Workflow Evidence - NEW SECTION */}
+              {/* Workflow Evidence */}
               <div className="space-y-4">
                 <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4" /> {t('tasks.activity_log')}

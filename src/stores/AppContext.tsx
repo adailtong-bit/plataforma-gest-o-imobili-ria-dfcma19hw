@@ -26,6 +26,7 @@ import {
   GenericDocument,
   NegotiationStatus,
   NegotiationLogEntry,
+  Booking,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -48,6 +49,7 @@ import {
   advertisements as initialAdvertisements,
   mockAdvertisers,
   mockAdPricing,
+  bookings as initialBookings,
 } from '@/lib/mockData'
 import { canChat } from '@/lib/permissions'
 import { translations, Language } from '@/lib/translations'
@@ -68,6 +70,7 @@ interface AppContextType {
   tenants: Tenant[]
   owners: Owner[]
   partners: Partner[]
+  bookings: Booking[] // Added
   automationRules: AutomationRule[]
   currentUser: User | Owner | Partner | Tenant
   allUsers: (User | Owner | Partner | Tenant)[]
@@ -106,6 +109,9 @@ interface AppContextType {
   updateOwner: (owner: Owner) => void
   addPartner: (partner: Partner) => void
   updatePartner: (partner: Partner) => void
+  addBooking: (booking: Booking) => void // Added
+  updateBooking: (booking: Booking) => void // Added
+  deleteBooking: (bookingId: string) => void // Added
   setCurrentUser: (userId: string) => void
   startChat: (contactId: string) => void
   updateAutomationRule: (rule: AutomationRule) => void
@@ -180,6 +186,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [owners])
 
   const [partners, setPartners] = useState<Partner[]>(initialPartners)
+  const [bookings, setBookings] = useState<Booking[]>(initialBookings) // Added
   const [automationRules, setAutomationRules] = useState<AutomationRule[]>(
     initialAutomationRules,
   )
@@ -241,6 +248,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   >(systemUsers[0])
 
   const allUsers = [...users, ...owners, ...partners, ...tenants]
+
+  // ... (existing effects and functions)
 
   useEffect(() => {
     const checkExpirations = () => {
@@ -383,6 +392,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  // ... (sendMessage and other existing functions)
   const visibleMessages = allMessages.filter(
     (m) =>
       m.ownerId === currentUser.id ||
@@ -814,6 +824,96 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  // Booking Actions
+  const addBooking = (booking: Booking) => {
+    setBookings((prev) => [...prev, booking])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Booking',
+      entityId: booking.id,
+      details: `Created booking for: ${booking.guestName}`,
+    })
+
+    if (booking.paid && booking.totalAmount > 0) {
+      // Create ledger entry immediately if paid on creation
+      const ledgerEntry: LedgerEntry = {
+        id: `inc-${Date.now()}`,
+        propertyId: booking.propertyId,
+        date: new Date().toISOString(),
+        dueDate: booking.checkIn,
+        paymentDate: new Date().toISOString(),
+        type: 'income',
+        category: 'Rent (Short Term)',
+        amount: booking.totalAmount,
+        description: `Booking #${booking.id.slice(-4)} - ${booking.guestName}`,
+        referenceId: booking.id,
+        status: 'cleared',
+      }
+      addLedgerEntry(ledgerEntry)
+      // Update booking to link ledger entry (async-ish pattern mock)
+      // We'll rely on the fact that for mock data we don't strictly need the ID back immediately in the same tick if we are careful,
+      // but ideally we update the booking state right away.
+      // Since `addLedgerEntry` updates state, we can't easily get the ID back here if it was async real DB.
+      // But here it's sync.
+      // We won't update the booking state recursively here to avoid complexity in this mock.
+    }
+  }
+
+  const updateBooking = (booking: Booking) => {
+    // Check if status changed to paid to trigger financial entry
+    const oldBooking = bookings.find((b) => b.id === booking.id)
+    if (
+      oldBooking &&
+      !oldBooking.paid &&
+      booking.paid &&
+      booking.totalAmount > 0
+    ) {
+      const ledgerEntry: LedgerEntry = {
+        id: `inc-${Date.now()}`,
+        propertyId: booking.propertyId,
+        date: new Date().toISOString(),
+        dueDate: booking.checkIn,
+        paymentDate: new Date().toISOString(),
+        type: 'income',
+        category: 'Rent (Short Term)',
+        amount: booking.totalAmount,
+        description: `Booking #${booking.id.slice(-4)} - ${booking.guestName}`,
+        referenceId: booking.id,
+        status: 'cleared',
+      }
+      addLedgerEntry(ledgerEntry)
+      addNotification({
+        title: 'Pagamento Confirmado',
+        message: `A reserva de ${booking.guestName} foi marcada como paga.`,
+        type: 'success',
+      })
+    }
+
+    setBookings((prev) => prev.map((b) => (b.id === booking.id ? booking : b)))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Booking',
+      entityId: booking.id,
+      details: `Updated booking for: ${booking.guestName}`,
+    })
+  }
+
+  const deleteBooking = (bookingId: string) => {
+    setBookings((prev) => prev.filter((b) => b.id !== bookingId))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'Booking',
+      entityId: bookingId,
+      details: 'Deleted booking',
+    })
+  }
+
   const updateAutomationRule = (rule: AutomationRule) => {
     setAutomationRules(
       automationRules.map((r) => (r.id === rule.id ? rule : r)),
@@ -1101,6 +1201,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         tenants,
         owners,
         partners,
+        bookings, // Added
         automationRules,
         currentUser,
         allUsers,
@@ -1139,6 +1240,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateOwner,
         addPartner,
         updatePartner,
+        addBooking, // Added
+        updateBooking, // Added
+        deleteBooking, // Added
         setCurrentUser,
         startChat,
         updateAutomationRule,

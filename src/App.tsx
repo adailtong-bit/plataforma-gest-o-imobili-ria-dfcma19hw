@@ -29,6 +29,7 @@ import MarketAnalysis from './pages/MarketAnalysis'
 import Workflows from './pages/Workflows'
 import Renewals from './pages/Renewals'
 import PublicityAdmin from './pages/admin/PublicityAdmin'
+import ShortTerm from './pages/ShortTerm'
 import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { useEffect } from 'react'
@@ -52,6 +53,7 @@ const App = () => {
                 <Route path="/" element={<Index />} />
                 <Route path="/properties" element={<Properties />} />
                 <Route path="/properties/:id" element={<PropertyDetails />} />
+                <Route path="/short-term" element={<ShortTerm />} />
                 <Route path="/condominiums" element={<Condominiums />} />
                 <Route
                   path="/condominiums/:id"

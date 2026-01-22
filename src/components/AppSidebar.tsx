@@ -29,6 +29,7 @@ import {
   Workflow,
   RefreshCw,
   Megaphone,
+  BriefcaseBusiness,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -64,7 +65,13 @@ export function AppSidebar() {
       resource: 'properties',
     },
     {
-      title: t('common.renewals'), // Renovação de Contrato
+      title: t('common.short_term'),
+      url: '/short-term',
+      icon: BriefcaseBusiness, // Using BriefcaseBusiness for Short Term business nature
+      resource: 'short_term',
+    },
+    {
+      title: t('common.renewals'),
       url: '/renewals',
       icon: RefreshCw,
       resource: 'renewals',

@@ -22,6 +22,7 @@ import {
   Advertisement,
   Advertiser,
   AdPricing,
+  Booking,
 } from '@/lib/types'
 
 // --- System-Wide Seeded Test Environment ---
@@ -70,6 +71,7 @@ const internalUsers: User[] = Array.from({ length: 3 }).map((_, i) => ({
     { resource: 'dashboard', actions: ['view'] },
     { resource: 'properties', actions: ['view', 'create', 'edit'] },
     { resource: 'tasks', actions: ['view', 'create', 'edit', 'delete'] },
+    { resource: 'short_term', actions: ['view', 'create', 'edit', 'delete'] },
   ],
   status: 'active',
   isFirstLogin: false,
@@ -196,6 +198,52 @@ export const tenants: Tenant[] = tenantsData.flatMap((manager, tIdx) =>
         : [],
   })),
 )
+
+// Bookings (Short Term)
+export const bookings: Booking[] = [
+  {
+    id: 'bk_1',
+    propertyId: 'prop_0_0', // Assuming Property 1-1 is short term
+    guestName: 'John Smith',
+    guestEmail: 'john@traveler.com',
+    guestPhone: '+1 555 0101',
+    checkIn: addDays(new Date(), 2).toISOString(),
+    checkOut: addDays(new Date(), 7).toISOString(),
+    status: 'confirmed',
+    totalAmount: 1250.0,
+    paid: true,
+    platform: 'airbnb',
+    adults: 2,
+    children: 1,
+  },
+  {
+    id: 'bk_2',
+    propertyId: 'prop_0_1',
+    guestName: 'Maria Garcia',
+    guestEmail: 'maria@traveler.com',
+    checkIn: subDays(new Date(), 2).toISOString(),
+    checkOut: addDays(new Date(), 3).toISOString(),
+    status: 'checked_in',
+    totalAmount: 850.0,
+    paid: true,
+    platform: 'booking.com',
+    adults: 2,
+  },
+  {
+    id: 'bk_3',
+    propertyId: 'prop_0_0',
+    guestName: 'Family Vacation',
+    guestEmail: 'fam@traveler.com',
+    checkIn: addDays(new Date(), 10).toISOString(),
+    checkOut: addDays(new Date(), 17).toISOString(),
+    status: 'confirmed',
+    totalAmount: 2100.0,
+    paid: false,
+    platform: 'vrbo',
+    adults: 4,
+    children: 2,
+  },
+]
 
 // Partners (3 per manager)
 export const partners: Partner[] = tenantsData.flatMap((manager, tIdx) =>

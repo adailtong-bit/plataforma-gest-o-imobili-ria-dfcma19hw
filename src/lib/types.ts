@@ -26,6 +26,7 @@ export type Resource =
   | 'workflows'
   | 'renewals'
   | 'publicity'
+  | 'short_term' // Added resource
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -316,6 +317,26 @@ export interface Tenant {
   suggestedRenewalPrice?: number
 }
 
+export interface Booking {
+  id: string
+  propertyId: string
+  propertyName?: string // For denormalization convenience in lists
+  guestName: string
+  guestEmail: string
+  guestPhone?: string
+  checkIn: string // ISO Date
+  checkOut: string // ISO Date
+  status: 'confirmed' | 'checked_in' | 'checked_out' | 'cancelled'
+  totalAmount: number
+  paid: boolean
+  platform: 'airbnb' | 'vrbo' | 'direct' | 'booking.com' | 'other'
+  notes?: string
+  ledgerEntryId?: string // Link to financial record
+  generatedTasks?: string[] // IDs of cleaning/inspection tasks
+  adults?: number
+  children?: number
+}
+
 export interface Owner {
   id: string
   name: string
@@ -418,6 +439,7 @@ export interface Task {
   price?: number
   backToBack?: boolean
   recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
+  bookingId?: string // Link to Short Term Booking
 }
 
 export interface Invoice {

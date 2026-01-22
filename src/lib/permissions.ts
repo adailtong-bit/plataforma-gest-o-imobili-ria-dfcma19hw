@@ -26,6 +26,7 @@ export const hasPermission = (
   if (user.role === 'property_owner') {
     if (resource === 'portal' && action === 'view') return true
     if (resource === 'messages' && action === 'view') return true
+    if (resource === 'short_term' && action === 'view') return true // Can view booking cal if needed
     return false
   }
 
