@@ -10,17 +10,18 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2, MapPin, Clock, Camera } from 'lucide-react'
+import { Loader2, MapPin, Clock, Camera, Plus, X } from 'lucide-react'
 import { format } from 'date-fns'
 import { Evidence, Task } from '@/lib/types'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface EvidenceUploadDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   task: Task
   type: 'arrival' | 'completion'
-  onConfirm: (evidence: Evidence) => void
+  onConfirm: (evidenceList: Evidence[]) => void
 }
 
 export function EvidenceUploadDialog({
@@ -31,8 +32,8 @@ export function EvidenceUploadDialog({
   onConfirm,
 }: EvidenceUploadDialogProps) {
   const { t } = useLanguageStore()
-  const [file, setFile] = useState<File | null>(null)
-  const [preview, setPreview] = useState<string | null>(null)
+  const [files, setFiles] = useState<File[]>([])
+  const [previews, setPreviews] = useState<string[]>([])
   const [loadingLocation, setLoadingLocation] = useState(false)
   const [locationData, setLocationData] = useState<{
     lat: number
@@ -42,14 +43,13 @@ export function EvidenceUploadDialog({
 
   useEffect(() => {
     if (open) {
-      setFile(null)
-      setPreview(null)
+      setFiles([])
+      setPreviews([])
       setLocationData(null)
       setLoadingLocation(true)
 
       // Simulate getting location
       const timer = setTimeout(() => {
-        // Mock location based on task property or generic
         setLocationData({
           lat: 28.5383,
           lng: -81.3792,
@@ -63,25 +63,36 @@ export function EvidenceUploadDialog({
   }, [open, task.propertyAddress])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0]
-      setFile(selectedFile)
-      setPreview(URL.createObjectURL(selectedFile))
+    if (e.target.files && e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files)
+      const newPreviews = newFiles.map((f) => URL.createObjectURL(f))
+
+      setFiles((prev) => [...prev, ...newFiles])
+      setPreviews((prev) => [...prev, ...newPreviews])
+
+      // Reset input value to allow selecting same file again if needed
+      e.target.value = ''
     }
   }
 
-  const handleConfirm = () => {
-    if (!file || !preview) return
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index))
+    setPreviews((prev) => prev.filter((_, i) => i !== index))
+  }
 
-    const newEvidence: Evidence = {
+  const handleConfirm = () => {
+    if (files.length === 0) return
+
+    const evidenceList: Evidence[] = previews.map((url, index) => ({
       id: Math.random().toString(36).substr(2, 9),
-      url: preview, // In a real app, this would be the S3 URL
+      url: url, // In a real app, upload to S3 here
       type: type,
       timestamp: new Date().toISOString(),
       location: locationData || undefined,
-    }
+      notes: `Photo ${index + 1} of ${previews.length}`,
+    }))
 
-    onConfirm(newEvidence)
+    onConfirm(evidenceList)
   }
 
   const title =
@@ -124,40 +135,50 @@ export function EvidenceUploadDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Evidência Fotográfica</Label>
-            {!preview ? (
-              <div className="h-40 w-full rounded-md border-2 border-dashed flex flex-col items-center justify-center gap-2 bg-muted/20 hover:bg-muted/40 transition-colors relative cursor-pointer">
-                <Camera className="h-8 w-8 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  {t('tasks.photo_placeholder')}
-                </span>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  onChange={handleFileChange}
-                />
+            <Label>Evidência Fotográfica (Múltiplas)</Label>
+            <ScrollArea className="h-[220px] w-full rounded-md border p-2">
+              <div className="grid grid-cols-2 gap-2">
+                {previews.map((preview, idx) => (
+                  <div
+                    key={idx}
+                    className="relative aspect-video rounded-md overflow-hidden border bg-black group"
+                  >
+                    <img
+                      src={preview}
+                      alt={`Preview ${idx}`}
+                      className="w-full h-full object-contain"
+                    />
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => removeFile(idx)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+
+                <div className="aspect-video w-full rounded-md border-2 border-dashed flex flex-col items-center justify-center gap-2 bg-muted/20 hover:bg-muted/40 transition-colors relative cursor-pointer">
+                  <Camera className="h-8 w-8 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground text-center px-2">
+                    {files.length > 0
+                      ? 'Adicionar mais'
+                      : t('tasks.photo_placeholder')}
+                  </span>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={handleFileChange}
+                  />
+                </div>
               </div>
-            ) : (
-              <div className="relative h-40 w-full rounded-md overflow-hidden border bg-black">
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-full h-full object-contain"
-                />
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="absolute top-2 right-2 h-7 text-xs"
-                  onClick={() => {
-                    setFile(null)
-                    setPreview(null)
-                  }}
-                >
-                  {t('common.edit')}
-                </Button>
-              </div>
-            )}
+            </ScrollArea>
+            <p className="text-xs text-muted-foreground">
+              {files.length} foto(s) selecionada(s).
+            </p>
           </div>
         </div>
 
@@ -171,7 +192,7 @@ export function EvidenceUploadDialog({
           </Button>
           <Button
             onClick={handleConfirm}
-            disabled={!file || loadingLocation}
+            disabled={files.length === 0 || loadingLocation}
             className="flex-1 sm:flex-none bg-trust-blue"
           >
             {type === 'arrival'

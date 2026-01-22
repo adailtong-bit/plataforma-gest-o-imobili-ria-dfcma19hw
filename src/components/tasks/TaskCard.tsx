@@ -29,6 +29,8 @@ import {
   User,
   Edit,
   Pencil,
+  Play,
+  Square,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
@@ -105,23 +107,27 @@ export function TaskCard({
     }
   }
 
-  const handleEvidenceUpload = (evidence: Evidence) => {
+  const handleEvidenceUpload = (evidenceList: Evidence[]) => {
     if (onAddEvidence) {
-      onAddEvidence(task.id, evidence)
+      // Upload all evidence items
+      evidenceList.forEach((ev) => onAddEvidence(task.id, ev))
 
-      if (evidence.type === 'arrival') {
+      // Check the type of the first evidence to determine action
+      const type = evidenceList[0]?.type
+
+      if (type === 'arrival') {
         onStatusChange('in_progress')
         setCheckInOpen(false)
         toast({
           title: 'Check-in realizado',
-          description: 'Tarefa iniciada com registro de chegada.',
+          description: `Tarefa iniciada às ${format(new Date(), 'HH:mm')}`,
         })
-      } else if (evidence.type === 'completion') {
+      } else if (type === 'completion') {
         onStatusChange('completed')
         setCheckOutOpen(false)
         toast({
           title: 'Serviço Concluído',
-          description: 'Tarefa finalizada e lançada no financeiro.',
+          description: `Tarefa finalizada com ${evidenceList.length} fotos.`,
         })
       }
     }
@@ -326,10 +332,11 @@ export function TaskCard({
           {task.status === 'pending' && (
             <Button
               size="sm"
-              className="w-full h-8 text-xs bg-trust-blue hover:bg-trust-blue/90"
+              className="w-full h-9 text-xs bg-trust-blue hover:bg-trust-blue/90"
               onClick={() => setCheckInOpen(true)}
             >
-              <Camera className="h-3 w-3 mr-2" /> {t('tasks.start_checkin')}
+              <Play className="h-3 w-3 mr-2 fill-current" />{' '}
+              {t('tasks.start_checkin')}
             </Button>
           )}
           {task.status === 'in_progress' && (
@@ -337,7 +344,7 @@ export function TaskCard({
               {onUpload && (
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button size="sm" variant="outline" className="text-xs h-8">
+                    <Button size="sm" variant="outline" className="text-xs h-9">
                       <Upload className="h-3 w-3 mr-1" /> {t('tasks.photos')}
                     </Button>
                   </DialogTrigger>
@@ -365,10 +372,11 @@ export function TaskCard({
               )}
               <Button
                 size="sm"
-                className="text-xs h-8 bg-green-600 hover:bg-green-700"
+                className="text-xs h-9 bg-green-600 hover:bg-green-700"
                 onClick={() => setCheckOutOpen(true)}
               >
-                <CheckCircle2 className="h-3 w-3 mr-1" /> {t('tasks.finish')}
+                <Square className="h-3 w-3 mr-1 fill-current" />{' '}
+                {t('tasks.finish')}
               </Button>
             </div>
           )}
@@ -377,7 +385,7 @@ export function TaskCard({
               <Button
                 variant="secondary"
                 size="sm"
-                className="flex-1 h-8 text-xs cursor-default"
+                className="flex-1 h-9 text-xs cursor-default"
               >
                 <CheckCircle2 className="h-3 w-3 mr-2 text-green-600" />
                 {t('common.completed')}
@@ -386,7 +394,7 @@ export function TaskCard({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-8 w-8 p-0 text-green-600"
+                  className="h-9 w-9 p-0 text-green-600"
                   title="Faturado Automaticamente"
                   disabled
                 >
@@ -398,7 +406,7 @@ export function TaskCard({
           <Button
             variant="ghost"
             size="sm"
-            className="w-full h-7 text-xs text-muted-foreground"
+            className="w-full h-8 text-xs text-muted-foreground"
             onClick={() => setDetailsOpen(true)}
           >
             {t('tasks.details_evidence')}

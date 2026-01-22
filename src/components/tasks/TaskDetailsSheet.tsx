@@ -57,12 +57,33 @@ export function TaskDetailsSheet({
   }
 
   const arrivalEvidence = task.evidence?.find((e) => e.type === 'arrival')
-  const completionEvidence = task.evidence?.find((e) => e.type === 'completion')
+  const completionEvidence =
+    task.evidence?.filter((e) => e.type === 'completion') || []
   const otherEvidence = task.evidence?.filter((e) => e.type === 'other') || []
-  // Fallback for legacy images
-  const legacyImages =
-    task.images?.filter((img) => !task.evidence?.some((e) => e.url === img)) ||
-    []
+
+  // Combine legacy images and completion photos for gallery
+  const galleryImages = [
+    ...completionEvidence.map((e) => ({
+      url: e.url,
+      type: 'Completion',
+      date: e.timestamp,
+    })),
+    ...otherEvidence.map((e) => ({
+      url: e.url,
+      type: 'Update',
+      date: e.timestamp,
+    })),
+    ...(task.images?.map((url) => ({
+      url,
+      type: 'Reference',
+      date: task.date,
+    })) || []),
+  ]
+
+  // Filter out duplicates if evidence url is same as image url
+  const uniqueGallery = galleryImages.filter(
+    (img, index, self) => index === self.findIndex((t) => t.url === img.url),
+  )
 
   const linkedBooking = task.bookingId
     ? bookings.find((b) => b.id === task.bookingId)
@@ -181,101 +202,51 @@ export function TaskDetailsSheet({
                   <CheckCircle2 className="h-4 w-4" /> {t('tasks.activity_log')}
                 </h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Arrival Card */}
-                  <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden">
-                    <div className="p-3 bg-muted/50 border-b flex items-center justify-between">
-                      <span className="font-semibold text-xs uppercase tracking-wider text-blue-600">
-                        {t('tasks.arrival')}
-                      </span>
-                      {arrivalEvidence && (
-                        <CheckCircle2 className="h-3 w-3 text-green-500" />
-                      )}
-                    </div>
-                    <div className="p-0">
-                      {arrivalEvidence ? (
-                        <div className="flex flex-col">
-                          <div className="relative aspect-video bg-black">
-                            <img
-                              src={arrivalEvidence.url}
-                              alt="Arrival"
-                              className="w-full h-full object-contain"
-                            />
-                          </div>
-                          <div className="p-3 text-xs space-y-1.5 bg-muted/10">
-                            <div className="flex items-center gap-1.5 text-muted-foreground">
-                              <Clock className="h-3 w-3" />
-                              <span>
-                                {format(
-                                  new Date(arrivalEvidence.timestamp),
-                                  'dd/MM/yyyy HH:mm',
-                                )}
-                              </span>
-                            </div>
-                            {arrivalEvidence.location && (
-                              <div className="flex items-start gap-1.5 text-muted-foreground">
-                                <Navigation className="h-3 w-3 mt-0.5 shrink-0" />
-                                <span className="leading-tight">
-                                  {arrivalEvidence.location.address}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="h-32 flex items-center justify-center text-xs text-muted-foreground italic bg-muted/10">
-                          {t('common.pending')}
-                        </div>
-                      )}
-                    </div>
+                {/* Arrival Status */}
+                <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden mb-4">
+                  <div className="p-3 bg-muted/50 border-b flex items-center justify-between">
+                    <span className="font-semibold text-xs uppercase tracking-wider text-blue-600">
+                      {t('tasks.arrival')}
+                    </span>
+                    {arrivalEvidence && (
+                      <CheckCircle2 className="h-3 w-3 text-green-500" />
+                    )}
                   </div>
-
-                  {/* Completion Card */}
-                  <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden">
-                    <div className="p-3 bg-muted/50 border-b flex items-center justify-between">
-                      <span className="font-semibold text-xs uppercase tracking-wider text-green-600">
-                        {t('tasks.completion')}
-                      </span>
-                      {completionEvidence && (
-                        <CheckCircle2 className="h-3 w-3 text-green-500" />
-                      )}
-                    </div>
-                    <div className="p-0">
-                      {completionEvidence ? (
-                        <div className="flex flex-col">
-                          <div className="relative aspect-video bg-black">
-                            <img
-                              src={completionEvidence.url}
-                              alt="Completion"
-                              className="w-full h-full object-contain"
-                            />
+                  <div className="p-0">
+                    {arrivalEvidence ? (
+                      <div className="flex flex-col">
+                        <div className="relative aspect-video bg-black">
+                          <img
+                            src={arrivalEvidence.url}
+                            alt="Arrival"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div className="p-3 text-xs space-y-1.5 bg-muted/10">
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            <span>
+                              {format(
+                                new Date(arrivalEvidence.timestamp),
+                                'dd/MM/yyyy HH:mm',
+                              )}
+                            </span>
                           </div>
-                          <div className="p-3 text-xs space-y-1.5 bg-muted/10">
-                            <div className="flex items-center gap-1.5 text-muted-foreground">
-                              <Clock className="h-3 w-3" />
-                              <span>
-                                {format(
-                                  new Date(completionEvidence.timestamp),
-                                  'dd/MM/yyyy HH:mm',
-                                )}
+                          {arrivalEvidence.location && (
+                            <div className="flex items-start gap-1.5 text-muted-foreground">
+                              <Navigation className="h-3 w-3 mt-0.5 shrink-0" />
+                              <span className="leading-tight">
+                                {arrivalEvidence.location.address}
                               </span>
                             </div>
-                            {completionEvidence.location && (
-                              <div className="flex items-start gap-1.5 text-muted-foreground">
-                                <Navigation className="h-3 w-3 mt-0.5 shrink-0" />
-                                <span className="leading-tight">
-                                  {completionEvidence.location.address}
-                                </span>
-                              </div>
-                            )}
-                          </div>
+                          )}
                         </div>
-                      ) : (
-                        <div className="h-32 flex items-center justify-center text-xs text-muted-foreground italic bg-muted/10">
-                          {t('common.pending')}
-                        </div>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <div className="h-20 flex items-center justify-center text-xs text-muted-foreground italic bg-muted/10">
+                        {t('common.pending')} - Check-in não realizado
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -329,39 +300,31 @@ export function TaskDetailsSheet({
                 </p>
               </div>
 
-              {/* Additional Photos / Attachments */}
-              {(legacyImages.length > 0 || otherEvidence.length > 0) && (
+              {/* Gallery */}
+              {uniqueGallery.length > 0 && (
                 <div className="space-y-3">
                   <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
-                    <ImageIcon className="h-4 w-4" />{' '}
-                    {t('tasks.additional_photos')}
+                    <ImageIcon className="h-4 w-4" /> Galeria de Fotos
                   </h3>
                   <div className="grid grid-cols-2 gap-2">
-                    {otherEvidence.map((ev, idx) => (
+                    {uniqueGallery.map((img, idx) => (
                       <div
-                        key={ev.id}
+                        key={`gallery-${idx}`}
                         className="relative aspect-video rounded-md overflow-hidden border bg-muted group"
                       >
                         <img
-                          src={ev.url}
-                          alt={`Evidence ${idx + 1}`}
+                          src={img.url}
+                          alt={`Gallery ${idx + 1}`}
                           className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
                         />
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-1 text-[10px] text-white truncate px-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {format(new Date(ev.timestamp), 'dd/MM HH:mm')}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                          <div className="text-[10px] text-white w-full">
+                            <p className="font-semibold">{img.type}</p>
+                            <p className="truncate opacity-80">
+                              {format(new Date(img.date), 'dd/MM HH:mm')}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                    {legacyImages.map((img, idx) => (
-                      <div
-                        key={`legacy-${idx}`}
-                        className="relative aspect-video rounded-md overflow-hidden border bg-muted"
-                      >
-                        <img
-                          src={img}
-                          alt={`Legacy ${idx + 1}`}
-                          className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
-                        />
                       </div>
                     ))}
                   </div>
