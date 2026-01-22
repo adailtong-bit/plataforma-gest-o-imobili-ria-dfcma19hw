@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import {
   Select,
@@ -24,10 +25,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, MoreHorizontal, Send, Filter } from 'lucide-react'
+import {
+  Search,
+  MoreHorizontal,
+  Send,
+  Filter,
+  Key,
+  Copy,
+  Info,
+} from 'lucide-react'
 import useShortTermStore from '@/stores/useShortTermStore'
 import usePropertyStore from '@/stores/usePropertyStore'
-import { Booking, MessageTemplate } from '@/lib/types'
+import useCondominiumStore from '@/stores/useCondominiumStore'
+import { Booking, MessageTemplate, Property, Condominium } from '@/lib/types'
 import { format, parseISO } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import {
@@ -36,16 +46,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
 
 export function ShortTermBookings() {
   const { bookings, messageTemplates } = useShortTermStore()
   const { properties } = usePropertyStore()
+  const { condominiums } = useCondominiumStore()
   const { toast } = useToast()
 
   const [filter, setFilter] = useState('')
   const [sourceFilter, setSourceFilter] = useState('all')
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
   const [messageDialogOpen, setMessageDialogOpen] = useState(false)
+  const [previewMessage, setPreviewMessage] = useState('')
+  const [selectedTemplateName, setSelectedTemplateName] = useState('')
 
   const filteredBookings = bookings.filter(
     (b) =>
@@ -72,19 +86,108 @@ export function ShortTermBookings() {
     }
   }
 
-  const handleTriggerTemplate = (template: MessageTemplate) => {
-    if (!selectedBooking) return
-    // Mock sending
-    let content = template.content
-    content = content.replace('{GuestName}', selectedBooking.guestName)
-    content = content.replace(
-      '{CheckInDate}',
-      format(parseISO(selectedBooking.checkIn), 'dd/MM/yyyy'),
+  const replacePlaceholders = (
+    content: string,
+    booking: Booking,
+    property: Property | undefined,
+    condo: Condominium | undefined,
+  ) => {
+    let text = content
+    // Existing single braces
+    text = text.replace(/{GuestName}/g, booking.guestName)
+    text = text.replace(
+      /{CheckInDate}/g,
+      format(parseISO(booking.checkIn), 'dd/MM/yyyy'),
+    )
+    text = text.replace(
+      /{CheckOutDate}/g,
+      format(parseISO(booking.checkOut), 'dd/MM/yyyy'),
     )
 
+    // New double braces
+    text = text.replace(
+      /{{property_address}}/g,
+      property?.address || 'Address Not Available',
+    )
+    text = text.replace(
+      /{{door_code}}/g,
+      property?.accessCodeUnit || 'Code Not Available',
+    )
+    text = text.replace(
+      /{{condo_code}}/g,
+      property?.accessCodeBuilding || 'Code Not Available',
+    )
+
+    // Pool Code Logic (Property > Condo > Fallback)
+    const poolCode =
+      property?.accessCodePool || condo?.accessCredentials?.poolCode
+
+    if (poolCode) {
+      text = text.replace(/{{pool_code}}/g, poolCode)
+    } else {
+      // Graceful Omission: Remove lines containing the placeholder if empty
+      const lineRegex = /^.*{{pool_code}}.*$/gm
+      text = text.replace(lineRegex, '')
+      // Cleanup inline remnants just in case
+      text = text.replace(/{{pool_code}}/g, '')
+    }
+
+    // Condo Code cleanup if empty
+    if (!property?.accessCodeBuilding) {
+      const lineRegex = /^.*{{condo_code}}.*$/gm
+      text = text.replace(lineRegex, '')
+      text = text.replace(/{{condo_code}}/g, '')
+    }
+
+    // Trim excessive newlines
+    return text.replace(/\n{3,}/g, '\n\n').trim()
+  }
+
+  const handleSelectTemplate = (template: MessageTemplate) => {
+    if (!selectedBooking) return
+    const prop = properties.find((p) => p.id === selectedBooking.propertyId)
+    const condo = condominiums.find((c) => c.id === prop?.condominiumId)
+
+    const content = replacePlaceholders(
+      template.content,
+      selectedBooking,
+      prop,
+      condo,
+    )
+    setPreviewMessage(content)
+    setSelectedTemplateName(template.name)
+  }
+
+  const handleGenerateAccessInfo = () => {
+    if (!selectedBooking) return
+    const prop = properties.find((p) => p.id === selectedBooking.propertyId)
+    const condo = condominiums.find((c) => c.id === prop?.condominiumId)
+
+    // Hardcoded Access Info Block Pattern
+    const accessTemplate = `Hello {GuestName},
+
+Here is everything you need for your check-in at {{property_address}}:
+
+🏢 **Building/Gate Code:** {{condo_code}}
+🚪 **Door Code:** {{door_code}}
+🏊 **Pool Access:** {{pool_code}}
+
+Enjoy your stay!`
+
+    const content = replacePlaceholders(
+      accessTemplate,
+      selectedBooking,
+      prop,
+      condo,
+    )
+    setPreviewMessage(content)
+    setSelectedTemplateName('Access Info (Auto-Generated)')
+  }
+
+  const handleSendMessage = () => {
     toast({
       title: 'Message Sent',
-      description: `Template "${template.name}" sent to ${selectedBooking.guestName}`,
+      description: `"${selectedTemplateName}" sent to ${selectedBooking?.guestName}`,
     })
     setMessageDialogOpen(false)
   }
@@ -178,10 +281,22 @@ export function ShortTermBookings() {
                           <DropdownMenuItem
                             onClick={() => {
                               setSelectedBooking(booking)
+                              setPreviewMessage('')
+                              setSelectedTemplateName('')
                               setMessageDialogOpen(true)
                             }}
                           >
                             <Send className="mr-2 h-4 w-4" /> Send Message
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedBooking(booking)
+                              handleGenerateAccessInfo()
+                              setMessageDialogOpen(true)
+                            }}
+                          >
+                            <Key className="mr-2 h-4 w-4" /> Send Access Info
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -195,28 +310,72 @@ export function ShortTermBookings() {
       </div>
 
       <Dialog open={messageDialogOpen} onOpenChange={setMessageDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
               Send Message to {selectedBooking?.guestName}
             </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-2 py-4">
-            <p className="text-sm text-muted-foreground mb-2">
-              Select a template to send:
-            </p>
-            {messageTemplates.map((tmpl) => (
-              <Button
-                key={tmpl.id}
-                variant="outline"
-                className="justify-start"
-                onClick={() => handleTriggerTemplate(tmpl)}
-              >
-                {tmpl.name}
-              </Button>
-            ))}
-            {messageTemplates.length === 0 && (
-              <p className="text-sm italic">No templates configured.</p>
+          <div className="grid gap-4 py-2">
+            {!previewMessage ? (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  Select a template to generate the message:
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant="outline"
+                    className="justify-start bg-blue-50 hover:bg-blue-100 border-blue-200"
+                    onClick={handleGenerateAccessInfo}
+                  >
+                    <Key className="mr-2 h-4 w-4 text-blue-600" />
+                    Access Info (Auto)
+                  </Button>
+                  {messageTemplates.map((tmpl) => (
+                    <Button
+                      key={tmpl.id}
+                      variant="outline"
+                      className="justify-start"
+                      onClick={() => handleSelectTemplate(tmpl)}
+                    >
+                      {tmpl.name}
+                    </Button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="bg-muted p-4 rounded-md border text-sm whitespace-pre-wrap font-mono">
+                  {previewMessage}
+                </div>
+                <div className="flex justify-between items-center text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Info className="h-3 w-3" /> Note: Placeholders have been
+                    replaced with actual property data.
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setPreviewMessage('')
+                      setSelectedTemplateName('')
+                    }}
+                  >
+                    Back to Templates
+                  </Button>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setMessageDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSendMessage} className="bg-trust-blue">
+                    <Send className="mr-2 h-4 w-4" /> Send Message
+                  </Button>
+                </div>
+              </div>
             )}
           </div>
         </DialogContent>

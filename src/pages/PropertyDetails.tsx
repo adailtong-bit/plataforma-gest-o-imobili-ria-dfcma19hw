@@ -9,6 +9,7 @@ import {
   Trash2,
   User,
   ClipboardList,
+  Key,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -39,6 +40,7 @@ import { PropertyMarketing } from '@/components/properties/PropertyMarketing'
 import { PropertyContent } from '@/components/properties/PropertyContent'
 import { DocumentVault } from '@/components/documents/DocumentVault'
 import { PropertyTasks } from '@/components/properties/PropertyTasks'
+import { PropertyFeatures } from '@/components/properties/PropertyFeatures'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -60,6 +62,7 @@ export default function PropertyDetails() {
   const activeTenant = tenants.find(
     (t) => t.propertyId === property?.id && t.status === 'active',
   )
+  const linkedCondo = condominiums.find((c) => c.id === formData?.condominiumId)
 
   useEffect(() => {
     if (property) {
@@ -232,6 +235,9 @@ export default function PropertyDetails() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
+          <TabsTrigger value="features">
+            <Key className="h-4 w-4 mr-2" /> Acesso & Features
+          </TabsTrigger>
           <TabsTrigger value="location">Localização</TabsTrigger>
           <TabsTrigger value="financial">{t('common.financial')}</TabsTrigger>
           <TabsTrigger value="tasks">
@@ -249,6 +255,15 @@ export default function PropertyDetails() {
             data={formData}
             onChange={handleChange}
             canEdit={isEditing}
+          />
+        </TabsContent>
+
+        <TabsContent value="features">
+          <PropertyFeatures
+            data={formData}
+            onChange={handleChange}
+            canEdit={isEditing}
+            condominium={linkedCondo}
           />
         </TabsContent>
 

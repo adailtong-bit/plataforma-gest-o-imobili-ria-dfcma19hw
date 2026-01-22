@@ -189,11 +189,12 @@ export interface Property {
   guests: number
   wifiSsid?: string
   wifiPassword?: string
-  accessCodeBuilding?: string
-  accessCodeUnit?: string
+  accessCodeBuilding?: string // Condominium Access Code
+  accessCodeUnit?: string // House/Door Code
   accessCodeGuest?: string
   accessCodeService?: string
   accessCodeCleaning?: string
+  accessCodePool?: string // Pool Access Code
   hoaValue?: number
   hoaFrequency?: 'monthly' | 'quarterly' | 'semi-annually' | 'annually'
   description?: {

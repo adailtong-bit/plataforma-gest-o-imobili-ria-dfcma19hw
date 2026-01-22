@@ -230,10 +230,34 @@ export function CommunicationSettings() {
                 }
                 className="h-32"
               />
-              <p className="text-xs text-muted-foreground">
-                Available placeholders: {'{GuestName}'}, {'{CheckInDate}'},{' '}
-                {'{CheckOutTime}'}
-              </p>
+              <div className="p-3 bg-muted rounded-md text-xs space-y-2">
+                <p className="font-semibold text-muted-foreground">
+                  Available placeholders:
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <code className="bg-background px-1 rounded">
+                    {'{GuestName}'}
+                  </code>
+                  <code className="bg-background px-1 rounded">
+                    {'{CheckInDate}'}
+                  </code>
+                  <code className="bg-background px-1 rounded">
+                    {'{CheckOutDate}'}
+                  </code>
+                  <code className="bg-background px-1 rounded">
+                    {'{{property_address}}'}
+                  </code>
+                  <code className="bg-background px-1 rounded">
+                    {'{{door_code}}'}
+                  </code>
+                  <code className="bg-background px-1 rounded">
+                    {'{{condo_code}}'}
+                  </code>
+                  <code className="bg-background px-1 rounded">
+                    {'{{pool_code}}'}
+                  </code>
+                </div>
+              </div>
             </div>
           </div>
           <DialogFooter>
