@@ -27,6 +27,7 @@ import { Badge } from '@/components/ui/badge'
 import { hasPermission } from '@/lib/permissions'
 import { PublicityFooter } from './PublicityFooter'
 import { differenceInHours, parseISO } from 'date-fns'
+import { cn } from '@/lib/utils'
 
 export default function DashboardLayout() {
   const { currentUser, setCurrentUser } = useAuthStore()
@@ -245,7 +246,13 @@ export default function DashboardLayout() {
       <AppSidebar />
       <SidebarInset>
         <AppHeader />
-        <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 max-w-[1600px] w-full mx-auto flex flex-col">
+        <main
+          className={cn(
+            'flex-1 overflow-auto p-4 md:p-6 lg:p-8 max-w-[1600px] w-full mx-auto flex flex-col',
+            location.pathname === '/short-term' &&
+              'bg-gray-50 md:bg-transparent',
+          )}
+        >
           <Outlet />
           <PublicityFooter />
         </main>
