@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Card,
   CardContent,
@@ -56,11 +56,37 @@ export function ServiceCatalog() {
 
   const [currentRate, setCurrentRate] = useState<Partial<ServiceRate>>({
     serviceName: '',
-    price: 0,
+    servicePrice: 0,
+    partnerPayment: 0,
+    pmValue: 0,
+    productPrice: 0,
     validFrom: format(new Date(), 'yyyy-MM-dd'),
     validTo: '',
     type: 'generic',
   })
+
+  // Auto-calculate PM Value based on Service Price and Partner Payment if not manually set recently
+  // For now, let's keep it simple: manual input for all to ensure accuracy as per user story.
+  // "Implement logic to ensure the relationship... is consistent"
+  // Let's add listeners to update pmValue if servicePrice and partnerPayment are set.
+  const handlePriceChange = (
+    field: keyof ServiceRate,
+    val: string | number,
+  ) => {
+    const numVal = Number(val)
+    const newRate = { ...currentRate, [field]: numVal }
+
+    if (field === 'servicePrice' || field === 'partnerPayment') {
+      const sp =
+        field === 'servicePrice' ? numVal : Number(currentRate.servicePrice)
+      const pp =
+        field === 'partnerPayment' ? numVal : Number(currentRate.partnerPayment)
+      // Recalculate PM Value
+      newRate.pmValue = sp - pp
+    }
+
+    setCurrentRate(newRate)
+  }
 
   // Flatten all service rates including generic
   const partnerRates = partners.flatMap((partner) =>
@@ -90,25 +116,29 @@ export function ServiceCatalog() {
   )
 
   const handleSave = () => {
-    if (!currentRate.serviceName || !currentRate.price) {
+    if (!currentRate.serviceName || !currentRate.servicePrice) {
       toast({
         title: 'Erro',
-        description: 'Preencha todos os campos obrigatórios.',
+        description: 'Nome e Preço do Serviço são obrigatórios.',
         variant: 'destructive',
       })
       return
     }
 
-    if (selectedPartnerId === 'generic') {
-      const rateData: ServiceRate = {
-        id: currentRate.id || `gen-rate-${Date.now()}`,
-        serviceName: currentRate.serviceName,
-        price: Number(currentRate.price),
-        validFrom: currentRate.validFrom || new Date().toISOString(),
-        validTo: currentRate.validTo,
-        type: 'generic',
-      }
+    const rateData: ServiceRate = {
+      id: currentRate.id || `rate-${Date.now()}`,
+      serviceName: currentRate.serviceName,
+      servicePrice: Number(currentRate.servicePrice || 0),
+      partnerPayment: Number(currentRate.partnerPayment || 0),
+      pmValue: Number(currentRate.pmValue || 0),
+      productPrice: Number(currentRate.productPrice || 0),
+      validFrom:
+        currentRate.validFrom?.toString() || format(new Date(), 'yyyy-MM-dd'),
+      validTo: currentRate.validTo?.toString(),
+      type: selectedPartnerId === 'generic' ? 'generic' : 'specific',
+    }
 
+    if (selectedPartnerId === 'generic') {
       if (editMode && currentRate.id) {
         updateGenericServiceRate(rateData)
       } else {
@@ -122,17 +152,10 @@ export function ServiceCatalog() {
 
       if (editMode && currentRate.id) {
         updatedRates = updatedRates.map((r) =>
-          r.id === currentRate.id ? (currentRate as ServiceRate) : r,
+          r.id === currentRate.id ? rateData : r,
         )
       } else {
-        updatedRates.push({
-          id: `rate-${Date.now()}`,
-          serviceName: currentRate.serviceName,
-          price: Number(currentRate.price),
-          validFrom: currentRate.validFrom || new Date().toISOString(),
-          validTo: currentRate.validTo,
-          type: 'specific',
-        } as ServiceRate)
+        updatedRates.push(rateData)
       }
 
       updatePartner({ ...partner, serviceRates: updatedRates })
@@ -182,7 +205,10 @@ export function ServiceCatalog() {
     setCurrentRate({
       id: rate.id,
       serviceName: rate.serviceName,
-      price: rate.price,
+      servicePrice: rate.servicePrice,
+      partnerPayment: rate.partnerPayment,
+      pmValue: rate.pmValue,
+      productPrice: rate.productPrice,
       validFrom: rate.validFrom,
       validTo: rate.validTo || '',
       type: rate.type,
@@ -194,7 +220,10 @@ export function ServiceCatalog() {
     setSelectedPartnerId('generic')
     setCurrentRate({
       serviceName: '',
-      price: 0,
+      servicePrice: 0,
+      partnerPayment: 0,
+      pmValue: 0,
+      productPrice: 0,
       validFrom: format(new Date(), 'yyyy-MM-dd'),
       validTo: '',
       type: 'generic',
@@ -208,8 +237,8 @@ export function ServiceCatalog() {
           <div>
             <CardTitle>Catálogo de Preços de Serviços</CardTitle>
             <CardDescription>
-              Defina preços fixos (Labor) para serviços comuns. O custo de
-              material é adicionado na criação da tarefa.
+              Gerencie custos, pagamentos a parceiros e margens de PM para
+              automação financeira.
             </CardDescription>
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
@@ -218,62 +247,116 @@ export function ServiceCatalog() {
                 <Plus className="mr-2 h-4 w-4" /> Adicionar Serviço
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-3xl overflow-y-auto max-h-[90vh]">
               <DialogHeader>
                 <DialogTitle>
                   {editMode ? 'Editar Serviço' : 'Novo Serviço'}
                 </DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label>Parceiro / Fornecedor</Label>
-                  <Select
-                    value={selectedPartnerId}
-                    onValueChange={setSelectedPartnerId}
-                    disabled={editMode}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="generic">
-                        Genérico (Todos os Parceiros)
-                      </SelectItem>
-                      {partners.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name} ({p.type})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Nome do Serviço</Label>
-                  <Input
-                    value={currentRate.serviceName}
-                    onChange={(e) =>
-                      setCurrentRate({
-                        ...currentRate,
-                        serviceName: e.target.value,
-                      })
-                    }
-                    placeholder="Ex: Limpeza Padrão 2 Quartos"
-                  />
-                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Preço Fixo (Labor) ($)</Label>
+                    <Label>Parceiro / Fornecedor</Label>
+                    <Select
+                      value={selectedPartnerId}
+                      onValueChange={setSelectedPartnerId}
+                      disabled={editMode}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="generic">
+                          Genérico (Todos os Parceiros)
+                        </SelectItem>
+                        {partners.map((p) => (
+                          <SelectItem key={p.id} value={p.id}>
+                            {p.name} ({p.type})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Nome do Serviço</Label>
                     <Input
-                      type="number"
-                      value={currentRate.price}
+                      value={currentRate.serviceName}
                       onChange={(e) =>
                         setCurrentRate({
                           ...currentRate,
-                          price: Number(e.target.value),
+                          serviceName: e.target.value,
                         })
                       }
+                      placeholder="Ex: Limpeza Padrão 2 Quartos"
                     />
                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg border">
+                  <div className="grid gap-2">
+                    <Label className="text-xs">
+                      Service Price (Total Labor)
+                    </Label>
+                    <Input
+                      type="number"
+                      value={currentRate.servicePrice}
+                      onChange={(e) =>
+                        handlePriceChange('servicePrice', e.target.value)
+                      }
+                      placeholder="0.00"
+                      className="font-bold"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label className="text-xs text-muted-foreground">
+                      Partner Payment (Cost)
+                    </Label>
+                    <Input
+                      type="number"
+                      value={currentRate.partnerPayment}
+                      onChange={(e) =>
+                        handlePriceChange('partnerPayment', e.target.value)
+                      }
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label className="text-xs text-muted-foreground">
+                      PM Value (Margin)
+                    </Label>
+                    <Input
+                      type="number"
+                      value={currentRate.pmValue}
+                      onChange={(e) =>
+                        setCurrentRate({
+                          ...currentRate,
+                          pmValue: Number(e.target.value),
+                        })
+                      }
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label className="text-xs">Product Price (Material)</Label>
+                    <Input
+                      type="number"
+                      value={currentRate.productPrice}
+                      onChange={(e) =>
+                        setCurrentRate({
+                          ...currentRate,
+                          productPrice: Number(e.target.value),
+                        })
+                      }
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground text-center">
+                  PM Value é calculado automaticamente como (Service Price -
+                  Partner Payment), mas pode ser ajustado.
+                </p>
+
+                <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label>Início Validade</Label>
                     <Input
@@ -290,6 +373,23 @@ export function ServiceCatalog() {
                         setCurrentRate({
                           ...currentRate,
                           validFrom: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Fim Validade (Opcional)</Label>
+                    <Input
+                      type="date"
+                      value={
+                        currentRate.validTo
+                          ? format(new Date(currentRate.validTo), 'yyyy-MM-dd')
+                          : ''
+                      }
+                      onChange={(e) =>
+                        setCurrentRate({
+                          ...currentRate,
+                          validTo: e.target.value,
                         })
                       }
                     />
@@ -319,15 +419,16 @@ export function ServiceCatalog() {
           </div>
         </div>
 
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Serviço</TableHead>
                 <TableHead>Parceiro</TableHead>
-                <TableHead>Categoria</TableHead>
-                <TableHead>Preço (Labor)</TableHead>
-                <TableHead>Validade</TableHead>
+                <TableHead>Service Price</TableHead>
+                <TableHead>Product Price</TableHead>
+                <TableHead>Partner Pay</TableHead>
+                <TableHead>PM Value</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -335,7 +436,7 @@ export function ServiceCatalog() {
               {filteredRates.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className="text-center py-8 text-muted-foreground"
                   >
                     Nenhum serviço encontrado no catálogo.
@@ -354,23 +455,15 @@ export function ServiceCatalog() {
                         rate.partnerName
                       )}
                     </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="capitalize">
-                        {rate.partnerType}
-                      </Badge>
-                    </TableCell>
                     <TableCell className="font-bold">
-                      ${rate.price.toFixed(2)}
+                      ${rate.servicePrice?.toFixed(2)}
                     </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col text-xs">
-                        <span>
-                          De:{' '}
-                          {rate.validFrom
-                            ? format(new Date(rate.validFrom), 'dd/MM/yyyy')
-                            : '-'}
-                        </span>
-                      </div>
+                    <TableCell>${rate.productPrice?.toFixed(2)}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      ${rate.partnerPayment?.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-green-600 font-medium">
+                      ${rate.pmValue?.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

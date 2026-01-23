@@ -64,6 +64,7 @@ import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { ServiceRate } from '@/lib/types'
 
 const formSchema = z.object({
   title: z.string().min(2, 'O título deve ter pelo menos 2 caracteres.'),
@@ -83,6 +84,9 @@ const formSchema = z.object({
   recurrence: z
     .enum(['none', 'daily', 'weekly', 'monthly', 'yearly'])
     .default('none'),
+  // Fields for tracking template values
+  templateServicePrice: z.number().optional(),
+  templatePmValue: z.number().optional(),
 })
 
 export function CreateTaskDialog() {
@@ -96,7 +100,7 @@ export function CreateTaskDialog() {
   const { t } = useLanguageStore()
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const [taskTemplates, setTaskTemplates] = useState<
-    { label: string; value: string; price: number }[]
+    { label: string; value: string; rate: ServiceRate }[]
   >([])
   const [openCombobox, setOpenCombobox] = useState(false)
 
@@ -113,6 +117,8 @@ export function CreateTaskDialog() {
       materialCost: '',
       teamMemberPayout: '',
       recurrence: 'none',
+      templateServicePrice: 0,
+      templatePmValue: 0,
     },
   })
 
@@ -121,17 +127,27 @@ export function CreateTaskDialog() {
   const watchAssigneeId = form.watch('assigneeId')
   const watchPrice = form.watch('price')
   const watchMaterial = form.watch('materialCost')
+  const watchTemplateServicePrice = form.watch('templateServicePrice')
 
   const selectedProperty = properties.find((p) => p.id === watchPropertyId)
 
   // Calculate profit margin display
   const laborCost = parseFloat(watchPrice || '0')
   const materialCost = parseFloat(watchMaterial || '0')
-  const laborMargin = financialSettings.maintenanceMarginLabor || 0
-  const materialMargin = financialSettings.maintenanceMarginMaterial || 0
-  const estimatedBillable =
-    laborCost * (1 + laborMargin / 100) +
-    materialCost * (1 + materialMargin / 100)
+
+  // Logic: If template was used, we prioritize the template's service price + product price as billable
+  // Otherwise, we calculate using global margin.
+  let estimatedBillable = 0
+  if (watchTemplateServicePrice && watchTemplateServicePrice > 0) {
+    // Template Billable = ServicePrice + ProductPrice (Assuming materialCost is ProductPrice)
+    estimatedBillable = watchTemplateServicePrice + materialCost
+  } else {
+    const laborMargin = financialSettings.maintenanceMarginLabor || 0
+    const materialMargin = financialSettings.maintenanceMarginMaterial || 0
+    estimatedBillable =
+      laborCost * (1 + laborMargin / 100) +
+      materialCost * (1 + materialMargin / 100)
+  }
 
   const relevantPartners = partners
     .filter((p) => {
@@ -151,14 +167,14 @@ export function CreateTaskDialog() {
   const isPartner = currentUser.role === 'partner'
 
   useEffect(() => {
-    let templates: { label: string; value: string; price: number }[] = []
+    let templates: { label: string; value: string; rate: ServiceRate }[] = []
 
     // 1. Add generic rates
     if (genericServiceRates && genericServiceRates.length > 0) {
       templates = genericServiceRates.map((rate) => ({
         label: `${rate.serviceName} (Genérico)`,
         value: rate.serviceName,
-        price: rate.price,
+        rate: rate,
       }))
     }
 
@@ -167,35 +183,13 @@ export function CreateTaskDialog() {
       const partnerTemplates = selectedPartner.serviceRates.map((rate) => ({
         label: rate.serviceName,
         value: rate.serviceName,
-        price: rate.price,
+        rate: rate,
       }))
       templates = [...templates, ...partnerTemplates]
     }
 
     setTaskTemplates(templates)
   }, [selectedPartner, genericServiceRates])
-
-  useEffect(() => {
-    if (watchAssigneeId && watchType) {
-      const partner = partners.find((p) => p.id === watchAssigneeId)
-      // Only auto-fill if not already filled or if it was filled by a generic template before
-      // Ideally we wait for user to pick a template, but this auto-fill logic existed before for type matching
-      // Let's refine: If a partner has a rate matching the type EXACTLY, use it?
-      // Or relies on the User picking from the Combobox.
-      // The previous logic was:
-      if (partner && partner.serviceRates) {
-        const rate = partner.serviceRates.find(
-          (r) =>
-            watchType.toLowerCase().includes(r.serviceName.toLowerCase()) ||
-            r.serviceName.toLowerCase().includes(watchType.toLowerCase()),
-        )
-        const currentPrice = form.getValues('price')
-        if (rate && (!currentPrice || currentPrice === '')) {
-          form.setValue('price', rate.price.toString())
-        }
-      }
-    }
-  }, [watchAssigneeId, watchType, partners, form])
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -242,10 +236,10 @@ export function CreateTaskDialog() {
       date: values.date.toISOString(),
       priority: values.priority,
       description: values.description,
-      price: finalLaborCost, // Keeping price as vendor labor cost
+      price: finalLaborCost, // Vendor Labor Cost (Partner Payment)
       laborCost: finalLaborCost,
       materialCost: finalMaterialCost,
-      billableAmount: estimatedBillable,
+      billableAmount: estimatedBillable, // Total charged to owner
       teamMemberPayout: finalPayout,
       backToBack: values.backToBack,
       recurrence: values.recurrence,
@@ -432,13 +426,30 @@ export function CreateTaskDialog() {
                                   {taskTemplates.map((template) => (
                                     <CommandItem
                                       value={template.label}
-                                      key={`${template.value}-${template.price}`}
+                                      key={`${template.value}-${template.rate.id}`}
                                       onSelect={() => {
                                         form.setValue('title', template.value)
-                                        if (template.price) {
+                                        // Populate financial fields from template
+                                        if (template.rate) {
                                           form.setValue(
                                             'price',
-                                            template.price.toString(),
+                                            (
+                                              template.rate.partnerPayment || 0
+                                            ).toString(),
+                                          )
+                                          form.setValue(
+                                            'materialCost',
+                                            (
+                                              template.rate.productPrice || 0
+                                            ).toString(),
+                                          )
+                                          form.setValue(
+                                            'templateServicePrice',
+                                            template.rate.servicePrice || 0,
+                                          )
+                                          form.setValue(
+                                            'templatePmValue',
+                                            template.rate.pmValue || 0,
                                           )
                                         }
                                         setOpenCombobox(false)
@@ -454,7 +465,8 @@ export function CreateTaskDialog() {
                                       />
                                       {template.label}
                                       <span className="ml-auto text-xs text-muted-foreground">
-                                        ${template.price}
+                                        Billable: $
+                                        {template.rate.servicePrice?.toFixed(2)}
                                       </span>
                                     </CommandItem>
                                   ))}
@@ -514,7 +526,7 @@ export function CreateTaskDialog() {
                       name="price"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Custo Mão de Obra ($)</FormLabel>
+                          <FormLabel>Partner Payment (Cost)</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -522,6 +534,9 @@ export function CreateTaskDialog() {
                               {...field}
                             />
                           </FormControl>
+                          <FormDescription className="text-[10px]">
+                            Amount paid to partner.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -531,7 +546,7 @@ export function CreateTaskDialog() {
                       name="materialCost"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Custo Materiais ($)</FormLabel>
+                          <FormLabel>Product Price (Cost)</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -539,12 +554,15 @@ export function CreateTaskDialog() {
                               {...field}
                             />
                           </FormControl>
+                          <FormDescription className="text-[10px]">
+                            Cost of materials.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                     <div className="col-span-2 bg-muted/20 p-2 rounded text-sm flex justify-between">
-                      <span>Total Estimado (para o proprietário):</span>
+                      <span>Service Price (Billable to Owner):</span>
                       <span className="font-bold">
                         ${estimatedBillable.toFixed(2)}
                       </span>

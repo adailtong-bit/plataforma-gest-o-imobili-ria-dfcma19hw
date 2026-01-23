@@ -368,7 +368,10 @@ export interface Owner {
 export interface ServiceRate {
   id: string
   serviceName: string
-  price: number
+  servicePrice: number // Billable Total (Labor)
+  partnerPayment: number // Vendor Cost
+  pmValue: number // Margin
+  productPrice: number // Material Cost
   validFrom: string
   validTo?: string
   type?: 'generic' | 'specific'
@@ -448,9 +451,9 @@ export interface Task {
   images?: string[]
   evidence?: Evidence[]
   description?: string
-  price?: number // Base Cost (Vendor)
-  laborCost?: number // Explicit Labor Cost
-  materialCost?: number // Explicit Material Cost
+  price?: number // Base Cost (Vendor) - partnerPayment
+  laborCost?: number // Explicit Labor Cost - servicePrice? Or usually cost.
+  materialCost?: number // Explicit Material Cost - productPrice
   billableAmount?: number // Total charged to Owner (with margins)
   teamMemberPayout?: number
   backToBack?: boolean

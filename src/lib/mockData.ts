@@ -712,7 +712,28 @@ export const ledgerEntries: LedgerEntry[] = [
 
 export const auditLogs: AuditLog[] = []
 
-export const genericServiceRates: ServiceRate[] = []
+export const genericServiceRates: ServiceRate[] = [
+  {
+    id: 'rate1',
+    serviceName: 'Limpeza Padrão',
+    servicePrice: 150,
+    partnerPayment: 120,
+    pmValue: 30,
+    productPrice: 0,
+    validFrom: '2023-01-01',
+    type: 'generic',
+  },
+  {
+    id: 'rate2',
+    serviceName: 'Manutenção Leve',
+    servicePrice: 100,
+    partnerPayment: 80,
+    pmValue: 20,
+    productPrice: 10,
+    validFrom: '2023-01-01',
+    type: 'generic',
+  },
+]
 
 export const notifications: Notification[] = []
 

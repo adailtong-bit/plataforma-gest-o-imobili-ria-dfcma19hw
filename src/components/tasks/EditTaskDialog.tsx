@@ -64,7 +64,7 @@ import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { Task } from '@/lib/types'
+import { Task, ServiceRate } from '@/lib/types'
 
 const formSchema = z.object({
   title: z.string().min(2, 'O título deve ter pelo menos 2 caracteres.'),
@@ -106,7 +106,7 @@ export function EditTaskDialog({
   const { t } = useLanguageStore()
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const [taskTemplates, setTaskTemplates] = useState<
-    { label: string; value: string; price: number }[]
+    { label: string; value: string; rate: ServiceRate }[]
   >([])
   const [openCombobox, setOpenCombobox] = useState(false)
 
@@ -197,14 +197,14 @@ export function EditTaskDialog({
   const availableEmployees = selectedPartner?.employees || []
 
   useEffect(() => {
-    let templates: { label: string; value: string; price: number }[] = []
+    let templates: { label: string; value: string; rate: ServiceRate }[] = []
 
     // 1. Add generic rates
     if (genericServiceRates && genericServiceRates.length > 0) {
       templates = genericServiceRates.map((rate) => ({
         label: `${rate.serviceName} (Genérico)`,
         value: rate.serviceName,
-        price: rate.price,
+        rate: rate,
       }))
     }
 
@@ -213,7 +213,7 @@ export function EditTaskDialog({
       const partnerTemplates = selectedPartner.serviceRates.map((rate) => ({
         label: rate.serviceName,
         value: rate.serviceName,
-        price: rate.price,
+        rate: rate,
       }))
       templates = [...templates, ...partnerTemplates]
     }
@@ -370,13 +370,21 @@ export function EditTaskDialog({
                                   {taskTemplates.map((template) => (
                                     <CommandItem
                                       value={template.label}
-                                      key={`${template.value}-${template.price}`}
+                                      key={`${template.value}-${template.rate.id}`}
                                       onSelect={() => {
                                         form.setValue('title', template.value)
-                                        if (template.price) {
+                                        if (template.rate) {
                                           form.setValue(
                                             'price',
-                                            template.price.toString(),
+                                            (
+                                              template.rate.partnerPayment || 0
+                                            ).toString(),
+                                          )
+                                          form.setValue(
+                                            'materialCost',
+                                            (
+                                              template.rate.productPrice || 0
+                                            ).toString(),
                                           )
                                         }
                                         setOpenCombobox(false)
@@ -392,7 +400,8 @@ export function EditTaskDialog({
                                       />
                                       {template.label}
                                       <span className="ml-auto text-xs text-muted-foreground">
-                                        ${template.price}
+                                        Billable: $
+                                        {template.rate.servicePrice?.toFixed(2)}
                                       </span>
                                     </CommandItem>
                                   ))}
@@ -540,7 +549,7 @@ export function EditTaskDialog({
                       name="price"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Custo Mão de Obra ($)</FormLabel>
+                          <FormLabel>Partner Payment (Cost)</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -557,7 +566,7 @@ export function EditTaskDialog({
                       name="materialCost"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Custo Materiais ($)</FormLabel>
+                          <FormLabel>Product Price (Cost)</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
