@@ -41,6 +41,7 @@ import { hasPermission } from '@/lib/permissions'
 import { User, Resource } from '@/lib/types'
 import logo from '@/assets/logo-estilizado.jpg'
 import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 
 export function AppSidebar() {
   const location = useLocation()
@@ -196,7 +197,9 @@ export function AppSidebar() {
           currentUser.role === 'partner' ||
           currentUser.role === 'partner_employee') && (
           <SidebarGroup>
-            <SidebarGroupLabel>Portal</SidebarGroupLabel>
+            <SidebarGroupLabel className={cn(isMobile && 'text-white/70')}>
+              Portal
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {currentUser.role === 'tenant' && (
@@ -204,6 +207,9 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive('/portal/tenant')}
+                      className={cn(
+                        isMobile && 'text-white font-bold hover:text-white/90',
+                      )}
                     >
                       <Link to="/portal/tenant" onClick={handleLinkClick}>
                         <LayoutTemplate />
@@ -217,6 +223,9 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive('/portal/owner')}
+                      className={cn(
+                        isMobile && 'text-white font-bold hover:text-white/90',
+                      )}
                     >
                       <Link to="/portal/owner" onClick={handleLinkClick}>
                         <LayoutTemplate />
@@ -231,6 +240,9 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive('/portal/partner')}
+                      className={cn(
+                        isMobile && 'text-white font-bold hover:text-white/90',
+                      )}
                     >
                       <Link to="/portal/partner" onClick={handleLinkClick}>
                         <LayoutTemplate />
@@ -246,7 +258,9 @@ export function AppSidebar() {
 
         {visibleMenuItems.length > 0 && (
           <SidebarGroup>
-            <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
+            <SidebarGroupLabel className={cn(isMobile && 'text-white/70')}>
+              Menu Principal
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {visibleMenuItems.map((item) => (
@@ -255,6 +269,9 @@ export function AppSidebar() {
                       asChild
                       isActive={isActive(item.url)}
                       tooltip={item.title}
+                      className={cn(
+                        isMobile && 'text-white font-bold hover:text-white/90',
+                      )}
                     >
                       <Link
                         to={item.url}
@@ -283,7 +300,9 @@ export function AppSidebar() {
         )}
 
         <SidebarGroup className="mt-auto">
-          <SidebarGroupLabel>Sistema</SidebarGroupLabel>
+          <SidebarGroupLabel className={cn(isMobile && 'text-white/70')}>
+            Sistema
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {showPublicity && (
@@ -292,6 +311,9 @@ export function AppSidebar() {
                     asChild
                     isActive={isActive('/admin/publicity')}
                     tooltip="Publicity Admin"
+                    className={cn(
+                      isMobile && 'text-white font-bold hover:text-white/90',
+                    )}
                   >
                     <Link to="/admin/publicity" onClick={handleLinkClick}>
                       <Megaphone />
@@ -306,6 +328,9 @@ export function AppSidebar() {
                     asChild
                     isActive={isActive('/users')}
                     tooltip="Usuários"
+                    className={cn(
+                      isMobile && 'text-white font-bold hover:text-white/90',
+                    )}
                   >
                     <Link to="/users" onClick={handleLinkClick}>
                       <Users />
@@ -320,6 +345,9 @@ export function AppSidebar() {
                     asChild
                     isActive={isActive('/settings')}
                     tooltip={t('common.settings')}
+                    className={cn(
+                      isMobile && 'text-white font-bold hover:text-white/90',
+                    )}
                   >
                     <Link to="/settings" onClick={handleLinkClick}>
                       <Settings />
@@ -342,11 +370,21 @@ export function AppSidebar() {
                   {currentUser.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col text-sm leading-tight group-data-[collapsible=icon]:hidden">
+              <div
+                className={cn(
+                  'flex flex-col text-sm leading-tight group-data-[collapsible=icon]:hidden',
+                  isMobile && 'text-white',
+                )}
+              >
                 <span className="font-semibold truncate w-32">
                   {currentUser.name}
                 </span>
-                <span className="text-xs text-muted-foreground truncate w-32">
+                <span
+                  className={cn(
+                    'text-xs text-muted-foreground truncate w-32',
+                    isMobile && 'text-white/70',
+                  )}
+                >
                   {currentUser.email}
                 </span>
               </div>

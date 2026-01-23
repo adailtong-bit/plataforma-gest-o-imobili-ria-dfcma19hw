@@ -251,6 +251,8 @@ export default function DashboardLayout() {
             'flex-1 overflow-auto p-4 md:p-6 lg:p-8 max-w-[1600px] w-full mx-auto flex flex-col',
             location.pathname === '/short-term' &&
               'bg-gray-50 md:bg-transparent',
+            // Mobile specific background for owners route
+            location.pathname === '/owners' && 'bg-gray-100 md:bg-transparent',
           )}
         >
           <Outlet />
