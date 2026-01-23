@@ -155,6 +155,7 @@ export function TaskCard({
   // Hierarchical Visibility Logic
   const isTeamMember = currentUser.role === 'partner_employee'
   const isPartner = currentUser.role === 'partner'
+  const isOwner = currentUser.role === 'property_owner'
   const isAdminOrPM = [
     'platform_owner',
     'software_tenant',
@@ -164,6 +165,7 @@ export function TaskCard({
   // Determine which financial values to show
   const showPartnerPrice = isAdminOrPM || isPartner
   const showTeamPayout = isAdminOrPM || isPartner || isTeamMember
+  const showBillable = isAdminOrPM || isOwner
 
   const partnerRecord = isPartner
     ? partners.find(
@@ -327,9 +329,17 @@ export function TaskCard({
           </div>
 
           <div className="flex flex-col gap-1 mb-3">
+            {showBillable && (
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Preço Total:</span>
+                <span className="font-bold text-gray-900">
+                  ${(task.billableAmount || task.price || 0).toFixed(2)}
+                </span>
+              </div>
+            )}
             {showPartnerPrice && task.price && (
               <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Valor (Partner):</span>
+                <span className="text-muted-foreground">Custo (Partner):</span>
                 <span className="font-semibold text-green-700">
                   ${task.price.toFixed(2)}
                 </span>

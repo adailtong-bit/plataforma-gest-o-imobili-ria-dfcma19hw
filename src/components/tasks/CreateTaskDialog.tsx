@@ -75,7 +75,8 @@ const formSchema = z.object({
   partnerEmployeeId: z.string().optional(),
   priority: z.enum(['low', 'medium', 'high', 'critical']),
   date: z.date({ required_error: 'Selecione uma data.' }),
-  price: z.string().optional(),
+  price: z.string().optional(), // Base Vendor Price
+  materialCost: z.string().optional(),
   teamMemberPayout: z.string().optional(),
   description: z.string().optional(),
   backToBack: z.boolean().default(false),
@@ -109,6 +110,7 @@ export function CreateTaskDialog() {
       backToBack: false,
       description: '',
       price: '',
+      materialCost: '',
       teamMemberPayout: '',
       recurrence: 'none',
     },
@@ -117,8 +119,19 @@ export function CreateTaskDialog() {
   const watchPropertyId = form.watch('propertyId')
   const watchType = form.watch('type')
   const watchAssigneeId = form.watch('assigneeId')
+  const watchPrice = form.watch('price')
+  const watchMaterial = form.watch('materialCost')
 
   const selectedProperty = properties.find((p) => p.id === watchPropertyId)
+
+  // Calculate profit margin display
+  const laborCost = parseFloat(watchPrice || '0')
+  const materialCost = parseFloat(watchMaterial || '0')
+  const laborMargin = financialSettings.maintenanceMarginLabor || 0
+  const materialMargin = financialSettings.maintenanceMarginMaterial || 0
+  const estimatedBillable =
+    laborCost * (1 + laborMargin / 100) +
+    materialCost * (1 + materialMargin / 100)
 
   const relevantPartners = partners
     .filter((p) => {
@@ -127,7 +140,7 @@ export function CreateTaskDialog() {
       if (watchType === 'inspection') return p.type === 'agent'
       return true
     })
-    .filter((p, index, self) => index === self.findIndex((t) => t.id === p.id)) // Deduplicate by ID to prevent key errors
+    .filter((p, index, self) => index === self.findIndex((t) => t.id === p.id))
 
   const selectedPartner = partners.find((p) => p.id === watchAssigneeId)
   const availableEmployees = selectedPartner?.employees || []
@@ -137,7 +150,6 @@ export function CreateTaskDialog() {
   )
   const isPartner = currentUser.role === 'partner'
 
-  // Update available templates when partner changes
   useEffect(() => {
     if (selectedPartner && selectedPartner.serviceRates) {
       const templates = selectedPartner.serviceRates.map((rate) => ({
@@ -151,7 +163,6 @@ export function CreateTaskDialog() {
     }
   }, [selectedPartner])
 
-  // Auto fetch price when assignee/type changes
   useEffect(() => {
     if (watchAssigneeId && watchType) {
       const partner = partners.find((p) => p.id === watchAssigneeId)
@@ -183,26 +194,20 @@ export function CreateTaskDialog() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const assignee = partners.find((p) => p.id === values.assigneeId)
-    let finalPrice = values.price ? parseFloat(values.price) : undefined
+    const finalLaborCost = values.price ? parseFloat(values.price) : 0
+    const finalMaterialCost = values.materialCost
+      ? parseFloat(values.materialCost)
+      : 0
     const finalPayout = values.teamMemberPayout
       ? parseFloat(values.teamMemberPayout)
       : undefined
-
-    if (!finalPrice && assignee && assignee.serviceRates) {
-      const rate = assignee.serviceRates.find(
-        (r) =>
-          values.type.toLowerCase().includes(r.serviceName.toLowerCase()) ||
-          r.serviceName.toLowerCase().includes(values.type.toLowerCase()),
-      )
-      if (rate) finalPrice = rate.price
-    }
 
     const employeeId =
       values.partnerEmployeeId === 'none' ? undefined : values.partnerEmployeeId
 
     // Budget Approval Logic
     const threshold = financialSettings.approvalThreshold || 500
-    const isHighValue = finalPrice && finalPrice > threshold
+    const isHighValue = estimatedBillable > threshold
     const initialStatus = isHighValue ? 'pending_approval' : 'pending'
 
     addTask({
@@ -220,24 +225,21 @@ export function CreateTaskDialog() {
       date: values.date.toISOString(),
       priority: values.priority,
       description: values.description,
-      price: finalPrice,
+      price: finalLaborCost, // Keeping price as vendor labor cost
+      laborCost: finalLaborCost,
+      materialCost: finalMaterialCost,
+      billableAmount: estimatedBillable,
       teamMemberPayout: finalPayout,
       backToBack: values.backToBack,
       recurrence: values.recurrence,
       images: uploadedImages,
     })
 
-    const desc = isHighValue
-      ? `Task exceeds $${threshold} and requires approval.`
-      : t('tasks.assigned_to', {
-          title: values.title,
-          name: assignee?.name || '',
-        })
-
     toast({
       title: isHighValue ? 'Pending Approval' : t('tasks.success_created'),
-      description: desc,
-      variant: isHighValue ? 'default' : 'default',
+      description: isHighValue
+        ? 'Task exceeds threshold and requires approval.'
+        : 'Task created successfully.',
     })
 
     setOpen(false)
@@ -366,8 +368,7 @@ export function CreateTaskDialog() {
                         <SelectContent>
                           {relevantPartners.map((p) => (
                             <SelectItem key={p.id} value={p.id}>
-                              {p.name}{' '}
-                              {p.companyName ? `(${p.companyName})` : ''}
+                              {p.name} ({p.companyName || ''})
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -377,7 +378,6 @@ export function CreateTaskDialog() {
                   )}
                 />
 
-                {/* Smart Task Selection Combobox */}
                 <FormField
                   control={form.control}
                   name="title"
@@ -405,15 +405,13 @@ export function CreateTaskDialog() {
                         </PopoverTrigger>
                         <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                           <Command>
-                            <CommandInput placeholder="Buscar template ou criar novo..." />
+                            <CommandInput placeholder="Buscar template..." />
                             <CommandList>
                               <CommandEmpty>
-                                <div className="p-2 text-sm cursor-pointer hover:bg-accent rounded-sm">
-                                  Use título personalizado
-                                </div>
+                                Use título personalizado
                               </CommandEmpty>
                               {taskTemplates.length > 0 && (
-                                <CommandGroup heading="Templates do Parceiro">
+                                <CommandGroup heading="Templates">
                                   {taskTemplates.map((template) => (
                                     <CommandItem
                                       value={template.label}
@@ -438,11 +436,9 @@ export function CreateTaskDialog() {
                                         )}
                                       />
                                       {template.label}
-                                      {template.price && (
-                                        <span className="ml-auto text-xs text-muted-foreground">
-                                          ${template.price}
-                                        </span>
-                                      )}
+                                      <span className="ml-auto text-xs text-muted-foreground">
+                                        ${template.price}
+                                      </span>
                                     </CommandItem>
                                   ))}
                                 </CommandGroup>
@@ -453,15 +449,9 @@ export function CreateTaskDialog() {
                       </Popover>
                       <div className="mt-2">
                         <Input
-                          placeholder="Ou digite um título personalizado aqui..."
+                          placeholder="Ou digite um título personalizado..."
                           value={field.value}
                           onChange={field.onChange}
-                          className={cn(
-                            'transition-all duration-300',
-                            taskTemplates.length > 0
-                              ? 'opacity-70 focus:opacity-100'
-                              : '',
-                          )}
                         />
                       </div>
                       <FormMessage />
@@ -475,10 +465,7 @@ export function CreateTaskDialog() {
                     name="partnerEmployeeId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center gap-1">
-                          <User className="h-3 w-3" /> Membro da Equipe
-                          (Opcional)
-                        </FormLabel>
+                        <FormLabel>Membro da Equipe (Opcional)</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -489,10 +476,10 @@ export function CreateTaskDialog() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="none">Nenhum (Geral)</SelectItem>
+                            <SelectItem value="none">Nenhum</SelectItem>
                             {availableEmployees.map((e) => (
                               <SelectItem key={e.id} value={e.id}>
-                                {e.name} ({e.role})
+                                {e.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -503,21 +490,49 @@ export function CreateTaskDialog() {
                   />
                 )}
 
-                {/* Financial Fields - Hierarchy Based */}
                 {isAdminOrPM && (
-                  <FormField
-                    control={form.control}
-                    name="price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Valor Pago ao Parceiro ($)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="0.00" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <>
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Custo Mão de Obra ($)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0.00"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="materialCost"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Custo Materiais ($)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0.00"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="col-span-2 bg-muted/20 p-2 rounded text-sm flex justify-between">
+                      <span>Total Estimado (para o proprietário):</span>
+                      <span className="font-bold">
+                        ${estimatedBillable.toFixed(2)}
+                      </span>
+                    </div>
+                  </>
                 )}
 
                 {(isAdminOrPM || isPartner) && (
@@ -530,9 +545,6 @@ export function CreateTaskDialog() {
                         <FormControl>
                           <Input type="number" placeholder="0.00" {...field} />
                         </FormControl>
-                        <FormDescription className="text-xs">
-                          Quanto o membro da equipe recebe.
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -663,7 +675,6 @@ export function CreateTaskDialog() {
                     <ImageIcon className="h-6 w-6 text-muted-foreground" />
                   </div>
                 </div>
-                <FormDescription>{t('tasks.photos_desc')}</FormDescription>
               </div>
 
               <FormField

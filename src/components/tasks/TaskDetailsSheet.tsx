@@ -19,6 +19,9 @@ import {
   Navigation,
   Briefcase,
   Star,
+  Receipt,
+  Hammer,
+  HardHat,
 } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -90,14 +93,18 @@ export function TaskDetailsSheet({
     ? bookings.find((b) => b.id === task.bookingId)
     : null
 
+  // Role-Based Logic
   const isAdminOrPM = ['platform_owner', 'software_tenant'].includes(
     currentUser.role,
   )
   const isPartner = currentUser.role === 'partner'
   const isTeamMember = currentUser.role === 'partner_employee'
+  const isOwner = currentUser.role === 'property_owner'
 
-  const showPartnerPrice = isAdminOrPM || isPartner
+  // Visibility flags
+  const showInternalCosts = isAdminOrPM || isPartner
   const showTeamPayout = isAdminOrPM || isPartner || isTeamMember
+  const showBillableToOwner = isAdminOrPM || isOwner
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -126,6 +133,69 @@ export function TaskDetailsSheet({
             </SheetHeader>
 
             <div className="space-y-6">
+              {/* Financial Section - Role Protected */}
+              {(showInternalCosts || showBillableToOwner) && (
+                <Card className="bg-emerald-50/50 border-emerald-100">
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex items-center gap-2 text-emerald-800 font-semibold text-sm uppercase tracking-wide">
+                      <Receipt className="h-4 w-4" /> Detalhes Financeiros
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Owner / PM View */}
+                      {showBillableToOwner && (
+                        <div className="col-span-2 md:col-span-1">
+                          <span className="text-muted-foreground text-xs block">
+                            Total (Fatura Proprietário)
+                          </span>
+                          <span className="text-xl font-bold text-emerald-700">
+                            $
+                            {(task.billableAmount || task.price || 0).toFixed(
+                              2,
+                            )}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* PM / Partner View */}
+                      {showInternalCosts && (
+                        <>
+                          <div className="col-span-2 md:col-span-1">
+                            <span className="text-muted-foreground text-xs block flex items-center gap-1">
+                              <Hammer className="h-3 w-3" /> Custo Mão de Obra
+                            </span>
+                            <span className="font-medium text-gray-700">
+                              ${(task.laborCost || task.price || 0).toFixed(2)}
+                            </span>
+                          </div>
+                          {task.materialCost && task.materialCost > 0 && (
+                            <div className="col-span-2 md:col-span-1">
+                              <span className="text-muted-foreground text-xs block flex items-center gap-1">
+                                <HardHat className="h-3 w-3" /> Custo Materiais
+                              </span>
+                              <span className="font-medium text-gray-700">
+                                ${task.materialCost.toFixed(2)}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      )}
+
+                      {/* Team / PM / Partner View */}
+                      {showTeamPayout && task.teamMemberPayout && (
+                        <div className="col-span-2 md:col-span-1">
+                          <span className="text-muted-foreground text-xs block flex items-center gap-1">
+                            <User className="h-3 w-3" /> Pagamento Equipe
+                          </span>
+                          <span className="font-medium text-blue-600">
+                            ${task.teamMemberPayout.toFixed(2)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Rating Section */}
               {task.rating && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -296,25 +366,6 @@ export function TaskDetailsSheet({
                     {format(new Date(task.date), 'dd/MM/yyyy')}
                   </p>
                 </div>
-                {showPartnerPrice && task.price && (
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                      <DollarSign className="h-3 w-3" />{' '}
-                      {t('tasks.estimated_value')}
-                    </h4>
-                    <p className="font-medium">${task.price.toFixed(2)}</p>
-                  </div>
-                )}
-                {showTeamPayout && task.teamMemberPayout && (
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                      <DollarSign className="h-3 w-3" /> Payout Equipe
-                    </h4>
-                    <p className="font-medium text-blue-600">
-                      ${task.teamMemberPayout.toFixed(2)}
-                    </p>
-                  </div>
-                )}
               </div>
 
               <Separator />

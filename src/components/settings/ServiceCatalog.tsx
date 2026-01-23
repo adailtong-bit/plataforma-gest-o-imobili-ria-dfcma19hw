@@ -52,7 +52,7 @@ export function ServiceCatalog() {
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
-  const [selectedPartnerId, setSelectedPartnerId] = useState<string>('generic') // 'generic' or partner ID
+  const [selectedPartnerId, setSelectedPartnerId] = useState<string>('generic')
 
   const [currentRate, setCurrentRate] = useState<Partial<ServiceRate>>({
     serviceName: '',
@@ -208,7 +208,8 @@ export function ServiceCatalog() {
           <div>
             <CardTitle>Catálogo de Preços de Serviços</CardTitle>
             <CardDescription>
-              Gerencie e visualize todos os serviços e tarifas dos parceiros.
+              Defina preços fixos (Labor) para serviços comuns. O custo de
+              material é adicionado na criação da tarefa.
             </CardDescription>
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
@@ -225,14 +226,14 @@ export function ServiceCatalog() {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label>Tipo de Precificação</Label>
+                  <Label>Parceiro / Fornecedor</Label>
                   <Select
                     value={selectedPartnerId}
                     onValueChange={setSelectedPartnerId}
                     disabled={editMode}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o tipo" />
+                      <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="generic">
@@ -256,12 +257,12 @@ export function ServiceCatalog() {
                         serviceName: e.target.value,
                       })
                     }
-                    placeholder="Ex: Limpeza Padrão"
+                    placeholder="Ex: Limpeza Padrão 2 Quartos"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Preço ($)</Label>
+                    <Label>Preço Fixo (Labor) ($)</Label>
                     <Input
                       type="number"
                       value={currentRate.price}
@@ -274,7 +275,7 @@ export function ServiceCatalog() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Validade (Início)</Label>
+                    <Label>Início Validade</Label>
                     <Input
                       type="date"
                       value={
@@ -289,23 +290,6 @@ export function ServiceCatalog() {
                         setCurrentRate({
                           ...currentRate,
                           validFrom: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Validade (Fim)</Label>
-                    <Input
-                      type="date"
-                      value={
-                        currentRate.validTo
-                          ? format(new Date(currentRate.validTo), 'yyyy-MM-dd')
-                          : ''
-                      }
-                      onChange={(e) =>
-                        setCurrentRate({
-                          ...currentRate,
-                          validTo: e.target.value,
                         })
                       }
                     />
@@ -342,7 +326,7 @@ export function ServiceCatalog() {
                 <TableHead>Serviço</TableHead>
                 <TableHead>Parceiro</TableHead>
                 <TableHead>Categoria</TableHead>
-                <TableHead>Preço</TableHead>
+                <TableHead>Preço (Labor)</TableHead>
                 <TableHead>Validade</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -385,12 +369,6 @@ export function ServiceCatalog() {
                           {rate.validFrom
                             ? format(new Date(rate.validFrom), 'dd/MM/yyyy')
                             : '-'}
-                        </span>
-                        <span>
-                          Até:{' '}
-                          {rate.validTo
-                            ? format(new Date(rate.validTo), 'dd/MM/yyyy')
-                            : 'Indefinido'}
                         </span>
                       </div>
                     </TableCell>

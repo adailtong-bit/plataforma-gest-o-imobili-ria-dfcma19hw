@@ -90,6 +90,7 @@ export default function Settings() {
       <Tabs defaultValue="profile" className="space-y-4">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="profile">{t('common.profile')}</TabsTrigger>
+          <TabsTrigger value="billing">Billing Model</TabsTrigger>
           <TabsTrigger value="notifications">
             {t('common.notifications')}
           </TabsTrigger>
@@ -176,6 +177,97 @@ export default function Settings() {
               </div>
               <div className="flex justify-end">
                 <Button className="bg-trust-blue" onClick={handleProfileSave}>
+                  {t('settings.save_changes')}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="billing">
+          <Card>
+            <CardHeader>
+              <CardTitle>Billing Model Configuration</CardTitle>
+              <CardDescription>
+                Configure how revenue and fees are distributed between PMs,
+                Owners, and Partners.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label>PM Management Fee (%)</Label>
+                  <Input
+                    type="number"
+                    value={financialData.pmManagementFee || 0}
+                    onChange={(e) =>
+                      handleFinancialChange(
+                        'pmManagementFee',
+                        Number(e.target.value),
+                      )
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Percentage taken from rental income.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label>Cleaning Fee Routing</Label>
+                  <Select
+                    value={financialData.cleaningFeeRouting || 'pm'}
+                    onValueChange={(v) =>
+                      handleFinancialChange('cleaningFeeRouting', v)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pm">Property Manager (PM)</SelectItem>
+                      <SelectItem value="owner">Property Owner</SelectItem>
+                      <SelectItem value="partner">Partner (Direct)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Who receives the cleaning fee from tenants/guests?
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Maintenance Margin (Labor) (%)</Label>
+                  <Input
+                    type="number"
+                    value={financialData.maintenanceMarginLabor || 0}
+                    onChange={(e) =>
+                      handleFinancialChange(
+                        'maintenanceMarginLabor',
+                        Number(e.target.value),
+                      )
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Markup percentage added to labor costs.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label>Maintenance Margin (Materials) (%)</Label>
+                  <Input
+                    type="number"
+                    value={financialData.maintenanceMarginMaterial || 0}
+                    onChange={(e) =>
+                      handleFinancialChange(
+                        'maintenanceMarginMaterial',
+                        Number(e.target.value),
+                      )
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Markup percentage added to material costs.
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <Button onClick={handleFinancialSave} className="bg-trust-blue">
                   {t('settings.save_changes')}
                 </Button>
               </div>

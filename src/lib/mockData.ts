@@ -555,7 +555,9 @@ export const tasks: Task[] = [
     date: subDays(new Date(), 1).toISOString(),
     priority: 'high',
     images: ['https://img.usecurling.com/p/300/200?q=clean%20bedroom'],
-    price: 150.0,
+    price: 150.0, // Vendor cost
+    laborCost: 150.0,
+    billableAmount: 180.0, // With margin
     teamMemberPayout: 50.0,
     recurrence: 'none',
     bookingId: 'bk_1',
@@ -575,6 +577,9 @@ export const tasks: Task[] = [
     date: new Date().toISOString(),
     priority: 'medium',
     price: 200.0,
+    laborCost: 200.0,
+    materialCost: 50.0,
+    billableAmount: 300.0, // Example calculation
     teamMemberPayout: 80.0,
     description: 'Fix the AC unit in the master bedroom.',
   },
@@ -725,6 +730,10 @@ export const defaultFinancialSettings: FinancialSettings = {
   apiKey: 'sk_test_123456789',
   apiSecret: '****',
   isProduction: false,
+  pmManagementFee: 10,
+  cleaningFeeRouting: 'pm',
+  maintenanceMarginLabor: 15,
+  maintenanceMarginMaterial: 10,
 }
 
 // Market Analysis Mock Data

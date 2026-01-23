@@ -49,6 +49,11 @@ export interface FinancialSettings {
   crmApiKey?: string
   isProduction: boolean
   approvalThreshold?: number
+  // Billing Model
+  pmManagementFee?: number
+  cleaningFeeRouting?: 'owner' | 'pm' | 'partner'
+  maintenanceMarginLabor?: number
+  maintenanceMarginMaterial?: number
 }
 
 export interface BankStatement {
@@ -443,7 +448,10 @@ export interface Task {
   images?: string[]
   evidence?: Evidence[]
   description?: string
-  price?: number
+  price?: number // Base Cost (Vendor)
+  laborCost?: number // Explicit Labor Cost
+  materialCost?: number // Explicit Material Cost
+  billableAmount?: number // Total charged to Owner (with margins)
   teamMemberPayout?: number
   backToBack?: boolean
   recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
@@ -592,7 +600,7 @@ export interface ChatAttachment {
 export interface ChatMessage {
   id: string
   text: string
-  senderId: string // Changed from 'sender' literal to 'senderId' string for robust attribution
+  senderId: string
   timestamp: string
   attachments?: ChatAttachment[]
   read?: boolean

@@ -46,11 +46,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Checkbox } from '@/components/ui/checkbox'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useTaskStore from '@/stores/useTaskStore'
 import usePartnerStore from '@/stores/usePartnerStore'
 import useAuthStore from '@/stores/useAuthStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -67,6 +67,7 @@ const formSchema = z.object({
   priority: z.enum(['low', 'medium', 'high', 'critical']),
   date: z.date({ required_error: 'Selecione uma data.' }),
   price: z.string().optional(),
+  materialCost: z.string().optional(),
   teamMemberPayout: z.string().optional(),
   description: z.string().optional(),
   backToBack: z.boolean().default(false),
@@ -90,6 +91,7 @@ export function EditTaskDialog({
   const { updateTask } = useTaskStore()
   const { partners } = usePartnerStore()
   const { currentUser } = useAuthStore()
+  const { financialSettings } = useFinancialStore()
   const { toast } = useToast()
   const { t } = useLanguageStore()
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
@@ -109,7 +111,12 @@ export function EditTaskDialog({
       partnerEmployeeId: task.partnerEmployeeId || 'none',
       priority: task.priority,
       date: new Date(task.date),
-      price: task.price ? task.price.toString() : '',
+      price: task.laborCost
+        ? task.laborCost.toString()
+        : task.price
+          ? task.price.toString()
+          : '',
+      materialCost: task.materialCost ? task.materialCost.toString() : '',
       teamMemberPayout: task.teamMemberPayout
         ? task.teamMemberPayout.toString()
         : '',
@@ -129,7 +136,12 @@ export function EditTaskDialog({
         partnerEmployeeId: task.partnerEmployeeId || 'none',
         priority: task.priority,
         date: new Date(task.date),
-        price: task.price ? task.price.toString() : '',
+        price: task.laborCost
+          ? task.laborCost.toString()
+          : task.price
+            ? task.price.toString()
+            : '',
+        materialCost: task.materialCost ? task.materialCost.toString() : '',
         teamMemberPayout: task.teamMemberPayout
           ? task.teamMemberPayout.toString()
           : '',
@@ -144,6 +156,17 @@ export function EditTaskDialog({
   const watchPropertyId = form.watch('propertyId')
   const watchType = form.watch('type')
   const watchAssigneeId = form.watch('assigneeId')
+  const watchPrice = form.watch('price')
+  const watchMaterial = form.watch('materialCost')
+
+  // Recalculate billable for preview
+  const laborCost = parseFloat(watchPrice || '0')
+  const materialCost = parseFloat(watchMaterial || '0')
+  const laborMargin = financialSettings.maintenanceMarginLabor || 0
+  const materialMargin = financialSettings.maintenanceMarginMaterial || 0
+  const estimatedBillable =
+    laborCost * (1 + laborMargin / 100) +
+    materialCost * (1 + materialMargin / 100)
 
   const selectedProperty = properties.find((p) => p.id === watchPropertyId)
 
@@ -154,7 +177,7 @@ export function EditTaskDialog({
       if (watchType === 'inspection') return p.type === 'agent'
       return true
     })
-    .filter((p, index, self) => index === self.findIndex((t) => t.id === p.id)) // Deduplicate by ID
+    .filter((p, index, self) => index === self.findIndex((t) => t.id === p.id))
 
   const selectedPartner = partners.find((p) => p.id === watchAssigneeId)
   const availableEmployees = selectedPartner?.employees || []
@@ -173,7 +196,10 @@ export function EditTaskDialog({
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const assignee = partners.find((p) => p.id === values.assigneeId)
-    const finalPrice = values.price ? parseFloat(values.price) : undefined
+    const finalLabor = values.price ? parseFloat(values.price) : 0
+    const finalMaterial = values.materialCost
+      ? parseFloat(values.materialCost)
+      : 0
     const finalPayout = values.teamMemberPayout
       ? parseFloat(values.teamMemberPayout)
       : undefined
@@ -195,7 +221,10 @@ export function EditTaskDialog({
       date: values.date.toISOString(),
       priority: values.priority,
       description: values.description,
-      price: finalPrice,
+      price: finalLabor, // Vendor Labor Cost
+      laborCost: finalLabor,
+      materialCost: finalMaterial,
+      billableAmount: estimatedBillable, // Updated billable
       teamMemberPayout: finalPayout,
       backToBack: values.backToBack,
       recurrence: values.recurrence,
@@ -358,8 +387,7 @@ export function EditTaskDialog({
                         <SelectContent>
                           {relevantPartners.map((p) => (
                             <SelectItem key={p.id} value={p.id}>
-                              {p.name}{' '}
-                              {p.companyName ? `(${p.companyName})` : ''}
+                              {p.name} ({p.companyName || ''})
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -402,21 +430,49 @@ export function EditTaskDialog({
                   />
                 )}
 
-                {/* Financial Fields - Hierarchy Based */}
                 {isAdminOrPM && (
-                  <FormField
-                    control={form.control}
-                    name="price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Valor Pago ao Parceiro ($)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="0.00" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <>
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Custo Mão de Obra ($)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0.00"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="materialCost"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Custo Materiais ($)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0.00"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="col-span-2 bg-muted/20 p-2 rounded text-sm flex justify-between">
+                      <span>Total Estimado (para o proprietário):</span>
+                      <span className="font-bold">
+                        ${estimatedBillable.toFixed(2)}
+                      </span>
+                    </div>
+                  </>
                 )}
 
                 {(isAdminOrPM || isPartner) && (
@@ -429,9 +485,6 @@ export function EditTaskDialog({
                         <FormControl>
                           <Input type="number" placeholder="0.00" {...field} />
                         </FormControl>
-                        <FormDescription className="text-xs">
-                          Quanto o membro da equipe recebe.
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -510,7 +563,6 @@ export function EditTaskDialog({
                     <ImageIcon className="h-6 w-6 text-muted-foreground" />
                   </div>
                 </div>
-                <FormDescription>{t('tasks.photos_desc')}</FormDescription>
               </div>
 
               <FormField
