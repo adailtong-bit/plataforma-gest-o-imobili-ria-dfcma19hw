@@ -10,6 +10,8 @@ import {
   X,
   User,
   Save,
+  ChevronsUpDown,
+  Check,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
@@ -46,6 +48,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useTaskStore from '@/stores/useTaskStore'
 import usePartnerStore from '@/stores/usePartnerStore'
@@ -89,12 +99,16 @@ export function EditTaskDialog({
 }: EditTaskDialogProps) {
   const { properties } = usePropertyStore()
   const { updateTask } = useTaskStore()
-  const { partners } = usePartnerStore()
+  const { partners, genericServiceRates } = usePartnerStore()
   const { currentUser } = useAuthStore()
   const { financialSettings } = useFinancialStore()
   const { toast } = useToast()
   const { t } = useLanguageStore()
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
+  const [taskTemplates, setTaskTemplates] = useState<
+    { label: string; value: string; price: number }[]
+  >([])
+  const [openCombobox, setOpenCombobox] = useState(false)
 
   const isAdminOrPM = ['platform_owner', 'software_tenant'].includes(
     currentUser.role,
@@ -181,6 +195,31 @@ export function EditTaskDialog({
 
   const selectedPartner = partners.find((p) => p.id === watchAssigneeId)
   const availableEmployees = selectedPartner?.employees || []
+
+  useEffect(() => {
+    let templates: { label: string; value: string; price: number }[] = []
+
+    // 1. Add generic rates
+    if (genericServiceRates && genericServiceRates.length > 0) {
+      templates = genericServiceRates.map((rate) => ({
+        label: `${rate.serviceName} (Genérico)`,
+        value: rate.serviceName,
+        price: rate.price,
+      }))
+    }
+
+    // 2. Add partner specific rates
+    if (selectedPartner && selectedPartner.serviceRates) {
+      const partnerTemplates = selectedPartner.serviceRates.map((rate) => ({
+        label: rate.serviceName,
+        value: rate.serviceName,
+        price: rate.price,
+      }))
+      templates = [...templates, ...partnerTemplates]
+    }
+
+    setTaskTemplates(templates)
+  }, [selectedPartner, genericServiceRates])
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -300,12 +339,76 @@ export function EditTaskDialog({
                   render={({ field }) => (
                     <FormItem className="col-span-2">
                       <FormLabel>{t('tasks.task_title')}</FormLabel>
-                      <FormControl>
+                      <Popover
+                        open={openCombobox}
+                        onOpenChange={setOpenCombobox}
+                      >
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className={cn(
+                                'w-full justify-between',
+                                !field.value && 'text-muted-foreground',
+                              )}
+                            >
+                              {field.value || 'Selecione ou digite um título'}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                          <Command>
+                            <CommandInput placeholder="Buscar template..." />
+                            <CommandList>
+                              <CommandEmpty>
+                                Use título personalizado
+                              </CommandEmpty>
+                              {taskTemplates.length > 0 && (
+                                <CommandGroup heading="Templates de Serviço">
+                                  {taskTemplates.map((template) => (
+                                    <CommandItem
+                                      value={template.label}
+                                      key={`${template.value}-${template.price}`}
+                                      onSelect={() => {
+                                        form.setValue('title', template.value)
+                                        if (template.price) {
+                                          form.setValue(
+                                            'price',
+                                            template.price.toString(),
+                                          )
+                                        }
+                                        setOpenCombobox(false)
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          'mr-2 h-4 w-4',
+                                          template.value === field.value
+                                            ? 'opacity-100'
+                                            : 'opacity-0',
+                                        )}
+                                      />
+                                      {template.label}
+                                      <span className="ml-auto text-xs text-muted-foreground">
+                                        ${template.price}
+                                      </span>
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              )}
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <div className="mt-2">
                         <Input
-                          placeholder="Ex: Limpeza de Check-out"
-                          {...field}
+                          placeholder="Ou digite um título personalizado..."
+                          value={field.value}
+                          onChange={field.onChange}
                         />
-                      </FormControl>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}

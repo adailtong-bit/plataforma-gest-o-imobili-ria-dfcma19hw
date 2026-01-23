@@ -89,7 +89,7 @@ export function CreateTaskDialog() {
   const [open, setOpen] = useState(false)
   const { properties } = usePropertyStore()
   const { addTask } = useTaskStore()
-  const { partners } = usePartnerStore()
+  const { partners, genericServiceRates } = usePartnerStore()
   const { currentUser } = useAuthStore()
   const { financialSettings } = useFinancialStore()
   const { toast } = useToast()
@@ -151,21 +151,38 @@ export function CreateTaskDialog() {
   const isPartner = currentUser.role === 'partner'
 
   useEffect(() => {
+    let templates: { label: string; value: string; price: number }[] = []
+
+    // 1. Add generic rates
+    if (genericServiceRates && genericServiceRates.length > 0) {
+      templates = genericServiceRates.map((rate) => ({
+        label: `${rate.serviceName} (Genérico)`,
+        value: rate.serviceName,
+        price: rate.price,
+      }))
+    }
+
+    // 2. Add partner specific rates
     if (selectedPartner && selectedPartner.serviceRates) {
-      const templates = selectedPartner.serviceRates.map((rate) => ({
+      const partnerTemplates = selectedPartner.serviceRates.map((rate) => ({
         label: rate.serviceName,
         value: rate.serviceName,
         price: rate.price,
       }))
-      setTaskTemplates(templates)
-    } else {
-      setTaskTemplates([])
+      templates = [...templates, ...partnerTemplates]
     }
-  }, [selectedPartner])
+
+    setTaskTemplates(templates)
+  }, [selectedPartner, genericServiceRates])
 
   useEffect(() => {
     if (watchAssigneeId && watchType) {
       const partner = partners.find((p) => p.id === watchAssigneeId)
+      // Only auto-fill if not already filled or if it was filled by a generic template before
+      // Ideally we wait for user to pick a template, but this auto-fill logic existed before for type matching
+      // Let's refine: If a partner has a rate matching the type EXACTLY, use it?
+      // Or relies on the User picking from the Combobox.
+      // The previous logic was:
       if (partner && partner.serviceRates) {
         const rate = partner.serviceRates.find(
           (r) =>
@@ -411,11 +428,11 @@ export function CreateTaskDialog() {
                                 Use título personalizado
                               </CommandEmpty>
                               {taskTemplates.length > 0 && (
-                                <CommandGroup heading="Templates">
+                                <CommandGroup heading="Templates de Serviço">
                                   {taskTemplates.map((template) => (
                                     <CommandItem
                                       value={template.label}
-                                      key={template.value}
+                                      key={`${template.value}-${template.price}`}
                                       onSelect={() => {
                                         form.setValue('title', template.value)
                                         if (template.price) {

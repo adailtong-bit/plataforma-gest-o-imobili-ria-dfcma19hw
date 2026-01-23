@@ -31,6 +31,7 @@ import {
   Megaphone,
   BriefcaseBusiness,
   FileText,
+  Tags,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -117,6 +118,12 @@ export function AppSidebar() {
       url: '/partners',
       icon: Briefcase,
       resource: 'partners',
+    },
+    {
+      title: t('common.service_pricing'),
+      url: '/service-pricing',
+      icon: Tags,
+      resource: 'settings', // Using settings permission for catalog management
     },
     {
       title: t('common.calendar'),
