@@ -8,9 +8,11 @@ const useMessageStore = () => {
 
   return {
     messages: context.messages,
+    typingStatus: context.typingStatus,
     sendMessage: context.sendMessage,
     markAsRead: context.markAsRead,
     startChat: context.startChat,
+    setTyping: context.setTyping,
   }
 }
 

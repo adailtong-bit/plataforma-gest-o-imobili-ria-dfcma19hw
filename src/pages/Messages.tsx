@@ -16,6 +16,11 @@ import {
   MoreVertical,
   Phone,
   Video,
+  Check,
+  CheckCheck,
+  Image as ImageIcon,
+  FileText,
+  Download,
 } from 'lucide-react'
 import useMessageStore from '@/stores/useMessageStore'
 import useAuthStore from '@/stores/useAuthStore'
@@ -36,9 +41,17 @@ import {
 } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
+import { ChatAttachment } from '@/lib/types'
 
 export default function Messages() {
-  const { messages, sendMessage, markAsRead, startChat } = useMessageStore()
+  const {
+    messages,
+    sendMessage,
+    markAsRead,
+    startChat,
+    typingStatus,
+    setTyping,
+  } = useMessageStore()
   const { currentUser, allUsers } = useAuthStore()
   const { tenants } = useTenantStore()
   const { properties } = usePropertyStore()
@@ -51,6 +64,7 @@ export default function Messages() {
   const initialContactId = searchParams.get('contactId')
   const context = searchParams.get('context')
   const scrollRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
     () => {
@@ -64,6 +78,9 @@ export default function Messages() {
   const [inputText, setInputText] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [newChatOpen, setNewChatOpen] = useState(false)
+  const [isTypingDebounce, setIsTypingDebounce] = useState<
+    NodeJS.Timeout | undefined
+  >(undefined)
 
   // Resolve Context Data (Renewal)
   const contextTenant =
@@ -118,12 +135,21 @@ export default function Messages() {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: 'smooth' })
     }
-  }, [selectedMessage?.history])
+  }, [selectedMessage?.history, typingStatus])
+
+  // Mark as Read when opening chat or receiving new messages in open chat
+  useEffect(() => {
+    if (selectedMessageId && selectedMessage?.unread) {
+      markAsRead(selectedMessageId)
+    }
+  }, [selectedMessageId, selectedMessage?.unread, markAsRead])
 
   const handleSend = () => {
     if (inputText.trim() && selectedMessage) {
       sendMessage(selectedMessage.contactId, inputText)
       setInputText('')
+      if (isTypingDebounce) clearTimeout(isTypingDebounce)
+      setTyping(currentUser.id, false)
     }
   }
 
@@ -131,6 +157,39 @@ export default function Messages() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSend()
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputText(e.target.value)
+
+    // Simulate typing status for self (conceptually, though usually sent to server)
+    // Here we skip sending "I am typing" to store for self, but we might want to simulate
+    // it so we can test the UI? No, UI shows OTHER people typing.
+    // So we don't need to do anything here for local visual, only for remote.
+    // In a real app, socket.emit('typing', true).
+  }
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && selectedMessage) {
+      const type = file.type.startsWith('image/')
+        ? 'image'
+        : file.type === 'application/pdf'
+          ? 'pdf'
+          : 'file'
+      const url = URL.createObjectURL(file) // Create local preview URL
+
+      const attachment: ChatAttachment = {
+        id: `att-${Date.now()}`,
+        name: file.name,
+        url,
+        type,
+        size: `${(file.size / 1024).toFixed(1)} KB`,
+      }
+
+      sendMessage(selectedMessage.contactId, '', [attachment])
+      if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }
 
@@ -182,6 +241,10 @@ export default function Messages() {
       navigate(`/messages?contactId=${userId}`)
     }
   }
+
+  const isContactTyping = selectedMessage
+    ? typingStatus[selectedMessage.contactId]
+    : false
 
   const UserList = ({ list }: { list: typeof allUsers }) => (
     <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
@@ -339,7 +402,13 @@ export default function Messages() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-muted-foreground truncate max-w-[150px] group-hover:text-foreground/80 transition-colors">
-                          {msg.lastMessage}
+                          {typingStatus[msg.contactId] ? (
+                            <span className="text-green-600 font-medium italic">
+                              Typing...
+                            </span>
+                          ) : (
+                            msg.lastMessage
+                          )}
                         </span>
                         {msg.unread > 0 && (
                           <span className="bg-primary text-primary-foreground text-[10px] font-bold h-5 min-w-5 flex items-center justify-center rounded-full px-1.5 shadow-sm">
@@ -383,10 +452,18 @@ export default function Messages() {
                       )}
                     </h3>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                      <span className="text-xs text-muted-foreground">
-                        {t('messages.online')}
-                      </span>
+                      {isContactTyping ? (
+                        <span className="text-xs text-green-600 font-medium animate-pulse">
+                          Typing...
+                        </span>
+                      ) : (
+                        <>
+                          <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                          <span className="text-xs text-muted-foreground">
+                            {t('messages.online')}
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -536,13 +613,99 @@ export default function Messages() {
                                   : 'bg-white dark:bg-muted text-foreground border rounded-2xl rounded-tl-sm',
                               )}
                             >
+                              {msg.attachments &&
+                                msg.attachments.length > 0 && (
+                                  <div className="flex flex-col gap-2 mb-2">
+                                    {msg.attachments.map((att) => (
+                                      <div key={att.id}>
+                                        {att.type === 'image' ? (
+                                          <div className="rounded-lg overflow-hidden border">
+                                            <img
+                                              src={att.url}
+                                              alt={att.name}
+                                              className="max-w-full h-auto max-h-[200px] object-cover"
+                                            />
+                                          </div>
+                                        ) : (
+                                          <div className="flex items-center gap-2 p-2 bg-background/20 rounded-md border border-white/20">
+                                            <FileText className="h-5 w-5" />
+                                            <div className="flex-1 overflow-hidden">
+                                              <p className="truncate font-medium text-xs">
+                                                {att.name}
+                                              </p>
+                                              <p className="text-[10px] opacity-70">
+                                                {att.size || 'File'}
+                                              </p>
+                                            </div>
+                                            <a
+                                              href={att.url}
+                                              download={att.name}
+                                              target="_blank"
+                                              rel="noreferrer"
+                                              className="p-1 hover:bg-white/20 rounded"
+                                            >
+                                              <Download className="h-4 w-4" />
+                                            </a>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                               {msg.text}
                             </div>
+
+                            {isMe && (
+                              <div className="flex justify-end w-full mt-1 pr-1">
+                                {msg.read ? (
+                                  <div
+                                    className="flex items-center text-blue-500"
+                                    title="Read"
+                                  >
+                                    <CheckCheck className="h-3 w-3" />
+                                    <span className="text-[9px] ml-0.5">
+                                      Read
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="flex items-center text-muted-foreground"
+                                    title="Sent"
+                                  >
+                                    <Check className="h-3 w-3" />
+                                    <span className="text-[9px] ml-0.5">
+                                      Sent
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
                     )
                   })}
+                  {isContactTyping && (
+                    <div className="flex w-full justify-start">
+                      <div className="flex gap-3 max-w-[85%] md:max-w-[70%] flex-row">
+                        <Avatar className="h-8 w-8 mt-1 border shadow-sm">
+                          <AvatarImage
+                            src={contactUser?.avatar || selectedMessage.avatar}
+                          />
+                          <AvatarFallback>
+                            {contactUser?.name?.charAt(0) || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="bg-white dark:bg-muted border rounded-2xl rounded-tl-sm p-3.5 shadow-sm">
+                          <div className="flex gap-1">
+                            <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce delay-0"></span>
+                            <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce delay-150"></span>
+                            <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce delay-300"></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <div ref={scrollRef} />
                 </div>
               </ScrollArea>
@@ -550,17 +713,26 @@ export default function Messages() {
               {/* Input Area */}
               <div className="p-4 border-t bg-card z-10">
                 <div className="flex gap-2 items-end">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    onChange={handleFileUpload}
+                    accept="image/*,application/pdf"
+                  />
                   <Button
                     variant="ghost"
                     size="icon"
                     className="shrink-0 h-10 w-10 rounded-full"
+                    onClick={() => fileInputRef.current?.click()}
+                    title="Attach file"
                   >
                     <Paperclip className="h-5 w-5 text-muted-foreground" />
                   </Button>
                   <Input
                     placeholder={t('messages.type_message')}
                     value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
+                    onChange={handleInputChange}
                     onKeyDown={handleKeyPress}
                     className="flex-1 min-h-[40px] max-h-[120px] py-2 resize-none"
                   />

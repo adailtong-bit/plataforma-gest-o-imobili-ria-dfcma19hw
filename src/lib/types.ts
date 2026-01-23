@@ -581,12 +581,21 @@ export interface Message {
   history: ChatMessage[]
 }
 
+export interface ChatAttachment {
+  id: string
+  name: string
+  url: string
+  type: 'image' | 'pdf' | 'file'
+  size?: string
+}
+
 export interface ChatMessage {
   id: string
   text: string
   senderId: string // Changed from 'sender' literal to 'senderId' string for robust attribution
   timestamp: string
-  attachments?: string[]
+  attachments?: ChatAttachment[]
+  read?: boolean
 }
 
 export interface Advertiser {

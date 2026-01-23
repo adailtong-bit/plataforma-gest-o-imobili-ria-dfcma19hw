@@ -4,6 +4,7 @@ import React, {
   ReactNode,
   useEffect,
   useMemo,
+  useCallback,
 } from 'react'
 import {
   Property,
@@ -36,6 +37,7 @@ import {
   CalendarBlock,
   MessageTemplate,
   ChatMessage,
+  ChatAttachment,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -63,6 +65,7 @@ import {
   messageTemplates as initialTemplates,
 } from '@/lib/mockData'
 import { translations, Language } from '@/lib/translations'
+import { useToast } from '@/hooks/use-toast'
 
 interface AppContextType {
   properties: Property[]
@@ -91,6 +94,7 @@ interface AppContextType {
   advertisers: Advertiser[]
   adPricing: AdPricing
   language: Language
+  typingStatus: Record<string, boolean> // userId -> isTyping
   setLanguage: (lang: Language) => void
   t: (key: string, params?: Record<string, string>) => string
   addProperty: (property: Property) => void
@@ -106,24 +110,15 @@ interface AppContextType {
   markPaymentAs: (paymentId: string, status: Payment['status']) => void
   addTaskImage: (taskId: string, imageUrl: string) => void
   addTaskEvidence: (taskId: string, evidence: Evidence) => void
-  sendMessage: (contactId: string, text: string, attachments?: string[]) => void
+  sendMessage: (
+    contactId: string,
+    text: string,
+    attachments?: ChatAttachment[],
+    senderIdOverride?: string,
+  ) => void
   markAsRead: (threadId: string) => void
-  addTenant: (tenant: Tenant) => void
-  updateTenant: (tenant: Tenant) => void
-  addOwner: (owner: Owner) => void
-  updateOwner: (owner: Owner) => void
-  addPartner: (partner: Partner) => void
-  updatePartner: (partner: Partner) => void
-  addBooking: (booking: Booking) => void
-  updateBooking: (booking: Booking) => void
-  deleteBooking: (bookingId: string) => void
-  addCalendarBlock: (block: CalendarBlock) => void
-  deleteCalendarBlock: (blockId: string) => void
-  addMessageTemplate: (template: MessageTemplate) => void
-  updateMessageTemplate: (template: MessageTemplate) => void
-  deleteMessageTemplate: (templateId: string) => void
-  setCurrentUser: (userId: string) => void
   startChat: (contactId: string) => void
+  setTyping: (userId: string, isTyping: boolean) => void
   updateAutomationRule: (rule: AutomationRule) => void
   addUser: (user: User) => void
   updateUser: (user: User) => void
@@ -226,11 +221,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   )
   const [advertisers, setAdvertisers] = useState<Advertiser[]>(mockAdvertisers)
   const [adPricing, setAdPricingState] = useState<AdPricing>(mockAdPricing)
+  const [typingStatus, setTypingStatus] = useState<Record<string, boolean>>({})
 
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app_language')
     return (saved as Language) || 'pt'
   })
+
+  const { toast } = useToast()
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
@@ -268,7 +266,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     combined.forEach((u) => {
       if (uniqueMap.has(u.id)) {
-        // Merge with existing to ensure we capture all properties (e.g. User permissions + Partner serviceRates)
         uniqueMap.set(u.id, { ...uniqueMap.get(u.id), ...u })
       } else {
         uniqueMap.set(u.id, u)
@@ -287,17 +284,23 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setAuditLogs((prev) => [newLog, ...prev])
   }
 
-  const addNotification = (
-    notification: Omit<Notification, 'id' | 'timestamp' | 'read'>,
-  ) => {
-    const newNotif: Notification = {
-      id: `notif-${Date.now()}-${Math.random()}`,
-      timestamp: new Date().toISOString(),
-      read: false,
-      ...notification,
-    }
-    setNotifications((prev) => [newNotif, ...prev])
-  }
+  const addNotification = useCallback(
+    (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
+      const newNotif: Notification = {
+        id: `notif-${Date.now()}-${Math.random()}`,
+        timestamp: new Date().toISOString(),
+        read: false,
+        ...notification,
+      }
+      setNotifications((prev) => [newNotif, ...prev])
+      toast({
+        title: notification.title,
+        description: notification.message,
+        duration: 3000,
+      })
+    },
+    [toast],
+  )
 
   const markNotificationAsRead = (id: string) => {
     setNotifications((prev) =>
@@ -334,26 +337,34 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       prev.map((u) => (u.id === id ? { ...u, status: 'blocked' } : u)),
     )
 
+  // Typing Status Helper
+  const setTyping = (userId: string, isTyping: boolean) => {
+    setTypingStatus((prev) => ({ ...prev, [userId]: isTyping }))
+  }
+
   // Messaging Logic - Bidirectional Sync
   const sendMessage = (
     contactId: string,
     text: string,
-    attachments: string[] = [],
+    attachments: ChatAttachment[] = [],
+    senderIdOverride?: string,
   ) => {
+    const senderId = senderIdOverride || currentUser.id
     const newMessage: ChatMessage = {
       id: `msg-${Date.now()}-${Math.random()}`,
       text,
-      senderId: currentUser.id,
+      senderId,
       timestamp: new Date().toISOString(),
       attachments,
+      read: false,
     }
 
     setAllMessages((prev) => {
       let nextMessages = [...prev]
 
-      // 1. Sender Side (Me -> Contact)
+      // 1. Sender Side (Sender -> Contact)
       const senderThreadIndex = nextMessages.findIndex(
-        (m) => m.ownerId === currentUser.id && m.contactId === contactId,
+        (m) => m.ownerId === senderId && m.contactId === contactId,
       )
       if (senderThreadIndex >= 0) {
         // Update existing thread for sender
@@ -367,10 +378,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         // Create new thread for sender
         const contact = allUsers.find((u) => u.id === contactId)
         nextMessages.push({
-          id: `chat-${currentUser.id}-${contactId}`,
+          id: `chat-${senderId}-${contactId}`,
           contact: contact?.name || 'Unknown',
           contactId: contactId,
-          ownerId: currentUser.id,
+          ownerId: senderId,
           lastMessage: text,
           time: newMessage.timestamp,
           unread: 0,
@@ -379,9 +390,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         })
       }
 
-      // 2. Recipient Side (Contact -> Me)
+      // 2. Recipient Side (Contact -> Sender)
       const recipientThreadIndex = nextMessages.findIndex(
-        (m) => m.ownerId === contactId && m.contactId === currentUser.id,
+        (m) => m.ownerId === contactId && m.contactId === senderId,
       )
       if (recipientThreadIndex >= 0) {
         // Update existing thread for recipient
@@ -394,26 +405,58 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         }
       } else {
         // Create new thread for recipient
+        const senderUser = allUsers.find((u) => u.id === senderId)
         nextMessages.push({
-          id: `chat-${contactId}-${currentUser.id}`,
-          contact: currentUser.name,
-          contactId: currentUser.id,
+          id: `chat-${contactId}-${senderId}`,
+          contact: senderUser?.name || 'Unknown',
+          contactId: senderId,
           ownerId: contactId,
           lastMessage: text,
           time: newMessage.timestamp,
           unread: 1,
-          avatar: currentUser.avatar || '',
+          avatar: senderUser?.avatar || '',
           history: [newMessage],
         })
       }
 
       return nextMessages
     })
+
+    // Simulated Auto-Reply Logic for Demo purposes
+    if (
+      !senderIdOverride &&
+      contactId !== currentUser.id &&
+      Math.random() > 0.3
+    ) {
+      setTimeout(() => {
+        setTyping(contactId, true)
+        setTimeout(() => {
+          setTyping(contactId, false)
+          sendMessage(
+            currentUser.id,
+            `This is an automated reply from ${allUsers.find((u) => u.id === contactId)?.name || 'User'}. I received: "${text}"`,
+            [],
+            contactId, // Send as the contact
+          )
+        }, 2000)
+      }, 1000)
+    }
   }
 
   const markAsRead = (threadId: string) => {
     setAllMessages((prev) =>
-      prev.map((m) => (m.id === threadId ? { ...m, unread: 0 } : m)),
+      prev.map((m) => {
+        if (m.id === threadId) {
+          return {
+            ...m,
+            unread: 0,
+            history: m.history.map((msg) =>
+              msg.senderId !== currentUser.id ? { ...msg, read: true } : msg,
+            ),
+          }
+        }
+        return m
+      }),
     )
   }
 
@@ -445,6 +488,43 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       ])
     }
   }
+
+  // Toast notification for incoming messages when not on messages page
+  useEffect(() => {
+    const lastMessage = allMessages
+      .filter((m) => m.ownerId === currentUser.id)
+      .sort(
+        (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime(),
+      )[0]
+
+    if (
+      lastMessage &&
+      lastMessage.unread > 0 &&
+      window.location.pathname !== '/messages'
+    ) {
+      // Basic check to prevent spamming on load - in real app use a subscription or proper event
+      const msgTime = new Date(lastMessage.time).getTime()
+      const now = new Date().getTime()
+      if (now - msgTime < 5000) {
+        // Only if message is very recent
+        toast({
+          title: `Nova mensagem de ${lastMessage.contact}`,
+          description: lastMessage.lastMessage,
+          duration: 4000,
+          action: (
+            <div
+              className="bg-primary text-primary-foreground px-3 py-2 rounded-md text-xs cursor-pointer"
+              onClick={() =>
+                (window.location.href = `/messages?contactId=${lastMessage.contactId}`)
+              }
+            >
+              Ver
+            </div>
+          ),
+        })
+      }
+    }
+  }, [allMessages, currentUser.id, toast])
 
   const addProperty = (p: Property) => setProperties([...properties, p])
   const updateProperty = (p: Property) =>
@@ -586,6 +666,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         advertisers,
         adPricing,
         language,
+        typingStatus,
+        setTyping,
         setLanguage,
         t,
         addProperty,

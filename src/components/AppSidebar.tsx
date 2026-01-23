@@ -36,15 +36,18 @@ import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
+import useMessageStore from '@/stores/useMessageStore'
 import { hasPermission } from '@/lib/permissions'
 import { User, Resource } from '@/lib/types'
 import logo from '@/assets/logo-estilizado.jpg'
+import { Badge } from '@/components/ui/badge'
 
 export function AppSidebar() {
   const location = useLocation()
   const pathname = location.pathname
   const { t } = useLanguageStore()
   const { currentUser } = useAuthStore()
+  const { messages } = useMessageStore()
   const { setOpenMobile, isMobile } = useSidebar()
 
   const handleLinkClick = () => {
@@ -52,6 +55,12 @@ export function AppSidebar() {
       setOpenMobile(false)
     }
   }
+
+  // Calculate unread messages
+  const unreadMessagesCount = messages.reduce(
+    (acc, msg) => acc + (msg.unread || 0),
+    0,
+  )
 
   const allMenuItems = [
     {
@@ -136,13 +145,14 @@ export function AppSidebar() {
       title: t('common.invoices'),
       url: '/invoices',
       icon: FileText,
-      resource: 'financial', // Assuming invoices are under financial permissions
+      resource: 'financial',
     },
     {
       title: t('common.messages'),
       url: '/messages',
       icon: MessageSquare,
       resource: 'messages',
+      badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined,
     },
   ]
 
@@ -181,7 +191,6 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        {/* Special Portal Links for specific roles - Usually these are the ONLY links they see, but if they have broader perms, they might see menu items too */}
         {(currentUser.role === 'tenant' ||
           currentUser.role === 'property_owner' ||
           currentUser.role === 'partner' ||
@@ -247,9 +256,23 @@ export function AppSidebar() {
                       isActive={isActive(item.url)}
                       tooltip={item.title}
                     >
-                      <Link to={item.url} onClick={handleLinkClick}>
-                        <item.icon />
-                        <span>{item.title}</span>
+                      <Link
+                        to={item.url}
+                        onClick={handleLinkClick}
+                        className="flex justify-between items-center w-full"
+                      >
+                        <div className="flex items-center gap-2">
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </div>
+                        {item.badge !== undefined && (
+                          <Badge
+                            variant="destructive"
+                            className="h-5 min-w-5 px-1 flex items-center justify-center text-[10px]"
+                          >
+                            {item.badge}
+                          </Badge>
+                        )}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
