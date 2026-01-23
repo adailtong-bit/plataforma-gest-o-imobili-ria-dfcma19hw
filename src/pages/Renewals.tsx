@@ -61,9 +61,14 @@ export default function Renewals() {
   const [sheetOpen, setSheetOpen] = useState(false)
   const [selectedTenantId, setSelectedTenantId] = useState<string | null>(null)
 
+  // Safe data access - ensure arrays are initialized to prevent runtime errors
+  const safeTenants = Array.isArray(tenants) ? tenants : []
+  const safeProperties = Array.isArray(properties) ? properties : []
+  const safeOwners = Array.isArray(owners) ? owners : []
+
   // Filter tenants active or recently renewed
-  const relevantTenants = tenants.filter(
-    (t) => t.status === 'active' || t.negotiationStatus === 'closed',
+  const relevantTenants = safeTenants.filter(
+    (t) => t && (t.status === 'active' || t.negotiationStatus === 'closed'),
   )
 
   // Pre-calculate data
@@ -77,8 +82,8 @@ export default function Renewals() {
       console.error('Invalid date', e)
     }
 
-    const property = properties.find((p) => p.id === t.propertyId)
-    const owner = owners.find((o) => o.id === property?.ownerId)
+    const property = safeProperties.find((p) => p.id === t.propertyId)
+    const owner = safeOwners.find((o) => o.id === property?.ownerId)
 
     // Display Status (Exclusive for Badge Color)
     let displayStatus: 'critical' | 'upcoming' | 'year' | 'safe' | 'renewed' =
@@ -123,13 +128,19 @@ export default function Renewals() {
         return false
 
       // Search Term
-      if (
-        searchTerm &&
-        !item.property?.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !item.tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !item.owner?.name.toLowerCase().includes(searchTerm.toLowerCase())
-      ) {
-        return false
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase()
+        const propName = item.property?.name?.toLowerCase() || ''
+        const tenantName = item.tenant?.name?.toLowerCase() || ''
+        const ownerName = item.owner?.name?.toLowerCase() || ''
+
+        if (
+          !propName.includes(term) &&
+          !tenantName.includes(term) &&
+          !ownerName.includes(term)
+        ) {
+          return false
+        }
       }
       return true
     })
@@ -182,7 +193,7 @@ export default function Renewals() {
   }
 
   const currentTenantValue = selectedTenantId
-    ? tenants.find((t) => t.id === selectedTenantId)?.rentValue || 0
+    ? safeTenants.find((t) => t.id === selectedTenantId)?.rentValue || 0
     : 0
 
   const getStatusBadge = (status: string) => {
@@ -332,7 +343,7 @@ export default function Renewals() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('common.all')}</SelectItem>
-            {owners.map((o) => (
+            {safeOwners.map((o) => (
               <SelectItem key={o.id} value={o.id}>
                 {o.name}
               </SelectItem>
@@ -411,7 +422,9 @@ export default function Renewals() {
                           ? `${tenant.suggestedRenewalPrice}`
                           : '-'}
                       </TableCell>
-                      <TableCell>${tenant.rentValue.toFixed(2)}</TableCell>
+                      <TableCell>
+                        ${(tenant.rentValue ?? 0).toFixed(2)}
+                      </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
                           <span
