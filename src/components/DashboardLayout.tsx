@@ -47,17 +47,10 @@ export default function DashboardLayout() {
   const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false)
   const [processing, setProcessing] = useState(false)
 
-  // Auth Check for Layout
-  // If not authenticated, we just render Outlet (which might be Landing/Login) without dashboard chrome
-  // However, App.tsx should ideally separate layouts.
-  // Given current constraint, we conditionally render layout parts.
-  if (!isAuthenticated) {
-    return <Outlet />
-  }
-
   // Status Check & Enforcement & RBAC Redirection
   useEffect(() => {
-    if (!currentUser) return
+    // Moved early return inside the effect to avoid conditional hook execution
+    if (!isAuthenticated || !currentUser) return
 
     const checkAccess = () => {
       const path = location.pathname
@@ -116,11 +109,19 @@ export default function DashboardLayout() {
     ) {
       setSubscriptionModalOpen(true)
     }
-  }, [currentUser, properties.length, location.pathname])
+  }, [
+    currentUser,
+    properties.length,
+    location.pathname,
+    isAuthenticated,
+    navigate,
+    toast,
+  ])
 
   // Operational Notifications Logic
   useEffect(() => {
-    if (!currentUser || !tasks) return
+    // Moved early return inside the effect to avoid conditional hook execution
+    if (!isAuthenticated || !currentUser || !tasks) return
 
     const checkTasks = () => {
       const now = new Date()
@@ -157,7 +158,7 @@ export default function DashboardLayout() {
     checkTasks() // Run once on mount
 
     return () => clearInterval(interval)
-  }, [currentUser, tasks])
+  }, [currentUser, tasks, isAuthenticated])
 
   const handlePasswordUpdate = () => {
     if (newPassword.length < 6) {
@@ -179,12 +180,14 @@ export default function DashboardLayout() {
 
     setProcessing(true)
     setTimeout(() => {
-      updateUser({
-        ...(currentUser as User),
-        isFirstLogin: false,
-        status: 'active',
-      })
-      setCurrentUser(currentUser.id)
+      if (currentUser) {
+        updateUser({
+          ...(currentUser as User),
+          isFirstLogin: false,
+          status: 'active',
+        })
+        setCurrentUser(currentUser.id)
+      }
 
       setProcessing(false)
       setPasswordModalOpen(false)
@@ -195,11 +198,13 @@ export default function DashboardLayout() {
   const handleEntryPayment = () => {
     setProcessing(true)
     setTimeout(() => {
-      updateUser({
-        ...(currentUser as User),
-        hasPaidEntryFee: true,
-      })
-      setCurrentUser(currentUser.id)
+      if (currentUser) {
+        updateUser({
+          ...(currentUser as User),
+          hasPaidEntryFee: true,
+        })
+        setCurrentUser(currentUser.id)
+      }
       setProcessing(false)
       setPaymentModalOpen(false)
       toast({ title: 'Pagamento Confirmado', description: 'Acesso liberado.' })
@@ -209,11 +214,13 @@ export default function DashboardLayout() {
   const handleSubscriptionUpgrade = (plan: 'pay_per_house' | 'unlimited') => {
     setProcessing(true)
     setTimeout(() => {
-      updateUser({
-        ...(currentUser as User),
-        subscriptionPlan: plan,
-      })
-      setCurrentUser(currentUser.id)
+      if (currentUser) {
+        updateUser({
+          ...(currentUser as User),
+          subscriptionPlan: plan,
+        })
+        setCurrentUser(currentUser.id)
+      }
       setProcessing(false)
       setSubscriptionModalOpen(false)
       toast({
@@ -221,6 +228,13 @@ export default function DashboardLayout() {
         description: `Plano ${plan} ativado.`,
       })
     }, 1500)
+  }
+
+  // Auth Check for Layout
+  // If not authenticated, we just render Outlet (which might be Landing/Login) without dashboard chrome
+  // Moved this check to the bottom to respect React Hooks rules (no conditional hooks)
+  if (!isAuthenticated) {
+    return <Outlet />
   }
 
   if (
