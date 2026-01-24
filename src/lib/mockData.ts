@@ -72,6 +72,8 @@ const internalUsers: User[] = Array.from({ length: 3 }).map((_, i) => ({
     { resource: 'properties', actions: ['view', 'create', 'edit'] },
     { resource: 'tasks', actions: ['view', 'create', 'edit', 'delete'] },
     { resource: 'short_term', actions: ['view', 'create', 'edit', 'delete'] },
+    { resource: 'analytics', actions: ['view'] },
+    { resource: 'automation', actions: ['view', 'edit'] },
   ],
   status: 'active',
   isFirstLogin: false,
@@ -230,6 +232,7 @@ export const properties: Property[] = tenantsData.flatMap((tenant, tIdx) =>
     },
     leadContact: 'sales@agency.com',
     channelLinks: [],
+    healthScore: 85 + (pIdx % 15), // Mock score
   })),
 )
 
@@ -257,6 +260,7 @@ properties.push({
   ownerId: demoOwnerUser.id,
   documents: [],
   channelLinks: [],
+  healthScore: 98,
 })
 
 // Owners (2 per tenant approx)
@@ -632,6 +636,18 @@ export const automationRules: AutomationRule[] = [
     enabled: true,
     daysBefore: 3,
     template: 'Olá {tenant}, lembrete que seu aluguel vence em 3 dias.',
+  },
+  {
+    id: 'rule2',
+    type: 'auto_approve_task',
+    enabled: false,
+    threshold: 100, // Tasks under $100
+  },
+  {
+    id: 'rule3',
+    type: 'auto_generate_invoice',
+    enabled: true,
+    event: 'task_completion',
   },
 ]
 

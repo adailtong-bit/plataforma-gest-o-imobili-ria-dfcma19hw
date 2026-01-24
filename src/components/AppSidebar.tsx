@@ -33,6 +33,8 @@ import {
   FileText,
   Tags,
   Database,
+  BarChart2,
+  Zap,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -97,6 +99,12 @@ export function AppSidebar() {
       resource: 'market_analysis',
     },
     {
+      title: 'Advanced Analytics',
+      url: '/admin/analytics',
+      icon: BarChart2,
+      resource: 'analytics',
+    },
+    {
       title: t('common.condominiums'),
       url: '/condominiums',
       icon: Building2,
@@ -143,6 +151,12 @@ export function AppSidebar() {
       url: '/workflows',
       icon: Workflow,
       resource: 'workflows',
+    },
+    {
+      title: 'Automation Rules',
+      url: '/admin/automation',
+      icon: Zap,
+      resource: 'automation',
     },
     {
       title: t('common.financial'),

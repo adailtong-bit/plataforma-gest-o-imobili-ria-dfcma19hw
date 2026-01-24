@@ -20,7 +20,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import useLanguageStore from '@/stores/useLanguageStore'
-import useAutomationStore from '@/stores/useAutomationStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useAuthStore from '@/stores/useAuthStore'
 import { hasPermission } from '@/lib/permissions'
@@ -29,11 +28,11 @@ import { useToast } from '@/hooks/use-toast'
 import { AuditLogList } from '@/components/audit/AuditLogList'
 import { User, FinancialSettings } from '@/lib/types'
 import useUserStore from '@/stores/useUserStore'
+import { Globe, CreditCard, Building } from 'lucide-react'
 
 export default function Settings() {
   const { t } = useLanguageStore()
   const { toast } = useToast()
-  const { automationRules, updateAutomationRule } = useAutomationStore()
   const { financialSettings, updateFinancialSettings } = useFinancialStore()
   const { currentUser } = useAuthStore()
   const { updateUser } = useUserStore()
@@ -90,13 +89,12 @@ export default function Settings() {
       <Tabs defaultValue="profile" className="space-y-4">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="profile">{t('common.profile')}</TabsTrigger>
-          <TabsTrigger value="billing">Billing Model</TabsTrigger>
-          <TabsTrigger value="notifications">
-            {t('common.notifications')}
-          </TabsTrigger>
-          <TabsTrigger value="automation">{t('common.automation')}</TabsTrigger>
           <TabsTrigger value="integrations">
             {t('settings.integrations')}
+          </TabsTrigger>
+          <TabsTrigger value="billing">Billing & Payment</TabsTrigger>
+          <TabsTrigger value="notifications">
+            {t('common.notifications')}
           </TabsTrigger>
           {canViewAudit && (
             <TabsTrigger value="audit">
@@ -187,44 +185,33 @@ export default function Settings() {
         <TabsContent value="integrations">
           <Card>
             <CardHeader>
-              <CardTitle>Financial Integrations</CardTitle>
+              <CardTitle>Enhanced Integration Hub</CardTitle>
               <CardDescription>
-                Configure payment gateways and third-party services.
+                Connect with external channels and services.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Payment Gateway */}
+              {/* Channel Managers */}
               <div>
-                <h3 className="text-lg font-medium mb-4">Payment Gateway</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label>Gateway Provider</Label>
-                    <Select
-                      value={financialData.gatewayProvider}
-                      onValueChange={(v: any) =>
-                        handleFinancialChange('gatewayProvider', v)
-                      }
+                <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+                  <Globe className="h-5 w-5" /> Booking Channels
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    'Airbnb',
+                    'Booking.com',
+                    'VRBO',
+                    'Expedia',
+                    'TripAdvisor',
+                  ].map((channel) => (
+                    <div
+                      key={channel}
+                      className="flex items-center justify-between p-4 border rounded-lg"
                     >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="stripe">Stripe</SelectItem>
-                        <SelectItem value="plaid">Plaid</SelectItem>
-                        <SelectItem value="manual">Manual</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>API Key</Label>
-                    <Input
-                      type="password"
-                      value={financialData.apiKey || ''}
-                      onChange={(e) =>
-                        handleFinancialChange('apiKey', e.target.value)
-                      }
-                    />
-                  </div>
+                      <span className="font-medium">{channel}</span>
+                      <Switch />
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -233,7 +220,9 @@ export default function Settings() {
               {/* Bill.com Integration */}
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium">Bill.com</h3>
+                  <h3 className="text-lg font-medium flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" /> BILL Platform (Payables)
+                  </h3>
                   <Switch
                     checked={financialData.billComEnabled || false}
                     onCheckedChange={(checked) =>
@@ -242,7 +231,7 @@ export default function Settings() {
                   />
                 </div>
                 {financialData.billComEnabled && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-muted/20 rounded-md">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-muted/20 rounded-md animate-in fade-in slide-in-from-top-2">
                     <div className="space-y-2">
                       <Label>Organization ID</Label>
                       <Input
@@ -250,6 +239,7 @@ export default function Settings() {
                         onChange={(e) =>
                           handleFinancialChange('billComOrgId', e.target.value)
                         }
+                        placeholder="org_..."
                       />
                     </div>
                     <div className="space-y-2">
@@ -260,47 +250,32 @@ export default function Settings() {
                         onChange={(e) =>
                           handleFinancialChange('billComApiKey', e.target.value)
                         }
+                        placeholder="key_..."
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Environment</Label>
+                      <Select
+                        value={financialData.billComEnvironment || 'sandbox'}
+                        onValueChange={(v: any) =>
+                          handleFinancialChange('billComEnvironment', v)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="sandbox">
+                            Sandbox (Test)
+                          </SelectItem>
+                          <SelectItem value="production">
+                            Production (Live)
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 )}
-              </div>
-
-              <Separator />
-
-              {/* CRM */}
-              <div>
-                <h3 className="text-lg font-medium mb-4">CRM Integration</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label>Provider</Label>
-                    <Select
-                      value={financialData.crmProvider || 'none'}
-                      onValueChange={(v: any) =>
-                        handleFinancialChange('crmProvider', v)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">None</SelectItem>
-                        <SelectItem value="salesforce">Salesforce</SelectItem>
-                        <SelectItem value="hubspot">HubSpot</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>CRM API Key</Label>
-                    <Input
-                      type="password"
-                      value={financialData.crmApiKey || ''}
-                      onChange={(e) =>
-                        handleFinancialChange('crmApiKey', e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
               </div>
 
               <div className="flex justify-end pt-4">
@@ -315,12 +290,61 @@ export default function Settings() {
         <TabsContent value="billing">
           <Card>
             <CardHeader>
-              <CardTitle>Billing Model</CardTitle>
+              <CardTitle>Billing & Payment</CardTitle>
               <CardDescription>
-                Fee structure and automated charge calculations.
+                Configure automated payouts and banking info.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              <div className="p-4 bg-blue-50 text-blue-800 rounded-md text-sm mb-4 border border-blue-200">
+                <Building className="inline-block w-4 h-4 mr-2" />
+                Linked Bank Account for Payouts
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label>Bank Name</Label>
+                  <Input
+                    value={financialData.bankName}
+                    onChange={(e) =>
+                      handleFinancialChange('bankName', e.target.value)
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Routing Number</Label>
+                  <Input
+                    value={financialData.routingNumber}
+                    onChange={(e) =>
+                      handleFinancialChange('routingNumber', e.target.value)
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Account Number</Label>
+                  <Input
+                    value={financialData.accountNumber}
+                    onChange={(e) =>
+                      handleFinancialChange('accountNumber', e.target.value)
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Account Type</Label>
+                  <Select defaultValue="checking">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="checking">Checking</SelectItem>
+                      <SelectItem value="savings">Savings</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <Separator />
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label>PM Management Fee (%)</Label>
@@ -379,61 +403,6 @@ export default function Settings() {
                 </div>
                 <Switch defaultChecked />
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="automation">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('settings.automation_title')}</CardTitle>
-              <CardDescription>{t('settings.automation_desc')}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {automationRules.map((rule) => (
-                <div key={rule.id}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="space-y-0.5">
-                      <Label className="text-base capitalize">
-                        {rule.type.replace('_', ' ')}
-                      </Label>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Input
-                          type="number"
-                          value={rule.daysBefore}
-                          onChange={(e) =>
-                            updateAutomationRule({
-                              ...rule,
-                              daysBefore: parseInt(e.target.value),
-                            })
-                          }
-                          className="w-16 h-8 text-center"
-                        />
-                        <span className="text-sm text-muted-foreground">
-                          {t('settings.days_before')}
-                        </span>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={rule.enabled}
-                      onCheckedChange={(checked) =>
-                        updateAutomationRule({ ...rule, enabled: checked })
-                      }
-                    />
-                  </div>
-                  <Input
-                    value={rule.template}
-                    onChange={(e) =>
-                      updateAutomationRule({
-                        ...rule,
-                        template: e.target.value,
-                      })
-                    }
-                    className="text-sm text-muted-foreground bg-muted/20"
-                  />
-                  <Separator className="mt-6" />
-                </div>
-              ))}
             </CardContent>
           </Card>
         </TabsContent>

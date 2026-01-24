@@ -31,6 +31,8 @@ import Workflows from './pages/Workflows'
 import Renewals from './pages/Renewals'
 import PublicityAdmin from './pages/admin/PublicityAdmin'
 import MigrationHub from './pages/admin/MigrationHub'
+import Analytics from './pages/admin/Analytics'
+import Automation from './pages/admin/Automation'
 import ShortTerm from './pages/ShortTerm'
 import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
@@ -82,6 +84,8 @@ const App = () => {
                 {/* Admin */}
                 <Route path="/admin/publicity" element={<PublicityAdmin />} />
                 <Route path="/admin/migration" element={<MigrationHub />} />
+                <Route path="/admin/analytics" element={<Analytics />} />
+                <Route path="/admin/automation" element={<Automation />} />
 
                 {/* Portals */}
                 <Route path="/portal/tenant" element={<TenantPortal />} />

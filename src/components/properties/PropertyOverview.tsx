@@ -14,6 +14,8 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import { hasPermission } from '@/lib/permissions'
 import useAuthStore from '@/stores/useAuthStore'
 import { User } from '@/lib/types'
+import { Badge } from '@/components/ui/badge'
+import { Trophy } from 'lucide-react'
 
 interface PropertyOverviewProps {
   data: Property
@@ -37,10 +39,24 @@ export function PropertyOverview({
     (currentUser.role === 'internal_user' &&
       hasPermission(currentUser as User, 'properties', 'view'))
 
+  // Health Score Color
+  const score = data.healthScore || 80
+  const scoreColor =
+    score >= 90 ? 'bg-green-500' : score >= 70 ? 'bg-yellow-500' : 'bg-red-500'
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row justify-between items-start">
         <CardTitle>{t('properties.overview')}</CardTitle>
+        <Badge variant="outline" className="flex items-center gap-1 px-3 py-1">
+          <Trophy className="h-3 w-3 text-yellow-500" />
+          Health Score:
+          <span
+            className={`ml-1 font-bold ${score >= 90 ? 'text-green-600' : 'text-yellow-600'}`}
+          >
+            {score}/100
+          </span>
+        </Badge>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid gap-2">

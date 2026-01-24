@@ -28,6 +28,8 @@ export type Resource =
   | 'publicity'
   | 'short_term'
   | 'migration'
+  | 'analytics'
+  | 'automation'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -59,6 +61,7 @@ export interface FinancialSettings {
   billComEnabled?: boolean
   billComOrgId?: string
   billComApiKey?: string
+  billComEnvironment?: 'sandbox' | 'production'
 }
 
 export interface BankStatement {
@@ -180,7 +183,13 @@ export interface SocialMediaLinks {
 
 export interface ChannelLink {
   id: string
-  platform: 'airbnb' | 'booking.com' | 'vrbo' | 'other'
+  platform:
+    | 'airbnb'
+    | 'booking.com'
+    | 'vrbo'
+    | 'expedia'
+    | 'tripadvisor'
+    | 'other'
   url: string
   lastSync?: string
   status: 'active' | 'error' | 'pending'
@@ -241,6 +250,7 @@ export interface Property {
   fixedExpenses?: FixedExpense[]
   socialMedia?: SocialMediaLinks
   leadContact?: string
+  healthScore?: number // Gamification: 0-100
 }
 
 export type DocumentCategory =
@@ -564,10 +574,17 @@ export interface Financials {
 
 export interface AutomationRule {
   id: string
-  type: 'rent_reminder' | 'contract_expiry' | 'maintenance_update'
+  type:
+    | 'rent_reminder'
+    | 'contract_expiry'
+    | 'maintenance_update'
+    | 'auto_approve_task'
+    | 'auto_generate_invoice'
   enabled: boolean
-  daysBefore: number
-  template: string
+  daysBefore?: number
+  template?: string
+  threshold?: number // For price based rules
+  event?: 'task_completion' | 'booking_confirmation'
 }
 
 export interface WorkflowStep {
