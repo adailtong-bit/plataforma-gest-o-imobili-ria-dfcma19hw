@@ -30,7 +30,7 @@ import { differenceInHours, parseISO } from 'date-fns'
 import { cn } from '@/lib/utils'
 
 export default function DashboardLayout() {
-  const { currentUser, setCurrentUser } = useAuthStore()
+  const { currentUser, setCurrentUser, isAuthenticated } = useAuthStore()
   const { updateUser } = useUserStore()
   const { properties } = usePropertyStore()
   const { tasks } = useTaskStore()
@@ -46,6 +46,14 @@ export default function DashboardLayout() {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false)
   const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false)
   const [processing, setProcessing] = useState(false)
+
+  // Auth Check for Layout
+  // If not authenticated, we just render Outlet (which might be Landing/Login) without dashboard chrome
+  // However, App.tsx should ideally separate layouts.
+  // Given current constraint, we conditionally render layout parts.
+  if (!isAuthenticated) {
+    return <Outlet />
+  }
 
   // Status Check & Enforcement & RBAC Redirection
   useEffect(() => {

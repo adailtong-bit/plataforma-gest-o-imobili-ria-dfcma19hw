@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   Card,
   CardContent,
@@ -7,8 +7,6 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   XAxis,
@@ -31,217 +29,306 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import {
-  TrendingUp,
-  DollarSign,
-  Users,
-  LineChart as ChartIcon,
-} from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import useLanguageStore from '@/stores/useLanguageStore'
 
-const predictionData = [
-  { month: 'Jan', revenue: 4000, projected: 4200, occupancy: 80 },
-  { month: 'Feb', revenue: 3000, projected: 3500, occupancy: 75 },
-  { month: 'Mar', revenue: 5000, projected: 4800, occupancy: 85 },
-  { month: 'Apr', revenue: 4500, projected: 5000, occupancy: 82 },
-  { month: 'May', revenue: 6000, projected: 6200, occupancy: 90 },
-  { month: 'Jun', revenue: 7000, projected: 7500, occupancy: 95 },
-  { month: 'Jul', revenue: 8000, projected: 8200, occupancy: 98 },
-  { month: 'Aug', revenue: null, projected: 8500, occupancy: 92 }, // Future
-  { month: 'Sep', revenue: null, projected: 7800, occupancy: 88 }, // Future
-]
-
-const optimizationSuggestions = [
+// Mock Data for Comparative Analysis
+const comparativeDataRaw = [
   {
-    property: 'Oceanview Villa',
-    currentPrice: 500,
-    suggestedPrice: 550,
-    reason: 'High demand in area',
-    impact: '+10% Revenue',
+    model: '2 Bed Condo',
+    month: 'Jan',
+    internalOcc: 85,
+    marketOcc: 80,
+    internalADR: 180,
+    marketADR: 170,
   },
   {
-    property: 'Downtown Condo',
-    currentPrice: 200,
-    suggestedPrice: 180,
-    reason: 'Lower occupancy forecast',
-    impact: '+15% Occupancy',
+    model: '2 Bed Condo',
+    month: 'Feb',
+    internalOcc: 82,
+    marketOcc: 78,
+    internalADR: 185,
+    marketADR: 175,
+  },
+  {
+    model: '2 Bed Condo',
+    month: 'Mar',
+    internalOcc: 88,
+    marketOcc: 82,
+    internalADR: 190,
+    marketADR: 180,
+  },
+  {
+    model: '3 Bed Villa',
+    month: 'Jan',
+    internalOcc: 75,
+    marketOcc: 70,
+    internalADR: 350,
+    marketADR: 340,
+  },
+  {
+    model: '3 Bed Villa',
+    month: 'Feb',
+    internalOcc: 78,
+    marketOcc: 72,
+    internalADR: 360,
+    marketADR: 345,
+  },
+  {
+    model: '3 Bed Villa',
+    month: 'Mar',
+    internalOcc: 80,
+    marketOcc: 75,
+    internalADR: 370,
+    marketADR: 350,
+  },
+  {
+    model: '4 Bed House',
+    month: 'Jan',
+    internalOcc: 90,
+    marketOcc: 85,
+    internalADR: 450,
+    marketADR: 420,
+  },
+  {
+    model: '4 Bed House',
+    month: 'Feb',
+    internalOcc: 92,
+    marketOcc: 88,
+    internalADR: 460,
+    marketADR: 430,
+  },
+  {
+    model: '4 Bed House',
+    month: 'Mar',
+    internalOcc: 95,
+    marketOcc: 90,
+    internalADR: 470,
+    marketADR: 440,
   },
 ]
 
 export default function Analytics() {
-  const [timeRange, setTimeRange] = useState('6m')
+  const { t } = useLanguageStore()
+  const [houseModel, setHouseModel] = useState('All')
+
+  const uniqueModels = Array.from(
+    new Set(comparativeDataRaw.map((d) => d.model)),
+  )
+
+  const filteredData = useMemo(() => {
+    let data = comparativeDataRaw
+    if (houseModel !== 'All') {
+      data = data.filter((d) => d.model === houseModel)
+    }
+    // Aggregate if 'All' is selected
+    if (houseModel === 'All') {
+      const months = Array.from(new Set(data.map((d) => d.month)))
+      return months.map((m) => {
+        const monthData = data.filter((d) => d.month === m)
+        const count = monthData.length
+        return {
+          model: 'All',
+          month: m,
+          internalOcc:
+            monthData.reduce((sum, curr) => sum + curr.internalOcc, 0) / count,
+          marketOcc:
+            monthData.reduce((sum, curr) => sum + curr.marketOcc, 0) / count,
+          internalADR:
+            monthData.reduce((sum, curr) => sum + curr.internalADR, 0) / count,
+          marketADR:
+            monthData.reduce((sum, curr) => sum + curr.marketADR, 0) / count,
+        }
+      })
+    }
+    return data
+  }, [houseModel])
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Advanced Analytics
+            {t('analytics.benchmark_title') ||
+              'Comparative Performance Dashboard'}
           </h1>
           <p className="text-muted-foreground">
-            Predictive insights and performance optimization.
+            {t('analytics.benchmark_desc') ||
+              'Compare internal performance against market benchmarks.'}
           </p>
         </div>
         <div className="flex gap-2">
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Time Range" />
+          <Select value={houseModel} onValueChange={setHouseModel}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue
+                placeholder={t('analytics.house_model') || 'House Model'}
+              />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1m">Last Month</SelectItem>
-              <SelectItem value="3m">Last 3 Months</SelectItem>
-              <SelectItem value="6m">Last 6 Months</SelectItem>
-              <SelectItem value="1y">Last Year</SelectItem>
+              <SelectItem value="All">
+                {t('common.all') || 'All Models'}
+              </SelectItem>
+              {uniqueModels.map((m) => (
+                <SelectItem key={m} value={m}>
+                  {m}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
-          <Button>Export Report</Button>
+          <Button variant="outline">{t('common.export_data')}</Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-gradient-to-br from-blue-50 to-white">
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="bg-blue-50/50 border-blue-100">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-blue-600" /> Projected Revenue
+            <CardTitle className="text-sm font-medium text-blue-800">
+              {t('analytics.internal_perf')} (Avg Occ)
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$24,500</div>
-            <p className="text-xs text-muted-foreground">+12% vs last period</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-green-50 to-white">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Users className="h-4 w-4 text-green-600" /> Forecasted Occupancy
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">92%</div>
-            <p className="text-xs text-muted-foreground">
-              High season approaching
+            <div className="text-3xl font-bold text-blue-900">
+              {Math.round(
+                filteredData.reduce((acc, curr) => acc + curr.internalOcc, 0) /
+                  filteredData.length,
+              )}
+              %
+            </div>
+            <p className="text-xs text-blue-600 font-medium mt-1">
+              vs{' '}
+              {Math.round(
+                filteredData.reduce((acc, curr) => acc + curr.marketOcc, 0) /
+                  filteredData.length,
+              )}
+              % Market
             </p>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-purple-50 to-white">
+        <Card className="bg-green-50/50 border-green-100">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-purple-600" /> RevPAR
+            <CardTitle className="text-sm font-medium text-green-800">
+              {t('analytics.internal_perf')} (Avg ADR)
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$185</div>
-            <p className="text-xs text-muted-foreground">
-              Revenue per available room
+            <div className="text-3xl font-bold text-green-900">
+              $
+              {Math.round(
+                filteredData.reduce((acc, curr) => acc + curr.internalADR, 0) /
+                  filteredData.length,
+              )}
+            </div>
+            <p className="text-xs text-green-600 font-medium mt-1">
+              vs $
+              {Math.round(
+                filteredData.reduce((acc, curr) => acc + curr.marketADR, 0) /
+                  filteredData.length,
+              )}{' '}
+              Market
             </p>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Occupancy Comparison Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>Revenue Forecast</CardTitle>
-            <CardDescription>Actual vs Projected Revenue</CardDescription>
+            <CardTitle>{t('analytics.occupancy')}</CardTitle>
+            <CardDescription>
+              {t('analytics.internal_perf')} vs {t('analytics.market_avg')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
               <ChartContainer
                 config={{
-                  revenue: { label: 'Actual', color: '#2563eb' },
-                  projected: { label: 'Projected', color: '#9333ea' },
+                  internalOcc: {
+                    label: t('analytics.internal_perf'),
+                    color: '#2563eb',
+                  },
+                  marketOcc: {
+                    label: t('analytics.market_avg'),
+                    color: '#9ca3af',
+                  },
                 }}
                 className="h-full w-full"
               >
-                <AreaChart data={predictionData}>
-                  <defs>
-                    <linearGradient
-                      id="fillRevenue"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient
-                      id="fillProjected"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="5%" stopColor="#9333ea" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#9333ea" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
+                <BarChart
+                  data={filteredData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="month" />
-                  <YAxis />
+                  <YAxis unit="%" />
                   <Tooltip content={<ChartTooltipContent />} />
                   <Legend content={<ChartLegendContent />} />
-                  <Area
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke="#2563eb"
-                    fillOpacity={1}
-                    fill="url(#fillRevenue)"
+                  <Bar
+                    dataKey="internalOcc"
+                    fill="#2563eb"
+                    name={t('analytics.internal_perf')}
+                    radius={[4, 4, 0, 0]}
                   />
-                  <Area
-                    type="monotone"
-                    dataKey="projected"
-                    stroke="#9333ea"
-                    strokeDasharray="5 5"
-                    fillOpacity={1}
-                    fill="url(#fillProjected)"
+                  <Bar
+                    dataKey="marketOcc"
+                    fill="#9ca3af"
+                    name={t('analytics.market_avg')}
+                    radius={[4, 4, 0, 0]}
                   />
-                </AreaChart>
+                </BarChart>
               </ChartContainer>
             </div>
           </CardContent>
         </Card>
 
+        {/* ADR Comparison Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>Price Optimization</CardTitle>
-            <CardDescription>AI-driven pricing suggestions</CardDescription>
+            <CardTitle>{t('analytics.adr')}</CardTitle>
+            <CardDescription>Average Daily Rate Comparison</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {optimizationSuggestions.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+            <div className="h-[300px] w-full">
+              <ChartContainer
+                config={{
+                  internalADR: {
+                    label: t('analytics.internal_perf'),
+                    color: '#16a34a',
+                  },
+                  marketADR: {
+                    label: t('analytics.market_avg'),
+                    color: '#9ca3af',
+                  },
+                }}
+                className="h-full w-full"
+              >
+                <LineChart
+                  data={filteredData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
-                  <div>
-                    <p className="font-semibold">{item.property}</p>
-                    <div className="flex gap-2 text-sm mt-1">
-                      <span className="text-muted-foreground line-through">
-                        ${item.currentPrice}
-                      </span>
-                      <span className="font-bold text-green-600">
-                        ${item.suggestedPrice}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {item.reason}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <Badge
-                      variant="outline"
-                      className="bg-green-50 text-green-700 border-green-200"
-                    >
-                      {item.impact}
-                    </Badge>
-                    <Button size="sm" className="mt-2 w-full">
-                      Apply
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="month" />
+                  <YAxis unit="$" />
+                  <Tooltip content={<ChartTooltipContent />} />
+                  <Legend content={<ChartLegendContent />} />
+                  <Line
+                    type="monotone"
+                    dataKey="internalADR"
+                    stroke="#16a34a"
+                    strokeWidth={3}
+                    name={t('analytics.internal_perf')}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="marketADR"
+                    stroke="#9ca3af"
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    name={t('analytics.market_avg')}
+                  />
+                </LineChart>
+              </ChartContainer>
             </div>
           </CardContent>
         </Card>

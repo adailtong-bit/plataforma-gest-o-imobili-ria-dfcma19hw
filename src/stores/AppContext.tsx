@@ -83,6 +83,7 @@ interface AppContextType {
   currentUser: User | Owner | Partner | Tenant
   allUsers: (User | Owner | Partner | Tenant)[]
   users: User[]
+  isAuthenticated: boolean
   paymentIntegrations: PaymentIntegration[]
   financialSettings: FinancialSettings
   bankStatements: BankStatement[]
@@ -97,6 +98,8 @@ interface AppContextType {
   typingStatus: Record<string, boolean> // userId -> isTyping
   setLanguage: (lang: Language) => void
   t: (key: string, params?: Record<string, string>) => string
+  login: (email: string) => boolean
+  logout: () => void
   addProperty: (property: Property) => void
   updateProperty: (property: Property) => void
   deleteProperty: (propertyId: string) => void
@@ -162,6 +165,7 @@ interface AppContextType {
   updateAdvertiser: (advertiser: Advertiser) => void
   deleteAdvertiser: (id: string) => void
   updateAdPricing: (pricing: AdPricing) => void
+  setCurrentUser: (id: string) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -229,6 +233,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return (saved as Language) || 'pt'
   })
 
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [currentUser, setCurrentUserObj] = useState<
+    User | Owner | Partner | Tenant
+  >(systemUsers[0])
+
   const { toast } = useToast()
 
   const setLanguage = (lang: Language) => {
@@ -256,10 +265,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return current as string
   }
 
-  const [currentUser, setCurrentUserObj] = useState<
-    User | Owner | Partner | Tenant
-  >(systemUsers[0])
-
   const allUsers = useMemo(() => {
     const combined = [...users, ...owners, ...partners, ...tenants]
     const uniqueMap = new Map()
@@ -274,6 +279,27 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     return Array.from(uniqueMap.values())
   }, [users, owners, partners, tenants])
+
+  const login = (email: string) => {
+    const user = allUsers.find(
+      (u) => u.email.toLowerCase() === email.toLowerCase(),
+    )
+    if (user) {
+      setCurrentUserObj(user)
+      setIsAuthenticated(true)
+      return true
+    }
+    return false
+  }
+
+  const logout = () => {
+    setIsAuthenticated(false)
+  }
+
+  const setCurrentUser = (id: string) => {
+    const u = allUsers.find((user) => user.id === id)
+    if (u) setCurrentUserObj(u)
+  }
 
   const addAuditLog = (log: Omit<AuditLog, 'id' | 'timestamp'>) => {
     const newLog: AuditLog = {
@@ -324,10 +350,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setLedgerEntries((prev) => prev.map((e) => (e.id === entry.id ? entry : e)))
   const deleteLedgerEntry = (id: string) =>
     setLedgerEntries((prev) => prev.filter((e) => e.id !== id))
-  const setCurrentUser = (id: string) => {
-    const u = allUsers.find((user) => user.id === id)
-    if (u) setCurrentUserObj(u)
-  }
   const approveUser = (id: string) =>
     setUsers((prev) =>
       prev.map((u) => (u.id === id ? { ...u, status: 'active' } : u)),
@@ -710,6 +732,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         currentUser,
         allUsers,
         users,
+        isAuthenticated,
         paymentIntegrations,
         financialSettings,
         bankStatements,
@@ -725,6 +748,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setTyping,
         setLanguage,
         t,
+        login,
+        logout,
         addProperty,
         updateProperty,
         deleteProperty,

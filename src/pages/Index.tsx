@@ -37,6 +37,7 @@ import useFinancialStore from '@/stores/useFinancialStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useNotificationStore from '@/stores/useNotificationStore'
+import useAuthStore from '@/stores/useAuthStore'
 import {
   Dialog,
   DialogContent,
@@ -49,8 +50,19 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
+import Landing from '@/pages/Landing'
 
 export default function Index() {
+  const { isAuthenticated } = useAuthStore()
+
+  if (!isAuthenticated) {
+    return <Landing />
+  }
+
+  return <DashboardContent />
+}
+
+function DashboardContent() {
   const [date, setDate] = useState<Date | undefined>(new Date())
   const { tasks } = useTaskStore()
   const { ledgerEntries, financials } = useFinancialStore()

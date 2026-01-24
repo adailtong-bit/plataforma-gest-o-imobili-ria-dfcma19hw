@@ -11,14 +11,16 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Zap, FileCheck, FileText, Bell } from 'lucide-react'
+import { Zap, FileCheck, FileText, Bell, Download } from 'lucide-react'
 import useAutomationStore from '@/stores/useAutomationStore'
 import { useToast } from '@/hooks/use-toast'
 import { AutomationRule } from '@/lib/types'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Automation() {
   const { automationRules, updateAutomationRule } = useAutomationStore()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
 
   const handleToggle = (id: string, enabled: boolean) => {
     const rule = automationRules.find((r) => r.id === id)
@@ -39,6 +41,29 @@ export default function Automation() {
     }
   }
 
+  const handleQuickBooksExport = (format: 'csv' | 'excel') => {
+    toast({
+      title: 'Export Started',
+      description: `Generating QuickBooks ${format.toUpperCase()} export...`,
+    })
+    // Mock export logic
+    setTimeout(() => {
+      const link = document.createElement('a')
+      link.href = '#'
+      link.setAttribute(
+        'download',
+        `quickbooks_export_${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'csv'}`,
+      )
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      toast({
+        title: 'Export Complete',
+        description: 'File downloaded successfully.',
+      })
+    }, 1500)
+  }
+
   const autoApproveRule = automationRules.find(
     (r) => r.type === 'auto_approve_task',
   )
@@ -53,14 +78,45 @@ export default function Automation() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-navy">
-          Workflow Automation Engine
+          {t('automation_title') || 'Workflow Automation Engine'}
         </h1>
         <p className="text-muted-foreground">
-          Define rules to automate repetitive tasks and financial processes.
+          {t('automation_desc') ||
+            'Define rules to automate repetitive tasks and financial processes.'}
         </p>
       </div>
 
       <div className="grid gap-6">
+        {/* QuickBooks Export */}
+        <Card className="bg-green-50/50 border-green-100">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-green-100 rounded-full">
+                <Download className="h-5 w-5 text-green-700" />
+              </div>
+              <div>
+                <CardTitle>{t('automation.quickbooks_export')}</CardTitle>
+                <CardDescription>
+                  {t('automation.quickbooks_desc')}
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4">
+              <Button onClick={() => handleQuickBooksExport('csv')}>
+                {t('automation.export_csv')}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => handleQuickBooksExport('excel')}
+              >
+                {t('automation.export_excel')}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Task Automation */}
         <Card>
           <CardHeader>
