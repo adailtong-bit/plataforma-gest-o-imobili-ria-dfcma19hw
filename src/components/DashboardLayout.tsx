@@ -49,7 +49,8 @@ export default function DashboardLayout() {
 
   // Status Check & Enforcement & RBAC Redirection
   useEffect(() => {
-    // Moved early return inside the effect to avoid conditional hook execution
+    // If not authenticated, we don't need to check permissions
+    // This allows the layout to render just the Outlet (e.g. Landing Page)
     if (!isAuthenticated || !currentUser) return
 
     const checkAccess = () => {
@@ -120,7 +121,6 @@ export default function DashboardLayout() {
 
   // Operational Notifications Logic
   useEffect(() => {
-    // Moved early return inside the effect to avoid conditional hook execution
     if (!isAuthenticated || !currentUser || !tasks) return
 
     const checkTasks = () => {
@@ -135,16 +135,9 @@ export default function DashboardLayout() {
             const taskDate = parseISO(task.date)
             const hoursDiff = differenceInHours(taskDate, now)
 
-            // Alert if task is within 24 hours
+            // Alert if task is within 24 hours (Logic preserved from original)
             if (hoursDiff > 0 && hoursDiff <= 24) {
-              // Simple de-dupe logic: check local storage or similar in real app
-              // Here we just fire. In production use a robust notification service
-              // console.log(`Alert: Task ${task.title} is due in ${hoursDiff} hours`)
-            }
-
-            // Alert if Overdue
-            if (hoursDiff < 0) {
-              // console.log(`Alert: Task ${task.title} is overdue!`)
+              // Notification logic would go here
             }
           } catch (e) {
             // ignore invalid dates
@@ -153,9 +146,8 @@ export default function DashboardLayout() {
       })
     }
 
-    // Run check every minute
     const interval = setInterval(checkTasks, 60000)
-    checkTasks() // Run once on mount
+    checkTasks()
 
     return () => clearInterval(interval)
   }, [currentUser, tasks, isAuthenticated])
@@ -231,12 +223,13 @@ export default function DashboardLayout() {
   }
 
   // Auth Check for Layout
-  // If not authenticated, we just render Outlet (which might be Landing/Login) without dashboard chrome
-  // Moved this check to the bottom to respect React Hooks rules (no conditional hooks)
+  // If NOT authenticated, render ONLY the Outlet (e.g. Landing Page)
+  // This effectively hides sidebar and header for guests
   if (!isAuthenticated) {
     return <Outlet />
   }
 
+  // If Authenticated but Blocked/Pending, show restricted screen
   if (
     currentUser?.status === 'pending_approval' ||
     currentUser?.status === 'blocked'
@@ -263,6 +256,7 @@ export default function DashboardLayout() {
     )
   }
 
+  // If Authenticated and Active, render Full Dashboard Layout
   return (
     <SidebarProvider>
       <AppSidebar />

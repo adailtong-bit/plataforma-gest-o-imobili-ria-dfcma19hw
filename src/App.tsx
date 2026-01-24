@@ -55,13 +55,16 @@ const App = () => {
             <Toaster />
             <Sonner />
             <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Index />} />
+              {/* Public Routes - No Layout */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
 
-              {/* Protected Routes */}
+              {/* Main Application Routes - Wrapped in DashboardLayout */}
+              {/* The Layout handles: */}
+              {/* 1. Sidebar/Header visibility based on authentication */}
+              {/* 2. Public Landing page display for unauthenticated users at root */}
               <Route element={<DashboardLayout />}>
+                <Route path="/" element={<Index />} />
                 <Route path="/properties" element={<Properties />} />
                 <Route path="/properties/:id" element={<PropertyDetails />} />
                 <Route path="/short-term" element={<ShortTerm />} />
@@ -98,8 +101,10 @@ const App = () => {
                 <Route path="/portal/tenant" element={<TenantPortal />} />
                 <Route path="/portal/owner" element={<OwnerPortal />} />
                 <Route path="/portal/partner" element={<PartnerPortal />} />
+
+                {/* 404 Inside Layout so authenticated users still see nav */}
+                <Route path="*" element={<NotFound />} />
               </Route>
-              <Route path="*" element={<NotFound />} />
             </Routes>
           </TooltipProvider>
         </BrowserRouter>
