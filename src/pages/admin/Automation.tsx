@@ -10,8 +10,14 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { Zap, FileCheck, FileText, Bell, Download } from 'lucide-react'
+import {
+  Zap,
+  FileCheck,
+  FileText,
+  Bell,
+  Download,
+  Database,
+} from 'lucide-react'
 import useAutomationStore from '@/stores/useAutomationStore'
 import { useToast } from '@/hooks/use-toast'
 import { AutomationRule } from '@/lib/types'
@@ -21,6 +27,7 @@ export default function Automation() {
   const { automationRules, updateAutomationRule } = useAutomationStore()
   const { toast } = useToast()
   const { t } = useLanguageStore()
+  const [isExporting, setIsExporting] = useState(false)
 
   const handleToggle = (id: string, enabled: boolean) => {
     const rule = automationRules.find((r) => r.id === id)
@@ -42,14 +49,54 @@ export default function Automation() {
   }
 
   const handleQuickBooksExport = (format: 'csv' | 'excel') => {
+    setIsExporting(true)
     toast({
-      title: 'Export Started',
-      description: `Generating QuickBooks ${format.toUpperCase()} export...`,
+      title: t('automation.export_success_title'),
+      description: t('automation.export_success_desc'),
     })
-    // Mock export logic
+
+    // Mock export generation
     setTimeout(() => {
+      const headers = [
+        'Date',
+        'Transaction Type',
+        'No.',
+        'Name',
+        'Memo/Description',
+        'Account',
+        'Class',
+        'Amount',
+      ]
+      const row1 = [
+        '2024-01-15',
+        'Invoice',
+        '1001',
+        'Tenant John',
+        'Rent January',
+        'Accounts Receivable',
+        'Rental Income',
+        '2000.00',
+      ]
+      const row2 = [
+        '2024-01-16',
+        'Bill',
+        '2001',
+        'Partner Plumber',
+        'Fix Leak',
+        'Maintenance Expense',
+        'Repairs',
+        '-150.00',
+      ]
+
+      const csvContent = [
+        headers.join(','),
+        row1.join(','),
+        row2.join(','),
+      ].join('\n')
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
       const link = document.createElement('a')
-      link.href = '#'
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
       link.setAttribute(
         'download',
         `quickbooks_export_${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'csv'}`,
@@ -57,11 +104,8 @@ export default function Automation() {
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
-      toast({
-        title: 'Export Complete',
-        description: 'File downloaded successfully.',
-      })
-    }, 1500)
+      setIsExporting(false)
+    }, 2000)
   }
 
   const autoApproveRule = automationRules.find(
@@ -78,21 +122,18 @@ export default function Automation() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-navy">
-          {t('automation_title') || 'Workflow Automation Engine'}
+          {t('settings.automation_title')}
         </h1>
-        <p className="text-muted-foreground">
-          {t('automation_desc') ||
-            'Define rules to automate repetitive tasks and financial processes.'}
-        </p>
+        <p className="text-muted-foreground">{t('settings.automation_desc')}</p>
       </div>
 
       <div className="grid gap-6">
-        {/* QuickBooks Export */}
+        {/* QuickBooks Integration - New Feature */}
         <Card className="bg-green-50/50 border-green-100">
           <CardHeader>
             <div className="flex items-center gap-2">
               <div className="p-2 bg-green-100 rounded-full">
-                <Download className="h-5 w-5 text-green-700" />
+                <Database className="h-5 w-5 text-green-700" />
               </div>
               <div>
                 <CardTitle>{t('automation.quickbooks_export')}</CardTitle>
@@ -103,15 +144,23 @@ export default function Automation() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-4">
-              <Button onClick={() => handleQuickBooksExport('csv')}>
-                {t('automation.export_csv')}
+            <div className="flex flex-wrap gap-4">
+              <Button
+                onClick={() => handleQuickBooksExport('csv')}
+                disabled={isExporting}
+                className="bg-green-700 hover:bg-green-800"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                {isExporting ? 'Exporting...' : t('automation.export_csv')}
               </Button>
               <Button
                 variant="outline"
                 onClick={() => handleQuickBooksExport('excel')}
+                disabled={isExporting}
+                className="border-green-200 text-green-800 hover:bg-green-100"
               >
-                {t('automation.export_excel')}
+                <FileText className="mr-2 h-4 w-4" />
+                {isExporting ? 'Exporting...' : t('automation.export_excel')}
               </Button>
             </div>
           </CardContent>
@@ -168,8 +217,8 @@ export default function Automation() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-green-100 rounded-full">
-                <FileText className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-yellow-100 rounded-full">
+                <Zap className="h-5 w-5 text-yellow-600" />
               </div>
               <div>
                 <CardTitle>Billing Automation</CardTitle>
@@ -200,9 +249,6 @@ export default function Automation() {
                   >
                     Task Completion
                   </Button>
-                  <Button variant="outline" disabled>
-                    Booking Confirmation (Coming Soon)
-                  </Button>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
                   Invoices will be drafted when a task status changes to
@@ -221,16 +267,16 @@ export default function Automation() {
                 <Bell className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <CardTitle>Smart Notifications</CardTitle>
+                <CardTitle>{t('settings.rent_reminder')}</CardTitle>
                 <CardDescription>
-                  Send automated reminders to tenants and owners.
+                  Send automated reminders to tenants.
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="flex items-center justify-between">
-              <Label htmlFor="rent-reminder">Rent Reminders</Label>
+              <Label htmlFor="rent-reminder">Enable Reminders</Label>
               <Switch
                 id="rent-reminder"
                 checked={rentReminderRule?.enabled || false}
@@ -241,7 +287,7 @@ export default function Automation() {
             </div>
             {rentReminderRule?.enabled && (
               <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg">
-                <Label>Days Before Due</Label>
+                <Label>{t('settings.days_before')}</Label>
                 <Input
                   type="number"
                   className="w-20"

@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { Download } from 'lucide-react'
 
 // Mock Data for Comparative Analysis
 const comparativeDataRaw = [
@@ -41,6 +42,8 @@ const comparativeDataRaw = [
     marketOcc: 80,
     internalADR: 180,
     marketADR: 170,
+    internalProfit: 2500,
+    marketProfit: 2200,
   },
   {
     model: '2 Bed Condo',
@@ -49,6 +52,8 @@ const comparativeDataRaw = [
     marketOcc: 78,
     internalADR: 185,
     marketADR: 175,
+    internalProfit: 2400,
+    marketProfit: 2150,
   },
   {
     model: '2 Bed Condo',
@@ -57,6 +62,8 @@ const comparativeDataRaw = [
     marketOcc: 82,
     internalADR: 190,
     marketADR: 180,
+    internalProfit: 2800,
+    marketProfit: 2400,
   },
   {
     model: '3 Bed Villa',
@@ -65,6 +72,8 @@ const comparativeDataRaw = [
     marketOcc: 70,
     internalADR: 350,
     marketADR: 340,
+    internalProfit: 4500,
+    marketProfit: 4100,
   },
   {
     model: '3 Bed Villa',
@@ -73,6 +82,8 @@ const comparativeDataRaw = [
     marketOcc: 72,
     internalADR: 360,
     marketADR: 345,
+    internalProfit: 4700,
+    marketProfit: 4200,
   },
   {
     model: '3 Bed Villa',
@@ -81,6 +92,8 @@ const comparativeDataRaw = [
     marketOcc: 75,
     internalADR: 370,
     marketADR: 350,
+    internalProfit: 4900,
+    marketProfit: 4400,
   },
   {
     model: '4 Bed House',
@@ -89,22 +102,8 @@ const comparativeDataRaw = [
     marketOcc: 85,
     internalADR: 450,
     marketADR: 420,
-  },
-  {
-    model: '4 Bed House',
-    month: 'Feb',
-    internalOcc: 92,
-    marketOcc: 88,
-    internalADR: 460,
-    marketADR: 430,
-  },
-  {
-    model: '4 Bed House',
-    month: 'Mar',
-    internalOcc: 95,
-    marketOcc: 90,
-    internalADR: 470,
-    marketADR: 440,
+    internalProfit: 6500,
+    marketProfit: 5800,
   },
 ]
 
@@ -138,6 +137,11 @@ export default function Analytics() {
             monthData.reduce((sum, curr) => sum + curr.internalADR, 0) / count,
           marketADR:
             monthData.reduce((sum, curr) => sum + curr.marketADR, 0) / count,
+          internalProfit:
+            monthData.reduce((sum, curr) => sum + curr.internalProfit, 0) /
+            count,
+          marketProfit:
+            monthData.reduce((sum, curr) => sum + curr.marketProfit, 0) / count,
         }
       })
     }
@@ -149,25 +153,19 @@ export default function Analytics() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            {t('analytics.benchmark_title') ||
-              'Comparative Performance Dashboard'}
+            {t('analytics.benchmark_title')}
           </h1>
           <p className="text-muted-foreground">
-            {t('analytics.benchmark_desc') ||
-              'Compare internal performance against market benchmarks.'}
+            {t('analytics.benchmark_desc')}
           </p>
         </div>
         <div className="flex gap-2">
           <Select value={houseModel} onValueChange={setHouseModel}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue
-                placeholder={t('analytics.house_model') || 'House Model'}
-              />
+              <SelectValue placeholder={t('analytics.house_model')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All">
-                {t('common.all') || 'All Models'}
-              </SelectItem>
+              <SelectItem value="All">{t('common.all')}</SelectItem>
               {uniqueModels.map((m) => (
                 <SelectItem key={m} value={m}>
                   {m}
@@ -175,7 +173,9 @@ export default function Analytics() {
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline">{t('common.export_data')}</Button>
+          <Button variant="outline" className="gap-2">
+            <Download className="h-4 w-4" /> {t('common.export_data')}
+          </Button>
         </div>
       </div>
 
@@ -201,31 +201,33 @@ export default function Analytics() {
                 filteredData.reduce((acc, curr) => acc + curr.marketOcc, 0) /
                   filteredData.length,
               )}
-              % Market
+              % {t('analytics.market_avg')}
             </p>
           </CardContent>
         </Card>
         <Card className="bg-green-50/50 border-green-100">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-green-800">
-              {t('analytics.internal_perf')} (Avg ADR)
+              {t('analytics.internal_perf')} (Avg Profit)
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-900">
               $
               {Math.round(
-                filteredData.reduce((acc, curr) => acc + curr.internalADR, 0) /
-                  filteredData.length,
-              )}
+                filteredData.reduce(
+                  (acc, curr) => acc + curr.internalProfit,
+                  0,
+                ) / filteredData.length,
+              ).toLocaleString()}
             </div>
             <p className="text-xs text-green-600 font-medium mt-1">
               vs $
               {Math.round(
-                filteredData.reduce((acc, curr) => acc + curr.marketADR, 0) /
+                filteredData.reduce((acc, curr) => acc + curr.marketProfit, 0) /
                   filteredData.length,
-              )}{' '}
-              Market
+              ).toLocaleString()}{' '}
+              {t('analytics.market_avg')}
             </p>
           </CardContent>
         </Card>
@@ -282,28 +284,30 @@ export default function Analytics() {
           </CardContent>
         </Card>
 
-        {/* ADR Comparison Chart */}
+        {/* Profitability Comparison Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>{t('analytics.adr')}</CardTitle>
-            <CardDescription>Average Daily Rate Comparison</CardDescription>
+            <CardTitle>{t('analytics.profitability_title')}</CardTitle>
+            <CardDescription>
+              {t('analytics.profitability_desc')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
               <ChartContainer
                 config={{
-                  internalADR: {
-                    label: t('analytics.internal_perf'),
+                  internalProfit: {
+                    label: t('analytics.profit_internal'),
                     color: '#16a34a',
                   },
-                  marketADR: {
-                    label: t('analytics.market_avg'),
+                  marketProfit: {
+                    label: t('analytics.profit_market'),
                     color: '#9ca3af',
                   },
                 }}
                 className="h-full w-full"
               >
-                <LineChart
+                <BarChart
                   data={filteredData}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
@@ -312,22 +316,19 @@ export default function Analytics() {
                   <YAxis unit="$" />
                   <Tooltip content={<ChartTooltipContent />} />
                   <Legend content={<ChartLegendContent />} />
-                  <Line
-                    type="monotone"
-                    dataKey="internalADR"
-                    stroke="#16a34a"
-                    strokeWidth={3}
-                    name={t('analytics.internal_perf')}
+                  <Bar
+                    dataKey="internalProfit"
+                    fill="#16a34a"
+                    name={t('analytics.profit_internal')}
+                    radius={[4, 4, 0, 0]}
                   />
-                  <Line
-                    type="monotone"
-                    dataKey="marketADR"
-                    stroke="#9ca3af"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    name={t('analytics.market_avg')}
+                  <Bar
+                    dataKey="marketProfit"
+                    fill="#9ca3af"
+                    name={t('analytics.profit_market')}
+                    radius={[4, 4, 0, 0]}
                   />
-                </LineChart>
+                </BarChart>
               </ChartContainer>
             </div>
           </CardContent>
