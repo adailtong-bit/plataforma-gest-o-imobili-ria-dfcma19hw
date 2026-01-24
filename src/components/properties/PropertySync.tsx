@@ -1,0 +1,234 @@
+import { useState } from 'react'
+import { Property, ChannelLink } from '@/lib/types'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { RefreshCw, Plus, Trash2, Link as LinkIcon } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+interface PropertySyncProps {
+  data: Property
+  onChange: (field: keyof Property, value: any) => void
+  canEdit: boolean
+}
+
+export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
+  const { toast } = useToast()
+  const [newLink, setNewLink] = useState('')
+  const [platform, setPlatform] = useState<
+    'airbnb' | 'booking.com' | 'vrbo' | 'other'
+  >('airbnb')
+
+  const handleAddLink = () => {
+    if (!newLink) return
+
+    const newChannelLink: ChannelLink = {
+      id: `link-${Date.now()}`,
+      platform,
+      url: newLink,
+      status: 'pending',
+      lastSync: new Date().toISOString(),
+    }
+
+    const updatedLinks = [...(data.channelLinks || []), newChannelLink]
+    onChange('channelLinks', updatedLinks)
+    setNewLink('')
+    toast({
+      title: 'Sync Link Added',
+      description: 'Calendar will attempt to sync shortly.',
+    })
+  }
+
+  const handleRemoveLink = (id: string) => {
+    const updatedLinks = (data.channelLinks || []).filter((l) => l.id !== id)
+    onChange('channelLinks', updatedLinks)
+  }
+
+  const handleSyncNow = () => {
+    toast({
+      title: 'Syncing...',
+      description: 'Updating calendar from external sources.',
+    })
+    // Mock sync update
+    const updatedLinks = (data.channelLinks || []).map((l) => ({
+      ...l,
+      lastSync: new Date().toISOString(),
+      status: 'active' as const,
+    }))
+    onChange('channelLinks', updatedLinks)
+  }
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Unified Channel Manager</CardTitle>
+          <CardDescription>
+            Sync calendars with external platforms (Airbnb, Booking.com) to
+            prevent overbooking.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex gap-4 items-end">
+            <div className="grid gap-2 flex-1">
+              <Label>Platform</Label>
+              <Select
+                value={platform}
+                onValueChange={(v: any) => setPlatform(v)}
+                disabled={!canEdit}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="airbnb">Airbnb (iCal)</SelectItem>
+                  <SelectItem value="booking.com">
+                    Booking.com (iCal)
+                  </SelectItem>
+                  <SelectItem value="vrbo">Vrbo (iCal)</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2 flex-[2]">
+              <Label>iCal URL</Label>
+              <Input
+                placeholder="https://..."
+                value={newLink}
+                onChange={(e) => setNewLink(e.target.value)}
+                disabled={!canEdit}
+              />
+            </div>
+            <Button
+              onClick={handleAddLink}
+              disabled={!canEdit}
+              className="bg-trust-blue"
+            >
+              <Plus className="h-4 w-4 mr-2" /> Add
+            </Button>
+          </div>
+
+          <div className="border rounded-md">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Platform</TableHead>
+                  <TableHead>URL</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Last Sync</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {(!data.channelLinks || data.channelLinks.length === 0) && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className="text-center py-6 text-muted-foreground"
+                    >
+                      No active sync connections.
+                    </TableCell>
+                  </TableRow>
+                )}
+                {data.channelLinks?.map((link) => (
+                  <TableRow key={link.id}>
+                    <TableCell className="capitalize font-medium">
+                      {link.platform}
+                    </TableCell>
+                    <TableCell className="max-w-[200px] truncate text-xs text-muted-foreground">
+                      {link.url}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={
+                          link.status === 'active'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }
+                      >
+                        {link.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {link.lastSync
+                        ? new Date(link.lastSync).toLocaleString()
+                        : '-'}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveLink(link.id)}
+                        disabled={!canEdit}
+                      >
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="flex justify-end">
+            <Button variant="outline" onClick={handleSyncNow} className="gap-2">
+              <RefreshCw className="h-4 w-4" /> Sync Now
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Export Calendar</CardTitle>
+          <CardDescription>
+            Share this property's calendar with other platforms.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            <Input
+              readOnly
+              value={`https://api.corepm.com/ical/${data.id}.ics`}
+            />
+            <Button
+              variant="outline"
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  `https://api.corepm.com/ical/${data.id}.ics`,
+                )
+                toast({ title: 'Copied!' })
+              }}
+            >
+              <LinkIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

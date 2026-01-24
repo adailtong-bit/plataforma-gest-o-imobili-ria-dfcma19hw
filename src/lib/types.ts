@@ -27,6 +27,7 @@ export type Resource =
   | 'renewals'
   | 'publicity'
   | 'short_term'
+  | 'migration'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -54,6 +55,10 @@ export interface FinancialSettings {
   cleaningFeeRouting?: 'owner' | 'pm' | 'partner'
   maintenanceMarginLabor?: number
   maintenanceMarginMaterial?: number
+  // Bill.com Integration
+  billComEnabled?: boolean
+  billComOrgId?: string
+  billComApiKey?: string
 }
 
 export interface BankStatement {
@@ -173,6 +178,14 @@ export interface SocialMediaLinks {
   other?: string
 }
 
+export interface ChannelLink {
+  id: string
+  platform: 'airbnb' | 'booking.com' | 'vrbo' | 'other'
+  url: string
+  lastSync?: string
+  status: 'active' | 'error' | 'pending'
+}
+
 export interface Property {
   id: string
   name: string
@@ -224,6 +237,7 @@ export interface Property {
   ownerId: string
   agentId?: string
   iCalUrl?: string
+  channelLinks?: ChannelLink[]
   fixedExpenses?: FixedExpense[]
   socialMedia?: SocialMediaLinks
   leadContact?: string
@@ -302,6 +316,12 @@ export interface Tenant {
   negotiationStatus?: NegotiationStatus
   negotiationLogs?: NegotiationLogEntry[]
   suggestedRenewalPrice?: number
+  rentAdjustmentConfig?: {
+    type: 'percentage' | 'fixed'
+    value: number
+    frequency: 'yearly'
+    nextAdjustmentDate?: string
+  }
   isDemo?: boolean
 }
 
@@ -330,9 +350,10 @@ export interface CalendarBlock {
   propertyId: string
   startDate: string
   endDate: string
-  type: 'manual_block' | 'maintenance'
+  type: 'manual_block' | 'maintenance' | 'external_sync'
   notes?: string
   taskId?: string
+  source?: string
 }
 
 export interface MessageTemplate {
@@ -461,6 +482,7 @@ export interface Task {
   bookingId?: string
   rating?: number
   feedback?: string
+  source?: 'manual' | 'migration' | 'automation'
 }
 
 export interface Invoice {
@@ -516,6 +538,8 @@ export interface AuditLog {
     | 'approve'
     | 'block'
     | 'renew'
+    | 'sync'
+    | 'import'
     | 'other'
   entity: string
   entityId?: string

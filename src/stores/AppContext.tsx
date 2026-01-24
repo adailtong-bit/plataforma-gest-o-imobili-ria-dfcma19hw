@@ -106,6 +106,7 @@ interface AppContextType {
   updateTaskStatus: (taskId: string, status: Task['status']) => void
   updateTask: (task: Task) => void
   addTask: (task: Task) => void
+  deleteTask: (taskId: string) => void
   addInvoice: (invoice: Invoice) => void
   markPaymentAs: (paymentId: string, status: Payment['status']) => void
   addTaskImage: (taskId: string, imageUrl: string) => void
@@ -259,7 +260,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     User | Owner | Partner | Tenant
   >(systemUsers[0])
 
-  // Memoize and deduplicate allUsers to avoid duplicate keys when rendering lists
   const allUsers = useMemo(() => {
     const combined = [...users, ...owners, ...partners, ...tenants]
     const uniqueMap = new Map()
@@ -337,12 +337,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       prev.map((u) => (u.id === id ? { ...u, status: 'blocked' } : u)),
     )
 
-  // Typing Status Helper
   const setTyping = (userId: string, isTyping: boolean) => {
     setTypingStatus((prev) => ({ ...prev, [userId]: isTyping }))
   }
 
-  // Messaging Logic - Bidirectional Sync
   const sendMessage = (
     contactId: string,
     text: string,
@@ -362,12 +360,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setAllMessages((prev) => {
       let nextMessages = [...prev]
 
-      // 1. Sender Side (Sender -> Contact)
       const senderThreadIndex = nextMessages.findIndex(
         (m) => m.ownerId === senderId && m.contactId === contactId,
       )
       if (senderThreadIndex >= 0) {
-        // Update existing thread for sender
         nextMessages[senderThreadIndex] = {
           ...nextMessages[senderThreadIndex],
           lastMessage: text,
@@ -375,7 +371,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           history: [...nextMessages[senderThreadIndex].history, newMessage],
         }
       } else {
-        // Create new thread for sender
         const contact = allUsers.find((u) => u.id === contactId)
         nextMessages.push({
           id: `chat-${senderId}-${contactId}`,
@@ -390,12 +385,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         })
       }
 
-      // 2. Recipient Side (Contact -> Sender)
       const recipientThreadIndex = nextMessages.findIndex(
         (m) => m.ownerId === contactId && m.contactId === senderId,
       )
       if (recipientThreadIndex >= 0) {
-        // Update existing thread for recipient
         nextMessages[recipientThreadIndex] = {
           ...nextMessages[recipientThreadIndex],
           lastMessage: text,
@@ -404,7 +397,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           history: [...nextMessages[recipientThreadIndex].history, newMessage],
         }
       } else {
-        // Create new thread for recipient
         const senderUser = allUsers.find((u) => u.id === senderId)
         nextMessages.push({
           id: `chat-${contactId}-${senderId}`,
@@ -422,7 +414,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       return nextMessages
     })
 
-    // Simulated Auto-Reply Logic for Demo purposes
     if (
       !senderIdOverride &&
       contactId !== currentUser.id &&
@@ -436,7 +427,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             currentUser.id,
             `This is an automated reply from ${allUsers.find((u) => u.id === contactId)?.name || 'User'}. I received: "${text}"`,
             [],
-            contactId, // Send as the contact
+            contactId,
           )
         }, 2000)
       }, 1000)
@@ -461,13 +452,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const startChat = (contactId: string) => {
-    // Check if thread exists for current user (Sender)
     if (
       allMessages.some(
         (m) => m.ownerId === currentUser.id && m.contactId === contactId,
       )
     ) {
-      return // Already exists
+      return
     }
 
     const contact = allUsers.find((u) => u.id === contactId)
@@ -475,7 +465,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       setAllMessages((prev) => [
         ...prev,
         {
-          id: `chat-${currentUser.id}-${contactId}`, // Consistent ID format
+          id: `chat-${currentUser.id}-${contactId}`,
           contact: contact.name,
           contactId: contact.id,
           ownerId: currentUser.id,
@@ -489,7 +479,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  // Toast notification for incoming messages when not on messages page
   useEffect(() => {
     const lastMessage = allMessages
       .filter((m) => m.ownerId === currentUser.id)
@@ -502,11 +491,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       lastMessage.unread > 0 &&
       window.location.pathname !== '/messages'
     ) {
-      // Basic check to prevent spamming on load - in real app use a subscription or proper event
       const msgTime = new Date(lastMessage.time).getTime()
       const now = new Date().getTime()
       if (now - msgTime < 5000) {
-        // Only if message is very recent
         toast({
           title: `Nova mensagem de ${lastMessage.contact}`,
           description: lastMessage.lastMessage,
@@ -544,6 +531,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setTasks(tasks.map((task) => (task.id === t.id ? t : task)))
   const updateTaskStatus = (id: string, status: any) =>
     setTasks(tasks.map((t) => (t.id === id ? { ...t, status } : t)))
+  const deleteTask = (id: string) => setTasks(tasks.filter((t) => t.id !== id))
   const addInvoice = (i: Invoice) => {
     setFinancials((prev) => ({ ...prev, invoices: [...prev.invoices, i] }))
   }
@@ -563,24 +551,92 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const updateUser = (u: User) =>
     setUsers(users.map((user) => (user.id === u.id ? u : user)))
   const deleteUser = (id: string) => setUsers(users.filter((u) => u.id !== id))
-  const updateAutomationRule = (r: AutomationRule) => {}
-  const updatePaymentIntegration = (i: PaymentIntegration) => {}
-  const updateFinancialSettings = (s: FinancialSettings) => {}
-  const uploadBankStatement = (s: BankStatement) => {}
-  const addGenericServiceRate = (r: ServiceRate) => {}
-  const updateGenericServiceRate = (r: ServiceRate) => {}
-  const deleteGenericServiceRate = (id: string) => {}
-  const renewTenantContract = () => {}
-  const updateTenantNegotiation = () => {}
-  const addAdvertisement = (a: Advertisement) => {}
-  const updateAdvertisement = (a: Advertisement) => {}
-  const deleteAdvertisement = (id: string) => {}
-  const addAdvertiser = (a: Advertiser) => {}
-  const updateAdvertiser = (a: Advertiser) => {}
-  const deleteAdvertiser = (id: string) => {}
-  const updateAdPricing = (p: AdPricing) => {}
+  const updateAutomationRule = (r: AutomationRule) =>
+    setAutomationRules((prev) =>
+      prev.map((rule) => (rule.id === r.id ? r : rule)),
+    )
+  const updatePaymentIntegration = (i: PaymentIntegration) =>
+    setPaymentIntegrations((prev) =>
+      prev.map((pi) => (pi.provider === i.provider ? i : pi)),
+    )
+  const updateFinancialSettings = (s: FinancialSettings) =>
+    setFinancialSettings(s)
+  const uploadBankStatement = (s: BankStatement) =>
+    setBankStatements((prev) => [...prev, s])
+  const addGenericServiceRate = (r: ServiceRate) =>
+    setGenericServiceRates((prev) => [...prev, r])
+  const updateGenericServiceRate = (r: ServiceRate) =>
+    setGenericServiceRates((prev) =>
+      prev.map((rate) => (rate.id === r.id ? r : rate)),
+    )
+  const deleteGenericServiceRate = (id: string) =>
+    setGenericServiceRates((prev) => prev.filter((r) => r.id !== id))
+  const renewTenantContract = (
+    id: string,
+    end: string,
+    rent: number,
+    start?: string,
+    doc?: GenericDocument,
+  ) => {
+    setTenants((prev) =>
+      prev.map((t) => {
+        if (t.id === id) {
+          const docs = doc ? [...(t.documents || []), doc] : t.documents
+          return {
+            ...t,
+            leaseStart: start || t.leaseStart,
+            leaseEnd: end,
+            rentValue: rent,
+            negotiationStatus: 'closed',
+            documents: docs,
+          }
+        }
+        return t
+      }),
+    )
+  }
+  const updateTenantNegotiation = (
+    id: string,
+    data: {
+      status?: NegotiationStatus
+      suggestedPrice?: number
+      log?: NegotiationLogEntry
+    },
+  ) => {
+    setTenants((prev) =>
+      prev.map((t) => {
+        if (t.id === id) {
+          const logs = data.log
+            ? [...(t.negotiationLogs || []), data.log]
+            : t.negotiationLogs
+          return {
+            ...t,
+            negotiationStatus: data.status || t.negotiationStatus,
+            suggestedRenewalPrice:
+              data.suggestedPrice !== undefined
+                ? data.suggestedPrice
+                : t.suggestedRenewalPrice,
+            negotiationLogs: logs,
+          }
+        }
+        return t
+      }),
+    )
+  }
+  const addAdvertisement = (a: Advertisement) =>
+    setAdvertisements((prev) => [...prev, a])
+  const updateAdvertisement = (a: Advertisement) =>
+    setAdvertisements((prev) => prev.map((ad) => (ad.id === a.id ? a : ad)))
+  const deleteAdvertisement = (id: string) =>
+    setAdvertisements((prev) => prev.filter((ad) => ad.id !== id))
+  const addAdvertiser = (a: Advertiser) =>
+    setAdvertisers((prev) => [...prev, a])
+  const updateAdvertiser = (a: Advertiser) =>
+    setAdvertisers((prev) => prev.map((ad) => (ad.id === a.id ? a : ad)))
+  const deleteAdvertiser = (id: string) =>
+    setAdvertisers((prev) => prev.filter((ad) => ad.id !== id))
+  const updateAdPricing = (p: AdPricing) => setAdPricingState(p)
 
-  // New Methods
   const addBooking = (booking: Booking) => {
     setBookings((prev) => [...prev, booking])
     if (booking.paid && booking.totalAmount > 0) {
@@ -631,7 +687,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setMessageTemplates((prev) => prev.filter((t) => t.id !== templateId))
   }
 
-  // Filter messages for current user perspective
   const visibleMessages = useMemo(
     () => allMessages.filter((m) => m.ownerId === currentUser.id),
     [allMessages, currentUser.id],
@@ -679,6 +734,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateTaskStatus,
         updateTask,
         addTask,
+        deleteTask,
         addInvoice,
         markPaymentAs,
         addTaskImage,

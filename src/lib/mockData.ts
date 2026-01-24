@@ -229,6 +229,7 @@ export const properties: Property[] = tenantsData.flatMap((tenant, tIdx) =>
       instagram: 'https://instagram.com/property',
     },
     leadContact: 'sales@agency.com',
+    channelLinks: [],
   })),
 )
 
@@ -255,6 +256,7 @@ properties.push({
   guests: 8,
   ownerId: demoOwnerUser.id,
   documents: [],
+  channelLinks: [],
 })
 
 // Owners (2 per tenant approx)
@@ -755,6 +757,7 @@ export const defaultFinancialSettings: FinancialSettings = {
   cleaningFeeRouting: 'pm',
   maintenanceMarginLabor: 15,
   maintenanceMarginMaterial: 10,
+  billComEnabled: false,
 }
 
 // Market Analysis Mock Data

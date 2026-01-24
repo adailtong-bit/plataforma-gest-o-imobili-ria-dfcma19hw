@@ -30,6 +30,7 @@ import MarketAnalysis from './pages/MarketAnalysis'
 import Workflows from './pages/Workflows'
 import Renewals from './pages/Renewals'
 import PublicityAdmin from './pages/admin/PublicityAdmin'
+import MigrationHub from './pages/admin/MigrationHub'
 import ShortTerm from './pages/ShortTerm'
 import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
@@ -80,6 +81,7 @@ const App = () => {
 
                 {/* Admin */}
                 <Route path="/admin/publicity" element={<PublicityAdmin />} />
+                <Route path="/admin/migration" element={<MigrationHub />} />
 
                 {/* Portals */}
                 <Route path="/portal/tenant" element={<TenantPortal />} />

@@ -10,6 +10,8 @@ import {
   User,
   ClipboardList,
   Key,
+  History,
+  RefreshCw,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -41,6 +43,8 @@ import { PropertyContent } from '@/components/properties/PropertyContent'
 import { DocumentVault } from '@/components/documents/DocumentVault'
 import { PropertyTasks } from '@/components/properties/PropertyTasks'
 import { PropertyFeatures } from '@/components/properties/PropertyFeatures'
+import { PropertyActivityLog } from '@/components/properties/PropertyActivityLog'
+import { PropertySync } from '@/components/properties/PropertySync'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -239,6 +243,9 @@ export default function PropertyDetails() {
             <Key className="h-4 w-4 mr-2" /> Acesso & Features
           </TabsTrigger>
           <TabsTrigger value="location">Localização</TabsTrigger>
+          <TabsTrigger value="sync">
+            <RefreshCw className="h-4 w-4 mr-2" /> Channel Sync
+          </TabsTrigger>
           <TabsTrigger value="financial">{t('common.financial')}</TabsTrigger>
           <TabsTrigger value="tasks">
             <ClipboardList className="h-4 w-4 mr-2" /> {t('common.tasks')}
@@ -248,6 +255,9 @@ export default function PropertyDetails() {
           </TabsTrigger>
           <TabsTrigger value="content">Conteúdo</TabsTrigger>
           <TabsTrigger value="documents">{t('common.documents')}</TabsTrigger>
+          <TabsTrigger value="logs">
+            <History className="h-4 w-4 mr-2" /> Activity Log
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -273,6 +283,14 @@ export default function PropertyDetails() {
             onChange={handleChange}
             canEdit={isEditing}
             condominiums={condominiums}
+          />
+        </TabsContent>
+
+        <TabsContent value="sync">
+          <PropertySync
+            data={formData}
+            onChange={handleChange}
+            canEdit={isEditing}
           />
         </TabsContent>
 
@@ -314,6 +332,10 @@ export default function PropertyDetails() {
             title="Documentos da Propriedade"
             description="Escrituras, contratos, inspeções."
           />
+        </TabsContent>
+
+        <TabsContent value="logs">
+          <PropertyActivityLog propertyId={formData.id} />
         </TabsContent>
       </Tabs>
     </div>

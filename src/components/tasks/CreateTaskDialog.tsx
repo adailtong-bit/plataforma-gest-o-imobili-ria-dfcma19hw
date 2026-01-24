@@ -7,7 +7,6 @@ import {
   Plus,
   Image as ImageIcon,
   X,
-  User,
   Check,
   ChevronsUpDown,
 } from 'lucide-react'
@@ -244,6 +243,7 @@ export function CreateTaskDialog() {
       backToBack: values.backToBack,
       recurrence: values.recurrence,
       images: uploadedImages,
+      source: 'manual',
     })
 
     toast({

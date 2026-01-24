@@ -184,13 +184,140 @@ export default function Settings() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="integrations">
+          <Card>
+            <CardHeader>
+              <CardTitle>Financial Integrations</CardTitle>
+              <CardDescription>
+                Configure payment gateways and third-party services.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Payment Gateway */}
+              <div>
+                <h3 className="text-lg font-medium mb-4">Payment Gateway</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label>Gateway Provider</Label>
+                    <Select
+                      value={financialData.gatewayProvider}
+                      onValueChange={(v: any) =>
+                        handleFinancialChange('gatewayProvider', v)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="stripe">Stripe</SelectItem>
+                        <SelectItem value="plaid">Plaid</SelectItem>
+                        <SelectItem value="manual">Manual</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>API Key</Label>
+                    <Input
+                      type="password"
+                      value={financialData.apiKey || ''}
+                      onChange={(e) =>
+                        handleFinancialChange('apiKey', e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Bill.com Integration */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium">Bill.com</h3>
+                  <Switch
+                    checked={financialData.billComEnabled || false}
+                    onCheckedChange={(checked) =>
+                      handleFinancialChange('billComEnabled', checked)
+                    }
+                  />
+                </div>
+                {financialData.billComEnabled && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-muted/20 rounded-md">
+                    <div className="space-y-2">
+                      <Label>Organization ID</Label>
+                      <Input
+                        value={financialData.billComOrgId || ''}
+                        onChange={(e) =>
+                          handleFinancialChange('billComOrgId', e.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Developer API Key</Label>
+                      <Input
+                        type="password"
+                        value={financialData.billComApiKey || ''}
+                        onChange={(e) =>
+                          handleFinancialChange('billComApiKey', e.target.value)
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <Separator />
+
+              {/* CRM */}
+              <div>
+                <h3 className="text-lg font-medium mb-4">CRM Integration</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label>Provider</Label>
+                    <Select
+                      value={financialData.crmProvider || 'none'}
+                      onValueChange={(v: any) =>
+                        handleFinancialChange('crmProvider', v)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="salesforce">Salesforce</SelectItem>
+                        <SelectItem value="hubspot">HubSpot</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>CRM API Key</Label>
+                    <Input
+                      type="password"
+                      value={financialData.crmApiKey || ''}
+                      onChange={(e) =>
+                        handleFinancialChange('crmApiKey', e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <Button onClick={handleFinancialSave} className="bg-trust-blue">
+                  {t('settings.save_changes')}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="billing">
           <Card>
             <CardHeader>
-              <CardTitle>Billing Model Configuration</CardTitle>
+              <CardTitle>Billing Model</CardTitle>
               <CardDescription>
-                Configure how revenue and fees are distributed between PMs,
-                Owners, and Partners.
+                Fee structure and automated charge calculations.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -207,9 +334,6 @@ export default function Settings() {
                       )
                     }
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Percentage taken from rental income.
-                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label>Cleaning Fee Routing</Label>
@@ -223,144 +347,16 @@ export default function Settings() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pm">Property Manager (PM)</SelectItem>
-                      <SelectItem value="owner">Property Owner</SelectItem>
-                      <SelectItem value="partner">Partner (Direct)</SelectItem>
+                      <SelectItem value="pm">Property Manager</SelectItem>
+                      <SelectItem value="owner">Owner</SelectItem>
+                      <SelectItem value="partner">Partner</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-muted-foreground">
-                    Who receives the cleaning fee from tenants/guests?
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Maintenance Margin (Labor) (%)</Label>
-                  <Input
-                    type="number"
-                    value={financialData.maintenanceMarginLabor || 0}
-                    onChange={(e) =>
-                      handleFinancialChange(
-                        'maintenanceMarginLabor',
-                        Number(e.target.value),
-                      )
-                    }
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Markup percentage added to labor costs.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label>Maintenance Margin (Materials) (%)</Label>
-                  <Input
-                    type="number"
-                    value={financialData.maintenanceMarginMaterial || 0}
-                    onChange={(e) =>
-                      handleFinancialChange(
-                        'maintenanceMarginMaterial',
-                        Number(e.target.value),
-                      )
-                    }
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Markup percentage added to material costs.
-                  </p>
                 </div>
               </div>
               <div className="flex justify-end">
                 <Button onClick={handleFinancialSave} className="bg-trust-blue">
-                  {t('settings.save_changes')}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="integrations">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('settings.payment_gateway')}</CardTitle>
-              <CardDescription>{t('settings.banking_desc')}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label>Gateway Provider</Label>
-                  <Select
-                    value={financialData.gatewayProvider}
-                    onValueChange={(v: any) =>
-                      handleFinancialChange('gatewayProvider', v)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="stripe">Stripe</SelectItem>
-                      <SelectItem value="plaid">Plaid</SelectItem>
-                      <SelectItem value="manual">Manual</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>API Key</Label>
-                  <Input
-                    value={financialData.apiKey || ''}
-                    onChange={(e) =>
-                      handleFinancialChange('apiKey', e.target.value)
-                    }
-                    type="password"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('settings.pix_key')}</Label>
-                  <Input
-                    value={financialData.pixKey || ''}
-                    onChange={(e) =>
-                      handleFinancialChange('pixKey', e.target.value)
-                    }
-                    placeholder="Chave Pix"
-                  />
-                </div>
-              </div>
-
-              <Separator />
-
-              <h3 className="text-lg font-medium">CRM</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label>{t('settings.crm_provider')}</Label>
-                  <Select
-                    value={financialData.crmProvider || 'none'}
-                    onValueChange={(v: any) =>
-                      handleFinancialChange('crmProvider', v)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">Nenhum</SelectItem>
-                      <SelectItem value="salesforce">Salesforce</SelectItem>
-                      <SelectItem value="hubspot">HubSpot</SelectItem>
-                      <SelectItem value="zoho">Zoho</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>CRM API Key</Label>
-                  <Input
-                    value={financialData.crmApiKey || ''}
-                    onChange={(e) =>
-                      handleFinancialChange('crmApiKey', e.target.value)
-                    }
-                    type="password"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end">
-                <Button onClick={handleFinancialSave} className="bg-trust-blue">
-                  {t('settings.save_changes')}
+                  Save Billing Config
                 </Button>
               </div>
             </CardContent>
@@ -376,11 +372,9 @@ export default function Settings() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">
-                    {t('settings.email_notif')}
-                  </Label>
+                  <Label className="text-base">Email Notifications</Label>
                   <p className="text-sm text-muted-foreground">
-                    {t('settings.email_desc')}
+                    Receive daily summaries and critical alerts via email.
                   </p>
                 </div>
                 <Switch defaultChecked />
@@ -400,8 +394,8 @@ export default function Settings() {
                 <div key={rule.id}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="space-y-0.5">
-                      <Label className="text-base">
-                        {t(`settings.${rule.type}`)}
+                      <Label className="text-base capitalize">
+                        {rule.type.replace('_', ' ')}
                       </Label>
                       <div className="flex items-center gap-2 mt-1">
                         <Input

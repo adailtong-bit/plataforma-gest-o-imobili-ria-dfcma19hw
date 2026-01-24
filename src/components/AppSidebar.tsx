@@ -32,6 +32,7 @@ import {
   BriefcaseBusiness,
   FileText,
   Tags,
+  Database,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -179,6 +180,9 @@ export function AppSidebar() {
   const showPublicity =
     currentUser.role === 'platform_owner' ||
     hasPermission(currentUser as User, 'publicity', 'view')
+  const showMigration =
+    currentUser.role === 'platform_owner' ||
+    currentUser.role === 'software_tenant'
 
   return (
     <Sidebar collapsible="icon">
@@ -312,6 +316,23 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              {showMigration && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive('/admin/migration')}
+                    tooltip="Migration Hub"
+                    className={cn(
+                      isMobile && 'text-white font-bold hover:text-white/90',
+                    )}
+                  >
+                    <Link to="/admin/migration" onClick={handleLinkClick}>
+                      <Database />
+                      <span>Migration Hub</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
               {showPublicity && (
                 <SidebarMenuItem>
                   <SidebarMenuButton

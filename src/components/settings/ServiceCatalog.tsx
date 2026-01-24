@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -65,10 +65,6 @@ export function ServiceCatalog() {
     type: 'generic',
   })
 
-  // Auto-calculate PM Value based on Service Price and Partner Payment if not manually set recently
-  // For now, let's keep it simple: manual input for all to ensure accuracy as per user story.
-  // "Implement logic to ensure the relationship... is consistent"
-  // Let's add listeners to update pmValue if servicePrice and partnerPayment are set.
   const handlePriceChange = (
     field: keyof ServiceRate,
     val: string | number,
