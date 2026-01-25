@@ -13,9 +13,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
 import { InventoryItem } from '@/lib/types'
-import { History, AlertTriangle } from 'lucide-react'
+import { History, AlertTriangle, Download } from 'lucide-react'
 import { format } from 'date-fns'
+import { exportToCSV } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 
 interface InventoryHistoryDialogProps {
   isOpen: boolean
@@ -28,21 +31,49 @@ export function InventoryHistoryDialog({
   onClose,
   item,
 }: InventoryHistoryDialogProps) {
+  const { toast } = useToast()
+
   if (!item) return null
 
   const history = item.damageHistory || []
 
+  const handleExport = () => {
+    if (history.length === 0) {
+      toast({
+        title: 'No Data',
+        description: 'No history to export.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    const headers = ['Date', 'Description', 'Reported By']
+    const rows = history.map((record) => [
+      record.date ? format(new Date(record.date), 'yyyy-MM-dd HH:mm') : '',
+      record.description,
+      record.reportedBy || 'System',
+    ])
+
+    exportToCSV(`history_${item.name.replace(/\s/g, '_')}`, headers, rows)
+    toast({ title: 'History Exported' })
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <History className="h-5 w-5" />
-            Damage History: {item.name}
-          </DialogTitle>
-          <DialogDescription>
-            Historical record of reported damages and incidents.
-          </DialogDescription>
+        <DialogHeader className="flex flex-row items-center justify-between pr-4">
+          <div className="space-y-1">
+            <DialogTitle className="flex items-center gap-2">
+              <History className="h-5 w-5" />
+              Damage History: {item.name}
+            </DialogTitle>
+            <DialogDescription>
+              Historical record of reported damages and incidents.
+            </DialogDescription>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" /> Export
+          </Button>
         </DialogHeader>
 
         <div className="mt-4 border rounded-md overflow-hidden">

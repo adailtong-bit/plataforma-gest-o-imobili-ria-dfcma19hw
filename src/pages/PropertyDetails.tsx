@@ -13,6 +13,7 @@ import {
   History,
   RefreshCw,
   Package,
+  Download,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -34,6 +35,7 @@ import useCondominiumStore from '@/stores/useCondominiumStore'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Property } from '@/lib/types'
+import { exportToCSV } from '@/lib/utils'
 
 // Sub-components
 import { PropertyOverview } from '@/components/properties/PropertyOverview'
@@ -122,6 +124,54 @@ export default function PropertyDetails() {
     }
   }
 
+  const handleExport = () => {
+    if (!formData) return
+
+    const headers = [
+      'Property ID',
+      'Name',
+      'Address',
+      'City',
+      'State',
+      'Zip Code',
+      'Country',
+      'Type',
+      'Profile',
+      'Status',
+      'Bedrooms',
+      'Bathrooms',
+      'Guests',
+      'Owner ID',
+      'Current Tenant',
+      'Listing Price',
+    ]
+
+    const row = [
+      formData.id,
+      formData.name,
+      formData.address,
+      formData.city || '',
+      formData.state || '',
+      formData.zipCode || '',
+      formData.country || '',
+      formData.type,
+      formData.profileType,
+      formData.status,
+      formData.bedrooms,
+      formData.bathrooms,
+      formData.guests,
+      formData.ownerId,
+      activeTenant ? activeTenant.name : 'None',
+      formData.listingPrice || 0,
+    ]
+
+    exportToCSV(`property_${formData.name}_export`, headers, [row])
+    toast({
+      title: 'Export Successful',
+      description: 'Property data exported to CSV.',
+    })
+  }
+
   const handleChange = (field: keyof Property, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }))
   }
@@ -184,6 +234,13 @@ export default function PropertyDetails() {
           <div className="flex gap-2">
             {!isEditing ? (
               <>
+                <Button
+                  variant="outline"
+                  onClick={handleExport}
+                  className="gap-2"
+                >
+                  <Download className="h-4 w-4" /> Export
+                </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="ghost" className="text-red-500">

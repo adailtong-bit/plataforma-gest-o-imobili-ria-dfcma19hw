@@ -38,3 +38,44 @@ export const applyPhoneMask = (value: string, country: 'US' | 'BR' | 'ES') => {
 
   return value
 }
+
+// Export data to CSV
+export const exportToCSV = (
+  filename: string,
+  headers: string[],
+  rows: (string | number | boolean | null | undefined)[][],
+) => {
+  const csvContent = [
+    headers.join(','),
+    ...rows.map((row) =>
+      row
+        .map((cell) => {
+          if (cell === null || cell === undefined) return ''
+          const stringCell = String(cell)
+          // Escape quotes and wrap in quotes if contains comma or quotes
+          if (
+            stringCell.includes(',') ||
+            stringCell.includes('"') ||
+            stringCell.includes('\n')
+          ) {
+            return `"${stringCell.replace(/"/g, '""')}"`
+          }
+          return stringCell
+        })
+        .join(','),
+    ),
+  ].join('\n')
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.setAttribute('href', url)
+  link.setAttribute(
+    'download',
+    filename.endsWith('.csv') ? filename : `${filename}.csv`,
+  )
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}

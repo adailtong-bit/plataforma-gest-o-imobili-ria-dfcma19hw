@@ -47,6 +47,7 @@ import {
   FileSpreadsheet,
   History,
   Info,
+  Download,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
@@ -56,10 +57,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { InventoryImportDialog } from '@/components/inventory/InventoryImportDialog'
 import { InventoryDeleteDialog } from '@/components/inventory/InventoryDeleteDialog'
 import { InventoryHistoryDialog } from '@/components/inventory/InventoryHistoryDialog'
 import { format } from 'date-fns'
+import { exportToCSV } from '@/lib/utils'
 
 interface PropertyInventoryProps {
   data: Property
@@ -197,6 +205,66 @@ export function PropertyInventory({
     setIsHistoryOpen(true)
   }
 
+  const handleExportInventory = () => {
+    const headers = [
+      'Item Name',
+      'Category',
+      'Quantity',
+      'Condition',
+      'Description',
+      'Created At',
+      'Last Updated',
+    ]
+
+    const rows = filteredItems.map((item) => [
+      item.name,
+      item.category,
+      item.quantity,
+      item.condition,
+      item.description || '',
+      item.createdAt
+        ? format(new Date(item.createdAt), 'yyyy-MM-dd HH:mm')
+        : '',
+      item.updatedAt
+        ? format(new Date(item.updatedAt), 'yyyy-MM-dd HH:mm')
+        : '',
+    ])
+
+    exportToCSV(`inventory_${data.name}`, headers, rows)
+    toast({ title: 'Inventory Exported' })
+  }
+
+  const handleExportDamages = () => {
+    const headers = ['Item Name', 'Damage Date', 'Description', 'Reported By']
+
+    const rows: string[][] = []
+
+    inventory.forEach((item) => {
+      if (item.damageHistory && item.damageHistory.length > 0) {
+        item.damageHistory.forEach((log) => {
+          rows.push([
+            item.name,
+            log.date ? format(new Date(log.date), 'yyyy-MM-dd HH:mm') : '',
+            log.description,
+            log.reportedBy || 'Unknown',
+          ])
+        })
+      }
+    })
+
+    if (rows.length === 0) {
+      toast({
+        title: 'No Data',
+        description: 'No damage records found to export.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    exportToCSV(`damage_log_${data.name}`, headers, rows)
+    toast({ title: 'Damage Log Exported' })
+  }
+
   const resetForm = () => {
     setEditingItem({
       name: '',
@@ -239,36 +307,54 @@ export function PropertyInventory({
             Manage items, track condition history, and import bulk data.
           </CardDescription>
         </div>
-        {canEdit && (
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsImportOpen(true)}
-            >
-              <Upload className="h-4 w-4 mr-2" /> Import
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsDeleteOpen(true)}
-              disabled={inventory.length === 0}
-              className="text-red-600 hover:text-red-700"
-            >
-              <Trash2 className="h-4 w-4 mr-2" /> Clear All
-            </Button>
-            <Button
-              onClick={() => {
-                resetForm()
-                setIsDialogOpen(true)
-              }}
-              className="gap-2 bg-trust-blue"
-              size="sm"
-            >
-              <Plus className="h-4 w-4" /> Add Item
-            </Button>
-          </div>
-        )}
+        <div className="flex flex-wrap gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Download className="h-4 w-4" /> Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={handleExportInventory}>
+                Inventory List (CSV)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportDamages}>
+                Damage History Log (CSV)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {canEdit && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsImportOpen(true)}
+              >
+                <Upload className="h-4 w-4 mr-2" /> Import
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsDeleteOpen(true)}
+                disabled={inventory.length === 0}
+                className="text-red-600 hover:text-red-700"
+              >
+                <Trash2 className="h-4 w-4 mr-2" /> Clear All
+              </Button>
+              <Button
+                onClick={() => {
+                  resetForm()
+                  setIsDialogOpen(true)
+                }}
+                className="gap-2 bg-trust-blue"
+                size="sm"
+              >
+                <Plus className="h-4 w-4" /> Add Item
+              </Button>
+            </>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-2 max-w-sm">
