@@ -50,7 +50,7 @@ import logo from '@/assets/logo-estilizado.jpg'
 
 export function AppHeader() {
   const { toggleSidebar } = useSidebar()
-  const { currentUser, setCurrentUser, allUsers } = useAuthStore()
+  const { currentUser, setCurrentUser, allUsers, logout } = useAuthStore()
   const { language, setLanguage, t } = useLanguageStore()
   const { notifications, markNotificationAsRead } = useNotificationStore()
   const navigate = useNavigate()
@@ -103,6 +103,11 @@ export function AppHeader() {
   const handleNotificationClick = (id: string) => {
     markNotificationAsRead(id)
     // Optional: navigate to specific detail if notification payload supported it
+  }
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
   }
 
   return (
@@ -348,7 +353,9 @@ export function AppHeader() {
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem>{t('common.logout')}</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
+              {t('common.logout')}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
