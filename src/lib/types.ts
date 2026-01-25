@@ -204,6 +204,14 @@ export type ItemCondition =
   | 'Missing'
   | 'Broken'
 
+export interface DamageRecord {
+  id: string
+  date: string
+  description: string
+  reportedBy?: string
+  images?: string[]
+}
+
 export interface InventoryItem {
   id: string
   name: string
@@ -212,6 +220,9 @@ export interface InventoryItem {
   description?: string
   condition: ItemCondition
   notes?: string
+  createdAt?: string
+  updatedAt?: string
+  damageHistory?: DamageRecord[]
 }
 
 export interface InventoryCheckResult {
