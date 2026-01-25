@@ -19,9 +19,10 @@ import {
   Edit,
   X,
   Home,
-  AlertTriangle,
   History,
   TrendingUp,
+  CheckSquare,
+  FileText,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -30,7 +31,7 @@ import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DocumentVault } from '@/components/documents/DocumentVault'
-import { Tenant } from '@/lib/types'
+import { Tenant, InventoryInspection } from '@/lib/types'
 import { Separator } from '@/components/ui/separator'
 import {
   Select,
@@ -39,6 +40,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { InventoryInspectionModal } from '@/components/inventory/InventoryInspectionModal'
+import { InventoryReportViewer } from '@/components/inventory/InventoryReportViewer'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { format } from 'date-fns'
 
 export default function TenantDetails() {
   const { id } = useParams()
@@ -55,6 +67,17 @@ export default function TenantDetails() {
 
   const [formData, setFormData] = useState<Tenant | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+
+  // Inspection Modal State
+  const [inspectionModalOpen, setInspectionModalOpen] = useState(false)
+  const [inspectionType, setInspectionType] = useState<
+    'check_in' | 'check_out'
+  >('check_in')
+
+  // Report Viewer State
+  const [reportViewerOpen, setReportViewerOpen] = useState(false)
+  const [selectedInspection, setSelectedInspection] =
+    useState<InventoryInspection | null>(null)
 
   useEffect(() => {
     if (tenant) {
@@ -88,6 +111,35 @@ export default function TenantDetails() {
   const handleSendMessage = () => {
     navigate(`/messages?contactId=${formData.id}`)
   }
+
+  const handleInspectionSave = (inspection: InventoryInspection) => {
+    const updatedInspections = [...(formData.inspections || []), inspection]
+    const updatedTenant = { ...formData, inspections: updatedInspections }
+    setFormData(updatedTenant)
+    updateTenant(updatedTenant)
+    toast({ title: 'Inspection Completed', description: 'Records updated.' })
+  }
+
+  const startInspection = (type: 'check_in' | 'check_out') => {
+    if (!property?.inventory || property.inventory.length === 0) {
+      toast({
+        title: 'No Inventory',
+        description: 'Property has no master inventory configured.',
+        variant: 'destructive',
+      })
+      return
+    }
+    setInspectionType(type)
+    setInspectionModalOpen(true)
+  }
+
+  const viewReport = (inspection: InventoryInspection) => {
+    setSelectedInspection(inspection)
+    setReportViewerOpen(true)
+  }
+
+  const hasCheckIn = formData.inspections?.some((i) => i.type === 'check_in')
+  const hasCheckOut = formData.inspections?.some((i) => i.type === 'check_out')
 
   return (
     <div className="flex flex-col gap-6 pb-10">
@@ -170,6 +222,55 @@ export default function TenantDetails() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6 animate-fade-in">
+          {/* Tenant Status Alerts */}
+          {formData.status === 'active' && !hasCheckIn && (
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 flex justify-between items-center rounded-r-md">
+              <div className="flex items-center gap-3">
+                <CheckSquare className="h-5 w-5 text-yellow-600" />
+                <div>
+                  <h3 className="font-semibold text-yellow-800">
+                    Mandatory Check-in Inspection
+                  </h3>
+                  <p className="text-sm text-yellow-700">
+                    This tenant is active but no check-in inventory record
+                    exists.
+                  </p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                onClick={() => startInspection('check_in')}
+              >
+                Perform Check-in
+              </Button>
+            </div>
+          )}
+
+          {formData.status === 'past' && !hasCheckOut && (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 flex justify-between items-center rounded-r-md">
+              <div className="flex items-center gap-3">
+                <CheckSquare className="h-5 w-5 text-red-600" />
+                <div>
+                  <h3 className="font-semibold text-red-800">
+                    Missing Check-out Inspection
+                  </h3>
+                  <p className="text-sm text-red-700">
+                    Tenant has left but no check-out inventory verification
+                    found.
+                  </p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => startInspection('check_out')}
+              >
+                Perform Check-out
+              </Button>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Left Column: Personal Info & Contract Config */}
             <div className="md:col-span-2 space-y-6">
@@ -300,6 +401,89 @@ export default function TenantDetails() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Inspections List */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div className="flex flex-col space-y-1.5">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <CheckSquare className="h-5 w-5 text-blue-600" />
+                      Inventory Inspections
+                    </CardTitle>
+                    <CardDescription>
+                      Record of check-in and check-out property states.
+                    </CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    {!hasCheckIn && (
+                      <Button
+                        size="sm"
+                        onClick={() => startInspection('check_in')}
+                      >
+                        Start Check-in
+                      </Button>
+                    )}
+                    {hasCheckIn && !hasCheckOut && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => startInspection('check_out')}
+                      >
+                        Start Check-out
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>By</TableHead>
+                        <TableHead>Items Checked</TableHead>
+                        <TableHead className="text-right">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {!formData.inspections ||
+                      formData.inspections.length === 0 ? (
+                        <TableRow>
+                          <TableCell
+                            colSpan={5}
+                            className="text-center py-6 text-muted-foreground"
+                          >
+                            No inspections performed.
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        formData.inspections.map((insp) => (
+                          <TableRow key={insp.id}>
+                            <TableCell className="capitalize font-medium">
+                              {insp.type.replace('_', ' ')}
+                            </TableCell>
+                            <TableCell>
+                              {format(new Date(insp.date), 'PP')}
+                            </TableCell>
+                            <TableCell>{insp.performedBy}</TableCell>
+                            <TableCell>{insp.items.length}</TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="gap-2"
+                                onClick={() => viewReport(insp)}
+                              >
+                                <FileText className="h-3 w-3" /> View Report
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Right Column: Property & Lease */}
@@ -411,6 +595,36 @@ export default function TenantDetails() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Inspection Modal */}
+      {property && (
+        <InventoryInspectionModal
+          isOpen={inspectionModalOpen}
+          onClose={() => setInspectionModalOpen(false)}
+          onSave={handleInspectionSave}
+          propertyId={property.id}
+          type={inspectionType}
+          title={
+            inspectionType === 'check_in'
+              ? 'Tenant Check-in Inspection'
+              : 'Tenant Check-out Inspection'
+          }
+          performedBy="Manager"
+          isOptional={false}
+        />
+      )}
+
+      {/* Report Viewer */}
+      <InventoryReportViewer
+        isOpen={reportViewerOpen}
+        onClose={() => setReportViewerOpen(false)}
+        inspection={selectedInspection}
+        title={
+          selectedInspection
+            ? `${selectedInspection.type === 'check_in' ? 'Check-in' : 'Check-out'} Report`
+            : undefined
+        }
+      />
     </div>
   )
 }

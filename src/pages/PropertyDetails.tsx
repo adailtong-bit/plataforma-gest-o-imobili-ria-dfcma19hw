@@ -12,6 +12,7 @@ import {
   Key,
   History,
   RefreshCw,
+  Package,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -45,6 +46,7 @@ import { PropertyTasks } from '@/components/properties/PropertyTasks'
 import { PropertyFeatures } from '@/components/properties/PropertyFeatures'
 import { PropertyActivityLog } from '@/components/properties/PropertyActivityLog'
 import { PropertySync } from '@/components/properties/PropertySync'
+import { PropertyInventory } from '@/components/properties/PropertyInventory'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -239,6 +241,9 @@ export default function PropertyDetails() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
+          <TabsTrigger value="inventory">
+            <Package className="h-4 w-4 mr-2" /> Inventory
+          </TabsTrigger>
           <TabsTrigger value="features">
             <Key className="h-4 w-4 mr-2" /> Acesso & Features
           </TabsTrigger>
@@ -262,6 +267,14 @@ export default function PropertyDetails() {
 
         <TabsContent value="overview">
           <PropertyOverview
+            data={formData}
+            onChange={handleChange}
+            canEdit={isEditing}
+          />
+        </TabsContent>
+
+        <TabsContent value="inventory">
+          <PropertyInventory
             data={formData}
             onChange={handleChange}
             canEdit={isEditing}

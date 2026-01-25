@@ -195,6 +195,45 @@ export interface ChannelLink {
   status: 'active' | 'error' | 'pending'
 }
 
+export type ItemCondition =
+  | 'New'
+  | 'Good'
+  | 'Fair'
+  | 'Poor'
+  | 'Damaged'
+  | 'Missing'
+  | 'Broken'
+
+export interface InventoryItem {
+  id: string
+  name: string
+  category: string
+  quantity: number
+  description?: string
+  condition: ItemCondition
+  notes?: string
+}
+
+export interface InventoryCheckResult {
+  itemId?: string // Reference to original item
+  name: string
+  category: string
+  originalCondition: ItemCondition
+  condition: ItemCondition // Observed condition
+  notes?: string
+  quantity: number
+}
+
+export interface InventoryInspection {
+  id: string
+  date: string
+  type: 'check_in' | 'check_out'
+  performedBy: string
+  items: InventoryCheckResult[]
+  notes?: string
+  signature?: string
+}
+
 export interface Property {
   id: string
   name: string
@@ -250,7 +289,8 @@ export interface Property {
   fixedExpenses?: FixedExpense[]
   socialMedia?: SocialMediaLinks
   leadContact?: string
-  healthScore?: number // Gamification: 0-100
+  healthScore?: number
+  inventory?: InventoryItem[] // Inventory Management
 }
 
 export type DocumentCategory =
@@ -333,6 +373,7 @@ export interface Tenant {
     nextAdjustmentDate?: string
   }
   isDemo?: boolean
+  inspections?: InventoryInspection[] // Check-in/Check-out Inspections
 }
 
 export interface Booking {
@@ -353,6 +394,7 @@ export interface Booking {
   generatedTasks?: string[]
   adults?: number
   children?: number
+  inspections?: InventoryInspection[] // Short-term Inspections
 }
 
 export interface CalendarBlock {
@@ -399,10 +441,10 @@ export interface Owner {
 export interface ServiceRate {
   id: string
   serviceName: string
-  servicePrice: number // Billable Total (Labor)
-  partnerPayment: number // Vendor Cost
-  pmValue: number // Margin
-  productPrice: number // Material Cost
+  servicePrice: number
+  partnerPayment: number
+  pmValue: number
+  productPrice: number
   validFrom: string
   validTo?: string
   type?: 'generic' | 'specific'
@@ -482,10 +524,10 @@ export interface Task {
   images?: string[]
   evidence?: Evidence[]
   description?: string
-  price?: number // Base Cost (Vendor) - partnerPayment
-  laborCost?: number // Explicit Labor Cost - servicePrice? Or usually cost.
-  materialCost?: number // Explicit Material Cost - productPrice
-  billableAmount?: number // Total charged to Owner (with margins)
+  price?: number
+  laborCost?: number
+  materialCost?: number
+  billableAmount?: number
   teamMemberPayout?: number
   backToBack?: boolean
   recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
@@ -583,7 +625,7 @@ export interface AutomationRule {
   enabled: boolean
   daysBefore?: number
   template?: string
-  threshold?: number // For price based rules
+  threshold?: number
   event?: 'task_completion' | 'booking_confirmation'
 }
 

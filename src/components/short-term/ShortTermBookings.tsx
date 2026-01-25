@@ -33,11 +33,21 @@ import {
   Key,
   Copy,
   Info,
+  CheckCircle,
+  LogOut,
+  CheckSquare,
+  FileText,
 } from 'lucide-react'
 import useShortTermStore from '@/stores/useShortTermStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useCondominiumStore from '@/stores/useCondominiumStore'
-import { Booking, MessageTemplate, Property, Condominium } from '@/lib/types'
+import {
+  Booking,
+  MessageTemplate,
+  Property,
+  Condominium,
+  InventoryInspection,
+} from '@/lib/types'
 import { format, parseISO } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import {
@@ -47,9 +57,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import { InventoryInspectionModal } from '@/components/inventory/InventoryInspectionModal'
+import { InventoryReportViewer } from '@/components/inventory/InventoryReportViewer'
 
 export function ShortTermBookings() {
-  const { bookings, messageTemplates } = useShortTermStore()
+  const { bookings, messageTemplates, updateBooking } = useShortTermStore()
   const { properties } = usePropertyStore()
   const { condominiums } = useCondominiumStore()
   const { toast } = useToast()
@@ -60,6 +72,17 @@ export function ShortTermBookings() {
   const [messageDialogOpen, setMessageDialogOpen] = useState(false)
   const [previewMessage, setPreviewMessage] = useState('')
   const [selectedTemplateName, setSelectedTemplateName] = useState('')
+
+  // Inspection State
+  const [inspectionModalOpen, setInspectionModalOpen] = useState(false)
+  const [inspectionAction, setInspectionAction] = useState<
+    'check_in' | 'check_out' | null
+  >(null)
+
+  // Report Viewer State
+  const [reportViewerOpen, setReportViewerOpen] = useState(false)
+  const [selectedInspection, setSelectedInspection] =
+    useState<InventoryInspection | null>(null)
 
   const filteredBookings = bookings.filter(
     (b) =>
@@ -186,6 +209,79 @@ Enjoy your stay!`
     setMessageDialogOpen(false)
   }
 
+  const initiateCheckIn = (booking: Booking) => {
+    setSelectedBooking(booking)
+    setInspectionAction('check_in')
+    setInspectionModalOpen(true)
+  }
+
+  const initiateCheckOut = (booking: Booking) => {
+    setSelectedBooking(booking)
+    setInspectionAction('check_out')
+    setInspectionModalOpen(true)
+  }
+
+  const handleInspectionSave = (inspection: InventoryInspection) => {
+    if (!selectedBooking) return
+
+    const updatedInspections = [
+      ...(selectedBooking.inspections || []),
+      inspection,
+    ]
+    const updatedStatus =
+      inspectionAction === 'check_in' ? 'checked_in' : 'checked_out'
+
+    updateBooking({
+      ...selectedBooking,
+      status: updatedStatus,
+      inspections: updatedInspections,
+    })
+
+    toast({
+      title:
+        inspectionAction === 'check_in'
+          ? 'Check-in Completed'
+          : 'Check-out Completed',
+      description: 'Inventory inspection recorded successfully.',
+    })
+    setInspectionModalOpen(false)
+  }
+
+  const handleInspectionSkip = () => {
+    if (!selectedBooking) return
+    // Only allowed for short term check-out per requirements
+    const updatedStatus =
+      inspectionAction === 'check_in' ? 'checked_in' : 'checked_out'
+
+    updateBooking({
+      ...selectedBooking,
+      status: updatedStatus,
+    })
+
+    toast({
+      title: 'Status Updated',
+      description: `Guest marked as ${updatedStatus.replace('_', ' ')} (Inspection Skipped).`,
+    })
+    setInspectionModalOpen(false)
+  }
+
+  const viewInspectionReport = (
+    booking: Booking,
+    type: 'check_in' | 'check_out',
+  ) => {
+    const inspection = booking.inspections?.find((i) => i.type === type)
+    if (inspection) {
+      setSelectedInspection(inspection)
+      setReportViewerOpen(true)
+    } else {
+      toast({
+        title: 'No Report',
+        description: 'Inspection record not found.',
+        variant: 'destructive',
+      })
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
@@ -243,6 +339,13 @@ Enjoy your stay!`
             ) : (
               filteredBookings.map((booking) => {
                 const prop = properties.find((p) => p.id === booking.propertyId)
+                const hasCheckInReport = booking.inspections?.some(
+                  (i) => i.type === 'check_in',
+                )
+                const hasCheckOutReport = booking.inspections?.some(
+                  (i) => i.type === 'check_out',
+                )
+
                 return (
                   <TableRow key={booking.id}>
                     <TableCell className="font-medium">{prop?.name}</TableCell>
@@ -272,6 +375,49 @@ Enjoy your stay!`
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          {booking.status === 'confirmed' && (
+                            <DropdownMenuItem
+                              onClick={() => initiateCheckIn(booking)}
+                            >
+                              <CheckCircle className="mr-2 h-4 w-4 text-green-600" />{' '}
+                              Check-in Guest
+                            </DropdownMenuItem>
+                          )}
+                          {booking.status === 'checked_in' && (
+                            <DropdownMenuItem
+                              onClick={() => initiateCheckOut(booking)}
+                            >
+                              <LogOut className="mr-2 h-4 w-4 text-orange-600" />{' '}
+                              Check-out Guest
+                            </DropdownMenuItem>
+                          )}
+
+                          {(hasCheckInReport || hasCheckOutReport) && (
+                            <DropdownMenuSeparator />
+                          )}
+
+                          {hasCheckInReport && (
+                            <DropdownMenuItem
+                              onClick={() =>
+                                viewInspectionReport(booking, 'check_in')
+                              }
+                            >
+                              <FileText className="mr-2 h-4 w-4" /> View
+                              Check-in Report
+                            </DropdownMenuItem>
+                          )}
+                          {hasCheckOutReport && (
+                            <DropdownMenuItem
+                              onClick={() =>
+                                viewInspectionReport(booking, 'check_out')
+                              }
+                            >
+                              <FileText className="mr-2 h-4 w-4" /> View
+                              Check-out Report
+                            </DropdownMenuItem>
+                          )}
+
+                          <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={() => {
                               setSelectedBooking(booking)
@@ -282,7 +428,6 @@ Enjoy your stay!`
                           >
                             <Send className="mr-2 h-4 w-4" /> Send Message
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={() => {
                               setSelectedBooking(booking)
@@ -374,6 +519,36 @@ Enjoy your stay!`
           </div>
         </DialogContent>
       </Dialog>
+
+      {selectedBooking && inspectionAction && (
+        <InventoryInspectionModal
+          isOpen={inspectionModalOpen}
+          onClose={() => setInspectionModalOpen(false)}
+          onSave={handleInspectionSave}
+          onSkip={handleInspectionSkip}
+          propertyId={selectedBooking.propertyId}
+          type={inspectionAction}
+          title={
+            inspectionAction === 'check_in'
+              ? 'Guest Check-in Inventory'
+              : 'Guest Check-out Inventory'
+          }
+          performedBy="Manager"
+          // Short-term check-out can be skipped (optional)
+          isOptional={inspectionAction === 'check_out'}
+        />
+      )}
+
+      <InventoryReportViewer
+        isOpen={reportViewerOpen}
+        onClose={() => setReportViewerOpen(false)}
+        inspection={selectedInspection}
+        title={
+          selectedInspection
+            ? `${selectedInspection.type === 'check_in' ? 'Check-in' : 'Check-out'} Report`
+            : undefined
+        }
+      />
     </div>
   )
 }

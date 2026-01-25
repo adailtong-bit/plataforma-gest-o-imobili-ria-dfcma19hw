@@ -233,6 +233,32 @@ export const properties: Property[] = tenantsData.flatMap((tenant, tIdx) =>
     leadContact: 'sales@agency.com',
     channelLinks: [],
     healthScore: 85 + (pIdx % 15), // Mock score
+    inventory: [
+      {
+        id: 'inv1',
+        name: 'Sofa',
+        category: 'Furniture',
+        quantity: 1,
+        condition: 'Good',
+        description: 'Living room sofa',
+      },
+      {
+        id: 'inv2',
+        name: 'TV',
+        category: 'Electronics',
+        quantity: 1,
+        condition: 'New',
+        description: '65 inch 4K TV',
+      },
+      {
+        id: 'inv3',
+        name: 'Dining Table',
+        category: 'Furniture',
+        quantity: 1,
+        condition: 'Good',
+        description: 'Glass table with 6 chairs',
+      },
+    ],
   })),
 )
 
@@ -261,6 +287,32 @@ properties.push({
   documents: [],
   channelLinks: [],
   healthScore: 98,
+  inventory: [
+    {
+      id: 'inv_demo_1',
+      name: 'King Bed',
+      category: 'Furniture',
+      quantity: 1,
+      condition: 'New',
+      description: 'Master Bedroom',
+    },
+    {
+      id: 'inv_demo_2',
+      name: 'Coffee Maker',
+      category: 'Appliances',
+      quantity: 1,
+      condition: 'Good',
+      description: 'Kitchen Nespresso',
+    },
+    {
+      id: 'inv_demo_3',
+      name: 'Pool Chairs',
+      category: 'Outdoor',
+      quantity: 4,
+      condition: 'Fair',
+      description: 'Pool Area',
+    },
+  ],
 })
 
 // Owners (2 per tenant approx)
@@ -336,6 +388,7 @@ export const tenants: Tenant[] = tenantsData.flatMap((manager, tIdx) =>
             },
           ]
         : [],
+    inspections: [],
   })),
 )
 
@@ -354,6 +407,7 @@ tenants.push({
   country: 'US',
   avatar: demoTenantUser.avatar,
   isDemo: true,
+  inspections: [],
 })
 
 // Bookings (Short Term)
@@ -372,6 +426,7 @@ export const bookings: Booking[] = [
     platform: 'airbnb',
     adults: 2,
     children: 1,
+    inspections: [],
   },
   {
     id: 'bk_2',
@@ -385,6 +440,7 @@ export const bookings: Booking[] = [
     paid: true,
     platform: 'booking.com',
     adults: 2,
+    inspections: [],
   },
   {
     id: 'bk_3',
@@ -399,6 +455,7 @@ export const bookings: Booking[] = [
     platform: 'vrbo',
     adults: 4,
     children: 2,
+    inspections: [],
   },
 ]
 
