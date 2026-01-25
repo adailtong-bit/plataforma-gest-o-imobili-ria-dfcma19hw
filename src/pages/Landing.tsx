@@ -17,6 +17,12 @@ import {
 } from '@/components/ui/carousel'
 import { Badge } from '@/components/ui/badge'
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
   CheckCircle2,
   Globe,
   LayoutDashboard,
@@ -34,10 +40,12 @@ import {
 } from 'lucide-react'
 import logo from '@/assets/logo-estilizado.jpg'
 import { trackEvent } from '@/lib/analytics'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Landing() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { language, setLanguage, t } = useLanguageStore()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,39 +68,33 @@ export default function Landing() {
   const features = [
     {
       icon: <LayoutDashboard className="h-6 w-6 text-trust-blue" />,
-      title: 'Centralized Command Center',
-      description:
-        'Eliminate dashboard hopping. Control occupancy, maintenance, and staff from a single, intuitive interface.',
+      title: t('landing.features.command_center.title'),
+      description: t('landing.features.command_center.desc'),
     },
     {
       icon: <Globe className="h-6 w-6 text-trust-blue" />,
-      title: 'Global Channel Sync',
-      description:
-        'Prevent double bookings with real-time synchronization across Airbnb, Vrbo, Booking.com, and direct channels.',
+      title: t('landing.features.channel_sync.title'),
+      description: t('landing.features.channel_sync.desc'),
     },
     {
       icon: <CreditCard className="h-6 w-6 text-trust-blue" />,
-      title: 'Automated Financials',
-      description:
-        'Streamline owner payouts and expense tracking with direct QuickBooks integration and automated invoicing.',
+      title: t('landing.features.financials.title'),
+      description: t('landing.features.financials.desc'),
     },
     {
       icon: <MessageSquare className="h-6 w-6 text-trust-blue" />,
-      title: 'Unified Guest Inbox',
-      description:
-        'Never miss a message. consolidate guest communications into one thread for faster response times.',
+      title: t('landing.features.guest_inbox.title'),
+      description: t('landing.features.guest_inbox.desc'),
     },
     {
       icon: <Calendar className="h-6 w-6 text-trust-blue" />,
-      title: 'Smart Scheduling',
-      description:
-        'Auto-dispatch cleaning and maintenance crews based on live check-in/out data, ensuring zero downtime.',
+      title: t('landing.features.smart_scheduling.title'),
+      description: t('landing.features.smart_scheduling.desc'),
     },
     {
       icon: <BarChart className="h-6 w-6 text-trust-blue" />,
-      title: 'Revenue Intelligence',
-      description:
-        'Make data-driven decisions with advanced analytics on RevPAR, occupancy rates, and market trends.',
+      title: t('landing.features.revenue_intel.title'),
+      description: t('landing.features.revenue_intel.desc'),
     },
   ]
 
@@ -122,24 +124,24 @@ export default function Landing() {
 
   const plans = [
     {
-      name: 'Starter',
+      name: t('landing.pricing.starter.name'),
       price: '$29',
-      period: '/mo',
-      description: 'Essential tools for hosts scaling up.',
+      period: t('landing.pricing.per_month'),
+      description: t('landing.pricing.starter.desc'),
       features: [
         'Up to 5 properties',
         'Real-time Channel Sync',
         'Basic Financial Reports',
         'Email Support',
       ],
-      cta: 'Start Free Trial',
+      cta: t('landing.pricing.starter.cta'),
       popular: false,
     },
     {
-      name: 'Professional',
+      name: t('landing.pricing.professional.name'),
       price: '$99',
-      period: '/mo',
-      description: 'Powerhouse for growing agencies.',
+      period: t('landing.pricing.per_month'),
+      description: t('landing.pricing.professional.desc'),
       features: [
         'Up to 50 properties',
         'Advanced Automation workflows',
@@ -147,14 +149,14 @@ export default function Landing() {
         'Priority 24/7 Support',
         'QuickBooks Integration',
       ],
-      cta: 'Get Started',
+      cta: t('landing.pricing.professional.cta'),
       popular: true,
     },
     {
-      name: 'Enterprise',
+      name: t('landing.pricing.enterprise.name'),
       price: 'Custom',
       period: '',
-      description: 'Tailored for large portfolios.',
+      description: t('landing.pricing.enterprise.desc'),
       features: [
         'Unlimited properties',
         'Dedicated API Access',
@@ -162,7 +164,7 @@ export default function Landing() {
         'Dedicated Success Manager',
         'Custom Onboarding',
       ],
-      cta: 'Contact Sales',
+      cta: t('landing.pricing.enterprise.cta'),
       popular: false,
     },
   ]
@@ -196,28 +198,62 @@ export default function Landing() {
               onClick={() => handleNavClick('features')}
               className="hover:text-trust-blue transition-colors"
             >
-              Features
+              {t('landing.nav.features')}
             </a>
             <a
               href="#testimonials"
               onClick={() => handleNavClick('testimonials')}
               className="hover:text-trust-blue transition-colors"
             >
-              Testimonials
+              {t('landing.nav.testimonials')}
             </a>
             <a
               href="#pricing"
               onClick={() => handleNavClick('pricing')}
               className="hover:text-trust-blue transition-colors"
             >
-              Pricing
+              {t('landing.nav.pricing')}
             </a>
+
+            {/* Language Selector */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-trust-blue"
+                >
+                  <Globe className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => setLanguage('pt')}
+                  className={language === 'pt' ? 'bg-accent' : ''}
+                >
+                  🇵🇹 Português
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setLanguage('en')}
+                  className={language === 'en' ? 'bg-accent' : ''}
+                >
+                  🇺🇸 English
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setLanguage('es')}
+                  className={language === 'es' ? 'bg-accent' : ''}
+                >
+                  🇪🇸 Español
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Link to="/login" onClick={() => handleCtaClick('Login', 'nav')}>
               <Button
                 variant="ghost"
                 className="hover:bg-blue-50 hover:text-trust-blue"
               >
-                Log In
+                {t('landing.nav.login')}
               </Button>
             </Link>
             <Link
@@ -225,7 +261,7 @@ export default function Landing() {
               onClick={() => handleCtaClick('Get Started', 'nav')}
             >
               <Button className="bg-trust-blue hover:bg-blue-700 shadow-md transition-transform hover:-translate-y-0.5">
-                Get Started
+                {t('landing.nav.get_started')}
               </Button>
             </Link>
           </nav>
@@ -254,36 +290,72 @@ export default function Landing() {
               onClick={() => handleNavClick('features')}
               className="py-2 hover:text-trust-blue font-medium"
             >
-              Features
+              {t('landing.nav.features')}
             </a>
             <a
               href="#testimonials"
               onClick={() => handleNavClick('testimonials')}
               className="py-2 hover:text-trust-blue font-medium"
             >
-              Testimonials
+              {t('landing.nav.testimonials')}
             </a>
             <a
               href="#pricing"
               onClick={() => handleNavClick('pricing')}
               className="py-2 hover:text-trust-blue font-medium"
             >
-              Pricing
+              {t('landing.nav.pricing')}
             </a>
+
+            {/* Mobile Language Selector */}
+            <div className="py-2 flex items-center justify-between border-t border-b border-border/50 my-2">
+              <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Globe className="h-4 w-4" /> Language
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant={language === 'en' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setLanguage('en')}
+                  className="h-7 text-xs px-2"
+                >
+                  EN
+                </Button>
+                <Button
+                  variant={language === 'pt' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setLanguage('pt')}
+                  className="h-7 text-xs px-2"
+                >
+                  PT
+                </Button>
+                <Button
+                  variant={language === 'es' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setLanguage('es')}
+                  className="h-7 text-xs px-2"
+                >
+                  ES
+                </Button>
+              </div>
+            </div>
+
             <div className="flex flex-col gap-2 mt-2">
               <Link
                 to="/login"
                 onClick={() => handleCtaClick('Login', 'mobile_nav')}
               >
                 <Button variant="outline" className="w-full">
-                  Log In
+                  {t('landing.nav.login')}
                 </Button>
               </Link>
               <Link
                 to="/register"
                 onClick={() => handleCtaClick('Get Started', 'mobile_nav')}
               >
-                <Button className="w-full bg-trust-blue">Get Started</Button>
+                <Button className="w-full bg-trust-blue">
+                  {t('landing.nav.get_started')}
+                </Button>
               </Link>
             </div>
           </div>
@@ -299,21 +371,19 @@ export default function Landing() {
           variant="secondary"
           className="mb-8 px-4 py-1.5 text-sm font-medium bg-blue-100/50 text-trust-blue border-blue-200 hover:bg-blue-100 animate-in fade-in slide-in-from-bottom-4 duration-700"
         >
-          <Zap className="w-3 h-3 mr-2 fill-trust-blue" /> New V2.0: Enhanced
-          Automation
+          <Zap className="w-3 h-3 mr-2 fill-trust-blue" />{' '}
+          {t('landing.hero.badge')}
         </Badge>
 
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 max-w-5xl text-navy animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 leading-tight">
-          The Operating System for <br className="hidden md:block" />
+          {t('landing.hero.title_start')} <br className="hidden md:block" />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-trust-blue via-blue-600 to-blue-800">
-            Modern Property Management
+            {t('landing.hero.title_end')}
           </span>
         </h1>
 
         <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mb-10 animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200 leading-relaxed">
-          Streamline operations, maximize occupancy, and boost revenue with the
-          industry's most robust all-in-one platform for vacation and long-term
-          rentals.
+          {t('landing.hero.subtitle')}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-300 w-full sm:w-auto">
@@ -325,7 +395,8 @@ export default function Landing() {
               size="lg"
               className="w-full sm:w-auto text-lg px-8 h-14 bg-trust-blue hover:bg-blue-700 shadow-xl hover:shadow-2xl transition-all font-bold"
             >
-              Start Free Trial <ArrowRight className="ml-2 h-5 w-5" />
+              {t('landing.hero.cta_primary')}{' '}
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
           <a href="#features" onClick={() => handleNavClick('features_hero')}>
@@ -334,7 +405,8 @@ export default function Landing() {
               variant="outline"
               className="w-full sm:w-auto text-lg px-8 h-14 gap-2 border-2"
             >
-              <TrendingUp className="h-4 w-4" /> View Features
+              <TrendingUp className="h-4 w-4" />{' '}
+              {t('landing.hero.cta_secondary')}
             </Button>
           </a>
         </div>
@@ -354,7 +426,7 @@ export default function Landing() {
       <section className="py-12 bg-muted/30 border-y">
         <div className="container mx-auto px-6">
           <p className="text-center text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-8">
-            Trusted by top property managers and industry leaders
+            {t('landing.social_proof.title')}
           </p>
           <div className="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
             {[
@@ -385,14 +457,13 @@ export default function Landing() {
               variant="outline"
               className="mb-4 text-trust-blue border-trust-blue/20 bg-blue-50"
             >
-              Powerful Features
+              {t('landing.features.badge')}
             </Badge>
             <h2 className="text-3xl md:text-5xl font-bold mb-6 text-navy">
-              Everything you need to scale
+              {t('landing.features.title')}
             </h2>
             <p className="text-xl text-muted-foreground">
-              Replace your fragmented tech stack with one robust platform
-              designed for efficient growth.
+              {t('landing.features.subtitle')}
             </p>
           </div>
 
@@ -430,19 +501,19 @@ export default function Landing() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8 animate-in slide-in-from-left-8 duration-700">
               <h2 className="text-4xl md:text-5xl font-bold leading-tight">
-                Data-Driven Decisions for <br />
-                <span className="text-blue-200">Maximum Profitability</span>
+                {t('landing.stats.title_start')} <br />
+                <span className="text-blue-200">
+                  {t('landing.stats.title_end')}
+                </span>
               </h2>
               <p className="text-xl text-blue-100 leading-relaxed">
-                COREPM provides real-time insights into your portfolio's
-                performance. Identify trends, optimize pricing, and reduce
-                operational costs effortlessly.
+                {t('landing.stats.subtitle')}
               </p>
               <ul className="space-y-4">
                 {[
-                  'Real-time financial reporting',
-                  'Automated occupancy optimization',
-                  'Predictive maintenance alerts',
+                  t('landing.stats.list_1'),
+                  t('landing.stats.list_2'),
+                  t('landing.stats.list_3'),
                 ].map((item, i) => (
                   <li
                     key={i}
@@ -456,10 +527,22 @@ export default function Landing() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {[
-                { label: 'Properties Managed', value: '10k+' },
-                { label: 'Revenue Processed', value: '$500M+' },
-                { label: 'Uptime Guarantee', value: '99.9%' },
-                { label: 'Customer Satisfaction', value: '4.9/5' },
+                {
+                  label: t('landing.stats.properties'),
+                  value: '10k+',
+                },
+                {
+                  label: t('landing.stats.revenue'),
+                  value: '$500M+',
+                },
+                {
+                  label: t('landing.stats.uptime'),
+                  value: '99.9%',
+                },
+                {
+                  label: t('landing.stats.satisfaction'),
+                  value: '4.9/5',
+                },
               ].map((stat, idx) => (
                 <div
                   key={idx}
@@ -484,14 +567,13 @@ export default function Landing() {
               variant="outline"
               className="mb-4 text-trust-blue border-trust-blue/20 bg-blue-50"
             >
-              Testimonials
+              {t('landing.nav.testimonials')}
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-navy">
-              Trusted by Industry Leaders
+              {t('landing.testimonials.title')}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Don't just take our word for it. Hear from partners who have
-              transformed their business with COREPM.
+              {t('landing.testimonials.subtitle')}
             </p>
           </div>
 
@@ -548,11 +630,10 @@ export default function Landing() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-navy">
-              Simple, Transparent Pricing
+              {t('landing.pricing.title')}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Choose the plan that fits your business stage. Scale up or down at
-              any time.
+              {t('landing.pricing.subtitle')}
             </p>
           </div>
 
@@ -564,7 +645,7 @@ export default function Landing() {
               >
                 {plan.popular && (
                   <div className="bg-trust-blue text-white text-center text-xs font-bold py-1.5 uppercase tracking-wider rounded-t-lg">
-                    Most Popular
+                    {t('landing.pricing.most_popular')}
                   </div>
                 )}
                 <CardHeader>
@@ -618,11 +699,10 @@ export default function Landing() {
 
         <div className="container mx-auto px-6 relative z-10">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
-            Ready to streamline your property management?
+            {t('landing.footer_cta.title')}
           </h2>
           <p className="text-blue-100 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            Join thousands of forward-thinking property managers who are saving
-            time and increasing revenue with COREPM.
+            {t('landing.footer_cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
@@ -633,7 +713,7 @@ export default function Landing() {
                 size="lg"
                 className="w-full sm:w-auto bg-white text-trust-blue hover:bg-blue-50 text-lg h-14 px-8 font-bold shadow-xl hover:shadow-2xl transition-all"
               >
-                Get Started Now
+                {t('landing.footer_cta.cta_primary')}
               </Button>
             </Link>
             <Link
@@ -645,7 +725,7 @@ export default function Landing() {
                 variant="outline"
                 className="w-full sm:w-auto border-white text-white hover:bg-white/10 text-lg h-14 px-8 backdrop-blur-sm"
               >
-                Contact Sales
+                {t('landing.footer_cta.cta_secondary')}
               </Button>
             </Link>
           </div>
@@ -666,9 +746,7 @@ export default function Landing() {
                 <span className="font-bold text-xl tracking-tight">COREPM</span>
               </div>
               <p className="text-sm leading-relaxed text-slate-500">
-                The all-in-one solution for modern property management. Automate
-                operations, manage financials, and grow your portfolio
-                efficiently.
+                {t('landing.hero.subtitle')}
               </p>
               <div className="flex gap-4">
                 <a
@@ -688,27 +766,27 @@ export default function Landing() {
 
             <div>
               <h4 className="font-bold text-white mb-6 text-sm uppercase tracking-wider">
-                Product
+                {t('landing.footer.product')}
               </h4>
               <ul className="space-y-3 text-sm">
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Features
+                    {t('landing.footer.features')}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Pricing
+                    {t('landing.footer.pricing')}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Integrations
+                    {t('landing.footer.integrations')}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Enterprise
+                    {t('landing.footer.enterprise')}
                   </a>
                 </li>
               </ul>
@@ -716,27 +794,27 @@ export default function Landing() {
 
             <div>
               <h4 className="font-bold text-white mb-6 text-sm uppercase tracking-wider">
-                Resources
+                {t('landing.footer.resources')}
               </h4>
               <ul className="space-y-3 text-sm">
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Blog
+                    {t('landing.footer.blog')}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Documentation
+                    {t('landing.footer.docs')}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Case Studies
+                    {t('landing.footer.case_studies')}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Help Center
+                    {t('landing.footer.help')}
                   </a>
                 </li>
               </ul>
@@ -744,27 +822,27 @@ export default function Landing() {
 
             <div>
               <h4 className="font-bold text-white mb-6 text-sm uppercase tracking-wider">
-                Company
+                {t('landing.footer.company')}
               </h4>
               <ul className="space-y-3 text-sm">
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    About Us
+                    {t('landing.footer.about')}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Careers
+                    {t('landing.footer.careers')}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Legal
+                    {t('landing.footer.legal')}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Contact
+                    {t('landing.footer.contact')}
                   </a>
                 </li>
               </ul>
@@ -775,10 +853,10 @@ export default function Landing() {
             <p>© {new Date().getFullYear()} COREPM Inc. All rights reserved.</p>
             <div className="flex gap-8">
               <a href="#" className="hover:text-white transition-colors">
-                Privacy Policy
+                {t('landing.footer.privacy')}
               </a>
               <a href="#" className="hover:text-white transition-colors">
-                Terms of Service
+                {t('landing.footer.terms')}
               </a>
             </div>
           </div>

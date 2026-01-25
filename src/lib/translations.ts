@@ -92,6 +92,124 @@ export const translations = {
       welcome: 'Bem-vindo',
       full_name: 'Nome Completo',
     },
+    landing: {
+      nav: {
+        features: 'Recursos',
+        testimonials: 'Depoimentos',
+        pricing: 'Preços',
+        login: 'Entrar',
+        get_started: 'Começar',
+      },
+      hero: {
+        badge: 'Novo V2.0: Automação Aprimorada',
+        title_start: 'O Sistema Operacional para',
+        title_end: 'Gestão Imobiliária Moderna',
+        subtitle:
+          'Otimize operações, maximize a ocupação e aumente a receita com a plataforma tudo-em-um mais robusta do setor.',
+        cta_primary: 'Teste Grátis',
+        cta_secondary: 'Ver Recursos',
+      },
+      social_proof: {
+        title: 'Confiado por grandes gestores e líderes do setor',
+      },
+      features: {
+        title: 'Tudo o que você precisa para crescer',
+        subtitle:
+          'Substitua sua pilha de tecnologia fragmentada por uma plataforma robusta projetada para crescimento eficiente.',
+        badge: 'Recursos Poderosos',
+        command_center: {
+          title: 'Centro de Comando Centralizado',
+          desc: 'Controle ocupação, manutenção e equipe de uma interface única e intuitiva.',
+        },
+        channel_sync: {
+          title: 'Sincronização Global de Canais',
+          desc: 'Evite overbookings com sincronização em tempo real entre Airbnb, Vrbo, Booking.com e canais diretos.',
+        },
+        financials: {
+          title: 'Financeiro Automatizado',
+          desc: 'Agilize pagamentos de proprietários e rastreamento de despesas com integração direta QuickBooks.',
+        },
+        guest_inbox: {
+          title: 'Caixa de Entrada Unificada',
+          desc: 'Nunca perca uma mensagem. Centralize comunicações de hóspedes para respostas mais rápidas.',
+        },
+        smart_scheduling: {
+          title: 'Agendamento Inteligente',
+          desc: 'Despache equipes de limpeza e manutenção com base em dados de check-in/out ao vivo.',
+        },
+        revenue_intel: {
+          title: 'Inteligência de Receita',
+          desc: 'Tome decisões baseadas em dados com análises avançadas sobre RevPAR, taxas de ocupação e tendências.',
+        },
+      },
+      stats: {
+        title_start: 'Decisões Baseadas em Dados para',
+        title_end: 'Lucratividade Máxima',
+        subtitle:
+          'COREPM fornece insights em tempo real sobre o desempenho do seu portfólio. Identifique tendências e otimize custos.',
+        list_1: 'Relatórios financeiros em tempo real',
+        list_2: 'Otimização automatizada de ocupação',
+        list_3: 'Alertas de manutenção preditiva',
+        properties: 'Propriedades Geridas',
+        revenue: 'Receita Processada',
+        uptime: 'Garantia de Uptime',
+        satisfaction: 'Satisfação do Cliente',
+      },
+      testimonials: {
+        title: 'Confiado por Líderes',
+        subtitle:
+          'Veja o que nossos parceiros dizem sobre transformar seus negócios com a COREPM.',
+      },
+      pricing: {
+        title: 'Preços Simples e Transparentes',
+        subtitle:
+          'Escolha o plano que se adapta ao estágio do seu negócio. Mude a qualquer momento.',
+        starter: {
+          name: 'Starter',
+          desc: 'Ferramentas essenciais para hosts em crescimento.',
+          cta: 'Testar Grátis',
+        },
+        professional: {
+          name: 'Profissional',
+          desc: 'Poderoso para agências em expansão.',
+          cta: 'Começar Agora',
+        },
+        enterprise: {
+          name: 'Enterprise',
+          desc: 'Sob medida para grandes portfólios.',
+          cta: 'Falar com Vendas',
+        },
+        most_popular: 'Mais Popular',
+        per_month: '/mês',
+      },
+      footer_cta: {
+        title: 'Pronto para otimizar sua gestão?',
+        subtitle:
+          'Junte-se a milhares de gestores que estão economizando tempo e aumentando a receita com COREPM.',
+        cta_primary: 'Começar Agora',
+        cta_secondary: 'Falar com Vendas',
+      },
+      footer: {
+        product: 'Produto',
+        resources: 'Recursos',
+        company: 'Empresa',
+        features: 'Recursos',
+        pricing: 'Preços',
+        integrations: 'Integrações',
+        enterprise: 'Enterprise',
+        blog: 'Blog',
+        docs: 'Documentação',
+        case_studies: 'Casos de Sucesso',
+        help: 'Central de Ajuda',
+        about: 'Sobre Nós',
+        careers: 'Carreiras',
+        legal: 'Legal',
+        contact: 'Contato',
+        privacy: 'Política de Privacidade',
+        terms: 'Termos de Serviço',
+        rights: 'Todos os direitos reservados.',
+      },
+    },
     marketing: {
       hero_title: 'Gestão Imobiliária Simplificada',
       hero_subtitle:
@@ -183,7 +301,6 @@ export const translations = {
       tenant: 'Inquilino',
       partner_employee: 'Equipe (Staff)',
     },
-    // Adding minimal keys for other modules to prevent crashes, reusing logic where possible
     dashboard: {
       title: 'Painel',
       subtitle: 'Visão Geral',
@@ -415,6 +532,124 @@ export const translations = {
       register: 'Register',
       welcome: 'Welcome',
       full_name: 'Full Name',
+    },
+    landing: {
+      nav: {
+        features: 'Features',
+        testimonials: 'Testimonials',
+        pricing: 'Pricing',
+        login: 'Log In',
+        get_started: 'Get Started',
+      },
+      hero: {
+        badge: 'New V2.0: Enhanced Automation',
+        title_start: 'The Operating System for',
+        title_end: 'Modern Property Management',
+        subtitle:
+          "Streamline operations, maximize occupancy, and boost revenue with the industry's most robust all-in-one platform for vacation and long-term rentals.",
+        cta_primary: 'Start Free Trial',
+        cta_secondary: 'View Features',
+      },
+      social_proof: {
+        title: 'Trusted by top property managers and industry leaders',
+      },
+      features: {
+        title: 'Everything you need to scale',
+        subtitle:
+          'Replace your fragmented tech stack with one robust platform designed for efficient growth.',
+        badge: 'Powerful Features',
+        command_center: {
+          title: 'Centralized Command Center',
+          desc: 'Eliminate dashboard hopping. Control occupancy, maintenance, and staff from a single, intuitive interface.',
+        },
+        channel_sync: {
+          title: 'Global Channel Sync',
+          desc: 'Prevent double bookings with real-time synchronization across Airbnb, Vrbo, Booking.com, and direct channels.',
+        },
+        financials: {
+          title: 'Automated Financials',
+          desc: 'Streamline owner payouts and expense tracking with direct QuickBooks integration and automated invoicing.',
+        },
+        guest_inbox: {
+          title: 'Unified Guest Inbox',
+          desc: 'Never miss a message. Consolidate guest communications into one thread for faster response times.',
+        },
+        smart_scheduling: {
+          title: 'Smart Scheduling',
+          desc: 'Auto-dispatch cleaning and maintenance crews based on live check-in/out data, ensuring zero downtime.',
+        },
+        revenue_intel: {
+          title: 'Revenue Intelligence',
+          desc: 'Make data-driven decisions with advanced analytics on RevPAR, occupancy rates, and market trends.',
+        },
+      },
+      stats: {
+        title_start: 'Data-Driven Decisions for',
+        title_end: 'Maximum Profitability',
+        subtitle:
+          "COREPM provides real-time insights into your portfolio's performance. Identify trends, optimize pricing, and reduce operational costs effortlessly.",
+        list_1: 'Real-time financial reporting',
+        list_2: 'Automated occupancy optimization',
+        list_3: 'Predictive maintenance alerts',
+        properties: 'Properties Managed',
+        revenue: 'Revenue Processed',
+        uptime: 'Uptime Guarantee',
+        satisfaction: 'Customer Satisfaction',
+      },
+      testimonials: {
+        title: 'Trusted by Industry Leaders',
+        subtitle:
+          "Don't just take our word for it. Hear from partners who have transformed their business with COREPM.",
+      },
+      pricing: {
+        title: 'Simple, Transparent Pricing',
+        subtitle:
+          'Choose the plan that fits your business stage. Scale up or down at any time.',
+        starter: {
+          name: 'Starter',
+          desc: 'Essential tools for hosts scaling up.',
+          cta: 'Start Free Trial',
+        },
+        professional: {
+          name: 'Professional',
+          desc: 'Powerhouse for growing agencies.',
+          cta: 'Get Started',
+        },
+        enterprise: {
+          name: 'Enterprise',
+          desc: 'Tailored for large portfolios.',
+          cta: 'Contact Sales',
+        },
+        most_popular: 'Most Popular',
+        per_month: '/mo',
+      },
+      footer_cta: {
+        title: 'Ready to streamline your property management?',
+        subtitle:
+          'Join thousands of forward-thinking property managers who are saving time and increasing revenue with COREPM.',
+        cta_primary: 'Get Started Now',
+        cta_secondary: 'Contact Sales',
+      },
+      footer: {
+        product: 'Product',
+        resources: 'Resources',
+        company: 'Company',
+        features: 'Features',
+        pricing: 'Pricing',
+        integrations: 'Integrations',
+        enterprise: 'Enterprise',
+        blog: 'Blog',
+        docs: 'Documentation',
+        case_studies: 'Case Studies',
+        help: 'Help Center',
+        about: 'About Us',
+        careers: 'Careers',
+        legal: 'Legal',
+        contact: 'Contact',
+        privacy: 'Privacy Policy',
+        terms: 'Terms of Service',
+        rights: 'All rights reserved.',
+      },
     },
     marketing: {
       hero_title: 'Property Management Simplified',
@@ -738,6 +973,124 @@ export const translations = {
       register: 'Registrarse',
       welcome: 'Bienvenido',
       full_name: 'Nombre Completo',
+    },
+    landing: {
+      nav: {
+        features: 'Características',
+        testimonials: 'Testimonios',
+        pricing: 'Precios',
+        login: 'Iniciar Sesión',
+        get_started: 'Comenzar',
+      },
+      hero: {
+        badge: 'Nuevo V2.0: Automatización Mejorada',
+        title_start: 'El Sistema Operativo para',
+        title_end: 'Gestión Inmobiliaria Moderna',
+        subtitle:
+          'Optimice operaciones, maximice la ocupación y aumente los ingresos con la plataforma todo en uno más robusta.',
+        cta_primary: 'Prueba Gratis',
+        cta_secondary: 'Ver Funciones',
+      },
+      social_proof: {
+        title: 'Confiado por los principales gestores y líderes del sector',
+      },
+      features: {
+        title: 'Todo lo que necesita para escalar',
+        subtitle:
+          'Reemplace su tecnología fragmentada con una plataforma robusta diseñada para el crecimiento.',
+        badge: 'Funciones Potentes',
+        command_center: {
+          title: 'Centro de Comando Centralizado',
+          desc: 'Controle ocupación, mantenimiento y personal desde una interfaz única e intuitiva.',
+        },
+        channel_sync: {
+          title: 'Sincronización Global de Canales',
+          desc: 'Evite overbookings con sincronización en tiempo real entre Airbnb, Vrbo, Booking.com y canales directos.',
+        },
+        financials: {
+          title: 'Finanzas Automatizadas',
+          desc: 'Agilice pagos a propietarios y seguimiento de gastos con integración directa de QuickBooks.',
+        },
+        guest_inbox: {
+          title: 'Buzón de Huéspedes Unificado',
+          desc: 'Nunca pierda un mensaje. Centralice las comunicaciones para respuestas más rápidas.',
+        },
+        smart_scheduling: {
+          title: 'Programación Inteligente',
+          desc: 'Despache equipos de limpieza y mantenimiento basados en datos de check-in/out en vivo.',
+        },
+        revenue_intel: {
+          title: 'Inteligencia de Ingresos',
+          desc: 'Tome decisiones basadas en datos con análisis avanzados sobre RevPAR, ocupación y tendencias.',
+        },
+      },
+      stats: {
+        title_start: 'Decisiones Basadas en Datos para',
+        title_end: 'Máxima Rentabilidad',
+        subtitle:
+          'COREPM proporciona información en tiempo real sobre el rendimiento de su cartera. Identifique tendencias y optimice costos.',
+        list_1: 'Informes financieros en tiempo real',
+        list_2: 'Optimización automatizada de ocupación',
+        list_3: 'Alertas de mantenimiento predictivo',
+        properties: 'Propiedades Gestionadas',
+        revenue: 'Ingresos Procesados',
+        uptime: 'Garantía de Uptime',
+        satisfaction: 'Satisfacción del Cliente',
+      },
+      testimonials: {
+        title: 'Confiado por Líderes',
+        subtitle:
+          'Vea lo que dicen nuestros socios sobre la transformación de sus negocios con COREPM.',
+      },
+      pricing: {
+        title: 'Precios Simples y Transparentes',
+        subtitle:
+          'Elija el plan que se adapte a su etapa de negocio. Cambie en cualquier momento.',
+        starter: {
+          name: 'Starter',
+          desc: 'Herramientas esenciales para anfitriones en crecimiento.',
+          cta: 'Probar Gratis',
+        },
+        professional: {
+          name: 'Profesional',
+          desc: 'Potencia para agencias en expansión.',
+          cta: 'Comenzar Ahora',
+        },
+        enterprise: {
+          name: 'Enterprise',
+          desc: 'A medida para grandes carteras.',
+          cta: 'Contactar Ventas',
+        },
+        most_popular: 'Más Popular',
+        per_month: '/mes',
+      },
+      footer_cta: {
+        title: '¿Listo para optimizar su gestión?',
+        subtitle:
+          'Únase a miles de gestores que están ahorrando tiempo y aumentando ingresos con COREPM.',
+        cta_primary: 'Comenzar Ahora',
+        cta_secondary: 'Contactar Ventas',
+      },
+      footer: {
+        product: 'Producto',
+        resources: 'Recursos',
+        company: 'Empresa',
+        features: 'Funciones',
+        pricing: 'Precios',
+        integrations: 'Integraciones',
+        enterprise: 'Enterprise',
+        blog: 'Blog',
+        docs: 'Documentación',
+        case_studies: 'Casos de Éxito',
+        help: 'Centro de Ayuda',
+        about: 'Sobre Nosotros',
+        careers: 'Carreras',
+        legal: 'Legal',
+        contact: 'Contacto',
+        privacy: 'Política de Privacidad',
+        terms: 'Términos de Servicio',
+        rights: 'Todos los derechos reservados.',
+      },
     },
     marketing: {
       hero_title: 'Gestión Inmobiliaria Simplificada',
