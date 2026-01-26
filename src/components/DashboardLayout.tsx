@@ -26,7 +26,7 @@ import { User } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { hasPermission } from '@/lib/permissions'
 import { PublicityFooter } from './PublicityFooter'
-import { differenceInHours, parseISO } from 'date-fns'
+import { differenceInHours, parseISO, isPast } from 'date-fns'
 import { cn } from '@/lib/utils'
 
 export default function DashboardLayout() {
@@ -34,7 +34,7 @@ export default function DashboardLayout() {
   const { updateUser } = useUserStore()
   const { properties } = usePropertyStore()
   const { tasks } = useTaskStore()
-  const { addNotification } = useNotificationStore()
+  const { addNotification, notifications } = useNotificationStore()
   const navigate = useNavigate()
   const location = useLocation()
   const { toast } = useToast()
@@ -129,15 +129,41 @@ export default function DashboardLayout() {
         if (
           task.status !== 'completed' &&
           task.status !== 'approved' &&
-          task.status !== 'pending_approval'
+          task.status !== 'pending_approval' &&
+          task.type === 'maintenance'
         ) {
           try {
             const taskDate = parseISO(task.date)
             const hoursDiff = differenceInHours(taskDate, now)
 
-            // Alert if task is within 24 hours (Logic preserved from original)
-            if (hoursDiff > 0 && hoursDiff <= 24) {
-              // Notification logic would go here
+            // Alert if maintenance task is within 48 hours
+            if (hoursDiff > 0 && hoursDiff <= 48) {
+              const alreadyNotified = notifications.some(
+                (n) => n.message.includes(task.title) && n.type === 'warning',
+              )
+              if (!alreadyNotified) {
+                addNotification({
+                  title: 'Upcoming Maintenance',
+                  message: `Maintenance "${task.title}" is due in less than 48 hours.`,
+                  type: 'warning',
+                })
+              }
+            }
+
+            // Alert if overdue
+            if (isPast(taskDate) && Math.abs(hoursDiff) > 0) {
+              const alreadyNotified = notifications.some(
+                (n) =>
+                  n.message.includes(task.title) &&
+                  n.message.includes('Overdue'),
+              )
+              if (!alreadyNotified) {
+                addNotification({
+                  title: 'Maintenance Overdue',
+                  message: `Task "${task.title}" is overdue! Please check immediately.`,
+                  type: 'warning',
+                })
+              }
             }
           } catch (e) {
             // ignore invalid dates
@@ -146,11 +172,11 @@ export default function DashboardLayout() {
       })
     }
 
-    const interval = setInterval(checkTasks, 60000)
-    checkTasks()
+    const interval = setInterval(checkTasks, 60000) // Check every minute
+    checkTasks() // Initial check
 
     return () => clearInterval(interval)
-  }, [currentUser, tasks, isAuthenticated])
+  }, [currentUser, tasks, isAuthenticated, notifications, addNotification])
 
   const handlePasswordUpdate = () => {
     if (newPassword.length < 6) {

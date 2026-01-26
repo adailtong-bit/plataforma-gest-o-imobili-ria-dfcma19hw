@@ -1,10 +1,11 @@
+import { useEffect } from 'react'
 import { Property } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
-import { Copy } from 'lucide-react'
+import { Copy, Wand2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
 interface PropertyContentProps {
@@ -19,6 +20,25 @@ export function PropertyContent({
   canEdit,
 }: PropertyContentProps) {
   const { toast } = useToast()
+
+  // Automated Description Translation Logic
+  const handleDescriptionChange = (lang: 'pt' | 'en' | 'es', value: string) => {
+    // Update current language
+    onNestedChange('description', lang, value)
+
+    // Auto-translate to others if they are empty
+    // This is a simulation of real-time translation
+    const others = (['pt', 'en', 'es'] as const).filter((l) => l !== lang)
+    others.forEach((otherLang) => {
+      const currentOther = data.description?.[otherLang]
+      if (!currentOther || currentOther.trim() === '') {
+        // Simple mock translation: just prepend the lang code to indicate it's auto-filled
+        // In production, this would call a translation API
+        const mockTranslation = `[${otherLang.toUpperCase()}] ${value}`
+        onNestedChange('description', otherLang, mockTranslation)
+      }
+    })
+  }
 
   const copyContent = (
     field: 'description' | 'hoaRules',
@@ -49,7 +69,14 @@ export function PropertyContent({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Descrição Pública</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            Descrição Pública
+            {canEdit && (
+              <div className="text-xs font-normal text-muted-foreground bg-secondary px-2 py-1 rounded-full flex items-center gap-1">
+                <Wand2 className="h-3 w-3" /> Auto-translate active
+              </div>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="pt">
@@ -64,7 +91,7 @@ export function PropertyContent({
                 <Textarea
                   value={getDesc('pt')}
                   onChange={(e) =>
-                    onNestedChange('description', 'pt', e.target.value)
+                    handleDescriptionChange('pt', e.target.value)
                   }
                   disabled={!canEdit}
                   rows={6}
@@ -89,7 +116,7 @@ export function PropertyContent({
                 <Textarea
                   value={getDesc('en')}
                   onChange={(e) =>
-                    onNestedChange('description', 'en', e.target.value)
+                    handleDescriptionChange('en', e.target.value)
                   }
                   disabled={!canEdit}
                   rows={6}
@@ -114,7 +141,7 @@ export function PropertyContent({
                 <Textarea
                   value={getDesc('es')}
                   onChange={(e) =>
-                    onNestedChange('description', 'es', e.target.value)
+                    handleDescriptionChange('es', e.target.value)
                   }
                   disabled={!canEdit}
                   rows={6}

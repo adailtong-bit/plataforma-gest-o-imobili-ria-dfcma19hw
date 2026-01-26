@@ -13,7 +13,6 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { FileUpload } from '@/components/ui/file-upload'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import {
   Share2,
@@ -26,6 +25,12 @@ import {
   Copy,
   Download,
   Image as ImageIcon,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import {
@@ -51,6 +56,9 @@ export function PropertyMarketing({
   const { t } = useLanguageStore()
   const { toast } = useToast()
   const [publishDialogOpen, setPublishDialogOpen] = useState(false)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [zoomLevel, setZoomLevel] = useState(1)
 
   const handleGalleryAdd = (url: string) => {
     onChange('gallery', [...(data.gallery || []), url])
@@ -85,6 +93,31 @@ export function PropertyMarketing({
     )
     toast({ title: 'Link copiado para a área de transferência.' })
   }
+
+  const openLightbox = (index: number) => {
+    setCurrentImageIndex(index)
+    setZoomLevel(1)
+    setLightboxOpen(true)
+  }
+
+  const nextImage = () => {
+    if (data.gallery && data.gallery.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % data.gallery!.length)
+      setZoomLevel(1)
+    }
+  }
+
+  const prevImage = () => {
+    if (data.gallery && data.gallery.length > 0) {
+      setCurrentImageIndex((prev) =>
+        prev === 0 ? data.gallery!.length - 1 : prev - 1,
+      )
+      setZoomLevel(1)
+    }
+  }
+
+  const zoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.5, 3))
+  const zoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.5, 1))
 
   return (
     <div className="space-y-6">
@@ -238,26 +271,35 @@ export function PropertyMarketing({
       <Card>
         <CardHeader>
           <CardTitle>{t('properties.listing_gallery')}</CardTitle>
-          <CardDescription>High quality images for portals.</CardDescription>
+          <CardDescription>
+            High quality images for portals. Click to expand.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             {data.gallery?.map((img, idx) => (
               <div
                 key={idx}
-                className="relative aspect-video rounded-md overflow-hidden group"
+                className="relative aspect-video rounded-md overflow-hidden group cursor-pointer border border-muted hover:shadow-lg transition-all"
+                onClick={() => openLightbox(idx)}
               >
                 <img
                   src={img}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
                   alt={`Gallery ${idx}`}
                 />
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Maximize2 className="h-6 w-6 text-white drop-shadow-md" />
+                </div>
                 {canEdit && (
                   <button
-                    onClick={() => handleGalleryRemove(idx)}
-                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleGalleryRemove(idx)
+                    }}
+                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                   >
-                    X
+                    <X className="h-3 w-3" />
                   </button>
                 )}
               </div>
@@ -268,6 +310,76 @@ export function PropertyMarketing({
           )}
         </CardContent>
       </Card>
+
+      {/* Lightbox Overlay */}
+      {lightboxOpen && data.gallery && data.gallery.length > 0 && (
+        <div className="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center animate-in fade-in duration-200">
+          <div className="absolute top-4 right-4 flex gap-2 z-50">
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={zoomIn}
+              className="bg-black/50 text-white border-white/20 hover:bg-black/70"
+            >
+              <ZoomIn className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={zoomOut}
+              className="bg-black/50 text-white border-white/20 hover:bg-black/70"
+            >
+              <ZoomOut className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setLightboxOpen(false)}
+              className="text-white hover:bg-white/20"
+            >
+              <X className="h-6 w-6" />
+            </Button>
+          </div>
+
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 z-50">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={prevImage}
+              className="text-white hover:bg-white/20 h-12 w-12 rounded-full"
+            >
+              <ChevronLeft className="h-8 w-8" />
+            </Button>
+          </div>
+
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 z-50">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={nextImage}
+              className="text-white hover:bg-white/20 h-12 w-12 rounded-full"
+            >
+              <ChevronRight className="h-8 w-8" />
+            </Button>
+          </div>
+
+          <div
+            className="overflow-hidden w-full h-full flex items-center justify-center p-8"
+            style={{ cursor: zoomLevel > 1 ? 'grab' : 'default' }}
+          >
+            <img
+              src={data.gallery[currentImageIndex]}
+              alt="Fullscreen"
+              className="max-w-full max-h-full object-contain transition-transform duration-200"
+              style={{ transform: `scale(${zoomLevel})` }}
+            />
+          </div>
+
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 px-4 py-2 rounded-full text-white text-sm">
+            {currentImageIndex + 1} / {data.gallery.length}
+          </div>
+        </div>
+      )}
 
       {/* Automated Marketing Kit Dialog */}
       <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>

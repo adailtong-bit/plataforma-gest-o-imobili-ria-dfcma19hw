@@ -14,6 +14,7 @@ import {
   RefreshCw,
   Package,
   Download,
+  FileText,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -49,6 +50,7 @@ import { PropertyFeatures } from '@/components/properties/PropertyFeatures'
 import { PropertyActivityLog } from '@/components/properties/PropertyActivityLog'
 import { PropertySync } from '@/components/properties/PropertySync'
 import { PropertyInventory } from '@/components/properties/PropertyInventory'
+import { PropertyContracts } from '@/components/properties/PropertyContracts'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -220,7 +222,7 @@ export default function PropertyDetails() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/properties">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" title="Voltar para Lista">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
@@ -298,6 +300,9 @@ export default function PropertyDetails() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
+          <TabsTrigger value="contracts">
+            <FileText className="h-4 w-4 mr-2" /> Contracts
+          </TabsTrigger>
           <TabsTrigger value="inventory">
             <Package className="h-4 w-4 mr-2" /> Inventory
           </TabsTrigger>
@@ -328,6 +333,10 @@ export default function PropertyDetails() {
             onChange={handleChange}
             canEdit={isEditing}
           />
+        </TabsContent>
+
+        <TabsContent value="contracts">
+          <PropertyContracts propertyId={formData.id} canEdit={isEditing} />
         </TabsContent>
 
         <TabsContent value="inventory">
