@@ -34,6 +34,7 @@ import {
   MessageTemplate,
   InventoryItem,
   ChatMessage,
+  InventoryMedia,
 } from '@/lib/types'
 
 // Helper for random data
@@ -102,11 +103,21 @@ const internalUsers: User[] = Array.from({ length: 3 }).map((_, i) => ({
 
 // Partners (Vendors)
 const partnersData: Partner[] = tenantsData.flatMap((manager, tIdx) =>
-  Array.from({ length: 2 }).map((_, i) => ({
+  Array.from({ length: 3 }).map((_, i) => ({
     id: `partner_${tIdx}_${i}`,
-    name: i === 0 ? `Cleaning Co ${tIdx + 1}` : `FixIt Maintenance ${tIdx + 1}`,
-    type: i === 0 ? 'cleaning' : 'maintenance',
-    companyName: i === 0 ? `Sparkle Clean ${tIdx}` : `Handy Heroes ${tIdx}`,
+    name:
+      i === 0
+        ? `Cleaning Co ${tIdx + 1}`
+        : i === 1
+          ? `FixIt Maintenance ${tIdx + 1}`
+          : `Inspection Pro ${tIdx + 1}`,
+    type: i === 0 ? 'cleaning' : i === 1 ? 'maintenance' : 'agent',
+    companyName:
+      i === 0
+        ? `Sparkle Clean ${tIdx}`
+        : i === 1
+          ? `Handy Heroes ${tIdx}`
+          : `InspectIt ${tIdx}`,
     email: `partner${tIdx}_${i}@service.com`,
     phone: `+1 (555) 88${tIdx}${i}`,
     country: 'US',
@@ -175,6 +186,19 @@ export const systemUsers: User[] = [
   ...tenantsData,
   ...internalUsers,
   ...partnerEmployees,
+  ...partnersData.map(
+    (p) =>
+      ({
+        id: p.id,
+        name: p.name,
+        email: p.email,
+        role: 'partner',
+        avatar: p.avatar,
+        status: 'active',
+        isFirstLogin: false,
+        country: 'US',
+      }) as User,
+  ),
   ...demoUsers,
 ]
 
@@ -243,16 +267,29 @@ const generateInventory = (count: number): InventoryItem[] => {
     let condition = 'Good'
     let damageHistory: any[] = []
 
-    if (conditionRoll > 0.9) condition = 'New'
-    else if (conditionRoll < 0.1) {
-      condition = 'Damaged'
+    // Ensure we have some damaged items for testing (approx 15%)
+    if (conditionRoll > 0.85) condition = 'Damaged'
+    else if (conditionRoll > 0.7) condition = 'Fair'
+    else if (conditionRoll < 0.3) condition = 'New'
+
+    const media: InventoryMedia[] = [
+      {
+        id: `media_${Date.now()}_${i}`,
+        url: `https://img.usecurling.com/p/200/200?q=${name.replace(' ', '%20')}&seed=${i}`,
+        type: 'image',
+        date: subDays(new Date(), randomInt(1, 365)).toISOString(),
+        notes: `Photo of ${name}`,
+      },
+    ]
+
+    if (condition === 'Damaged') {
       damageHistory.push({
         id: `dmg_${i}`,
-        date: subDays(new Date(), randomInt(1, 30)).toISOString(),
-        description: 'Item found broken during inspection',
+        date: subDays(new Date(), randomInt(1, 10)).toISOString(),
+        description: 'Item found broken during last inspection',
         reportedBy: 'Inspector',
       })
-    } else if (conditionRoll < 0.2) condition = 'Fair'
+    }
 
     return {
       id: `inv_${Date.now()}_${i}`,
@@ -264,7 +301,7 @@ const generateInventory = (count: number): InventoryItem[] => {
       createdAt: subDays(new Date(), randomInt(30, 365)).toISOString(),
       updatedAt: subDays(new Date(), randomInt(1, 30)).toISOString(),
       damageHistory,
-      media: [],
+      media,
     }
   })
 }
@@ -328,7 +365,7 @@ export const properties: Property[] = tenantsData.flatMap((tenant, tIdx) =>
       hoaFrequency: 'monthly',
       ownerId: `owner_${tIdx}_${pIdx % 2}`,
       documents: [],
-      agentId: `partner_${tIdx}_0`,
+      agentId: `partner_${tIdx}_2`,
       fixedExpenses: [
         {
           id: `fe-${tIdx}-${pIdx}`,
@@ -443,7 +480,7 @@ const taskStatuses = [
   'approved',
 ] as const
 
-// Generate 50 Tasks
+// Generate 50 Random Standard Tasks
 for (let i = 0; i < 50; i++) {
   const prop = randomItem(properties)
   const type = randomItem(taskTypes)
@@ -479,6 +516,35 @@ for (let i = 0; i < 50; i++) {
       : [],
   })
 }
+
+// Generate Maintenance Tasks for Damaged Inventory (Integration Requirement)
+properties.forEach((prop) => {
+  prop.inventory?.forEach((item) => {
+    if (['Damaged', 'Broken', 'Missing', 'Poor'].includes(item.condition)) {
+      const partner = randomItem(
+        partnersData.filter((p) => p.type === 'maintenance'),
+      )
+      tasks.push({
+        id: `task_auto_${item.id}`,
+        title: `Repair: ${item.name}`,
+        propertyId: prop.id,
+        propertyName: prop.name,
+        propertyAddress: prop.address,
+        propertyCommunity: prop.community,
+        status: 'pending',
+        type: 'maintenance',
+        assignee: partner?.name || 'Unassigned',
+        assigneeId: partner?.id,
+        date: new Date().toISOString(),
+        priority: 'high',
+        description: `Auto-generated maintenance task for damaged item: ${item.name}. Condition: ${item.condition}.`,
+        inventoryItemId: item.id,
+        source: 'automation',
+        price: 150,
+      })
+    }
+  })
+})
 
 // --- 6. MESSAGES GENERATION ---
 
@@ -651,6 +717,14 @@ export const notifications: Notification[] = [
     message: 'High priority maintenance reported.',
     timestamp: subDays(new Date(), 1).toISOString(),
     read: false,
+    type: 'warning',
+  },
+  {
+    id: 'notif_3',
+    title: 'Inventory Alert',
+    message: 'Damage reported for Sofa in Residence 1-1.',
+    timestamp: subDays(new Date(), 2).toISOString(),
+    read: true,
     type: 'warning',
   },
 ]

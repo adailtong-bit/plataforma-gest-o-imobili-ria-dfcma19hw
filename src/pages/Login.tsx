@@ -15,6 +15,13 @@ import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { useToast } from '@/hooks/use-toast'
 import logo from '@/assets/logo-estilizado.jpg'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export default function Login() {
   const { t } = useLanguageStore()
@@ -45,6 +52,41 @@ export default function Login() {
     }
   }
 
+  const handleDemoLogin = (role: string) => {
+    let demoEmail = ''
+    switch (role) {
+      case 'admin':
+        demoEmail = 'admin@corepm.com'
+        break
+      case 'manager':
+        demoEmail = 'manager1@corepm.com'
+        break
+      case 'partner':
+        demoEmail = 'partner0_1@service.com'
+        break
+      case 'owner':
+        demoEmail = 'owner@demo.com'
+        break
+      case 'tenant':
+        demoEmail = 'tenant@demo.com'
+        break
+      default:
+        demoEmail = 'admin@corepm.com'
+    }
+    setEmail(demoEmail)
+    setPassword('demo123')
+    setTimeout(() => {
+      const success = login(demoEmail)
+      if (success) {
+        toast({
+          title: 'Demo Login',
+          description: `Logged in as ${role}`,
+        })
+        navigate('/')
+      }
+    }, 500)
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
@@ -60,6 +102,46 @@ export default function Login() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+            <Label className="text-xs font-semibold text-blue-800 uppercase mb-2 block">
+              Quick Demo Login
+            </Label>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white text-xs h-8"
+                onClick={() => handleDemoLogin('admin')}
+              >
+                Admin
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white text-xs h-8"
+                onClick={() => handleDemoLogin('manager')}
+              >
+                Manager
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white text-xs h-8"
+                onClick={() => handleDemoLogin('partner')}
+              >
+                Partner
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white text-xs h-8"
+                onClick={() => handleDemoLogin('owner')}
+              >
+                Owner
+              </Button>
+            </div>
+          </div>
+
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">{t('common.email')}</Label>
