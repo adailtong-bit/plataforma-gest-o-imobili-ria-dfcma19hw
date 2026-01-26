@@ -24,7 +24,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useSidebar } from '@/components/ui/sidebar'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useNotificationStore from '@/stores/useNotificationStore'
@@ -49,7 +49,6 @@ import { ThemeCustomizer } from '@/components/ThemeCustomizer'
 import logo from '@/assets/logo-estilizado.jpg'
 
 export function AppHeader() {
-  const { toggleSidebar } = useSidebar()
   const { currentUser, setCurrentUser, allUsers, logout } = useAuthStore()
   const { language, setLanguage, t } = useLanguageStore()
   const { notifications, markNotificationAsRead } = useNotificationStore()
@@ -112,9 +111,10 @@ export function AppHeader() {
 
   return (
     <header className="flex h-16 items-center gap-4 border-b bg-background px-6 sticky top-0 z-50 shadow-sm w-full">
-      <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+      <SidebarTrigger className="-ml-2">
         <Menu className="h-5 w-5" />
-      </Button>
+      </SidebarTrigger>
+
       <Link
         to="/"
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
