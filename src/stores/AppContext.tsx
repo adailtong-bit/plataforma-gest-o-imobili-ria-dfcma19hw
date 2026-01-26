@@ -110,6 +110,7 @@ interface AppContextType {
   updateTask: (task: Task) => void
   addTask: (task: Task) => void
   deleteTask: (taskId: string) => void
+  notifySupplier: (taskId: string) => void
   addInvoice: (invoice: Invoice) => void
   markPaymentAs: (paymentId: string, status: Payment['status']) => void
   addTaskImage: (taskId: string, imageUrl: string) => void
@@ -447,6 +448,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       entity: 'Task',
       entityId: task?.propertyId || id,
       details: `Deleted task: ${task?.title || id}`,
+    })
+  }
+
+  const notifySupplier = (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId)
+    if (!task) return
+    const now = new Date().toISOString()
+    updateTask({ ...task, lastNotified: now })
+    toast({
+      title: 'Notificação Enviada',
+      description: `Fornecedor ${task.assignee} notificado sobre a tarefa "${task.title}".`,
     })
   }
 
@@ -909,6 +921,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateTask,
         addTask,
         deleteTask,
+        notifySupplier,
         addInvoice,
         markPaymentAs,
         addTaskImage,

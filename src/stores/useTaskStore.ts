@@ -13,6 +13,7 @@ const useTaskStore = () => {
     deleteTask: context.deleteTask,
     addTaskImage: context.addTaskImage,
     addTaskEvidence: context.addTaskEvidence,
+    notifySupplier: context.notifySupplier,
   }
 }
 

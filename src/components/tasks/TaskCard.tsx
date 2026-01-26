@@ -33,6 +33,7 @@ import {
   Square,
   Star,
   ThumbsUp,
+  BellRing,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
@@ -40,7 +41,6 @@ import { TaskDetailsSheet } from './TaskDetailsSheet'
 import { EvidenceUploadDialog } from './EvidenceUploadDialog'
 import { EditTaskDialog } from './EditTaskDialog'
 import useLanguageStore from '@/stores/useLanguageStore'
-import useFinancialStore from '@/stores/useFinancialStore'
 import useAuthStore from '@/stores/useAuthStore'
 import usePartnerStore from '@/stores/usePartnerStore'
 import {
@@ -69,10 +69,9 @@ export function TaskCard({
 }: TaskCardProps) {
   const { toast } = useToast()
   const { t } = useLanguageStore()
-  const { ledgerEntries } = useFinancialStore()
   const { currentUser } = useAuthStore()
   const { partners } = usePartnerStore()
-  const { updateTask } = useTaskStore()
+  const { updateTask, notifySupplier } = useTaskStore()
 
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
@@ -368,6 +367,13 @@ export function TaskCard({
             )}
           </div>
 
+          {/* Supplier Communication - Last Notified */}
+          {task.lastNotified && isAdminOrPM && (
+            <div className="mt-2 text-[10px] text-muted-foreground text-right italic">
+              Notified: {format(new Date(task.lastNotified), 'dd/MM HH:mm')}
+            </div>
+          )}
+
           {(assignedEmployeeName || canDelegate) && (
             <div className="mt-3 pt-3 border-t">
               <div className="flex items-center justify-between">
@@ -427,6 +433,21 @@ export function TaskCard({
           )}
         </CardContent>
         <CardFooter className="p-4 pt-0 mt-auto grid gap-2">
+          {/* Action Buttons for PM/Admin */}
+          {isAdminOrPM && task.status !== 'completed' && (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full h-8 text-xs border-blue-200 text-blue-700 hover:bg-blue-50"
+                onClick={() => notifySupplier(task.id)}
+                title="Notify Supplier"
+              >
+                <BellRing className="h-3 w-3 mr-1" /> Notify
+              </Button>
+            </div>
+          )}
+
           {task.status === 'pending_approval' && isAdminOrPM && (
             <Button
               size="sm"

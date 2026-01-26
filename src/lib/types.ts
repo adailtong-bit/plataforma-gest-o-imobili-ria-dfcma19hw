@@ -558,6 +558,7 @@ export interface Task {
   feedback?: string
   source?: 'manual' | 'migration' | 'automation'
   inventoryItemId?: string
+  lastNotified?: string // Supplier Communication Automation
 }
 
 export interface Invoice {

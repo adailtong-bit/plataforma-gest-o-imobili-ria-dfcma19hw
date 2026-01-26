@@ -31,14 +31,15 @@ import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Lock,
-  MessageCircle,
   User,
   Building,
   Users,
   Send,
   ShieldCheck,
+  FileText,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { DocumentVault } from '@/components/documents/DocumentVault'
 
 interface NegotiationSheetProps {
   open: boolean
@@ -51,13 +52,12 @@ export function NegotiationSheet({
   onOpenChange,
   tenantId,
 }: NegotiationSheetProps) {
-  const { tenants, updateTenantNegotiation } = useTenantStore()
+  const { tenants, updateTenant, updateTenantNegotiation } = useTenantStore()
   const { properties } = usePropertyStore()
   const { owners } = useOwnerStore()
   const { messages, sendMessage, startChat } = useMessageStore()
   const { currentUser } = useAuthStore()
   const { toast } = useToast()
-  const scrollRef = useRef<HTMLDivElement>(null)
 
   const tenant = tenants.find((t) => t.id === tenantId)
   const property = tenant
@@ -261,18 +261,21 @@ export function NegotiationSheet({
           </div>
 
           <Tabs defaultValue="aggregated" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="aggregated" className="text-xs">
-                Unified View
+                Unified
               </TabsTrigger>
               <TabsTrigger value="tenant" className="text-xs">
-                Tenant Chat
+                Tenant
               </TabsTrigger>
               <TabsTrigger value="owner" className="text-xs">
-                Owner Chat
+                Owner
+              </TabsTrigger>
+              <TabsTrigger value="documents" className="text-xs">
+                Docs
               </TabsTrigger>
               <TabsTrigger value="internal" className="text-xs">
-                Internal
+                Notes
               </TabsTrigger>
             </TabsList>
 
@@ -425,6 +428,19 @@ export function NegotiationSheet({
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
+            </TabsContent>
+
+            {/* Documents Tab */}
+            <TabsContent value="documents" className="mt-4 space-y-4">
+              <DocumentVault
+                documents={tenant.documents || []}
+                onUpdate={(docs) =>
+                  updateTenant({ ...tenant, documents: docs })
+                }
+                canEdit={true}
+                title="Lease Documents"
+                description="Upload lease agreements, addendums, and ID docs."
+              />
             </TabsContent>
 
             {/* Internal Notes */}

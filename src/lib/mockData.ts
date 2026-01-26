@@ -514,6 +514,10 @@ for (let i = 0; i < 50; i++) {
     images: isCompleted
       ? [`https://img.usecurling.com/p/300/200?q=${type}`]
       : [],
+    lastNotified:
+      Math.random() > 0.7
+        ? subDays(new Date(), randomInt(1, 5)).toISOString()
+        : undefined,
   })
 }
 

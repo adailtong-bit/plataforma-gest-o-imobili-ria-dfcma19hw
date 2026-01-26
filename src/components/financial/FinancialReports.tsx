@@ -6,14 +6,6 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -27,6 +19,7 @@ import {
   TrendingUp,
   PieChart as PieChartIcon,
   BarChart2,
+  Globe,
 } from 'lucide-react'
 import {
   BarChart,
@@ -39,19 +32,11 @@ import {
   PieChart,
   Pie,
   Cell,
-  LineChart,
-  Line,
-  ResponsiveContainer,
 } from 'recharts'
-import {
-  ChartContainer,
-  ChartTooltipContent,
-  ChartLegendContent,
-} from '@/components/ui/chart'
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import useFinancialStore from '@/stores/useFinancialStore'
 import usePropertyStore from '@/stores/usePropertyStore'
-import usePartnerStore from '@/stores/usePartnerStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useShortTermStore from '@/stores/useShortTermStore'
 import {
@@ -73,7 +58,6 @@ export function FinancialReports() {
   const { ledgerEntries } = useFinancialStore()
   const { properties } = usePropertyStore()
   const { tenants } = useTenantStore()
-  const { partners } = usePartnerStore()
   const { bookings } = useShortTermStore()
   const { toast } = useToast()
 
@@ -229,7 +213,44 @@ export function FinancialReports() {
     })
   }, [tenants, bookings, properties, selectedPropertyId])
 
-  // --- 4. EXPORT HANDLER ---
+  // --- 4. CHANNEL ANALYTICS ---
+
+  const channelAnalytics = useMemo(() => {
+    // Filter bookings based on period and selected property
+    const relevantBookings = bookings.filter((b) => {
+      const date = parseISO(b.checkIn)
+      const isDateValid = date >= startDate
+      const isPropertyValid =
+        selectedPropertyId === 'all' || b.propertyId === selectedPropertyId
+      return isDateValid && isPropertyValid && b.status !== 'cancelled'
+    })
+
+    const data: Record<
+      string,
+      { revenue: number; bookings: number; name: string }
+    > = {
+      airbnb: { revenue: 0, bookings: 0, name: 'Airbnb' },
+      vrbo: { revenue: 0, bookings: 0, name: 'Vrbo' },
+      'booking.com': { revenue: 0, bookings: 0, name: 'Booking.com' },
+      direct: { revenue: 0, bookings: 0, name: 'Direct' },
+      other: { revenue: 0, bookings: 0, name: 'Other' },
+    }
+
+    relevantBookings.forEach((b) => {
+      const platform = b.platform || 'other'
+      if (data[platform]) {
+        data[platform].revenue += b.totalAmount || 0
+        data[platform].bookings += 1
+      } else {
+        data.other.revenue += b.totalAmount || 0
+        data.other.bookings += 1
+      }
+    })
+
+    return Object.values(data).filter((d) => d.revenue > 0 || d.bookings > 0)
+  }, [bookings, startDate, selectedPropertyId])
+
+  // --- 5. EXPORT HANDLER ---
 
   const handleExport = () => {
     const headers = [
@@ -263,7 +284,7 @@ export function FinancialReports() {
   }
 
   // --- CHARTS CONFIG ---
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8']
 
   return (
     <div className="space-y-6">
@@ -321,6 +342,9 @@ export function FinancialReports() {
         <TabsList>
           <TabsTrigger value="overview">
             <BarChart2 className="h-4 w-4 mr-2" /> Overview & P&L
+          </TabsTrigger>
+          <TabsTrigger value="channels">
+            <Globe className="h-4 w-4 mr-2" /> Channel Analytics
           </TabsTrigger>
           <TabsTrigger value="projection">
             <TrendingUp className="h-4 w-4 mr-2" /> Projected Cash Flow
@@ -399,6 +423,89 @@ export function FinancialReports() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="channels">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Revenue by Channel</CardTitle>
+                <CardDescription>
+                  Total income generated per platform.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px] w-full">
+                  <ChartContainer
+                    config={{
+                      revenue: { label: 'Revenue', color: '#8884d8' },
+                    }}
+                    className="h-full w-full"
+                  >
+                    <BarChart
+                      data={channelAnalytics}
+                      layout="vertical"
+                      margin={{ left: 20 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                      <XAxis type="number" />
+                      <YAxis dataKey="name" type="category" width={100} />
+                      <Tooltip content={<ChartTooltipContent />} />
+                      <Bar
+                        dataKey="revenue"
+                        fill="#8884d8"
+                        radius={[0, 4, 4, 0]}
+                        name="Revenue"
+                      />
+                    </BarChart>
+                  </ChartContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Booking Volume</CardTitle>
+                <CardDescription>
+                  Number of reservations per platform.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px] w-full">
+                  <ChartContainer
+                    config={{
+                      bookings: { label: 'Bookings', color: '#82ca9d' },
+                    }}
+                    className="h-full w-full"
+                  >
+                    <PieChart>
+                      <Pie
+                        data={channelAnalytics}
+                        dataKey="bookings"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        fill="#82ca9d"
+                        label={({ name, percent }) =>
+                          `${name} ${(percent * 100).toFixed(0)}%`
+                        }
+                      >
+                        {channelAnalytics.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ChartContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="projection">
