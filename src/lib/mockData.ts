@@ -259,7 +259,7 @@ const inventoryCategories = [
   },
 ]
 
-const generateInventory = (count: number): InventoryItem[] => {
+const generateInventory = (count: number, seed: string): InventoryItem[] => {
   return Array.from({ length: count }).map((_, i) => {
     const category = randomItem(inventoryCategories)
     const name = randomItem(category.items)
@@ -274,7 +274,7 @@ const generateInventory = (count: number): InventoryItem[] => {
 
     const media: InventoryMedia[] = [
       {
-        id: `media_${Date.now()}_${i}`,
+        id: `media_${seed}_${i}`,
         url: `https://img.usecurling.com/p/200/200?q=${name.replace(' ', '%20')}&seed=${i}`,
         type: 'image',
         date: subDays(new Date(), randomInt(1, 365)).toISOString(),
@@ -284,7 +284,7 @@ const generateInventory = (count: number): InventoryItem[] => {
 
     if (condition === 'Damaged') {
       damageHistory.push({
-        id: `dmg_${i}`,
+        id: `dmg_${seed}_${i}`,
         date: subDays(new Date(), randomInt(1, 10)).toISOString(),
         description: 'Item found broken during last inspection',
         reportedBy: 'Inspector',
@@ -292,7 +292,7 @@ const generateInventory = (count: number): InventoryItem[] => {
     }
 
     return {
-      id: `inv_${Date.now()}_${i}`,
+      id: `inv_${seed}_${i}`,
       name: `${name} ${i + 1}`,
       category: category.name,
       quantity: randomInt(1, 4),
@@ -376,7 +376,7 @@ export const properties: Property[] = tenantsData.flatMap((tenant, tIdx) =>
         },
       ],
       healthScore: randomInt(60, 100),
-      inventory: generateInventory(12), // 12 items per property
+      inventory: generateInventory(12, `${tIdx}_${pIdx}`), // 12 items per property with unique seed
     }
   }),
 )
@@ -405,7 +405,7 @@ properties.push({
   ownerId: 'demo_owner',
   documents: [],
   healthScore: 98,
-  inventory: generateInventory(15),
+  inventory: generateInventory(15, 'demo'), // unique seed
 })
 
 // --- 4. BOOKINGS & TENANTS ---
@@ -525,7 +525,7 @@ properties.forEach((prop) => {
         partnersData.filter((p) => p.type === 'maintenance'),
       )
       tasks.push({
-        id: `task_auto_${item.id}`,
+        id: `task_auto_${item.id}`, // Guaranteed unique because item.id is now globally unique
         title: `Repair: ${item.name}`,
         propertyId: prop.id,
         propertyName: prop.name,
