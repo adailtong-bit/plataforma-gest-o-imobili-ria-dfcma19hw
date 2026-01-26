@@ -28,7 +28,15 @@ import { useToast } from '@/hooks/use-toast'
 import { AuditLogList } from '@/components/audit/AuditLogList'
 import { User, FinancialSettings } from '@/lib/types'
 import useUserStore from '@/stores/useUserStore'
-import { Globe, CreditCard, Building } from 'lucide-react'
+import {
+  Globe,
+  CreditCard,
+  Building,
+  CheckCircle,
+  RefreshCw,
+  AlertCircle,
+} from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 
 export default function Settings() {
   const { t } = useLanguageStore()
@@ -44,6 +52,13 @@ export default function Settings() {
     taxId: (currentUser as User).taxId || '',
     address: (currentUser as User).address || '',
     phone: currentUser.phone || '',
+  })
+
+  // Mock Channel States
+  const [channelStatus, setChannelStatus] = useState({
+    airbnb: { connected: true, lastSync: '2 minutes ago', status: 'Healthy' },
+    booking: { connected: true, lastSync: '15 minutes ago', status: 'Healthy' },
+    vrbo: { connected: false, lastSync: 'Never', status: 'Disconnected' },
   })
 
   const handleFinancialSave = () => {
@@ -71,6 +86,22 @@ export default function Settings() {
 
   const handleFinancialChange = (field: string, value: any) => {
     setFinancialData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const toggleChannel = (channel: 'airbnb' | 'booking' | 'vrbo') => {
+    setChannelStatus((prev) => ({
+      ...prev,
+      [channel]: {
+        ...prev[channel],
+        connected: !prev[channel].connected,
+        status: !prev[channel].connected ? 'Healthy' : 'Disconnected',
+        lastSync: !prev[channel].connected ? 'Just now' : 'Disconnected',
+      },
+    }))
+    toast({
+      title: 'Channel Updated',
+      description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} integration ${!channelStatus[channel].connected ? 'enabled' : 'disabled'}.`,
+    })
   }
 
   const isPlatformOwner = currentUser.role === 'platform_owner'
@@ -185,9 +216,9 @@ export default function Settings() {
         <TabsContent value="integrations">
           <Card>
             <CardHeader>
-              <CardTitle>Enhanced Integration Hub</CardTitle>
+              <CardTitle>Channel Manager & Integrations</CardTitle>
               <CardDescription>
-                Connect with external channels and services.
+                Manage booking channels and external service connections.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -196,22 +227,143 @@ export default function Settings() {
                 <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
                   <Globe className="h-5 w-5" /> Booking Channels
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[
-                    'Airbnb',
-                    'Booking.com',
-                    'VRBO',
-                    'Expedia',
-                    'TripAdvisor',
-                  ].map((channel) => (
-                    <div
-                      key={channel}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <span className="font-medium">{channel}</span>
-                      <Switch />
+                <div className="grid gap-4">
+                  <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-rose-50 p-2 rounded">
+                        <img
+                          src="https://img.usecurling.com/i?q=airbnb&color=red"
+                          className="w-8 h-8"
+                          alt="Airbnb"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-semibold">Airbnb</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          {channelStatus.airbnb.connected ? (
+                            <>
+                              <Badge
+                                variant="outline"
+                                className="bg-green-50 text-green-700 border-green-200 gap-1"
+                              >
+                                <CheckCircle className="w-3 h-3" /> Connected
+                              </Badge>
+                              <span className="flex items-center gap-1">
+                                <RefreshCw className="w-3 h-3" /> Last Sync:{' '}
+                                {channelStatus.airbnb.lastSync}
+                              </span>
+                            </>
+                          ) : (
+                            <Badge variant="secondary">Disconnected</Badge>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  ))}
+                    <div className="flex items-center gap-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={!channelStatus.airbnb.connected}
+                      >
+                        Configure
+                      </Button>
+                      <Switch
+                        checked={channelStatus.airbnb.connected}
+                        onCheckedChange={() => toggleChannel('airbnb')}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-blue-50 p-2 rounded">
+                        <img
+                          src="https://img.usecurling.com/i?q=booking.com&color=blue"
+                          className="w-8 h-8"
+                          alt="Booking.com"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-semibold">Booking.com</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          {channelStatus.booking.connected ? (
+                            <>
+                              <Badge
+                                variant="outline"
+                                className="bg-green-50 text-green-700 border-green-200 gap-1"
+                              >
+                                <CheckCircle className="w-3 h-3" /> Connected
+                              </Badge>
+                              <span className="flex items-center gap-1">
+                                <RefreshCw className="w-3 h-3" /> Last Sync:{' '}
+                                {channelStatus.booking.lastSync}
+                              </span>
+                            </>
+                          ) : (
+                            <Badge variant="secondary">Disconnected</Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={!channelStatus.booking.connected}
+                      >
+                        Configure
+                      </Button>
+                      <Switch
+                        checked={channelStatus.booking.connected}
+                        onCheckedChange={() => toggleChannel('booking')}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-indigo-50 p-2 rounded">
+                        <img
+                          src="https://img.usecurling.com/i?q=home&color=violet"
+                          className="w-8 h-8"
+                          alt="Vrbo"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-semibold">Vrbo</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          {channelStatus.vrbo.connected ? (
+                            <Badge
+                              variant="outline"
+                              className="bg-green-50 text-green-700"
+                            >
+                              Connected
+                            </Badge>
+                          ) : (
+                            <>
+                              <Badge variant="secondary" className="gap-1">
+                                <AlertCircle className="w-3 h-3" /> Disconnected
+                              </Badge>
+                              <span className="text-xs">Setup required</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={!channelStatus.vrbo.connected}
+                      >
+                        Configure
+                      </Button>
+                      <Switch
+                        checked={channelStatus.vrbo.connected}
+                        onCheckedChange={() => toggleChannel('vrbo')}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
