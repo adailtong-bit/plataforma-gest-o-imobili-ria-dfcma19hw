@@ -44,7 +44,6 @@ import {
   Search,
   Package,
   Upload,
-  FileSpreadsheet,
   History,
   Info,
   Download,
@@ -68,6 +67,7 @@ import { InventoryDeleteDialog } from '@/components/inventory/InventoryDeleteDia
 import { InventoryHistoryDialog } from '@/components/inventory/InventoryHistoryDialog'
 import { format } from 'date-fns'
 import { exportToCSV } from '@/lib/utils'
+import useTaskStore from '@/stores/useTaskStore'
 
 interface PropertyInventoryProps {
   data: Property
@@ -81,6 +81,7 @@ export function PropertyInventory({
   canEdit,
 }: PropertyInventoryProps) {
   const { toast } = useToast()
+  const { addTask } = useTaskStore()
   const [filter, setFilter] = useState('')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -147,9 +148,26 @@ export function PropertyInventory({
           },
           ...newDamageHistory,
         ]
+
+        // Auto-generate Maintenance Task
+        addTask({
+          id: `task-auto-${Date.now()}`,
+          title: `Repair: ${editingItem.name}`,
+          propertyId: data.id,
+          propertyName: data.name,
+          propertyAddress: data.address,
+          type: 'maintenance',
+          status: 'pending',
+          priority: 'high',
+          description: `Auto-generated maintenance request due to inventory damage report. Item: ${editingItem.name}, Condition: ${editingItem.condition}`,
+          date: new Date().toISOString(),
+          assignee: 'Unassigned',
+          source: 'automation',
+        })
+
         toast({
-          title: 'Damage Recorded',
-          description: 'Added to item history.',
+          title: 'Damage Recorded & Task Created',
+          description: 'A maintenance task has been automatically generated.',
         })
       }
 
@@ -568,7 +586,7 @@ export function PropertyInventory({
                 <p className="text-xs text-yellow-600 flex items-center gap-1">
                   <Info className="h-3 w-3" />
                   Changing condition to {editingItem.condition} will record a
-                  damage log entry.
+                  damage log entry and create a maintenance task.
                 </p>
               )}
             </div>
