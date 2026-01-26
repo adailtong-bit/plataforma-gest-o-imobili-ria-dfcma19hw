@@ -36,6 +36,7 @@ import MigrationHub from './pages/admin/MigrationHub'
 import Analytics from './pages/admin/Analytics'
 import Automation from './pages/admin/Automation'
 import ShortTerm from './pages/ShortTerm'
+import Reports from './pages/Reports'
 import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { useEffect } from 'react'
@@ -88,6 +89,7 @@ const App = () => {
                 <Route path="/users" element={<Users />} />
                 <Route path="/service-pricing" element={<ServicePricing />} />
                 <Route path="/market-analysis" element={<MarketAnalysis />} />
+                <Route path="/reports" element={<Reports />} />
                 <Route path="/workflows" element={<Workflows />} />
                 <Route path="/renewals" element={<Renewals />} />
 

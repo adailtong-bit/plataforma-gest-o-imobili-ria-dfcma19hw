@@ -35,6 +35,7 @@ import {
   Database,
   BarChart2,
   Zap,
+  PieChart,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -103,6 +104,12 @@ export function AppSidebar() {
       url: '/admin/analytics',
       icon: BarChart2,
       resource: 'analytics',
+    },
+    {
+      title: 'Relatórios (Novo)',
+      url: '/reports',
+      icon: PieChart,
+      resource: 'reports',
     },
     {
       title: t('common.condominiums'),

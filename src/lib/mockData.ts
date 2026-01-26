@@ -93,6 +93,7 @@ const internalUsers: User[] = Array.from({ length: 3 }).map((_, i) => ({
     { resource: 'tasks', actions: ['view', 'create', 'edit', 'delete'] },
     { resource: 'short_term', actions: ['view', 'create', 'edit', 'delete'] },
     { resource: 'financial', actions: ['view'] },
+    { resource: 'reports', actions: ['view'] },
   ],
   status: 'active',
   isFirstLogin: false,
@@ -263,6 +264,7 @@ const generateInventory = (count: number): InventoryItem[] => {
       createdAt: subDays(new Date(), randomInt(30, 365)).toISOString(),
       updatedAt: subDays(new Date(), randomInt(1, 30)).toISOString(),
       damageHistory,
+      media: [],
     }
   })
 }

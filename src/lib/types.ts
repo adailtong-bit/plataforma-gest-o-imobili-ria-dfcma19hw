@@ -30,6 +30,7 @@ export type Resource =
   | 'migration'
   | 'analytics'
   | 'automation'
+  | 'reports'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -210,6 +211,15 @@ export interface DamageRecord {
   description: string
   reportedBy?: string
   images?: string[]
+  linkedTaskId?: string
+}
+
+export interface InventoryMedia {
+  id: string
+  url: string
+  type: 'image' | 'video'
+  date: string
+  notes?: string
 }
 
 export interface InventoryItem {
@@ -223,6 +233,7 @@ export interface InventoryItem {
   createdAt?: string
   updatedAt?: string
   damageHistory?: DamageRecord[]
+  media?: InventoryMedia[]
 }
 
 export interface InventoryCheckResult {
@@ -546,6 +557,7 @@ export interface Task {
   rating?: number
   feedback?: string
   source?: 'manual' | 'migration' | 'automation'
+  inventoryItemId?: string
 }
 
 export interface Invoice {

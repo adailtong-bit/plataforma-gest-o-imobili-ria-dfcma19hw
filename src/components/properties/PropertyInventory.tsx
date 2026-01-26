@@ -1,10 +1,5 @@
 import { useState } from 'react'
-import {
-  Property,
-  InventoryItem,
-  ItemCondition,
-  DamageRecord,
-} from '@/lib/types'
+import { Property, InventoryItem, ItemCondition } from '@/lib/types'
 import {
   Card,
   CardContent,
@@ -23,20 +18,11 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Label } from '@/components/ui/label'
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import {
   Plus,
   Trash2,
@@ -45,8 +31,9 @@ import {
   Package,
   Upload,
   History,
-  Info,
   Download,
+  AlertTriangle,
+  Image as ImageIcon,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
@@ -56,18 +43,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { InventoryImportDialog } from '@/components/inventory/InventoryImportDialog'
 import { InventoryDeleteDialog } from '@/components/inventory/InventoryDeleteDialog'
 import { InventoryHistoryDialog } from '@/components/inventory/InventoryHistoryDialog'
+import { InventoryItemDialog } from '@/components/inventory/InventoryItemDialog'
 import { format } from 'date-fns'
 import { exportToCSV } from '@/lib/utils'
 import useTaskStore from '@/stores/useTaskStore'
+import useNotificationStore from '@/stores/useNotificationStore'
 
 interface PropertyInventoryProps {
   data: Property
@@ -81,24 +64,21 @@ export function PropertyInventory({
   canEdit,
 }: PropertyInventoryProps) {
   const { toast } = useToast()
-  const { addTask } = useTaskStore()
+  const { addTask, tasks } = useTaskStore()
+  const { addNotification } = useNotificationStore()
   const [filter, setFilter] = useState('')
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  // New Dialog States
+  // Dialog States
+  const [isItemDialogOpen, setIsItemDialogOpen] = useState(false)
   const [isImportOpen, setIsImportOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
+
   const [selectedHistoryItem, setSelectedHistoryItem] =
     useState<InventoryItem | null>(null)
-
-  const [editingItem, setEditingItem] = useState<Partial<InventoryItem>>({
-    name: '',
-    category: '',
-    quantity: 1,
-    condition: 'New',
-    description: '',
-  })
+  const [editingItem, setEditingItem] = useState<
+    Partial<InventoryItem> | undefined
+  >(undefined)
 
   const inventory = data.inventory || []
 
@@ -108,8 +88,13 @@ export function PropertyInventory({
       item.category.toLowerCase().includes(filter.toLowerCase()),
   )
 
-  const handleSaveItem = () => {
-    if (!editingItem.name || !editingItem.category) {
+  // Find linked task for an item
+  const getLinkedTask = (inventoryItemId: string) => {
+    return tasks.find((t) => t.inventoryItemId === inventoryItemId)
+  }
+
+  const handleSaveItem = (itemData: Partial<InventoryItem>) => {
+    if (!itemData.name || !itemData.category) {
       toast({
         title: 'Error',
         description: 'Name and Category are required.',
@@ -121,14 +106,14 @@ export function PropertyInventory({
     const now = new Date().toISOString()
     let updatedInventory = [...inventory]
 
-    if (editingItem.id) {
+    if (itemData.id) {
       // Update logic
-      const originalItem = inventory.find((i) => i.id === editingItem.id)
+      const originalItem = inventory.find((i) => i.id === itemData.id)
 
       // Check for damage logging
       let newDamageHistory = originalItem?.damageHistory || []
       const isDamaged = ['Damaged', 'Broken', 'Missing', 'Poor'].includes(
-        editingItem.condition || '',
+        itemData.condition || '',
       )
       const wasGood = !['Damaged', 'Broken', 'Missing', 'Poor'].includes(
         originalItem?.condition || '',
@@ -136,45 +121,57 @@ export function PropertyInventory({
 
       if (
         isDamaged &&
-        (wasGood || editingItem.condition !== originalItem?.condition)
+        (wasGood || itemData.condition !== originalItem?.condition)
       ) {
-        // Auto-log damage
-        newDamageHistory = [
-          {
-            id: `dmg-${Date.now()}`,
-            date: now,
-            description: `Condition changed to ${editingItem.condition}. Note: ${editingItem.description || 'No description provided.'}`,
-            reportedBy: 'Manager',
-          },
-          ...newDamageHistory,
-        ]
+        // Log damage
+        const damageRecordId = `dmg-${Date.now()}`
 
         // Auto-generate Maintenance Task
+        const taskId = `task-auto-${Date.now()}`
         addTask({
-          id: `task-auto-${Date.now()}`,
-          title: `Repair: ${editingItem.name}`,
+          id: taskId,
+          title: `Repair: ${itemData.name}`,
           propertyId: data.id,
           propertyName: data.name,
           propertyAddress: data.address,
           type: 'maintenance',
           status: 'pending',
           priority: 'high',
-          description: `Auto-generated maintenance request due to inventory damage report. Item: ${editingItem.name}, Condition: ${editingItem.condition}`,
+          description: `Auto-generated maintenance request due to inventory damage report. Item: ${itemData.name}, Condition: ${itemData.condition}. Note: ${itemData.description}`,
           date: new Date().toISOString(),
           assignee: 'Unassigned',
           source: 'automation',
+          inventoryItemId: itemData.id,
         })
 
+        // Add Notification
+        addNotification({
+          title: 'Inventory Alert',
+          message: `Item "${itemData.name}" reported as ${itemData.condition} at ${data.name}. Maintenance task created.`,
+          type: 'warning',
+        })
+
+        newDamageHistory = [
+          {
+            id: damageRecordId,
+            date: now,
+            description: `Condition changed to ${itemData.condition}. Note: ${itemData.description || 'No description provided.'}`,
+            reportedBy: 'Manager',
+            linkedTaskId: taskId,
+          },
+          ...newDamageHistory,
+        ]
+
         toast({
-          title: 'Damage Recorded & Task Created',
+          title: 'Damage Recorded',
           description: 'A maintenance task has been automatically generated.',
         })
       }
 
       updatedInventory = updatedInventory.map((item) =>
-        item.id === editingItem.id
+        item.id === itemData.id
           ? {
-              ...(editingItem as InventoryItem),
+              ...(itemData as InventoryItem),
               updatedAt: now,
               damageHistory: newDamageHistory,
             }
@@ -185,18 +182,19 @@ export function PropertyInventory({
       // Create logic
       const newItem: InventoryItem = {
         id: `inv-${Date.now()}`,
-        ...(editingItem as Omit<InventoryItem, 'id'>),
+        ...(itemData as Omit<InventoryItem, 'id'>),
         createdAt: now,
         updatedAt: now,
         damageHistory: [],
+        media: itemData.media || [],
       }
       updatedInventory.push(newItem)
       toast({ title: 'Item Added' })
     }
 
     onChange('inventory', updatedInventory)
-    setIsDialogOpen(false)
-    resetForm()
+    setIsItemDialogOpen(false)
+    setEditingItem(undefined)
   }
 
   const handleDeleteItem = (id: string) => {
@@ -230,7 +228,7 @@ export function PropertyInventory({
       'Quantity',
       'Condition',
       'Description',
-      'Created At',
+      'Has Media',
       'Last Updated',
     ]
 
@@ -240,9 +238,7 @@ export function PropertyInventory({
       item.quantity,
       item.condition,
       item.description || '',
-      item.createdAt
-        ? format(new Date(item.createdAt), 'yyyy-MM-dd HH:mm')
-        : '',
+      item.media && item.media.length > 0 ? 'Yes' : 'No',
       item.updatedAt
         ? format(new Date(item.updatedAt), 'yyyy-MM-dd HH:mm')
         : '',
@@ -250,52 +246,6 @@ export function PropertyInventory({
 
     exportToCSV(`inventory_${data.name}`, headers, rows)
     toast({ title: 'Inventory Exported' })
-  }
-
-  const handleExportDamages = () => {
-    const headers = ['Item Name', 'Damage Date', 'Description', 'Reported By']
-
-    const rows: string[][] = []
-
-    inventory.forEach((item) => {
-      if (item.damageHistory && item.damageHistory.length > 0) {
-        item.damageHistory.forEach((log) => {
-          rows.push([
-            item.name,
-            log.date ? format(new Date(log.date), 'yyyy-MM-dd HH:mm') : '',
-            log.description,
-            log.reportedBy || 'Unknown',
-          ])
-        })
-      }
-    })
-
-    if (rows.length === 0) {
-      toast({
-        title: 'No Data',
-        description: 'No damage records found to export.',
-        variant: 'destructive',
-      })
-      return
-    }
-
-    exportToCSV(`damage_log_${data.name}`, headers, rows)
-    toast({ title: 'Damage Log Exported' })
-  }
-
-  const resetForm = () => {
-    setEditingItem({
-      name: '',
-      category: '',
-      quantity: 1,
-      condition: 'New',
-      description: '',
-    })
-  }
-
-  const openEdit = (item: InventoryItem) => {
-    setEditingItem({ ...item })
-    setIsDialogOpen(true)
   }
 
   const getConditionColor = (condition: ItemCondition) => {
@@ -336,9 +286,6 @@ export function PropertyInventory({
               <DropdownMenuItem onClick={handleExportInventory}>
                 Inventory List (CSV)
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleExportDamages}>
-                Damage History Log (CSV)
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -362,8 +309,8 @@ export function PropertyInventory({
               </Button>
               <Button
                 onClick={() => {
-                  resetForm()
-                  setIsDialogOpen(true)
+                  setEditingItem(undefined)
+                  setIsItemDialogOpen(true)
                 }}
                 className="gap-2 bg-trust-blue"
                 size="sm"
@@ -392,7 +339,7 @@ export function PropertyInventory({
                 <TableHead>Category</TableHead>
                 <TableHead>Qty</TableHead>
                 <TableHead>Condition</TableHead>
-                <TableHead className="hidden md:table-cell">Updated</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -406,199 +353,107 @@ export function PropertyInventory({
                     <div className="flex flex-col items-center gap-2">
                       <Package className="h-10 w-10 text-muted-foreground/30" />
                       <p>No inventory items found.</p>
-                      {canEdit && (
-                        <Button
-                          variant="link"
-                          onClick={() => setIsImportOpen(true)}
-                        >
-                          Import from Excel/CSV
-                        </Button>
-                      )}
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredItems.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      <div className="font-medium">{item.name}</div>
-                      <div className="text-xs text-muted-foreground md:hidden truncate max-w-[150px]">
-                        {item.description}
-                      </div>
-                    </TableCell>
-                    <TableCell>{item.category}</TableCell>
-                    <TableCell>{item.quantity}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={getConditionColor(item.condition)}
-                      >
-                        {item.condition}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell text-xs text-muted-foreground">
-                      {item.updatedAt
-                        ? format(new Date(item.updatedAt), 'MMM d, yyyy')
-                        : '-'}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
+                filteredItems.map((item) => {
+                  const linkedTask = getLinkedTask(item.id)
+                  const hasMedia = item.media && item.media.length > 0
+
+                  return (
+                    <TableRow key={item.id}>
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span className="font-medium flex items-center gap-2">
+                            {item.name}
+                            {hasMedia && (
+                              <ImageIcon className="h-3 w-3 text-blue-500" />
+                            )}
+                          </span>
+                          <span className="text-xs text-muted-foreground truncate max-w-[150px]">
+                            {item.description}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{item.category}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={getConditionColor(item.condition)}
+                        >
+                          {item.condition}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {linkedTask ? (
+                          <div className="flex items-center gap-1 text-xs text-blue-600">
+                            <AlertTriangle className="h-3 w-3" />
+                            <span>Fix: {linkedTask.status}</span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            OK
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleViewHistory(item)}
+                                >
+                                  <History className="h-4 w-4 text-blue-600" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>View History</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+
+                          {canEdit && (
+                            <>
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => handleViewHistory(item)}
+                                onClick={() => {
+                                  setEditingItem(item)
+                                  setIsItemDialogOpen(true)
+                                }}
                               >
-                                <History className="h-4 w-4 text-blue-600" />
+                                <Edit2 className="h-4 w-4" />
                               </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>View History</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-
-                        {canEdit && (
-                          <>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => openEdit(item)}
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-red-500 hover:text-red-700"
-                              onClick={() => handleDeleteItem(item.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-red-500 hover:text-red-700"
+                                onClick={() => handleDeleteItem(item.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
               )}
             </TableBody>
           </Table>
         </div>
       </CardContent>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {editingItem.id ? 'Edit Item' : 'New Item'}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>Name</Label>
-                <Input
-                  value={editingItem.name}
-                  onChange={(e) =>
-                    setEditingItem({ ...editingItem, name: e.target.value })
-                  }
-                  placeholder="e.g. Sofa"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Category</Label>
-                <Select
-                  value={editingItem.category}
-                  onValueChange={(v) =>
-                    setEditingItem({ ...editingItem, category: v })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Furniture">Furniture</SelectItem>
-                    <SelectItem value="Appliances">Appliances</SelectItem>
-                    <SelectItem value="Electronics">Electronics</SelectItem>
-                    <SelectItem value="Kitchenware">Kitchenware</SelectItem>
-                    <SelectItem value="Linens">Linens</SelectItem>
-                    <SelectItem value="Decor">Decor</SelectItem>
-                    <SelectItem value="Outdoor">Outdoor</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>Quantity</Label>
-                <Input
-                  type="number"
-                  min={1}
-                  value={editingItem.quantity}
-                  onChange={(e) =>
-                    setEditingItem({
-                      ...editingItem,
-                      quantity: parseInt(e.target.value),
-                    })
-                  }
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Condition</Label>
-                <Select
-                  value={editingItem.condition}
-                  onValueChange={(v: any) =>
-                    setEditingItem({ ...editingItem, condition: v })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="New">New</SelectItem>
-                    <SelectItem value="Good">Good</SelectItem>
-                    <SelectItem value="Fair">Fair</SelectItem>
-                    <SelectItem value="Poor">Poor</SelectItem>
-                    <SelectItem value="Damaged">Damaged</SelectItem>
-                    <SelectItem value="Broken">Broken</SelectItem>
-                    <SelectItem value="Missing">Missing</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid gap-2">
-              <Label>Description / Notes</Label>
-              <Input
-                value={editingItem.description || ''}
-                onChange={(e) =>
-                  setEditingItem({
-                    ...editingItem,
-                    description: e.target.value,
-                  })
-                }
-                placeholder="Details about the item..."
-              />
-              {['Damaged', 'Broken', 'Missing', 'Poor'].includes(
-                editingItem.condition || '',
-              ) && (
-                <p className="text-xs text-yellow-600 flex items-center gap-1">
-                  <Info className="h-3 w-3" />
-                  Changing condition to {editingItem.condition} will record a
-                  damage log entry and create a maintenance task.
-                </p>
-              )}
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveItem}>Save Item</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <InventoryItemDialog
+        isOpen={isItemDialogOpen}
+        onClose={() => setIsItemDialogOpen(false)}
+        onSave={handleSaveItem}
+        initialData={editingItem}
+      />
 
       <InventoryImportDialog
         isOpen={isImportOpen}
