@@ -106,7 +106,6 @@ export function InventoryImportDialog({
         onClose()
       } else {
         // Mock Excel Import since we can't use xlsx library
-        // In a real app, this would send the file to backend or use xlsx library
         setTimeout(() => {
           const mockItems: InventoryItem[] = [
             {
