@@ -45,7 +45,7 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { CloseNegotiationDialog } from '@/components/renewals/CloseNegotiationDialog'
 import { NegotiationSheet } from '@/components/renewals/NegotiationSheet'
-import { GenericDocument, Tenant, Property, Owner } from '@/lib/types'
+import { GenericDocument } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import {
@@ -265,41 +265,51 @@ export default function Renewals() {
   )
 
   const processedData = useMemo(() => {
-    return relevantTenants.map((t) => {
-      let daysLeft = 9999
-      const leaseEndDate = t.leaseEnd ? new Date(t.leaseEnd) : new Date()
-      try {
-        if (t.leaseEnd) {
-          daysLeft = differenceInDays(leaseEndDate, new Date())
+    return relevantTenants
+      .map((t) => {
+        const property = properties.find((p) => p.id === t.propertyId)
+
+        // Strict LTR Filter: Only show Long Term Rentals in Renewals
+        if (property?.profileType !== 'long_term') return null
+
+        const owner = owners.find((o) => o.id === property?.ownerId)
+
+        let daysLeft = 9999
+        const leaseEndDate = t.leaseEnd ? new Date(t.leaseEnd) : new Date()
+        try {
+          if (t.leaseEnd) {
+            daysLeft = differenceInDays(leaseEndDate, new Date())
+          }
+        } catch (e) {
+          console.error('Invalid date', e)
         }
-      } catch (e) {
-        console.error('Invalid date', e)
-      }
 
-      const property = properties.find((p) => p.id === t.propertyId)
-      const owner = owners.find((o) => o.id === property?.ownerId)
+        let displayStatus:
+          | 'critical'
+          | 'upcoming'
+          | 'year'
+          | 'safe'
+          | 'renewed' = 'safe'
 
-      let displayStatus: 'critical' | 'upcoming' | 'year' | 'safe' | 'renewed' =
-        'safe'
+        if (t.negotiationStatus === 'closed') {
+          displayStatus = 'renewed'
+        } else {
+          if (daysLeft < 30) displayStatus = 'critical'
+          else if (daysLeft < 90) displayStatus = 'upcoming'
+          else if (daysLeft < 365) displayStatus = 'year'
+        }
 
-      if (t.negotiationStatus === 'closed') {
-        displayStatus = 'renewed'
-      } else {
-        if (daysLeft < 30) displayStatus = 'critical'
-        else if (daysLeft < 90) displayStatus = 'upcoming'
-        else if (daysLeft < 365) displayStatus = 'year'
-      }
-
-      return {
-        tenant: t,
-        property,
-        owner,
-        daysLeft,
-        leaseEndDate,
-        displayStatus,
-        negotiationStatus: t.negotiationStatus || 'negotiating',
-      }
-    })
+        return {
+          tenant: t,
+          property,
+          owner,
+          daysLeft,
+          leaseEndDate,
+          displayStatus,
+          negotiationStatus: t.negotiationStatus || 'negotiating',
+        }
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null)
   }, [relevantTenants, properties, owners])
 
   const filteredData = useMemo(() => {

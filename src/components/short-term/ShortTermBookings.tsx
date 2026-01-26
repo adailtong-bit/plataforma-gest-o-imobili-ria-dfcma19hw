@@ -31,12 +31,11 @@ import {
   Send,
   Filter,
   Key,
-  Copy,
   Info,
   CheckCircle,
   LogOut,
-  CheckSquare,
   FileText,
+  Mail,
 } from 'lucide-react'
 import useShortTermStore from '@/stores/useShortTermStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -55,8 +54,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { InventoryInspectionModal } from '@/components/inventory/InventoryInspectionModal'
 import { InventoryReportViewer } from '@/components/inventory/InventoryReportViewer'
 
@@ -69,8 +71,11 @@ export function ShortTermBookings() {
   const [filter, setFilter] = useState('')
   const [sourceFilter, setSourceFilter] = useState('all')
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
-  const [messageDialogOpen, setMessageDialogOpen] = useState(false)
-  const [previewMessage, setPreviewMessage] = useState('')
+
+  // Email/Message Modal State
+  const [emailModalOpen, setEmailModalOpen] = useState(false)
+  const [emailContent, setEmailContent] = useState('')
+  const [appendDetails, setAppendDetails] = useState(false)
   const [selectedTemplateName, setSelectedTemplateName] = useState('')
 
   // Inspection State
@@ -84,15 +89,17 @@ export function ShortTermBookings() {
   const [selectedInspection, setSelectedInspection] =
     useState<InventoryInspection | null>(null)
 
-  const filteredBookings = bookings.filter(
-    (b) =>
+  const filteredBookings = bookings.filter((b) => {
+    const prop = properties.find((p) => p.id === b.propertyId)
+    // Strict STR Filter
+    if (prop?.profileType !== 'short_term') return false
+
+    return (
       (b.guestName.toLowerCase().includes(filter.toLowerCase()) ||
-        properties
-          .find((p) => p.id === b.propertyId)
-          ?.name.toLowerCase()
-          .includes(filter.toLowerCase())) &&
-      (sourceFilter === 'all' || b.platform === sourceFilter),
-  )
+        (prop?.name || '').toLowerCase().includes(filter.toLowerCase())) &&
+      (sourceFilter === 'all' || b.platform === sourceFilter)
+    )
+  })
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -116,7 +123,6 @@ export function ShortTermBookings() {
     condo: Condominium | undefined,
   ) => {
     let text = content
-    // Existing single braces
     text = text.replace(/{GuestName}/g, booking.guestName)
     text = text.replace(
       /{CheckInDate}/g,
@@ -127,7 +133,6 @@ export function ShortTermBookings() {
       format(parseISO(booking.checkOut), 'dd/MM/yyyy'),
     )
 
-    // New double braces support
     text = text.replace(
       /{{property_address}}/g,
       property?.address || 'Address Not Available',
@@ -172,41 +177,50 @@ export function ShortTermBookings() {
       prop,
       condo,
     )
-    setPreviewMessage(content)
+    setEmailContent(content)
     setSelectedTemplateName(template.name)
   }
 
-  const handleGenerateAccessInfo = () => {
-    if (!selectedBooking) return
-    const prop = properties.find((p) => p.id === selectedBooking.propertyId)
-    const condo = condominiums.find((c) => c.id === prop?.condominiumId)
+  const openEmailModal = (booking: Booking, template?: string) => {
+    setSelectedBooking(booking)
+    setAppendDetails(false)
+    setSelectedTemplateName('')
 
-    const accessTemplate = `Hello {GuestName},
+    if (template === 'access_info') {
+      const prop = properties.find((p) => p.id === booking.propertyId)
+      const condo = condominiums.find((c) => c.id === prop?.condominiumId)
+      const accessTemplate = `Hello {GuestName},\n\nHere is everything you need for your check-in at {{property_address}}:\n\nEnjoy your stay!`
+      setEmailContent(replacePlaceholders(accessTemplate, booking, prop, condo))
+      setAppendDetails(true) // Auto-enable details for access info
+    } else {
+      setEmailContent(`Hello ${booking.guestName},\n\n`)
+    }
 
-Here is everything you need for your check-in at {{property_address}}:
-
-🏢 **Building/Gate Code:** {{condo_code}}
-🚪 **Door Code:** {{door_code}}
-🏊 **Pool Access:** {{pool_code}}
-
-Enjoy your stay!`
-
-    const content = replacePlaceholders(
-      accessTemplate,
-      selectedBooking,
-      prop,
-      condo,
-    )
-    setPreviewMessage(content)
-    setSelectedTemplateName('Access Info (Auto-Generated)')
+    setEmailModalOpen(true)
   }
 
-  const handleSendMessage = () => {
+  const handleSendEmail = () => {
+    if (!selectedBooking) return
+
+    let finalBody = emailContent
+
+    if (appendDetails) {
+      const prop = properties.find((p) => p.id === selectedBooking.propertyId)
+      const details = `\n\n----------------------------------\nReservation Details:\nCheck-in: ${format(parseISO(selectedBooking.checkIn), 'MMM dd, yyyy')}\nCheck-out: ${format(parseISO(selectedBooking.checkOut), 'MMM dd, yyyy')}\nAccess Code: ${prop?.accessCodeUnit || 'N/A'}\nAddress: ${prop?.address || 'N/A'}`
+      finalBody += details
+    }
+
     toast({
-      title: 'Message Sent',
-      description: `"${selectedTemplateName}" sent to ${selectedBooking?.guestName}`,
+      title: 'Email Sent Successfully',
+      description: `Message sent to ${selectedBooking.guestEmail}`,
     })
-    setMessageDialogOpen(false)
+
+    console.log('Sending Email:', {
+      to: selectedBooking.guestEmail,
+      body: finalBody,
+    })
+
+    setEmailModalOpen(false)
   }
 
   const initiateCheckIn = (booking: Booking) => {
@@ -249,7 +263,6 @@ Enjoy your stay!`
 
   const handleInspectionSkip = () => {
     if (!selectedBooking) return
-    // Only allowed for short term check-out per requirements
     const updatedStatus =
       inspectionAction === 'check_in' ? 'checked_in' : 'checked_out'
 
@@ -419,21 +432,14 @@ Enjoy your stay!`
 
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedBooking(booking)
-                              setPreviewMessage('')
-                              setSelectedTemplateName('')
-                              setMessageDialogOpen(true)
-                            }}
+                            onClick={() => openEmailModal(booking)}
                           >
-                            <Send className="mr-2 h-4 w-4" /> Send Message
+                            <Mail className="mr-2 h-4 w-4" /> Send Email
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedBooking(booking)
-                              handleGenerateAccessInfo()
-                              setMessageDialogOpen(true)
-                            }}
+                            onClick={() =>
+                              openEmailModal(booking, 'access_info')
+                            }
                           >
                             <Key className="mr-2 h-4 w-4" /> Send Access Info
                           </DropdownMenuItem>
@@ -448,75 +454,69 @@ Enjoy your stay!`
         </Table>
       </div>
 
-      <Dialog open={messageDialogOpen} onOpenChange={setMessageDialogOpen}>
+      <Dialog open={emailModalOpen} onOpenChange={setEmailModalOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              Send Message to {selectedBooking?.guestName}
+              Send Email to {selectedBooking?.guestName}
             </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-2">
-            {!previewMessage ? (
-              <>
-                <p className="text-sm text-muted-foreground">
-                  Select a template to generate the message:
-                </p>
-                <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="mb-2 block">Use Template (Optional)</Label>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {messageTemplates.map((tmpl) => (
                   <Button
+                    key={tmpl.id}
                     variant="outline"
-                    className="justify-start bg-blue-50 hover:bg-blue-100 border-blue-200"
-                    onClick={handleGenerateAccessInfo}
-                  >
-                    <Key className="mr-2 h-4 w-4 text-blue-600" />
-                    Access Info (Auto)
-                  </Button>
-                  {messageTemplates.map((tmpl) => (
-                    <Button
-                      key={tmpl.id}
-                      variant="outline"
-                      className="justify-start"
-                      onClick={() => handleSelectTemplate(tmpl)}
-                    >
-                      {tmpl.name}
-                    </Button>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <div className="space-y-4">
-                <div className="bg-muted p-4 rounded-md border text-sm whitespace-pre-wrap font-mono">
-                  {previewMessage}
-                </div>
-                <div className="flex justify-between items-center text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Info className="h-3 w-3" /> Note: Placeholders have been
-                    replaced with actual property data.
-                  </span>
-                  <Button
-                    variant="ghost"
                     size="sm"
-                    onClick={() => {
-                      setPreviewMessage('')
-                      setSelectedTemplateName('')
-                    }}
+                    onClick={() => handleSelectTemplate(tmpl)}
                   >
-                    Back to Templates
+                    {tmpl.name}
                   </Button>
-                </div>
-                <div className="flex justify-end gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setMessageDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={handleSendMessage} className="bg-trust-blue">
-                    <Send className="mr-2 h-4 w-4" /> Send Message
-                  </Button>
-                </div>
+                ))}
               </div>
-            )}
+              <Label>Email Content</Label>
+              <Textarea
+                value={emailContent}
+                onChange={(e) => setEmailContent(e.target.value)}
+                className="h-48 font-mono mt-1.5"
+                placeholder="Write your message here..."
+              />
+            </div>
+
+            <div className="flex items-center space-x-2 bg-muted p-4 rounded-md">
+              <Switch
+                id="append-details"
+                checked={appendDetails}
+                onCheckedChange={setAppendDetails}
+              />
+              <div className="grid gap-1.5 leading-none">
+                <Label htmlFor="append-details">
+                  Append Reservation Details automatically
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Includes Check-in/out dates and Access Codes at the bottom of
+                  the email.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Info className="h-3 w-3" /> Sending to:{' '}
+                {selectedBooking?.guestEmail}
+              </span>
+            </div>
           </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmailModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSendEmail} className="bg-trust-blue gap-2">
+              <Send className="h-4 w-4" /> Send Email
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -534,7 +534,6 @@ Enjoy your stay!`
               : 'Guest Check-out Inventory'
           }
           performedBy="Manager"
-          // Short-term check-out can be skipped (optional)
           isOptional={inspectionAction === 'check_out'}
         />
       )}

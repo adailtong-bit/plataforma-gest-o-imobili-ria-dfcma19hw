@@ -21,14 +21,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import useShortTermStore from '@/stores/useShortTermStore'
 import usePropertyStore from '@/stores/usePropertyStore'
-import {
-  parseISO,
-  isSameDay,
-  format,
-  isWithinInterval,
-  addDays,
-} from 'date-fns'
-import { CalendarBlock } from '@/lib/types'
+import { parseISO, format, isWithinInterval, addDays } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 
 export function ShortTermCalendar() {
@@ -47,11 +40,20 @@ export function ShortTermCalendar() {
   const [linkedTaskId, setLinkedTaskId] = useState('')
   const [daysCount, setDaysCount] = useState(1)
 
+  // STRICT STR FILTERING
   const shortTermProperties = properties.filter(
     (p) => p.profileType === 'short_term',
   )
+  const shortTermPropIds = shortTermProperties.map((p) => p.id)
 
-  const bookedDays = bookings.flatMap((b) => {
+  const strBookings = bookings.filter((b) =>
+    shortTermPropIds.includes(b.propertyId),
+  )
+  const strBlocks = calendarBlocks.filter((b) =>
+    shortTermPropIds.includes(b.propertyId),
+  )
+
+  const bookedDays = strBookings.flatMap((b) => {
     const days = []
     let current = parseISO(b.checkIn)
     const end = parseISO(b.checkOut)
@@ -62,7 +64,7 @@ export function ShortTermCalendar() {
     return days
   })
 
-  const blockedDays = calendarBlocks.flatMap((b) => {
+  const blockedDays = strBlocks.flatMap((b) => {
     const days = []
     let current = parseISO(b.startDate)
     const end = parseISO(b.endDate)
@@ -104,7 +106,7 @@ export function ShortTermCalendar() {
     toast({ title: 'Block Removed' })
   }
 
-  const selectedDateBlocks = calendarBlocks.filter((b) => {
+  const selectedDateBlocks = strBlocks.filter((b) => {
     if (!date) return false
     return isWithinInterval(date, {
       start: parseISO(b.startDate),
@@ -112,7 +114,7 @@ export function ShortTermCalendar() {
     })
   })
 
-  const selectedDateBookings = bookings.filter((b) => {
+  const selectedDateBookings = strBookings.filter((b) => {
     if (!date) return false
     return isWithinInterval(date, {
       start: parseISO(b.checkIn),
