@@ -284,25 +284,28 @@ export default function DashboardLayout() {
 
   // If Authenticated and Active, render Full Dashboard Layout
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <AppSidebar />
       <SidebarInset>
-        <AppHeader />
-        <main
-          className={cn(
-            'flex-1 overflow-auto p-4 md:p-6 lg:p-8 max-w-[1600px] w-full mx-auto flex flex-col',
-            location.pathname === '/short-term' &&
-              'bg-gray-50 md:bg-transparent',
-            // Mobile specific background for owners route
-            location.pathname === '/owners' && 'bg-gray-100 md:bg-transparent',
-          )}
-        >
-          <Outlet />
-          <PublicityFooter />
-        </main>
-        <footer className="border-t py-4 px-6 text-center text-xs text-muted-foreground">
-          <p>© 2026 COREPM v1.0.0. All rights reserved.</p>
-        </footer>
+        <div className="flex-1 flex flex-col min-h-screen">
+          <AppHeader />
+          <main
+            className={cn(
+              'flex-1 overflow-auto p-4 md:p-6 lg:p-8 max-w-[1600px] w-full mx-auto flex flex-col',
+              location.pathname === '/short-term' &&
+                'bg-gray-50 md:bg-transparent',
+              // Mobile specific background for owners route
+              location.pathname === '/owners' &&
+                'bg-gray-100 md:bg-transparent',
+            )}
+          >
+            <Outlet />
+            <PublicityFooter />
+          </main>
+          <footer className="border-t py-4 px-6 text-center text-xs text-muted-foreground mt-auto">
+            <p>© 2026 COREPM v1.0.0. All rights reserved.</p>
+          </footer>
+        </div>
 
         <Dialog open={passwordModalOpen} onOpenChange={() => {}}>
           <DialogContent

@@ -111,7 +111,7 @@ export function AppHeader() {
   }
 
   return (
-    <header className="flex h-16 items-center gap-4 border-b bg-background px-6 sticky top-0 z-20 shadow-sm">
+    <header className="flex h-16 items-center gap-4 border-b bg-background px-6 sticky top-0 z-50 shadow-sm w-full">
       <Button variant="ghost" size="icon" onClick={toggleSidebar}>
         <Menu className="h-5 w-5" />
       </Button>

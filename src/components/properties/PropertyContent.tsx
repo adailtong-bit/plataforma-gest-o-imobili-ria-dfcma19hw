@@ -10,12 +10,14 @@ import { useToast } from '@/hooks/use-toast'
 
 interface PropertyContentProps {
   data: Property
+  onChange: (field: keyof Property, value: any) => void
   onNestedChange: (parent: keyof Property, key: string, value: string) => void
   canEdit: boolean
 }
 
 export function PropertyContent({
   data,
+  onChange,
   onNestedChange,
   canEdit,
 }: PropertyContentProps) {
@@ -23,21 +25,33 @@ export function PropertyContent({
 
   // Automated Description Translation Logic
   const handleDescriptionChange = (lang: 'pt' | 'en' | 'es', value: string) => {
-    // Update current language
-    onNestedChange('description', lang, value)
+    // Construct the new description object based on current state
+    const currentDescription = data.description || { pt: '', en: '', es: '' }
+
+    // Start with the updated value for the current language
+    const newDescription = {
+      ...currentDescription,
+      [lang]: value,
+    }
 
     // Auto-translate to others if they are empty
-    // This is a simulation of real-time translation
     const others = (['pt', 'en', 'es'] as const).filter((l) => l !== lang)
     others.forEach((otherLang) => {
-      const currentOther = data.description?.[otherLang]
-      if (!currentOther || currentOther.trim() === '') {
+      const currentOther = newDescription[otherLang]
+      // Only auto-fill if the other field is empty and we have a value to translate from
+      if (
+        (!currentOther || currentOther.trim() === '') &&
+        value.trim() !== ''
+      ) {
         // Simple mock translation: just prepend the lang code to indicate it's auto-filled
-        // In production, this would call a translation API
-        const mockTranslation = `[${otherLang.toUpperCase()}] ${value}`
-        onNestedChange('description', otherLang, mockTranslation)
+        // In a real application, this would be an API call to a translation service
+        newDescription[otherLang] = `[${otherLang.toUpperCase()}] ${value}`
       }
     })
+
+    // Perform a single atomic update for the entire description object
+    // This ensures no race conditions or batched state update issues occur
+    onChange('description', newDescription)
   }
 
   const copyContent = (

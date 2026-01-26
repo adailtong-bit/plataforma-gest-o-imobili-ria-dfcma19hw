@@ -398,6 +398,7 @@ export default function PropertyDetails() {
         <TabsContent value="content">
           <PropertyContent
             data={formData}
+            onChange={handleChange}
             onNestedChange={handleNestedChange}
             canEdit={isEditing}
           />
