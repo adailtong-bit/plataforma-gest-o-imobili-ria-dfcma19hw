@@ -95,7 +95,7 @@ interface AppContextType {
   advertisers: Advertiser[]
   adPricing: AdPricing
   language: Language
-  typingStatus: Record<string, boolean> // userId -> isTyping
+  typingStatus: Record<string, boolean>
   setLanguage: (lang: Language) => void
   t: (key: string, params?: Record<string, string>) => string
   login: (email: string) => boolean
@@ -310,6 +310,148 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setAuditLogs((prev) => [newLog, ...prev])
   }
 
+  // --- Core Action Functions with Logging and Automation ---
+
+  const addLedgerEntry = (entry: LedgerEntry) => {
+    setLedgerEntries((prev) => [...prev, entry])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Financial',
+      entityId: entry.propertyId,
+      details: `Financial Entry: ${entry.type === 'income' ? '+' : '-'}${entry.amount} (${entry.category}) - ${entry.description}`,
+    })
+  }
+
+  const addProperty = (p: Property) => {
+    setProperties([...properties, p])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Property',
+      entityId: p.id,
+      details: `Created property: ${p.name}`,
+    })
+
+    // Automated Financial Posting: HOA Fee (Initial)
+    if (p.hoaValue && p.hoaValue > 0) {
+      const hoaEntry: LedgerEntry = {
+        id: `auto-hoa-${p.id}-${Date.now()}`,
+        propertyId: p.id,
+        date: new Date().toISOString(),
+        dueDate: new Date().toISOString(),
+        type: 'expense',
+        category: 'HOA Fee',
+        amount: p.hoaValue,
+        description: `Initial HOA Fee - ${p.community || 'Association'}`,
+        status: 'pending',
+      }
+      // Use setTimeout to ensure property exists in state before ledger entry refers to it
+      setTimeout(() => addLedgerEntry(hoaEntry), 100)
+    }
+  }
+
+  const updateProperty = (p: Property) => {
+    setProperties(properties.map((prop) => (prop.id === p.id ? p : prop)))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Property',
+      entityId: p.id,
+      details: `Updated property details: ${p.name}`,
+    })
+  }
+
+  const deleteProperty = (id: string) => {
+    const prop = properties.find((p) => p.id === id)
+    setProperties(properties.filter((p) => p.id !== id))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'Property',
+      entityId: id,
+      details: `Deleted property: ${prop?.name || id}`,
+    })
+  }
+
+  const addTask = (t: Task) => {
+    setTasks([...tasks, t])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Task',
+      entityId: t.propertyId,
+      details: `Created task: ${t.title} for ${t.propertyName}`,
+    })
+  }
+
+  const updateTask = (t: Task) => {
+    const oldTask = tasks.find((task) => task.id === t.id)
+    setTasks(tasks.map((task) => (task.id === t.id ? t : task)))
+
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Task',
+      entityId: t.propertyId,
+      details: `Updated task: ${t.title}. Status: ${t.status}`,
+    })
+
+    // Task-Financial Integration
+    if (
+      t.status === 'completed' &&
+      oldTask?.status !== 'completed' &&
+      (t.billableAmount || t.price)
+    ) {
+      const amount = t.billableAmount || t.price || 0
+      const ledgerEntry: LedgerEntry = {
+        id: `auto-task-${t.id}-${Date.now()}`,
+        propertyId: t.propertyId,
+        date: new Date().toISOString(),
+        type: 'expense',
+        category: t.type === 'cleaning' ? 'Cleaning' : 'Maintenance',
+        amount: amount,
+        description: `Task Completed: ${t.title}`,
+        referenceId: t.id,
+        status: 'pending',
+        payee: t.assignee,
+      }
+      addLedgerEntry(ledgerEntry)
+      toast({
+        title: 'Financial Posting',
+        description: `Task cost ($${amount}) automatically posted to ledger.`,
+      })
+    }
+  }
+
+  const updateTaskStatus = (id: string, status: Task['status']) => {
+    const task = tasks.find((t) => t.id === id)
+    if (task) {
+      updateTask({ ...task, status })
+    }
+  }
+
+  const deleteTask = (id: string) => {
+    const task = tasks.find((t) => t.id === id)
+    setTasks(tasks.filter((t) => t.id !== id))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'Task',
+      entityId: task?.propertyId || id,
+      details: `Deleted task: ${task?.title || id}`,
+    })
+  }
+
+  // --- End Core Action Functions ---
+
   const addNotification = useCallback(
     (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
       const newNotif: Notification = {
@@ -334,22 +476,31 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     )
   }
 
-  const addLedgerEntry = (entry: LedgerEntry) => {
-    setLedgerEntries((prev) => [...prev, entry])
+  const updateLedgerEntry = (entry: LedgerEntry) => {
+    setLedgerEntries((prev) => prev.map((e) => (e.id === entry.id ? entry : e)))
     addAuditLog({
       userId: currentUser.id,
       userName: currentUser.name,
-      action: 'create',
-      entity: 'Ledger',
-      entityId: entry.id,
-      details: `Created ledger entry: ${entry.amount} (${entry.type})`,
+      action: 'update',
+      entity: 'Financial',
+      entityId: entry.propertyId,
+      details: `Updated financial entry: ${entry.description}`,
     })
   }
 
-  const updateLedgerEntry = (entry: LedgerEntry) =>
-    setLedgerEntries((prev) => prev.map((e) => (e.id === entry.id ? entry : e)))
-  const deleteLedgerEntry = (id: string) =>
+  const deleteLedgerEntry = (id: string) => {
+    const entry = ledgerEntries.find((e) => e.id === id)
     setLedgerEntries((prev) => prev.filter((e) => e.id !== id))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'Financial',
+      entityId: entry?.propertyId || id,
+      details: `Deleted financial entry: ${entry?.description || id}`,
+    })
+  }
+
   const approveUser = (id: string) =>
     setUsers((prev) =>
       prev.map((u) => (u.id === id ? { ...u, status: 'active' } : u)),
@@ -535,11 +686,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [allMessages, currentUser.id, toast])
 
-  const addProperty = (p: Property) => setProperties([...properties, p])
-  const updateProperty = (p: Property) =>
-    setProperties(properties.map((prop) => (prop.id === p.id ? p : prop)))
-  const deleteProperty = (id: string) =>
-    setProperties(properties.filter((p) => p.id !== id))
   const addCondominium = (c: Condominium) =>
     setCondominiums([...condominiums, c])
   const updateCondominium = (c: Condominium) =>
@@ -548,15 +694,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     )
   const deleteCondominium = (id: string) =>
     setCondominiums(condominiums.filter((c) => c.id !== id))
-  const addTask = (t: Task) => setTasks([...tasks, t])
-  const updateTask = (t: Task) =>
-    setTasks(tasks.map((task) => (task.id === t.id ? t : task)))
-  const updateTaskStatus = (id: string, status: any) =>
-    setTasks(tasks.map((t) => (t.id === id ? { ...t, status } : t)))
-  const deleteTask = (id: string) => setTasks(tasks.filter((t) => t.id !== id))
+
   const addInvoice = (i: Invoice) => {
     setFinancials((prev) => ({ ...prev, invoices: [...prev.invoices, i] }))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Invoice',
+      details: `Generated Invoice: $${i.amount} - ${i.description}`,
+    })
   }
+
   const markPaymentAs = (id: string, status: any) => {}
   const addTaskImage = (id: string, img: string) => {}
   const addTaskEvidence = (id: string, ev: Evidence) => {}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { LedgerEntry, Task } from '@/lib/types'
 import {
   Table,
@@ -46,6 +46,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { cn } from '@/lib/utils'
 
 interface PropertyLedgerProps {
   propertyId: string
@@ -68,6 +69,29 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
     category: '',
     dueDate: new Date().toISOString().split('T')[0],
   })
+
+  // Calculate Running Balance
+  const sortedEntriesWithBalance = useMemo(() => {
+    // Sort by Date Ascending for balance calculation
+    const sorted = [...entries].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    )
+
+    let balance = 0
+    return sorted.map((entry) => {
+      // Income increases balance, Expense decreases balance
+      // Assuming initial balance 0 or effectively running from start
+      if (entry.type === 'income') {
+        balance += entry.amount
+      } else {
+        balance -= entry.amount
+      }
+      return { ...entry, runningBalance: balance }
+    })
+  }, [entries])
+
+  // Display ordered descending (newest on top) but keep correct running balance from calculation
+  const displayEntries = [...sortedEntriesWithBalance].reverse()
 
   const handleSave = () => {
     if (!newEntry.amount || !newEntry.description || !newEntry.category) {
@@ -135,21 +159,6 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
     }
   }
 
-  const getStatusBadge = (entry: LedgerEntry) => {
-    if (entry.status === 'cleared')
-      return <Badge className="bg-green-600">Pago</Badge>
-    if (
-      entry.status === 'pending' &&
-      entry.dueDate &&
-      isPast(parseISO(entry.dueDate))
-    ) {
-      return <Badge variant="destructive">Atrasado</Badge>
-    }
-    if (entry.status === 'pending')
-      return <Badge variant="secondary">Pendente</Badge>
-    return <Badge variant="outline">{entry.status}</Badge>
-  }
-
   return (
     <div className="space-y-4">
       <TaskDetailsSheet
@@ -159,11 +168,16 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
       />
 
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Extrato Financeiro Detalhado</h3>
+        <div>
+          <h3 className="text-lg font-medium">Bank-Style Statement</h3>
+          <p className="text-sm text-muted-foreground">
+            Financial view with running balance.
+          </p>
+        </div>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button size="sm" className="bg-trust-blue">
-              <Plus className="mr-2 h-4 w-4" /> Lançamento Manual
+              <Plus className="mr-2 h-4 w-4" /> Manual Entry
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -203,8 +217,8 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="income">Receita</SelectItem>
-                      <SelectItem value="expense">Despesa</SelectItem>
+                      <SelectItem value="income">Receita (Credit)</SelectItem>
+                      <SelectItem value="expense">Despesa (Debit)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -215,7 +229,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                     onChange={(e) =>
                       setNewEntry({ ...newEntry, category: e.target.value })
                     }
-                    placeholder="Ex: Aluguel, Manutenção"
+                    placeholder="Ex: Rent, HOA, Maintenance"
                   />
                 </div>
               </div>
@@ -242,7 +256,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Vencimento</Label>
+                  <Label>Data</Label>
                   <Input
                     type="date"
                     value={newEntry.dueDate}
@@ -316,19 +330,8 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                   </div>
                 </div>
 
-                {/* Receipt Upload in Edit Mode */}
                 <div className="grid gap-2">
                   <Label>Anexos / Comprovantes</Label>
-                  {editingEntry.attachments &&
-                    editingEntry.attachments.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-2">
-                        {editingEntry.attachments.map((att, idx) => (
-                          <Badge key={idx} variant="secondary">
-                            {att.name}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
                   <FileUpload
                     accept=".pdf,.png,.jpg,.jpeg"
                     label="Upload Comprovante"
@@ -347,25 +350,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                 </div>
 
                 <DialogFooter>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button>Salvar Alterações</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Confirmar Alteração</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Deseja salvar as alterações neste lançamento?
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleUpdate}>
-                          Confirmar
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <Button onClick={handleUpdate}>Confirmar Alteração</Button>
                 </DialogFooter>
               </div>
             )}
@@ -373,88 +358,89 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
         </Dialog>
       </div>
 
-      <div className="border rounded-md">
+      <div className="border rounded-md bg-white overflow-hidden shadow-sm">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead>Vencimento</TableHead>
-              <TableHead>Pagamento</TableHead>
-              <TableHead>Descrição</TableHead>
-              <TableHead>Categoria</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Valor</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
+              <TableHead className="w-[100px]">Date</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead className="text-right">Debit (-)</TableHead>
+              <TableHead className="text-right">Credit (+)</TableHead>
+              <TableHead className="text-right font-bold text-gray-900 bg-gray-50/50">
+                Balance
+              </TableHead>
+              <TableHead className="text-right w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {entries.length === 0 ? (
+            {displayEntries.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-6">
-                  Nenhum registro financeiro.
+                <TableCell colSpan={7} className="text-center py-10">
+                  No financial entries recorded.
                 </TableCell>
               </TableRow>
             ) : (
-              entries.map((entry) => {
-                // Find associated task if any
+              displayEntries.map((entry) => {
                 const associatedTask = tasks.find(
                   (t) => t.id === entry.referenceId,
                 )
 
                 return (
-                  <TableRow key={entry.id}>
-                    <TableCell>
-                      {entry.dueDate
-                        ? format(new Date(entry.dueDate), 'dd/MM/yyyy')
-                        : '-'}
-                    </TableCell>
-                    <TableCell>
-                      {entry.paymentDate
-                        ? format(new Date(entry.paymentDate), 'dd/MM/yyyy')
-                        : '-'}
+                  <TableRow key={entry.id} className="hover:bg-muted/30">
+                    <TableCell className="font-mono text-xs">
+                      {format(new Date(entry.date), 'dd/MM/yyyy')}
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
                         <span
-                          className="cursor-pointer hover:underline font-medium"
+                          className="font-medium text-sm cursor-pointer hover:underline"
                           onClick={() => setEditingEntry(entry)}
                         >
                           {entry.description}
                         </span>
-                        {/* Task Link */}
                         {associatedTask && (
                           <div
-                            className="flex items-center gap-1 text-xs text-blue-600 cursor-pointer hover:text-blue-800 mt-1 w-fit"
+                            className="flex items-center gap-1 text-[10px] text-blue-600 cursor-pointer hover:text-blue-800 mt-0.5 w-fit bg-blue-50 px-1.5 py-0.5 rounded"
                             onClick={(e) => {
                               e.stopPropagation()
                               setViewingTask(associatedTask)
                             }}
                           >
                             <ClipboardList className="h-3 w-3" />
-                            Ver Tarefa
+                            Task Linked
                           </div>
-                        )}
-                        {entry.attachments && entry.attachments.length > 0 && (
-                          <span className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                            <Paperclip className="h-3 w-3" />{' '}
-                            {entry.attachments.length} anexo(s)
-                          </span>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>{entry.category}</TableCell>
-                    <TableCell>{getStatusBadge(entry)}</TableCell>
-                    <TableCell
-                      className={`text-right font-medium ${
-                        entry.type === 'income'
-                          ? 'text-green-600'
-                          : 'text-red-600'
-                      }`}
-                    >
-                      {entry.type === 'income' ? '+' : '-'}$
-                      {entry.amount.toFixed(2)}
+                    <TableCell>
+                      <Badge variant="outline" className="font-normal text-xs">
+                        {entry.category}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right text-red-600 font-medium">
+                      {entry.type === 'expense'
+                        ? `$${entry.amount.toFixed(2)}`
+                        : ''}
+                    </TableCell>
+                    <TableCell className="text-right text-green-600 font-medium">
+                      {entry.type === 'income'
+                        ? `$${entry.amount.toFixed(2)}`
+                        : ''}
+                    </TableCell>
+                    <TableCell className="text-right font-bold bg-gray-50/30">
+                      <span
+                        className={cn(
+                          (entry as any).runningBalance < 0
+                            ? 'text-red-700'
+                            : 'text-gray-900',
+                        )}
+                      >
+                        ${(entry as any).runningBalance.toFixed(2)}
+                      </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2 items-center">
+                      <div className="flex justify-end gap-1">
                         <Dialog
                           open={openUpload === entry.id}
                           onOpenChange={(o) =>
@@ -465,62 +451,48 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                             <Button
                               variant="ghost"
                               size="icon"
-                              title="Upload Comprovante"
+                              className="h-6 w-6"
+                              title="Upload"
                             >
-                              <Upload className="h-4 w-4" />
+                              <Upload className="h-3 w-3" />
                             </Button>
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>
-                              <DialogTitle>Anexar Comprovante</DialogTitle>
+                              <DialogTitle>Anexar</DialogTitle>
                             </DialogHeader>
                             <FileUpload
-                              accept=".pdf,.jpg,.png,.jpeg"
+                              accept=".pdf,.jpg,.png"
                               onChange={(url) =>
                                 handleUploadFile(entry.id, url)
                               }
                             />
                           </DialogContent>
                         </Dialog>
-
-                        <Select
-                          defaultValue={entry.status}
-                          onValueChange={(v) => handleStatusUpdate(entry, v)}
-                        >
-                          <SelectTrigger className="h-8 w-[100px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pending">Pendente</SelectItem>
-                            <SelectItem value="cleared">Pago</SelectItem>
-                            <SelectItem value="overdue">Atrasado</SelectItem>
-                            <SelectItem value="void">Cancelado</SelectItem>
-                          </SelectContent>
-                        </Select>
-
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="text-red-500"
+                              className="h-6 w-6 text-muted-foreground hover:text-red-500"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-3 w-3" />
                             </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <DialogTitle>Confirmar Exclusão</DialogTitle>
+                              <DialogTitle>Delete Entry</DialogTitle>
                               <AlertDialogDescription>
-                                Tem certeza que deseja excluir este lançamento?
+                                Are you sure? This will remove the transaction
+                                and affect the balance.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={() => handleDelete(entry.id)}
                               >
-                                Excluir
+                                Delete
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>

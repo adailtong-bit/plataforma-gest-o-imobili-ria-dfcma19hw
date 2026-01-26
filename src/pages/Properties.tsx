@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Trash2, Plus } from 'lucide-react'
+import { MapPin, Trash2, Plus, Building, Home } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -45,6 +45,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 export default function Properties() {
   const { properties, addProperty, deleteProperty } = usePropertyStore()
@@ -59,6 +60,7 @@ export default function Properties() {
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
 
+  // Initial state without default profileType to force user selection
   const [newProp, setNewProp] = useState<Partial<Property>>({
     name: '',
     address: '',
@@ -69,7 +71,7 @@ export default function Properties() {
     neighborhood: '',
     country: 'USA',
     type: 'House',
-    profileType: 'short_term',
+    profileType: undefined, // Must be selected manually
     bedrooms: 3,
     bathrooms: 2,
     guests: 6,
@@ -78,6 +80,7 @@ export default function Properties() {
     condominiumId: '',
     image: '',
     listingPrice: 0,
+    hoaValue: 0,
   })
 
   // Filter properties based on user permissions
@@ -156,6 +159,15 @@ export default function Properties() {
       })
       return
     }
+    // Check mandatory Profile Type (Rental Type)
+    if (!newProp.profileType) {
+      toast({
+        title: 'Erro de Validação',
+        description: 'Selecione o tipo de aluguel (STR ou LTR).',
+        variant: 'destructive',
+      })
+      return
+    }
 
     const selectedCondo = condominiums.find(
       (c) => c.id === newProp.condominiumId,
@@ -171,7 +183,7 @@ export default function Properties() {
       country: newProp.country || '',
       neighborhood: newProp.neighborhood || '',
       type: newProp.type || 'House',
-      profileType: newProp.profileType || 'short_term',
+      profileType: newProp.profileType,
       community: selectedCondo
         ? selectedCondo.name
         : newProp.community || 'Independent',
@@ -193,10 +205,12 @@ export default function Properties() {
       agentId: newProp.agentId,
       fixedExpenses: [],
       listingPrice: newProp.listingPrice || 0,
+      hoaValue: newProp.hoaValue || 0,
     } as Property)
+
     toast({
       title: t('properties.property_added'),
-      description: `${newProp.name} ${t('properties.property_added_desc')}`,
+      description: `${newProp.name} adicionada. Se houve valor de HOA, uma entrada financeira foi gerada.`,
     })
     setOpen(false)
     setNewProp({
@@ -209,12 +223,13 @@ export default function Properties() {
       neighborhood: '',
       country: 'USA',
       type: 'House',
-      profileType: 'short_term',
+      profileType: undefined,
       bedrooms: 3,
       bathrooms: 2,
       guests: 6,
       image: '',
       listingPrice: 0,
+      hoaValue: 0,
     })
   }
 
@@ -256,6 +271,50 @@ export default function Properties() {
                 <DialogTitle>{t('properties.add_title')}</DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
+                {/* Manual Rental Type Selection */}
+                <div className="grid gap-3 p-4 border rounded-md bg-muted/20">
+                  <Label className="text-base font-semibold">
+                    Tipo de Aluguel (Rental Type){' '}
+                    <span className="text-red-500">*</span>
+                  </Label>
+                  <RadioGroup
+                    value={newProp.profileType}
+                    onValueChange={(val: any) =>
+                      setNewProp({ ...newProp, profileType: val })
+                    }
+                    className="grid grid-cols-2 gap-4"
+                  >
+                    <div>
+                      <RadioGroupItem
+                        value="short_term"
+                        id="str"
+                        className="peer sr-only"
+                      />
+                      <Label
+                        htmlFor="str"
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                      >
+                        <Home className="mb-2 h-6 w-6" />
+                        Short Term (STR)
+                      </Label>
+                    </div>
+                    <div>
+                      <RadioGroupItem
+                        value="long_term"
+                        id="ltr"
+                        className="peer sr-only"
+                      />
+                      <Label
+                        htmlFor="ltr"
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                      >
+                        <Building className="mb-2 h-6 w-6" />
+                        Long Term (LTR)
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
                 <div className="grid gap-2">
                   <Label>
                     {t('common.name')} <span className="text-red-500">*</span>
@@ -334,15 +393,30 @@ export default function Properties() {
                   </div>
                 </div>
 
-                <div className="grid gap-2">
-                  <Label>Valor do Imóvel ($)</Label>
-                  <CurrencyInput
-                    value={newProp.listingPrice}
-                    onChange={(val) =>
-                      setNewProp({ ...newProp, listingPrice: val })
-                    }
-                    placeholder="0.00"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Valor do Imóvel ($)</Label>
+                    <CurrencyInput
+                      value={newProp.listingPrice}
+                      onChange={(val) =>
+                        setNewProp({ ...newProp, listingPrice: val })
+                      }
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>HOA Fee (Mensal) ($)</Label>
+                    <CurrencyInput
+                      value={newProp.hoaValue}
+                      onChange={(val) =>
+                        setNewProp({ ...newProp, hoaValue: val })
+                      }
+                      placeholder="0.00"
+                    />
+                    <span className="text-[10px] text-muted-foreground">
+                      O valor será lançado automaticamente no financeiro.
+                    </span>
+                  </div>
                 </div>
 
                 <div className="grid gap-2">
@@ -410,8 +484,8 @@ export default function Properties() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos Perfis</SelectItem>
-            <SelectItem value="short_term">Short Term</SelectItem>
-            <SelectItem value="long_term">Long Term</SelectItem>
+            <SelectItem value="short_term">Short Term (STR)</SelectItem>
+            <SelectItem value="long_term">Long Term (LTR)</SelectItem>
           </SelectContent>
         </Select>
       </div>
