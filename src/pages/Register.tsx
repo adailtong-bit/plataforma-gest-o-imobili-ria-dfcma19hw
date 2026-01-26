@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Link, useNavigate } from 'react-router-dom'
-import useAuthStore from '@/stores/useAuthStore'
+import useUserStore from '@/stores/useUserStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { useToast } from '@/hooks/use-toast'
 import logo from '@/assets/logo-estilizado.jpg'
@@ -22,7 +22,7 @@ export default function Register() {
   const { t } = useLanguageStore()
   const navigate = useNavigate()
   const { toast } = useToast()
-  const { addUser } = useAuthStore()
+  const { addUser } = useUserStore()
 
   const [formData, setFormData] = useState({
     name: '',
