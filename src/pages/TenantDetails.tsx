@@ -25,6 +25,7 @@ import {
   FileText,
   Link as LinkIcon,
   Unlink,
+  Plus,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -59,7 +60,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog'
+import { AddressInput, AddressData } from '@/components/ui/address-input'
+import { PhoneInput } from '@/components/ui/phone-input'
 
 export default function TenantDetails() {
   const { id } = useParams()
@@ -93,7 +97,11 @@ export default function TenantDetails() {
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('')
 
   // Referral Contact State
-  const [newReferral, setNewReferral] = useState({ name: '', phone: '' })
+  const [newReferral, setNewReferral] = useState({
+    name: '',
+    phone: '',
+    email: '',
+  })
 
   useEffect(() => {
     if (tenant) {
@@ -116,6 +124,13 @@ export default function TenantDetails() {
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }))
+  }
+
+  const handleAddressSelect = (addr: AddressData) => {
+    setFormData((prev: any) => ({
+      ...prev,
+      address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
+    }))
   }
 
   const handleDocsUpdate = (docs: any) => {
@@ -159,7 +174,7 @@ export default function TenantDetails() {
 
     const selectedProp = properties.find((p) => p.id === selectedPropertyId)
     if (selectedProp) {
-      // Update property status to reserved
+      // Update property status to reserved (User Story Req: Reserved Status logic)
       updateProperty({ ...selectedProp, status: 'reserved' })
       // Link tenant
       const updatedTenant = { ...formData, propertyId: selectedPropertyId }
@@ -175,9 +190,7 @@ export default function TenantDetails() {
 
   const handleUnlinkProperty = () => {
     if (!property) return
-    if (
-      confirm('Unlink property? This will set property status to Available.')
-    ) {
+    if (confirm('Unlink property? This will set property status to Available.')) {
       updateProperty({ ...property, status: 'available' })
       const updatedTenant = { ...formData, propertyId: undefined }
       setFormData(updatedTenant)
@@ -187,10 +200,13 @@ export default function TenantDetails() {
   }
 
   const addReferralContact = () => {
-    if (!newReferral.name || !newReferral.phone) return
-    const referrals = [...(formData.referralContacts || []), { ...newReferral }]
+    if (!newReferral.name) return
+    const referrals = [
+      ...(formData.referralContacts || []),
+      { ...newReferral },
+    ]
     setFormData({ ...formData, referralContacts: referrals })
-    setNewReferral({ name: '', phone: '' })
+    setNewReferral({ name: '', phone: '', email: '' })
   }
 
   const removeReferralContact = (index: number) => {
@@ -366,8 +382,8 @@ export default function TenantDetails() {
                     </div>
                     <div className="grid gap-2">
                       <Label>Telefone</Label>
-                      <Input
-                        value={formData.phone}
+                      <PhoneInput
+                        value={formData.phone || ''}
                         onChange={(e) => handleChange('phone', e.target.value)}
                         disabled={!isEditing}
                       />
@@ -382,13 +398,30 @@ export default function TenantDetails() {
                         disabled={!isEditing}
                       />
                     </div>
+                    <div className="grid gap-2 col-span-2">
+                      <Label>Buscar Endereço</Label>
+                      <AddressInput
+                        onAddressSelect={handleAddressSelect}
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div className="grid gap-2 col-span-2">
+                      <Label>Endereço Completo</Label>
+                      <Input
+                        value={formData.address || ''}
+                        onChange={(e) =>
+                          handleChange('address', e.target.value)
+                        }
+                        disabled={!isEditing}
+                      />
+                    </div>
                   </div>
 
                   <Separator />
                   <h3 className="font-medium text-sm">Documentação</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="grid gap-2">
-                      <Label>ID Number</Label>
+                      <Label>ID / RG</Label>
                       <Input
                         value={formData.idNumber || ''}
                         onChange={(e) =>
@@ -436,6 +469,9 @@ export default function TenantDetails() {
                         <div className="flex-1 text-sm text-muted-foreground">
                           {ref.phone}
                         </div>
+                        <div className="flex-1 text-sm text-muted-foreground">
+                          {ref.email}
+                        </div>
                         {isEditing && (
                           <Button
                             variant="ghost"
@@ -449,7 +485,7 @@ export default function TenantDetails() {
                       </div>
                     ))}
                     {isEditing && (
-                      <div className="flex gap-2 items-end">
+                      <div className="grid grid-cols-3 gap-2 items-end">
                         <Input
                           placeholder="Name"
                           value={newReferral.name}
@@ -472,13 +508,26 @@ export default function TenantDetails() {
                           }
                           className="h-8"
                         />
-                        <Button
-                          size="sm"
-                          onClick={addReferralContact}
-                          className="h-8"
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Email"
+                            value={newReferral.email}
+                            onChange={(e) =>
+                              setNewReferral({
+                                ...newReferral,
+                                email: e.target.value,
+                              })
+                            }
+                            className="h-8 flex-1"
+                          />
+                          <Button
+                            size="sm"
+                            onClick={addReferralContact}
+                            className="h-8"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -857,3 +906,4 @@ export default function TenantDetails() {
     </div>
   )
 }
+

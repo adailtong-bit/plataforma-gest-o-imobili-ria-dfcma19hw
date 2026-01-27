@@ -38,6 +38,7 @@ import {
 import { isValidEmail } from '@/lib/utils'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { Label } from '@/components/ui/label'
+import { AddressInput, AddressData } from '@/components/ui/address-input'
 
 export default function Tenants() {
   const { tenants, addTenant } = useTenantStore()
@@ -53,10 +54,14 @@ export default function Tenants() {
     name: '',
     email: '',
     phone: '',
+    address: '',
     rentValue: '',
     propertyId: '',
     leaseStart: '',
     leaseEnd: '',
+    idNumber: '',
+    passport: '',
+    socialSecurity: '',
   })
 
   const filteredTenants = tenants.filter(
@@ -64,6 +69,13 @@ export default function Tenants() {
       t.name.toLowerCase().includes(filter.toLowerCase()) ||
       t.email.toLowerCase().includes(filter.toLowerCase()),
   )
+
+  const handleAddressSelect = (addr: AddressData) => {
+    setNewTenant((prev) => ({
+      ...prev,
+      address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
+    }))
+  }
 
   const handleAddTenant = () => {
     if (!newTenant.name || !newTenant.email) {
@@ -99,6 +111,7 @@ export default function Tenants() {
       rentValue: parseFloat(newTenant.rentValue) || 0,
       status: 'active',
       role: 'tenant',
+      referralContacts: [],
     } as any)
     setOpen(false)
     toast({ title: 'Tenant added' })
@@ -106,10 +119,14 @@ export default function Tenants() {
       name: '',
       email: '',
       phone: '',
+      address: '',
       rentValue: '',
       propertyId: '',
       leaseStart: '',
       leaseEnd: '',
+      idNumber: '',
+      passport: '',
+      socialSecurity: '',
     })
   }
 
@@ -124,6 +141,7 @@ export default function Tenants() {
       'Tenant Name',
       'Email',
       'Phone',
+      'Address',
       'Property ID',
       'Property Name',
       'Owner ID',
@@ -141,6 +159,7 @@ export default function Tenants() {
         tenant.name,
         tenant.email,
         tenant.phone,
+        tenant.address || 'N/A',
         tenant.propertyId || 'N/A',
         property?.name || 'N/A',
         owner?.id || 'N/A',
@@ -187,39 +206,89 @@ export default function Tenants() {
                 <Plus className="h-4 w-4" /> {t('tenants.new_tenant')}
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-2xl overflow-y-auto max-h-[90vh]">
               <DialogHeader>
                 <DialogTitle>{t('tenants.register_title')}</DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Name</Label>
+                    <Input
+                      placeholder="Full Name"
+                      value={newTenant.name}
+                      onChange={(e) =>
+                        setNewTenant({ ...newTenant, name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>ID / RG</Label>
+                    <Input
+                      placeholder="ID Number"
+                      value={newTenant.idNumber}
+                      onChange={(e) =>
+                        setNewTenant({ ...newTenant, idNumber: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Email</Label>
+                    <Input
+                      placeholder="Email"
+                      value={newTenant.email}
+                      onChange={(e) =>
+                        setNewTenant({ ...newTenant, email: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Phone</Label>
+                    <PhoneInput
+                      value={newTenant.phone}
+                      onChange={(e) =>
+                        setNewTenant({ ...newTenant, phone: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
                 <div className="grid gap-2">
-                  <Label>Name</Label>
+                  <Label>Current Address</Label>
+                  <AddressInput onAddressSelect={handleAddressSelect} />
                   <Input
-                    placeholder="Full Name"
-                    value={newTenant.name}
+                    placeholder="Full Address"
+                    value={newTenant.address}
                     onChange={(e) =>
-                      setNewTenant({ ...newTenant, name: e.target.value })
+                      setNewTenant({ ...newTenant, address: e.target.value })
                     }
                   />
                 </div>
-                <div className="grid gap-2">
-                  <Label>Email</Label>
-                  <Input
-                    placeholder="Email"
-                    value={newTenant.email}
-                    onChange={(e) =>
-                      setNewTenant({ ...newTenant, email: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Phone</Label>
-                  <PhoneInput
-                    value={newTenant.phone}
-                    onChange={(e) =>
-                      setNewTenant({ ...newTenant, phone: e.target.value })
-                    }
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Passport</Label>
+                    <Input
+                      placeholder="Passport Number"
+                      value={newTenant.passport}
+                      onChange={(e) =>
+                        setNewTenant({ ...newTenant, passport: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>SSN (Optional)</Label>
+                    <Input
+                      placeholder="XXX-XX-XXXX"
+                      value={newTenant.socialSecurity}
+                      onChange={(e) =>
+                        setNewTenant({
+                          ...newTenant,
+                          socialSecurity: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
                 </div>
                 <Button onClick={handleAddTenant} className="w-full">
                   Save
@@ -338,3 +407,4 @@ export default function Tenants() {
     </div>
   )
 }
+

@@ -27,6 +27,7 @@ import {
   endOfYear,
   subYears,
   getYear,
+  isWithinInterval,
 } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
@@ -47,7 +48,7 @@ export function OwnerStatement({
 }: OwnerStatementProps) {
   const { toast } = useToast()
   const { tasks } = useTaskStore()
-  const [period, setPeriod] = useState('current') // current, last, last3, year, prevYear
+  const [period, setPeriod] = useState('current') // current, last, last3, semester, year, prevYear
   const [selectedPropertyId, setSelectedPropertyId] = useState('all')
   const [viewingTask, setViewingTask] = useState<Task | null>(null)
 
@@ -63,6 +64,8 @@ export function OwnerStatement({
       return { start: startOfMonth(last), end: endOfMonth(last) }
     } else if (period === 'last3') {
       return { start: startOfMonth(subMonths(now, 3)), end: endOfMonth(now) }
+    } else if (period === 'semester') {
+      return { start: startOfMonth(subMonths(now, 6)), end: endOfMonth(now) }
     } else if (period === 'year') {
       return { start: startOfYear(now), end: endOfYear(now) }
     } else if (period === 'prevYear') {
@@ -142,6 +145,7 @@ export function OwnerStatement({
               <SelectItem value="current">Este Mês</SelectItem>
               <SelectItem value="last">Mês Passado</SelectItem>
               <SelectItem value="last3">Últimos 3 Meses</SelectItem>
+              <SelectItem value="semester">Semestre</SelectItem>
               <SelectItem value="year">Ano Atual ({currentYear})</SelectItem>
               <SelectItem value="prevYear">
                 Ano Anterior ({currentYear - 1})
@@ -267,3 +271,4 @@ export function OwnerStatement({
     </Card>
   )
 }
+

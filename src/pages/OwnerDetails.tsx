@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -13,6 +13,7 @@ import {
   Download,
   Building,
   ClipboardList,
+  MessageCircle,
 } from 'lucide-react'
 import useOwnerStore from '@/stores/useOwnerStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -30,6 +31,7 @@ export default function OwnerDetails() {
   const { properties } = usePropertyStore()
   const { ledgerEntries } = useFinancialStore()
   const { toast } = useToast()
+  const navigate = useNavigate()
 
   // Use useMemo to stabilize owner object selection
   const owner = useMemo(() => owners.find((o) => o.id === id), [owners, id])
@@ -43,10 +45,6 @@ export default function OwnerDetails() {
   useEffect(() => {
     if (owner) {
       setFormData((prev) => {
-        // Prevent infinite loop by checking if data actually changed
-        // This is crucial because updateOwner updates the store, which updates 'owner',
-        // which triggers this effect. If we blindly setFormData, we might cause a loop
-        // if references are unstable.
         if (JSON.stringify(prev) === JSON.stringify(owner)) {
           return prev
         }
@@ -77,10 +75,13 @@ export default function OwnerDetails() {
   }
 
   const handleDocsUpdate = (docs: GenericDocument[]) => {
-    // Immediate persistence for documents as requested in User Story
     const updatedOwner = { ...formData!, documents: docs }
     setFormData(updatedOwner)
     updateOwner(updatedOwner)
+  }
+
+  const handleMessageRedirect = () => {
+    navigate(`/messages?contactId=${formData.id}`)
   }
 
   return (
@@ -92,9 +93,19 @@ export default function OwnerDetails() {
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
-            {formData.name}
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold tracking-tight text-navy">
+              {formData.name}
+            </h1>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleMessageRedirect}
+              title="Message Owner"
+            >
+              <MessageCircle className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
         <div className="flex gap-2">
           {isEditing ? (
@@ -294,3 +305,4 @@ export default function OwnerDetails() {
     </div>
   )
 }
+

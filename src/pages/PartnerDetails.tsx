@@ -14,6 +14,7 @@ import {
   MessageCircle,
   Mail,
   Star,
+  Ban,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import usePartnerStore from '@/stores/usePartnerStore'
@@ -40,11 +41,22 @@ import { PartnerTasks } from '@/components/partners/PartnerTasks'
 import { PartnerPricing } from '@/components/partners/PartnerPricing'
 import { PartnerDocuments } from '@/components/partners/PartnerDocuments'
 import { isValidEmail } from '@/lib/utils'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 export default function PartnerDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { partners, updatePartner } = usePartnerStore()
+  const { partners, updatePartner, deletePartner } = usePartnerStore()
   const { ledgerEntries } = useFinancialStore()
   const { tasks } = useTaskStore()
   const { t } = useLanguageStore()
@@ -107,10 +119,32 @@ export default function PartnerDetails() {
     updatePartner(updatedPartner)
   }
 
-  const handleDelete = () => {
-    if (confirm('Tem certeza que deseja excluir este parceiro?')) {
-      toast({ title: 'Excluído', description: 'Parceiro removido.' })
+  const handleInactivate = () => {
+    // Check for pending tasks
+    const pending = tasks.filter(
+      (t) =>
+        t.assigneeId === formData.id &&
+        (t.status === 'pending' || t.status === 'in_progress'),
+    )
+
+    if (pending.length > 0) {
+      if (
+        confirm(
+          `Este parceiro possui ${pending.length} tarefas pendentes. Deseja inativar e realocar tarefas? (Simplesmente inativa por agora)`,
+        )
+      ) {
+        deletePartner(formData.id)
+        navigate('/partners')
+        toast({
+          title: 'Inativado',
+          description:
+            'Parceiro inativado. Por favor, reatribua as tarefas manualmente na tela de Tarefas.',
+        })
+      }
+    } else {
+      deletePartner(formData.id)
       navigate('/partners')
+      toast({ title: 'Inativado', description: 'Parceiro inativado.' })
     }
   }
 
@@ -182,9 +216,29 @@ export default function PartnerDetails() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="destructive" size="icon" onClick={handleDelete}>
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="icon">
+                <Ban className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Inativar Parceiro</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tem certeza que deseja inativar este parceiro? Ele não poderá
+                  mais receber novas tarefas.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleInactivate}>
+                  Confirmar Inativação
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
           <Button onClick={handleSave} className="bg-trust-blue gap-2">
             <Save className="h-4 w-4" /> {t('common.save')}
           </Button>
@@ -270,6 +324,42 @@ export default function PartnerDetails() {
                       }
                     />
                   </div>
+                  <div className="grid gap-2">
+                    <Label>Cidade</Label>
+                    <Input
+                      value={formData.city || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, city: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Estado</Label>
+                    <Input
+                      value={formData.state || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, state: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>CEP / Zip</Label>
+                    <Input
+                      value={formData.zipCode || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, zipCode: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>País</Label>
+                    <Input
+                      value={formData.country || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, country: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
 
                 <div className="border-t pt-4 mt-4">
@@ -287,6 +377,21 @@ export default function PartnerDetails() {
                             paymentInfo: {
                               ...formData.paymentInfo!,
                               bankName: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Bank Number</Label>
+                      <Input
+                        value={formData.paymentInfo?.bankNumber}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            paymentInfo: {
+                              ...formData.paymentInfo!,
+                              bankNumber: e.target.value,
                             },
                           })
                         }
@@ -317,6 +422,21 @@ export default function PartnerDetails() {
                             paymentInfo: {
                               ...formData.paymentInfo!,
                               accountNumber: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Zelle</Label>
+                      <Input
+                        value={formData.paymentInfo?.zelle}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            paymentInfo: {
+                              ...formData.paymentInfo!,
+                              zelle: e.target.value,
                             },
                           })
                         }
@@ -461,3 +581,4 @@ export default function PartnerDetails() {
     </div>
   )
 }
+

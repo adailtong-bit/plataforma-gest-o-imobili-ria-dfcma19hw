@@ -373,6 +373,7 @@ export interface Tenant {
   email: string
   phone: string
   country?: string
+  address?: string
   propertyId?: string
   rentValue: number
   leaseStart?: string
@@ -386,7 +387,7 @@ export interface Tenant {
   driverLicense?: string
   socialSecurity?: string
   references?: string
-  referralContacts?: { name: string; phone: string }[]
+  referralContacts?: { name: string; phone: string; email?: string }[]
   emergencyContact?: {
     name: string
     phone: string
@@ -769,3 +770,4 @@ export interface Advertisement {
   startDate?: string
   endDate?: string
 }
+

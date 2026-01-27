@@ -284,6 +284,7 @@ export default function Condominiums() {
               <TableRow>
                 <TableHead>{t('common.name')}</TableHead>
                 <TableHead>{t('common.address')}</TableHead>
+                <TableHead>Location</TableHead>
                 <TableHead>{t('condominiums.manager')}</TableHead>
                 <TableHead>{t('condominiums.contact')}</TableHead>
                 <TableHead className="text-right">
@@ -294,7 +295,7 @@ export default function Condominiums() {
             <TableBody>
               {filteredCondos.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8">
                     {t('condominiums.no_condos')}
                   </TableCell>
                 </TableRow>
@@ -305,9 +306,14 @@ export default function Condominiums() {
                       <Building2 className="h-4 w-4 text-muted-foreground" />
                       {condo.name}
                     </TableCell>
+                    <TableCell>{condo.address}</TableCell>
                     <TableCell>
-                      {condo.address}
-                      {condo.city && `, ${condo.city}`}
+                      <div className="flex flex-col text-xs text-muted-foreground">
+                        <span>{condo.city || '-'}</span>
+                        <span>
+                          {condo.state} {condo.zipCode}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell>{condo.managerName || '-'}</TableCell>
                     <TableCell>
@@ -378,3 +384,4 @@ export default function Condominiums() {
     </div>
   )
 }
+

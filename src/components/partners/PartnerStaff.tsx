@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   Table,
   TableBody,
@@ -19,11 +19,18 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Trash2, Edit, Calendar } from 'lucide-react'
-import { Partner, PartnerEmployee } from '@/lib/types'
+import { Plus, Trash2, Edit, Calendar, Upload } from 'lucide-react'
+import { Partner, PartnerEmployee, GenericDocument } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface PartnerStaffProps {
   partner: Partner
@@ -45,6 +52,12 @@ export function PartnerStaff({
     email: '',
     phone: '',
     status: 'active',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: '',
+    documents: [],
   })
 
   // Scheduler state
@@ -54,6 +67,8 @@ export function PartnerStaff({
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
   const [scheduleSlots, setScheduleSlots] = useState<string>('09:00, 14:00')
   const [scheduleValue, setScheduleValue] = useState<string>('')
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSave = () => {
     if (!formData.name || !formData.role) return
@@ -100,7 +115,40 @@ export function PartnerStaff({
       email: '',
       phone: '',
       status: 'active',
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      country: '',
+      documents: [],
     })
+  }
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const newDoc: GenericDocument = {
+        id: `doc-${Date.now()}`,
+        name: file.name,
+        url: URL.createObjectURL(file),
+        date: new Date().toISOString(),
+        type: file.type,
+        size: `${(file.size / 1024).toFixed(2)} KB`,
+        category: 'ID', // Default to ID
+      }
+      setFormData((prev) => ({
+        ...prev,
+        documents: [...(prev.documents || []), newDoc],
+      }))
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const removeDocument = (id: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      documents: (prev.documents || []).filter((d) => d.id !== id),
+    }))
   }
 
   // Schedule logic
@@ -173,31 +221,33 @@ export function PartnerStaff({
                 <Plus className="h-4 w-4 mr-2" /> Adicionar
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-3xl overflow-y-auto max-h-[90vh]">
               <DialogHeader>
                 <DialogTitle>
                   {editingId ? 'Editar' : 'Novo'} Funcionário
                 </DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label>Nome</Label>
-                  <Input
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Cargo / Função</Label>
-                  <Input
-                    value={formData.role}
-                    onChange={(e) =>
-                      setFormData({ ...formData, role: e.target.value })
-                    }
-                    placeholder="Ex: Supervisor, Cleaner"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Nome</Label>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Cargo / Função</Label>
+                    <Input
+                      value={formData.role}
+                      onChange={(e) =>
+                        setFormData({ ...formData, role: e.target.value })
+                      }
+                      placeholder="Ex: Supervisor, Cleaner"
+                    />
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
@@ -219,6 +269,104 @@ export function PartnerStaff({
                     />
                   </div>
                 </div>
+
+                <div className="grid gap-2">
+                  <Label>Endereço</Label>
+                  <Input
+                    value={formData.address}
+                    onChange={(e) =>
+                      setFormData({ ...formData, address: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="grid gap-2">
+                    <Label>Cidade</Label>
+                    <Input
+                      value={formData.city}
+                      onChange={(e) =>
+                        setFormData({ ...formData, city: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Estado</Label>
+                    <Input
+                      value={formData.state}
+                      onChange={(e) =>
+                        setFormData({ ...formData, state: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>CEP</Label>
+                    <Input
+                      value={formData.zipCode}
+                      onChange={(e) =>
+                        setFormData({ ...formData, zipCode: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>País</Label>
+                    <Input
+                      value={formData.country}
+                      onChange={(e) =>
+                        setFormData({ ...formData, country: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="border rounded p-3 bg-muted/20">
+                  <div className="flex justify-between items-center mb-2">
+                    <Label className="font-semibold">
+                      Documentos (CNH, Passaporte)
+                    </Label>
+                    <div>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        onChange={handleFileUpload}
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Upload className="h-3 w-3 mr-1" /> Upload
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    {formData.documents?.map((doc) => (
+                      <div
+                        key={doc.id}
+                        className="flex items-center justify-between text-sm bg-background p-2 rounded border"
+                      >
+                        <span>
+                          {doc.name} ({doc.category})
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-red-500"
+                          onClick={() => removeDocument(doc.id)}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                    {(!formData.documents ||
+                      formData.documents.length === 0) && (
+                      <span className="text-xs text-muted-foreground">
+                        Nenhum documento anexado.
+                      </span>
+                    )}
+                  </div>
+                </div>
+
                 <Button onClick={handleSave}>Salvar</Button>
               </div>
             </DialogContent>
@@ -340,7 +488,8 @@ export function PartnerStaff({
                     <div className="grid gap-2">
                       <Label>Valor Diária / Serviço ($)</Label>
                       <Input
-                        type="number"
+                        type="text"
+                        inputMode="decimal"
                         value={scheduleValue}
                         onChange={(e) => setScheduleValue(e.target.value)}
                         placeholder="Opcional: Valor específico"
@@ -377,3 +526,4 @@ export function PartnerStaff({
     </Card>
   )
 }
+

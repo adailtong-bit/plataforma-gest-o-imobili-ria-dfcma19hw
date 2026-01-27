@@ -62,7 +62,13 @@ export default function Partners() {
     city: '',
     state: '',
     country: '',
-    paymentInfo: { bankName: '', routingNumber: '', accountNumber: '' },
+    paymentInfo: {
+      bankName: '',
+      routingNumber: '',
+      accountNumber: '',
+      bankNumber: '',
+      zelle: '',
+    },
   })
 
   // Filter inactive partners by default in the main list, or show them visually distinct
@@ -135,7 +141,13 @@ export default function Partners() {
       email: '',
       phone: '',
       address: '',
-      paymentInfo: { bankName: '', routingNumber: '', accountNumber: '' },
+      paymentInfo: {
+        bankName: '',
+        routingNumber: '',
+        accountNumber: '',
+        bankNumber: '',
+        zelle: '',
+      },
     })
   }
 
@@ -357,6 +369,19 @@ export default function Partners() {
                     }
                   />
                   <Input
+                    placeholder="Bank Number"
+                    value={newPartner.paymentInfo?.bankNumber}
+                    onChange={(e) =>
+                      setNewPartner({
+                        ...newPartner,
+                        paymentInfo: {
+                          ...newPartner.paymentInfo!,
+                          bankNumber: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                  <Input
                     placeholder={t('partners.routing')}
                     value={newPartner.paymentInfo?.routingNumber}
                     onChange={(e) =>
@@ -451,3 +476,4 @@ export default function Partners() {
     </div>
   )
 }
+

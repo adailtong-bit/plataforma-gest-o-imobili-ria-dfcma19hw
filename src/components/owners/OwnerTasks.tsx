@@ -11,7 +11,14 @@ import {
 import { ClipboardList } from 'lucide-react'
 import { TaskCard } from '@/components/tasks/TaskCard'
 import useTaskStore from '@/stores/useTaskStore'
-import { startOfMonth, endOfMonth, isWithinInterval } from 'date-fns'
+import {
+  startOfMonth,
+  endOfMonth,
+  isWithinInterval,
+  subMonths,
+  startOfYear,
+  endOfYear,
+} from 'date-fns'
 
 interface OwnerTasksProps {
   ownerId: string
@@ -44,6 +51,19 @@ export function OwnerTasks({ ownerId, properties }: OwnerTasksProps) {
       return isWithinInterval(taskDate, {
         start: startOfMonth(now),
         end: endOfMonth(now),
+      })
+    }
+    if (timeFilter === 'last_month') {
+      const last = subMonths(now, 1)
+      return isWithinInterval(taskDate, {
+        start: startOfMonth(last),
+        end: endOfMonth(last),
+      })
+    }
+    if (timeFilter === 'this_year') {
+      return isWithinInterval(taskDate, {
+        start: startOfYear(now),
+        end: endOfYear(now),
       })
     }
     return true
@@ -85,6 +105,8 @@ export function OwnerTasks({ ownerId, properties }: OwnerTasksProps) {
             <SelectContent>
               <SelectItem value="all">Todo o Período</SelectItem>
               <SelectItem value="this_month">Este Mês</SelectItem>
+              <SelectItem value="last_month">Mês Passado</SelectItem>
+              <SelectItem value="this_year">Este Ano</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -111,3 +133,4 @@ export function OwnerTasks({ ownerId, properties }: OwnerTasksProps) {
     </Card>
   )
 }
+
