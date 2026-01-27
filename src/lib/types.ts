@@ -769,5 +769,3 @@ export interface Advertisement {
   startDate?: string
   endDate?: string
 }
-
-

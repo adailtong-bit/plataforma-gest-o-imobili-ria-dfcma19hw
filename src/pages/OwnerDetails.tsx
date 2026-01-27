@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -31,7 +31,9 @@ export default function OwnerDetails() {
   const { ledgerEntries } = useFinancialStore()
   const { toast } = useToast()
 
-  const owner = owners.find((o) => o.id === id)
+  // Use useMemo to stabilize owner object selection
+  const owner = useMemo(() => owners.find((o) => o.id === id), [owners, id])
+
   const [formData, setFormData] = useState<Owner | null>(
     owner ? { ...owner } : null,
   )
@@ -41,6 +43,13 @@ export default function OwnerDetails() {
   useEffect(() => {
     if (owner) {
       setFormData((prev) => {
+        // Prevent infinite loop by checking if data actually changed
+        // This is crucial because updateOwner updates the store, which updates 'owner',
+        // which triggers this effect. If we blindly setFormData, we might cause a loop
+        // if references are unstable.
+        if (JSON.stringify(prev) === JSON.stringify(owner)) {
+          return prev
+        }
         return { ...owner }
       })
     }
@@ -78,11 +87,11 @@ export default function OwnerDetails() {
     <div className="flex flex-col gap-6 pb-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link to="/owners">
-            <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/owners">
               <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
             {formData.name}
           </h1>
@@ -285,5 +294,3 @@ export default function OwnerDetails() {
     </div>
   )
 }
-
-

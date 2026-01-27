@@ -28,5 +28,3 @@ const usePartnerStore = () => {
 }
 
 export default usePartnerStore
-
-

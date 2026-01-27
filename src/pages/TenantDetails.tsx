@@ -175,7 +175,9 @@ export default function TenantDetails() {
 
   const handleUnlinkProperty = () => {
     if (!property) return
-    if (confirm('Unlink property? This will set property status to Available.')) {
+    if (
+      confirm('Unlink property? This will set property status to Available.')
+    ) {
       updateProperty({ ...property, status: 'available' })
       const updatedTenant = { ...formData, propertyId: undefined }
       setFormData(updatedTenant)
@@ -186,10 +188,7 @@ export default function TenantDetails() {
 
   const addReferralContact = () => {
     if (!newReferral.name || !newReferral.phone) return
-    const referrals = [
-      ...(formData.referralContacts || []),
-      { ...newReferral },
-    ]
+    const referrals = [...(formData.referralContacts || []), { ...newReferral }]
     setFormData({ ...formData, referralContacts: referrals })
     setNewReferral({ name: '', phone: '' })
   }
@@ -742,7 +741,9 @@ export default function TenantDetails() {
                             <DialogTitle>Link to Property</DialogTitle>
                           </DialogHeader>
                           <div className="py-4 space-y-4">
-                            <Label>Select Property (Available/Interested)</Label>
+                            <Label>
+                              Select Property (Available/Interested)
+                            </Label>
                             <Select
                               onValueChange={setSelectedPropertyId}
                               value={selectedPropertyId}
@@ -856,5 +857,3 @@ export default function TenantDetails() {
     </div>
   )
 }
-
-
