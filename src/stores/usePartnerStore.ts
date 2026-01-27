@@ -6,11 +6,21 @@ const usePartnerStore = () => {
   if (!context)
     throw new Error('usePartnerStore must be used within AppProvider')
 
+  const deletePartner = (id: string) => {
+    // Soft Delete Implementation: Instead of removing, mark as inactive
+    const partner = context.partners.find((p) => p.id === id)
+    if (partner) {
+      context.updatePartner({ ...partner, status: 'inactive' })
+      // Logic to flag pending tasks would ideally happen here or in the UI component calling this
+    }
+  }
+
   return {
     partners: context.partners,
     genericServiceRates: context.genericServiceRates,
     addPartner: context.addPartner,
     updatePartner: context.updatePartner,
+    deletePartner: deletePartner, // Expose soft delete wrapper
     addGenericServiceRate: context.addGenericServiceRate,
     updateGenericServiceRate: context.updateGenericServiceRate,
     deleteGenericServiceRate: context.deleteGenericServiceRate,
@@ -18,3 +28,5 @@ const usePartnerStore = () => {
 }
 
 export default usePartnerStore
+
+

@@ -58,19 +58,29 @@ export default function Partners() {
     email: '',
     phone: '',
     address: '',
+    zipCode: '',
+    city: '',
+    state: '',
+    country: '',
     paymentInfo: { bankName: '', routingNumber: '', accountNumber: '' },
   })
 
+  // Filter inactive partners by default in the main list, or show them visually distinct
+  // For now, showing all but allowing filter
   const filteredPartners = partners.filter(
     (p) =>
-      p.name.toLowerCase().includes(filter.toLowerCase()) ||
-      p.companyName?.toLowerCase().includes(filter.toLowerCase()),
+      (p.name.toLowerCase().includes(filter.toLowerCase()) ||
+        p.companyName?.toLowerCase().includes(filter.toLowerCase())) &&
+      p.status === 'active',
   )
 
   const handleAddressSelect = (addr: AddressData) => {
     setNewPartner((prev) => ({
       ...prev,
-      address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
+      address: addr.street,
+      city: addr.city,
+      state: addr.state,
+      zipCode: addr.zipCode,
       country: addr.country,
     }))
   }
@@ -102,6 +112,9 @@ export default function Partners() {
       email: newPartner.email,
       phone: newPartner.phone || '',
       address: newPartner.address,
+      zipCode: newPartner.zipCode,
+      city: newPartner.city,
+      state: newPartner.state,
       country: newPartner.country,
       paymentInfo: newPartner.paymentInfo,
       status: 'active',
@@ -198,7 +211,7 @@ export default function Partners() {
               <Plus className="h-4 w-4" /> {t('partners.new_partner')}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl overflow-y-auto max-h-[90vh]">
             <DialogHeader>
               <DialogTitle>{t('partners.register_title')}</DialogTitle>
             </DialogHeader>
@@ -291,15 +304,45 @@ export default function Partners() {
                   onChange={(e) =>
                     setNewPartner({ ...newPartner, address: e.target.value })
                   }
-                  placeholder="Full Address"
+                  placeholder="Address Line 1"
                 />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div className="grid gap-2">
+                  <Label>Cidade</Label>
+                  <Input
+                    value={newPartner.city}
+                    onChange={(e) =>
+                      setNewPartner({ ...newPartner, city: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Estado</Label>
+                  <Input
+                    value={newPartner.state}
+                    onChange={(e) =>
+                      setNewPartner({ ...newPartner, state: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>CEP / ZIP</Label>
+                  <Input
+                    value={newPartner.zipCode}
+                    onChange={(e) =>
+                      setNewPartner({ ...newPartner, zipCode: e.target.value })
+                    }
+                  />
+                </div>
               </div>
 
               <div className="border rounded-md p-3 space-y-3 bg-muted/20">
                 <Label className="font-semibold">
                   {t('partners.bank_info')}
                 </Label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <Input
                     placeholder={t('partners.bank_name')}
                     value={newPartner.paymentInfo?.bankName}
@@ -335,6 +378,19 @@ export default function Partners() {
                         paymentInfo: {
                           ...newPartner.paymentInfo!,
                           accountNumber: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                  <Input
+                    placeholder="Zelle (Email/Phone)"
+                    value={newPartner.paymentInfo?.zelle}
+                    onChange={(e) =>
+                      setNewPartner({
+                        ...newPartner,
+                        paymentInfo: {
+                          ...newPartner.paymentInfo!,
+                          zelle: e.target.value,
                         },
                       })
                     }
@@ -395,3 +451,5 @@ export default function Partners() {
     </div>
   )
 }
+
+

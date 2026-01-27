@@ -303,7 +303,9 @@ export default function Owners() {
                               {t('common.actions')}
                             </DropdownMenuLabel>
                             <DropdownMenuItem
-                              onClick={() => navigate('/messages')}
+                              onClick={() =>
+                                navigate(`/messages?contactId=${owner.id}`)
+                              }
                             >
                               <MessageSquare className="mr-2 h-4 w-4" />{' '}
                               {t('tenants.send_message')}
@@ -339,3 +341,5 @@ export default function Owners() {
     </div>
   )
 }
+
+

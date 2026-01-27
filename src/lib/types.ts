@@ -126,6 +126,9 @@ export interface Condominium {
   id: string
   name: string
   address: string
+  zipCode?: string
+  city?: string
+  state?: string
   managerName?: string
   managerPhone?: string
   managerEmail?: string
@@ -159,6 +162,7 @@ export type PropertyStatus =
   | 'in_registration'
   | 'suspended'
   | 'released'
+  | 'reserved'
 
 export interface FixedExpense {
   id: string
@@ -325,6 +329,7 @@ export type DocumentCategory =
   | 'Inspection'
   | 'Passport'
   | 'SSN'
+  | 'DriverLicense'
 
 export interface PropertyDocument {
   id: string
@@ -377,9 +382,11 @@ export interface Tenant {
   avatar?: string
   documents?: GenericDocument[]
   idNumber?: string
+  passport?: string
   driverLicense?: string
   socialSecurity?: string
   references?: string
+  referralContacts?: { name: string; phone: string }[]
   emergencyContact?: {
     name: string
     phone: string
@@ -451,6 +458,9 @@ export interface Owner {
   avatar?: string
   documents?: GenericDocument[]
   address?: string
+  zipCode?: string
+  city?: string
+  state?: string
   secondContact?: {
     name: string
     phone: string
@@ -478,6 +488,12 @@ export interface PartnerEmployee {
   role: string
   email?: string
   phone?: string
+  address?: string
+  zipCode?: string
+  city?: string
+  state?: string
+  country?: string
+  documents?: GenericDocument[]
   status: 'active' | 'inactive'
   schedule?: {
     date: string
@@ -499,10 +515,15 @@ export interface Partner {
   role: UserRole
   avatar?: string
   address?: string
+  zipCode?: string
+  city?: string
+  state?: string
   paymentInfo?: {
     bankName: string
     routingNumber: string
     accountNumber: string
+    bankNumber?: string
+    zelle?: string
   }
   serviceRates?: ServiceRate[]
   employees?: PartnerEmployee[]
@@ -559,13 +580,14 @@ export interface Task {
   source?: 'manual' | 'migration' | 'automation'
   inventoryItemId?: string
   lastNotified?: string // Supplier Communication Automation
+  invoiceId?: string
 }
 
 export interface Invoice {
   id: string
   description: string
   amount: number
-  status: 'pending' | 'paid' | 'approved'
+  status: 'pending' | 'paid' | 'approved' | 'sent'
   date: string
   fromId?: string
   toId?: string
@@ -747,3 +769,5 @@ export interface Advertisement {
   startDate?: string
   endDate?: string
 }
+
+

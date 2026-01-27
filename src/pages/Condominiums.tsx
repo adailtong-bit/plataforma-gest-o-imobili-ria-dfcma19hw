@@ -63,6 +63,9 @@ export default function Condominiums() {
   const [formData, setFormData] = useState({
     name: '',
     address: '',
+    zipCode: '',
+    city: '',
+    state: '',
     managerName: '',
     managerPhone: '',
     managerEmail: '',
@@ -80,7 +83,10 @@ export default function Condominiums() {
   const handleAddressSelect = (addr: AddressData) => {
     setFormData((prev) => ({
       ...prev,
-      address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
+      address: addr.street,
+      city: addr.city,
+      state: addr.state,
+      zipCode: addr.zipCode,
     }))
   }
 
@@ -133,6 +139,9 @@ export default function Condominiums() {
     setFormData({
       name: '',
       address: '',
+      zipCode: '',
+      city: '',
+      state: '',
       managerName: '',
       managerPhone: '',
       managerEmail: '',
@@ -187,6 +196,35 @@ export default function Condominiums() {
                     setFormData({ ...formData, address: e.target.value })
                   }
                 />
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="grid gap-2">
+                  <Label>Cidade</Label>
+                  <Input
+                    value={formData.city}
+                    onChange={(e) =>
+                      setFormData({ ...formData, city: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Estado</Label>
+                  <Input
+                    value={formData.state}
+                    onChange={(e) =>
+                      setFormData({ ...formData, state: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>CEP / ZIP</Label>
+                  <Input
+                    value={formData.zipCode}
+                    onChange={(e) =>
+                      setFormData({ ...formData, zipCode: e.target.value })
+                    }
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label>{t('condominiums.manager')}</Label>
@@ -267,7 +305,10 @@ export default function Condominiums() {
                       <Building2 className="h-4 w-4 text-muted-foreground" />
                       {condo.name}
                     </TableCell>
-                    <TableCell>{condo.address}</TableCell>
+                    <TableCell>
+                      {condo.address}
+                      {condo.city && `, ${condo.city}`}
+                    </TableCell>
                     <TableCell>{condo.managerName || '-'}</TableCell>
                     <TableCell>
                       <div className="flex flex-col text-xs">
@@ -337,3 +378,5 @@ export default function Condominiums() {
     </div>
   )
 }
+
+

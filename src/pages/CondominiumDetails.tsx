@@ -95,10 +95,13 @@ export default function CondominiumDetails() {
   }
 
   const handleAddressSelect = (addr: AddressData) => {
-    handleChange(
-      'address',
-      `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
-    )
+    setFormData((prev: any) => ({
+      ...prev,
+      address: addr.street,
+      city: addr.city,
+      state: addr.state,
+      zipCode: addr.zipCode,
+    }))
   }
 
   const handleNestedChange = (
@@ -238,6 +241,38 @@ export default function CondominiumDetails() {
                 <AddressInput
                   onAddressSelect={handleAddressSelect}
                   defaultValue={formData.address}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Endereço</Label>
+                <Input
+                  value={formData.address}
+                  onChange={(e) => handleChange('address', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Cidade</Label>
+                <Input
+                  value={formData.city || ''}
+                  onChange={(e) => handleChange('city', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Estado</Label>
+                <Input
+                  value={formData.state || ''}
+                  onChange={(e) => handleChange('state', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>CEP / ZIP</Label>
+                <Input
+                  value={formData.zipCode || ''}
+                  onChange={(e) => handleChange('zipCode', e.target.value)}
                   disabled={!isEditing}
                 />
               </div>
@@ -565,3 +600,5 @@ export default function CondominiumDetails() {
     </div>
   )
 }
+
+

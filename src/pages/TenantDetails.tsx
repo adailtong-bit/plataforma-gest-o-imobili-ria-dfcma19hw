@@ -23,6 +23,8 @@ import {
   TrendingUp,
   CheckSquare,
   FileText,
+  Link as LinkIcon,
+  Unlink,
 } from 'lucide-react'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -31,7 +33,7 @@ import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DocumentVault } from '@/components/documents/DocumentVault'
-import { Tenant, InventoryInspection } from '@/lib/types'
+import { Tenant, InventoryInspection, Property } from '@/lib/types'
 import { Separator } from '@/components/ui/separator'
 import {
   Select,
@@ -51,11 +53,18 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { format } from 'date-fns'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 
 export default function TenantDetails() {
   const { id } = useParams()
   const { tenants, updateTenant } = useTenantStore()
-  const { properties } = usePropertyStore()
+  const { properties, updateProperty } = usePropertyStore()
   const { owners } = useOwnerStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
@@ -78,6 +87,13 @@ export default function TenantDetails() {
   const [reportViewerOpen, setReportViewerOpen] = useState(false)
   const [selectedInspection, setSelectedInspection] =
     useState<InventoryInspection | null>(null)
+
+  // Property Linking
+  const [linkPropertyOpen, setLinkPropertyOpen] = useState(false)
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string>('')
+
+  // Referral Contact State
+  const [newReferral, setNewReferral] = useState({ name: '', phone: '' })
 
   useEffect(() => {
     if (tenant) {
@@ -138,8 +154,58 @@ export default function TenantDetails() {
     setReportViewerOpen(true)
   }
 
+  const handleLinkProperty = () => {
+    if (!selectedPropertyId) return
+
+    const selectedProp = properties.find((p) => p.id === selectedPropertyId)
+    if (selectedProp) {
+      // Update property status to reserved
+      updateProperty({ ...selectedProp, status: 'reserved' })
+      // Link tenant
+      const updatedTenant = { ...formData, propertyId: selectedPropertyId }
+      setFormData(updatedTenant)
+      updateTenant(updatedTenant)
+      setLinkPropertyOpen(false)
+      toast({
+        title: 'Property Linked',
+        description: `Linked to ${selectedProp.name}. Status set to Reserved.`,
+      })
+    }
+  }
+
+  const handleUnlinkProperty = () => {
+    if (!property) return
+    if (confirm('Unlink property? This will set property status to Available.')) {
+      updateProperty({ ...property, status: 'available' })
+      const updatedTenant = { ...formData, propertyId: undefined }
+      setFormData(updatedTenant)
+      updateTenant(updatedTenant)
+      toast({ title: 'Unlinked', description: 'Property association removed.' })
+    }
+  }
+
+  const addReferralContact = () => {
+    if (!newReferral.name || !newReferral.phone) return
+    const referrals = [
+      ...(formData.referralContacts || []),
+      { ...newReferral },
+    ]
+    setFormData({ ...formData, referralContacts: referrals })
+    setNewReferral({ name: '', phone: '' })
+  }
+
+  const removeReferralContact = (index: number) => {
+    const referrals = [...(formData.referralContacts || [])]
+    referrals.splice(index, 1)
+    setFormData({ ...formData, referralContacts: referrals })
+  }
+
   const hasCheckIn = formData.inspections?.some((i) => i.type === 'check_in')
   const hasCheckOut = formData.inspections?.some((i) => i.type === 'check_out')
+
+  const availableProperties = properties.filter(
+    (p) => p.status === 'available' || p.status === 'interested',
+  )
 
   return (
     <div className="flex flex-col gap-6 pb-10">
@@ -281,38 +347,141 @@ export default function TenantDetails() {
                     Informações Pessoais
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Nome Completo</Label>
-                    <Input
-                      value={formData.name}
-                      onChange={(e) => handleChange('name', e.target.value)}
-                      disabled={!isEditing}
-                    />
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>Nome Completo</Label>
+                      <Input
+                        value={formData.name}
+                        onChange={(e) => handleChange('name', e.target.value)}
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Email</Label>
+                      <Input
+                        value={formData.email}
+                        onChange={(e) => handleChange('email', e.target.value)}
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Telefone</Label>
+                      <Input
+                        value={formData.phone}
+                        onChange={(e) => handleChange('phone', e.target.value)}
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Nacionalidade</Label>
+                      <Input
+                        value={formData.country || ''}
+                        onChange={(e) =>
+                          handleChange('country', e.target.value)
+                        }
+                        disabled={!isEditing}
+                      />
+                    </div>
                   </div>
-                  <div className="grid gap-2">
-                    <Label>Email</Label>
-                    <Input
-                      value={formData.email}
-                      onChange={(e) => handleChange('email', e.target.value)}
-                      disabled={!isEditing}
-                    />
+
+                  <Separator />
+                  <h3 className="font-medium text-sm">Documentação</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid gap-2">
+                      <Label>ID Number</Label>
+                      <Input
+                        value={formData.idNumber || ''}
+                        onChange={(e) =>
+                          handleChange('idNumber', e.target.value)
+                        }
+                        disabled={!isEditing}
+                        placeholder="RG / ID"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Passport</Label>
+                      <Input
+                        value={formData.passport || ''}
+                        onChange={(e) =>
+                          handleChange('passport', e.target.value)
+                        }
+                        disabled={!isEditing}
+                        placeholder="Passport No."
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>SSN (Social Security)</Label>
+                      <Input
+                        value={formData.socialSecurity || ''}
+                        onChange={(e) =>
+                          handleChange('socialSecurity', e.target.value)
+                        }
+                        disabled={!isEditing}
+                        placeholder="xxx-xx-xxxx"
+                      />
+                    </div>
                   </div>
-                  <div className="grid gap-2">
-                    <Label>Telefone</Label>
-                    <Input
-                      value={formData.phone}
-                      onChange={(e) => handleChange('phone', e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Nacionalidade</Label>
-                    <Input
-                      value={formData.country || ''}
-                      onChange={(e) => handleChange('country', e.target.value)}
-                      disabled={!isEditing}
-                    />
+
+                  <Separator />
+                  <h3 className="font-medium text-sm">Referral Contacts</h3>
+                  <div className="space-y-2">
+                    {formData.referralContacts?.map((ref, idx) => (
+                      <div
+                        key={idx}
+                        className="flex gap-2 items-center bg-muted/20 p-2 rounded"
+                      >
+                        <div className="flex-1 text-sm font-medium">
+                          {ref.name}
+                        </div>
+                        <div className="flex-1 text-sm text-muted-foreground">
+                          {ref.phone}
+                        </div>
+                        {isEditing && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 text-red-500"
+                            onClick={() => removeReferralContact(idx)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                    {isEditing && (
+                      <div className="flex gap-2 items-end">
+                        <Input
+                          placeholder="Name"
+                          value={newReferral.name}
+                          onChange={(e) =>
+                            setNewReferral({
+                              ...newReferral,
+                              name: e.target.value,
+                            })
+                          }
+                          className="h-8"
+                        />
+                        <Input
+                          placeholder="Phone"
+                          value={newReferral.phone}
+                          onChange={(e) =>
+                            setNewReferral({
+                              ...newReferral,
+                              phone: e.target.value,
+                            })
+                          }
+                          className="h-8"
+                        />
+                        <Button
+                          size="sm"
+                          onClick={addReferralContact}
+                          className="h-8"
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -415,7 +584,7 @@ export default function TenantDetails() {
                     </CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    {!hasCheckIn && (
+                    {!hasCheckIn && property && (
                       <Button
                         size="sm"
                         onClick={() => startInspection('check_in')}
@@ -423,7 +592,7 @@ export default function TenantDetails() {
                         Start Check-in
                       </Button>
                     )}
-                    {hasCheckIn && !hasCheckOut && (
+                    {hasCheckIn && !hasCheckOut && property && (
                       <Button
                         size="sm"
                         variant="outline"
@@ -491,9 +660,21 @@ export default function TenantDetails() {
               {property ? (
                 <Card className="bg-slate-50 border-slate-200">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Home className="h-5 w-5 text-slate-500" /> Propriedade
-                    </CardTitle>
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Home className="h-5 w-5 text-slate-500" /> Propriedade
+                      </CardTitle>
+                      {isEditing && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleUnlinkProperty}
+                          title="Unlink"
+                        >
+                          <Unlink className="h-4 w-4 text-red-500" />
+                        </Button>
+                      )}
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-1">
@@ -506,6 +687,11 @@ export default function TenantDetails() {
                       <p className="text-sm text-muted-foreground">
                         {property.address}
                       </p>
+                      {property.status === 'reserved' && (
+                        <Badge className="bg-yellow-500 hover:bg-yellow-600">
+                          Reserved
+                        </Badge>
+                      )}
                     </div>
                     <Separator />
                     <div className="space-y-2">
@@ -536,11 +722,53 @@ export default function TenantDetails() {
                 </Card>
               ) : (
                 <Card className="bg-muted/40 border-dashed">
-                  <CardContent className="flex flex-col items-center justify-center py-10 text-center">
+                  <CardContent className="flex flex-col items-center justify-center py-10 text-center gap-4">
                     <Home className="h-10 w-10 text-muted-foreground/50 mb-2" />
                     <p className="text-muted-foreground">
                       Nenhuma propriedade vinculada.
                     </p>
+                    {isEditing && (
+                      <Dialog
+                        open={linkPropertyOpen}
+                        onOpenChange={setLinkPropertyOpen}
+                      >
+                        <DialogTrigger asChild>
+                          <Button variant="outline" className="gap-2">
+                            <LinkIcon className="h-4 w-4" /> Link Property
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Link to Property</DialogTitle>
+                          </DialogHeader>
+                          <div className="py-4 space-y-4">
+                            <Label>Select Property (Available/Interested)</Label>
+                            <Select
+                              onValueChange={setSelectedPropertyId}
+                              value={selectedPropertyId}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {availableProperties.map((p) => (
+                                  <SelectItem key={p.id} value={p.id}>
+                                    {p.name} ({p.status})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Button
+                              onClick={handleLinkProperty}
+                              disabled={!selectedPropertyId}
+                              className="w-full"
+                            >
+                              Confirm Link (Set Reserved)
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    )}
                   </CardContent>
                 </Card>
               )}
@@ -628,3 +856,5 @@ export default function TenantDetails() {
     </div>
   )
 }
+
+

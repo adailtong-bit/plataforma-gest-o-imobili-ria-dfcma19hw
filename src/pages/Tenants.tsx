@@ -35,6 +35,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { isValidEmail } from '@/lib/utils'
+import { PhoneInput } from '@/components/ui/phone-input'
+import { Label } from '@/components/ui/label'
 
 export default function Tenants() {
   const { tenants, addTenant } = useTenantStore()
@@ -63,16 +66,51 @@ export default function Tenants() {
   )
 
   const handleAddTenant = () => {
-    if (!newTenant.name) return
+    if (!newTenant.name || !newTenant.email) {
+      toast({
+        title: 'Validation Error',
+        description: 'Name and email are required.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (!isValidEmail(newTenant.email)) {
+      toast({
+        title: 'Validation Error',
+        description: 'Invalid email format.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (!newTenant.phone || newTenant.phone.length < 10) {
+      toast({
+        title: 'Validation Error',
+        description: 'Phone number is invalid or too short.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     addTenant({
       id: `t-${Date.now()}`,
       ...newTenant,
-      rentValue: parseFloat(newTenant.rentValue),
+      rentValue: parseFloat(newTenant.rentValue) || 0,
       status: 'active',
       role: 'tenant',
     } as any)
     setOpen(false)
     toast({ title: 'Tenant added' })
+    setNewTenant({
+      name: '',
+      email: '',
+      phone: '',
+      rentValue: '',
+      propertyId: '',
+      leaseStart: '',
+      leaseEnd: '',
+    })
   }
 
   const handleWhatsApp = (phone: string) => {
@@ -85,6 +123,7 @@ export default function Tenants() {
       'Tenant ID',
       'Tenant Name',
       'Email',
+      'Phone',
       'Property ID',
       'Property Name',
       'Owner ID',
@@ -101,6 +140,7 @@ export default function Tenants() {
         tenant.id,
         tenant.name,
         tenant.email,
+        tenant.phone,
         tenant.propertyId || 'N/A',
         property?.name || 'N/A',
         owner?.id || 'N/A',
@@ -152,21 +192,38 @@ export default function Tenants() {
                 <DialogTitle>{t('tenants.register_title')}</DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <Input
-                  placeholder="Name"
-                  value={newTenant.name}
-                  onChange={(e) =>
-                    setNewTenant({ ...newTenant, name: e.target.value })
-                  }
-                />
-                <Input
-                  placeholder="Email"
-                  value={newTenant.email}
-                  onChange={(e) =>
-                    setNewTenant({ ...newTenant, email: e.target.value })
-                  }
-                />
-                <Button onClick={handleAddTenant}>Save</Button>
+                <div className="grid gap-2">
+                  <Label>Name</Label>
+                  <Input
+                    placeholder="Full Name"
+                    value={newTenant.name}
+                    onChange={(e) =>
+                      setNewTenant({ ...newTenant, name: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Email</Label>
+                  <Input
+                    placeholder="Email"
+                    value={newTenant.email}
+                    onChange={(e) =>
+                      setNewTenant({ ...newTenant, email: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Phone</Label>
+                  <PhoneInput
+                    value={newTenant.phone}
+                    onChange={(e) =>
+                      setNewTenant({ ...newTenant, phone: e.target.value })
+                    }
+                  />
+                </div>
+                <Button onClick={handleAddTenant} className="w-full">
+                  Save
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -281,3 +338,5 @@ export default function Tenants() {
     </div>
   )
 }
+
+

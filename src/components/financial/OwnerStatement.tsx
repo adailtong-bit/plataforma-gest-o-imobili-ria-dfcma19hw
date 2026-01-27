@@ -18,7 +18,16 @@ import {
 import { Button } from '@/components/ui/button'
 import { Download, ExternalLink, ClipboardList } from 'lucide-react'
 import { Property, LedgerEntry, Task } from '@/lib/types'
-import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns'
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  startOfYear,
+  endOfYear,
+  subYears,
+  getYear,
+} from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
 import { Link } from 'react-router-dom'
@@ -38,12 +47,12 @@ export function OwnerStatement({
 }: OwnerStatementProps) {
   const { toast } = useToast()
   const { tasks } = useTaskStore()
-  const [period, setPeriod] = useState('current') // current, last, last3
+  const [period, setPeriod] = useState('current') // current, last, last3, year, prevYear
+  const [selectedPropertyId, setSelectedPropertyId] = useState('all')
   const [viewingTask, setViewingTask] = useState<Task | null>(null)
 
-  const ownerPropertyIds = properties
-    .filter((p) => p.ownerId === ownerId)
-    .map((p) => p.id)
+  const ownerProperties = properties.filter((p) => p.ownerId === ownerId)
+  const ownerPropertyIds = ownerProperties.map((p) => p.id)
 
   const getDateRange = () => {
     const now = new Date()
@@ -52,16 +61,28 @@ export function OwnerStatement({
     } else if (period === 'last') {
       const last = subMonths(now, 1)
       return { start: startOfMonth(last), end: endOfMonth(last) }
-    } else {
-      // last3
+    } else if (period === 'last3') {
       return { start: startOfMonth(subMonths(now, 3)), end: endOfMonth(now) }
+    } else if (period === 'year') {
+      return { start: startOfYear(now), end: endOfYear(now) }
+    } else if (period === 'prevYear') {
+      const prev = subYears(now, 1)
+      return { start: startOfYear(prev), end: endOfYear(prev) }
+    } else {
+      return { start: startOfMonth(now), end: endOfMonth(now) }
     }
   }
 
   const range = getDateRange()
 
   const filteredEntries = ledgerEntries.filter((entry) => {
-    if (!ownerPropertyIds.includes(entry.propertyId)) return false
+    const propertyMatch =
+      selectedPropertyId === 'all'
+        ? ownerPropertyIds.includes(entry.propertyId)
+        : entry.propertyId === selectedPropertyId
+
+    if (!propertyMatch) return false
+
     const date = new Date(entry.date)
     return date >= range.start && date <= range.end
   })
@@ -83,6 +104,8 @@ export function OwnerStatement({
     })
   }
 
+  const currentYear = getYear(new Date())
+
   return (
     <Card>
       <TaskDetailsSheet
@@ -91,9 +114,26 @@ export function OwnerStatement({
         onOpenChange={(open) => !open && setViewingTask(null)}
       />
 
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col md:flex-row items-center justify-between gap-4">
         <CardTitle>Extrato do Proprietário</CardTitle>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap justify-end">
+          <Select
+            value={selectedPropertyId}
+            onValueChange={setSelectedPropertyId}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Propriedade" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as Propriedades</SelectItem>
+              {ownerProperties.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <Select value={period} onValueChange={setPeriod}>
             <SelectTrigger className="w-[180px]">
               <SelectValue />
@@ -102,6 +142,10 @@ export function OwnerStatement({
               <SelectItem value="current">Este Mês</SelectItem>
               <SelectItem value="last">Mês Passado</SelectItem>
               <SelectItem value="last3">Últimos 3 Meses</SelectItem>
+              <SelectItem value="year">Ano Atual ({currentYear})</SelectItem>
+              <SelectItem value="prevYear">
+                Ano Anterior ({currentYear - 1})
+              </SelectItem>
             </SelectContent>
           </Select>
           <Button variant="outline" onClick={handleDownload}>
@@ -223,3 +267,5 @@ export function OwnerStatement({
     </Card>
   )
 }
+
+

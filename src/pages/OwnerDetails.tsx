@@ -41,8 +41,6 @@ export default function OwnerDetails() {
   useEffect(() => {
     if (owner) {
       setFormData((prev) => {
-        // Only update if we are not editing, or if the update is from documents (handled via handleDocsUpdate which also updates local state)
-        // For simplicity and consistency with TenantDetails, we sync.
         return { ...owner }
       })
     }
@@ -135,15 +133,6 @@ export default function OwnerDetails() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Endereço Completo</Label>
-                <Input
-                  value={formData.address || ''}
-                  onChange={(e) => handleChange('address', e.target.value)}
-                  disabled={!isEditing}
-                  placeholder="Street, City, State, ZIP"
-                />
-              </div>
-              <div className="grid gap-2">
                 <Label>Email</Label>
                 <Input
                   value={formData.email}
@@ -156,6 +145,47 @@ export default function OwnerDetails() {
                 <Input
                   value={formData.phone}
                   onChange={(e) => handleChange('phone', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Endereço Completo</Label>
+                <Input
+                  value={formData.address || ''}
+                  onChange={(e) => handleChange('address', e.target.value)}
+                  disabled={!isEditing}
+                  placeholder="Street, City, State, ZIP"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Cidade</Label>
+                <Input
+                  value={formData.city || ''}
+                  onChange={(e) => handleChange('city', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Estado</Label>
+                <Input
+                  value={formData.state || ''}
+                  onChange={(e) => handleChange('state', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>CEP / Zip</Label>
+                <Input
+                  value={formData.zipCode || ''}
+                  onChange={(e) => handleChange('zipCode', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>País</Label>
+                <Input
+                  value={formData.country || ''}
+                  onChange={(e) => handleChange('country', e.target.value)}
                   disabled={!isEditing}
                 />
               </div>
@@ -255,3 +285,5 @@ export default function OwnerDetails() {
     </div>
   )
 }
+
+
