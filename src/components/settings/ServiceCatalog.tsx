@@ -22,7 +22,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
 import {
@@ -237,12 +236,11 @@ export function ServiceCatalog() {
               automação financeira.
             </CardDescription>
           </div>
+          {/* Ref Fix: Removed DialogTrigger to prevent setRef recursion */}
+          <Button onClick={openAdd} className="bg-trust-blue">
+            <Plus className="mr-2 h-4 w-4" /> Adicionar Serviço
+          </Button>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={openAdd} className="bg-trust-blue">
-                <Plus className="mr-2 h-4 w-4" /> Adicionar Serviço
-              </Button>
-            </DialogTrigger>
             <DialogContent className="max-w-3xl overflow-y-auto max-h-[90vh]">
               <DialogHeader>
                 <DialogTitle>
