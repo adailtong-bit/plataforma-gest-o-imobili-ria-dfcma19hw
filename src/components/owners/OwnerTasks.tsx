@@ -133,4 +133,3 @@ export function OwnerTasks({ ownerId, properties }: OwnerTasksProps) {
     </Card>
   )
 }
-

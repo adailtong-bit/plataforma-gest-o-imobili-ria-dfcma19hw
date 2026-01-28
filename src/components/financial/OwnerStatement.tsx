@@ -271,4 +271,3 @@ export function OwnerStatement({
     </Card>
   )
 }
-

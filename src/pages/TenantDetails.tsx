@@ -190,7 +190,9 @@ export default function TenantDetails() {
 
   const handleUnlinkProperty = () => {
     if (!property) return
-    if (confirm('Unlink property? This will set property status to Available.')) {
+    if (
+      confirm('Unlink property? This will set property status to Available.')
+    ) {
       updateProperty({ ...property, status: 'available' })
       const updatedTenant = { ...formData, propertyId: undefined }
       setFormData(updatedTenant)
@@ -201,10 +203,7 @@ export default function TenantDetails() {
 
   const addReferralContact = () => {
     if (!newReferral.name) return
-    const referrals = [
-      ...(formData.referralContacts || []),
-      { ...newReferral },
-    ]
+    const referrals = [...(formData.referralContacts || []), { ...newReferral }]
     setFormData({ ...formData, referralContacts: referrals })
     setNewReferral({ name: '', phone: '', email: '' })
   }
@@ -906,4 +905,3 @@ export default function TenantDetails() {
     </div>
   )
 }
-

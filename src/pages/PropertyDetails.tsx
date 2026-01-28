@@ -64,7 +64,12 @@ export default function PropertyDetails() {
   const { toast } = useToast()
 
   const property = properties.find((p) => p.id === id)
-  const [formData, setFormData] = useState<Property | null>(null)
+
+  // Use lazy initialization to set initial state if property is already available
+  // This prevents an initial null render flash and helps with stability
+  const [formData, setFormData] = useState<Property | null>(() =>
+    property ? JSON.parse(JSON.stringify(property)) : null,
+  )
   const [isEditing, setIsEditing] = useState(false)
 
   // Link resolution
@@ -74,9 +79,16 @@ export default function PropertyDetails() {
   )
   const linkedCondo = condominiums.find((c) => c.id === formData?.condominiumId)
 
+  // Stability Fix: Prevent infinite loops by using functional update pattern
+  // Only update state if the property ID has changed (navigation) or if not yet initialized
   useEffect(() => {
     if (property) {
-      setFormData(JSON.parse(JSON.stringify(property)))
+      setFormData((prev) => {
+        if (!prev || prev.id !== property.id) {
+          return JSON.parse(JSON.stringify(property))
+        }
+        return prev
+      })
     }
   }, [property])
 
