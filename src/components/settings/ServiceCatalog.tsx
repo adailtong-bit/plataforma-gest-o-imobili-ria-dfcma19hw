@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   Card,
   CardContent,
@@ -32,11 +32,17 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Search, Plus, Trash2, Edit } from 'lucide-react'
+import { Search, Plus, Trash2, Edit, AlertTriangle, Layers } from 'lucide-react'
 import usePartnerStore from '@/stores/usePartnerStore'
 import { useToast } from '@/hooks/use-toast'
-import { format } from 'date-fns'
+import { format, differenceInDays } from 'date-fns'
 import { ServiceRate } from '@/lib/types'
+import { ServiceCategoriesDialog } from './ServiceCategoriesDialog'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 export function ServiceCatalog() {
   const {
@@ -46,10 +52,13 @@ export function ServiceCatalog() {
     addGenericServiceRate,
     updateGenericServiceRate,
     deleteGenericServiceRate,
+    serviceCategories,
   } = usePartnerStore()
   const { toast } = useToast()
   const [filter, setFilter] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [open, setOpen] = useState(false)
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [selectedPartnerId, setSelectedPartnerId] = useState<string>('generic')
 
@@ -62,6 +71,8 @@ export function ServiceCatalog() {
     validFrom: format(new Date(), 'yyyy-MM-dd'),
     validTo: '',
     type: 'generic',
+    categoryId: '',
+    lastUpdated: new Date().toISOString(),
   })
 
   const handlePriceChange = (
@@ -96,7 +107,7 @@ export function ServiceCatalog() {
 
   const genericRatesFormatted = genericServiceRates.map((rate) => ({
     ...rate,
-    partnerName: 'Genérico (Todos)',
+    partnerName: 'Generic (All)',
     partnerId: 'generic',
     partnerType: 'System',
     isGeneric: true,
@@ -104,17 +115,29 @@ export function ServiceCatalog() {
 
   const allRates = [...genericRatesFormatted, ...partnerRates]
 
-  const filteredRates = allRates.filter(
-    (rate) =>
+  const filteredRates = allRates.filter((rate) => {
+    const matchesText =
       rate.serviceName.toLowerCase().includes(filter.toLowerCase()) ||
-      rate.partnerName.toLowerCase().includes(filter.toLowerCase()),
-  )
+      rate.partnerName.toLowerCase().includes(filter.toLowerCase())
+
+    const matchesCategory =
+      categoryFilter === 'all' || rate.categoryId === categoryFilter
+
+    return matchesText && matchesCategory
+  })
+
+  const staleRatesCount = useMemo(() => {
+    return allRates.filter((rate) => {
+      if (!rate.lastUpdated) return false
+      return differenceInDays(new Date(), new Date(rate.lastUpdated)) > 180
+    }).length
+  }, [allRates])
 
   const handleSave = () => {
     if (!currentRate.serviceName || !currentRate.servicePrice) {
       toast({
-        title: 'Erro',
-        description: 'Nome e Preço do Serviço são obrigatórios.',
+        title: 'Error',
+        description: 'Service Name and Price are required.',
         variant: 'destructive',
       })
       return
@@ -131,6 +154,8 @@ export function ServiceCatalog() {
         currentRate.validFrom?.toString() || format(new Date(), 'yyyy-MM-dd'),
       validTo: currentRate.validTo?.toString(),
       type: selectedPartnerId === 'generic' ? 'generic' : 'specific',
+      categoryId: currentRate.categoryId,
+      lastUpdated: new Date().toISOString(),
     }
 
     if (selectedPartnerId === 'generic') {
@@ -157,10 +182,8 @@ export function ServiceCatalog() {
     }
 
     toast({
-      title: 'Sucesso',
-      description: editMode
-        ? 'Serviço atualizado.'
-        : 'Serviço adicionado ao catálogo.',
+      title: 'Success',
+      description: editMode ? 'Service updated.' : 'Service added to catalog.',
     })
 
     setOpen(false)
@@ -168,7 +191,7 @@ export function ServiceCatalog() {
   }
 
   const handleDelete = (partnerId: string, rateId: string) => {
-    if (confirm('Tem certeza que deseja excluir este serviço?')) {
+    if (confirm('Are you sure you want to delete this service?')) {
       if (partnerId === 'generic') {
         deleteGenericServiceRate(rateId)
       } else {
@@ -182,8 +205,8 @@ export function ServiceCatalog() {
       }
 
       toast({
-        title: 'Excluído',
-        description: 'Serviço removido do catálogo.',
+        title: 'Deleted',
+        description: 'Service removed from catalog.',
       })
     }
   }
@@ -207,6 +230,8 @@ export function ServiceCatalog() {
       validFrom: rate.validFrom,
       validTo: rate.validTo || '',
       type: rate.type,
+      categoryId: rate.categoryId,
+      lastUpdated: rate.lastUpdated,
     })
     setOpen(true)
   }
@@ -222,269 +247,398 @@ export function ServiceCatalog() {
       validFrom: format(new Date(), 'yyyy-MM-dd'),
       validTo: '',
       type: 'generic',
+      categoryId: '',
+      lastUpdated: new Date().toISOString(),
     })
   }
 
+  const getCategoryBadge = (categoryId?: string) => {
+    const cat = serviceCategories.find((c) => c.id === categoryId)
+    if (!cat) return null
+    return (
+      <Badge
+        variant="outline"
+        className="border-0 text-white"
+        style={{ backgroundColor: cat.color }}
+      >
+        {cat.name}
+      </Badge>
+    )
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <CardTitle>Catálogo de Preços de Serviços</CardTitle>
-            <CardDescription>
-              Gerencie custos, pagamentos a parceiros e margens de PM para
-              automação financeira.
-            </CardDescription>
+    <>
+      <ServiceCategoriesDialog
+        open={categoryDialogOpen}
+        onOpenChange={setCategoryDialogOpen}
+      />
+
+      <div className="flex flex-col gap-4">
+        {staleRatesCount > 0 && (
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-md flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-yellow-600" />
+            <span className="text-sm font-medium">
+              Attention: {staleRatesCount} services have not been updated in
+              over 6 months. Please review your pricing.
+            </span>
           </div>
-          {/* Ref Fix: Removed DialogTrigger to prevent setRef recursion */}
-          <Button onClick={openAdd} className="bg-trust-blue">
-            <Plus className="mr-2 h-4 w-4" /> Adicionar Serviço
-          </Button>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="max-w-3xl overflow-y-auto max-h-[90vh]">
-              <DialogHeader>
-                <DialogTitle>
-                  {editMode ? 'Editar Serviço' : 'Novo Serviço'}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Parceiro / Fornecedor</Label>
-                    <Select
-                      value={selectedPartnerId}
-                      onValueChange={setSelectedPartnerId}
-                      disabled={editMode}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="generic">
-                          Genérico (Todos os Parceiros)
-                        </SelectItem>
-                        {partners.map((p) => (
-                          <SelectItem key={p.id} value={p.id}>
-                            {p.name} ({p.type})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Nome do Serviço</Label>
-                    <Input
-                      value={currentRate.serviceName}
-                      onChange={(e) =>
-                        setCurrentRate({
-                          ...currentRate,
-                          serviceName: e.target.value,
-                        })
-                      }
-                      placeholder="Ex: Limpeza Padrão 2 Quartos"
-                    />
-                  </div>
-                </div>
+        )}
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg border">
-                  <div className="grid gap-2">
-                    <Label className="text-xs">
-                      Service Price (Total Labor)
-                    </Label>
-                    <Input
-                      type="number"
-                      value={currentRate.servicePrice}
-                      onChange={(e) =>
-                        handlePriceChange('servicePrice', e.target.value)
-                      }
-                      placeholder="0.00"
-                      className="font-bold"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label className="text-xs text-muted-foreground">
-                      Partner Payment (Cost)
-                    </Label>
-                    <Input
-                      type="number"
-                      value={currentRate.partnerPayment}
-                      onChange={(e) =>
-                        handlePriceChange('partnerPayment', e.target.value)
-                      }
-                      placeholder="0.00"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label className="text-xs text-muted-foreground">
-                      PM Value (Margin)
-                    </Label>
-                    <Input
-                      type="number"
-                      value={currentRate.pmValue}
-                      onChange={(e) =>
-                        setCurrentRate({
-                          ...currentRate,
-                          pmValue: Number(e.target.value),
-                        })
-                      }
-                      placeholder="0.00"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label className="text-xs">Product Price (Material)</Label>
-                    <Input
-                      type="number"
-                      value={currentRate.productPrice}
-                      onChange={(e) =>
-                        setCurrentRate({
-                          ...currentRate,
-                          productPrice: Number(e.target.value),
-                        })
-                      }
-                      placeholder="0.00"
-                    />
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground text-center">
-                  PM Value é calculado automaticamente como (Service Price -
-                  Partner Payment), mas pode ser ajustado.
-                </p>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Início Validade</Label>
-                    <Input
-                      type="date"
-                      value={
-                        currentRate.validFrom
-                          ? format(
-                              new Date(currentRate.validFrom),
-                              'yyyy-MM-dd',
-                            )
-                          : ''
-                      }
-                      onChange={(e) =>
-                        setCurrentRate({
-                          ...currentRate,
-                          validFrom: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Fim Validade (Opcional)</Label>
-                    <Input
-                      type="date"
-                      value={
-                        currentRate.validTo
-                          ? format(new Date(currentRate.validTo), 'yyyy-MM-dd')
-                          : ''
-                      }
-                      onChange={(e) =>
-                        setCurrentRate({
-                          ...currentRate,
-                          validTo: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <CardTitle>Service Pricing Catalog</CardTitle>
+                <CardDescription>
+                  Manage service costs, partner payments, and profit margins.
+                </CardDescription>
               </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setOpen(false)}>
-                  Cancelar
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setCategoryDialogOpen(true)}
+                >
+                  <Layers className="mr-2 h-4 w-4" /> Manage Categories
                 </Button>
-                <Button onClick={handleSave}>Salvar</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar serviço ou parceiro..."
-              className="pl-8"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            />
-          </div>
-        </div>
+                <Button onClick={openAdd} className="bg-trust-blue">
+                  <Plus className="mr-2 h-4 w-4" /> Add Service
+                </Button>
+              </div>
 
-        <div className="rounded-md border overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Serviço</TableHead>
-                <TableHead>Parceiro</TableHead>
-                <TableHead>Service Price</TableHead>
-                <TableHead>Product Price</TableHead>
-                <TableHead>Partner Pay</TableHead>
-                <TableHead>PM Value</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredRates.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    className="text-center py-8 text-muted-foreground"
-                  >
-                    Nenhum serviço encontrado no catálogo.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredRates.map((rate) => (
-                  <TableRow key={`${rate.partnerId}-${rate.id}`}>
-                    <TableCell className="font-medium">
-                      {rate.serviceName}
-                    </TableCell>
-                    <TableCell>
-                      {rate.isGeneric ? (
-                        <Badge variant="secondary">Genérico</Badge>
-                      ) : (
-                        rate.partnerName
-                      )}
-                    </TableCell>
-                    <TableCell className="font-bold">
-                      ${rate.servicePrice?.toFixed(2)}
-                    </TableCell>
-                    <TableCell>${rate.productPrice?.toFixed(2)}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      ${rate.partnerPayment?.toFixed(2)}
-                    </TableCell>
-                    <TableCell className="text-green-600 font-medium">
-                      ${rate.pmValue?.toFixed(2)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openEdit(rate)}
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className="max-w-3xl overflow-y-auto max-h-[90vh]">
+                  <DialogHeader>
+                    <DialogTitle>
+                      {editMode ? 'Edit Service' : 'New Service'}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label>Partner / Vendor</Label>
+                        <Select
+                          value={selectedPartnerId}
+                          onValueChange={setSelectedPartnerId}
+                          disabled={editMode}
                         >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-500 hover:text-red-700"
-                          onClick={() => handleDelete(rate.partnerId, rate.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="generic">
+                              Generic (All Partners)
+                            </SelectItem>
+                            {partners.map((p) => (
+                              <SelectItem key={p.id} value={p.id}>
+                                {p.name} ({p.type})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-                    </TableCell>
+                      <div className="grid gap-2">
+                        <Label>Category</Label>
+                        <Select
+                          value={currentRate.categoryId || 'none'}
+                          onValueChange={(val) =>
+                            setCurrentRate({
+                              ...currentRate,
+                              categoryId: val === 'none' ? undefined : val,
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            {serviceCategories.map((cat) => (
+                              <SelectItem key={cat.id} value={cat.id}>
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className="w-2 h-2 rounded-full"
+                                    style={{ backgroundColor: cat.color }}
+                                  />
+                                  {cat.name}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Service Name</Label>
+                      <Input
+                        value={currentRate.serviceName}
+                        onChange={(e) =>
+                          setCurrentRate({
+                            ...currentRate,
+                            serviceName: e.target.value,
+                          })
+                        }
+                        placeholder="e.g. Standard Cleaning 2 Bed"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg border">
+                      <div className="grid gap-2">
+                        <Label className="text-xs">
+                          Service Price (Total Labor)
+                        </Label>
+                        <Input
+                          type="number"
+                          value={currentRate.servicePrice}
+                          onChange={(e) =>
+                            handlePriceChange('servicePrice', e.target.value)
+                          }
+                          placeholder="0.00"
+                          className="font-bold"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label className="text-xs text-muted-foreground">
+                          Partner Payment (Cost)
+                        </Label>
+                        <Input
+                          type="number"
+                          value={currentRate.partnerPayment}
+                          onChange={(e) =>
+                            handlePriceChange('partnerPayment', e.target.value)
+                          }
+                          placeholder="0.00"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label className="text-xs text-muted-foreground">
+                          PM Value (Margin)
+                        </Label>
+                        <Input
+                          type="number"
+                          value={currentRate.pmValue}
+                          onChange={(e) =>
+                            setCurrentRate({
+                              ...currentRate,
+                              pmValue: Number(e.target.value),
+                            })
+                          }
+                          placeholder="0.00"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label className="text-xs">
+                          Product Price (Material)
+                        </Label>
+                        <Input
+                          type="number"
+                          value={currentRate.productPrice}
+                          onChange={(e) =>
+                            setCurrentRate({
+                              ...currentRate,
+                              productPrice: Number(e.target.value),
+                            })
+                          }
+                          placeholder="0.00"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground text-center">
+                      PM Value is auto-calculated as (Service Price - Partner
+                      Payment), but can be adjusted.
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label>Valid From</Label>
+                        <Input
+                          type="date"
+                          value={
+                            currentRate.validFrom
+                              ? format(
+                                  new Date(currentRate.validFrom),
+                                  'yyyy-MM-dd',
+                                )
+                              : ''
+                          }
+                          onChange={(e) =>
+                            setCurrentRate({
+                              ...currentRate,
+                              validFrom: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>Valid To (Optional)</Label>
+                        <Input
+                          type="date"
+                          value={
+                            currentRate.validTo
+                              ? format(
+                                  new Date(currentRate.validTo),
+                                  'yyyy-MM-dd',
+                                )
+                              : ''
+                          }
+                          onChange={(e) =>
+                            setCurrentRate({
+                              ...currentRate,
+                              validTo: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSave}>Save</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row items-center gap-2 mb-4">
+              <div className="relative flex-1 w-full">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search service or partner..."
+                  className="pl-8"
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                />
+              </div>
+              <div className="w-full md:w-[200px]">
+                <Select
+                  value={categoryFilter}
+                  onValueChange={setCategoryFilter}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {serviceCategories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="rounded-md border overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Service</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Partner</TableHead>
+                    <TableHead>Service Price</TableHead>
+                    <TableHead>Product Price</TableHead>
+                    <TableHead>Partner Pay</TableHead>
+                    <TableHead>PM Value</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+                </TableHeader>
+                <TableBody>
+                  {filteredRates.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={8}
+                        className="text-center py-8 text-muted-foreground"
+                      >
+                        No services found in catalog.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredRates.map((rate) => {
+                      const isStale =
+                        rate.lastUpdated &&
+                        differenceInDays(
+                          new Date(),
+                          new Date(rate.lastUpdated),
+                        ) > 180
+
+                      return (
+                        <TableRow key={`${rate.partnerId}-${rate.id}`}>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">
+                                {rate.serviceName}
+                              </span>
+                              {isStale && (
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>
+                                      Review Needed: Price not updated in 6
+                                      months.
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {getCategoryBadge(rate.categoryId)}
+                          </TableCell>
+                          <TableCell>
+                            {rate.isGeneric ? (
+                              <Badge variant="secondary">Generic</Badge>
+                            ) : (
+                              rate.partnerName
+                            )}
+                          </TableCell>
+                          <TableCell className="font-bold">
+                            ${rate.servicePrice?.toFixed(2)}
+                          </TableCell>
+                          <TableCell>
+                            ${rate.productPrice?.toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            ${rate.partnerPayment?.toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-green-600 font-medium">
+                            ${rate.pmValue?.toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => openEdit(rate)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-red-500 hover:text-red-700"
+                                onClick={() =>
+                                  handleDelete(rate.partnerId, rate.id)
+                                }
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </>
   )
 }

@@ -1,5 +1,7 @@
 import { ServiceCatalog } from '@/components/settings/ServiceCatalog'
+import { ServiceAnalytics } from '@/components/settings/ServiceAnalytics'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function ServicePricing() {
   const { t } = useLanguageStore()
@@ -12,7 +14,19 @@ export default function ServicePricing() {
         </h1>
         <p className="text-muted-foreground">{t('common.service_desc')}</p>
       </div>
-      <ServiceCatalog />
+
+      <Tabs defaultValue="catalog" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="catalog">Catalog</TabsTrigger>
+          <TabsTrigger value="analytics">Revenue Reports</TabsTrigger>
+        </TabsList>
+        <TabsContent value="catalog">
+          <ServiceCatalog />
+        </TabsContent>
+        <TabsContent value="analytics">
+          <ServiceAnalytics />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

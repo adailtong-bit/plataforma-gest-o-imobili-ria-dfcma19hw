@@ -38,6 +38,7 @@ import {
   MessageTemplate,
   ChatMessage,
   ChatAttachment,
+  ServiceCategory,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -63,6 +64,7 @@ import {
   bookings as initialBookings,
   calendarBlocks as initialBlocks,
   messageTemplates as initialTemplates,
+  serviceCategories as initialServiceCategories,
 } from '@/lib/mockData'
 import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
@@ -90,6 +92,7 @@ interface AppContextType {
   ledgerEntries: LedgerEntry[]
   auditLogs: AuditLog[]
   genericServiceRates: ServiceRate[]
+  serviceCategories: ServiceCategory[]
   notifications: Notification[]
   advertisements: Advertisement[]
   advertisers: Advertiser[]
@@ -138,6 +141,9 @@ interface AppContextType {
   addGenericServiceRate: (rate: ServiceRate) => void
   updateGenericServiceRate: (rate: ServiceRate) => void
   deleteGenericServiceRate: (rateId: string) => void
+  addServiceCategory: (category: ServiceCategory) => void
+  updateServiceCategory: (category: ServiceCategory) => void
+  deleteServiceCategory: (categoryId: string) => void
   addNotification: (
     notification: Omit<Notification, 'id' | 'timestamp' | 'read'>,
   ) => void
@@ -220,6 +226,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(initialAuditLogs)
   const [genericServiceRates, setGenericServiceRates] =
     useState<ServiceRate[]>(initialGenericRates)
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>(
+    initialServiceCategories,
+  )
   const [notifications, setNotifications] =
     useState<Notification[]>(initialNotifications)
   const [advertisements, setAdvertisements] = useState<Advertisement[]>(
@@ -747,13 +756,33 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const uploadBankStatement = (s: BankStatement) =>
     setBankStatements((prev) => [...prev, s])
   const addGenericServiceRate = (r: ServiceRate) =>
-    setGenericServiceRates((prev) => [...prev, r])
+    setGenericServiceRates((prev) => [
+      ...prev,
+      { ...r, lastUpdated: new Date().toISOString() },
+    ])
   const updateGenericServiceRate = (r: ServiceRate) =>
     setGenericServiceRates((prev) =>
-      prev.map((rate) => (rate.id === r.id ? r : rate)),
+      prev.map((rate) =>
+        rate.id === r.id
+          ? { ...r, lastUpdated: new Date().toISOString() }
+          : rate,
+      ),
     )
   const deleteGenericServiceRate = (id: string) =>
     setGenericServiceRates((prev) => prev.filter((r) => r.id !== id))
+
+  const addServiceCategory = (category: ServiceCategory) => {
+    setServiceCategories((prev) => [...prev, category])
+  }
+  const updateServiceCategory = (category: ServiceCategory) => {
+    setServiceCategories((prev) =>
+      prev.map((c) => (c.id === category.id ? category : c)),
+    )
+  }
+  const deleteServiceCategory = (categoryId: string) => {
+    setServiceCategories((prev) => prev.filter((c) => c.id !== categoryId))
+  }
+
   const renewTenantContract = (
     id: string,
     end: string,
@@ -900,6 +929,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         ledgerEntries,
         auditLogs,
         genericServiceRates,
+        serviceCategories,
         notifications,
         advertisements,
         advertisers,
@@ -958,6 +988,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addGenericServiceRate,
         updateGenericServiceRate,
         deleteGenericServiceRate,
+        addServiceCategory,
+        updateServiceCategory,
+        deleteServiceCategory,
         addNotification,
         markNotificationAsRead,
         approveUser,

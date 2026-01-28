@@ -5,6 +5,7 @@ import {
   subMonths,
   endOfMonth,
   eachMonthOfInterval,
+  subMonths as subMonthsFn,
 } from 'date-fns'
 import {
   Property,
@@ -35,6 +36,7 @@ import {
   InventoryItem,
   ChatMessage,
   InventoryMedia,
+  ServiceCategory,
 } from '@/lib/types'
 
 // Helper for random data
@@ -705,7 +707,43 @@ export const automationRules: AutomationRule[] = [
   { id: 'rule1', type: 'rent_reminder', enabled: true, daysBefore: 3 },
 ]
 export const auditLogs: AuditLog[] = []
-export const genericServiceRates: ServiceRate[] = []
+
+// Service Categories
+export const serviceCategories: ServiceCategory[] = [
+  { id: 'cat_cleaning', name: 'Cleaning', color: '#3b82f6' },
+  { id: 'cat_maintenance', name: 'Maintenance', color: '#f59e0b' },
+  { id: 'cat_inspection', name: 'Inspection', color: '#10b981' },
+  { id: 'cat_legal', name: 'Legal', color: '#6366f1' },
+  { id: 'cat_other', name: 'Other', color: '#6b7280' },
+]
+
+export const genericServiceRates: ServiceRate[] = [
+  {
+    id: 'rate_1',
+    serviceName: 'Standard Cleaning',
+    servicePrice: 150,
+    partnerPayment: 100,
+    pmValue: 50,
+    productPrice: 10,
+    validFrom: new Date().toISOString(),
+    type: 'generic',
+    categoryId: 'cat_cleaning',
+    lastUpdated: new Date().toISOString(),
+  },
+  {
+    id: 'rate_2',
+    serviceName: 'Deep Cleaning',
+    servicePrice: 250,
+    partnerPayment: 180,
+    pmValue: 70,
+    productPrice: 20,
+    validFrom: subDays(new Date(), 200).toISOString(),
+    type: 'generic',
+    categoryId: 'cat_cleaning',
+    lastUpdated: subDays(new Date(), 200).toISOString(),
+  },
+]
+
 export const notifications: Notification[] = [
   {
     id: 'notif_1',

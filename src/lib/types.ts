@@ -471,6 +471,12 @@ export interface Owner {
   isDemo?: boolean
 }
 
+export interface ServiceCategory {
+  id: string
+  name: string
+  color: string
+}
+
 export interface ServiceRate {
   id: string
   serviceName: string
@@ -481,6 +487,8 @@ export interface ServiceRate {
   validFrom: string
   validTo?: string
   type?: 'generic' | 'specific'
+  categoryId?: string
+  lastUpdated?: string
 }
 
 export interface PartnerEmployee {
