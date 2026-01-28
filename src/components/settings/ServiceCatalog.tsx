@@ -34,6 +34,8 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Search, Plus, Trash2, Edit, AlertTriangle, Layers } from 'lucide-react'
 import usePartnerStore from '@/stores/usePartnerStore'
+import useFinancialStore from '@/stores/useFinancialStore'
+import useLanguageStore from '@/stores/useLanguageStore'
 import { useToast } from '@/hooks/use-toast'
 import { format, differenceInDays } from 'date-fns'
 import { ServiceRate } from '@/lib/types'
@@ -54,13 +56,18 @@ export function ServiceCatalog() {
     deleteGenericServiceRate,
     serviceCategories,
   } = usePartnerStore()
+  const { financialSettings } = useFinancialStore()
+  const { t } = useLanguageStore()
   const { toast } = useToast()
+
   const [filter, setFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [open, setOpen] = useState(false)
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [selectedPartnerId, setSelectedPartnerId] = useState<string>('generic')
+
+  const priceReviewThreshold = financialSettings.priceReviewThresholdDays || 180
 
   const [currentRate, setCurrentRate] = useState<Partial<ServiceRate>>({
     serviceName: '',
@@ -107,7 +114,7 @@ export function ServiceCatalog() {
 
   const genericRatesFormatted = genericServiceRates.map((rate) => ({
     ...rate,
-    partnerName: 'Generic (All)',
+    partnerName: t('service_pricing.generic'),
     partnerId: 'generic',
     partnerType: 'System',
     isGeneric: true,
@@ -129,15 +136,18 @@ export function ServiceCatalog() {
   const staleRatesCount = useMemo(() => {
     return allRates.filter((rate) => {
       if (!rate.lastUpdated) return false
-      return differenceInDays(new Date(), new Date(rate.lastUpdated)) > 180
+      return (
+        differenceInDays(new Date(), new Date(rate.lastUpdated)) >
+        priceReviewThreshold
+      )
     }).length
-  }, [allRates])
+  }, [allRates, priceReviewThreshold])
 
   const handleSave = () => {
     if (!currentRate.serviceName || !currentRate.servicePrice) {
       toast({
-        title: 'Error',
-        description: 'Service Name and Price are required.',
+        title: t('common.error'),
+        description: t('service_pricing.service_name') + ' required.',
         variant: 'destructive',
       })
       return
@@ -182,7 +192,7 @@ export function ServiceCatalog() {
     }
 
     toast({
-      title: 'Success',
+      title: t('common.save'),
       description: editMode ? 'Service updated.' : 'Service added to catalog.',
     })
 
@@ -191,7 +201,7 @@ export function ServiceCatalog() {
   }
 
   const handleDelete = (partnerId: string, rateId: string) => {
-    if (confirm('Are you sure you want to delete this service?')) {
+    if (confirm(t('common.confirm'))) {
       if (partnerId === 'generic') {
         deleteGenericServiceRate(rateId)
       } else {
@@ -205,7 +215,7 @@ export function ServiceCatalog() {
       }
 
       toast({
-        title: 'Deleted',
+        title: t('common.delete'),
         description: 'Service removed from catalog.',
       })
     }
@@ -278,8 +288,10 @@ export function ServiceCatalog() {
           <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-md flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-yellow-600" />
             <span className="text-sm font-medium">
-              Attention: {staleRatesCount} services have not been updated in
-              over 6 months. Please review your pricing.
+              {t('service_pricing.stale_alert', {
+                count: String(staleRatesCount),
+                days: String(priceReviewThreshold),
+              })}
             </span>
           </div>
         )}
@@ -288,9 +300,9 @@ export function ServiceCatalog() {
           <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
-                <CardTitle>Service Pricing Catalog</CardTitle>
+                <CardTitle>{t('service_pricing.title')}</CardTitle>
                 <CardDescription>
-                  Manage service costs, partner payments, and profit margins.
+                  {t('service_pricing.subtitle')}
                 </CardDescription>
               </div>
               <div className="flex gap-2">
@@ -298,10 +310,12 @@ export function ServiceCatalog() {
                   variant="outline"
                   onClick={() => setCategoryDialogOpen(true)}
                 >
-                  <Layers className="mr-2 h-4 w-4" /> Manage Categories
+                  <Layers className="mr-2 h-4 w-4" />{' '}
+                  {t('service_pricing.manage_categories')}
                 </Button>
                 <Button onClick={openAdd} className="bg-trust-blue">
-                  <Plus className="mr-2 h-4 w-4" /> Add Service
+                  <Plus className="mr-2 h-4 w-4" />{' '}
+                  {t('service_pricing.add_service')}
                 </Button>
               </div>
 
@@ -309,13 +323,15 @@ export function ServiceCatalog() {
                 <DialogContent className="max-w-3xl overflow-y-auto max-h-[90vh]">
                   <DialogHeader>
                     <DialogTitle>
-                      {editMode ? 'Edit Service' : 'New Service'}
+                      {editMode
+                        ? t('service_pricing.edit_service')
+                        : t('service_pricing.add_service')}
                     </DialogTitle>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Partner / Vendor</Label>
+                        <Label>{t('service_pricing.partner_vendor')}</Label>
                         <Select
                           value={selectedPartnerId}
                           onValueChange={setSelectedPartnerId}
@@ -326,7 +342,7 @@ export function ServiceCatalog() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="generic">
-                              Generic (All Partners)
+                              {t('service_pricing.generic')}
                             </SelectItem>
                             {partners.map((p) => (
                               <SelectItem key={p.id} value={p.id}>
@@ -337,7 +353,7 @@ export function ServiceCatalog() {
                         </Select>
                       </div>
                       <div className="grid gap-2">
-                        <Label>Category</Label>
+                        <Label>{t('service_pricing.category')}</Label>
                         <Select
                           value={currentRate.categoryId || 'none'}
                           onValueChange={(val) =>
@@ -351,7 +367,9 @@ export function ServiceCatalog() {
                             <SelectValue placeholder="Select Category" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="none">None</SelectItem>
+                            <SelectItem value="none">
+                              {t('common.none')}
+                            </SelectItem>
                             {serviceCategories.map((cat) => (
                               <SelectItem key={cat.id} value={cat.id}>
                                 <div className="flex items-center gap-2">
@@ -368,7 +386,7 @@ export function ServiceCatalog() {
                       </div>
                     </div>
                     <div className="grid gap-2">
-                      <Label>Service Name</Label>
+                      <Label>{t('service_pricing.service_name')}</Label>
                       <Input
                         value={currentRate.serviceName}
                         onChange={(e) =>
@@ -384,7 +402,7 @@ export function ServiceCatalog() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg border">
                       <div className="grid gap-2">
                         <Label className="text-xs">
-                          Service Price (Total Labor)
+                          {t('service_pricing.service_price')}
                         </Label>
                         <Input
                           type="number"
@@ -398,7 +416,7 @@ export function ServiceCatalog() {
                       </div>
                       <div className="grid gap-2">
                         <Label className="text-xs text-muted-foreground">
-                          Partner Payment (Cost)
+                          {t('service_pricing.partner_payment')}
                         </Label>
                         <Input
                           type="number"
@@ -411,7 +429,7 @@ export function ServiceCatalog() {
                       </div>
                       <div className="grid gap-2">
                         <Label className="text-xs text-muted-foreground">
-                          PM Value (Margin)
+                          {t('service_pricing.pm_value')}
                         </Label>
                         <Input
                           type="number"
@@ -427,7 +445,7 @@ export function ServiceCatalog() {
                       </div>
                       <div className="grid gap-2">
                         <Label className="text-xs">
-                          Product Price (Material)
+                          {t('service_pricing.product_price')}
                         </Label>
                         <Input
                           type="number"
@@ -449,7 +467,7 @@ export function ServiceCatalog() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Valid From</Label>
+                        <Label>{t('service_pricing.valid_from')}</Label>
                         <Input
                           type="date"
                           value={
@@ -469,7 +487,7 @@ export function ServiceCatalog() {
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label>Valid To (Optional)</Label>
+                        <Label>{t('service_pricing.valid_to')}</Label>
                         <Input
                           type="date"
                           value={
@@ -492,9 +510,9 @@ export function ServiceCatalog() {
                   </div>
                   <DialogFooter>
                     <Button variant="outline" onClick={() => setOpen(false)}>
-                      Cancel
+                      {t('common.cancel')}
                     </Button>
-                    <Button onClick={handleSave}>Save</Button>
+                    <Button onClick={handleSave}>{t('common.save')}</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
@@ -505,7 +523,7 @@ export function ServiceCatalog() {
               <div className="relative flex-1 w-full">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search service or partner..."
+                  placeholder={t('common.search')}
                   className="pl-8"
                   value={filter}
                   onChange={(e) => setFilter(e.target.value)}
@@ -517,10 +535,10 @@ export function ServiceCatalog() {
                   onValueChange={setCategoryFilter}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Filter Category" />
+                    <SelectValue placeholder={t('common.filter')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="all">{t('common.all')}</SelectItem>
                     {serviceCategories.map((cat) => (
                       <SelectItem key={cat.id} value={cat.id}>
                         {cat.name}
@@ -535,14 +553,18 @@ export function ServiceCatalog() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Service</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Partner</TableHead>
-                    <TableHead>Service Price</TableHead>
-                    <TableHead>Product Price</TableHead>
-                    <TableHead>Partner Pay</TableHead>
-                    <TableHead>PM Value</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>{t('service_pricing.service_name')}</TableHead>
+                    <TableHead>{t('service_pricing.category')}</TableHead>
+                    <TableHead>{t('common.partners')}</TableHead>
+                    <TableHead>{t('service_pricing.service_price')}</TableHead>
+                    <TableHead>{t('service_pricing.product_price')}</TableHead>
+                    <TableHead>
+                      {t('service_pricing.partner_payment')}
+                    </TableHead>
+                    <TableHead>{t('service_pricing.pm_value')}</TableHead>
+                    <TableHead className="text-right">
+                      {t('common.actions')}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -552,7 +574,7 @@ export function ServiceCatalog() {
                         colSpan={8}
                         className="text-center py-8 text-muted-foreground"
                       >
-                        No services found in catalog.
+                        {t('common.none')}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -562,7 +584,7 @@ export function ServiceCatalog() {
                         differenceInDays(
                           new Date(),
                           new Date(rate.lastUpdated),
-                        ) > 180
+                        ) > priceReviewThreshold
 
                       return (
                         <TableRow key={`${rate.partnerId}-${rate.id}`}>
@@ -577,10 +599,7 @@ export function ServiceCatalog() {
                                     <AlertTriangle className="h-4 w-4 text-yellow-500" />
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>
-                                      Review Needed: Price not updated in 6
-                                      months.
-                                    </p>
+                                    <p>{t('service_pricing.review_needed')}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               )}
@@ -591,7 +610,9 @@ export function ServiceCatalog() {
                           </TableCell>
                           <TableCell>
                             {rate.isGeneric ? (
-                              <Badge variant="secondary">Generic</Badge>
+                              <Badge variant="secondary">
+                                {t('service_pricing.generic')}
+                              </Badge>
                             ) : (
                               rate.partnerName
                             )}

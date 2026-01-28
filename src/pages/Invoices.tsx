@@ -24,6 +24,7 @@ import {
   DollarSign,
   Plus,
   ArrowRight,
+  Eye,
 } from 'lucide-react'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useAuthStore from '@/stores/useAuthStore'
@@ -31,6 +32,8 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import { format } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { TaskInvoiceDialog } from '@/components/financial/TaskInvoiceDialog'
+import { InvoiceViewer } from '@/components/financial/InvoiceViewer'
+import { Invoice } from '@/lib/types'
 
 export default function Invoices() {
   const { financials } = useFinancialStore()
@@ -39,6 +42,10 @@ export default function Invoices() {
   const { toast } = useToast()
   const [filter, setFilter] = useState('')
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
+
+  // Invoice Viewer State
+  const [viewInvoiceOpen, setViewInvoiceOpen] = useState(false)
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
 
   const invoices = financials.invoices
 
@@ -60,6 +67,11 @@ export default function Invoices() {
       title: t('invoices.sent_success'),
       description: `Invoice ${invoiceId} sent to ${payerName}.`,
     })
+  }
+
+  const handleViewInvoice = (inv: Invoice) => {
+    setSelectedInvoice(inv)
+    setViewInvoiceOpen(true)
   }
 
   const getStatusBadge = (status: string) => {
@@ -112,10 +124,16 @@ export default function Invoices() {
         onOpenChange={setCreateDialogOpen}
       />
 
+      <InvoiceViewer
+        open={viewInvoiceOpen}
+        onOpenChange={setViewInvoiceOpen}
+        invoice={selectedInvoice}
+      />
+
       <Card>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
-            <CardTitle>Invoices List</CardTitle>
+            <CardTitle>{t('invoices.title')}</CardTitle>
             <div className="relative w-64">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -186,6 +204,15 @@ export default function Invoices() {
                       <TableCell>{getStatusBadge(inv.status)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0"
+                            onClick={() => handleViewInvoice(inv)}
+                            title={t('invoices.view')}
+                          >
+                            <Eye className="h-4 w-4 text-gray-500" />
+                          </Button>
                           <Button
                             size="sm"
                             variant="outline"

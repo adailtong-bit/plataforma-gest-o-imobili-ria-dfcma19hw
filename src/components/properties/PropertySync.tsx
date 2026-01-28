@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface PropertySyncProps {
   data: Property
@@ -37,6 +38,7 @@ interface PropertySyncProps {
 
 export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const [newLink, setNewLink] = useState('')
   const [platform, setPlatform] = useState<
     'airbnb' | 'booking.com' | 'vrbo' | 'other'
@@ -57,7 +59,7 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
     onChange('channelLinks', updatedLinks)
     setNewLink('')
     toast({
-      title: 'Sync Link Added',
+      title: t('sync.title'),
       description: 'Calendar will attempt to sync shortly.',
     })
   }
@@ -69,8 +71,8 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
 
   const handleSyncNow = () => {
     toast({
-      title: 'Syncing...',
-      description: 'Updating calendar from external sources.',
+      title: t('sync.sync_success'),
+      description: t('sync.sync_desc'),
     })
     // Mock sync update
     const updatedLinks = (data.channelLinks || []).map((l) => ({
@@ -85,16 +87,13 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Unified Channel Manager</CardTitle>
-          <CardDescription>
-            Sync calendars with external platforms (Airbnb, Booking.com) to
-            prevent overbooking.
-          </CardDescription>
+          <CardTitle>{t('sync.title')}</CardTitle>
+          <CardDescription>{t('sync.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex gap-4 items-end">
             <div className="grid gap-2 flex-1">
-              <Label>Platform</Label>
+              <Label>{t('sync.platform')}</Label>
               <Select
                 value={platform}
                 onValueChange={(v: any) => setPlatform(v)}
@@ -114,7 +113,7 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
               </Select>
             </div>
             <div className="grid gap-2 flex-[2]">
-              <Label>iCal URL</Label>
+              <Label>{t('sync.ical_url')}</Label>
               <Input
                 placeholder="https://..."
                 value={newLink}
@@ -127,7 +126,7 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
               disabled={!canEdit}
               className="bg-trust-blue"
             >
-              <Plus className="h-4 w-4 mr-2" /> Add
+              <Plus className="h-4 w-4 mr-2" /> {t('sync.add_link')}
             </Button>
           </div>
 
@@ -135,11 +134,13 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Platform</TableHead>
+                  <TableHead>{t('sync.platform')}</TableHead>
                   <TableHead>URL</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Last Sync</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t('sync.status')}</TableHead>
+                  <TableHead>{t('sync.last_sync')}</TableHead>
+                  <TableHead className="text-right">
+                    {t('common.actions')}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -149,7 +150,7 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
                       colSpan={5}
                       className="text-center py-6 text-muted-foreground"
                     >
-                      No active sync connections.
+                      {t('sync.no_links')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -196,7 +197,7 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
 
           <div className="flex justify-end">
             <Button variant="outline" onClick={handleSyncNow} className="gap-2">
-              <RefreshCw className="h-4 w-4" /> Sync Now
+              <RefreshCw className="h-4 w-4" /> {t('sync.sync_now')}
             </Button>
           </div>
         </CardContent>
@@ -204,7 +205,7 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Export Calendar</CardTitle>
+          <CardTitle>{t('sync.export_calendar')}</CardTitle>
           <CardDescription>
             Share this property's calendar with other platforms.
           </CardDescription>
@@ -221,7 +222,7 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
                 navigator.clipboard.writeText(
                   `https://api.corepm.com/ical/${data.id}.ics`,
                 )
-                toast({ title: 'Copied!' })
+                toast({ title: t('sync.copy_link') })
               }}
             >
               <LinkIcon className="h-4 w-4" />

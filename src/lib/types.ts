@@ -63,6 +63,8 @@ export interface FinancialSettings {
   billComOrgId?: string
   billComApiKey?: string
   billComEnvironment?: 'sandbox' | 'production'
+  // Service Pricing
+  priceReviewThresholdDays?: number
 }
 
 export interface BankStatement {
