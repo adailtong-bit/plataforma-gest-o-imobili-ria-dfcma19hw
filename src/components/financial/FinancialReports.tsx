@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useContext } from 'react'
 import {
   Card,
   CardContent,
@@ -39,6 +39,8 @@ import useFinancialStore from '@/stores/useFinancialStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useShortTermStore from '@/stores/useShortTermStore'
+import useLanguageStore from '@/stores/useLanguageStore'
+import { AppContext } from '@/stores/AppContext'
 import {
   format,
   subMonths,
@@ -52,7 +54,7 @@ import {
   parseISO,
 } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
-import { exportToCSV } from '@/lib/utils'
+import { exportToCSV, formatCurrency } from '@/lib/utils'
 
 export function FinancialReports() {
   const { ledgerEntries } = useFinancialStore()
@@ -60,9 +62,14 @@ export function FinancialReports() {
   const { tenants } = useTenantStore()
   const { bookings } = useShortTermStore()
   const { toast } = useToast()
+  const { language, t } = useLanguageStore()
+  const context = useContext(AppContext)
+
+  // Use global property selection, but allow local override if needed
+  // For the report, typically users want to see the selected context
+  const selectedPropertyId = context?.selectedPropertyId || 'all'
 
   const [period, setPeriod] = useState('1y') // Default to 1 year for robust data
-  const [selectedPropertyId, setSelectedPropertyId] = useState('all')
 
   // --- 1. HISTORICAL DATA PREPARATION ---
 
@@ -151,8 +158,7 @@ export function FinancialReports() {
       const ltrIncome = tenants.reduce((acc, t) => {
         if (
           t.status === 'active' &&
-          (!selectedPropertyId ||
-            selectedPropertyId === 'all' ||
+          (selectedPropertyId === 'all' ||
             t.propertyId === selectedPropertyId) &&
           t.leaseEnd &&
           new Date(t.leaseEnd) >= monthStart
@@ -170,9 +176,7 @@ export function FinancialReports() {
       const strIncome = bookings.reduce((acc, b) => {
         if (
           b.status !== 'cancelled' &&
-          (!selectedPropertyId ||
-            selectedPropertyId === 'all' ||
-            b.propertyId === selectedPropertyId)
+          (selectedPropertyId === 'all' || b.propertyId === selectedPropertyId)
         ) {
           const checkIn = parseISO(b.checkIn)
           if (isWithinInterval(checkIn, { start: monthStart, end: monthEnd })) {
@@ -306,25 +310,7 @@ export function FinancialReports() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Property Filter</label>
-              <Select
-                value={selectedPropertyId}
-                onValueChange={setSelectedPropertyId}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="All Properties" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Properties</SelectItem>
-                  {properties.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Removed local property selector as it is now global in DashboardLayout */}
             <div className="md:col-start-4">
               <Button
                 variant="outline"
@@ -363,11 +349,12 @@ export function FinancialReports() {
                   Total Revenue
                 </div>
                 <div className="text-2xl font-bold text-green-700">
-                  $
-                  {filteredEntries
-                    .filter((e) => e.type === 'income')
-                    .reduce((acc, curr) => acc + curr.amount, 0)
-                    .toLocaleString()}
+                  {formatCurrency(
+                    filteredEntries
+                      .filter((e) => e.type === 'income')
+                      .reduce((acc, curr) => acc + curr.amount, 0),
+                    language,
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -377,11 +364,12 @@ export function FinancialReports() {
                   Total Expenses
                 </div>
                 <div className="text-2xl font-bold text-red-700">
-                  $
-                  {filteredEntries
-                    .filter((e) => e.type === 'expense')
-                    .reduce((acc, curr) => acc + curr.amount, 0)
-                    .toLocaleString()}
+                  {formatCurrency(
+                    filteredEntries
+                      .filter((e) => e.type === 'expense')
+                      .reduce((acc, curr) => acc + curr.amount, 0),
+                    language,
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -391,15 +379,15 @@ export function FinancialReports() {
                   Net Income
                 </div>
                 <div className="text-2xl font-bold text-blue-700">
-                  $
-                  {(
+                  {formatCurrency(
                     filteredEntries
                       .filter((e) => e.type === 'income')
                       .reduce((acc, curr) => acc + curr.amount, 0) -
-                    filteredEntries
-                      .filter((e) => e.type === 'expense')
-                      .reduce((acc, curr) => acc + curr.amount, 0)
-                  ).toLocaleString()}
+                      filteredEntries
+                        .filter((e) => e.type === 'expense')
+                        .reduce((acc, curr) => acc + curr.amount, 0),
+                    language,
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -413,10 +401,7 @@ export function FinancialReports() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {/* Note: In a real implementation, we would group 'filteredEntries' by month here for the chart. 
-                   For brevity, we are reusing the logic structure but would ideally pass processed data. 
-                   We will omit complex re-processing in this block to keep it clean, relying on the 'filteredEntries' logic above. 
-               */}
+              {/* Placeholder for chart - implementation would mirror dashboard logic */}
               <div className="h-[300px] flex items-center justify-center text-muted-foreground bg-muted/10 rounded border border-dashed">
                 Select "Projected Cash Flow" or "Profitability" for detailed
                 charts.
@@ -614,7 +599,7 @@ export function FinancialReports() {
                                 : 'text-red-600'
                             }
                           >
-                            ${item.profit.toLocaleString()}
+                            {formatCurrency(item.profit, language)}
                           </span>
                         </div>
                         <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
@@ -626,8 +611,12 @@ export function FinancialReports() {
                           />
                         </div>
                         <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>Income: ${item.income.toLocaleString()}</span>
-                          <span>Expense: ${item.expense.toLocaleString()}</span>
+                          <span>
+                            Income: {formatCurrency(item.income, language)}
+                          </span>
+                          <span>
+                            Expense: {formatCurrency(item.expense, language)}
+                          </span>
                         </div>
                       </div>
                     ))}

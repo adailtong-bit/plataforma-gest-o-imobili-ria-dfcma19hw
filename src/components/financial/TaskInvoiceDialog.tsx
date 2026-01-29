@@ -21,9 +21,10 @@ import { useToast } from '@/hooks/use-toast'
 import useTaskStore from '@/stores/useTaskStore'
 import useAuthStore from '@/stores/useAuthStore'
 import useFinancialStore from '@/stores/useFinancialStore'
-import { format } from 'date-fns'
+import useLanguageStore from '@/stores/useLanguageStore'
 import { Invoice } from '@/lib/types'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 interface TaskInvoiceDialogProps {
   open: boolean
@@ -38,6 +39,7 @@ export function TaskInvoiceDialog({
   const { currentUser } = useAuthStore()
   const { addInvoice } = useFinancialStore()
   const { toast } = useToast()
+  const { language } = useLanguageStore()
 
   const [selectedTasks, setSelectedTasks] = useState<string[]>([])
 
@@ -128,6 +130,7 @@ export function TaskInvoiceDialog({
       status: 'pending',
       date: new Date().toISOString(),
       fromId: currentUser.id,
+      propertyId: firstTask?.propertyId, // Associate with the first task's property
       type: invoiceType,
     }
 
@@ -135,7 +138,7 @@ export function TaskInvoiceDialog({
 
     toast({
       title: 'Invoice Generated',
-      description: `Invoice for $${totalAmount.toFixed(2)} created successfully.`,
+      description: `Invoice for ${formatCurrency(totalAmount, language)} created successfully.`,
     })
 
     onOpenChange(false)
@@ -200,18 +203,15 @@ export function TaskInvoiceDialog({
                           }
                         />
                       </TableCell>
-                      <TableCell>
-                        {format(new Date(task.date), 'MM/dd/yyyy')}
-                      </TableCell>
+                      <TableCell>{formatDate(task.date, language)}</TableCell>
                       <TableCell className="font-medium">
                         {task.title}
                       </TableCell>
                       <TableCell>{task.propertyName}</TableCell>
                       <TableCell className="text-right font-semibold">
-                        $
                         {isTeamMember
-                          ? task.teamMemberPayout?.toFixed(2)
-                          : task.price?.toFixed(2)}
+                          ? formatCurrency(task.teamMemberPayout || 0, language)
+                          : formatCurrency(task.price || 0, language)}
                       </TableCell>
                     </TableRow>
                   ))
@@ -223,7 +223,7 @@ export function TaskInvoiceDialog({
 
         <DialogFooter className="flex justify-between items-center w-full">
           <div className="text-lg font-bold">
-            Total: ${totalAmount.toFixed(2)}
+            Total: {formatCurrency(totalAmount, language)}
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>

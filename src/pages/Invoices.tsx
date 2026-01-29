@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import {
   Card,
   CardContent,
@@ -29,16 +29,19 @@ import {
 import useFinancialStore from '@/stores/useFinancialStore'
 import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { format } from 'date-fns'
+import { AppContext } from '@/stores/AppContext'
 import { useToast } from '@/hooks/use-toast'
 import { TaskInvoiceDialog } from '@/components/financial/TaskInvoiceDialog'
 import { InvoiceViewer } from '@/components/financial/InvoiceViewer'
 import { Invoice } from '@/lib/types'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 export default function Invoices() {
   const { financials } = useFinancialStore()
   const { allUsers } = useAuthStore()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
+  const context = useContext(AppContext)
+  const selectedPropertyId = context?.selectedPropertyId || 'all'
   const { toast } = useToast()
   const [filter, setFilter] = useState('')
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
@@ -49,11 +52,17 @@ export default function Invoices() {
 
   const invoices = financials.invoices
 
-  const filteredInvoices = invoices.filter(
-    (inv) =>
-      inv.id.toLowerCase().includes(filter.toLowerCase()) ||
-      inv.description.toLowerCase().includes(filter.toLowerCase()),
-  )
+  const filteredInvoices = invoices
+    .filter((inv) =>
+      selectedPropertyId === 'all'
+        ? true
+        : inv.propertyId === selectedPropertyId,
+    )
+    .filter(
+      (inv) =>
+        inv.id.toLowerCase().includes(filter.toLowerCase()) ||
+        inv.description.toLowerCase().includes(filter.toLowerCase()),
+    )
 
   const resolveUserName = (id?: string) => {
     if (!id) return 'Unknown'
@@ -181,9 +190,7 @@ export default function Invoices() {
                       <TableCell className="max-w-[200px] truncate">
                         {inv.description}
                       </TableCell>
-                      <TableCell>
-                        {format(new Date(inv.date), 'dd/MM/yyyy')}
-                      </TableCell>
+                      <TableCell>{formatDate(inv.date, language)}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span className="font-medium text-foreground">
@@ -198,7 +205,7 @@ export default function Invoices() {
                       <TableCell>
                         <div className="flex items-center gap-1 font-bold">
                           <DollarSign className="h-3 w-3 text-muted-foreground" />
-                          {inv.amount.toFixed(2)}
+                          {formatCurrency(inv.amount, language)}
                         </div>
                       </TableCell>
                       <TableCell>{getStatusBadge(inv.status)}</TableCell>

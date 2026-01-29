@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { Language } from './translations'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -78,4 +79,31 @@ export const exportToCSV = (
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
+}
+
+export const formatCurrency = (
+  value: number,
+  language: Language = 'en',
+  currency: string = 'USD',
+) => {
+  let locale = 'en-US'
+  if (language === 'pt') locale = 'pt-BR'
+  if (language === 'es') locale = 'es-US' // Spanish in US typically uses es-US formatting or similar
+
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value)
+}
+
+export const formatDate = (date: string | Date, language: Language = 'en') => {
+  let locale = 'en-US'
+  if (language === 'pt') locale = 'pt-BR'
+  if (language === 'es') locale = 'es-ES'
+
+  return new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date(date))
 }

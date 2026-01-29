@@ -54,6 +54,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { formatCurrency } from '@/lib/utils'
 
 export function ServiceCatalog() {
   const {
@@ -66,7 +67,7 @@ export function ServiceCatalog() {
     serviceCategories,
   } = usePartnerStore()
   const { financialSettings, updateFinancialSettings } = useFinancialStore()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const { toast } = useToast()
 
   const [filter, setFilter] = useState('')
@@ -687,16 +688,16 @@ export function ServiceCatalog() {
                             )}
                           </TableCell>
                           <TableCell className="font-bold">
-                            ${rate.servicePrice?.toFixed(2)}
+                            {formatCurrency(rate.servicePrice, language)}
                           </TableCell>
                           <TableCell>
-                            ${rate.productPrice?.toFixed(2)}
+                            {formatCurrency(rate.productPrice, language)}
                           </TableCell>
                           <TableCell className="text-muted-foreground">
-                            ${rate.partnerPayment?.toFixed(2)}
+                            {formatCurrency(rate.partnerPayment, language)}
                           </TableCell>
                           <TableCell className="text-green-600 font-medium">
-                            ${rate.pmValue?.toFixed(2)}
+                            {formatCurrency(rate.pmValue, language)}
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">

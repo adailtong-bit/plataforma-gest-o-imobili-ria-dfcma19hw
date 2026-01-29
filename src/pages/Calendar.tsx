@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useContext } from 'react'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import {
   Card,
@@ -15,10 +15,11 @@ import useFinancialStore from '@/stores/useFinancialStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import usePartnerStore from '@/stores/usePartnerStore'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { AppContext } from '@/stores/AppContext'
 import { TaskDetailsSheet } from '@/components/tasks/TaskDetailsSheet'
 import { Task } from '@/lib/types'
-import { format, isSameDay, parseISO } from 'date-fns'
-import { cn } from '@/lib/utils'
+import { isSameDay, parseISO } from 'date-fns'
+import { cn, formatCurrency, formatDate } from '@/lib/utils'
 import {
   Briefcase,
   DollarSign,
@@ -64,21 +65,27 @@ export default function CalendarPage() {
   const { ledgerEntries } = useFinancialStore()
   const { properties } = usePropertyStore()
   const { partners } = usePartnerStore()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
+  const context = useContext(AppContext)
+  const selectedPropertyId = context?.selectedPropertyId || 'all'
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
   const navigate = useNavigate()
 
   // Filters
   const [filterPartner, setFilterPartner] = useState<string>('all')
-  const [filterProperty, setFilterProperty] = useState<string>('all')
+  // We use local state for partner filter, but property filter comes from global context mostly
+  // However, users might want to filter inside calendar specifically too.
+  // For consistency with user story "selecting a property must filter all data", we respect global state.
 
   // 1. Process Tasks
   const taskEvents: CalendarEvent[] = tasks
     .filter((t) => {
-      if (filterPartner !== 'all' && t.assigneeId !== filterPartner)
+      // Global Property Filter
+      if (selectedPropertyId !== 'all' && t.propertyId !== selectedPropertyId)
         return false
-      if (filterProperty !== 'all' && t.propertyId !== filterProperty)
+      // Local Partner Filter
+      if (filterPartner !== 'all' && t.assigneeId !== filterPartner)
         return false
       return true
     })
@@ -92,7 +99,7 @@ export default function CalendarPage() {
   const contractEvents: CalendarEvent[] = tenants
     .filter((t) => t.leaseEnd && t.status === 'active')
     .filter((t) => {
-      if (filterProperty !== 'all' && t.propertyId !== filterProperty)
+      if (selectedPropertyId !== 'all' && t.propertyId !== selectedPropertyId)
         return false
       if (filterPartner !== 'all') return false // Contracts not linked to partners directly in this view
       return true
@@ -112,7 +119,7 @@ export default function CalendarPage() {
   const financialEvents: CalendarEvent[] = ledgerEntries
     .filter((e) => e.dueDate && e.status === 'pending')
     .filter((e) => {
-      if (filterProperty !== 'all' && e.propertyId !== filterProperty)
+      if (selectedPropertyId !== 'all' && e.propertyId !== selectedPropertyId)
         return false
       if (filterPartner !== 'all') return false // Financials usually not direct partner link in this simple view unless extended
       return true
@@ -190,20 +197,6 @@ export default function CalendarPage() {
               ))}
             </SelectContent>
           </Select>
-
-          <Select value={filterProperty} onValueChange={setFilterProperty}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={t('common.properties')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('common.all')}</SelectItem>
-              {properties.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
       </div>
 
@@ -269,7 +262,7 @@ export default function CalendarPage() {
         <Card className="lg:col-span-4 h-[500px] lg:h-full flex flex-col">
           <CardHeader>
             <CardTitle>
-              {date ? format(date, 'EEEE, d MMM') : t('calendar.title')}
+              {date ? formatDate(date, language) : t('calendar.title')}
             </CardTitle>
             <CardDescription>
               {dayEvents.length} events for this day.
@@ -326,7 +319,7 @@ export default function CalendarPage() {
                                 </p>
                                 {event.data.price && (
                                   <p className="text-xs font-medium text-green-700">
-                                    ${event.data.price.toFixed(2)}
+                                    {formatCurrency(event.data.price, language)}
                                   </p>
                                 )}
                               </div>
@@ -414,7 +407,7 @@ export default function CalendarPage() {
                               {event.data.description}
                             </p>
                             <p className="text-xs font-bold text-green-800">
-                              ${event.data.amount.toFixed(2)}
+                              {formatCurrency(event.data.amount, language)}
                             </p>
                           </div>
                           {event.data.propertyId && (

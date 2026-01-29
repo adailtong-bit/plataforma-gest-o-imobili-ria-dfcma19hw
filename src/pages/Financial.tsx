@@ -25,9 +25,10 @@ import { useRef, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
 import { FinancialReports } from '@/components/financial/FinancialReports'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 export default function Financial() {
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const { currentUser } = useAuthStore()
   const { bankStatements, uploadBankStatement } = useFinancialStore()
   const { toast } = useToast()
@@ -144,7 +145,7 @@ export default function Financial() {
                           {stmt.fileName}
                         </TableCell>
                         <TableCell>
-                          {new Date(stmt.uploadDate).toLocaleDateString()}
+                          {formatDate(stmt.uploadDate, language)}
                         </TableCell>
                         <TableCell>
                           {stmt.status === 'reconciled' ? (
@@ -164,7 +165,7 @@ export default function Financial() {
                         </TableCell>
                         <TableCell>{stmt.itemsCount}</TableCell>
                         <TableCell>
-                          ${stmt.totalAmount.toLocaleString()}
+                          {formatCurrency(stmt.totalAmount, language)}
                         </TableCell>
                         <TableCell className="text-right">
                           {stmt.status === 'pending' && (

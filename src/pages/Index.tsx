@@ -15,7 +15,7 @@ import {
   Trophy,
 } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   ChartContainer,
@@ -38,6 +38,7 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useNotificationStore from '@/stores/useNotificationStore'
 import useAuthStore from '@/stores/useAuthStore'
+import { AppContext } from '@/stores/AppContext'
 import {
   Dialog,
   DialogContent,
@@ -51,6 +52,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import Landing from '@/pages/Landing'
+import { formatCurrency } from '@/lib/utils'
 
 export default function Index() {
   const { isAuthenticated } = useAuthStore()
@@ -68,7 +70,9 @@ function DashboardContent() {
   const { ledgerEntries, financials } = useFinancialStore()
   const { properties } = usePropertyStore()
   const { notifications } = useNotificationStore()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
+  const context = useContext(AppContext)
+  const selectedPropertyId = context?.selectedPropertyId || 'all'
 
   // Dashboard Widget State
   const [widgets, setWidgets] = useState({
@@ -81,13 +85,22 @@ function DashboardContent() {
   })
   const [dialogOpen, setDialogOpen] = useState(false)
 
+  // Filter Data based on selectedPropertyId
+  const filteredEntries = ledgerEntries.filter((e) =>
+    selectedPropertyId === 'all' ? true : e.propertyId === selectedPropertyId,
+  )
+
+  const filteredTasks = tasks.filter((t) =>
+    selectedPropertyId === 'all' ? true : t.propertyId === selectedPropertyId,
+  )
+
   // Calculate real metrics from ledger
-  const totalRevenue = ledgerEntries
+  const totalRevenue = filteredEntries
     .filter((e) => e.type === 'income')
     .reduce((acc, curr) => acc + curr.value || curr.amount, 0)
 
   // Chart Data preparation
-  const chartData = ledgerEntries.reduce(
+  const chartData = filteredEntries.reduce(
     (acc, entry) => {
       const month = new Date(entry.date).toLocaleString('default', {
         month: 'short',
@@ -125,18 +138,30 @@ function DashboardContent() {
     },
   }
 
-  const pendingCleanings = tasks.filter(
+  const pendingCleanings = filteredTasks.filter(
     (t) => t.type === 'cleaning' && t.status === 'pending',
   )
-  const activePropertiesCount = properties.filter(
-    (p) => p.status === 'rented' || p.status === 'available',
-  ).length
+
+  const activePropertiesCount =
+    selectedPropertyId === 'all'
+      ? properties.filter(
+          (p) => p.status === 'rented' || p.status === 'available',
+        ).length
+      : properties.find((p) => p.id === selectedPropertyId)
+        ? 1
+        : 0
+
   const unreadNotifications = notifications.filter((n) => !n.read)
 
   // Gamification: Calculate Global Health Score
+  const relevantProperties =
+    selectedPropertyId === 'all'
+      ? properties
+      : properties.filter((p) => p.id === selectedPropertyId)
+
   const avgHealthScore =
-    properties.reduce((acc, p) => acc + (p.healthScore || 80), 0) /
-    (properties.length || 1)
+    relevantProperties.reduce((acc, p) => acc + (p.healthScore || 80), 0) /
+    (relevantProperties.length || 1)
 
   const toggleWidget = (key: keyof typeof widgets) => {
     setWidgets((prev) => ({ ...prev, [key]: !prev[key] }))
@@ -215,7 +240,7 @@ function DashboardContent() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                ${totalRevenue.toLocaleString()}
+                {formatCurrency(totalRevenue, language)}
               </div>
               <p className="text-xs text-muted-foreground">
                 +20.1% {t('dashboard.from_last_month')}
@@ -379,6 +404,11 @@ function DashboardContent() {
               <div className="space-y-4">
                 {financials.invoices
                   .filter((i) => i.status === 'pending')
+                  .filter((i) =>
+                    selectedPropertyId === 'all'
+                      ? true
+                      : i.propertyId === selectedPropertyId,
+                  )
                   .map((invoice) => (
                     <div
                       key={invoice.id}
@@ -399,7 +429,7 @@ function DashboardContent() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-sm">
-                          ${invoice.amount.toFixed(2)}
+                          {formatCurrency(invoice.amount, language)}
                         </span>
                         <Button size="sm" variant="outline">
                           {t('dashboard.review')}
@@ -407,7 +437,7 @@ function DashboardContent() {
                       </div>
                     </div>
                   ))}
-                {tasks
+                {filteredTasks
                   .filter((t) => t.status === 'pending')
                   .map((task) => (
                     <div

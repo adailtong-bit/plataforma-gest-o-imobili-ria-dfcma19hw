@@ -37,6 +37,7 @@ import {
   ChatMessage,
   InventoryMedia,
   ServiceCategory,
+  Invoice,
 } from '@/lib/types'
 
 // Helper for random data
@@ -653,6 +654,22 @@ properties.slice(0, 20).forEach((prop) => {
 
 // --- 8. FINANCIALS SUMMARY ---
 
+// Generate dummy invoices linked to properties
+const generatedInvoices: Invoice[] = []
+for (let i = 0; i < 10; i++) {
+  const prop = randomItem(properties)
+  generatedInvoices.push({
+    id: `inv_${Date.now()}_${i}`,
+    description: `Service Invoice ${i}`,
+    amount: randomInt(100, 500),
+    status: randomItem(['paid', 'pending', 'approved']),
+    date: subDays(new Date(), randomInt(1, 30)).toISOString(),
+    propertyId: prop.id,
+    fromId: 'tenant_manager_1',
+    type: 'generic',
+  })
+}
+
 // Calculate totals for charts
 const revenueByMonth = months.map((m) => {
   const total = ledgerEntries
@@ -674,7 +691,7 @@ export const financials: Financials = {
     { category: 'Management Fees', value: 3200, fill: 'var(--color-cleaning)' },
     { category: 'Utilities', value: 1200, fill: 'var(--color-utilities)' },
   ],
-  invoices: [],
+  invoices: generatedInvoices,
   payments: [],
 }
 
@@ -788,5 +805,30 @@ export const defaultFinancialSettings: FinancialSettings = {
   gatewayProvider: 'manual',
   isProduction: false,
 }
-export const marketData: MarketData[] = []
+export const marketData: MarketData[] = [
+  {
+    region: 'Orlando, FL',
+    averagePrice: 350000,
+    occupancyRate: 75,
+    trend: 'up',
+    competitorCount: 150,
+    averageDaysOnMarket: 45,
+    shortTermRate: 185,
+    longTermRate: 2300,
+    pricePerSqFt: 210,
+    saturationIndex: 65,
+  },
+  {
+    region: 'Miami, FL',
+    averagePrice: 550000,
+    occupancyRate: 82,
+    trend: 'stable',
+    competitorCount: 300,
+    averageDaysOnMarket: 30,
+    shortTermRate: 320,
+    longTermRate: 3500,
+    pricePerSqFt: 450,
+    saturationIndex: 85,
+  },
+]
 export const workflows: Workflow[] = []

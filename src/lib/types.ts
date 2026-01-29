@@ -602,6 +602,7 @@ export interface Invoice {
   date: string
   fromId?: string
   toId?: string
+  propertyId?: string
   type?: 'team_to_partner' | 'partner_to_pm' | 'admin_to_pm' | 'generic'
 }
 

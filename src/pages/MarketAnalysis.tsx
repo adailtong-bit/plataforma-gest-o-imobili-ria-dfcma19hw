@@ -7,15 +7,13 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
   LineChart,
   Line,
   Legend,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
 } from 'recharts'
 import {
   ChartContainer,
@@ -37,11 +35,12 @@ import { useToast } from '@/hooks/use-toast'
 import { Label } from '@/components/ui/label'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { formatCurrency } from '@/lib/utils'
 
 export default function MarketAnalysis() {
   const { toast } = useToast()
   const { properties } = usePropertyStore()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
 
   // State for Filters
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all')
@@ -249,21 +248,23 @@ export default function MarketAnalysis() {
                     {t('market.avg_sale_price')}
                   </span>
                   <div className="text-2xl font-bold">
-                    ${data.averagePrice.toLocaleString()}
+                    {formatCurrency(data.averagePrice, language)}
                   </div>
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
                     {t('market.price_sqft')}
                   </span>
-                  <div className="text-2xl font-bold">${data.pricePerSqFt}</div>
+                  <div className="text-2xl font-bold">
+                    {formatCurrency(data.pricePerSqFt, language)}
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
                     {t('market.avg_daily_rate')}
                   </span>
                   <div className="text-xl font-semibold text-green-600">
-                    ${data.shortTermRate}
+                    {formatCurrency(data.shortTermRate, language)}
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -271,7 +272,7 @@ export default function MarketAnalysis() {
                     {t('market.monthly_rent')}
                   </span>
                   <div className="text-xl font-semibold text-blue-600">
-                    ${data.longTermRate}
+                    {formatCurrency(data.longTermRate, language)}
                   </div>
                 </div>
               </div>
@@ -329,7 +330,7 @@ export default function MarketAnalysis() {
             <div className="h-[400px] w-full">
               <ChartContainer
                 config={{
-                  avgPrice: { label: 'Avg Price ($)', color: '#2563eb' },
+                  avgPrice: { label: 'Avg Price', color: '#2563eb' },
                   adr: { label: 'Avg Daily Rate (ADR)', color: '#9333ea' },
                   monthlyRent: { label: 'Rent (LTR)', color: '#0ea5e9' },
                   occupancy: { label: 'Occupancy (%)', color: '#16a34a' },
@@ -351,7 +352,7 @@ export default function MarketAnalysis() {
                     stroke="#2563eb"
                     strokeWidth={2}
                     dot={{ r: 4 }}
-                    name="Avg Price ($)"
+                    name="Avg Price"
                   />
                   <Line
                     yAxisId="right"
@@ -360,7 +361,7 @@ export default function MarketAnalysis() {
                     stroke="#9333ea"
                     strokeWidth={2}
                     dot={false}
-                    name="ADR ($)"
+                    name="ADR"
                   />
                   <Line
                     yAxisId="right"
@@ -369,7 +370,7 @@ export default function MarketAnalysis() {
                     stroke="#0ea5e9"
                     strokeWidth={2}
                     dot={false}
-                    name="Rent ($)"
+                    name="Rent"
                   />
                   <Line
                     yAxisId="right"

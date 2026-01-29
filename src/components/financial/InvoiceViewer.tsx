@@ -9,10 +9,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { Invoice } from '@/lib/types'
 import { Printer, Download, X } from 'lucide-react'
-import { format } from 'date-fns'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
 import { useMemo } from 'react'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 interface InvoiceViewerProps {
   open: boolean
@@ -25,7 +25,7 @@ export function InvoiceViewer({
   onOpenChange,
   invoice,
 }: InvoiceViewerProps) {
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const { allUsers, currentUser } = useAuthStore()
 
   const handlePrint = () => {
@@ -42,11 +42,6 @@ export function InvoiceViewer({
     if (!invoice?.toId) return null
     return allUsers.find((u) => u.id === invoice.toId)
   }, [invoice, allUsers])
-
-  const currencyFormatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  })
 
   if (!invoice) return null
 
@@ -95,7 +90,7 @@ export function InvoiceViewer({
                   <span className="font-semibold text-gray-600">
                     {t('invoice_viewer.date')}:
                   </span>
-                  <span>{format(new Date(invoice.date), 'MMM dd, yyyy')}</span>
+                  <span>{formatDate(invoice.date, language)}</span>
                 </div>
                 {/* Due Date (Standard Net 14 or Net 30) */}
                 <div className="flex justify-end gap-4">
@@ -103,11 +98,11 @@ export function InvoiceViewer({
                     {t('invoice_viewer.due_date')}:
                   </span>
                   <span>
-                    {format(
+                    {formatDate(
                       new Date(
                         new Date(invoice.date).getTime() + 14 * 86400000,
                       ),
-                      'MMM dd, yyyy',
+                      language,
                     )}
                   </span>
                 </div>
@@ -171,10 +166,10 @@ export function InvoiceViewer({
                   </td>
                   <td className="py-4 px-4 text-right text-gray-600">1</td>
                   <td className="py-4 px-4 text-right text-gray-600">
-                    {currencyFormatter.format(invoice.amount)}
+                    {formatCurrency(invoice.amount, language)}
                   </td>
                   <td className="py-4 px-4 text-right font-medium text-gray-800">
-                    {currencyFormatter.format(invoice.amount)}
+                    {formatCurrency(invoice.amount, language)}
                   </td>
                 </tr>
               </tbody>
@@ -186,15 +181,15 @@ export function InvoiceViewer({
             <div className="w-72 space-y-3">
               <div className="flex justify-between text-sm text-gray-600">
                 <span>{t('invoice_viewer.subtotal')}:</span>
-                <span>{currencyFormatter.format(invoice.amount)}</span>
+                <span>{formatCurrency(invoice.amount, language)}</span>
               </div>
               <div className="flex justify-between text-sm text-gray-600">
                 <span>{t('common.taxes')} (0%):</span>
-                <span>$0.00</span>
+                <span>{formatCurrency(0, language)}</span>
               </div>
               <div className="border-t-2 border-gray-200 pt-3 flex justify-between text-xl font-bold text-navy">
                 <span>{t('invoice_viewer.total')}:</span>
-                <span>{currencyFormatter.format(invoice.amount)}</span>
+                <span>{formatCurrency(invoice.amount, language)}</span>
               </div>
             </div>
           </div>

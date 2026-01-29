@@ -99,7 +99,9 @@ interface AppContextType {
   adPricing: AdPricing
   language: Language
   typingStatus: Record<string, boolean>
+  selectedPropertyId: string
   setLanguage: (lang: Language) => void
+  setSelectedPropertyId: (id: string) => void
   t: (key: string, params?: Record<string, string>) => string
   login: (email: string) => boolean
   logout: () => void
@@ -243,6 +245,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const saved = localStorage.getItem('app_language')
     return (saved as Language) || 'en'
   })
+
+  // Global Property Selection (default 'all')
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all')
 
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [currentUser, setCurrentUserObj] = useState<
@@ -937,8 +942,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         adPricing,
         language,
         typingStatus,
+        selectedPropertyId,
         setTyping,
         setLanguage,
+        setSelectedPropertyId,
         t,
         login,
         logout,
