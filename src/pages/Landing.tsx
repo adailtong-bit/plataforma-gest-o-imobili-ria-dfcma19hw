@@ -41,6 +41,7 @@ import {
 import logo from '@/assets/logo-estilizado.jpg'
 import { trackEvent } from '@/lib/analytics'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { formatCurrency } from '@/lib/utils'
 
 export default function Landing() {
   const [scrolled, setScrolled] = useState(false)
@@ -100,24 +101,21 @@ export default function Landing() {
 
   const testimonials = [
     {
-      quote:
-        "The automation capabilities have saved us over 20 hours a week. It's not just software; it's a growth partner.",
-      author: 'Sarah Jenkins',
-      role: 'CEO, Coastal Stays',
+      quote: t('landing.testimonials.quote_1'),
+      author: t('landing.testimonials.author_1'),
+      role: t('landing.testimonials.role_1'),
       rating: 5,
     },
     {
-      quote:
-        'Finally, a platform that handles complex owner accounting correctly. My clients love the transparency of the portal.',
-      author: 'Michael Rodriguez',
-      role: 'Property Manager, Urban Living',
+      quote: t('landing.testimonials.quote_2'),
+      author: t('landing.testimonials.author_2'),
+      role: t('landing.testimonials.role_2'),
       rating: 5,
     },
     {
-      quote:
-        'Seamless onboarding and incredible support. We scaled from 10 to 50 units in 6 months thanks to COREPM.',
-      author: 'Elena Vasquez',
-      role: 'Director, Luxury Villas',
+      quote: t('landing.testimonials.quote_3'),
+      author: t('landing.testimonials.author_3'),
+      role: t('landing.testimonials.role_3'),
       rating: 5,
     },
   ]
@@ -125,44 +123,44 @@ export default function Landing() {
   const plans = [
     {
       name: t('landing.pricing.starter.name'),
-      price: '$29',
+      price: 29, // number for formatting
       period: t('landing.pricing.per_month'),
       description: t('landing.pricing.starter.desc'),
       features: [
-        'Up to 5 properties',
-        'Real-time Channel Sync',
-        'Basic Financial Reports',
-        'Email Support',
+        t('landing.pricing.starter.feat_1'),
+        t('landing.pricing.starter.feat_2'),
+        t('landing.pricing.starter.feat_3'),
+        t('landing.pricing.starter.feat_4'),
       ],
       cta: t('landing.pricing.starter.cta'),
       popular: false,
     },
     {
       name: t('landing.pricing.professional.name'),
-      price: '$99',
+      price: 99, // number for formatting
       period: t('landing.pricing.per_month'),
       description: t('landing.pricing.professional.desc'),
       features: [
-        'Up to 50 properties',
-        'Advanced Automation workflows',
-        'Branded Owner Portals',
-        'Priority 24/7 Support',
-        'QuickBooks Integration',
+        t('landing.pricing.professional.feat_1'),
+        t('landing.pricing.professional.feat_2'),
+        t('landing.pricing.professional.feat_3'),
+        t('landing.pricing.professional.feat_4'),
+        t('landing.pricing.professional.feat_5'),
       ],
       cta: t('landing.pricing.professional.cta'),
       popular: true,
     },
     {
       name: t('landing.pricing.enterprise.name'),
-      price: 'Custom',
+      price: t('landing.pricing.custom_price'), // string
       period: '',
       description: t('landing.pricing.enterprise.desc'),
       features: [
-        'Unlimited properties',
-        'Dedicated API Access',
-        'White Label Solution',
-        'Dedicated Success Manager',
-        'Custom Onboarding',
+        t('landing.pricing.enterprise.feat_1'),
+        t('landing.pricing.enterprise.feat_2'),
+        t('landing.pricing.enterprise.feat_3'),
+        t('landing.pricing.enterprise.feat_4'),
+        t('landing.pricing.enterprise.feat_5'),
       ],
       cta: t('landing.pricing.enterprise.cta'),
       popular: false,
@@ -659,7 +657,12 @@ export default function Landing() {
                 <CardContent className="flex-1 flex flex-col">
                   <div className="mb-8">
                     <span className="text-5xl font-extrabold text-navy">
-                      {plan.price}
+                      {typeof plan.price === 'number'
+                        ? formatCurrency(plan.price, language).replace(
+                            /\.00$/,
+                            '',
+                          )
+                        : plan.price}
                     </span>
                     <span className="text-muted-foreground font-medium">
                       {plan.period}

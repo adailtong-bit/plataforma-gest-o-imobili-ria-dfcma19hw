@@ -103,15 +103,13 @@ export const formatCurrency = (
 }
 
 export const formatDate = (date: string | Date, language: Language = 'en') => {
-  if (language === 'es') {
-    // ES requested format: DD/MM/YYYY
+  if (language === 'es' || language === 'pt') {
+    // ES/PT requested format: DD/MM/YYYY
     return format(new Date(date), 'dd/MM/yyyy')
   }
 
-  let locale = 'en-US'
-  if (language === 'pt') locale = 'pt-BR'
-
-  return new Intl.DateTimeFormat(locale, {
+  // Default EN
+  return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
