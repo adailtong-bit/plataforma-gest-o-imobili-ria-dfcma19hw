@@ -287,6 +287,17 @@ export interface InventoryInspection {
   signature?: string
 }
 
+export interface Lead {
+  id: string
+  name: string
+  email: string
+  phone?: string
+  source: 'Zillow' | 'Idealista' | 'Website' | 'Other'
+  date: string
+  status: 'new' | 'contacted' | 'qualified' | 'lost'
+  message?: string
+}
+
 export interface Property {
   id: string
   name: string
@@ -304,7 +315,12 @@ export interface Property {
   status: PropertyStatus
   marketingStatus?: 'listed' | 'unlisted'
   listingPrice?: number
+  purchasePrice?: number // For ROI Calculation
   publishToPortals?: boolean
+  portalSettings?: {
+    zillow: boolean
+    idealista: boolean
+  }
   image: string
   gallery?: string[]
   bedrooms: number
@@ -344,6 +360,7 @@ export interface Property {
   leadContact?: string
   healthScore?: number
   inventory?: InventoryItem[] // Inventory Management
+  leads?: Lead[] // Marketing Leads
 }
 
 export type DocumentCategory =

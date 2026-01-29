@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Property } from '@/lib/types'
+import { Property, Lead } from '@/lib/types'
 import {
   Card,
   CardContent,
@@ -8,40 +8,29 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
-import { Textarea } from '@/components/ui/textarea'
-import { FileUpload } from '@/components/ui/file-upload'
-import useLanguageStore from '@/stores/useLanguageStore'
 import { Button } from '@/components/ui/button'
 import {
   Share2,
-  Facebook,
-  Instagram,
-  Linkedin,
-  Youtube,
   Globe,
-  Video,
-  Copy,
-  Download,
-  Image as ImageIcon,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  ZoomIn,
-  ZoomOut,
-  Maximize2,
+  Loader2,
+  Users,
+  MessageSquare,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { formatCurrency } from '@/lib/utils'
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { format } from 'date-fns'
 
 interface PropertyMarketingProps {
   data: Property
@@ -56,429 +45,206 @@ export function PropertyMarketing({
 }: PropertyMarketingProps) {
   const { t, language } = useLanguageStore()
   const { toast } = useToast()
-  const [publishDialogOpen, setPublishDialogOpen] = useState(false)
-  const [lightboxOpen, setLightboxOpen] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [zoomLevel, setZoomLevel] = useState(1)
+  const [isPublishing, setIsPublishing] = useState(false)
 
-  const handleGalleryAdd = (url: string) => {
-    onChange('gallery', [...(data.gallery || []), url])
-  }
+  // Portal Settings handlers
+  const handlePortalToggle = (
+    portal: 'zillow' | 'idealista',
+    enabled: boolean,
+  ) => {
+    const currentSettings = data.portalSettings || {
+      zillow: false,
+      idealista: false,
+    }
+    onChange('portalSettings', { ...currentSettings, [portal]: enabled })
 
-  const handleGalleryRemove = (index: number) => {
-    onChange(
-      'gallery',
-      (data.gallery || []).filter((_, i) => i !== index),
-    )
-  }
-
-  const handleSocialChange = (platform: string, value: string) => {
-    onChange('socialMedia', { ...data.socialMedia, [platform]: value })
-  }
-
-  const handlePublishClick = () => {
-    if (data.status !== 'available' && data.status !== 'released') {
+    if (enabled) {
       toast({
-        title: 'Restricted',
-        description: 'Property must be Available or Released.',
+        title: 'Sync Enabled',
+        description: `Synchronization with ${portal === 'zillow' ? 'Zillow' : 'Idealista'} active.`,
+      })
+    }
+  }
+
+  const handlePublish = () => {
+    if (!data.portalSettings?.zillow && !data.portalSettings?.idealista) {
+      toast({
+        title: t('common.error'),
+        description: 'Please enable at least one portal.',
         variant: 'destructive',
       })
       return
     }
-    setPublishDialogOpen(true)
+
+    setIsPublishing(true)
+    // Simulate API Call
+    setTimeout(() => {
+      setIsPublishing(false)
+      toast({
+        title: t('common.success'),
+        description: t('marketing_tab.publish_success'),
+      })
+    }, 2000)
   }
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(
-      `https://platform.com/listing/${data.id || 'preview'}`,
-    )
-    toast({ title: t('common.copied') })
-  }
-
-  const openLightbox = (index: number) => {
-    setCurrentImageIndex(index)
-    setZoomLevel(1)
-    setLightboxOpen(true)
-  }
-
-  const nextImage = () => {
-    if (data.gallery && data.gallery.length > 0) {
-      setCurrentImageIndex((prev) => (prev + 1) % data.gallery!.length)
-      setZoomLevel(1)
-    }
-  }
-
-  const prevImage = () => {
-    if (data.gallery && data.gallery.length > 0) {
-      setCurrentImageIndex((prev) =>
-        prev === 0 ? data.gallery!.length - 1 : prev - 1,
-      )
-      setZoomLevel(1)
-    }
-  }
-
-  const zoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.5, 3))
-  const zoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.5, 1))
+  // Helper for Leads
+  const leads = data.leads || []
 
   return (
     <div className="space-y-6">
+      {/* Portal Sync Configuration */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>{t('properties.marketing')}</CardTitle>
-            <CardDescription>{t('properties.marketing_desc')}</CardDescription>
-          </div>
-          <Button onClick={handlePublishClick} className="gap-2 bg-blue-600">
-            <Share2 className="h-4 w-4" /> {t('properties.publicity')}
-          </Button>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Globe className="h-5 w-5" /> {t('marketing_tab.portal_sync')}
+          </CardTitle>
+          <CardDescription>
+            Manage automated listings on major real estate platforms.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between border p-4 rounded-lg bg-muted/20">
-            <div className="space-y-0.5">
-              <Label className="text-base">
-                {t('properties.publish_portals')}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Airbnb, Booking, Vrbo.
-              </p>
+          <div className="flex items-center justify-between border p-4 rounded-lg">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 bg-blue-600 rounded-md flex items-center justify-center text-white font-bold">
+                Z
+              </div>
+              <div>
+                <p className="font-semibold">Zillow</p>
+                <p className="text-sm text-muted-foreground">
+                  US Market Leader
+                </p>
+              </div>
             </div>
             <Switch
-              checked={data.publishToPortals || false}
-              onCheckedChange={(checked) =>
-                onChange('publishToPortals', checked)
-              }
-              disabled={
-                !canEdit ||
-                (data.status !== 'available' && data.status !== 'released')
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label>{t('properties.listing_price')}</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-2 text-muted-foreground text-sm font-bold">
-                  {language === 'pt' ? 'R$' : language === 'es' ? '€' : '$'}
-                </span>
-                <Input
-                  type="number"
-                  className="pl-8"
-                  value={data.listingPrice || ''}
-                  onChange={(e) =>
-                    onChange('listingPrice', Number(e.target.value))
-                  }
-                  disabled={!canEdit}
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Lead Contact (Email)</Label>
-              <Input
-                value={data.leadContact || ''}
-                onChange={(e) => onChange('leadContact', e.target.value)}
-                placeholder="sales@agency.com"
-                disabled={!canEdit}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium">Social Media</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-2">
-                <Facebook className="h-5 w-5 text-blue-600" />
-                <Input
-                  placeholder="Facebook URL"
-                  value={data.socialMedia?.facebook || ''}
-                  onChange={(e) =>
-                    handleSocialChange('facebook', e.target.value)
-                  }
-                  disabled={!canEdit}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Instagram className="h-5 w-5 text-pink-600" />
-                <Input
-                  placeholder="Instagram URL"
-                  value={data.socialMedia?.instagram || ''}
-                  onChange={(e) =>
-                    handleSocialChange('instagram', e.target.value)
-                  }
-                  disabled={!canEdit}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Linkedin className="h-5 w-5 text-blue-700" />
-                <Input
-                  placeholder="LinkedIn URL"
-                  value={data.socialMedia?.linkedin || ''}
-                  onChange={(e) =>
-                    handleSocialChange('linkedin', e.target.value)
-                  }
-                  disabled={!canEdit}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Youtube className="h-5 w-5 text-red-600" />
-                <Input
-                  placeholder="YouTube URL"
-                  value={data.socialMedia?.youtube || ''}
-                  onChange={(e) =>
-                    handleSocialChange('youtube', e.target.value)
-                  }
-                  disabled={!canEdit}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Video className="h-5 w-5 text-black" />
-                <Input
-                  placeholder="TikTok URL"
-                  value={data.socialMedia?.tiktok || ''}
-                  onChange={(e) => handleSocialChange('tiktok', e.target.value)}
-                  disabled={!canEdit}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Globe className="h-5 w-5 text-gray-500" />
-                <Input
-                  placeholder="Other URL"
-                  value={data.socialMedia?.other || ''}
-                  onChange={(e) => handleSocialChange('other', e.target.value)}
-                  disabled={!canEdit}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>{t('properties.public_desc')}</Label>
-            <Textarea
-              value={data.description?.en || ''}
-              onChange={(e) =>
-                onChange('description', {
-                  ...data.description,
-                  en: e.target.value,
-                })
-              }
-              placeholder="Enter engaging description..."
-              rows={5}
+              checked={data.portalSettings?.zillow || false}
+              onCheckedChange={(c) => handlePortalToggle('zillow', c)}
               disabled={!canEdit}
             />
           </div>
+
+          <div className="flex items-center justify-between border p-4 rounded-lg">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 bg-yellow-400 rounded-md flex items-center justify-center text-black font-bold">
+                i
+              </div>
+              <div>
+                <p className="font-semibold">Idealista</p>
+                <p className="text-sm text-muted-foreground">European Market</p>
+              </div>
+            </div>
+            <Switch
+              checked={data.portalSettings?.idealista || false}
+              onCheckedChange={(c) => handlePortalToggle('idealista', c)}
+              disabled={!canEdit}
+            />
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <Button
+              onClick={handlePublish}
+              disabled={!canEdit || isPublishing}
+              className="bg-trust-blue w-full sm:w-auto"
+            >
+              {isPublishing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+                  Publishing...
+                </>
+              ) : (
+                <>
+                  <Share2 className="mr-2 h-4 w-4" />{' '}
+                  {t('marketing_tab.publish_btn')}
+                </>
+              )}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
+      {/* Centralized Lead Management */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('properties.listing_gallery')}</CardTitle>
-          <CardDescription>High quality images for portals.</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" /> {t('marketing_tab.leads')}
+          </CardTitle>
+          <CardDescription>
+            Inquiries captured from external portals.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            {data.gallery?.map((img, idx) => (
-              <div
-                key={idx}
-                className="relative aspect-video rounded-md overflow-hidden group cursor-pointer border border-muted hover:shadow-lg transition-all"
-                onClick={() => openLightbox(idx)}
-              >
-                <img
-                  src={img}
-                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                  alt={`Gallery ${idx}`}
-                />
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Maximize2 className="h-6 w-6 text-white drop-shadow-md" />
-                </div>
-                {canEdit && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleGalleryRemove(idx)
-                    }}
-                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('common.name')}</TableHead>
+                  <TableHead>{t('marketing_tab.contact_info')}</TableHead>
+                  <TableHead>{t('marketing_tab.source')}</TableHead>
+                  <TableHead>{t('marketing_tab.inquiry_date')}</TableHead>
+                  <TableHead>{t('marketing_tab.status')}</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {leads.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="text-center py-8 text-muted-foreground"
+                    >
+                      No leads yet.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  leads.map((lead) => (
+                    <TableRow key={lead.id}>
+                      <TableCell className="font-medium">{lead.name}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col text-xs">
+                          <span>{lead.email}</span>
+                          <span className="text-muted-foreground">
+                            {lead.phone}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={
+                            lead.source === 'Zillow'
+                              ? 'bg-blue-50 text-blue-700 border-blue-200'
+                              : lead.source === 'Idealista'
+                                ? 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                                : ''
+                          }
+                        >
+                          {lead.source}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {format(new Date(lead.date), 'dd/MM/yyyy')}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            lead.status === 'new' ? 'default' : 'secondary'
+                          }
+                        >
+                          {lead.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="sm">
+                          <MessageSquare className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 )}
-              </div>
-            ))}
+              </TableBody>
+            </Table>
           </div>
-          {canEdit && (
-            <FileUpload
-              onChange={handleGalleryAdd}
-              label={t('common.add_title')}
-            />
-          )}
         </CardContent>
       </Card>
-
-      {/* Lightbox Overlay */}
-      {lightboxOpen && data.gallery && data.gallery.length > 0 && (
-        <div className="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center animate-in fade-in duration-200">
-          <div className="absolute top-4 right-4 flex gap-2 z-50">
-            <Button
-              variant="secondary"
-              size="icon"
-              onClick={zoomIn}
-              className="bg-black/50 text-white border-white/20 hover:bg-black/70"
-            >
-              <ZoomIn className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="secondary"
-              size="icon"
-              onClick={zoomOut}
-              className="bg-black/50 text-white border-white/20 hover:bg-black/70"
-            >
-              <ZoomOut className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setLightboxOpen(false)}
-              className="text-white hover:bg-white/20"
-            >
-              <X className="h-6 w-6" />
-            </Button>
-          </div>
-
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 z-50">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={prevImage}
-              className="text-white hover:bg-white/20 h-12 w-12 rounded-full"
-            >
-              <ChevronLeft className="h-8 w-8" />
-            </Button>
-          </div>
-
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 z-50">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={nextImage}
-              className="text-white hover:bg-white/20 h-12 w-12 rounded-full"
-            >
-              <ChevronRight className="h-8 w-8" />
-            </Button>
-          </div>
-
-          <div
-            className="overflow-hidden w-full h-full flex items-center justify-center p-8"
-            style={{ cursor: zoomLevel > 1 ? 'grab' : 'default' }}
-          >
-            <img
-              src={data.gallery[currentImageIndex]}
-              alt="Fullscreen"
-              className="max-w-full max-h-full object-contain transition-transform duration-200"
-              style={{ transform: `scale(${zoomLevel})` }}
-            />
-          </div>
-
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 px-4 py-2 rounded-full text-white text-sm">
-            {currentImageIndex + 1} / {data.gallery.length}
-          </div>
-        </div>
-      )}
-
-      {/* Automated Marketing Kit Dialog */}
-      <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
-        <DialogContent className="max-w-2xl overflow-y-auto max-h-[90vh]">
-          <DialogHeader>
-            <DialogTitle>Automated Property Marketing Kit</DialogTitle>
-            <DialogDescription>
-              Use this kit for social media and listings.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-6 py-4">
-            {/* Social Media Post Preview */}
-            <div className="border rounded-md p-4 bg-muted/20">
-              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <Share2 className="h-4 w-4" /> Social Media Preview
-              </h4>
-              <div className="bg-white border rounded-lg p-4 shadow-sm space-y-3">
-                <div className="aspect-video w-full bg-gray-100 rounded-md overflow-hidden">
-                  <img
-                    src={data.image}
-                    alt="Main"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">{data.name}</h3>
-                  <p className="text-sm text-gray-600">
-                    {data.city}, {data.state}
-                  </p>
-                </div>
-                <p className="text-sm text-gray-800">
-                  ✨ New Listing! Check out this amazing {data.bedrooms}BR/
-                  {data.bathrooms}BA property in {data.community || data.city}.
-                  {data.description?.en
-                    ? ` ${data.description.en.substring(0, 80)}...`
-                    : ''}
-                </p>
-                <div className="flex gap-2 text-xs text-blue-600 font-medium">
-                  <span>#{data.city?.replace(/\s/g, '')}RealEstate</span>
-                  <span>#DreamHome</span>
-                  <span>#ForRent</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Assets Download Section */}
-            <div className="border rounded-md p-4 bg-muted/20">
-              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <ImageIcon className="h-4 w-4" /> Downloadable Assets
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="w-full justify-start">
-                  <Download className="mr-2 h-4 w-4" /> High-Res Photos (ZIP)
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Download className="mr-2 h-4 w-4" /> PDF Brochure
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Download className="mr-2 h-4 w-4" /> Instagram Stories
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Download className="mr-2 h-4 w-4" /> Facebook Post
-                </Button>
-              </div>
-            </div>
-
-            {/* Links Section */}
-            <div className="border rounded-md p-4 bg-muted/20">
-              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <Globe className="h-4 w-4" /> Direct Booking Link
-              </h4>
-              <div className="flex gap-2">
-                <Input
-                  readOnly
-                  value={`https://platform.com/listing/${data.id || 'preview'}`}
-                />
-                <Button onClick={handleCopyLink} size="icon">
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setPublishDialogOpen(false)}
-            >
-              {t('common.close')}
-            </Button>
-            <Button onClick={handleCopyLink} className="bg-trust-blue">
-              {t('common.copied')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

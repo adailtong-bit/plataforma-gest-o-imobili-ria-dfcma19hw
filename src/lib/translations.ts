@@ -2,6 +2,7 @@ export type Language = 'pt' | 'en' | 'es'
 
 export const translations = {
   pt: {
+    // ... existing translations
     common: {
       dashboard: 'Painel',
       properties: 'Propriedades',
@@ -103,7 +104,7 @@ export const translations = {
       delete_active_tenant_error:
         'Não é possível excluir propriedade com inquilino ativo.',
       confirm_delete: 'Confirmar Exclusão',
-      operations: 'Operações',
+      operations: 'Operaciones',
       contracts: 'Contratos',
       total: 'Total',
       done: 'Concluir',
@@ -201,6 +202,7 @@ export const translations = {
         documents: 'Documentos',
         logs: 'Log de Atividade',
         export: 'Exportar',
+        analytics: 'Analytics Financeiro',
       },
       features: {
         bedrooms: 'Quartos',
@@ -232,6 +234,31 @@ export const translations = {
         auto_translate: 'Tradução Auto',
         copy_from: 'Copiar de',
       },
+      analytics: {
+        title: 'Análise Financeira Avançada',
+        subtitle: 'Projeções de fluxo de caixa e análise de ROI.',
+        cash_flow_projection: 'Projeção de Fluxo de Caixa (12 Meses)',
+        profitability: 'Análise de Rentabilidade',
+        unit_comparison: 'Comparação de Unidades',
+        noi: 'Net Operating Income (NOI)',
+        roi: 'Return on Investment (ROI)',
+        cap_rate: 'Cap Rate',
+        occupancy_rate: 'Taxa de Ocupação',
+        revenue_sqm: 'Receita / m²',
+        projected_income: 'Receita Projetada',
+        projected_expenses: 'Despesas Projetadas',
+        net_flow: 'Fluxo Líquido',
+      },
+      marketing_tab: {
+        portal_sync: 'Sincronização com Portais',
+        leads: 'Gestão de Leads',
+        publish_btn: 'Publicar nos Portais',
+        publish_success: 'Dados enviados para os portais selecionados.',
+        source: 'Origem',
+        contact_info: 'Contato',
+        inquiry_date: 'Data',
+        status: 'Status',
+      },
     },
     status: {
       rented: 'Alugado',
@@ -261,6 +288,7 @@ export const translations = {
       copy_link: 'Link copiado!',
     },
     landing: {
+      // ... existing landing translations
       nav: {
         features: 'Funcionalidades',
         testimonials: 'Depoimentos',
@@ -402,6 +430,7 @@ export const translations = {
     },
   },
   en: {
+    // ... existing EN translations
     common: {
       dashboard: 'Dashboard',
       properties: 'Properties',
@@ -601,6 +630,7 @@ export const translations = {
         documents: 'Documents',
         logs: 'Activity Log',
         export: 'Export',
+        analytics: 'Financial Analytics',
       },
       features: {
         bedrooms: 'Bedrooms',
@@ -631,6 +661,31 @@ export const translations = {
         auto_translate: 'Auto-translate',
         copy_from: 'Copy from',
       },
+      analytics: {
+        title: 'Advanced Financial Analytics',
+        subtitle: 'Cash flow projections and ROI analysis.',
+        cash_flow_projection: 'Cash Flow Projection (12 Months)',
+        profitability: 'Profitability Analysis',
+        unit_comparison: 'Unit Comparison',
+        noi: 'Net Operating Income (NOI)',
+        roi: 'Return on Investment (ROI)',
+        cap_rate: 'Cap Rate',
+        occupancy_rate: 'Occupancy Rate',
+        revenue_sqm: 'Revenue / sqm',
+        projected_income: 'Projected Income',
+        projected_expenses: 'Projected Expenses',
+        net_flow: 'Net Flow',
+      },
+      marketing_tab: {
+        portal_sync: 'Portal Sync',
+        leads: 'Lead Management',
+        publish_btn: 'Publish to Portals',
+        publish_success: 'Data pushed to selected portals.',
+        source: 'Source',
+        contact_info: 'Contact',
+        inquiry_date: 'Date',
+        status: 'Status',
+      },
     },
     status: {
       rented: 'Rented',
@@ -660,6 +715,7 @@ export const translations = {
       copy_link: 'Link copied!',
     },
     landing: {
+      // ... existing landing
       nav: {
         features: 'Features',
         testimonials: 'Testimonials',
@@ -800,6 +856,7 @@ export const translations = {
     },
   },
   es: {
+    // ... existing ES translations
     common: {
       dashboard: 'Panel',
       properties: 'Propiedades',
@@ -999,6 +1056,7 @@ export const translations = {
         documents: 'Documentos',
         logs: 'Registro de Actividad',
         export: 'Exportar',
+        analytics: 'Análisis Financiero',
       },
       features: {
         bedrooms: 'Habitaciones',
@@ -1029,6 +1087,31 @@ export const translations = {
         auto_translate: 'Auto-traducir',
         copy_from: 'Copiar de',
       },
+      analytics: {
+        title: 'Análisis Financiero Avanzado',
+        subtitle: 'Proyecciones de flujo de caja y análisis de ROI.',
+        cash_flow_projection: 'Proyección de Flujo de Caja (12 Meses)',
+        profitability: 'Análisis de Rentabilidad',
+        unit_comparison: 'Comparación de Unidades',
+        noi: 'Net Operating Income (NOI)',
+        roi: 'Return on Investment (ROI)',
+        cap_rate: 'Cap Rate',
+        occupancy_rate: 'Tasa de Ocupación',
+        revenue_sqm: 'Ingresos / m²',
+        projected_income: 'Ingresos Proyectados',
+        projected_expenses: 'Gastos Proyectados',
+        net_flow: 'Flujo Neto',
+      },
+      marketing_tab: {
+        portal_sync: 'Sincronización con Portales',
+        leads: 'Gestión de Leads',
+        publish_btn: 'Publicar en Portales',
+        publish_success: 'Datos enviados a los portales seleccionados.',
+        source: 'Fuente',
+        contact_info: 'Contacto',
+        inquiry_date: 'Fecha',
+        status: 'Estado',
+      },
     },
     status: {
       rented: 'Alquilado',
@@ -1058,6 +1141,7 @@ export const translations = {
       copy_link: '¡Enlace copiado!',
     },
     landing: {
+      // ... existing landing
       nav: {
         features: 'Características',
         testimonials: 'Testimonios',

@@ -15,6 +15,7 @@ import {
   FileText,
   Hammer,
   BarChart,
+  PieChart,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -53,6 +54,7 @@ import { PropertySync } from '@/components/properties/PropertySync'
 import { PropertyInventory } from '@/components/properties/PropertyInventory'
 import { PropertyContracts } from '@/components/properties/PropertyContracts'
 import { MaintenanceReport } from '@/components/maintenance/MaintenanceReport'
+import { PropertyAnalytics } from '@/components/properties/PropertyAnalytics'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -322,6 +324,9 @@ export default function PropertyDetails() {
           <TabsTrigger value="overview">
             {t('properties.tabs.overview')}
           </TabsTrigger>
+          <TabsTrigger value="analytics">
+            <PieChart className="h-4 w-4 mr-2" /> Analytics
+          </TabsTrigger>
           <TabsTrigger value="reports">
             <BarChart className="h-4 w-4 mr-2" /> Reports
           </TabsTrigger>
@@ -371,6 +376,10 @@ export default function PropertyDetails() {
             onChange={handleChange}
             canEdit={isEditing}
           />
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <PropertyAnalytics property={formData} />
         </TabsContent>
 
         <TabsContent value="reports">

@@ -88,8 +88,24 @@ const formSchema = z.object({
   templatePmValue: z.number().optional(),
 })
 
-export function CreateTaskDialog() {
-  const [open, setOpen] = useState(false)
+interface CreateTaskDialogProps {
+  initialPropertyId?: string
+  initialDate?: Date
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}
+
+export function CreateTaskDialog({
+  initialPropertyId,
+  initialDate,
+  open: controlledOpen,
+  onOpenChange: setControlledOpen,
+}: CreateTaskDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const isControlled = controlledOpen !== undefined
+  const open = isControlled ? controlledOpen : internalOpen
+  const setOpen = isControlled ? setControlledOpen! : setInternalOpen
+
   const { properties } = usePropertyStore()
   const { addTask } = useTaskStore()
   const { partners, genericServiceRates } = usePartnerStore()
@@ -107,6 +123,7 @@ export function CreateTaskDialog() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
+      propertyId: initialPropertyId || '',
       assigneeId: '',
       partnerEmployeeId: 'none',
       priority: 'medium',
@@ -118,8 +135,19 @@ export function CreateTaskDialog() {
       recurrence: 'none',
       templateServicePrice: 0,
       templatePmValue: 0,
+      date: initialDate || new Date(),
     },
   })
+
+  // Update form defaults when props change
+  useEffect(() => {
+    if (initialPropertyId) {
+      form.setValue('propertyId', initialPropertyId)
+    }
+    if (initialDate) {
+      form.setValue('date', initialDate)
+    }
+  }, [initialPropertyId, initialDate, form])
 
   const watchPropertyId = form.watch('propertyId')
   const watchType = form.watch('type')
@@ -134,11 +162,8 @@ export function CreateTaskDialog() {
   const laborCost = parseFloat(watchPrice || '0')
   const materialCost = parseFloat(watchMaterial || '0')
 
-  // Logic: If template was used, we prioritize the template's service price + product price as billable
-  // Otherwise, we calculate using global margin.
   let estimatedBillable = 0
   if (watchTemplateServicePrice && watchTemplateServicePrice > 0) {
-    // Template Billable = ServicePrice + ProductPrice (Assuming materialCost is ProductPrice)
     estimatedBillable = watchTemplateServicePrice + materialCost
   } else {
     const laborMargin = financialSettings.maintenanceMarginLabor || 0
@@ -168,7 +193,6 @@ export function CreateTaskDialog() {
   useEffect(() => {
     let templates: { label: string; value: string; rate: ServiceRate }[] = []
 
-    // 1. Add generic rates
     if (genericServiceRates && genericServiceRates.length > 0) {
       templates = genericServiceRates.map((rate) => ({
         label: `${rate.serviceName} (Genérico)`,
@@ -177,7 +201,6 @@ export function CreateTaskDialog() {
       }))
     }
 
-    // 2. Add partner specific rates
     if (selectedPartner && selectedPartner.serviceRates) {
       const partnerTemplates = selectedPartner.serviceRates.map((rate) => ({
         label: rate.serviceName,
@@ -215,7 +238,6 @@ export function CreateTaskDialog() {
     const employeeId =
       values.partnerEmployeeId === 'none' ? undefined : values.partnerEmployeeId
 
-    // Budget Approval Logic
     const threshold = financialSettings.approvalThreshold || 500
     const isHighValue = estimatedBillable > threshold
     const initialStatus = isHighValue ? 'pending_approval' : 'pending'
@@ -235,10 +257,10 @@ export function CreateTaskDialog() {
       date: values.date.toISOString(),
       priority: values.priority,
       description: values.description,
-      price: finalLaborCost, // Vendor Labor Cost (Partner Payment)
+      price: finalLaborCost,
       laborCost: finalLaborCost,
       materialCost: finalMaterialCost,
-      billableAmount: estimatedBillable, // Total charged to owner
+      billableAmount: estimatedBillable,
       teamMemberPayout: finalPayout,
       backToBack: values.backToBack,
       recurrence: values.recurrence,
@@ -260,11 +282,13 @@ export function CreateTaskDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-trust-blue gap-2">
-          <Plus className="h-4 w-4" /> {t('tasks.new_task')}
-        </Button>
-      </DialogTrigger>
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <Button className="bg-trust-blue gap-2">
+            <Plus className="h-4 w-4" /> {t('tasks.new_task')}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-[600px] h-[90vh] flex flex-col p-0">
         <DialogHeader className="p-6 pb-2">
           <DialogTitle>{t('tasks.create_title')}</DialogTitle>
@@ -284,6 +308,7 @@ export function CreateTaskDialog() {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        disabled={!!initialPropertyId}
                       >
                         <FormControl>
                           <SelectTrigger>

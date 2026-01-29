@@ -38,6 +38,7 @@ import {
   InventoryMedia,
   ServiceCategory,
   Invoice,
+  Lead,
 } from '@/lib/types'
 
 // Helper for random data
@@ -309,6 +310,20 @@ const generateInventory = (count: number, seed: string): InventoryItem[] => {
   })
 }
 
+// Generate leads for a property
+const generateLeads = (count: number): Lead[] => {
+  return Array.from({ length: count }).map((_, i) => ({
+    id: `lead_${i}`,
+    name: `Lead Candidate ${i + 1}`,
+    email: `lead${i + 1}@email.com`,
+    phone: `+1 555 010 ${i.toString().padStart(2, '0')}`,
+    source: randomItem(['Zillow', 'Idealista', 'Website', 'Other']),
+    date: subDays(new Date(), randomInt(0, 30)).toISOString(),
+    status: randomItem(['new', 'contacted', 'qualified', 'lost']),
+    message: 'Interested in this property for next month.',
+  }))
+}
+
 // --- 3. PROPERTIES GENERATION ---
 
 // Owners (2 per PM)
@@ -355,7 +370,9 @@ export const properties: Property[] = tenantsData.flatMap((tenant, tIdx) =>
       status: pIdx % 5 === 0 ? 'available' : 'rented',
       marketingStatus: 'listed',
       listingPrice: 350 + pIdx * 50, // Daily or Monthly base
+      purchasePrice: 300000 + pIdx * 20000,
       publishToPortals: true,
+      portalSettings: { zillow: true, idealista: false },
       image: `https://img.usecurling.com/p/400/300?q=${isShortTerm ? 'vacation%20house' : 'apartment'}&seed=${tIdx}${pIdx}`,
       gallery: [
         `https://img.usecurling.com/p/400/300?q=living%20room&seed=${tIdx}${pIdx}1`,
@@ -379,7 +396,8 @@ export const properties: Property[] = tenantsData.flatMap((tenant, tIdx) =>
         },
       ],
       healthScore: randomInt(60, 100),
-      inventory: generateInventory(12, `${tIdx}_${pIdx}`), // 12 items per property with unique seed
+      inventory: generateInventory(12, `${tIdx}_${pIdx}`),
+      leads: generateLeads(randomInt(0, 5)),
     }
   }),
 )
@@ -399,7 +417,9 @@ properties.push({
   status: 'available',
   marketingStatus: 'listed',
   listingPrice: 500,
+  purchasePrice: 1500000,
   publishToPortals: true,
+  portalSettings: { zillow: true, idealista: true },
   image: 'https://img.usecurling.com/p/400/300?q=luxury%20villa',
   gallery: ['https://img.usecurling.com/p/400/300?q=villa%20interior'],
   bedrooms: 4,
@@ -408,7 +428,8 @@ properties.push({
   ownerId: 'demo_owner',
   documents: [],
   healthScore: 98,
-  inventory: generateInventory(15, 'demo'), // unique seed
+  inventory: generateInventory(15, 'demo'),
+  leads: generateLeads(8),
 })
 
 // --- 4. BOOKINGS & TENANTS ---
@@ -600,11 +621,11 @@ for (let i = 0; i < 15; i++) {
 
 export const ledgerEntries: LedgerEntry[] = []
 const months = eachMonthOfInterval({
-  start: subMonths(new Date(), 5),
-  end: new Date(),
+  start: subMonths(new Date(), 12),
+  end: addMonths(new Date(), 12),
 })
 
-// Generate Ledger for last 6 months
+// Generate Ledger for last 12 months and future 12
 properties.slice(0, 20).forEach((prop) => {
   months.forEach((month) => {
     // Income
@@ -620,7 +641,7 @@ properties.slice(0, 20).forEach((prop) => {
         category: 'Rent',
         amount: prop.profileType === 'long_term' ? 2000 : randomInt(1500, 4000),
         description: `Rent Income - ${month.toLocaleString('default', { month: 'short' })}`,
-        status: 'cleared',
+        status: month < new Date() ? 'cleared' : 'pending',
       })
     }
 
@@ -633,11 +654,11 @@ properties.slice(0, 20).forEach((prop) => {
       category: 'Management Fee',
       amount: 200,
       description: 'Monthly Management Fee',
-      status: 'cleared',
+      status: month < new Date() ? 'cleared' : 'pending',
     })
 
-    // Random Maintenance
-    if (randomInt(0, 10) > 7) {
+    // Random Maintenance (Historical only)
+    if (month < new Date() && randomInt(0, 10) > 7) {
       ledgerEntries.push({
         id: `exp_maint_${prop.id}_${month.getTime()}`,
         propertyId: prop.id,
@@ -671,18 +692,20 @@ for (let i = 0; i < 10; i++) {
 }
 
 // Calculate totals for charts
-const revenueByMonth = months.map((m) => {
-  const total = ledgerEntries
-    .filter(
-      (l) =>
-        l.type === 'income' && new Date(l.date).getMonth() === m.getMonth(),
-    )
-    .reduce((acc, curr) => acc + curr.amount, 0)
-  return {
-    month: m.toLocaleString('default', { month: 'short' }),
-    value: total,
-  }
-})
+const revenueByMonth = months
+  .filter((m) => m <= new Date())
+  .map((m) => {
+    const total = ledgerEntries
+      .filter(
+        (l) =>
+          l.type === 'income' && new Date(l.date).getMonth() === m.getMonth(),
+      )
+      .reduce((acc, curr) => acc + curr.amount, 0)
+    return {
+      month: m.toLocaleString('default', { month: 'short' }),
+      value: total,
+    }
+  })
 
 export const financials: Financials = {
   revenue: revenueByMonth,
