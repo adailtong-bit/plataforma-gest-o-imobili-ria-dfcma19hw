@@ -37,7 +37,7 @@ import useTenantStore from '@/stores/useTenantStore'
 import { Tenant } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { formatDate } from '@/lib/utils'
+import { formatDate, formatCurrency } from '@/lib/utils'
 
 interface PropertyContractsProps {
   propertyId: string
@@ -53,7 +53,6 @@ export function PropertyContracts({
   const { t, language } = useLanguageStore()
   const [isOpen, setIsOpen] = useState(false)
 
-  // Local state for new contract (Tenant lease)
   const [newContract, setNewContract] = useState<Partial<Tenant>>({
     name: '',
     email: '',
@@ -112,9 +111,7 @@ export function PropertyContracts({
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle>{t('common.contracts')}</CardTitle>
-          <CardDescription>
-            Manage lease agreements and history.
-          </CardDescription>
+          <CardDescription>Manage lease agreements.</CardDescription>
         </div>
         {canEdit && (
           <Button
@@ -169,7 +166,9 @@ export function PropertyContracts({
                         : '-'}
                     </div>
                   </TableCell>
-                  <TableCell>${tenant.rentValue}</TableCell>
+                  <TableCell>
+                    {formatCurrency(tenant.rentValue, language)}
+                  </TableCell>
                   <TableCell>
                     <Badge
                       variant={
@@ -229,7 +228,7 @@ export function PropertyContracts({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>{t('common.value')} ($)</Label>
+                <Label>{t('common.value')}</Label>
                 <Input
                   type="number"
                   value={newContract.rentValue}

@@ -11,6 +11,7 @@ import { format } from 'date-fns'
 import { History, Activity, User, FileText, CheckCircle2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { formatDate } from '@/lib/utils'
 
 interface PropertyActivityLogProps {
   propertyId: string
@@ -18,7 +19,7 @@ interface PropertyActivityLogProps {
 
 export function PropertyActivityLog({ propertyId }: PropertyActivityLogProps) {
   const { auditLogs } = useAuditStore()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
 
   // Improved filtering to capture property specific and related entity logs
   const propertyLogs = auditLogs
@@ -26,9 +27,7 @@ export function PropertyActivityLog({ propertyId }: PropertyActivityLogProps) {
       (log) =>
         log.entityId === propertyId ||
         (log.details && log.details.includes(propertyId)) ||
-        // Include logs where the property name might be mentioned if ID isn't direct
-        // Ideally backend would have robust linking, here we check common patterns
-        (log.entity === 'Task' && log.entityId === propertyId) || // Task log often uses propertyId as entityId in our AppContext implementation
+        (log.entity === 'Task' && log.entityId === propertyId) ||
         (log.entity === 'Financial' && log.entityId === propertyId),
     )
     .sort(
@@ -85,7 +84,8 @@ export function PropertyActivityLog({ propertyId }: PropertyActivityLogProps) {
                         </span>
                       </div>
                       <span className="text-xs text-muted-foreground font-mono">
-                        {format(new Date(log.timestamp), 'MMM dd, HH:mm')}
+                        {format(new Date(log.timestamp), 'HH:mm')} •{' '}
+                        {formatDate(log.timestamp, language)}
                       </span>
                     </div>
                     <p className="text-sm text-gray-700 bg-muted/30 p-2 rounded-md border">

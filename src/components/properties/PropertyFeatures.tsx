@@ -66,7 +66,7 @@ export function PropertyFeatures({
                 value={data.wifiSsid || ''}
                 onChange={(e) => onChange('wifiSsid', e.target.value)}
                 disabled={!canEdit}
-                placeholder="Ex: MinhaCasa_5G"
+                placeholder="SSID"
               />
             </div>
             <div className="grid gap-2">
@@ -92,7 +92,7 @@ export function PropertyFeatures({
                 value={data.accessCodeUnit || ''}
                 onChange={(e) => onChange('accessCodeUnit', e.target.value)}
                 disabled={!canEdit}
-                placeholder="Ex: 1234"
+                placeholder="1234"
               />
             </div>
             <div className="grid gap-2">
@@ -101,7 +101,7 @@ export function PropertyFeatures({
                 value={data.accessCodeBuilding || ''}
                 onChange={(e) => onChange('accessCodeBuilding', e.target.value)}
                 disabled={!canEdit}
-                placeholder="Ex: #5566"
+                placeholder="#5566"
               />
             </div>
             <div className="grid gap-2">
@@ -111,7 +111,7 @@ export function PropertyFeatures({
                   value={data.accessCodePool || ''}
                   onChange={(e) => onChange('accessCodePool', e.target.value)}
                   disabled={!canEdit}
-                  placeholder="Ex: 9090"
+                  placeholder="9090"
                   className="pl-8"
                 />
                 <Waves className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -123,7 +123,7 @@ export function PropertyFeatures({
                 value={data.accessCodeCleaning || ''}
                 onChange={(e) => onChange('accessCodeCleaning', e.target.value)}
                 disabled={!canEdit}
-                placeholder="Uso interno"
+                placeholder="Internal use"
               />
             </div>
           </div>

@@ -45,13 +45,11 @@ export function PropertyContent({
         value.trim() !== ''
       ) {
         // Simple mock translation: just prepend the lang code to indicate it's auto-filled
-        // In a real application, this would be an API call to a translation service
         newDescription[otherLang] = `[${otherLang.toUpperCase()}] ${value}`
       }
     })
 
     // Perform a single atomic update for the entire description object
-    // This ensures no race conditions or batched state update issues occur
     onChange('description', newDescription)
   }
 

@@ -63,7 +63,7 @@ export function PropertyOverview({
             value={data.name}
             onChange={(e) => onChange('name', e.target.value)}
             disabled={!canEdit}
-            placeholder="Ex: Villa Sol"
+            placeholder={t('properties.search_placeholder')}
           />
         </div>
         <div className="grid gap-2">

@@ -53,6 +53,7 @@ import { useToast } from '@/hooks/use-toast'
 import { setDate, getDaysInMonth, parseISO, addMonths } from 'date-fns'
 import { FileUpload } from '@/components/ui/file-upload'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 interface PropertyFinancialsProps {
   data: Property
@@ -70,7 +71,7 @@ export function PropertyFinancials({
   partners,
 }: PropertyFinancialsProps) {
   const { toast } = useToast()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const { properties, updateProperty } = usePropertyStore()
   const {
     ledgerEntries,
@@ -85,7 +86,7 @@ export function PropertyFinancials({
   const [actionType, setActionType] = useState<'add' | 'edit'>('add')
   const [currentExpenseId, setCurrentExpenseId] = useState<string | null>(null)
 
-  // Form State - Expanded for Contracts
+  // Form State
   const [formData, setFormData] = useState({
     name: '',
     provider: '',
@@ -148,7 +149,7 @@ export function PropertyFinancials({
       !formData.paymentDate
     ) {
       toast({
-        title: 'Error',
+        title: t('common.error'),
         description: t('common.required'),
         variant: 'destructive',
       })
@@ -215,7 +216,7 @@ export function PropertyFinancials({
         attachments: formData.receiptUrl
           ? [{ name: 'Comprovante', url: formData.receiptUrl }]
           : [],
-        payee: expense.provider, // Added payee
+        payee: expense.provider,
       }
 
       addLedgerEntry(entry)
@@ -233,14 +234,14 @@ export function PropertyFinancials({
           description: `${expense.name} - ${expense.provider || ''} (Auto)`,
           referenceId: expense.id,
           status: 'pending',
-          payee: expense.provider, // Added payee
+          payee: expense.provider,
         }
         setTimeout(() => addLedgerEntry(nextEntry), 100)
       }
 
       toast({
         title: t('common.success'),
-        description: 'Fixed expense created.',
+        description: t('common.save'),
       })
     } else {
       updatedExpenses = updatedExpenses.map((e) =>
@@ -263,14 +264,14 @@ export function PropertyFinancials({
           amount: expense.amount,
           description: `${expense.name} - ${expense.provider || ''}`,
           dueDate: newDueDate.toISOString(),
-          payee: expense.provider, // Update payee
+          payee: expense.provider,
         }
         updateLedgerEntry(updatedEntry)
       })
 
       toast({
         title: t('common.success'),
-        description: 'Fixed expense updated.',
+        description: t('common.save'),
       })
     }
 
@@ -300,7 +301,7 @@ export function PropertyFinancials({
 
     toast({
       title: t('common.removed'),
-      description: 'Record deleted.',
+      description: t('common.delete_success'),
     })
   }
 
@@ -308,7 +309,7 @@ export function PropertyFinancials({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Configurações Financeiras</CardTitle>
+          <CardTitle>{t('properties.financial')}</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid gap-2">
@@ -331,7 +332,7 @@ export function PropertyFinancials({
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label>Agente Responsável</Label>
+            <Label>{t('partners.agent')}</Label>
             <Select
               value={data.agentId || 'none'}
               onValueChange={(v) =>
@@ -355,18 +356,25 @@ export function PropertyFinancials({
             </Select>
           </div>
           <div className="grid gap-2 md:col-span-2 pt-4">
-            <h3 className="font-semibold text-sm">Associação (HOA)</h3>
+            <h3 className="font-semibold text-sm">HOA</h3>
           </div>
           <div className="grid gap-2">
-            <Label>{t('properties.hoa_fee')} ($)</Label>
+            <Label>{t('properties.hoa_fee')}</Label>
             <CurrencyInput
               value={data.hoaValue || 0}
               onChange={(val) => onChange('hoaValue', val)}
               disabled={!canEdit}
+              locale={
+                language === 'pt'
+                  ? 'pt-BR'
+                  : language === 'es'
+                    ? 'es-ES'
+                    : 'en-US'
+              }
             />
           </div>
           <div className="grid gap-2">
-            <Label>{t('common.frequency')}</Label>
+            <Label>{t('properties.hoa_freq')}</Label>
             <Select
               value={data.hoaFrequency || 'monthly'}
               onValueChange={(v) => onChange('hoaFrequency', v)}
@@ -376,10 +384,18 @@ export function PropertyFinancials({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="monthly">Mensal</SelectItem>
-                <SelectItem value="quarterly">Trimestral</SelectItem>
-                <SelectItem value="semi-annually">Semestral</SelectItem>
-                <SelectItem value="annually">Anual</SelectItem>
+                <SelectItem value="monthly">
+                  {t('properties.monthly')}
+                </SelectItem>
+                <SelectItem value="quarterly">
+                  {t('properties.quarterly')}
+                </SelectItem>
+                <SelectItem value="semi-annually">
+                  {t('properties.annually')} (2x)
+                </SelectItem>
+                <SelectItem value="annually">
+                  {t('properties.annually')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -388,7 +404,7 @@ export function PropertyFinancials({
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Despesas Fixas</CardTitle>
+          <CardTitle>{t('common.financial')}</CardTitle>
           <Button onClick={handleOpenAdd} className="bg-trust-blue gap-2">
             <Plus className="h-4 w-4" /> {t('common.add_title')}
           </Button>
@@ -398,10 +414,10 @@ export function PropertyFinancials({
             <TableHeader>
               <TableRow>
                 <TableHead>{t('common.description')}</TableHead>
-                <TableHead>Fornecedor</TableHead>
-                <TableHead>Contrato</TableHead>
+                <TableHead>{t('partners.agent')}</TableHead>
+                <TableHead>{t('common.contracts')}</TableHead>
                 <TableHead>{t('common.value')}</TableHead>
-                <TableHead>Dia Venc.</TableHead>
+                <TableHead>{t('common.due_date')}</TableHead>
                 <TableHead className="text-right">
                   {t('common.actions')}
                 </TableHead>
@@ -426,13 +442,15 @@ export function PropertyFinancials({
                   <TableCell>
                     {expense.contractEndDate ? (
                       <span className="text-xs">
-                        Até {expense.contractEndDate}
+                        {formatDate(expense.contractEndDate, language)}
                       </span>
                     ) : (
                       '-'
                     )}
                   </TableCell>
-                  <TableCell>${expense.amount.toFixed(2)}</TableCell>
+                  <TableCell>
+                    {formatCurrency(expense.amount, language)}
+                  </TableCell>
                   <TableCell>{expense.dueDay}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
@@ -456,7 +474,7 @@ export function PropertyFinancials({
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>
-                              {t('common.confirm_delete')}
+                              {t('common.delete_title')}
                             </AlertDialogTitle>
                             <AlertDialogDescription>
                               {t('common.delete_desc')}
@@ -507,13 +525,13 @@ export function PropertyFinancials({
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                placeholder="Ex: Internet, Luz, Água"
+                placeholder="Ex: Internet"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>
-                  Fornecedor <span className="text-red-500">*</span>
+                  Provider <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   value={formData.provider}
@@ -524,21 +542,20 @@ export function PropertyFinancials({
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Nº Registro / Conta</Label>
+                <Label>{t('partners.account')}</Label>
                 <Input
                   value={formData.accountNumber}
                   onChange={(e) =>
                     setFormData({ ...formData, accountNumber: e.target.value })
                   }
-                  placeholder="ID da Fatura ou Cliente"
+                  placeholder="ID"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>
-                  {t('common.value')} ($){' '}
-                  <span className="text-red-500">*</span>
+                  {t('common.value')} <span className="text-red-500">*</span>
                 </Label>
                 <CurrencyInput
                   value={formData.amount}
@@ -548,6 +565,13 @@ export function PropertyFinancials({
                       amount: val,
                       recurringValue: val,
                     })
+                  }
+                  locale={
+                    language === 'pt'
+                      ? 'pt-BR'
+                      : language === 'es'
+                        ? 'es-ES'
+                        : 'en-US'
                   }
                 />
               </div>
@@ -565,12 +589,13 @@ export function PropertyFinancials({
               </div>
             </div>
 
-            {/* Contract Fields */}
             <div className="border-t pt-4 mt-2">
-              <h4 className="text-sm font-medium mb-3">Detalhes do Contrato</h4>
+              <h4 className="text-sm font-medium mb-3">
+                {t('common.contracts')}
+              </h4>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>Início do Contrato</Label>
+                  <Label>Start</Label>
                   <Input
                     type="date"
                     value={formData.contractStartDate}
@@ -583,7 +608,7 @@ export function PropertyFinancials({
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Fim do Contrato</Label>
+                  <Label>End</Label>
                   <Input
                     type="date"
                     value={formData.contractEndDate}
@@ -596,11 +621,18 @@ export function PropertyFinancials({
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Valor Recorrente Mensal</Label>
+                  <Label>Recurring</Label>
                   <CurrencyInput
                     value={formData.recurringValue}
                     onChange={(val) =>
                       setFormData({ ...formData, recurringValue: val })
+                    }
+                    locale={
+                      language === 'pt'
+                        ? 'pt-BR'
+                        : language === 'es'
+                          ? 'es-ES'
+                          : 'en-US'
                     }
                   />
                 </div>
@@ -609,7 +641,7 @@ export function PropertyFinancials({
 
             <div className="grid gap-2 pt-2">
               <Label className="flex items-center gap-2">
-                <Upload className="h-4 w-4" /> Comprovante (Opcional)
+                <Upload className="h-4 w-4" /> {t('common.upload')}
               </Label>
               <FileUpload
                 value={formData.receiptUrl}
@@ -641,7 +673,7 @@ export function PropertyFinancials({
       <AlertDialog open={confirmActionOpen} onOpenChange={setConfirmActionOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Change</AlertDialogTitle>
+            <AlertDialogTitle>{t('common.confirm')}</AlertDialogTitle>
             <AlertDialogDescription>
               Changing this expense will update future pending entries.
             </AlertDialogDescription>

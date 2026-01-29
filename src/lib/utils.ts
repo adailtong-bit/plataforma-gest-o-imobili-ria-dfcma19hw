@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Language } from './translations'
 import { format } from 'date-fns'
+import { ptBR, es, enUS } from 'date-fns/locale'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -11,7 +12,7 @@ export const isValidEmail = (email: string) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
-// Basic mask enforcement
+// Phone mask enforcement
 export const applyPhoneMask = (value: string, country: 'US' | 'BR' | 'ES') => {
   const digits = value.replace(/\D/g, '')
 
@@ -41,6 +42,7 @@ export const applyPhoneMask = (value: string, country: 'US' | 'BR' | 'ES') => {
   return value
 }
 
+// Document mask enforcement based on Acceptance Criteria
 export const applyDocumentMask = (
   value: string,
   country: 'US' | 'BR' | 'ES',
@@ -48,14 +50,14 @@ export const applyDocumentMask = (
   const digits = value.replace(/\D/g, '')
 
   if (country === 'US') {
-    // SSN: XXX-XX-XXXX
+    // SSN: ###-##-####
     if (digits.length <= 3) return digits
     if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`
     return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5, 9)}`
   }
 
   if (country === 'BR') {
-    // CPF: XXX.XXX.XXX-XX
+    // CPF: ###.###.###-##
     if (digits.length <= 3) return digits
     if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`
     if (digits.length <= 9)
@@ -64,10 +66,11 @@ export const applyDocumentMask = (
   }
 
   if (country === 'ES') {
-    // DNI: 8 digits + Letter (Handling only digits here for simplicity mostly, usually users type letter at end)
-    // Simple mask for 12345678A -> usually no separators or just space
+    // DNI: ########-#
+    // Typically 8 digits + Letter, but masking for numeric part often shown as 12345678-A or similar
+    // Requirement says: ########-#
     if (digits.length <= 8) return digits
-    return digits.slice(0, 9)
+    return `${digits.slice(0, 8)}-${digits.slice(8, 9)}`
   }
 
   return value
@@ -119,39 +122,42 @@ export const formatCurrency = (
   language: Language = 'en',
   currency: string = 'USD',
 ) => {
-  if (language === 'es') {
-    // Custom ES format requested: $1.200,00 or €
-    // If currency is USD, requested format was $1.200,00
-    // If we want to support EUR for ES context:
-    const currencyCode =
-      currency === 'USD' && language === 'es' ? 'USD' : currency
-    // Using es-ES locale
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: currencyCode,
-    }).format(value)
-  }
+  let locale = 'en-US'
+  let currencyCode = currency
 
+  // Override currency code for display based on User Story requirements
   if (language === 'pt') {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL', // Assuming BRL for PT context as per example R$ 1.200,00
-    }).format(value)
+    locale = 'pt-BR'
+    currencyCode = 'BRL' // R$ 1.234,56
+  } else if (language === 'es') {
+    locale = 'es-ES'
+    currencyCode = 'EUR' // € 1.234,56
+  } else {
+    locale = 'en-US'
+    currencyCode = 'USD' // $1,234.56
   }
 
-  // Default EN
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: 'USD',
+    currency: currencyCode,
   }).format(value)
 }
 
-export const formatDate = (date: string | Date, language: Language = 'en') => {
-  if (language === 'es' || language === 'pt') {
-    // ES/PT requested format: DD/MM/YYYY
-    return format(new Date(date), 'dd/MM/yyyy')
+export const formatDate = (
+  date: string | Date | undefined,
+  language: Language = 'en',
+) => {
+  if (!date) return ''
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return ''
+
+  if (language === 'pt') {
+    return format(d, 'dd/MM/yyyy', { locale: ptBR })
+  }
+  if (language === 'es') {
+    return format(d, 'dd/MM/yyyy', { locale: es })
   }
 
   // Default EN
-  return format(new Date(date), 'MM/dd/yyyy')
+  return format(d, 'MM/dd/yyyy', { locale: enUS })
 }

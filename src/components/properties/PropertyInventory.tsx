@@ -90,7 +90,6 @@ export function PropertyInventory({
       item.category.toLowerCase().includes(filter.toLowerCase()),
   )
 
-  // Find linked task for an item
   const getLinkedTask = (inventoryItemId: string) => {
     return tasks.find((t) => t.inventoryItemId === inventoryItemId)
   }
@@ -109,10 +108,7 @@ export function PropertyInventory({
     let updatedInventory = [...inventory]
 
     if (itemData.id) {
-      // Update logic
       const originalItem = inventory.find((i) => i.id === itemData.id)
-
-      // Check for damage logging
       let newDamageHistory = originalItem?.damageHistory || []
       const isDamaged = ['Damaged', 'Broken', 'Missing', 'Poor'].includes(
         itemData.condition || '',
@@ -125,10 +121,7 @@ export function PropertyInventory({
         isDamaged &&
         (wasGood || itemData.condition !== originalItem?.condition)
       ) {
-        // Log damage
         const damageRecordId = `dmg-${Date.now()}`
-
-        // Auto-generate Maintenance Task
         const taskId = `task-auto-${Date.now()}`
         addTask({
           id: taskId,
@@ -139,17 +132,16 @@ export function PropertyInventory({
           type: 'maintenance',
           status: 'pending',
           priority: 'high',
-          description: `Auto-generated maintenance request due to inventory damage report. Item: ${itemData.name}, Condition: ${itemData.condition}. Note: ${itemData.description}`,
+          description: `Auto-generated maintenance request. Item: ${itemData.name}, Condition: ${itemData.condition}.`,
           date: new Date().toISOString(),
           assignee: 'Unassigned',
           source: 'automation',
           inventoryItemId: itemData.id,
         })
 
-        // Add Notification
         addNotification({
           title: 'Inventory Alert',
-          message: `Item "${itemData.name}" reported as ${itemData.condition} at ${data.name}. Maintenance task created.`,
+          message: `Item "${itemData.name}" reported as ${itemData.condition}.`,
           type: 'warning',
         })
 
@@ -157,7 +149,7 @@ export function PropertyInventory({
           {
             id: damageRecordId,
             date: now,
-            description: `Condition changed to ${itemData.condition}. Note: ${itemData.description || 'No description provided.'}`,
+            description: `Condition: ${itemData.condition}. Note: ${itemData.description || ''}`,
             reportedBy: 'Manager',
             linkedTaskId: taskId,
           },
@@ -166,7 +158,7 @@ export function PropertyInventory({
 
         toast({
           title: 'Damage Recorded',
-          description: 'A maintenance task has been automatically generated.',
+          description: 'Maintenance task generated.',
         })
       }
 
@@ -181,7 +173,6 @@ export function PropertyInventory({
       )
       toast({ title: t('common.success') })
     } else {
-      // Create logic
       const newItem: InventoryItem = {
         id: `inv-${Date.now()}`,
         ...(itemData as Omit<InventoryItem, 'id'>),
@@ -230,7 +221,6 @@ export function PropertyInventory({
       'Quantity',
       'Condition',
       'Description',
-      'Has Media',
       'Last Updated',
     ]
 
@@ -240,7 +230,6 @@ export function PropertyInventory({
       item.quantity,
       item.condition,
       item.description || '',
-      item.media && item.media.length > 0 ? 'Yes' : 'No',
       item.updatedAt ? formatDate(item.updatedAt, language) : '',
     ])
 
@@ -271,9 +260,7 @@ export function PropertyInventory({
       <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <CardTitle>{t('common.inventory')}</CardTitle>
-          <CardDescription>
-            Manage items, track condition history, and import bulk data.
-          </CardDescription>
+          <CardDescription>Manage items and conditions.</CardDescription>
         </div>
         <div className="flex flex-wrap gap-2">
           <DropdownMenu>
@@ -284,7 +271,7 @@ export function PropertyInventory({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem onClick={handleExportInventory}>
-                Inventory List (CSV)
+                CSV
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

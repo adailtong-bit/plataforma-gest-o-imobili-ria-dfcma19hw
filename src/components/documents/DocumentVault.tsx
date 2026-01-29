@@ -103,7 +103,7 @@ export function DocumentVault({
     onUpdate(newDocs)
     toast({
       title: t('common.removed'),
-      description: 'Document deleted permanently.',
+      description: 'Document deleted.',
     })
   }
 
@@ -112,9 +112,7 @@ export function DocumentVault({
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle>{title || t('common.documents')}</CardTitle>
-          <CardDescription>
-            {description || 'Manage uploaded files.'}
-          </CardDescription>
+          <CardDescription>{description || 'Manage files.'}</CardDescription>
         </div>
         {canEdit && (
           <div>

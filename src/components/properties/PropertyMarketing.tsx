@@ -41,6 +41,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
+import { formatCurrency } from '@/lib/utils'
 
 interface PropertyMarketingProps {
   data: Property
@@ -53,7 +54,7 @@ export function PropertyMarketing({
   onChange,
   canEdit,
 }: PropertyMarketingProps) {
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const { toast } = useToast()
   const [publishDialogOpen, setPublishDialogOpen] = useState(false)
   const [lightboxOpen, setLightboxOpen] = useState(false)
@@ -78,8 +79,8 @@ export function PropertyMarketing({
   const handlePublishClick = () => {
     if (data.status !== 'available' && data.status !== 'released') {
       toast({
-        title: 'Publicação Restrita',
-        description: 'A propriedade deve estar Disponível ou Liberada.',
+        title: 'Restricted',
+        description: 'Property must be Available or Released.',
         variant: 'destructive',
       })
       return
@@ -128,7 +129,7 @@ export function PropertyMarketing({
             <CardDescription>{t('properties.marketing_desc')}</CardDescription>
           </div>
           <Button onClick={handlePublishClick} className="gap-2 bg-blue-600">
-            <Share2 className="h-4 w-4" /> Publish / Share
+            <Share2 className="h-4 w-4" /> {t('properties.publicity')}
           </Button>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -155,14 +156,14 @@ export function PropertyMarketing({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label>{t('properties.listing_price')} (Base Nightly)</Label>
+              <Label>{t('properties.listing_price')}</Label>
               <div className="relative">
-                <span className="absolute left-3 top-2 text-muted-foreground">
-                  $
+                <span className="absolute left-3 top-2 text-muted-foreground text-sm font-bold">
+                  {language === 'pt' ? 'R$' : language === 'es' ? '€' : '$'}
                 </span>
                 <Input
                   type="number"
-                  className="pl-6"
+                  className="pl-8"
                   value={data.listingPrice || ''}
                   onChange={(e) =>
                     onChange('listingPrice', Number(e.target.value))
@@ -260,7 +261,7 @@ export function PropertyMarketing({
                   en: e.target.value,
                 })
               }
-              placeholder="Enter engaging description (EN)..."
+              placeholder="Enter engaging description..."
               rows={5}
               disabled={!canEdit}
             />
@@ -271,9 +272,7 @@ export function PropertyMarketing({
       <Card>
         <CardHeader>
           <CardTitle>{t('properties.listing_gallery')}</CardTitle>
-          <CardDescription>
-            High quality images for portals. Click to expand.
-          </CardDescription>
+          <CardDescription>High quality images for portals.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -390,8 +389,7 @@ export function PropertyMarketing({
           <DialogHeader>
             <DialogTitle>Automated Property Marketing Kit</DialogTitle>
             <DialogDescription>
-              This kit is automatically generated based on property details. Use
-              it for social media and listings.
+              Use this kit for social media and listings.
             </DialogDescription>
           </DialogHeader>
 
@@ -476,7 +474,7 @@ export function PropertyMarketing({
               {t('common.close')}
             </Button>
             <Button onClick={handleCopyLink} className="bg-trust-blue">
-              Copy All Content
+              {t('common.copied')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -204,14 +204,14 @@ export default function PropertyDetails() {
       <div className="flex flex-col gap-4">
         {/* Breadcrumb / Relations */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-md border w-fit">
-          <span className="font-medium">{t('common.relationships')}</span>
+          <span className="font-medium">{t('common.relationships')}:</span>
           {owner ? (
             <Link
               to={`/owners/${owner.id}`}
               className="flex items-center gap-1 hover:text-blue-600 underline"
             >
               <User className="h-3 w-3" /> {owner.name} (
-              {t('common.relationships.owner')})
+              {t('common.relationship_owner')})
             </Link>
           ) : (
             <span className="text-gray-400">{t('common.no_owner')}</span>
@@ -223,7 +223,7 @@ export default function PropertyDetails() {
               className="flex items-center gap-1 hover:text-blue-600 underline"
             >
               <User className="h-3 w-3" /> {activeTenant.name} (
-              {t('common.relationships.tenant')})
+              {t('common.relationship_tenant')})
             </Link>
           ) : (
             <span className="text-gray-400">

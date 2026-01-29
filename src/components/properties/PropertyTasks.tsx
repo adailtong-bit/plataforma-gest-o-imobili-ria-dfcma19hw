@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Task } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ClipboardList, Calendar as CalendarIcon, List } from 'lucide-react'
 import { TaskCard } from '@/components/tasks/TaskCard'

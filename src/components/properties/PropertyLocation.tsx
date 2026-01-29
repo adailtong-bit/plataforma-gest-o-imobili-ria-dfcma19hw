@@ -58,7 +58,7 @@ export function PropertyLocation({
               value={data.address}
               onChange={(e) => onChange('address', e.target.value)}
               disabled={!canEdit}
-              placeholder="Rua, Número"
+              placeholder={t('properties.search_placeholder')}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">

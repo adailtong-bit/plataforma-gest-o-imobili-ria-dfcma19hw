@@ -31,6 +31,7 @@ import {
 import useLanguageStore from '@/stores/useLanguageStore'
 import useShortTermStore from '@/stores/useShortTermStore'
 import { addDays } from 'date-fns'
+import { formatDate } from '@/lib/utils'
 
 interface PropertySyncProps {
   data: Property
@@ -40,7 +41,7 @@ interface PropertySyncProps {
 
 export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
   const { toast } = useToast()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const { addCalendarBlock } = useShortTermStore()
   const [newLink, setNewLink] = useState('')
   const [platform, setPlatform] = useState<
@@ -73,7 +74,6 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
   }
 
   const handleSyncNow = () => {
-    // 1. Mock status update
     const updatedLinks = (data.channelLinks || []).map((l) => ({
       ...l,
       lastSync: new Date().toISOString(),
@@ -81,7 +81,6 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
     }))
     onChange('channelLinks', updatedLinks)
 
-    // 2. Mock creation of "Blocked" dates from external feed
     const startDate = addDays(new Date(), 1).toISOString()
     const endDate = addDays(new Date(), 3).toISOString()
 
@@ -194,7 +193,7 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
                     </TableCell>
                     <TableCell className="text-xs">
                       {link.lastSync
-                        ? new Date(link.lastSync).toLocaleString()
+                        ? formatDate(link.lastSync, language)
                         : '-'}
                     </TableCell>
                     <TableCell className="text-right">
