@@ -213,7 +213,7 @@ export default function Users() {
   const handleSave = () => {
     if (!formData.name?.trim()) {
       toast({
-        title: 'Error',
+        title: t('common.error'),
         description: 'Name is required.',
         variant: 'destructive',
       })
@@ -221,7 +221,7 @@ export default function Users() {
     }
     if (!formData.email?.trim() || !isValidEmail(formData.email)) {
       toast({
-        title: 'Error',
+        title: t('common.error'),
         description: 'Invalid email.',
         variant: 'destructive',
       })
@@ -235,7 +235,7 @@ export default function Users() {
     )
     if (duplicate) {
       toast({
-        title: 'Error',
+        title: t('common.error'),
         description: 'This email is already in use.',
         variant: 'destructive',
       })
@@ -292,7 +292,7 @@ export default function Users() {
 
     if (isEditing && formData.id) {
       updateUser(finalUserData as User)
-      toast({ title: 'Success', description: 'User updated.' })
+      toast({ title: t('common.save'), description: 'User updated.' })
     } else {
       addUser({
         ...finalUserData,
@@ -301,7 +301,7 @@ export default function Users() {
           currentUser.role === 'platform_owner' ? 'active' : 'pending_approval',
         isFirstLogin: true,
       } as User)
-      toast({ title: 'Success', description: 'User created.' })
+      toast({ title: t('common.save'), description: 'User created.' })
     }
     setOpen(false)
     setFormData(initialFormState)
@@ -310,12 +310,15 @@ export default function Users() {
 
   const handleDelete = (id: string) => {
     deleteUser(id)
-    toast({ title: 'Success', description: 'User deleted.' })
+    toast({ title: t('common.delete'), description: 'User deleted.' })
   }
 
   const handleApprove = (id: string) => {
     approveUser(id)
-    toast({ title: 'Activated', description: 'Access granted to user.' })
+    toast({
+      title: t('users.status_active'),
+      description: t('users.approve_success'),
+    })
   }
 
   const initiateBlock = (id: string) => {
@@ -327,8 +330,8 @@ export default function Users() {
     if (userToBlock) {
       blockUser(userToBlock)
       toast({
-        title: 'Blocked',
-        description: 'User access has been revoked.',
+        title: t('users.status_blocked'),
+        description: t('users.block_success'),
         variant: 'destructive',
       })
     }
@@ -397,8 +400,8 @@ export default function Users() {
     const url = window.location.origin
     navigator.clipboard.writeText(url)
     toast({
-      title: 'Link Copied',
-      description: 'Access link copied to clipboard.',
+      title: t('users.link_copied'),
+      description: t('users.copy_success'),
     })
     setInviteOpen(false)
   }
@@ -408,17 +411,17 @@ export default function Users() {
       case 'active':
         return (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">
-            {t('common.active')}
+            {t('users.status_active')}
           </Badge>
         )
       case 'pending_approval':
         return (
           <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200">
-            {t('common.pending_approval')}
+            {t('users.status_pending')}
           </Badge>
         )
       case 'blocked':
-        return <Badge variant="destructive">{t('common.blocked')}</Badge>
+        return <Badge variant="destructive">{t('users.status_blocked')}</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
     }
@@ -453,27 +456,25 @@ export default function Users() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            User Management
+            {t('users.title')}
           </h1>
-          <p className="text-muted-foreground">
-            Manage access, roles, and system permissions.
-          </p>
+          <p className="text-muted-foreground">{t('users.subtitle')}</p>
         </div>
 
         <div className="flex gap-2">
           <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" className="gap-2">
-                <Share2 className="h-4 w-4" /> Invite
+                <Share2 className="h-4 w-4" /> {t('users.invite')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Share Access</DialogTitle>
+                <DialogTitle>{t('users.share_access')}</DialogTitle>
               </DialogHeader>
               <div className="py-4 space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Share the link below to allow new users to register.
+                  {t('users.share_desc')}
                 </p>
                 <div className="flex gap-2">
                   <Input readOnly value={`${window.location.origin}/signup`} />
@@ -505,7 +506,7 @@ export default function Users() {
               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>
-                    {isEditing ? 'Edit User' : 'New User'}
+                    {isEditing ? t('common.edit') : t('common.new')} User
                   </DialogTitle>
                   <DialogDescription>
                     Fill in user details and define access permissions.
@@ -525,7 +526,7 @@ export default function Users() {
                         onChange={(e) =>
                           setFormData({ ...formData, name: e.target.value })
                         }
-                        placeholder="Full Name"
+                        placeholder={t('common.full_name')}
                       />
                     </div>
                     <div className="grid gap-2">
@@ -553,7 +554,8 @@ export default function Users() {
                     </div>
                     <div className="grid gap-2">
                       <Label>
-                        Role <span className="text-red-500">*</span>
+                        {t('users.role_label')}{' '}
+                        <span className="text-red-500">*</span>
                       </Label>
                       <Select
                         value={formData.role}
@@ -719,8 +721,8 @@ export default function Users() {
                     <div className="border rounded-md mt-2">
                       <div className="p-4 bg-muted/20 border-b flex justify-between items-center">
                         <h4 className="font-medium flex items-center gap-2">
-                          <Shield className="h-4 w-4" /> Skills & Permissions
-                          (Menu Visibility)
+                          <Shield className="h-4 w-4" />{' '}
+                          {t('users.permissions')}
                         </h4>
                         {formData.role === 'internal_user' && (
                           <div className="flex items-center gap-2">
@@ -734,7 +736,7 @@ export default function Users() {
                               className="flex items-center gap-1 cursor-pointer"
                             >
                               <ShieldCheck className="h-4 w-4 text-trust-blue" />
-                              Full Admin (Mirror PM)
+                              {t('users.mirror_admin')}
                             </Label>
                           </div>
                         )}
@@ -745,16 +747,16 @@ export default function Users() {
                             <TableRow>
                               <TableHead>Module / Resource</TableHead>
                               <TableHead className="text-center w-[80px]">
-                                View
+                                {t('common.view')}
                               </TableHead>
                               <TableHead className="text-center w-[80px]">
-                                Create
+                                {t('common.new')}
                               </TableHead>
                               <TableHead className="text-center w-[80px]">
-                                Edit
+                                {t('common.edit')}
                               </TableHead>
                               <TableHead className="text-center w-[80px]">
-                                Delete
+                                {t('common.delete')}
                               </TableHead>
                             </TableRow>
                           </TableHeader>
@@ -815,19 +817,23 @@ export default function Users() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Registered Users</CardTitle>
+          <CardTitle>{t('users.registered')}</CardTitle>
           <CardDescription>
-            {sortedUsers.length} users registered in the system.
+            {sortedUsers.length} {t('users.registered_desc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name / Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>
+                  {t('common.name')} / {t('common.email')}
+                </TableHead>
+                <TableHead>{t('users.role_label')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -985,23 +991,21 @@ export default function Users() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-red-600">
-              <Ban className="h-5 w-5" /> Block Access
+              <Ban className="h-5 w-5" /> {t('users.block_title')}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to block this user? They will lose immediate
-              access to the system. You can reactivate them later using the
-              unblock button.
+              {t('users.block_confirm')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setBlockDialogOpen(false)}>
-              Cancel
+              {t('common.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmBlock}
               className="bg-red-600 hover:bg-red-700"
             >
-              Confirm Block
+              {t('common.block')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1009,5 +1013,3 @@ export default function Users() {
     </div>
   )
 }
-
-

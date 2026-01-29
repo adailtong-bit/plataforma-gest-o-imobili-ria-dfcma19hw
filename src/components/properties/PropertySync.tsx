@@ -29,6 +29,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useShortTermStore from '@/stores/useShortTermStore'
+import { addDays } from 'date-fns'
 
 interface PropertySyncProps {
   data: Property
@@ -39,6 +41,7 @@ interface PropertySyncProps {
 export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
   const { toast } = useToast()
   const { t } = useLanguageStore()
+  const { addCalendarBlock } = useShortTermStore()
   const [newLink, setNewLink] = useState('')
   const [platform, setPlatform] = useState<
     'airbnb' | 'booking.com' | 'vrbo' | 'other'
@@ -70,17 +73,33 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
   }
 
   const handleSyncNow = () => {
-    toast({
-      title: t('sync.sync_success'),
-      description: t('sync.sync_desc'),
-    })
-    // Mock sync update
+    // 1. Mock status update
     const updatedLinks = (data.channelLinks || []).map((l) => ({
       ...l,
       lastSync: new Date().toISOString(),
       status: 'active' as const,
     }))
     onChange('channelLinks', updatedLinks)
+
+    // 2. Mock creation of "Blocked" dates from external feed
+    // We add a random block starting tomorrow for 3 days to simulate incoming iCal data
+    const startDate = addDays(new Date(), 1).toISOString()
+    const endDate = addDays(new Date(), 3).toISOString()
+
+    addCalendarBlock({
+      id: `sync-block-${Date.now()}`,
+      propertyId: data.id,
+      startDate,
+      endDate,
+      type: 'external_sync',
+      notes: `Imported from ${updatedLinks[0]?.platform || 'External'}`,
+      source: updatedLinks[0]?.platform || 'External',
+    })
+
+    toast({
+      title: t('sync.sync_success'),
+      description: `${t('sync.sync_desc')} Added 1 new block.`,
+    })
   }
 
   return (

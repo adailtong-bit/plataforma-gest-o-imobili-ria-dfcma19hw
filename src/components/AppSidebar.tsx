@@ -245,7 +245,7 @@ export function AppSidebar() {
                     >
                       <Link to="/portal/tenant" onClick={handleLinkClick}>
                         <LayoutTemplate />
-                        <span>Portal Inquilino</span>
+                        <span>{t('sidebar.tenant_portal')}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -261,7 +261,7 @@ export function AppSidebar() {
                     >
                       <Link to="/portal/owner" onClick={handleLinkClick}>
                         <LayoutTemplate />
-                        <span>Portal Proprietário</span>
+                        <span>{t('sidebar.owner_portal')}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -278,7 +278,7 @@ export function AppSidebar() {
                     >
                       <Link to="/portal/partner" onClick={handleLinkClick}>
                         <LayoutTemplate />
-                        <span>Portal Parceiro</span>
+                        <span>{t('sidebar.partner_portal')}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -291,7 +291,7 @@ export function AppSidebar() {
         {visibleMenuItems.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel className={cn(isMobile && 'text-white/70')}>
-              Main Menu
+              {t('sidebar.main_menu')}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -333,7 +333,7 @@ export function AppSidebar() {
 
         <SidebarGroup className="mt-auto">
           <SidebarGroupLabel className={cn(isMobile && 'text-white/70')}>
-            System
+            {t('sidebar.system')}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -342,14 +342,14 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive('/admin/migration')}
-                    tooltip="Migration Hub"
+                    tooltip={t('sidebar.migration_hub')}
                     className={cn(
                       isMobile && 'text-white font-bold hover:text-white/90',
                     )}
                   >
                     <Link to="/admin/migration" onClick={handleLinkClick}>
                       <Database />
-                      <span>Migration Hub</span>
+                      <span>{t('sidebar.migration_hub')}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -359,14 +359,14 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive('/admin/publicity')}
-                    tooltip="Publicity Admin"
+                    tooltip={t('sidebar.publicity_admin')}
                     className={cn(
                       isMobile && 'text-white font-bold hover:text-white/90',
                     )}
                   >
                     <Link to="/admin/publicity" onClick={handleLinkClick}>
                       <Megaphone />
-                      <span>Publicity Admin</span>
+                      <span>{t('sidebar.publicity_admin')}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -376,14 +376,14 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive('/users')}
-                    tooltip="Users"
+                    tooltip={t('sidebar.users')}
                     className={cn(
                       isMobile && 'text-white font-bold hover:text-white/90',
                     )}
                   >
                     <Link to="/users" onClick={handleLinkClick}>
                       <Users />
-                      <span>Users</span>
+                      <span>{t('sidebar.users')}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -445,5 +445,3 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
-
-

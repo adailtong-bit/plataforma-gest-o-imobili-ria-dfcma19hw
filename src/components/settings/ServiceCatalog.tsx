@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import {
   Select,
@@ -32,7 +33,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Search, Plus, Trash2, Edit, AlertTriangle, Layers } from 'lucide-react'
+import {
+  Search,
+  Plus,
+  Trash2,
+  Edit,
+  AlertTriangle,
+  Layers,
+  BellRing,
+} from 'lucide-react'
 import usePartnerStore from '@/stores/usePartnerStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -56,7 +65,7 @@ export function ServiceCatalog() {
     deleteGenericServiceRate,
     serviceCategories,
   } = usePartnerStore()
-  const { financialSettings } = useFinancialStore()
+  const { financialSettings, updateFinancialSettings } = useFinancialStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
@@ -64,8 +73,14 @@ export function ServiceCatalog() {
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [open, setOpen] = useState(false)
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false)
+  const [configDialogOpen, setConfigDialogOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [selectedPartnerId, setSelectedPartnerId] = useState<string>('generic')
+
+  // Config State
+  const [reviewThreshold, setReviewThreshold] = useState(
+    financialSettings.priceReviewThresholdDays || 180,
+  )
 
   const priceReviewThreshold = financialSettings.priceReviewThresholdDays || 180
 
@@ -200,6 +215,18 @@ export function ServiceCatalog() {
     resetForm()
   }
 
+  const handleSaveConfig = () => {
+    updateFinancialSettings({
+      ...financialSettings,
+      priceReviewThresholdDays: reviewThreshold,
+    })
+    setConfigDialogOpen(false)
+    toast({
+      title: t('service_pricing.config_saved'),
+      description: t('service_pricing.config_saved_desc'),
+    })
+  }
+
   const handleDelete = (partnerId: string, rateId: string) => {
     if (confirm(t('common.confirm'))) {
       if (partnerId === 'generic') {
@@ -285,7 +312,7 @@ export function ServiceCatalog() {
 
       <div className="flex flex-col gap-4">
         {staleRatesCount > 0 && (
-          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-md flex items-center gap-2">
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-md flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
             <AlertTriangle className="h-4 w-4 text-yellow-600" />
             <span className="text-sm font-medium">
               {t('service_pricing.stale_alert', {
@@ -306,6 +333,48 @@ export function ServiceCatalog() {
                 </CardDescription>
               </div>
               <div className="flex gap-2">
+                <Dialog
+                  open={configDialogOpen}
+                  onOpenChange={setConfigDialogOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      title="Configure Alerts"
+                    >
+                      <BellRing className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {t('service_pricing.review_period_config')}
+                      </DialogTitle>
+                      <DialogDescription>
+                        {t('service_pricing.review_period_desc')}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid gap-2">
+                        <Label>{t('service_pricing.threshold_days')}</Label>
+                        <Input
+                          type="number"
+                          value={reviewThreshold}
+                          onChange={(e) =>
+                            setReviewThreshold(Number(e.target.value))
+                          }
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button onClick={handleSaveConfig}>
+                        {t('common.save')}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+
                 <Button
                   variant="outline"
                   onClick={() => setCategoryDialogOpen(true)}

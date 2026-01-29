@@ -179,10 +179,10 @@ export default function CalendarPage() {
           <Filter className="h-4 w-4 text-muted-foreground" />
           <Select value={filterPartner} onValueChange={setFilterPartner}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Partner" />
+              <SelectValue placeholder={t('common.partners')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Partners</SelectItem>
+              <SelectItem value="all">{t('common.all')}</SelectItem>
               {partners.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   {p.name}
@@ -193,10 +193,10 @@ export default function CalendarPage() {
 
           <Select value={filterProperty} onValueChange={setFilterProperty}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Property" />
+              <SelectValue placeholder={t('common.properties')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Properties</SelectItem>
+              <SelectItem value="all">{t('common.all')}</SelectItem>
               {properties.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   {p.name}
@@ -212,25 +212,27 @@ export default function CalendarPage() {
         <Card className="lg:col-span-8 h-[500px] lg:h-full flex flex-col">
           <CardHeader>
             <div className="flex flex-wrap justify-between items-center gap-2">
-              <CardTitle>Integrated View</CardTitle>
+              <CardTitle>{t('calendar.integrated_view')}</CardTitle>
               <div className="flex flex-wrap gap-2">
                 <Badge
                   variant="outline"
                   className="bg-blue-50 text-blue-700 border-blue-200"
                 >
-                  <Briefcase className="w-3 h-3 mr-1" /> Operations
+                  <Briefcase className="w-3 h-3 mr-1" />{' '}
+                  {t('common.operations')}
                 </Badge>
                 <Badge
                   variant="outline"
                   className="bg-red-50 text-red-700 border-red-200"
                 >
-                  <FileText className="w-3 h-3 mr-1" /> Contracts
+                  <FileText className="w-3 h-3 mr-1" /> {t('common.contracts')}
                 </Badge>
                 <Badge
                   variant="outline"
                   className="bg-green-50 text-green-700 border-green-200"
                 >
-                  <DollarSign className="w-3 h-3 mr-1" /> Financial
+                  <DollarSign className="w-3 h-3 mr-1" />{' '}
+                  {t('common.financial')}
                 </Badge>
               </div>
             </div>
@@ -267,7 +269,7 @@ export default function CalendarPage() {
         <Card className="lg:col-span-4 h-[500px] lg:h-full flex flex-col">
           <CardHeader>
             <CardTitle>
-              {date ? format(date, 'EEEE, d MMM') : 'Select a date'}
+              {date ? format(date, 'EEEE, d MMM') : t('calendar.title')}
             </CardTitle>
             <CardDescription>
               {dayEvents.length} events for this day.
@@ -278,8 +280,7 @@ export default function CalendarPage() {
               <div className="space-y-4 pb-6">
                 {dayEvents.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-8">
-                    {t('calendar.no_activities') ||
-                      'No activities scheduled for this date.'}
+                    {t('calendar.no_activities')}
                   </p>
                 ) : (
                   dayEvents.map((event, idx) => {
@@ -452,5 +453,3 @@ export default function CalendarPage() {
     </div>
   )
 }
-
-

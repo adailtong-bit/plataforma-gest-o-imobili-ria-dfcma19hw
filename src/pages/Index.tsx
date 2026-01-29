@@ -112,15 +112,15 @@ function DashboardContent() {
       color: 'hsl(var(--chart-1))',
     },
     cleaning: {
-      label: t('partners.cleaning'),
+      label: t('common.cleaning'),
       color: 'hsl(var(--chart-2))',
     },
     taxes: {
-      label: 'Impostos',
+      label: t('common.taxes'),
       color: 'hsl(var(--chart-3))',
     },
     utilities: {
-      label: 'Utilidades',
+      label: t('common.utilities'),
       color: 'hsl(var(--chart-4))',
     },
   }
@@ -155,14 +155,14 @@ function DashboardContent() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" className="gap-2">
-              <Settings2 className="h-4 w-4" /> Personalizar Dashboard
+              <Settings2 className="h-4 w-4" /> {t('dashboard.customize')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Personalizar Visualização</DialogTitle>
+              <DialogTitle>{t('dashboard.customize_view')}</DialogTitle>
               <DialogDescription>
-                Selecione os widgets que deseja ver no painel.
+                {t('dashboard.customize_desc')}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -172,7 +172,7 @@ function DashboardContent() {
                   checked={widgets.kpi}
                   onCheckedChange={() => toggleWidget('kpi')}
                 />
-                <Label htmlFor="kpi">Indicadores KPI (Topo)</Label>
+                <Label htmlFor="kpi">{t('dashboard.kpi_indicators')}</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -188,12 +188,16 @@ function DashboardContent() {
                   checked={widgets.revenueChart}
                   onCheckedChange={() => toggleWidget('revenueChart')}
                 />
-                <Label htmlFor="revenueChart">Gráfico de Receita</Label>
+                <Label htmlFor="revenueChart">
+                  {t('dashboard.revenue_chart')}
+                </Label>
               </div>
               {/* ... other checkboxes ... */}
             </div>
             <DialogFooter>
-              <Button onClick={() => setDialogOpen(false)}>Concluir</Button>
+              <Button onClick={() => setDialogOpen(false)}>
+                {t('common.done')}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -243,7 +247,9 @@ function DashboardContent() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{activePropertiesCount}</div>
-              <p className="text-xs text-muted-foreground">Total</p>
+              <p className="text-xs text-muted-foreground">
+                {t('common.total')}
+              </p>
             </CardContent>
           </Card>
           <Card>
@@ -257,7 +263,9 @@ function DashboardContent() {
               <div className="text-2xl font-bold">
                 {unreadNotifications.length}
               </div>
-              <p className="text-xs text-muted-foreground">Não lidas</p>
+              <p className="text-xs text-muted-foreground">
+                {t('dashboard.unread')}
+              </p>
             </CardContent>
           </Card>
         </div>

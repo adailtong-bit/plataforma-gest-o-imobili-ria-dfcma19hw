@@ -36,10 +36,12 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { Label } from '@/components/ui/label'
 import usePropertyStore from '@/stores/usePropertyStore'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function MarketAnalysis() {
   const { toast } = useToast()
   const { properties } = usePropertyStore()
+  const { t } = useLanguageStore()
 
   // State for Filters
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all')
@@ -89,7 +91,8 @@ export default function MarketAnalysis() {
 
     toast({
       title: 'Exporting Report',
-      description: 'The market analysis report (PDF) has been generated and downloaded.',
+      description:
+        'The market analysis report (PDF) has been generated and downloaded.',
     })
   }
 
@@ -105,15 +108,13 @@ export default function MarketAnalysis() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Comparative Market Analysis (CMA)
+            {t('market.title')}
           </h1>
-          <p className="text-muted-foreground">
-            Market intelligence and comparative data from Airbnb, Zillow, and Realtor.
-          </p>
+          <p className="text-muted-foreground">{t('market.subtitle')}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleExportPDF}>
-            <Download className="mr-2 h-4 w-4" /> Export PDF
+            <Download className="mr-2 h-4 w-4" /> {t('market.export_pdf')}
           </Button>
         </div>
       </div>
@@ -121,23 +122,23 @@ export default function MarketAnalysis() {
       {/* Advanced Filters */}
       <Card className="bg-muted/30">
         <CardHeader>
-          <CardTitle className="text-lg">Comparison Parameters</CardTitle>
-          <CardDescription>
-            Select a base property and filters to adjust the market sample.
-          </CardDescription>
+          <CardTitle className="text-lg">
+            {t('market.comparison_params')}
+          </CardTitle>
+          <CardDescription>{t('market.comparison_desc')}</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
           <div className="grid gap-2">
-            <Label>Base Property</Label>
+            <Label>{t('market.base_property')}</Label>
             <Select
               value={selectedPropertyId}
               onValueChange={setSelectedPropertyId}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select..." />
+                <SelectValue placeholder={t('market.select')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">General (No Link)</SelectItem>
+                <SelectItem value="all">{t('market.general')}</SelectItem>
                 {properties.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.name}
@@ -147,49 +148,49 @@ export default function MarketAnalysis() {
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label>Region</Label>
+            <Label>{t('market.region')}</Label>
             <Select value={filterRegion} onValueChange={setFilterRegion}>
               <SelectTrigger>
-                <SelectValue placeholder="All" />
+                <SelectValue placeholder={t('common.all')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="all">{t('common.all')}</SelectItem>
                 <SelectItem value="Orlando">Orlando, FL</SelectItem>
                 <SelectItem value="Miami">Miami, FL</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label>Bedrooms</Label>
+            <Label>{t('market.bedrooms')}</Label>
             <Select value={filterBedrooms} onValueChange={setFilterBedrooms}>
               <SelectTrigger>
-                <SelectValue placeholder="All" />
+                <SelectValue placeholder={t('common.all')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="1">1 Bedroom</SelectItem>
-                <SelectItem value="2">2 Bedrooms</SelectItem>
-                <SelectItem value="3">3 Bedrooms</SelectItem>
-                <SelectItem value="4+">4+ Bedrooms</SelectItem>
+                <SelectItem value="all">{t('common.all')}</SelectItem>
+                <SelectItem value="1">1 {t('market.bedrooms')}</SelectItem>
+                <SelectItem value="2">2 {t('market.bedrooms')}</SelectItem>
+                <SelectItem value="3">3 {t('market.bedrooms')}</SelectItem>
+                <SelectItem value="4+">4+ {t('market.bedrooms')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label>Bathrooms</Label>
+            <Label>{t('market.bathrooms')}</Label>
             <Select value={filterBathrooms} onValueChange={setFilterBathrooms}>
               <SelectTrigger>
-                <SelectValue placeholder="All" />
+                <SelectValue placeholder={t('common.all')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="1">1 Bathroom</SelectItem>
-                <SelectItem value="2">2 Bathrooms</SelectItem>
-                <SelectItem value="3+">3+ Bathrooms</SelectItem>
+                <SelectItem value="all">{t('common.all')}</SelectItem>
+                <SelectItem value="1">1 {t('market.bathrooms')}</SelectItem>
+                <SelectItem value="2">2 {t('market.bathrooms')}</SelectItem>
+                <SelectItem value="3+">3+ {t('market.bathrooms')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <Button onClick={handleCompare} className="bg-trust-blue">
-            <Search className="mr-2 h-4 w-4" /> Analyze
+            <Search className="mr-2 h-4 w-4" /> {t('market.analyze')}
           </Button>
         </CardContent>
       </Card>
@@ -245,7 +246,7 @@ export default function MarketAnalysis() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                    Avg Sale Price
+                    {t('market.avg_sale_price')}
                   </span>
                   <div className="text-2xl font-bold">
                     ${data.averagePrice.toLocaleString()}
@@ -253,13 +254,13 @@ export default function MarketAnalysis() {
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                    Price/SqFt
+                    {t('market.price_sqft')}
                   </span>
                   <div className="text-2xl font-bold">${data.pricePerSqFt}</div>
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                    Avg Daily Rate (STR)
+                    {t('market.avg_daily_rate')}
                   </span>
                   <div className="text-xl font-semibold text-green-600">
                     ${data.shortTermRate}
@@ -267,7 +268,7 @@ export default function MarketAnalysis() {
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                    Monthly Rent (LTR)
+                    {t('market.monthly_rent')}
                   </span>
                   <div className="text-xl font-semibold text-blue-600">
                     ${data.longTermRate}
@@ -278,7 +279,7 @@ export default function MarketAnalysis() {
               {/* Occupancy Bar */}
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Avg Occupancy</span>
+                  <span>{t('market.avg_occupancy')}</span>
                   <span className="font-bold">{data.occupancyRate}%</span>
                 </div>
                 <div className="h-2 bg-secondary rounded-full overflow-hidden">
@@ -299,10 +300,8 @@ export default function MarketAnalysis() {
           <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <div>
-                <CardTitle>Historical Market Trends</CardTitle>
-                <CardDescription>
-                  Analysis of Price, ADR, Monthly Rent, Occupancy, and Saturation.
-                </CardDescription>
+                <CardTitle>{t('market.historical_trends')}</CardTitle>
+                <CardDescription>{t('market.trends_desc')}</CardDescription>
               </div>
               <div className="flex items-center border rounded-md overflow-hidden">
                 <button
@@ -398,5 +397,3 @@ export default function MarketAnalysis() {
     </div>
   )
 }
-
-
