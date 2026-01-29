@@ -306,7 +306,10 @@ export function PropertyMarketing({
             ))}
           </div>
           {canEdit && (
-            <FileUpload onChange={handleGalleryAdd} label={t('common.add_title')} />
+            <FileUpload
+              onChange={handleGalleryAdd}
+              label={t('common.add_title')}
+            />
           )}
         </CardContent>
       </Card>
@@ -456,7 +459,7 @@ export function PropertyMarketing({
               <div className="flex gap-2">
                 <Input
                   readOnly
-                  value={`https://platform.com/listing/${data.id || 'preview'}`,
+                  value={`https://platform.com/listing/${data.id || 'preview'}`}
                 />
                 <Button onClick={handleCopyLink} size="icon">
                   <Copy className="h-4 w-4" />
@@ -481,4 +484,3 @@ export function PropertyMarketing({
     </div>
   )
 }
-
