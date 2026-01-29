@@ -100,9 +100,12 @@ function DashboardContent() {
     .reduce((acc, curr) => acc + curr.value || curr.amount, 0)
 
   // Chart Data preparation
+  const locale =
+    language === 'es' ? 'es-ES' : language === 'pt' ? 'pt-BR' : 'en-US'
+
   const chartData = filteredEntries.reduce(
     (acc, entry) => {
-      const month = new Date(entry.date).toLocaleString('default', {
+      const month = new Date(entry.date).toLocaleString(locale, {
         month: 'short',
       })
       const existing = acc.find((d) => d.month === month)

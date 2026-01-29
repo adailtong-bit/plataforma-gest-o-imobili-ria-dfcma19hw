@@ -100,7 +100,7 @@ export function AppSidebar() {
       resource: 'market_analysis',
     },
     {
-      title: 'Advanced Analytics',
+      title: t('common.advanced_analytics'),
       url: '/admin/analytics',
       icon: BarChart2,
       resource: 'analytics',
@@ -160,7 +160,7 @@ export function AppSidebar() {
       resource: 'workflows',
     },
     {
-      title: 'Automation Rules',
+      title: t('common.automation_rules'),
       url: '/admin/automation',
       icon: Zap,
       resource: 'automation',
