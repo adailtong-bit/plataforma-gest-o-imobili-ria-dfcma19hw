@@ -26,7 +26,7 @@ import { hasPermission } from '@/lib/permissions'
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 import { AuditLogList } from '@/components/audit/AuditLogList'
-import { User, FinancialSettings } from '@/lib/types'
+import { User, FinancialSettings, AlertConfig } from '@/lib/types'
 import useUserStore from '@/stores/useUserStore'
 import {
   Globe,
@@ -35,6 +35,7 @@ import {
   CheckCircle,
   RefreshCw,
   Mail,
+  Bell,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
@@ -61,11 +62,47 @@ export default function Settings() {
     vrbo: { connected: false, lastSync: 'Never', status: 'Disconnected' },
   })
 
+  // Initialize alerts if missing
+  const defaultAlerts: AlertConfig[] = [
+    {
+      id: 'a1',
+      trigger: 'price_threshold',
+      frequency: 'daily',
+      enabled: true,
+      label: t('settings.trigger_price'),
+    },
+    {
+      id: 'a2',
+      trigger: 'upcoming_booking',
+      frequency: 'immediate',
+      enabled: true,
+      label: t('settings.trigger_booking'),
+    },
+    {
+      id: 'a3',
+      trigger: 'new_task',
+      frequency: 'immediate',
+      enabled: false,
+      label: t('settings.trigger_task'),
+    },
+    {
+      id: 'a4',
+      trigger: 'low_inventory',
+      frequency: 'weekly',
+      enabled: true,
+      label: t('settings.trigger_inventory'),
+    },
+  ]
+
+  const [alerts, setAlerts] = useState<AlertConfig[]>(
+    financialData.alertPreferences || defaultAlerts,
+  )
+
   const handleFinancialSave = () => {
-    updateFinancialSettings(financialData)
+    updateFinancialSettings({ ...financialData, alertPreferences: alerts })
     toast({
       title: t('common.save'),
-      description: 'Configurações financeiras atualizadas.',
+      description: 'Configurações financeiras e alertas atualizados.',
     })
   }
 
@@ -102,6 +139,18 @@ export default function Settings() {
       title: 'Channel Updated',
       description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} integration ${!channelStatus[channel].connected ? 'enabled' : 'disabled'}.`,
     })
+  }
+
+  const handleAlertChange = (
+    id: string,
+    field: keyof AlertConfig,
+    value: any,
+  ) => {
+    setAlerts((prev) =>
+      prev.map((alert) =>
+        alert.id === id ? { ...alert, [field]: value } : alert,
+      ),
+    )
   }
 
   const isPlatformOwner = currentUser.role === 'platform_owner'
@@ -214,6 +263,7 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="integrations">
+          {/* ... existing integrations content ... */}
           <Card>
             <CardHeader>
               <CardTitle>Channel Manager & Integrations</CardTitle>
@@ -351,6 +401,7 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="billing">
+          {/* ... existing billing content ... */}
           <Card>
             <CardHeader>
               <CardTitle>Billing & Payment</CardTitle>
@@ -486,15 +537,70 @@ export default function Settings() {
               <CardTitle>{t('settings.alert_prefs')}</CardTitle>
               <CardDescription>{t('settings.alert_desc')}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="text-base">Email Notifications</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Receive daily summaries and critical alerts via email.
-                  </p>
-                </div>
-                <Switch defaultChecked />
+            <CardContent className="space-y-6">
+              <div className="grid gap-6">
+                {alerts.map((alert) => (
+                  <div
+                    key={alert.id}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg bg-card shadow-sm"
+                  >
+                    <div className="flex items-center gap-4 mb-4 sm:mb-0">
+                      <div className="p-2 bg-blue-50 rounded-full">
+                        <Bell className="h-5 w-5 text-trust-blue" />
+                      </div>
+                      <div>
+                        <Label
+                          htmlFor={`switch-${alert.id}`}
+                          className="font-semibold text-base block mb-1"
+                        >
+                          {alert.label ||
+                            t(
+                              `settings.trigger_${alert.trigger.split('_')[1]}`,
+                            )}
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          Receive emails for {alert.trigger.replace(/_/g, ' ')}.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Select
+                        value={alert.frequency}
+                        onValueChange={(val) =>
+                          handleAlertChange(alert.id, 'frequency', val)
+                        }
+                        disabled={!alert.enabled}
+                      >
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue placeholder={t('settings.frequency')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="immediate">
+                            {t('settings.freq_immediate')}
+                          </SelectItem>
+                          <SelectItem value="daily">
+                            {t('settings.freq_daily')}
+                          </SelectItem>
+                          <SelectItem value="weekly">
+                            {t('settings.freq_weekly')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Switch
+                        id={`switch-${alert.id}`}
+                        checked={alert.enabled}
+                        onCheckedChange={(checked) =>
+                          handleAlertChange(alert.id, 'enabled', checked)
+                        }
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end pt-4">
+                <Button onClick={handleFinancialSave} className="bg-trust-blue">
+                  {t('settings.save_changes')}
+                </Button>
               </div>
             </CardContent>
           </Card>

@@ -12,6 +12,7 @@ const useFinancialStore = () => {
     bankStatements: context.bankStatements,
     ledgerEntries: context.ledgerEntries,
     addInvoice: context.addInvoice,
+    updateInvoice: context.updateInvoice, // Added export
     markPaymentAs: context.markPaymentAs,
     updateFinancialSettings: context.updateFinancialSettings,
     uploadBankStatement: context.uploadBankStatement,

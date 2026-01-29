@@ -15,6 +15,7 @@ import {
   Package,
   Download,
   FileText,
+  Hammer,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -65,22 +66,17 @@ export default function PropertyDetails() {
 
   const property = properties.find((p) => p.id === id)
 
-  // Use lazy initialization to set initial state if property is already available
-  // This prevents an initial null render flash and helps with stability
   const [formData, setFormData] = useState<Property | null>(() =>
     property ? JSON.parse(JSON.stringify(property)) : null,
   )
   const [isEditing, setIsEditing] = useState(false)
 
-  // Link resolution
   const owner = owners.find((o) => o.id === property?.ownerId)
   const activeTenant = tenants.find(
     (t) => t.propertyId === property?.id && t.status === 'active',
   )
   const linkedCondo = condominiums.find((c) => c.id === formData?.condominiumId)
 
-  // Stability Fix: Prevent infinite loops by using functional update pattern
-  // Only update state if the property ID has changed (navigation) or if not yet initialized
   useEffect(() => {
     if (property) {
       setFormData((prev) => {
@@ -312,6 +308,9 @@ export default function PropertyDetails() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
+          <TabsTrigger value="maintenance">
+            <Hammer className="h-4 w-4 mr-2" /> {t('common.maintenance')}
+          </TabsTrigger>
           <TabsTrigger value="contracts">
             <FileText className="h-4 w-4 mr-2" /> Contracts
           </TabsTrigger>
@@ -326,9 +325,6 @@ export default function PropertyDetails() {
             <RefreshCw className="h-4 w-4 mr-2" /> Channel Sync
           </TabsTrigger>
           <TabsTrigger value="financial">{t('common.financial')}</TabsTrigger>
-          <TabsTrigger value="tasks">
-            <ClipboardList className="h-4 w-4 mr-2" /> {t('common.tasks')}
-          </TabsTrigger>
           <TabsTrigger value="marketing">
             {t('properties.marketing')}
           </TabsTrigger>
@@ -345,6 +341,10 @@ export default function PropertyDetails() {
             onChange={handleChange}
             canEdit={isEditing}
           />
+        </TabsContent>
+
+        <TabsContent value="maintenance">
+          <PropertyTasks propertyId={formData.id} canEdit={true} />
         </TabsContent>
 
         <TabsContent value="contracts">
@@ -393,10 +393,6 @@ export default function PropertyDetails() {
             owners={owners}
             partners={partners}
           />
-        </TabsContent>
-
-        <TabsContent value="tasks">
-          <PropertyTasks propertyId={formData.id} canEdit={true} />
         </TabsContent>
 
         <TabsContent value="marketing">

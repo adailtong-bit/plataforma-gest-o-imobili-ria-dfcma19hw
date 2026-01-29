@@ -39,6 +39,19 @@ export interface Permission {
   actions: Action[]
 }
 
+export interface AlertConfig {
+  id: string
+  trigger:
+    | 'price_threshold'
+    | 'upcoming_booking'
+    | 'new_task'
+    | 'low_inventory'
+    | 'payment_received'
+  frequency: 'immediate' | 'daily' | 'weekly'
+  enabled: boolean
+  label?: string
+}
+
 export interface FinancialSettings {
   companyName: string
   ein: string
@@ -65,6 +78,8 @@ export interface FinancialSettings {
   billComEnvironment?: 'sandbox' | 'production'
   // Service Pricing
   priceReviewThresholdDays?: number
+  // Alerts
+  alertPreferences?: AlertConfig[]
 }
 
 export interface BankStatement {

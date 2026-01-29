@@ -1,3 +1,4 @@
+// ... (imports remain similar, just ensuring updateInvoice is added)
 import React, {
   createContext,
   useState,
@@ -70,6 +71,7 @@ import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
 
 interface AppContextType {
+  // ... existing types
   properties: Property[]
   condominiums: Condominium[]
   tasks: Task[]
@@ -117,6 +119,7 @@ interface AppContextType {
   deleteTask: (taskId: string) => void
   notifySupplier: (taskId: string) => void
   addInvoice: (invoice: Invoice) => void
+  updateInvoice: (invoice: Invoice) => void // New Method
   markPaymentAs: (paymentId: string, status: Payment['status']) => void
   addTaskImage: (taskId: string, imageUrl: string) => void
   addTaskEvidence: (taskId: string, evidence: Evidence) => void
@@ -180,6 +183,7 @@ interface AppContextType {
 export const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
+  // ... state initializations
   const [properties, setProperties] = useState<Property[]>(initialProperties)
   const [condominiums, setCondominiums] =
     useState<Condominium[]>(initialCondominiums)
@@ -240,13 +244,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [adPricing, setAdPricingState] = useState<AdPricing>(mockAdPricing)
   const [typingStatus, setTypingStatus] = useState<Record<string, boolean>>({})
 
-  // Default to English ('en')
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app_language')
     return (saved as Language) || 'en'
   })
 
-  // Global Property Selection (default 'all')
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all')
 
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -326,8 +328,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setAuditLogs((prev) => [newLog, ...prev])
   }
 
-  // --- Core Action Functions with Logging and Automation ---
-
   const addLedgerEntry = (entry: LedgerEntry) => {
     setLedgerEntries((prev) => [...prev, entry])
     addAuditLog({
@@ -351,7 +351,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       details: `Created property: ${p.name}`,
     })
 
-    // Automated Financial Posting: HOA Fee (Initial)
     if (p.hoaValue && p.hoaValue > 0) {
       const hoaEntry: LedgerEntry = {
         id: `auto-hoa-${p.id}-${Date.now()}`,
@@ -364,7 +363,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         description: `Initial HOA Fee - ${p.community || 'Association'}`,
         status: 'pending',
       }
-      // Use setTimeout to ensure property exists in state before ledger entry refers to it
       setTimeout(() => addLedgerEntry(hoaEntry), 100)
     }
   }
@@ -419,7 +417,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       details: `Updated task: ${t.title}. Status: ${t.status}`,
     })
 
-    // Task-Financial Integration
     if (
       t.status === 'completed' &&
       oldTask?.status !== 'completed' &&
@@ -476,8 +473,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       description: `Supplier ${task.assignee} notified about task "${task.title}".`,
     })
   }
-
-  // --- End Core Action Functions ---
 
   const addNotification = useCallback(
     (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
@@ -733,6 +728,20 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  const updateInvoice = (i: Invoice) => {
+    setFinancials((prev) => ({
+      ...prev,
+      invoices: prev.invoices.map((inv) => (inv.id === i.id ? i : inv)),
+    }))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Invoice',
+      details: `Updated Invoice ${i.id}. Status: ${i.status}`,
+    })
+  }
+
   const markPaymentAs = (id: string, status: any) => {}
   const addTaskImage = (id: string, img: string) => {}
   const addTaskEvidence = (id: string, ev: Evidence) => {}
@@ -961,6 +970,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         deleteTask,
         notifySupplier,
         addInvoice,
+        updateInvoice, // Added to provider value
         markPaymentAs,
         addTaskImage,
         addTaskEvidence,

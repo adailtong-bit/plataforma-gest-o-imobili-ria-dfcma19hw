@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -8,11 +9,13 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Invoice } from '@/lib/types'
-import { Printer, Download, X } from 'lucide-react'
+import { Printer, Download, X, CreditCard, Loader2 } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 import { useMemo } from 'react'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 
 interface InvoiceViewerProps {
   open: boolean
@@ -27,6 +30,9 @@ export function InvoiceViewer({
 }: InvoiceViewerProps) {
   const { t, language } = useLanguageStore()
   const { allUsers, currentUser } = useAuthStore()
+  const { updateInvoice } = useFinancialStore()
+  const { toast } = useToast()
+  const [isProcessing, setIsProcessing] = useState(false)
 
   const handlePrint = () => {
     window.print()
@@ -43,7 +49,28 @@ export function InvoiceViewer({
     return allUsers.find((u) => u.id === invoice.toId)
   }, [invoice, allUsers])
 
+  const handlePayment = () => {
+    if (!invoice) return
+    setIsProcessing(true)
+
+    // Simulate payment processing delay
+    setTimeout(() => {
+      updateInvoice({ ...invoice, status: 'paid' })
+      setIsProcessing(false)
+      toast({
+        title: t('invoices.payment_success'),
+        description: `${formatCurrency(invoice.amount, language)} processed via Gateway.`,
+      })
+      onOpenChange(false)
+    }, 2000)
+  }
+
   if (!invoice) return null
+
+  const isPayable =
+    invoice.status === 'pending' ||
+    invoice.status === 'sent' ||
+    invoice.status === 'approved'
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -216,16 +243,30 @@ export function InvoiceViewer({
           </div>
         </div>
 
-        <DialogFooter className="gap-2 print:hidden">
+        <DialogFooter className="gap-2 print:hidden flex-wrap">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             <X className="h-4 w-4 mr-2" /> {t('invoice_viewer.close')}
           </Button>
           <Button variant="outline" className="gap-2">
             <Download className="h-4 w-4" /> {t('invoice_viewer.download')}
           </Button>
-          <Button onClick={handlePrint} className="bg-trust-blue gap-2">
+          <Button onClick={handlePrint} className="gap-2" variant="outline">
             <Printer className="h-4 w-4" /> {t('invoice_viewer.print')}
           </Button>
+          {isPayable && (
+            <Button
+              onClick={handlePayment}
+              disabled={isProcessing}
+              className="bg-green-600 hover:bg-green-700 text-white gap-2"
+            >
+              {isProcessing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <CreditCard className="h-4 w-4" />
+              )}
+              {isProcessing ? t('invoices.processing') : t('invoices.pay_now')}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

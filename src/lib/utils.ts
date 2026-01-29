@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Language } from './translations'
+import { format } from 'date-fns'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -86,9 +87,14 @@ export const formatCurrency = (
   language: Language = 'en',
   currency: string = 'USD',
 ) => {
+  if (language === 'es') {
+    // Custom ES format requested: $1.200,00
+    // We use ES locale for number formatting but prepend $ explicitly
+    return `$${value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  }
+
   let locale = 'en-US'
   if (language === 'pt') locale = 'pt-BR'
-  if (language === 'es') locale = 'es-ES' // Uses 1.200,00 format for Spanish
 
   return new Intl.NumberFormat(locale, {
     style: 'currency',
@@ -97,9 +103,13 @@ export const formatCurrency = (
 }
 
 export const formatDate = (date: string | Date, language: Language = 'en') => {
+  if (language === 'es') {
+    // ES requested format: DD/MM/YYYY
+    return format(new Date(date), 'dd/MM/yyyy')
+  }
+
   let locale = 'en-US'
   if (language === 'pt') locale = 'pt-BR'
-  if (language === 'es') locale = 'es-ES'
 
   return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
