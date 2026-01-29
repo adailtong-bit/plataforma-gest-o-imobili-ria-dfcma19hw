@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { MapPin } from 'lucide-react'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface PropertyLocationProps {
   data: Property
@@ -24,6 +25,8 @@ export function PropertyLocation({
   canEdit,
   condominiums,
 }: PropertyLocationProps) {
+  const { t } = useLanguageStore()
+
   // Construct a full address string for the map query to be more precise
   const fullAddress = [
     data.address,
@@ -43,12 +46,13 @@ export function PropertyLocation({
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>Endereço e Localização</CardTitle>
+          <CardTitle>{t('properties.location.address')}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label>
-              Endereço <span className="text-red-500">*</span>
+              {t('properties.location.address')}{' '}
+              <span className="text-red-500">*</span>
             </Label>
             <Input
               value={data.address}
@@ -60,7 +64,8 @@ export function PropertyLocation({
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>
-                CEP / Zip Code <span className="text-red-500">*</span>
+                {t('properties.zip_code')}{' '}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 value={data.zipCode || ''}
@@ -72,7 +77,7 @@ export function PropertyLocation({
               />
             </div>
             <div className="grid gap-2">
-              <Label>Informações Adicionais</Label>
+              <Label>{t('properties.info_label')}</Label>
               <Input
                 value={data.additionalInfo || ''}
                 onChange={(e) => onChange('additionalInfo', e.target.value)}
@@ -83,7 +88,7 @@ export function PropertyLocation({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label>Bairro</Label>
+              <Label>{t('properties.location.neighborhood')}</Label>
               <Input
                 value={data.neighborhood || ''}
                 onChange={(e) => onChange('neighborhood', e.target.value)}
@@ -91,7 +96,7 @@ export function PropertyLocation({
               />
             </div>
             <div className="grid gap-2">
-              <Label>Comunidade</Label>
+              <Label>{t('properties.location.community')}</Label>
               <Input
                 value={data.community}
                 onChange={(e) => onChange('community', e.target.value)}
@@ -101,7 +106,7 @@ export function PropertyLocation({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label>Cidade</Label>
+              <Label>{t('properties.city_placeholder')}</Label>
               <Input
                 value={data.city || ''}
                 onChange={(e) => onChange('city', e.target.value)}
@@ -109,7 +114,7 @@ export function PropertyLocation({
               />
             </div>
             <div className="grid gap-2">
-              <Label>Estado</Label>
+              <Label>{t('properties.state_placeholder')}</Label>
               <Input
                 value={data.state || ''}
                 onChange={(e) => onChange('state', e.target.value)}
@@ -118,7 +123,7 @@ export function PropertyLocation({
             </div>
           </div>
           <div className="grid gap-2">
-            <Label>País</Label>
+            <Label>{t('common.country')}</Label>
             <Input
               value={data.country || ''}
               onChange={(e) => onChange('country', e.target.value)}
@@ -126,7 +131,7 @@ export function PropertyLocation({
             />
           </div>
           <div className="grid gap-2">
-            <Label>Condomínio Vinculado</Label>
+            <Label>{t('properties.location.linked_condo')}</Label>
             <Select
               value={data.condominiumId || 'none'}
               onValueChange={(v) =>
@@ -135,10 +140,10 @@ export function PropertyLocation({
               disabled={!canEdit}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione..." />
+                <SelectValue placeholder={t('common.select')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Nenhum</SelectItem>
+                <SelectItem value="none">{t('common.none')}</SelectItem>
                 {condominiums.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}
@@ -152,7 +157,7 @@ export function PropertyLocation({
 
       <Card>
         <CardHeader>
-          <CardTitle>Mapa de Propriedades</CardTitle>
+          <CardTitle>{t('properties.location.map_title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="w-full aspect-square bg-muted rounded-lg flex flex-col items-center justify-center relative overflow-hidden border">
@@ -170,8 +175,7 @@ export function PropertyLocation({
               <div className="flex flex-col items-center justify-center text-center p-4">
                 <MapPin className="h-10 w-10 text-muted-foreground mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  Insira o endereço completo (Rua, Cidade) para visualizar o
-                  mapa.
+                  {t('properties.location.map_hint')}
                 </p>
               </div>
             )}

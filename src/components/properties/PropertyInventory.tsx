@@ -47,10 +47,11 @@ import { InventoryImportDialog } from '@/components/inventory/InventoryImportDia
 import { InventoryDeleteDialog } from '@/components/inventory/InventoryDeleteDialog'
 import { InventoryHistoryDialog } from '@/components/inventory/InventoryHistoryDialog'
 import { InventoryItemDialog } from '@/components/inventory/InventoryItemDialog'
-import { format } from 'date-fns'
+import { formatDate } from '@/lib/utils'
 import { exportToCSV } from '@/lib/utils'
 import useTaskStore from '@/stores/useTaskStore'
 import useNotificationStore from '@/stores/useNotificationStore'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface PropertyInventoryProps {
   data: Property
@@ -66,6 +67,7 @@ export function PropertyInventory({
   const { toast } = useToast()
   const { addTask, tasks } = useTaskStore()
   const { addNotification } = useNotificationStore()
+  const { t, language } = useLanguageStore()
   const [filter, setFilter] = useState('')
 
   // Dialog States
@@ -96,8 +98,8 @@ export function PropertyInventory({
   const handleSaveItem = (itemData: Partial<InventoryItem>) => {
     if (!itemData.name || !itemData.category) {
       toast({
-        title: 'Error',
-        description: 'Name and Category are required.',
+        title: t('common.error'),
+        description: t('common.required'),
         variant: 'destructive',
       })
       return
@@ -177,7 +179,7 @@ export function PropertyInventory({
             }
           : item,
       )
-      toast({ title: 'Item Updated' })
+      toast({ title: t('common.success') })
     } else {
       // Create logic
       const newItem: InventoryItem = {
@@ -189,7 +191,7 @@ export function PropertyInventory({
         media: itemData.media || [],
       }
       updatedInventory.push(newItem)
-      toast({ title: 'Item Added' })
+      toast({ title: t('common.success') })
     }
 
     onChange('inventory', updatedInventory)
@@ -200,7 +202,7 @@ export function PropertyInventory({
   const handleDeleteItem = (id: string) => {
     const updatedInventory = inventory.filter((item) => item.id !== id)
     onChange('inventory', updatedInventory)
-    toast({ title: 'Item Removed' })
+    toast({ title: t('common.removed') })
   }
 
   const handleBulkImport = (items: InventoryItem[]) => {
@@ -211,7 +213,7 @@ export function PropertyInventory({
   const handleClearInventory = () => {
     onChange('inventory', [])
     toast({
-      title: 'Inventory Cleared',
+      title: t('common.empty'),
       description: 'All items have been removed.',
     })
   }
@@ -239,13 +241,11 @@ export function PropertyInventory({
       item.condition,
       item.description || '',
       item.media && item.media.length > 0 ? 'Yes' : 'No',
-      item.updatedAt
-        ? format(new Date(item.updatedAt), 'yyyy-MM-dd HH:mm')
-        : '',
+      item.updatedAt ? formatDate(item.updatedAt, language) : '',
     ])
 
     exportToCSV(`inventory_${data.name}`, headers, rows)
-    toast({ title: 'Inventory Exported' })
+    toast({ title: t('common.success') })
   }
 
   const getConditionColor = (condition: ItemCondition) => {
@@ -270,7 +270,7 @@ export function PropertyInventory({
     <Card>
       <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <CardTitle>Inventory Management</CardTitle>
+          <CardTitle>{t('common.inventory')}</CardTitle>
           <CardDescription>
             Manage items, track condition history, and import bulk data.
           </CardDescription>
@@ -279,7 +279,7 @@ export function PropertyInventory({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="gap-2">
-                <Download className="h-4 w-4" /> Export
+                <Download className="h-4 w-4" /> {t('common.export')}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -305,7 +305,7 @@ export function PropertyInventory({
                 disabled={inventory.length === 0}
                 className="text-red-600 hover:text-red-700"
               >
-                <Trash2 className="h-4 w-4 mr-2" /> Clear All
+                <Trash2 className="h-4 w-4 mr-2" /> {t('common.delete')} All
               </Button>
               <Button
                 onClick={() => {
@@ -315,7 +315,7 @@ export function PropertyInventory({
                 className="gap-2 bg-trust-blue"
                 size="sm"
               >
-                <Plus className="h-4 w-4" /> Add Item
+                <Plus className="h-4 w-4" /> {t('common.new')}
               </Button>
             </>
           )}
@@ -325,7 +325,7 @@ export function PropertyInventory({
         <div className="flex items-center gap-2 max-w-sm">
           <Search className="h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search items..."
+            placeholder={t('common.search')}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           />
@@ -335,12 +335,14 @@ export function PropertyInventory({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Item Name</TableHead>
+                <TableHead>{t('common.name')}</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Qty</TableHead>
                 <TableHead>Condition</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -352,7 +354,7 @@ export function PropertyInventory({
                   >
                     <div className="flex flex-col items-center gap-2">
                       <Package className="h-10 w-10 text-muted-foreground/30" />
-                      <p>No inventory items found.</p>
+                      <p>{t('common.empty')}</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -411,7 +413,9 @@ export function PropertyInventory({
                                   <History className="h-4 w-4 text-blue-600" />
                                 </Button>
                               </TooltipTrigger>
-                              <TooltipContent>View History</TooltipContent>
+                              <TooltipContent>
+                                {t('common.history')}
+                              </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
 

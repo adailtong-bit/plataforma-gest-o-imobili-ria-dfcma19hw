@@ -208,7 +208,7 @@ function DashboardContent() {
                   checked={widgets.health}
                   onCheckedChange={() => toggleWidget('health')}
                 />
-                <Label htmlFor="health">Gamification Health Score</Label>
+                <Label htmlFor="health">{t('gamification.health_score')}</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -305,10 +305,10 @@ function DashboardContent() {
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-white">
               <Trophy className="h-6 w-6 text-yellow-300" />
-              Portfolio Health Score
+              {t('gamification.portfolio_health')}
             </CardTitle>
             <CardDescription className="text-blue-100">
-              Your overall performance level based on revenue and occupancy.
+              {t('gamification.desc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -318,8 +318,10 @@ function DashboardContent() {
               </div>
               <div className="flex-1 space-y-1">
                 <div className="flex justify-between text-xs text-blue-100">
-                  <span>Level: Expert</span>
-                  <span>Target: 100</span>
+                  <span>
+                    {t('gamification.level')}: {t('gamification.expert')}
+                  </span>
+                  <span>{t('gamification.target')}: 100</span>
                 </div>
                 <Progress value={avgHealthScore} className="h-3 bg-blue-800" />
               </div>
@@ -344,7 +346,7 @@ function DashboardContent() {
               <ChartContainer
                 config={{
                   revenue: {
-                    label: 'Receita',
+                    label: t('common.total'),
                     color: 'hsl(var(--primary))',
                   },
                 }}

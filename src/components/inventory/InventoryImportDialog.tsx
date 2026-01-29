@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label'
 import { Upload, FileSpreadsheet, AlertCircle } from 'lucide-react'
 import { InventoryItem, ItemCondition } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface InventoryImportDialogProps {
   isOpen: boolean
@@ -26,6 +27,7 @@ export function InventoryImportDialog({
   onImport,
 }: InventoryImportDialogProps) {
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -100,7 +102,7 @@ export function InventoryImportDialog({
         }
         onImport(items)
         toast({
-          title: 'Import Successful',
+          title: t('common.success'),
           description: `Imported ${items.length} items from CSV.`,
         })
         onClose()
@@ -140,7 +142,7 @@ export function InventoryImportDialog({
       }
     } catch (error) {
       toast({
-        title: 'Import Failed',
+        title: t('common.error'),
         description: 'Could not parse the file. Please check format.',
         variant: 'destructive',
       })
@@ -168,7 +170,7 @@ export function InventoryImportDialog({
             onClick={() => fileInputRef.current?.click()}
           >
             <FileSpreadsheet className="h-10 w-10 text-muted-foreground mb-2" />
-            <p className="text-sm font-medium">Click to select file</p>
+            <p className="text-sm font-medium">{t('common.upload')}</p>
             <p className="text-xs text-muted-foreground">.csv, .xlsx, .xls</p>
             <Input
               ref={fileInputRef}
@@ -199,7 +201,7 @@ export function InventoryImportDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={isProcessing}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={handleImport}

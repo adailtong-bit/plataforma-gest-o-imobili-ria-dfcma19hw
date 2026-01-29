@@ -52,6 +52,7 @@ import usePropertyStore from '@/stores/usePropertyStore'
 import { useToast } from '@/hooks/use-toast'
 import { setDate, getDaysInMonth, parseISO, addMonths } from 'date-fns'
 import { FileUpload } from '@/components/ui/file-upload'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface PropertyFinancialsProps {
   data: Property
@@ -69,6 +70,7 @@ export function PropertyFinancials({
   partners,
 }: PropertyFinancialsProps) {
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const { properties, updateProperty } = usePropertyStore()
   const {
     ledgerEntries,
@@ -146,8 +148,8 @@ export function PropertyFinancials({
       !formData.paymentDate
     ) {
       toast({
-        title: 'Campos Obrigatórios',
-        description: 'Preencha Nome, Fornecedor, Valor e Data.',
+        title: 'Error',
+        description: t('common.required'),
         variant: 'destructive',
       })
       return false
@@ -237,8 +239,8 @@ export function PropertyFinancials({
       }
 
       toast({
-        title: 'Despesa Fixa Criada',
-        description: 'Despesa adicionada e lançada no financeiro.',
+        title: t('common.success'),
+        description: 'Fixed expense created.',
       })
     } else {
       updatedExpenses = updatedExpenses.map((e) =>
@@ -267,8 +269,8 @@ export function PropertyFinancials({
       })
 
       toast({
-        title: 'Despesa Atualizada',
-        description: 'Informações e lançamentos pendentes atualizados.',
+        title: t('common.success'),
+        description: 'Fixed expense updated.',
       })
     }
 
@@ -297,8 +299,8 @@ export function PropertyFinancials({
     pendingEntries.forEach((entry) => deleteLedgerEntry(entry.id))
 
     toast({
-      title: 'Despesa Removida',
-      description: 'Registro e lançamentos pendentes excluídos.',
+      title: t('common.removed'),
+      description: 'Record deleted.',
     })
   }
 
@@ -310,7 +312,7 @@ export function PropertyFinancials({
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid gap-2">
-            <Label>Proprietário</Label>
+            <Label>{t('common.owners')}</Label>
             <Select
               value={data.ownerId}
               onValueChange={(v) => onChange('ownerId', v)}
@@ -338,10 +340,10 @@ export function PropertyFinancials({
               disabled={!canEdit}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione..." />
+                <SelectValue placeholder={t('common.select')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Nenhum</SelectItem>
+                <SelectItem value="none">{t('common.none')}</SelectItem>
                 {partners
                   .filter((p) => p.type === 'agent')
                   .map((p) => (
@@ -356,7 +358,7 @@ export function PropertyFinancials({
             <h3 className="font-semibold text-sm">Associação (HOA)</h3>
           </div>
           <div className="grid gap-2">
-            <Label>Valor HOA ($)</Label>
+            <Label>{t('properties.hoa_fee')} ($)</Label>
             <CurrencyInput
               value={data.hoaValue || 0}
               onChange={(val) => onChange('hoaValue', val)}
@@ -364,7 +366,7 @@ export function PropertyFinancials({
             />
           </div>
           <div className="grid gap-2">
-            <Label>Frequência HOA</Label>
+            <Label>{t('common.frequency')}</Label>
             <Select
               value={data.hoaFrequency || 'monthly'}
               onValueChange={(v) => onChange('hoaFrequency', v)}
@@ -388,19 +390,21 @@ export function PropertyFinancials({
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Despesas Fixas</CardTitle>
           <Button onClick={handleOpenAdd} className="bg-trust-blue gap-2">
-            <Plus className="h-4 w-4" /> Adicionar Despesa Fixa
+            <Plus className="h-4 w-4" /> {t('common.add_title')}
           </Button>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Despesa</TableHead>
+                <TableHead>{t('common.description')}</TableHead>
                 <TableHead>Fornecedor</TableHead>
                 <TableHead>Contrato</TableHead>
-                <TableHead>Valor</TableHead>
+                <TableHead>{t('common.value')}</TableHead>
                 <TableHead>Dia Venc.</TableHead>
-                <TableHead className="text-right">Ação</TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -411,7 +415,7 @@ export function PropertyFinancials({
                     colSpan={6}
                     className="text-center py-6 text-muted-foreground"
                   >
-                    Nenhuma despesa fixa cadastrada.
+                    {t('common.empty')}
                   </TableCell>
                 </TableRow>
               )}
@@ -452,19 +456,20 @@ export function PropertyFinancials({
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>
-                              Confirmar Exclusão
+                              {t('common.confirm_delete')}
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              Tem certeza? Excluir esta despesa removerá também
-                              os lançamentos futuros pendentes do financeiro.
+                              {t('common.delete_desc')}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogCancel>
+                              {t('common.cancel')}
+                            </AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleRemoveExpense(expense.id)}
                             >
-                              Excluir
+                              {t('common.delete')}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -488,16 +493,14 @@ export function PropertyFinancials({
         <DialogContent className="max-w-xl">
           <DialogHeader>
             <DialogTitle>
-              {actionType === 'add' ? 'Nova Despesa Fixa' : 'Editar Despesa'}
+              {actionType === 'add' ? t('common.new') : t('common.edit')}
             </DialogTitle>
-            <DialogDescription>
-              Configure os detalhes da despesa recorrente e contrato.
-            </DialogDescription>
+            <DialogDescription>Configure details.</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label>
-                Nome da Despesa <span className="text-red-500">*</span>
+                {t('common.name')} <span className="text-red-500">*</span>
               </Label>
               <Input
                 value={formData.name}
@@ -510,7 +513,7 @@ export function PropertyFinancials({
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>
-                  Fornecedor / Empresa <span className="text-red-500">*</span>
+                  Fornecedor <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   value={formData.provider}
@@ -534,7 +537,8 @@ export function PropertyFinancials({
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>
-                  Valor ($) <span className="text-red-500">*</span>
+                  {t('common.value')} ($){' '}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <CurrencyInput
                   value={formData.amount}
@@ -549,7 +553,7 @@ export function PropertyFinancials({
               </div>
               <div className="grid gap-2">
                 <Label>
-                  Data de Pagamento <span className="text-red-500">*</span>
+                  {t('common.date')} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   type="date"
@@ -613,23 +617,22 @@ export function PropertyFinancials({
                   setFormData({ ...formData, receiptUrl: url })
                 }
                 accept=".pdf,.jpg,.png,.jpeg"
-                label="Carregar Fatura/Recibo (PDF ou Imagem)"
+                label={t('common.upload')}
               />
               {actionType === 'add' && formData.receiptUrl && (
                 <div className="bg-green-50 text-green-700 p-2 rounded text-xs flex items-center gap-2 border border-green-200">
                   <FileCheck className="h-4 w-4" />
-                  Como você anexou um comprovante, esta conta será marcada como
-                  PAGA e o sistema agendará a do próximo mês automaticamente.
+                  Attached receipt will mark this as PAID.
                 </div>
               )}
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpenExpense(false)}>
-              Cancelar
+              {t('common.cancel')}
             </Button>
             <Button onClick={handlePreSubmit} className="bg-trust-blue">
-              {actionType === 'add' ? 'Adicionar Despesa' : 'Salvar Alterações'}
+              {t('common.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -638,17 +641,17 @@ export function PropertyFinancials({
       <AlertDialog open={confirmActionOpen} onOpenChange={setConfirmActionOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar Alteração</AlertDialogTitle>
+            <AlertDialogTitle>Confirm Change</AlertDialogTitle>
             <AlertDialogDescription>
-              Você está alterando uma despesa fixa. Isso atualizará
-              automaticamente todos os lançamentos futuros que ainda estão
-              pendentes. Deseja continuar?
+              Changing this expense will update future pending entries.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setConfirmActionOpen(false)}>
+              {t('common.cancel')}
+            </AlertDialogCancel>
             <AlertDialogAction onClick={executeSave}>
-              Confirmar
+              {t('common.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

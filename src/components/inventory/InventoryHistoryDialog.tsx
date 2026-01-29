@@ -16,9 +16,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { InventoryItem } from '@/lib/types'
 import { History, AlertTriangle, Download } from 'lucide-react'
-import { format } from 'date-fns'
+import { formatDate } from '@/lib/utils'
 import { exportToCSV } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface InventoryHistoryDialogProps {
   isOpen: boolean
@@ -32,6 +33,7 @@ export function InventoryHistoryDialog({
   item,
 }: InventoryHistoryDialogProps) {
   const { toast } = useToast()
+  const { t, language } = useLanguageStore()
 
   if (!item) return null
 
@@ -40,7 +42,7 @@ export function InventoryHistoryDialog({
   const handleExport = () => {
     if (history.length === 0) {
       toast({
-        title: 'No Data',
+        title: t('common.empty'),
         description: 'No history to export.',
         variant: 'destructive',
       })
@@ -49,13 +51,13 @@ export function InventoryHistoryDialog({
 
     const headers = ['Date', 'Description', 'Reported By']
     const rows = history.map((record) => [
-      record.date ? format(new Date(record.date), 'yyyy-MM-dd HH:mm') : '',
+      record.date ? formatDate(record.date, language) : '',
       record.description,
       record.reportedBy || 'System',
     ])
 
     exportToCSV(`history_${item.name.replace(/\s/g, '_')}`, headers, rows)
-    toast({ title: 'History Exported' })
+    toast({ title: t('common.success') })
   }
 
   return (
@@ -65,14 +67,14 @@ export function InventoryHistoryDialog({
           <div className="space-y-1">
             <DialogTitle className="flex items-center gap-2">
               <History className="h-5 w-5" />
-              Damage History: {item.name}
+              {t('common.history')}: {item.name}
             </DialogTitle>
             <DialogDescription>
               Historical record of reported damages and incidents.
             </DialogDescription>
           </div>
           <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" /> Export
+            <Download className="h-4 w-4 mr-2" /> {t('common.export')}
           </Button>
         </DialogHeader>
 
@@ -80,8 +82,8 @@ export function InventoryHistoryDialog({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Description</TableHead>
+                <TableHead>{t('common.date')}</TableHead>
+                <TableHead>{t('common.description')}</TableHead>
                 <TableHead>Reported By</TableHead>
               </TableRow>
             </TableHeader>
@@ -92,14 +94,14 @@ export function InventoryHistoryDialog({
                     colSpan={3}
                     className="text-center py-8 text-muted-foreground"
                   >
-                    No damage history recorded for this item.
+                    {t('common.empty')}
                   </TableCell>
                 </TableRow>
               ) : (
                 history.map((record) => (
                   <TableRow key={record.id}>
                     <TableCell className="font-medium whitespace-nowrap">
-                      {format(new Date(record.date), 'MMM dd, yyyy')}
+                      {formatDate(record.date, language)}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-start gap-2">
@@ -119,16 +121,12 @@ export function InventoryHistoryDialog({
 
         <div className="text-xs text-muted-foreground mt-2 flex justify-between">
           <span>
-            Created:{' '}
-            {item.createdAt
-              ? format(new Date(item.createdAt), 'PPP')
-              : 'Unknown'}
+            {t('common.created_at')}:{' '}
+            {item.createdAt ? formatDate(item.createdAt, language) : '-'}
           </span>
           <span>
-            Last Updated:{' '}
-            {item.updatedAt
-              ? format(new Date(item.updatedAt), 'PPP')
-              : 'Unknown'}
+            {t('common.updated_at')}:{' '}
+            {item.updatedAt ? formatDate(item.updatedAt, language) : '-'}
           </span>
         </div>
       </DialogContent>

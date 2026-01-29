@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface InventoryDeleteDialogProps {
   isOpen: boolean
@@ -25,6 +26,7 @@ export function InventoryDeleteDialog({
   onConfirm,
   count,
 }: InventoryDeleteDialogProps) {
+  const { t } = useLanguageStore()
   const [step, setStep] = useState<1 | 2>(1)
   const [confirmText, setConfirmText] = useState('')
   const isMatch = confirmText === 'DELETE'
@@ -53,18 +55,16 @@ export function InventoryDeleteDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {step === 1 ? 'Clear Inventory?' : 'Final Confirmation'}
+            {step === 1 ? t('common.confirm_delete') : 'Final Confirmation'}
           </AlertDialogTitle>
           <AlertDialogDescription>
             {step === 1 ? (
               <span>
-                Are you sure you want to delete all <strong>{count}</strong>{' '}
-                inventory items? This action cannot be undone.
+                {t('common.delete_title')} <strong>{count}</strong> items.
               </span>
             ) : (
               <span className="text-red-600 font-medium">
-                This will permanently erase the entire inventory. Type "DELETE"
-                below to confirm.
+                Type "DELETE" below to confirm.
               </span>
             )}
           </AlertDialogDescription>
@@ -83,13 +83,15 @@ export function InventoryDeleteDialog({
         )}
 
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={handleClose}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={handleClose}>
+            {t('common.cancel')}
+          </AlertDialogCancel>
           {step === 1 ? (
             <AlertDialogAction
               onClick={handleConfirmStep1}
               className="bg-red-600 hover:bg-red-700"
             >
-              Continue
+              {t('common.continue')}
             </AlertDialogAction>
           ) : (
             <AlertDialogAction
@@ -97,7 +99,7 @@ export function InventoryDeleteDialog({
               disabled={!isMatch}
               className="bg-red-600 hover:bg-red-700"
             >
-              Confirm Permanent Delete
+              {t('common.delete')}
             </AlertDialogAction>
           )}
         </AlertDialogFooter>

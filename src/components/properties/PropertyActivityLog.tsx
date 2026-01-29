@@ -10,6 +10,7 @@ import useAuditStore from '@/stores/useAuditStore'
 import { format } from 'date-fns'
 import { History, Activity, User, FileText, CheckCircle2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface PropertyActivityLogProps {
   propertyId: string
@@ -17,6 +18,7 @@ interface PropertyActivityLogProps {
 
 export function PropertyActivityLog({ propertyId }: PropertyActivityLogProps) {
   const { auditLogs } = useAuditStore()
+  const { t } = useLanguageStore()
 
   // Improved filtering to capture property specific and related entity logs
   const propertyLogs = auditLogs
@@ -51,18 +53,15 @@ export function PropertyActivityLog({ propertyId }: PropertyActivityLogProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <History className="h-5 w-5" /> Detailed Activity Log
+          <History className="h-5 w-5" /> {t('common.activity_log')}
         </CardTitle>
-        <CardDescription>
-          Comprehensive audit trail of all operations, financial postings, and
-          updates.
-        </CardDescription>
+        <CardDescription>Comprehensive audit trail.</CardDescription>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[400px] w-full pr-4">
           {propertyLogs.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground bg-muted/20 rounded-lg border border-dashed">
-              No activity recorded for this property yet.
+              {t('common.empty')}
             </div>
           ) : (
             <div className="space-y-6 pl-2">

@@ -16,12 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import {
-  Plus,
-  Calendar as CalendarIcon,
-  User as UserIcon,
-  FileText,
-} from 'lucide-react'
+import { Plus, Calendar as CalendarIcon, User as UserIcon } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -39,9 +34,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import useTenantStore from '@/stores/useTenantStore'
-import { format } from 'date-fns'
 import { Tenant } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
+import { formatDate } from '@/lib/utils'
 
 interface PropertyContractsProps {
   propertyId: string
@@ -54,6 +50,7 @@ export function PropertyContracts({
 }: PropertyContractsProps) {
   const { tenants, addTenant } = useTenantStore()
   const { toast } = useToast()
+  const { t, language } = useLanguageStore()
   const [isOpen, setIsOpen] = useState(false)
 
   // Local state for new contract (Tenant lease)
@@ -77,8 +74,8 @@ export function PropertyContracts({
       !newContract.rentValue
     ) {
       toast({
-        title: 'Error',
-        description: 'Please fill all required fields',
+        title: t('common.error'),
+        description: t('common.required'),
         variant: 'destructive',
       })
       return
@@ -107,14 +104,14 @@ export function PropertyContracts({
       rentValue: 0,
       status: 'active',
     })
-    toast({ title: 'Contract Added', description: 'Lease agreement recorded.' })
+    toast({ title: t('common.success') })
   }
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Rental Contracts</CardTitle>
+          <CardTitle>{t('common.contracts')}</CardTitle>
           <CardDescription>
             Manage lease agreements and history.
           </CardDescription>
@@ -124,7 +121,7 @@ export function PropertyContracts({
             onClick={() => setIsOpen(true)}
             className="bg-trust-blue gap-2"
           >
-            <Plus className="h-4 w-4" /> Add Contract
+            <Plus className="h-4 w-4" /> {t('common.new')}
           </Button>
         )}
       </CardHeader>
@@ -132,11 +129,11 @@ export function PropertyContracts({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Tenant</TableHead>
+              <TableHead>{t('common.tenants')}</TableHead>
               <TableHead>Start Date</TableHead>
               <TableHead>End Date</TableHead>
-              <TableHead>Value</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t('common.value')}</TableHead>
+              <TableHead>{t('common.status')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -146,7 +143,7 @@ export function PropertyContracts({
                   colSpan={5}
                   className="text-center py-8 text-muted-foreground"
                 >
-                  No contracts found.
+                  {t('common.empty')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -160,7 +157,7 @@ export function PropertyContracts({
                     <div className="flex items-center gap-2">
                       <CalendarIcon className="h-3 w-3 text-muted-foreground" />
                       {tenant.leaseStart
-                        ? format(new Date(tenant.leaseStart), 'dd/MM/yyyy')
+                        ? formatDate(tenant.leaseStart, language)
                         : '-'}
                     </div>
                   </TableCell>
@@ -168,7 +165,7 @@ export function PropertyContracts({
                     <div className="flex items-center gap-2">
                       <CalendarIcon className="h-3 w-3 text-muted-foreground" />
                       {tenant.leaseEnd
-                        ? format(new Date(tenant.leaseEnd), 'dd/MM/yyyy')
+                        ? formatDate(tenant.leaseEnd, language)
                         : '-'}
                     </div>
                   </TableCell>
@@ -192,11 +189,11 @@ export function PropertyContracts({
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>New Rental Contract</DialogTitle>
+            <DialogTitle>{t('common.new')} Contract</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label>Tenant Name</Label>
+              <Label>{t('common.name')}</Label>
               <Input
                 value={newContract.name}
                 onChange={(e) =>
@@ -232,7 +229,7 @@ export function PropertyContracts({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Monthly Rent ($)</Label>
+                <Label>{t('common.value')} ($)</Label>
                 <Input
                   type="number"
                   value={newContract.rentValue}
@@ -245,7 +242,7 @@ export function PropertyContracts({
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Status</Label>
+                <Label>{t('common.status')}</Label>
                 <Select
                   value={newContract.status}
                   onValueChange={(v) =>
@@ -256,9 +253,11 @@ export function PropertyContracts({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="prospective">Pending</SelectItem>
-                    <SelectItem value="past">Inactive</SelectItem>
+                    <SelectItem value="active">{t('common.active')}</SelectItem>
+                    <SelectItem value="prospective">
+                      {t('common.pending')}
+                    </SelectItem>
+                    <SelectItem value="past">{t('common.inactive')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -266,10 +265,10 @@ export function PropertyContracts({
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsOpen(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button onClick={handleSave} className="bg-trust-blue">
-              Save Contract
+              {t('common.save')}
             </Button>
           </DialogFooter>
         </DialogContent>

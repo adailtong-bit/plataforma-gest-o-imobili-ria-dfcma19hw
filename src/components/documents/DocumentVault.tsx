@@ -38,6 +38,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
+import { formatDate } from '@/lib/utils'
 
 interface DocumentVaultProps {
   documents: GenericDocument[]
@@ -51,10 +52,10 @@ export function DocumentVault({
   documents,
   onUpdate,
   canEdit,
-  title = 'Document Vault',
-  description = 'Manage uploaded files and contracts.',
+  title,
+  description,
 }: DocumentVaultProps) {
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const { toast } = useToast()
   const docInputRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -91,8 +92,8 @@ export function DocumentVault({
       setSelectedFile(null)
       if (docInputRef.current) docInputRef.current.value = ''
       toast({
-        title: 'Sucesso',
-        description: 'Documento armazenado com sucesso.',
+        title: t('common.success'),
+        description: 'Document stored.',
       })
     }, 1000)
   }
@@ -101,8 +102,8 @@ export function DocumentVault({
     const newDocs = (documents || []).filter((d) => d.id !== docId)
     onUpdate(newDocs)
     toast({
-      title: 'Removido',
-      description: 'Documento excluído permanentemente.',
+      title: t('common.removed'),
+      description: 'Document deleted permanently.',
     })
   }
 
@@ -110,8 +111,10 @@ export function DocumentVault({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
+          <CardTitle>{title || t('common.documents')}</CardTitle>
+          <CardDescription>
+            {description || 'Manage uploaded files.'}
+          </CardDescription>
         </div>
         {canEdit && (
           <div>
@@ -127,7 +130,7 @@ export function DocumentVault({
               className="bg-trust-blue"
             >
               <Upload className="mr-2 h-4 w-4" />
-              Upload
+              {t('common.upload')}
             </Button>
           </div>
         )}
@@ -137,18 +140,18 @@ export function DocumentVault({
         <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Classificar Documento</DialogTitle>
+              <DialogTitle>Classify Document</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label>Arquivo Selecionado</Label>
+                <Label>Selected File</Label>
                 <div className="p-2 border rounded bg-muted text-sm flex items-center gap-2">
                   <File className="h-4 w-4 text-blue-500" />
                   {selectedFile?.name}
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label>Categoria</Label>
+                <Label>Category</Label>
                 <Select
                   value={selectedCategory}
                   onValueChange={(v) =>
@@ -159,15 +162,14 @@ export function DocumentVault({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Contract">Contrato</SelectItem>
-                    <SelectItem value="ID">Identificação (ID/CNH)</SelectItem>
-                    <SelectItem value="Passport">Passaporte</SelectItem>
+                    <SelectItem value="Contract">Contract</SelectItem>
+                    <SelectItem value="ID">ID</SelectItem>
+                    <SelectItem value="Passport">Passport</SelectItem>
                     <SelectItem value="SSN">SSN / Tax ID</SelectItem>
-                    <SelectItem value="Insurance">Seguro</SelectItem>
-                    <SelectItem value="Deed">Escritura</SelectItem>
-                    <SelectItem value="Inspection">Inspeção</SelectItem>
-                    <SelectItem value="Other">Outro</SelectItem>
-                    <SelectItem value="Others">Outros (Others)</SelectItem>
+                    <SelectItem value="Insurance">Insurance</SelectItem>
+                    <SelectItem value="Deed">Deed</SelectItem>
+                    <SelectItem value="Inspection">Inspection</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -177,10 +179,10 @@ export function DocumentVault({
                 variant="outline"
                 onClick={() => setUploadDialogOpen(false)}
               >
-                Cancelar
+                {t('common.cancel')}
               </Button>
               <Button onClick={handleConfirmUpload} disabled={isUploading}>
-                {isUploading ? 'Salvando...' : 'Confirmar Upload'}
+                {isUploading ? 'Saving...' : t('common.confirm')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -189,7 +191,7 @@ export function DocumentVault({
         <div className="space-y-4">
           {!documents || documents.length === 0 ? (
             <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
-              Nenhum documento encontrado.
+              {t('common.empty')}
             </div>
           ) : (
             documents.map((doc) => (
@@ -209,7 +211,7 @@ export function DocumentVault({
                       </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(doc.date).toLocaleDateString()} •{' '}
+                      {formatDate(doc.date, language)} •{' '}
                       {doc.size || 'Unknown size'}
                     </p>
                   </div>
@@ -238,18 +240,21 @@ export function DocumentVault({
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir Documento</AlertDialogTitle>
+                          <AlertDialogTitle>
+                            {t('common.confirm_delete')}
+                          </AlertDialogTitle>
                           <AlertDialogDescription>
-                            Tem certeza que deseja excluir o arquivo "{doc.name}
-                            "?
+                            {t('common.delete_desc')}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogCancel>
+                            {t('common.cancel')}
+                          </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleRemoveDoc(doc.id)}
                           >
-                            Excluir
+                            {t('common.delete')}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

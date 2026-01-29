@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Property } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -7,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Copy, Wand2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface PropertyContentProps {
   data: Property
@@ -22,6 +22,7 @@ export function PropertyContent({
   canEdit,
 }: PropertyContentProps) {
   const { toast } = useToast()
+  const { t } = useLanguageStore()
 
   // Automated Description Translation Logic
   const handleDescriptionChange = (lang: 'pt' | 'en' | 'es', value: string) => {
@@ -63,13 +64,13 @@ export function PropertyContent({
     if (content) {
       onNestedChange(field, to, content)
       toast({
-        title: 'Copiado',
-        description: `Conteúdo copiado de ${from.toUpperCase()} para ${to.toUpperCase()}.`,
+        title: t('common.copied'),
+        description: `Content copied from ${from.toUpperCase()} to ${to.toUpperCase()}.`,
       })
     } else {
       toast({
-        title: 'Vazio',
-        description: `O conteúdo em ${from.toUpperCase()} está vazio.`,
+        title: t('common.empty'),
+        description: `Content in ${from.toUpperCase()} is empty.`,
         variant: 'destructive',
       })
     }
@@ -84,10 +85,11 @@ export function PropertyContent({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Descrição Pública
+            {t('properties.public_desc')}
             {canEdit && (
               <div className="text-xs font-normal text-muted-foreground bg-secondary px-2 py-1 rounded-full flex items-center gap-1">
-                <Wand2 className="h-3 w-3" /> Auto-translate active
+                <Wand2 className="h-3 w-3" />{' '}
+                {t('properties.content.auto_translate')}
               </div>
             )}
           </CardTitle>
@@ -101,7 +103,7 @@ export function PropertyContent({
             </TabsList>
             <TabsContent value="pt">
               <div className="grid gap-2 mt-2">
-                <Label>Descrição (PT)</Label>
+                <Label>{t('common.description')} (PT)</Label>
                 <Textarea
                   value={getDesc('pt')}
                   onChange={(e) =>
@@ -116,14 +118,15 @@ export function PropertyContent({
             <TabsContent value="en">
               <div className="grid gap-2 mt-2">
                 <div className="flex justify-between items-center">
-                  <Label>Description (EN)</Label>
+                  <Label>{t('common.description')} (EN)</Label>
                   {canEdit && !getDesc('en') && getDesc('pt') && (
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => copyContent('description', 'pt', 'en')}
                     >
-                      <Copy className="h-3 w-3 mr-1" /> Copiar de PT
+                      <Copy className="h-3 w-3 mr-1" />{' '}
+                      {t('properties.content.copy_from')} PT
                     </Button>
                   )}
                 </div>
@@ -141,14 +144,15 @@ export function PropertyContent({
             <TabsContent value="es">
               <div className="grid gap-2 mt-2">
                 <div className="flex justify-between items-center">
-                  <Label>Descripción (ES)</Label>
+                  <Label>{t('common.description')} (ES)</Label>
                   {canEdit && !getDesc('es') && getDesc('pt') && (
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => copyContent('description', 'pt', 'es')}
                     >
-                      <Copy className="h-3 w-3 mr-1" /> Copiar de PT
+                      <Copy className="h-3 w-3 mr-1" />{' '}
+                      {t('properties.content.copy_from')} PT
                     </Button>
                   )}
                 </div>
@@ -169,7 +173,7 @@ export function PropertyContent({
 
       <Card>
         <CardHeader>
-          <CardTitle>Regras da Casa / HOA</CardTitle>
+          <CardTitle>{t('properties.content.house_rules')}</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="pt">
@@ -202,7 +206,8 @@ export function PropertyContent({
                       size="sm"
                       onClick={() => copyContent('hoaRules', 'pt', 'en')}
                     >
-                      <Copy className="h-3 w-3 mr-1" /> Copiar de PT
+                      <Copy className="h-3 w-3 mr-1" />{' '}
+                      {t('properties.content.copy_from')} PT
                     </Button>
                   )}
                 </div>
@@ -227,7 +232,8 @@ export function PropertyContent({
                       size="sm"
                       onClick={() => copyContent('hoaRules', 'pt', 'es')}
                     >
-                      <Copy className="h-3 w-3 mr-1" /> Copiar de PT
+                      <Copy className="h-3 w-3 mr-1" />{' '}
+                      {t('properties.content.copy_from')} PT
                     </Button>
                   )}
                 </div>

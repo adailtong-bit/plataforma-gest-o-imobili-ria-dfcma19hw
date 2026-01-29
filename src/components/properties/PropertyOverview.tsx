@@ -41,8 +41,6 @@ export function PropertyOverview({
 
   // Health Score Color
   const score = data.healthScore || 80
-  const scoreColor =
-    score >= 90 ? 'bg-green-500' : score >= 70 ? 'bg-yellow-500' : 'bg-red-500'
 
   return (
     <Card>
@@ -50,7 +48,7 @@ export function PropertyOverview({
         <CardTitle>{t('properties.overview')}</CardTitle>
         <Badge variant="outline" className="flex items-center gap-1 px-3 py-1">
           <Trophy className="h-3 w-3 text-yellow-500" />
-          Health Score:
+          {t('gamification.health_score')}:
           <span
             className={`ml-1 font-bold ${score >= 90 ? 'text-green-600' : 'text-yellow-600'}`}
           >
@@ -60,7 +58,7 @@ export function PropertyOverview({
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid gap-2">
-          <Label>Nome da Propriedade</Label>
+          <Label>{t('common.name')}</Label>
           <Input
             value={data.name}
             onChange={(e) => onChange('name', e.target.value)}
@@ -69,7 +67,7 @@ export function PropertyOverview({
           />
         </div>
         <div className="grid gap-2">
-          <Label>Perfil da Propriedade</Label>
+          <Label>{t('properties.profile_filter')}</Label>
           <Select
             value={data.profileType}
             onValueChange={(v) => onChange('profileType', v)}
@@ -79,13 +77,17 @@ export function PropertyOverview({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="short_term">Curta Duração (STR)</SelectItem>
-              <SelectItem value="long_term">Longa Duração (LTR)</SelectItem>
+              <SelectItem value="short_term">
+                {t('properties.profile_short')}
+              </SelectItem>
+              <SelectItem value="long_term">
+                {t('properties.profile_long')}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="grid gap-2">
-          <Label>Tipo de Imóvel</Label>
+          <Label>{t('common.type')}</Label>
           <Select
             value={data.type}
             onValueChange={(v) => onChange('type', v)}
@@ -128,7 +130,7 @@ export function PropertyOverview({
           </Select>
         </div>
         <div className="grid gap-2">
-          <Label>Status Marketing</Label>
+          <Label>{t('properties.marketing')}</Label>
           <Select
             value={data.marketingStatus || 'unlisted'}
             onValueChange={(v) => onChange('marketingStatus', v)}
@@ -138,13 +140,15 @@ export function PropertyOverview({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="listed">Listado</SelectItem>
-              <SelectItem value="unlisted">Não Listado</SelectItem>
+              <SelectItem value="listed">
+                {t('properties.publish_portals')}
+              </SelectItem>
+              <SelectItem value="unlisted">{t('common.inactive')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="grid gap-2 col-span-1 md:col-span-2">
-          <Label>Imagem Principal</Label>
+          <Label>{t('properties.cover_image')}</Label>
           {canViewMedia ? (
             <div className="space-y-2">
               {data.image ? (
@@ -159,7 +163,7 @@ export function PropertyOverview({
                       className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full text-xs hover:bg-red-600 transition-colors"
                       onClick={() => onChange('image', '')}
                     >
-                      Remover
+                      {t('common.delete')}
                     </button>
                   )}
                 </div>

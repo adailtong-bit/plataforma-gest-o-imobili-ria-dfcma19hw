@@ -63,7 +63,7 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
     setNewLink('')
     toast({
       title: t('sync.title'),
-      description: 'Calendar will attempt to sync shortly.',
+      description: t('sync.sync_desc'),
     })
   }
 
@@ -82,7 +82,6 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
     onChange('channelLinks', updatedLinks)
 
     // 2. Mock creation of "Blocked" dates from external feed
-    // We add a random block starting tomorrow for 3 days to simulate incoming iCal data
     const startDate = addDays(new Date(), 1).toISOString()
     const endDate = addDays(new Date(), 3).toISOString()
 
@@ -98,7 +97,7 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
 
     toast({
       title: t('sync.sync_success'),
-      description: `${t('sync.sync_desc')} Added 1 new block.`,
+      description: t('sync.sync_desc'),
     })
   }
 

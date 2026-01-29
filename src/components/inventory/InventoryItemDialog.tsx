@@ -20,6 +20,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { InventoryItem, InventoryMedia } from '@/lib/types'
 import { Upload, X, PlayCircle, Image as ImageIcon, Info } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface InventoryItemDialogProps {
   isOpen: boolean
@@ -35,6 +36,7 @@ export function InventoryItemDialog({
   initialData,
 }: InventoryItemDialogProps) {
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState<Partial<InventoryItem>>(
@@ -93,14 +95,14 @@ export function InventoryItemDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {initialData?.id ? 'Edit Inventory Item' : 'New Inventory Item'}
+            {initialData?.id ? t('common.edit') : t('common.new')} Item
           </DialogTitle>
         </DialogHeader>
 
         <div className="grid gap-6 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label>Item Name *</Label>
+              <Label>{t('common.name')} *</Label>
               <Input
                 value={formData.name}
                 onChange={(e) =>
@@ -116,7 +118,7 @@ export function InventoryItemDialog({
                 onValueChange={(v) => setFormData({ ...formData, category: v })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select" />
+                  <SelectValue placeholder={t('common.select')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Furniture">Furniture</SelectItem>
@@ -172,7 +174,7 @@ export function InventoryItemDialog({
           </div>
 
           <div className="grid gap-2">
-            <Label>Description / Notes</Label>
+            <Label>{t('common.description')}</Label>
             <Textarea
               value={formData.description || ''}
               onChange={(e) =>
@@ -193,13 +195,13 @@ export function InventoryItemDialog({
 
           {/* Media Attachments */}
           <div className="grid gap-2">
-            <Label>Media Attachments (Photos/Videos)</Label>
+            <Label>Media Attachments</Label>
             <div
               className="border-2 border-dashed rounded-md p-4 flex flex-col items-center justify-center bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors"
               onClick={() => fileInputRef.current?.click()}
             >
               <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-              <p className="text-sm font-medium">Click to upload media</p>
+              <p className="text-sm font-medium">{t('common.upload')}</p>
               <p className="text-xs text-muted-foreground">
                 Images and Videos allowed
               </p>
@@ -250,10 +252,10 @@ export function InventoryItemDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleSave} className="bg-trust-blue">
-            Save Item
+            {t('common.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

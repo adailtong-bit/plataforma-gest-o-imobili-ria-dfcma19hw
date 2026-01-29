@@ -41,6 +41,38 @@ export const applyPhoneMask = (value: string, country: 'US' | 'BR' | 'ES') => {
   return value
 }
 
+export const applyDocumentMask = (
+  value: string,
+  country: 'US' | 'BR' | 'ES',
+) => {
+  const digits = value.replace(/\D/g, '')
+
+  if (country === 'US') {
+    // SSN: XXX-XX-XXXX
+    if (digits.length <= 3) return digits
+    if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`
+    return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5, 9)}`
+  }
+
+  if (country === 'BR') {
+    // CPF: XXX.XXX.XXX-XX
+    if (digits.length <= 3) return digits
+    if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`
+    if (digits.length <= 9)
+      return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`
+  }
+
+  if (country === 'ES') {
+    // DNI: 8 digits + Letter (Handling only digits here for simplicity mostly, usually users type letter at end)
+    // Simple mask for 12345678A -> usually no separators or just space
+    if (digits.length <= 8) return digits
+    return digits.slice(0, 9)
+  }
+
+  return value
+}
+
 // Export data to CSV
 export const exportToCSV = (
   filename: string,
@@ -88,17 +120,29 @@ export const formatCurrency = (
   currency: string = 'USD',
 ) => {
   if (language === 'es') {
-    // Custom ES format requested: $1.200,00
-    // We use ES locale for number formatting but prepend $ explicitly
-    return `$${value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    // Custom ES format requested: $1.200,00 or €
+    // If currency is USD, requested format was $1.200,00
+    // If we want to support EUR for ES context:
+    const currencyCode =
+      currency === 'USD' && language === 'es' ? 'USD' : currency
+    // Using es-ES locale
+    return new Intl.NumberFormat('es-ES', {
+      style: 'currency',
+      currency: currencyCode,
+    }).format(value)
   }
 
-  let locale = 'en-US'
-  if (language === 'pt') locale = 'pt-BR'
+  if (language === 'pt') {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL', // Assuming BRL for PT context as per example R$ 1.200,00
+    }).format(value)
+  }
 
-  return new Intl.NumberFormat(locale, {
+  // Default EN
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: currency,
+    currency: 'USD',
   }).format(value)
 }
 
@@ -109,9 +153,5 @@ export const formatDate = (date: string | Date, language: Language = 'en') => {
   }
 
   // Default EN
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(date))
+  return format(new Date(date), 'MM/dd/yyyy')
 }

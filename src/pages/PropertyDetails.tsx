@@ -8,8 +8,6 @@ import {
   X,
   Trash2,
   User,
-  ClipboardList,
-  Key,
   History,
   RefreshCw,
   Package,
@@ -94,7 +92,7 @@ export default function PropertyDetails() {
     if (!formData.name?.trim() || !formData.address?.trim()) {
       toast({
         title: t('common.error'),
-        description: 'Nome e Endereço são obrigatórios.',
+        description: t('properties.name_required'),
         variant: 'destructive',
       })
       return
@@ -102,8 +100,8 @@ export default function PropertyDetails() {
 
     if (!formData.zipCode?.trim()) {
       toast({
-        title: 'Erro de Validação',
-        description: 'O campo CEP/Zip Code é obrigatório.',
+        title: t('properties.validation_error'),
+        description: t('properties.zip_required'),
         variant: 'destructive',
       })
       return
@@ -113,14 +111,17 @@ export default function PropertyDetails() {
     setIsEditing(false)
     toast({
       title: t('common.save'),
-      description: 'Propriedade atualizada com sucesso.',
+      description: t('properties.property_added').replace(
+        'Adicionada',
+        'Atualizada',
+      ), // Reuse or generic success
     })
   }
 
   const handleDelete = () => {
     try {
       deleteProperty(property.id)
-      toast({ title: 'Propriedade excluída' })
+      toast({ title: t('properties.delete_success') })
       navigate('/properties')
     } catch (error: any) {
       toast({
@@ -128,7 +129,7 @@ export default function PropertyDetails() {
         description:
           error.message === 'error_active_tenant'
             ? t('common.delete_active_tenant_error')
-            : 'Erro ao excluir.',
+            : t('properties.error_delete'),
         variant: 'destructive',
       })
     }
@@ -177,8 +178,8 @@ export default function PropertyDetails() {
 
     exportToCSV(`property_${formData.name}_export`, headers, [row])
     toast({
-      title: 'Export Successful',
-      description: 'Property data exported to CSV.',
+      title: t('common.success'),
+      description: t('common.export_success'),
     })
   }
 
@@ -203,16 +204,17 @@ export default function PropertyDetails() {
       <div className="flex flex-col gap-4">
         {/* Breadcrumb / Relations */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-md border w-fit">
-          <span className="font-medium">Relacionamentos:</span>
+          <span className="font-medium">{t('common.relationships')}</span>
           {owner ? (
             <Link
               to={`/owners/${owner.id}`}
               className="flex items-center gap-1 hover:text-blue-600 underline"
             >
-              <User className="h-3 w-3" /> {owner.name} (Proprietário)
+              <User className="h-3 w-3" /> {owner.name} (
+              {t('common.relationships.owner')})
             </Link>
           ) : (
-            <span className="text-gray-400">Sem Proprietário</span>
+            <span className="text-gray-400">{t('common.no_owner')}</span>
           )}
           <span>/</span>
           {activeTenant ? (
@@ -220,17 +222,20 @@ export default function PropertyDetails() {
               to={`/tenants/${activeTenant.id}`}
               className="flex items-center gap-1 hover:text-blue-600 underline"
             >
-              <User className="h-3 w-3" /> {activeTenant.name} (Inquilino)
+              <User className="h-3 w-3" /> {activeTenant.name} (
+              {t('common.relationships.tenant')})
             </Link>
           ) : (
-            <span className="text-gray-400">Sem Inquilino Ativo</span>
+            <span className="text-gray-400">
+              {t('common.no_active_tenant')}
+            </span>
           )}
         </div>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/properties">
-              <Button variant="ghost" size="icon" title="Voltar para Lista">
+              <Button variant="ghost" size="icon" title={t('common.back')}>
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
@@ -249,7 +254,7 @@ export default function PropertyDetails() {
                   onClick={handleExport}
                   className="gap-2"
                 >
-                  <Download className="h-4 w-4" /> Export
+                  <Download className="h-4 w-4" /> {t('common.export')}
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
@@ -307,31 +312,46 @@ export default function PropertyDetails() {
 
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList className="w-full justify-start overflow-x-auto">
-          <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
+          <TabsTrigger value="overview">
+            {t('properties.tabs.overview')}
+          </TabsTrigger>
           <TabsTrigger value="maintenance">
-            <Hammer className="h-4 w-4 mr-2" /> {t('common.maintenance')}
+            <Hammer className="h-4 w-4 mr-2" />{' '}
+            {t('properties.tabs.maintenance')}
           </TabsTrigger>
           <TabsTrigger value="contracts">
-            <FileText className="h-4 w-4 mr-2" /> Contracts
+            <FileText className="h-4 w-4 mr-2" />{' '}
+            {t('properties.tabs.contracts')}
           </TabsTrigger>
           <TabsTrigger value="inventory">
-            <Package className="h-4 w-4 mr-2" /> Inventory
+            <Package className="h-4 w-4 mr-2" />{' '}
+            {t('properties.tabs.inventory')}
           </TabsTrigger>
           <TabsTrigger value="features">
-            <Key className="h-4 w-4 mr-2" /> Acesso & Features
+            <div className="flex items-center gap-2">
+              <span>{t('properties.tabs.features')}</span>
+            </div>
           </TabsTrigger>
-          <TabsTrigger value="location">Localização</TabsTrigger>
+          <TabsTrigger value="location">
+            {t('properties.tabs.location')}
+          </TabsTrigger>
           <TabsTrigger value="sync">
-            <RefreshCw className="h-4 w-4 mr-2" /> Channel Sync
+            <RefreshCw className="h-4 w-4 mr-2" /> {t('properties.tabs.sync')}
           </TabsTrigger>
-          <TabsTrigger value="financial">{t('common.financial')}</TabsTrigger>
+          <TabsTrigger value="financial">
+            {t('properties.tabs.financial')}
+          </TabsTrigger>
           <TabsTrigger value="marketing">
-            {t('properties.marketing')}
+            {t('properties.tabs.marketing')}
           </TabsTrigger>
-          <TabsTrigger value="content">Conteúdo</TabsTrigger>
-          <TabsTrigger value="documents">{t('common.documents')}</TabsTrigger>
+          <TabsTrigger value="content">
+            {t('properties.tabs.content')}
+          </TabsTrigger>
+          <TabsTrigger value="documents">
+            {t('properties.tabs.documents')}
+          </TabsTrigger>
           <TabsTrigger value="logs">
-            <History className="h-4 w-4 mr-2" /> Activity Log
+            <History className="h-4 w-4 mr-2" /> {t('properties.tabs.logs')}
           </TabsTrigger>
         </TabsList>
 
@@ -417,8 +437,8 @@ export default function PropertyDetails() {
             documents={formData.documents || []}
             onUpdate={(docs) => handleChange('documents', docs)}
             canEdit={isEditing}
-            title="Documentos da Propriedade"
-            description="Escrituras, contratos, inspeções."
+            title={t('properties.tabs.documents')}
+            description={t('common.documents')}
           />
         </TabsContent>
 

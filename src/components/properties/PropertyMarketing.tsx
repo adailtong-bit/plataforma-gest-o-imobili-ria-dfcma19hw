@@ -91,7 +91,7 @@ export function PropertyMarketing({
     navigator.clipboard.writeText(
       `https://platform.com/listing/${data.id || 'preview'}`,
     )
-    toast({ title: 'Link copiado para a área de transferência.' })
+    toast({ title: t('common.copied') })
   }
 
   const openLightbox = (index: number) => {
@@ -138,7 +138,7 @@ export function PropertyMarketing({
                 {t('properties.publish_portals')}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Sincronizar com Airbnb, Booking, Vrbo.
+                Airbnb, Booking, Vrbo.
               </p>
             </div>
             <Switch
@@ -183,7 +183,7 @@ export function PropertyMarketing({
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-sm font-medium">Redes Sociais</h3>
+            <h3 className="text-sm font-medium">Social Media</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center gap-2">
                 <Facebook className="h-5 w-5 text-blue-600" />
@@ -306,7 +306,7 @@ export function PropertyMarketing({
             ))}
           </div>
           {canEdit && (
-            <FileUpload onChange={handleGalleryAdd} label="Add Photo" />
+            <FileUpload onChange={handleGalleryAdd} label={t('common.add_title')} />
           )}
         </CardContent>
       </Card>
@@ -456,7 +456,7 @@ export function PropertyMarketing({
               <div className="flex gap-2">
                 <Input
                   readOnly
-                  value={`https://platform.com/listing/${data.id || 'preview'}`}
+                  value={`https://platform.com/listing/${data.id || 'preview'}`,
                 />
                 <Button onClick={handleCopyLink} size="icon">
                   <Copy className="h-4 w-4" />
@@ -470,7 +470,7 @@ export function PropertyMarketing({
               variant="outline"
               onClick={() => setPublishDialogOpen(false)}
             >
-              Close
+              {t('common.close')}
             </Button>
             <Button onClick={handleCopyLink} className="bg-trust-blue">
               Copy All Content
@@ -481,3 +481,4 @@ export function PropertyMarketing({
     </div>
   )
 }
+

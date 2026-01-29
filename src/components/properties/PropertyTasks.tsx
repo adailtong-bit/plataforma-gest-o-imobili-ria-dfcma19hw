@@ -13,6 +13,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import useLanguageStore from '@/stores/useLanguageStore'
+import { formatDate } from '@/lib/utils'
 
 interface PropertyTasksProps {
   propertyId: string
@@ -22,6 +24,7 @@ interface PropertyTasksProps {
 export function PropertyTasks({ propertyId, canEdit }: PropertyTasksProps) {
   const { tasks, updateTaskStatus, addTaskImage, addTaskEvidence } =
     useTaskStore()
+  const { t, language } = useLanguageStore()
   const [view, setView] = useState<'list' | 'calendar'>('list')
   const [date, setDate] = useState<Date | undefined>(new Date())
 
@@ -43,7 +46,8 @@ export function PropertyTasks({ propertyId, canEdit }: PropertyTasksProps) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="flex items-center gap-2">
-          <ClipboardList className="h-5 w-5" /> Tarefas & Manutenção
+          <ClipboardList className="h-5 w-5" /> {t('common.tasks')} &{' '}
+          {t('common.maintenance')}
         </CardTitle>
         <div className="flex bg-muted rounded-md p-1">
           <TooltipProvider>
@@ -58,7 +62,7 @@ export function PropertyTasks({ propertyId, canEdit }: PropertyTasksProps) {
                   <List className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Lista</TooltipContent>
+              <TooltipContent>List</TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <TooltipProvider>
@@ -73,7 +77,7 @@ export function PropertyTasks({ propertyId, canEdit }: PropertyTasksProps) {
                   <CalendarIcon className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Calendário</TooltipContent>
+              <TooltipContent>Calendar</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
@@ -82,7 +86,7 @@ export function PropertyTasks({ propertyId, canEdit }: PropertyTasksProps) {
         {view === 'list' ? (
           sortedTasks.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-              Nenhuma tarefa registrada para esta propriedade.
+              {t('common.empty')}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -116,11 +120,11 @@ export function PropertyTasks({ propertyId, canEdit }: PropertyTasksProps) {
             </div>
             <div className="flex-1 space-y-4">
               <h3 className="font-semibold text-sm text-muted-foreground">
-                Tarefas para {date?.toLocaleDateString()}
+                {t('common.tasks')} {date ? formatDate(date, language) : ''}
               </h3>
               {dayTasks.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground border rounded-lg bg-muted/20">
-                  Nenhuma tarefa nesta data.
+                  {t('common.empty')}
                 </div>
               ) : (
                 <div className="space-y-4">
