@@ -88,15 +88,15 @@ export default function MarketAnalysis() {
     document.body.removeChild(link)
 
     toast({
-      title: 'Exportando Relatório',
-      description: 'O relatório de mercado (PDF) foi gerado e baixado.',
+      title: 'Exporting Report',
+      description: 'The market analysis report (PDF) has been generated and downloaded.',
     })
   }
 
   const handleCompare = () => {
     toast({
-      title: 'Dados Atualizados',
-      description: `Comparativo atualizado. Amostra: ${sampleSize} imóveis.`,
+      title: 'Data Updated',
+      description: `Comparison updated. Sample: ${sampleSize} properties.`,
     })
   }
 
@@ -105,11 +105,10 @@ export default function MarketAnalysis() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Análise de Mercado Comparativa (CMA)
+            Comparative Market Analysis (CMA)
           </h1>
           <p className="text-muted-foreground">
-            Inteligência de mercado e dados comparativos de Airbnb, Zillow e
-            Realtor.
+            Market intelligence and comparative data from Airbnb, Zillow, and Realtor.
           </p>
         </div>
         <div className="flex gap-2">
@@ -122,24 +121,23 @@ export default function MarketAnalysis() {
       {/* Advanced Filters */}
       <Card className="bg-muted/30">
         <CardHeader>
-          <CardTitle className="text-lg">Parâmetros de Comparação</CardTitle>
+          <CardTitle className="text-lg">Comparison Parameters</CardTitle>
           <CardDescription>
-            Selecione uma propriedade base e filtros para ajustar a amostra de
-            mercado.
+            Select a base property and filters to adjust the market sample.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
           <div className="grid gap-2">
-            <Label>Propriedade Base</Label>
+            <Label>Base Property</Label>
             <Select
               value={selectedPropertyId}
               onValueChange={setSelectedPropertyId}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione..." />
+                <SelectValue placeholder="Select..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Geral (Sem Vínculo)</SelectItem>
+                <SelectItem value="all">General (No Link)</SelectItem>
                 {properties.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.name}
@@ -149,49 +147,49 @@ export default function MarketAnalysis() {
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label>Região</Label>
+            <Label>Region</Label>
             <Select value={filterRegion} onValueChange={setFilterRegion}>
               <SelectTrigger>
-                <SelectValue placeholder="Todas" />
+                <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="Orlando">Orlando, FL</SelectItem>
                 <SelectItem value="Miami">Miami, FL</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label>Quartos</Label>
+            <Label>Bedrooms</Label>
             <Select value={filterBedrooms} onValueChange={setFilterBedrooms}>
               <SelectTrigger>
-                <SelectValue placeholder="Todos" />
+                <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="1">1 Quarto</SelectItem>
-                <SelectItem value="2">2 Quartos</SelectItem>
-                <SelectItem value="3">3 Quartos</SelectItem>
-                <SelectItem value="4+">4+ Quartos</SelectItem>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="1">1 Bedroom</SelectItem>
+                <SelectItem value="2">2 Bedrooms</SelectItem>
+                <SelectItem value="3">3 Bedrooms</SelectItem>
+                <SelectItem value="4+">4+ Bedrooms</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label>Banheiros</Label>
+            <Label>Bathrooms</Label>
             <Select value={filterBathrooms} onValueChange={setFilterBathrooms}>
               <SelectTrigger>
-                <SelectValue placeholder="Todos" />
+                <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="1">1 Banheiro</SelectItem>
-                <SelectItem value="2">2 Banheiros</SelectItem>
-                <SelectItem value="3+">3+ Banheiros</SelectItem>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="1">1 Bathroom</SelectItem>
+                <SelectItem value="2">2 Bathrooms</SelectItem>
+                <SelectItem value="3+">3+ Bathrooms</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <Button onClick={handleCompare} className="bg-trust-blue">
-            <Search className="mr-2 h-4 w-4" /> Analisar
+            <Search className="mr-2 h-4 w-4" /> Analyze
           </Button>
         </CardContent>
       </Card>
@@ -232,13 +230,13 @@ export default function MarketAnalysis() {
                 <div>
                   <CardTitle className="text-xl">{data.region}</CardTitle>
                   <CardDescription className="flex items-center gap-1 mt-1">
-                    <Info className="h-3 w-3" /> Baseado em uma amostra de{' '}
-                    {sampleSize} imóveis comparáveis.
+                    <Info className="h-3 w-3" /> Based on a sample of{' '}
+                    {sampleSize} comparable properties.
                   </CardDescription>
                 </div>
                 {data.trend === 'up' && (
                   <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                    <TrendingUp className="h-3 w-3 mr-1" /> Alta Demanda
+                    <TrendingUp className="h-3 w-3 mr-1" /> High Demand
                   </Badge>
                 )}
               </div>
@@ -247,7 +245,7 @@ export default function MarketAnalysis() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                    Preço Médio Venda
+                    Avg Sale Price
                   </span>
                   <div className="text-2xl font-bold">
                     ${data.averagePrice.toLocaleString()}
@@ -255,13 +253,13 @@ export default function MarketAnalysis() {
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                    Preço/SqFt
+                    Price/SqFt
                   </span>
                   <div className="text-2xl font-bold">${data.pricePerSqFt}</div>
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                    Diária Média (STR)
+                    Avg Daily Rate (STR)
                   </span>
                   <div className="text-xl font-semibold text-green-600">
                     ${data.shortTermRate}
@@ -269,7 +267,7 @@ export default function MarketAnalysis() {
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                    Aluguel Mensal (LTR)
+                    Monthly Rent (LTR)
                   </span>
                   <div className="text-xl font-semibold text-blue-600">
                     ${data.longTermRate}
@@ -280,7 +278,7 @@ export default function MarketAnalysis() {
               {/* Occupancy Bar */}
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Ocupação Média</span>
+                  <span>Avg Occupancy</span>
                   <span className="font-bold">{data.occupancyRate}%</span>
                 </div>
                 <div className="h-2 bg-secondary rounded-full overflow-hidden">
@@ -301,9 +299,9 @@ export default function MarketAnalysis() {
           <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <div>
-                <CardTitle>Histórico de Tendências de Mercado</CardTitle>
+                <CardTitle>Historical Market Trends</CardTitle>
                 <CardDescription>
-                  Análise de Preço, ADR, Aluguel Mensal, Ocupação e Saturação.
+                  Analysis of Price, ADR, Monthly Rent, Occupancy, and Saturation.
                 </CardDescription>
               </div>
               <div className="flex items-center border rounded-md overflow-hidden">
@@ -311,19 +309,19 @@ export default function MarketAnalysis() {
                   onClick={() => setFilterTimeframe('6m')}
                   className={`px-3 py-1 text-sm ${filterTimeframe === '6m' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
                 >
-                  6 Meses
+                  6 Months
                 </button>
                 <button
                   onClick={() => setFilterTimeframe('1y')}
                   className={`px-3 py-1 text-sm border-l border-r ${filterTimeframe === '1y' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
                 >
-                  1 Ano
+                  1 Year
                 </button>
                 <button
                   onClick={() => setFilterTimeframe('2y')}
                   className={`px-3 py-1 text-sm ${filterTimeframe === '2y' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
                 >
-                  2 Anos
+                  2 Years
                 </button>
               </div>
             </div>
@@ -332,11 +330,11 @@ export default function MarketAnalysis() {
             <div className="h-[400px] w-full">
               <ChartContainer
                 config={{
-                  avgPrice: { label: 'Preço Médio ($)', color: '#2563eb' },
-                  adr: { label: 'Diária Média (ADR)', color: '#9333ea' },
-                  monthlyRent: { label: 'Aluguel (LTR)', color: '#0ea5e9' },
-                  occupancy: { label: 'Ocupação (%)', color: '#16a34a' },
-                  saturation: { label: 'Saturação', color: '#f97316' },
+                  avgPrice: { label: 'Avg Price ($)', color: '#2563eb' },
+                  adr: { label: 'Avg Daily Rate (ADR)', color: '#9333ea' },
+                  monthlyRent: { label: 'Rent (LTR)', color: '#0ea5e9' },
+                  occupancy: { label: 'Occupancy (%)', color: '#16a34a' },
+                  saturation: { label: 'Saturation', color: '#f97316' },
                 }}
                 className="h-full w-full"
               >
@@ -354,7 +352,7 @@ export default function MarketAnalysis() {
                     stroke="#2563eb"
                     strokeWidth={2}
                     dot={{ r: 4 }}
-                    name="Preço Médio ($)"
+                    name="Avg Price ($)"
                   />
                   <Line
                     yAxisId="right"
@@ -372,7 +370,7 @@ export default function MarketAnalysis() {
                     stroke="#0ea5e9"
                     strokeWidth={2}
                     dot={false}
-                    name="Aluguel ($)"
+                    name="Rent ($)"
                   />
                   <Line
                     yAxisId="right"
@@ -380,7 +378,7 @@ export default function MarketAnalysis() {
                     dataKey="occupancy"
                     stroke="#16a34a"
                     strokeWidth={2}
-                    name="Ocupação (%)"
+                    name="Occupancy (%)"
                   />
                   <Line
                     yAxisId="right"
@@ -389,7 +387,7 @@ export default function MarketAnalysis() {
                     stroke="#f97316"
                     strokeDasharray="5 5"
                     strokeWidth={2}
-                    name="Saturação"
+                    name="Saturation"
                   />
                 </LineChart>
               </ChartContainer>
@@ -400,3 +398,5 @@ export default function MarketAnalysis() {
     </div>
   )
 }
+
+

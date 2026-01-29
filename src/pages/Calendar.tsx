@@ -179,10 +179,10 @@ export default function CalendarPage() {
           <Filter className="h-4 w-4 text-muted-foreground" />
           <Select value={filterPartner} onValueChange={setFilterPartner}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Parceiro" />
+              <SelectValue placeholder="Partner" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos Parceiros</SelectItem>
+              <SelectItem value="all">All Partners</SelectItem>
               {partners.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   {p.name}
@@ -193,10 +193,10 @@ export default function CalendarPage() {
 
           <Select value={filterProperty} onValueChange={setFilterProperty}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Propriedade" />
+              <SelectValue placeholder="Property" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todas Propriedades</SelectItem>
+              <SelectItem value="all">All Properties</SelectItem>
               {properties.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   {p.name}
@@ -212,25 +212,25 @@ export default function CalendarPage() {
         <Card className="lg:col-span-8 h-[500px] lg:h-full flex flex-col">
           <CardHeader>
             <div className="flex flex-wrap justify-between items-center gap-2">
-              <CardTitle>Visão Integrada</CardTitle>
+              <CardTitle>Integrated View</CardTitle>
               <div className="flex flex-wrap gap-2">
                 <Badge
                   variant="outline"
                   className="bg-blue-50 text-blue-700 border-blue-200"
                 >
-                  <Briefcase className="w-3 h-3 mr-1" /> Operações
+                  <Briefcase className="w-3 h-3 mr-1" /> Operations
                 </Badge>
                 <Badge
                   variant="outline"
                   className="bg-red-50 text-red-700 border-red-200"
                 >
-                  <FileText className="w-3 h-3 mr-1" /> Contratos
+                  <FileText className="w-3 h-3 mr-1" /> Contracts
                 </Badge>
                 <Badge
                   variant="outline"
                   className="bg-green-50 text-green-700 border-green-200"
                 >
-                  <DollarSign className="w-3 h-3 mr-1" /> Financeiro
+                  <DollarSign className="w-3 h-3 mr-1" /> Financial
                 </Badge>
               </div>
             </div>
@@ -267,10 +267,10 @@ export default function CalendarPage() {
         <Card className="lg:col-span-4 h-[500px] lg:h-full flex flex-col">
           <CardHeader>
             <CardTitle>
-              {date ? format(date, 'EEEE, d MMM') : 'Selecione uma data'}
+              {date ? format(date, 'EEEE, d MMM') : 'Select a date'}
             </CardTitle>
             <CardDescription>
-              {dayEvents.length} eventos para este dia.
+              {dayEvents.length} events for this day.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-1 overflow-hidden p-0">
@@ -362,16 +362,16 @@ export default function CalendarPage() {
                               variant="outline"
                               className="text-[10px] uppercase bg-red-50 text-red-700 border-red-200"
                             >
-                              Expiração
+                              Expiration
                             </Badge>
                             <AlertTriangle className="h-4 w-4 text-red-500" />
                           </div>
                           <div>
                             <p className="font-semibold text-sm text-red-900">
-                              Fim de Contrato
+                              Lease End
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              Inquilino: {event.data.name}
+                              Tenant: {event.data.name}
                             </p>
                           </div>
                           {event.data.propertyId && (
@@ -404,7 +404,7 @@ export default function CalendarPage() {
                               variant="outline"
                               className="text-[10px] uppercase bg-green-50 text-green-700 border-green-200"
                             >
-                              Vencimento
+                              Due Date
                             </Badge>
                             <DollarSign className="h-4 w-4 text-green-600" />
                           </div>
@@ -452,3 +452,5 @@ export default function CalendarPage() {
     </div>
   )
 }
+
+

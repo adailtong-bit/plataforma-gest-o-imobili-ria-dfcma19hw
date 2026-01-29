@@ -94,7 +94,7 @@ export function AppSidebar() {
       resource: 'renewals',
     },
     {
-      title: 'Análise de Mercado',
+      title: t('common.market_analysis'),
       url: '/market-analysis',
       icon: TrendingUp,
       resource: 'market_analysis',
@@ -106,7 +106,7 @@ export function AppSidebar() {
       resource: 'analytics',
     },
     {
-      title: 'Relatórios (Novo)',
+      title: t('common.reports'),
       url: '/reports',
       icon: PieChart,
       resource: 'reports',
@@ -154,7 +154,7 @@ export function AppSidebar() {
       resource: 'tasks',
     },
     {
-      title: 'Workflows',
+      title: t('common.workflows'),
       url: '/workflows',
       icon: Workflow,
       resource: 'workflows',
@@ -230,7 +230,7 @@ export function AppSidebar() {
           currentUser.role === 'partner_employee') && (
           <SidebarGroup>
             <SidebarGroupLabel className={cn(isMobile && 'text-white/70')}>
-              Portal
+              {t('common.portal')}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -291,7 +291,7 @@ export function AppSidebar() {
         {visibleMenuItems.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel className={cn(isMobile && 'text-white/70')}>
-              Menu Principal
+              Main Menu
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -333,7 +333,7 @@ export function AppSidebar() {
 
         <SidebarGroup className="mt-auto">
           <SidebarGroupLabel className={cn(isMobile && 'text-white/70')}>
-            Sistema
+            System
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -376,14 +376,14 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive('/users')}
-                    tooltip="Usuários"
+                    tooltip="Users"
                     className={cn(
                       isMobile && 'text-white font-bold hover:text-white/90',
                     )}
                   >
                     <Link to="/users" onClick={handleLinkClick}>
                       <Users />
-                      <span>Usuários</span>
+                      <span>Users</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -445,3 +445,5 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
+
+

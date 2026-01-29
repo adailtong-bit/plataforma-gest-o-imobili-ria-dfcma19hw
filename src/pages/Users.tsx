@@ -213,16 +213,16 @@ export default function Users() {
   const handleSave = () => {
     if (!formData.name?.trim()) {
       toast({
-        title: 'Erro',
-        description: 'Nome é obrigatório.',
+        title: 'Error',
+        description: 'Name is required.',
         variant: 'destructive',
       })
       return
     }
     if (!formData.email?.trim() || !isValidEmail(formData.email)) {
       toast({
-        title: 'Erro',
-        description: 'Email inválido.',
+        title: 'Error',
+        description: 'Invalid email.',
         variant: 'destructive',
       })
       return
@@ -235,8 +235,8 @@ export default function Users() {
     )
     if (duplicate) {
       toast({
-        title: 'Erro',
-        description: 'Este email já está em uso.',
+        title: 'Error',
+        description: 'This email is already in use.',
         variant: 'destructive',
       })
       return
@@ -245,7 +245,7 @@ export default function Users() {
     if (!isEditing && !formData.password) {
       toast({
         title: t('common.error'),
-        description: 'Senha é obrigatória para novos usuários',
+        description: 'Password is required for new users',
         variant: 'destructive',
       })
       return
@@ -254,7 +254,7 @@ export default function Users() {
     if (formData.password && formData.password !== formData.confirmPassword) {
       toast({
         title: t('common.error'),
-        description: 'As senhas não coincidem',
+        description: 'Passwords do not match',
         variant: 'destructive',
       })
       return
@@ -292,7 +292,7 @@ export default function Users() {
 
     if (isEditing && formData.id) {
       updateUser(finalUserData as User)
-      toast({ title: 'Sucesso', description: 'Usuário atualizado.' })
+      toast({ title: 'Success', description: 'User updated.' })
     } else {
       addUser({
         ...finalUserData,
@@ -301,7 +301,7 @@ export default function Users() {
           currentUser.role === 'platform_owner' ? 'active' : 'pending_approval',
         isFirstLogin: true,
       } as User)
-      toast({ title: 'Sucesso', description: 'Usuário criado.' })
+      toast({ title: 'Success', description: 'User created.' })
     }
     setOpen(false)
     setFormData(initialFormState)
@@ -310,12 +310,12 @@ export default function Users() {
 
   const handleDelete = (id: string) => {
     deleteUser(id)
-    toast({ title: 'Sucesso', description: 'Usuário excluído.' })
+    toast({ title: 'Success', description: 'User deleted.' })
   }
 
   const handleApprove = (id: string) => {
     approveUser(id)
-    toast({ title: 'Ativado', description: 'Acesso concedido ao usuário.' })
+    toast({ title: 'Activated', description: 'Access granted to user.' })
   }
 
   const initiateBlock = (id: string) => {
@@ -327,8 +327,8 @@ export default function Users() {
     if (userToBlock) {
       blockUser(userToBlock)
       toast({
-        title: 'Bloqueado',
-        description: 'Acesso do usuário foi revogado.',
+        title: 'Blocked',
+        description: 'User access has been revoked.',
         variant: 'destructive',
       })
     }
@@ -397,8 +397,8 @@ export default function Users() {
     const url = window.location.origin
     navigator.clipboard.writeText(url)
     toast({
-      title: 'Link Copiado',
-      description: 'O link de acesso foi copiado para a área de transferência.',
+      title: 'Link Copied',
+      description: 'Access link copied to clipboard.',
     })
     setInviteOpen(false)
   }
@@ -445,7 +445,7 @@ export default function Users() {
     !hasPermission(currentUser as User, 'users', 'view') &&
     currentUser.role !== 'partner'
   ) {
-    return <div className="p-8 text-center">Acesso negado.</div>
+    return <div className="p-8 text-center">Access denied.</div>
   }
 
   return (
@@ -453,10 +453,10 @@ export default function Users() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Gerenciamento de Usuários
+            User Management
           </h1>
           <p className="text-muted-foreground">
-            Gerencie acesso, funções e permissões do sistema.
+            Manage access, roles, and system permissions.
           </p>
         </div>
 
@@ -464,17 +464,16 @@ export default function Users() {
           <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" className="gap-2">
-                <Share2 className="h-4 w-4" /> Convidar
+                <Share2 className="h-4 w-4" /> Invite
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Compartilhar Acesso</DialogTitle>
+                <DialogTitle>Share Access</DialogTitle>
               </DialogHeader>
               <div className="py-4 space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Compartilhe o link abaixo para permitir que novos usuários se
-                  cadastrem.
+                  Share the link below to allow new users to register.
                 </p>
                 <div className="flex gap-2">
                   <Input readOnly value={`${window.location.origin}/signup`} />
@@ -500,17 +499,16 @@ export default function Users() {
             >
               <DialogTrigger asChild>
                 <Button className="bg-trust-blue">
-                  <Plus className="mr-2 h-4 w-4" /> {t('common.new')} Usuário
+                  <Plus className="mr-2 h-4 w-4" /> {t('common.new')} User
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>
-                    {isEditing ? 'Editar Usuário' : 'Novo Usuário'}
+                    {isEditing ? 'Edit User' : 'New User'}
                   </DialogTitle>
                   <DialogDescription>
-                    Preencha os detalhes do usuário e defina suas permissões de
-                    acesso.
+                    Fill in user details and define access permissions.
                   </DialogDescription>
                 </DialogHeader>
 
@@ -527,7 +525,7 @@ export default function Users() {
                         onChange={(e) =>
                           setFormData({ ...formData, name: e.target.value })
                         }
-                        placeholder="Nome completo"
+                        placeholder="Full Name"
                       />
                     </div>
                     <div className="grid gap-2">
@@ -541,7 +539,7 @@ export default function Users() {
                           setFormData({ ...formData, email: e.target.value })
                         }
                         type="email"
-                        placeholder="email@exemplo.com"
+                        placeholder="email@example.com"
                       />
                     </div>
                     <div className="grid gap-2">
@@ -555,7 +553,7 @@ export default function Users() {
                     </div>
                     <div className="grid gap-2">
                       <Label>
-                        Função (Role) <span className="text-red-500">*</span>
+                        Role <span className="text-red-500">*</span>
                       </Label>
                       <Select
                         value={formData.role}
@@ -571,45 +569,45 @@ export default function Users() {
                           {canCreateRole('software_tenant') && (
                             <SelectItem value="software_tenant">
                               <div className="flex items-center gap-2">
-                                <Building className="h-4 w-4" /> Locador
-                                (Gestor)
+                                <Building className="h-4 w-4" /> Landlord
+                                (Manager)
                               </div>
                             </SelectItem>
                           )}
                           {canCreateRole('internal_user') && (
                             <SelectItem value="internal_user">
                               <div className="flex items-center gap-2">
-                                <UserCog className="h-4 w-4" /> Interno (Staff)
+                                <UserCog className="h-4 w-4" /> Internal (Staff)
                               </div>
                             </SelectItem>
                           )}
                           {canCreateRole('property_owner') && (
                             <SelectItem value="property_owner">
                               <div className="flex items-center gap-2">
-                                <UserIcon className="h-4 w-4" /> Proprietário
+                                <UserIcon className="h-4 w-4" /> Owner
                               </div>
                             </SelectItem>
                           )}
                           {canCreateRole('partner') && (
                             <SelectItem value="partner">
                               <div className="flex items-center gap-2">
-                                <Briefcase className="h-4 w-4" /> Parceiro
-                                (Empresa)
+                                <Briefcase className="h-4 w-4" /> Partner
+                                (Company)
                               </div>
                             </SelectItem>
                           )}
                           {canCreateRole('partner_employee') && (
                             <SelectItem value="partner_employee">
                               <div className="flex items-center gap-2">
-                                <UsersIcon className="h-4 w-4" /> Equipe
-                                (Técnico)
+                                <UsersIcon className="h-4 w-4" /> Team
+                                (Technician)
                               </div>
                             </SelectItem>
                           )}
                           {canCreateRole('tenant') && (
                             <SelectItem value="tenant">
                               <div className="flex items-center gap-2">
-                                <UserIcon className="h-4 w-4" /> Inquilino
+                                <UserIcon className="h-4 w-4" /> Tenant
                               </div>
                             </SelectItem>
                           )}
@@ -624,7 +622,7 @@ export default function Users() {
                     (currentUser.role === 'software_tenant' ||
                       currentUser.role === 'platform_owner') && (
                       <div className="grid gap-2">
-                        <Label>Empresa Parceira (Empregador)</Label>
+                        <Label>Partner Company (Employer)</Label>
                         <Select
                           value={formData.parentPartnerId}
                           onValueChange={(val) =>
@@ -632,7 +630,7 @@ export default function Users() {
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione o Parceiro" />
+                            <SelectValue placeholder="Select Partner" />
                           </SelectTrigger>
                           <SelectContent>
                             {partners.map((p) => (
@@ -656,7 +654,7 @@ export default function Users() {
                           onChange={(e) =>
                             setFormData({ ...formData, taxId: e.target.value })
                           }
-                          placeholder="CPF/CNPJ/SSN"
+                          placeholder="Tax ID"
                         />
                       </div>
                       <div className="grid gap-2">
@@ -669,7 +667,7 @@ export default function Users() {
                               address: e.target.value,
                             })
                           }
-                          placeholder="Endereço completo"
+                          placeholder="Full Address"
                         />
                       </div>
                     </div>
@@ -721,7 +719,7 @@ export default function Users() {
                     <div className="border rounded-md mt-2">
                       <div className="p-4 bg-muted/20 border-b flex justify-between items-center">
                         <h4 className="font-medium flex items-center gap-2">
-                          <Shield className="h-4 w-4" /> Skills & Permissões
+                          <Shield className="h-4 w-4" /> Skills & Permissions
                           (Menu Visibility)
                         </h4>
                         {formData.role === 'internal_user' && (
@@ -736,7 +734,7 @@ export default function Users() {
                               className="flex items-center gap-1 cursor-pointer"
                             >
                               <ShieldCheck className="h-4 w-4 text-trust-blue" />
-                              Admin Total (Mirror PM)
+                              Full Admin (Mirror PM)
                             </Label>
                           </div>
                         )}
@@ -745,18 +743,18 @@ export default function Users() {
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Módulo / Recurso</TableHead>
+                              <TableHead>Module / Resource</TableHead>
                               <TableHead className="text-center w-[80px]">
-                                Ver
+                                View
                               </TableHead>
                               <TableHead className="text-center w-[80px]">
-                                Criar
+                                Create
                               </TableHead>
                               <TableHead className="text-center w-[80px]">
-                                Editar
+                                Edit
                               </TableHead>
                               <TableHead className="text-center w-[80px]">
-                                Excluir
+                                Delete
                               </TableHead>
                             </TableRow>
                           </TableHeader>
@@ -817,19 +815,19 @@ export default function Users() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Usuários Registrados</CardTitle>
+          <CardTitle>Registered Users</CardTitle>
           <CardDescription>
-            {sortedUsers.length} usuários cadastrados no sistema.
+            {sortedUsers.length} users registered in the system.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nome / Email</TableHead>
-                <TableHead>Função</TableHead>
+                <TableHead>Name / Email</TableHead>
+                <TableHead>Role</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -839,7 +837,7 @@ export default function Users() {
                     colSpan={4}
                     className="text-center py-8 text-muted-foreground"
                   >
-                    Nenhum usuário encontrado.
+                    No users found.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -889,7 +887,7 @@ export default function Users() {
                             onClick={() => handleApprove(user.id)}
                             title={
                               user.status === 'blocked'
-                                ? 'Reativar Usuário'
+                                ? 'Reactivate User'
                                 : t('common.approve')
                             }
                           >
@@ -898,7 +896,9 @@ export default function Users() {
                             ) : (
                               <CheckCircle2 className="h-3 w-3 mr-1" />
                             )}
-                            {user.status === 'blocked' ? 'Reativar' : 'Aprovar'}
+                            {user.status === 'blocked'
+                              ? 'Reactivate'
+                              : 'Approve'}
                           </Button>
                         )}
 
@@ -985,23 +985,23 @@ export default function Users() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-red-600">
-              <Ban className="h-5 w-5" /> Bloquear Acesso
+              <Ban className="h-5 w-5" /> Block Access
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja bloquear este usuário? Ele perderá acesso
-              imediato ao sistema. Você poderá reativá-lo posteriormente através
-              do botão de desbloqueio.
+              Are you sure you want to block this user? They will lose immediate
+              access to the system. You can reactivate them later using the
+              unblock button.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setBlockDialogOpen(false)}>
-              Cancelar
+              Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmBlock}
               className="bg-red-600 hover:bg-red-700"
             >
-              Confirmar Bloqueio
+              Confirm Block
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1009,3 +1009,5 @@ export default function Users() {
     </div>
   )
 }
+
+

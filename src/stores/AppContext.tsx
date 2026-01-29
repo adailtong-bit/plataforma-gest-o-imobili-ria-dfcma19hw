@@ -238,9 +238,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [adPricing, setAdPricingState] = useState<AdPricing>(mockAdPricing)
   const [typingStatus, setTypingStatus] = useState<Record<string, boolean>>({})
 
+  // Default to English ('en')
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app_language')
-    return (saved as Language) || 'pt'
+    return (saved as Language) || 'en'
   })
 
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -435,7 +436,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       addLedgerEntry(ledgerEntry)
       toast({
         title: 'Financial Posting',
-        description: `Task cost ($${amount}) automatically posted to ledger.`,
+        description: `Task cost (${amount}) automatically posted to ledger.`,
       })
     }
   }
@@ -466,8 +467,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const now = new Date().toISOString()
     updateTask({ ...task, lastNotified: now })
     toast({
-      title: 'Notificação Enviada',
-      description: `Fornecedor ${task.assignee} notificado sobre a tarefa "${task.title}".`,
+      title: 'Notification Sent',
+      description: `Supplier ${task.assignee} notified about task "${task.title}".`,
     })
   }
 
@@ -689,7 +690,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       const now = new Date().getTime()
       if (now - msgTime < 5000) {
         toast({
-          title: `Nova mensagem de ${lastMessage.contact}`,
+          title: `New message from ${lastMessage.contact}`,
           description: lastMessage.lastMessage,
           duration: 4000,
           action: (
@@ -699,7 +700,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 (window.location.href = `/messages?contactId=${lastMessage.contactId}`)
               }
             >
-              Ver
+              View
             </div>
           ),
         })
@@ -723,7 +724,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       userName: currentUser.name,
       action: 'create',
       entity: 'Invoice',
-      details: `Generated Invoice: $${i.amount} - ${i.description}`,
+      details: `Generated Invoice: ${i.amount} - ${i.description}`,
     })
   }
 
@@ -1010,3 +1011,4 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     </AppContext.Provider>
   )
 }
+
