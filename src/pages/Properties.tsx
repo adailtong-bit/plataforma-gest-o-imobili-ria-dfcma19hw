@@ -128,16 +128,16 @@ export default function Properties() {
     // Strict Validation
     if (!newProp.name?.trim()) {
       toast({
-        title: 'Erro de Validação',
-        description: 'O nome da propriedade é obrigatório.',
+        title: t('properties.validation_error'),
+        description: t('properties.name_required'),
         variant: 'destructive',
       })
       return
     }
     if (!newProp.address?.trim()) {
       toast({
-        title: 'Erro de Validação',
-        description: 'O endereço é obrigatório.',
+        title: t('properties.validation_error'),
+        description: t('properties.address_required'),
         variant: 'destructive',
       })
       return
@@ -145,16 +145,16 @@ export default function Properties() {
     // Check mandatory Zip Code
     if (!newProp.zipCode?.trim()) {
       toast({
-        title: 'Erro de Validação',
-        description: 'O CEP/Zip Code é obrigatório.',
+        title: t('properties.validation_error'),
+        description: t('properties.zip_required'),
         variant: 'destructive',
       })
       return
     }
     if (!newProp.city?.trim() || !newProp.state?.trim()) {
       toast({
-        title: 'Erro de Validação',
-        description: 'Cidade e Estado são obrigatórios.',
+        title: t('properties.validation_error'),
+        description: t('properties.city_state_required'),
         variant: 'destructive',
       })
       return
@@ -162,8 +162,8 @@ export default function Properties() {
     // Check mandatory Profile Type (Rental Type)
     if (!newProp.profileType) {
       toast({
-        title: 'Erro de Validação',
-        description: 'Selecione o tipo de aluguel (STR ou LTR).',
+        title: t('properties.validation_error'),
+        description: t('properties.profile_required'),
         variant: 'destructive',
       })
       return
@@ -210,7 +210,7 @@ export default function Properties() {
 
     toast({
       title: t('properties.property_added'),
-      description: `${newProp.name} adicionada. Se houve valor de HOA, uma entrada financeira foi gerada.`,
+      description: `${newProp.name} ${t('common.completed').toLowerCase()}.`,
     })
     setOpen(false)
     setNewProp({
@@ -236,14 +236,14 @@ export default function Properties() {
   const handleDelete = (id: string) => {
     try {
       deleteProperty(id)
-      toast({ title: 'Propriedade excluída com sucesso.' })
+      toast({ title: t('properties.delete_success') })
     } catch (e: any) {
       toast({
         title: t('common.error'),
         description:
           e.message === 'error_active_tenant'
             ? t('common.delete_active_tenant_error')
-            : 'Erro ao excluir.',
+            : t('properties.error_delete'),
         variant: 'destructive',
       })
     }
@@ -274,7 +274,7 @@ export default function Properties() {
                 {/* Manual Rental Type Selection */}
                 <div className="grid gap-3 p-4 border rounded-md bg-muted/20">
                   <Label className="text-base font-semibold">
-                    Tipo de Aluguel (Rental Type){' '}
+                    {t('properties.rental_type')}{' '}
                     <span className="text-red-500">*</span>
                   </Label>
                   <RadioGroup
@@ -295,7 +295,7 @@ export default function Properties() {
                         className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                       >
                         <Home className="mb-2 h-6 w-6" />
-                        Short Term (STR)
+                        {t('properties.profile_short')}
                       </Label>
                     </div>
                     <div>
@@ -309,7 +309,7 @@ export default function Properties() {
                         className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                       >
                         <Building className="mb-2 h-6 w-6" />
-                        Long Term (LTR)
+                        {t('properties.profile_long')}
                       </Label>
                     </div>
                   </RadioGroup>
@@ -324,7 +324,7 @@ export default function Properties() {
                     onChange={(e) =>
                       setNewProp({ ...newProp, name: e.target.value })
                     }
-                    placeholder="Ex: Villa Bella"
+                    placeholder={t('properties.search_placeholder')}
                   />
                 </div>
 
@@ -338,14 +338,15 @@ export default function Properties() {
                     onChange={(e) =>
                       setNewProp({ ...newProp, address: e.target.value })
                     }
-                    placeholder="Rua, Número"
+                    placeholder={t('properties.address_placeholder')}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="grid gap-1">
                     <Label className="text-xs">
-                      CEP / Zip Code <span className="text-red-500">*</span>
+                      {t('properties.zip_code')}{' '}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       value={newProp.zipCode}
@@ -356,7 +357,9 @@ export default function Properties() {
                     />
                   </div>
                   <div className="grid gap-1">
-                    <Label className="text-xs">Informações Adicionais</Label>
+                    <Label className="text-xs">
+                      {t('properties.info_label')}
+                    </Label>
                     <Input
                       value={newProp.additionalInfo}
                       onChange={(e) =>
@@ -372,9 +375,11 @@ export default function Properties() {
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="grid gap-1">
-                    <Label className="text-xs">Cidade</Label>
+                    <Label className="text-xs">
+                      {t('properties.city_placeholder')}
+                    </Label>
                     <Input
-                      placeholder="City"
+                      placeholder={t('properties.city_placeholder')}
                       value={newProp.city}
                       onChange={(e) =>
                         setNewProp({ ...newProp, city: e.target.value })
@@ -382,9 +387,11 @@ export default function Properties() {
                     />
                   </div>
                   <div className="grid gap-1">
-                    <Label className="text-xs">Estado</Label>
+                    <Label className="text-xs">
+                      {t('properties.state_placeholder')}
+                    </Label>
                     <Input
-                      placeholder="State"
+                      placeholder={t('properties.state_placeholder')}
                       value={newProp.state}
                       onChange={(e) =>
                         setNewProp({ ...newProp, state: e.target.value })
@@ -395,7 +402,7 @@ export default function Properties() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Valor do Imóvel ($)</Label>
+                    <Label>{t('properties.property_value')} ($)</Label>
                     <CurrencyInput
                       value={newProp.listingPrice}
                       onChange={(val) =>
@@ -412,7 +419,7 @@ export default function Properties() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>HOA Fee (Mensal) ($)</Label>
+                    <Label>{t('properties.hoa_fee')} ($)</Label>
                     <CurrencyInput
                       value={newProp.hoaValue}
                       onChange={(val) =>
@@ -428,13 +435,13 @@ export default function Properties() {
                       }
                     />
                     <span className="text-[10px] text-muted-foreground">
-                      O valor será lançado automaticamente no financeiro.
+                      {t('properties.hoa_auto_hint')}
                     </span>
                   </div>
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>Imagem de Capa (Opcional na criação)</Label>
+                  <Label>{t('properties.cover_image')}</Label>
                   <Input
                     type="file"
                     accept="image/*"
@@ -449,7 +456,7 @@ export default function Properties() {
                   />
                   {!newProp.image && (
                     <p className="text-xs text-muted-foreground italic">
-                      Nenhuma imagem selecionada.
+                      {t('properties.no_image_selected')}
                     </p>
                   )}
                   {newProp.image && (
@@ -494,12 +501,16 @@ export default function Properties() {
           onValueChange={(v: any) => setProfileFilter(v)}
         >
           <SelectTrigger className="w-full md:w-[200px]">
-            <SelectValue placeholder="Perfil" />
+            <SelectValue placeholder={t('properties.profile_filter')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos Perfis</SelectItem>
-            <SelectItem value="short_term">Short Term (STR)</SelectItem>
-            <SelectItem value="long_term">Long Term (LTR)</SelectItem>
+            <SelectItem value="all">{t('properties.all_profiles')}</SelectItem>
+            <SelectItem value="short_term">
+              {t('properties.profile_short')}
+            </SelectItem>
+            <SelectItem value="long_term">
+              {t('properties.profile_long')}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -519,7 +530,7 @@ export default function Properties() {
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
-                  Sem Imagem
+                  {t('properties.no_image')}
                 </div>
               )}
               <Badge

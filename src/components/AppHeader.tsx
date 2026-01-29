@@ -185,7 +185,7 @@ export function AppHeader() {
         <CommandInput placeholder="Type to search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Properties">
+          <CommandGroup heading={t('properties.title')}>
             {properties.slice(0, 5).map((p) => (
               <CommandItem
                 key={p.id}
@@ -197,7 +197,7 @@ export function AppHeader() {
             ))}
           </CommandGroup>
           <CommandSeparator />
-          <CommandGroup heading="Tenants">
+          <CommandGroup heading={t('common.tenants')}>
             {tenants.slice(0, 5).map((t) => (
               <CommandItem
                 key={t.id}
@@ -209,7 +209,7 @@ export function AppHeader() {
             ))}
           </CommandGroup>
           <CommandSeparator />
-          <CommandGroup heading="Owners">
+          <CommandGroup heading={t('common.owners')}>
             {owners.slice(0, 5).map((o) => (
               <CommandItem
                 key={o.id}
@@ -221,7 +221,7 @@ export function AppHeader() {
             ))}
           </CommandGroup>
           <CommandSeparator />
-          <CommandGroup heading="Tasks">
+          <CommandGroup heading={t('common.tasks')}>
             {tasks.slice(0, 5).map((task) => (
               <CommandItem
                 key={task.id}
@@ -280,7 +280,9 @@ export function AppHeader() {
               <h4 className="font-semibold leading-none">
                 {t('common.notifications')}
               </h4>
-              <Badge variant="secondary">{unreadCount} novas</Badge>
+              <Badge variant="secondary">
+                {unreadCount} {t('dashboard.unread')}
+              </Badge>
             </div>
             <ScrollArea className="h-[300px]">
               {notifications.length === 0 ? (
@@ -355,7 +357,7 @@ export function AppHeader() {
             {demoUsers.length > 0 && (
               <>
                 <DropdownMenuLabel className="text-xs font-semibold text-blue-600">
-                  Demo Profiles
+                  {t('header.demo_profiles')}
                 </DropdownMenuLabel>
                 {demoUsers.map((user) => (
                   <DropdownMenuItem
@@ -375,7 +377,7 @@ export function AppHeader() {
               </>
             )}
 
-            <DropdownMenuLabel>Other Users (Test)</DropdownMenuLabel>
+            <DropdownMenuLabel>{t('header.other_users')}</DropdownMenuLabel>
             {otherDemoUsers.map((user) => (
               <DropdownMenuItem
                 key={user.id}

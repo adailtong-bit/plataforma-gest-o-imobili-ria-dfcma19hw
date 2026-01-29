@@ -15,13 +15,6 @@ import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { useToast } from '@/hooks/use-toast'
 import logo from '@/assets/logo-estilizado.jpg'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 
 export default function Login() {
   const { t } = useLanguageStore()
@@ -104,7 +97,7 @@ export default function Login() {
         <CardContent>
           <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
             <Label className="text-xs font-semibold text-blue-800 uppercase mb-2 block">
-              Quick Demo Login
+              {t('auth.demo_login')}
             </Label>
             <div className="grid grid-cols-2 gap-2">
               <Button
