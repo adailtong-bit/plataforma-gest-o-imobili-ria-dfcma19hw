@@ -18,11 +18,7 @@ import {
   Pie,
   Cell,
 } from 'recharts'
-import {
-  ChartContainer,
-  ChartTooltipContent,
-  ChartLegendContent,
-} from '@/components/ui/chart'
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 import {
   Select,
   SelectContent,
@@ -32,13 +28,15 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { DatePickerWithRange } from '@/components/ui/date-range-picker'
-import { addDays, subDays, isWithinInterval } from 'date-fns'
+import { subDays, isWithinInterval } from 'date-fns'
 import { DateRange } from 'react-day-picker'
-import { Download, Filter, FileText } from 'lucide-react'
+import { Download, Filter } from 'lucide-react'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useTaskStore from '@/stores/useTaskStore'
 import { exportToCSV } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
+import { MaintenanceReport } from '@/components/maintenance/MaintenanceReport'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function Reports() {
   const { properties } = usePropertyStore()
@@ -46,11 +44,10 @@ export default function Reports() {
   const { toast } = useToast()
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 30),
+    from: subDays(new Date(), 90),
     to: new Date(),
   })
   const [selectedProperty, setSelectedProperty] = useState<string>('all')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
 
   // Filter Data
   const filteredProperties = properties.filter((p) =>
@@ -71,7 +68,7 @@ export default function Reports() {
     return matchesProperty && matchesDate
   })
 
-  // Aggregate Data for Charts
+  // Aggregate Data for Inventory Charts
   const damageStats = filteredProperties.reduce(
     (acc, prop) => {
       const damagedItems =
@@ -102,27 +99,9 @@ export default function Reports() {
     ([name, value]) => ({ name, value }),
   )
 
-  const maintenanceStats = filteredTasks.reduce(
-    (acc, task) => {
-      if (task.type === 'maintenance') {
-        const status = task.status
-        if (acc[status]) acc[status]++
-        else acc[status] = 1
-      }
-      return acc
-    },
-    {} as Record<string, number>,
-  )
-
-  const maintenanceData = Object.entries(maintenanceStats).map(
-    ([name, value]) => ({ name, value }),
-  )
-
-  // Colors for charts
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8']
 
   const handleExport = () => {
-    // Generate CSV data based on current filters
     const headers = [
       'Property',
       'Task Title',
@@ -140,7 +119,7 @@ export default function Reports() {
       t.description || '',
     ])
 
-    exportToCSV('maintenance_report', headers, rows)
+    exportToCSV('full_report', headers, rows)
     toast({
       title: 'Export Successful',
       description: 'The report has been downloaded.',
@@ -155,8 +134,7 @@ export default function Reports() {
             Relatórios Avançados
           </h1>
           <p className="text-muted-foreground">
-            Análise detalhada de inventário, manutenção e condições das
-            propriedades.
+            Análise de inventário, manutenção e condições das propriedades.
           </p>
         </div>
         <Button onClick={handleExport} className="bg-trust-blue gap-2">
@@ -166,7 +144,7 @@ export default function Reports() {
 
       {/* Filters */}
       <Card className="bg-muted/30">
-        <CardContent className="p-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <CardContent className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
           <div className="grid gap-2">
             <span className="text-sm font-medium">Período</span>
             <DatePickerWithRange date={dateRange} setDate={setDateRange} />
@@ -190,155 +168,147 @@ export default function Reports() {
               </SelectContent>
             </Select>
           </div>
-          <div className="grid gap-2">
-            <span className="text-sm font-medium">Categoria</span>
-            <Select
-              value={selectedCategory}
-              onValueChange={setSelectedCategory}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Todas" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas Categorias</SelectItem>
-                <SelectItem value="Furniture">Furniture</SelectItem>
-                <SelectItem value="Appliances">Appliances</SelectItem>
-                <SelectItem value="Electronics">Electronics</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
           <Button variant="outline" className="gap-2">
             <Filter className="h-4 w-4" /> Aplicar Filtros
           </Button>
         </CardContent>
       </Card>
 
-      {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Condição do Inventário</CardTitle>
-            <CardDescription>
-              Distribuição de itens por estado de conservação
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ChartContainer
-                config={{
-                  value: { label: 'Items', color: '#8884d8' },
-                }}
-                className="h-full w-full"
-              >
-                <PieChart>
-                  <Pie
-                    data={conditionData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) =>
-                      `${name} ${(percent * 100).toFixed(0)}%`
-                    }
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
+      <Tabs defaultValue="maintenance" className="w-full">
+        <TabsList>
+          <TabsTrigger value="maintenance">
+            Maintenance & Efficiency
+          </TabsTrigger>
+          <TabsTrigger value="inventory">Inventory Health</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="maintenance">
+          <MaintenanceReport
+            tasks={filteredTasks}
+            title="Maintenance Performance"
+          />
+        </TabsContent>
+
+        <TabsContent value="inventory" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Condição do Inventário</CardTitle>
+                <CardDescription>
+                  Distribuição de itens por estado de conservação
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ChartContainer
+                    config={{
+                      value: { label: 'Items', color: '#8884d8' },
+                    }}
+                    className="h-full w-full"
                   >
-                    {conditionData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
+                    <PieChart>
+                      <Pie
+                        data={conditionData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) =>
+                          `${name} ${(percent * 100).toFixed(0)}%`
+                        }
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {conditionData.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip content={<ChartTooltipContent />} />
+                      <Legend />
+                    </PieChart>
+                  </ChartContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Danos por Propriedade</CardTitle>
+                <CardDescription>
+                  Propriedades com maior número de itens danificados
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ChartContainer
+                    config={{
+                      count: { label: 'Damaged Items', color: '#ef4444' },
+                    }}
+                    className="h-full w-full"
+                  >
+                    <BarChart
+                      data={damageStats.slice(0, 10)}
+                      layout="vertical"
+                      margin={{ left: 40 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                      <XAxis type="number" />
+                      <YAxis type="category" dataKey="name" width={100} />
+                      <Tooltip content={<ChartTooltipContent />} />
+                      <Bar
+                        dataKey="count"
+                        fill="#ef4444"
+                        radius={[0, 4, 4, 0]}
+                        name="Items"
                       />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Legend />
-                </PieChart>
-              </ChartContainer>
-            </div>
-          </CardContent>
-        </Card>
+                    </BarChart>
+                  </ChartContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Danos por Propriedade</CardTitle>
-            <CardDescription>
-              Propriedades com maior número de itens danificados/ausentes
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ChartContainer
-                config={{
-                  count: { label: 'Damaged Items', color: '#ef4444' },
-                }}
-                className="h-full w-full"
-              >
-                <BarChart
-                  data={damageStats.slice(0, 10)} // Top 10
-                  layout="vertical"
-                  margin={{ left: 40 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" />
-                  <YAxis type="category" dataKey="name" width={100} />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Bar
-                    dataKey="count"
-                    fill="#ef4444"
-                    radius={[0, 4, 4, 0]}
-                    name="Items"
-                  />
-                </BarChart>
-              </ChartContainer>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Items</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {filteredProperties.reduce(
-                (acc, p) => acc + (p.inventory?.length || 0),
-                0,
-              )}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Tarefas de Manutenção
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{filteredTasks.length}</div>
-            <p className="text-xs text-muted-foreground">
-              No período selecionado
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Custo Estimado de Reparo
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              $
-              {filteredTasks
-                .reduce((acc, t) => acc + (t.price || 0), 0)
-                .toLocaleString()}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Items
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {filteredProperties.reduce(
+                    (acc, p) => acc + (p.inventory?.length || 0),
+                    0,
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Damaged/Poor
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">
+                  {filteredProperties.reduce(
+                    (acc, p) =>
+                      acc +
+                      (p.inventory?.filter((i) =>
+                        ['Damaged', 'Poor', 'Broken'].includes(i.condition),
+                      ).length || 0),
+                    0,
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

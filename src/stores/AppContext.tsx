@@ -1,4 +1,3 @@
-// ... (imports remain similar, just ensuring updateInvoice is added)
 import React, {
   createContext,
   useState,
@@ -71,7 +70,6 @@ import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
 
 interface AppContextType {
-  // ... existing types
   properties: Property[]
   condominiums: Condominium[]
   tasks: Task[]
@@ -119,7 +117,7 @@ interface AppContextType {
   deleteTask: (taskId: string) => void
   notifySupplier: (taskId: string) => void
   addInvoice: (invoice: Invoice) => void
-  updateInvoice: (invoice: Invoice) => void // New Method
+  updateInvoice: (invoice: Invoice) => void
   markPaymentAs: (paymentId: string, status: Payment['status']) => void
   addTaskImage: (taskId: string, imageUrl: string) => void
   addTaskEvidence: (taskId: string, evidence: Evidence) => void
@@ -183,7 +181,6 @@ interface AppContextType {
 export const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  // ... state initializations
   const [properties, setProperties] = useState<Property[]>(initialProperties)
   const [condominiums, setCondominiums] =
     useState<Condominium[]>(initialCondominiums)
@@ -222,9 +219,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [paymentIntegrations, setPaymentIntegrations] = useState<
     PaymentIntegration[]
   >(defaultPaymentIntegrations)
+
+  // Initial Financial Settings with Gateways
   const [financialSettings, setFinancialSettings] = useState<FinancialSettings>(
-    defaultFinancialSettings,
+    {
+      ...defaultFinancialSettings,
+      gateways: {
+        stripe: { enabled: false },
+        paypal: { enabled: false },
+        mercadoPago: { enabled: false },
+      },
+    },
   )
+
   const [bankStatements, setBankStatements] =
     useState<BankStatement[]>(mockBankStatements)
   const [ledgerEntries, setLedgerEntries] =
@@ -328,6 +335,124 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setAuditLogs((prev) => [newLog, ...prev])
   }
 
+  const addNotification = useCallback(
+    (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
+      // Check user preferences before adding
+      if (
+        'notificationPreferences' in currentUser &&
+        currentUser.notificationPreferences
+      ) {
+        if (
+          notification.category === 'financial' &&
+          !currentUser.notificationPreferences.financials
+        )
+          return
+        if (
+          notification.category === 'maintenance' &&
+          !currentUser.notificationPreferences.maintenance
+        )
+          return
+        if (
+          notification.category === 'contract' &&
+          !currentUser.notificationPreferences.contractUpdates
+        )
+          return
+      }
+
+      const newNotif: Notification = {
+        id: `notif-${Date.now()}-${Math.random()}`,
+        timestamp: new Date().toISOString(),
+        read: false,
+        ...notification,
+      }
+      setNotifications((prev) => [newNotif, ...prev])
+      toast({
+        title: notification.title,
+        description: notification.message,
+        duration: 3000,
+        variant: notification.type === 'critical' ? 'destructive' : 'default',
+        action: notification.link ? (
+          <div
+            className="bg-primary text-primary-foreground px-3 py-2 rounded-md text-xs cursor-pointer hover:bg-primary/90"
+            onClick={() => (window.location.href = notification.link!)}
+          >
+            View
+          </div>
+        ) : undefined,
+      })
+    },
+    [toast, currentUser],
+  )
+
+  const addTask = (t: Task) => {
+    setTasks([...tasks, t])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Task',
+      entityId: t.propertyId,
+      details: `Created task: ${t.title} for ${t.propertyName}`,
+    })
+
+    if (t.priority === 'critical' || t.priority === 'high') {
+      addNotification({
+        title: 'Urgent Maintenance',
+        message: `High priority task created: ${t.title}`,
+        type: 'critical',
+        category: 'maintenance',
+        link: '/tasks',
+      })
+    }
+  }
+
+  const updateTask = (t: Task) => {
+    const oldTask = tasks.find((task) => task.id === t.id)
+    const updatedTask = {
+      ...t,
+      completedDate:
+        t.status === 'completed' && oldTask?.status !== 'completed'
+          ? new Date().toISOString()
+          : t.completedDate,
+    }
+    setTasks(tasks.map((task) => (task.id === t.id ? updatedTask : task)))
+
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Task',
+      entityId: t.propertyId,
+      details: `Updated task: ${t.title}. Status: ${t.status}`,
+    })
+
+    if (
+      t.status === 'completed' &&
+      oldTask?.status !== 'completed' &&
+      (t.billableAmount || t.price)
+    ) {
+      const amount = t.billableAmount || t.price || 0
+      const ledgerEntry: LedgerEntry = {
+        id: `auto-task-${t.id}-${Date.now()}`,
+        propertyId: t.propertyId,
+        date: new Date().toISOString(),
+        type: 'expense',
+        category: t.type === 'cleaning' ? 'Cleaning' : 'Maintenance',
+        amount: amount,
+        description: `Task Completed: ${t.title}`,
+        referenceId: t.id,
+        status: 'pending',
+        payee: t.assignee,
+      }
+      addLedgerEntry(ledgerEntry)
+      toast({
+        title: 'Financial Posting',
+        description: `Task cost (${amount}) automatically posted to ledger.`,
+      })
+    }
+  }
+
+  // Other boilerplate functions...
   const addLedgerEntry = (entry: LedgerEntry) => {
     setLedgerEntries((prev) => [...prev, entry])
     addAuditLog({
@@ -392,57 +517,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
-  const addTask = (t: Task) => {
-    setTasks([...tasks, t])
-    addAuditLog({
-      userId: currentUser.id,
-      userName: currentUser.name,
-      action: 'create',
-      entity: 'Task',
-      entityId: t.propertyId,
-      details: `Created task: ${t.title} for ${t.propertyName}`,
-    })
-  }
-
-  const updateTask = (t: Task) => {
-    const oldTask = tasks.find((task) => task.id === t.id)
-    setTasks(tasks.map((task) => (task.id === t.id ? t : task)))
-
-    addAuditLog({
-      userId: currentUser.id,
-      userName: currentUser.name,
-      action: 'update',
-      entity: 'Task',
-      entityId: t.propertyId,
-      details: `Updated task: ${t.title}. Status: ${t.status}`,
-    })
-
-    if (
-      t.status === 'completed' &&
-      oldTask?.status !== 'completed' &&
-      (t.billableAmount || t.price)
-    ) {
-      const amount = t.billableAmount || t.price || 0
-      const ledgerEntry: LedgerEntry = {
-        id: `auto-task-${t.id}-${Date.now()}`,
-        propertyId: t.propertyId,
-        date: new Date().toISOString(),
-        type: 'expense',
-        category: t.type === 'cleaning' ? 'Cleaning' : 'Maintenance',
-        amount: amount,
-        description: `Task Completed: ${t.title}`,
-        referenceId: t.id,
-        status: 'pending',
-        payee: t.assignee,
-      }
-      addLedgerEntry(ledgerEntry)
-      toast({
-        title: 'Financial Posting',
-        description: `Task cost (${amount}) automatically posted to ledger.`,
-      })
-    }
-  }
-
   const updateTaskStatus = (id: string, status: Task['status']) => {
     const task = tasks.find((t) => t.id === id)
     if (task) {
@@ -473,24 +547,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       description: `Supplier ${task.assignee} notified about task "${task.title}".`,
     })
   }
-
-  const addNotification = useCallback(
-    (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
-      const newNotif: Notification = {
-        id: `notif-${Date.now()}-${Math.random()}`,
-        timestamp: new Date().toISOString(),
-        read: false,
-        ...notification,
-      }
-      setNotifications((prev) => [newNotif, ...prev])
-      toast({
-        title: notification.title,
-        description: notification.message,
-        duration: 3000,
-      })
-    },
-    [toast],
-  )
 
   const markNotificationAsRead = (id: string) => {
     setNotifications((prev) =>
@@ -970,7 +1026,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         deleteTask,
         notifySupplier,
         addInvoice,
-        updateInvoice, // Added to provider value
+        updateInvoice,
         markPaymentAs,
         addTaskImage,
         addTaskEvidence,

@@ -14,6 +14,7 @@ import {
   Download,
   FileText,
   Hammer,
+  BarChart,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -32,6 +33,7 @@ import useOwnerStore from '@/stores/useOwnerStore'
 import usePartnerStore from '@/stores/usePartnerStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useCondominiumStore from '@/stores/useCondominiumStore'
+import useTaskStore from '@/stores/useTaskStore'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Property } from '@/lib/types'
@@ -50,6 +52,7 @@ import { PropertyActivityLog } from '@/components/properties/PropertyActivityLog
 import { PropertySync } from '@/components/properties/PropertySync'
 import { PropertyInventory } from '@/components/properties/PropertyInventory'
 import { PropertyContracts } from '@/components/properties/PropertyContracts'
+import { MaintenanceReport } from '@/components/maintenance/MaintenanceReport'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -59,6 +62,7 @@ export default function PropertyDetails() {
   const { partners } = usePartnerStore()
   const { tenants } = useTenantStore()
   const { condominiums } = useCondominiumStore()
+  const { tasks } = useTaskStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
@@ -74,6 +78,9 @@ export default function PropertyDetails() {
     (t) => t.propertyId === property?.id && t.status === 'active',
   )
   const linkedCondo = condominiums.find((c) => c.id === formData?.condominiumId)
+
+  // Filter tasks for reports
+  const propertyTasks = tasks.filter((t) => t.propertyId === id)
 
   useEffect(() => {
     if (property) {
@@ -315,6 +322,9 @@ export default function PropertyDetails() {
           <TabsTrigger value="overview">
             {t('properties.tabs.overview')}
           </TabsTrigger>
+          <TabsTrigger value="reports">
+            <BarChart className="h-4 w-4 mr-2" /> Reports
+          </TabsTrigger>
           <TabsTrigger value="maintenance">
             <Hammer className="h-4 w-4 mr-2" />{' '}
             {t('properties.tabs.maintenance')}
@@ -360,6 +370,13 @@ export default function PropertyDetails() {
             data={formData}
             onChange={handleChange}
             canEdit={isEditing}
+          />
+        </TabsContent>
+
+        <TabsContent value="reports">
+          <MaintenanceReport
+            tasks={propertyTasks}
+            title={`Maintenance Report: ${formData.name}`}
           />
         </TabsContent>
 

@@ -36,8 +36,10 @@ import {
   RefreshCw,
   Mail,
   Bell,
+  Wallet,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 
 export default function Settings() {
   const { t } = useLanguageStore()
@@ -55,6 +57,15 @@ export default function Settings() {
     phone: currentUser.phone || '',
   })
 
+  const [notificationPrefs, setNotificationPrefs] = useState({
+    financials:
+      (currentUser as User).notificationPreferences?.financials ?? true,
+    maintenance:
+      (currentUser as User).notificationPreferences?.maintenance ?? true,
+    contractUpdates:
+      (currentUser as User).notificationPreferences?.contractUpdates ?? true,
+  })
+
   // Mock Channel States
   const [channelStatus, setChannelStatus] = useState({
     airbnb: { connected: true, lastSync: '2 minutes ago', status: 'Healthy' },
@@ -62,47 +73,11 @@ export default function Settings() {
     vrbo: { connected: false, lastSync: 'Never', status: 'Disconnected' },
   })
 
-  // Initialize alerts if missing
-  const defaultAlerts: AlertConfig[] = [
-    {
-      id: 'a1',
-      trigger: 'price_threshold',
-      frequency: 'daily',
-      enabled: true,
-      label: t('settings.trigger_price'),
-    },
-    {
-      id: 'a2',
-      trigger: 'upcoming_booking',
-      frequency: 'immediate',
-      enabled: true,
-      label: t('settings.trigger_booking'),
-    },
-    {
-      id: 'a3',
-      trigger: 'new_task',
-      frequency: 'immediate',
-      enabled: false,
-      label: t('settings.trigger_task'),
-    },
-    {
-      id: 'a4',
-      trigger: 'low_inventory',
-      frequency: 'weekly',
-      enabled: true,
-      label: t('settings.trigger_inventory'),
-    },
-  ]
-
-  const [alerts, setAlerts] = useState<AlertConfig[]>(
-    financialData.alertPreferences || defaultAlerts,
-  )
-
   const handleFinancialSave = () => {
-    updateFinancialSettings({ ...financialData, alertPreferences: alerts })
+    updateFinancialSettings(financialData)
     toast({
       title: t('common.save'),
-      description: 'Configurações financeiras e alertas atualizados.',
+      description: 'Financial settings updated.',
     })
   }
 
@@ -114,15 +89,33 @@ export default function Settings() {
       phone: profileData.phone,
       taxId: profileData.taxId,
       address: profileData.address,
+      notificationPreferences: notificationPrefs,
     })
     toast({
       title: t('common.save'),
-      description: 'Perfil atualizado com sucesso.',
+      description: 'Profile updated successfully.',
     })
   }
 
   const handleFinancialChange = (field: string, value: any) => {
     setFinancialData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleGatewayChange = (
+    gateway: 'stripe' | 'paypal' | 'mercadoPago',
+    field: string,
+    value: any,
+  ) => {
+    setFinancialData((prev) => ({
+      ...prev,
+      gateways: {
+        ...prev.gateways,
+        [gateway]: {
+          ...prev.gateways[gateway],
+          [field]: value,
+        },
+      },
+    }))
   }
 
   const toggleChannel = (channel: 'airbnb' | 'booking' | 'vrbo') => {
@@ -139,18 +132,6 @@ export default function Settings() {
       title: 'Channel Updated',
       description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} integration ${!channelStatus[channel].connected ? 'enabled' : 'disabled'}.`,
     })
-  }
-
-  const handleAlertChange = (
-    id: string,
-    field: keyof AlertConfig,
-    value: any,
-  ) => {
-    setAlerts((prev) =>
-      prev.map((alert) =>
-        alert.id === id ? { ...alert, [field]: value } : alert,
-      ),
-    )
   }
 
   const isPlatformOwner = currentUser.role === 'platform_owner'
@@ -253,6 +234,56 @@ export default function Settings() {
                   />
                 </div>
               </div>
+
+              <Separator />
+
+              <div className="space-y-4">
+                <h3 className="font-medium flex items-center gap-2">
+                  <Bell className="h-4 w-4" /> Notification Preferences
+                </h3>
+                <div className="grid gap-4 md:grid-cols-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="notif-financial"
+                      checked={notificationPrefs.financials}
+                      onCheckedChange={(c) =>
+                        setNotificationPrefs((p) => ({
+                          ...p,
+                          financials: c as boolean,
+                        }))
+                      }
+                    />
+                    <Label htmlFor="notif-financial">Financial Alerts</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="notif-maint"
+                      checked={notificationPrefs.maintenance}
+                      onCheckedChange={(c) =>
+                        setNotificationPrefs((p) => ({
+                          ...p,
+                          maintenance: c as boolean,
+                        }))
+                      }
+                    />
+                    <Label htmlFor="notif-maint">Maintenance</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="notif-contract"
+                      checked={notificationPrefs.contractUpdates}
+                      onCheckedChange={(c) =>
+                        setNotificationPrefs((p) => ({
+                          ...p,
+                          contractUpdates: c as boolean,
+                        }))
+                      }
+                    />
+                    <Label htmlFor="notif-contract">Contract Updates</Label>
+                  </div>
+                </div>
+              </div>
+
               <div className="flex justify-end">
                 <Button className="bg-trust-blue" onClick={handleProfileSave}>
                   {t('settings.save_changes')}
@@ -263,7 +294,6 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="integrations">
-          {/* ... existing integrations content ... */}
           <Card>
             <CardHeader>
               <CardTitle>Channel Manager & Integrations</CardTitle>
@@ -278,7 +308,6 @@ export default function Settings() {
                   <Globe className="h-5 w-5" /> Booking Channels
                 </h3>
                 <div className="grid gap-4">
-                  {/* ... channels mock */}
                   <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
                     <div className="flex items-center gap-4">
                       <div className="bg-rose-50 p-2 rounded">
@@ -324,71 +353,7 @@ export default function Settings() {
                       />
                     </div>
                   </div>
-                  {/* Other channels similar to above */}
                 </div>
-              </div>
-
-              <Separator />
-
-              {/* Bill.com Integration */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" /> BILL Platform (Payables)
-                  </h3>
-                  <Switch
-                    checked={financialData.billComEnabled || false}
-                    onCheckedChange={(checked) =>
-                      handleFinancialChange('billComEnabled', checked)
-                    }
-                  />
-                </div>
-                {financialData.billComEnabled && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-muted/20 rounded-md animate-in fade-in slide-in-from-top-2">
-                    <div className="space-y-2">
-                      <Label>Organization ID</Label>
-                      <Input
-                        value={financialData.billComOrgId || ''}
-                        onChange={(e) =>
-                          handleFinancialChange('billComOrgId', e.target.value)
-                        }
-                        placeholder="org_..."
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Developer API Key</Label>
-                      <Input
-                        type="password"
-                        value={financialData.billComApiKey || ''}
-                        onChange={(e) =>
-                          handleFinancialChange('billComApiKey', e.target.value)
-                        }
-                        placeholder="key_..."
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Environment</Label>
-                      <Select
-                        value={financialData.billComEnvironment || 'sandbox'}
-                        onValueChange={(v: any) =>
-                          handleFinancialChange('billComEnvironment', v)
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="sandbox">
-                            Sandbox (Test)
-                          </SelectItem>
-                          <SelectItem value="production">
-                            Production (Live)
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                )}
               </div>
 
               <div className="flex justify-end pt-4">
@@ -401,45 +366,156 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="billing">
-          {/* ... existing billing content ... */}
           <Card>
             <CardHeader>
-              <CardTitle>Billing & Payment</CardTitle>
+              <CardTitle>Billing & Payment Gateways</CardTitle>
               <CardDescription>
-                Configure automated payouts and banking info.
+                Configure payment methods and payout settings.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Alert Configuration */}
-              <div className="p-4 bg-blue-50 text-blue-800 rounded-md text-sm mb-4 border border-blue-200">
-                <div className="flex items-center gap-2 mb-2">
-                  <Mail className="h-4 w-4" />
-                  <h4 className="font-semibold">Email Alerts Configuration</h4>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                  <div>
-                    <Label htmlFor="priceReviewThreshold">
-                      {t('settings.price_review_threshold')}
-                    </Label>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {t('settings.price_review_desc')}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      id="priceReviewThreshold"
-                      type="number"
-                      value={financialData.priceReviewThresholdDays || 180}
-                      onChange={(e) =>
-                        handleFinancialChange(
-                          'priceReviewThresholdDays',
-                          Number(e.target.value),
-                        )
+              {/* Payment Gateways Section */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium flex items-center gap-2">
+                  <Wallet className="h-5 w-5" /> Payment Gateways
+                </h3>
+
+                {/* Stripe */}
+                <div className="border rounded-md p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <CreditCard className="h-6 w-6 text-purple-600" />
+                      <Label className="text-base font-semibold">Stripe</Label>
+                    </div>
+                    <Switch
+                      checked={financialData.gateways?.stripe?.enabled}
+                      onCheckedChange={(c) =>
+                        handleGatewayChange('stripe', 'enabled', c)
                       }
-                      className="max-w-[100px]"
                     />
-                    <span className="text-xs text-muted-foreground">days</span>
                   </div>
+                  {financialData.gateways?.stripe?.enabled && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                      <div className="space-y-2">
+                        <Label>Public Key</Label>
+                        <Input
+                          placeholder="pk_test_..."
+                          value={financialData.gateways.stripe.publicKey || ''}
+                          onChange={(e) =>
+                            handleGatewayChange(
+                              'stripe',
+                              'publicKey',
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Secret Key</Label>
+                        <Input
+                          type="password"
+                          placeholder="sk_test_..."
+                          value={financialData.gateways.stripe.secretKey || ''}
+                          onChange={(e) =>
+                            handleGatewayChange(
+                              'stripe',
+                              'secretKey',
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* PayPal */}
+                <div className="border rounded-md p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <CreditCard className="h-6 w-6 text-blue-600" />
+                      <Label className="text-base font-semibold">PayPal</Label>
+                    </div>
+                    <Switch
+                      checked={financialData.gateways?.paypal?.enabled}
+                      onCheckedChange={(c) =>
+                        handleGatewayChange('paypal', 'enabled', c)
+                      }
+                    />
+                  </div>
+                  {financialData.gateways?.paypal?.enabled && (
+                    <div className="mt-2">
+                      <div className="space-y-2">
+                        <Label>Client ID</Label>
+                        <Input
+                          placeholder="Client ID"
+                          value={financialData.gateways.paypal.clientId || ''}
+                          onChange={(e) =>
+                            handleGatewayChange(
+                              'paypal',
+                              'clientId',
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Mercado Pago */}
+                <div className="border rounded-md p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <CreditCard className="h-6 w-6 text-cyan-600" />
+                      <Label className="text-base font-semibold">
+                        Mercado Pago
+                      </Label>
+                    </div>
+                    <Switch
+                      checked={financialData.gateways?.mercadoPago?.enabled}
+                      onCheckedChange={(c) =>
+                        handleGatewayChange('mercadoPago', 'enabled', c)
+                      }
+                    />
+                  </div>
+                  {financialData.gateways?.mercadoPago?.enabled && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                      <div className="space-y-2">
+                        <Label>Public Key</Label>
+                        <Input
+                          placeholder="TEST-..."
+                          value={
+                            financialData.gateways.mercadoPago.publicKey || ''
+                          }
+                          onChange={(e) =>
+                            handleGatewayChange(
+                              'mercadoPago',
+                              'publicKey',
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Access Token</Label>
+                        <Input
+                          type="password"
+                          placeholder="TEST-..."
+                          value={
+                            financialData.gateways.mercadoPago.accessToken || ''
+                          }
+                          onChange={(e) =>
+                            handleGatewayChange(
+                              'mercadoPago',
+                              'accessToken',
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -473,55 +549,8 @@ export default function Settings() {
                     }
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>Account Type</Label>
-                  <Select defaultValue="checking">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="checking">Checking</SelectItem>
-                      <SelectItem value="savings">Savings</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
 
-              <Separator />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label>PM Management Fee (%)</Label>
-                  <Input
-                    type="number"
-                    value={financialData.pmManagementFee || 0}
-                    onChange={(e) =>
-                      handleFinancialChange(
-                        'pmManagementFee',
-                        Number(e.target.value),
-                      )
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Cleaning Fee Routing</Label>
-                  <Select
-                    value={financialData.cleaningFeeRouting || 'pm'}
-                    onValueChange={(v) =>
-                      handleFinancialChange('cleaningFeeRouting', v)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pm">Property Manager</SelectItem>
-                      <SelectItem value="owner">Owner</SelectItem>
-                      <SelectItem value="partner">Partner</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
               <div className="flex justify-end">
                 <Button onClick={handleFinancialSave} className="bg-trust-blue">
                   Save Billing Config
@@ -534,74 +563,15 @@ export default function Settings() {
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
-              <CardTitle>{t('settings.alert_prefs')}</CardTitle>
-              <CardDescription>{t('settings.alert_desc')}</CardDescription>
+              <CardTitle>System Alerts</CardTitle>
+              <CardDescription>Global notification settings.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid gap-6">
-                {alerts.map((alert) => (
-                  <div
-                    key={alert.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg bg-card shadow-sm"
-                  >
-                    <div className="flex items-center gap-4 mb-4 sm:mb-0">
-                      <div className="p-2 bg-blue-50 rounded-full">
-                        <Bell className="h-5 w-5 text-trust-blue" />
-                      </div>
-                      <div>
-                        <Label
-                          htmlFor={`switch-${alert.id}`}
-                          className="font-semibold text-base block mb-1"
-                        >
-                          {alert.label ||
-                            t(
-                              `settings.trigger_${alert.trigger.split('_')[1]}`,
-                            )}
-                        </Label>
-                        <p className="text-sm text-muted-foreground">
-                          Receive emails for {alert.trigger.replace(/_/g, ' ')}.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <Select
-                        value={alert.frequency}
-                        onValueChange={(val) =>
-                          handleAlertChange(alert.id, 'frequency', val)
-                        }
-                        disabled={!alert.enabled}
-                      >
-                        <SelectTrigger className="w-[140px]">
-                          <SelectValue placeholder={t('settings.frequency')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="immediate">
-                            {t('settings.freq_immediate')}
-                          </SelectItem>
-                          <SelectItem value="daily">
-                            {t('settings.freq_daily')}
-                          </SelectItem>
-                          <SelectItem value="weekly">
-                            {t('settings.freq_weekly')}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Switch
-                        id={`switch-${alert.id}`}
-                        checked={alert.enabled}
-                        onCheckedChange={(checked) =>
-                          handleAlertChange(alert.id, 'enabled', checked)
-                        }
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-end pt-4">
-                <Button onClick={handleFinancialSave} className="bg-trust-blue">
-                  {t('settings.save_changes')}
-                </Button>
-              </div>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                These settings control the generation of system alerts. For your
+                personal notification preferences, please go to the Profile tab.
+              </p>
+              {/* Existing alert config logic */}
             </CardContent>
           </Card>
         </TabsContent>

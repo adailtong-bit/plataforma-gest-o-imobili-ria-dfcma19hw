@@ -58,7 +58,12 @@ export interface FinancialSettings {
   bankName: string
   routingNumber: string
   accountNumber: string
-  gatewayProvider: 'stripe' | 'plaid' | 'manual'
+  gatewayProvider: 'stripe' | 'plaid' | 'manual' // Legacy
+  gateways: {
+    stripe: { enabled: boolean; publicKey?: string; secretKey?: string }
+    paypal: { enabled: boolean; clientId?: string }
+    mercadoPago: { enabled: boolean; publicKey?: string; accessToken?: string }
+  }
   pixKey?: string
   apiKey?: string
   apiSecret?: string
@@ -122,6 +127,11 @@ export interface User {
   subscriptionPlan?: 'free' | 'pay_per_house' | 'unlimited'
   mirrorAdmin?: boolean
   isDemo?: boolean
+  notificationPreferences?: {
+    financials: boolean
+    maintenance: boolean
+    contractUpdates: boolean
+  }
 }
 
 export interface CondoContact {
@@ -589,6 +599,7 @@ export interface Task {
   assigneeId?: string
   partnerEmployeeId?: string
   date: string
+  completedDate?: string // For efficiency reporting
   priority: 'low' | 'medium' | 'high' | 'critical'
   images?: string[]
   evidence?: Evidence[]
@@ -677,7 +688,9 @@ export interface Notification {
   message: string
   timestamp: string
   read: boolean
-  type: 'info' | 'warning' | 'success'
+  type: 'info' | 'warning' | 'success' | 'critical'
+  link?: string
+  category?: 'financial' | 'maintenance' | 'contract' | 'system'
 }
 
 export interface Financials {

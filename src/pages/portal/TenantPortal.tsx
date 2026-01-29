@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -19,10 +20,10 @@ import useAuthStore from '@/stores/useAuthStore'
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useFinancialStore from '@/stores/useFinancialStore'
-import useMessageStore from '@/stores/useMessageStore'
 import { useNavigate } from 'react-router-dom'
-import { Home, DollarSign, MessageSquare, AlertCircle } from 'lucide-react'
+import { Home, DollarSign, AlertCircle } from 'lucide-react'
 import { format } from 'date-fns'
+import { PaymentModal } from '@/components/financial/PaymentModal'
 
 export default function TenantPortal() {
   const { currentUser } = useAuthStore()
@@ -30,6 +31,7 @@ export default function TenantPortal() {
   const { properties } = usePropertyStore()
   const { ledgerEntries } = useFinancialStore()
   const navigate = useNavigate()
+  const [showPayment, setShowPayment] = useState(false)
 
   const tenantRecord = tenants.find(
     (t) => t.id === currentUser.id || t.email === currentUser.email,
@@ -110,6 +112,12 @@ export default function TenantPortal() {
             <div className="flex gap-2 mt-4">
               <Button variant="outline" className="w-full sm:w-auto">
                 Baixar Contrato
+              </Button>
+              <Button
+                className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
+                onClick={() => setShowPayment(true)}
+              >
+                <DollarSign className="mr-2 h-4 w-4" /> Pagar Aluguel
               </Button>
               <Button
                 className="w-full sm:w-auto bg-trust-blue"
@@ -193,6 +201,16 @@ export default function TenantPortal() {
           </Table>
         </CardContent>
       </Card>
+
+      <PaymentModal
+        open={showPayment}
+        onOpenChange={setShowPayment}
+        amount={tenantRecord.rentValue}
+        description={`Rent Payment for ${property?.name || 'Property'}`}
+        onSuccess={() => {
+          /* Typically refresh ledger */
+        }}
+      />
     </div>
   )
 }
