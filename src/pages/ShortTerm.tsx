@@ -37,7 +37,7 @@ import { useToast } from '@/hooks/use-toast'
 import { CurrencyInput } from '@/components/ui/currency-input'
 
 export default function ShortTerm() {
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const { addBooking } = useShortTermStore()
   const { properties } = usePropertyStore()
   const { toast } = useToast()
@@ -214,6 +214,13 @@ export default function ShortTerm() {
                     value={newBooking.totalAmount}
                     onChange={(v) =>
                       setNewBooking({ ...newBooking, totalAmount: v })
+                    }
+                    locale={
+                      language === 'pt'
+                        ? 'pt-BR'
+                        : language === 'es'
+                          ? 'es-ES'
+                          : 'en-US'
                     }
                   />
                 </div>

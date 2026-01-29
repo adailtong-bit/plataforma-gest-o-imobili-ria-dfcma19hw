@@ -1,4 +1,4 @@
-import { useState, useMemo, useContext } from 'react'
+import { useState, useMemo, useContext, useEffect } from 'react'
 import {
   Card,
   CardContent,
@@ -20,6 +20,7 @@ import {
   PieChart as PieChartIcon,
   BarChart2,
   Globe,
+  Filter,
 } from 'lucide-react'
 import {
   BarChart,
@@ -55,6 +56,9 @@ import {
 } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { exportToCSV, formatCurrency } from '@/lib/utils'
+import { DatePickerWithRange } from '@/components/ui/date-range-picker'
+import { DateRange } from 'react-day-picker'
+import { Label } from '@/components/ui/label'
 
 export function FinancialReports() {
   const { ledgerEntries } = useFinancialStore()
@@ -65,44 +69,42 @@ export function FinancialReports() {
   const { language, t } = useLanguageStore()
   const context = useContext(AppContext)
 
-  // Use global property selection, but allow local override if needed
-  // For the report, typically users want to see the selected context
-  const selectedPropertyId = context?.selectedPropertyId || 'all'
+  // Global property selection
+  const globalPropertyId = context?.selectedPropertyId || 'all'
 
-  const [period, setPeriod] = useState('1y') // Default to 1 year for robust data
+  // Local state for interactive filters on the report page
+  const [selectedPropertyId, setSelectedPropertyId] =
+    useState<string>(globalPropertyId)
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: subMonths(new Date(), 12),
+    to: new Date(),
+  })
+
+  // Sync local state with global change if user hasn't manually overridden it on this page
+  // (Optional: here we just initialize. A strict sync might be annoying if user is comparing)
+  useEffect(() => {
+    setSelectedPropertyId(globalPropertyId)
+  }, [globalPropertyId])
 
   // --- 1. HISTORICAL DATA PREPARATION ---
 
-  const getStartDate = () => {
-    const now = new Date()
-    switch (period) {
-      case '1m':
-        return startOfMonth(now)
-      case '3m':
-        return subMonths(now, 3)
-      case '6m':
-        return subMonths(now, 6)
-      case 'q':
-        return startOfQuarter(now)
-      case 'ytd':
-        return startOfYear(now)
-      case '1y':
-        return subMonths(now, 12)
-      default:
-        return startOfMonth(now)
-    }
-  }
-
-  const startDate = getStartDate()
-
   const filteredEntries = useMemo(() => {
     return ledgerEntries.filter((e) => {
-      const dateValid = new Date(e.date) >= startDate
+      let dateValid = true
+      if (dateRange?.from && dateRange?.to) {
+        dateValid = isWithinInterval(new Date(e.date), {
+          start: dateRange.from,
+          end: dateRange.to,
+        })
+      } else if (dateRange?.from) {
+        dateValid = new Date(e.date) >= dateRange.from
+      }
+
       const propertyValid =
         selectedPropertyId === 'all' || e.propertyId === selectedPropertyId
       return dateValid && propertyValid
     })
-  }, [ledgerEntries, startDate, selectedPropertyId])
+  }, [ledgerEntries, dateRange, selectedPropertyId])
 
   // --- 2. PROFITABILITY BY TYPE (STR vs LTR) ---
 
@@ -223,7 +225,14 @@ export function FinancialReports() {
     // Filter bookings based on period and selected property
     const relevantBookings = bookings.filter((b) => {
       const date = parseISO(b.checkIn)
-      const isDateValid = date >= startDate
+      let isDateValid = true
+      if (dateRange?.from && dateRange?.to) {
+        isDateValid = isWithinInterval(date, {
+          start: dateRange.from,
+          end: dateRange.to,
+        })
+      }
+
       const isPropertyValid =
         selectedPropertyId === 'all' || b.propertyId === selectedPropertyId
       return isDateValid && isPropertyValid && b.status !== 'cancelled'
@@ -252,7 +261,7 @@ export function FinancialReports() {
     })
 
     return Object.values(data).filter((d) => d.revenue > 0 || d.bookings > 0)
-  }, [bookings, startDate, selectedPropertyId])
+  }, [bookings, dateRange, selectedPropertyId])
 
   // --- 5. EXPORT HANDLER ---
 
@@ -282,7 +291,7 @@ export function FinancialReports() {
 
     exportToCSV('financial_report', headers, rows)
     toast({
-      title: 'Export Successful',
+      title: t('common.export_success'),
       description: 'Financial data downloaded.',
     })
   }
@@ -294,30 +303,43 @@ export function FinancialReports() {
     <div className="space-y-6">
       <Card>
         <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Period (Historical)</label>
-              <Select value={period} onValueChange={setPeriod}>
+              <Label className="text-sm font-medium">
+                {t('common.date')} Range
+              </Label>
+              <DatePickerWithRange date={dateRange} setDate={setDateRange} />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                {t('common.property')}
+              </Label>
+              <Select
+                value={selectedPropertyId}
+                onValueChange={setSelectedPropertyId}
+              >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder={t('common.all')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1m">This Month</SelectItem>
-                  <SelectItem value="3m">Last 3 Months</SelectItem>
-                  <SelectItem value="6m">Last 6 Months</SelectItem>
-                  <SelectItem value="ytd">Year to Date</SelectItem>
-                  <SelectItem value="1y">Last Year</SelectItem>
+                  <SelectItem value="all">{t('common.all')}</SelectItem>
+                  {properties.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-            {/* Removed local property selector as it is now global in DashboardLayout */}
+
             <div className="md:col-start-4">
               <Button
                 variant="outline"
                 onClick={handleExport}
                 className="w-full gap-2"
               >
-                <Download className="h-4 w-4" /> Export CSV
+                <Download className="h-4 w-4" /> {t('common.export_data')}
               </Button>
             </div>
           </div>
@@ -401,10 +423,47 @@ export function FinancialReports() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {/* Placeholder for chart - implementation would mirror dashboard logic */}
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground bg-muted/10 rounded border border-dashed">
-                Select "Projected Cash Flow" or "Profitability" for detailed
-                charts.
+              {/* Basic aggregated bar chart for filtered entries */}
+              <div className="h-[300px] w-full">
+                <ChartContainer
+                  config={{
+                    income: { label: 'Income', color: '#22c55e' },
+                    expense: { label: 'Expense', color: '#ef4444' },
+                  }}
+                  className="h-full w-full"
+                >
+                  <BarChart
+                    data={[
+                      {
+                        name: 'Total',
+                        income: filteredEntries
+                          .filter((e) => e.type === 'income')
+                          .reduce((acc, curr) => acc + curr.amount, 0),
+                        expense: filteredEntries
+                          .filter((e) => e.type === 'expense')
+                          .reduce((acc, curr) => acc + curr.amount, 0),
+                      },
+                    ]}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Bar
+                      dataKey="income"
+                      fill="#22c55e"
+                      name="Income"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="expense"
+                      fill="#ef4444"
+                      name="Expense"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ChartContainer>
               </div>
             </CardContent>
           </Card>

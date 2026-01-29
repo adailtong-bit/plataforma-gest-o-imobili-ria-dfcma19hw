@@ -47,7 +47,7 @@ import { CloseNegotiationDialog } from '@/components/renewals/CloseNegotiationDi
 import { NegotiationSheet } from '@/components/renewals/NegotiationSheet'
 import { GenericDocument } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
+import { cn, formatCurrency, formatDate } from '@/lib/utils'
 import {
   Tooltip,
   TooltipContent,
@@ -72,6 +72,7 @@ const RenewalRow = memo(
     onStartNegotiation,
     onCloseNegotiation,
     showFinancials,
+    language,
   }: {
     data: any
     isSelected: boolean
@@ -80,6 +81,7 @@ const RenewalRow = memo(
     onStartNegotiation: (id: string) => void
     onCloseNegotiation: (id: string) => void
     showFinancials: boolean
+    language: any
   }) => {
     const {
       tenant,
@@ -128,12 +130,14 @@ const RenewalRow = memo(
         {showFinancials && (
           <TableCell>
             {tenant.suggestedRenewalPrice
-              ? `${tenant.suggestedRenewalPrice}`
+              ? formatCurrency(tenant.suggestedRenewalPrice, language)
               : '-'}
           </TableCell>
         )}
         {showFinancials && (
-          <TableCell>${(tenant.rentValue ?? 0).toFixed(2)}</TableCell>
+          <TableCell>
+            {formatCurrency(tenant.rentValue ?? 0, language)}
+          </TableCell>
         )}
         <TableCell>
           <div className="flex flex-col">
@@ -144,9 +148,7 @@ const RenewalRow = memo(
                   : 'font-medium'
               }
             >
-              {tenant.leaseEnd
-                ? format(new Date(tenant.leaseEnd), 'dd/MM/yyyy')
-                : 'N/A'}
+              {tenant.leaseEnd ? formatDate(tenant.leaseEnd, language) : 'N/A'}
             </span>
             <span className="text-xs text-muted-foreground">
               {displayStatus === 'renewed'
@@ -237,7 +239,7 @@ export default function Renewals() {
   const { owners } = useOwnerStore()
   const navigate = useNavigate()
   const { toast } = useToast()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const { currentUser } = useAuthStore()
 
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
@@ -576,6 +578,7 @@ export default function Renewals() {
                       onStartNegotiation={handleStartNegotiation}
                       onCloseNegotiation={handleOpenCloseDialog}
                       showFinancials={showFinancials}
+                      language={language}
                     />
                   ))
                 )}

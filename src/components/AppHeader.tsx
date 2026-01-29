@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import {
   Bell,
   Search,
@@ -8,6 +8,7 @@ import {
   Building,
   User,
   CheckSquare,
+  Building2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -23,6 +24,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import useAuthStore from '@/stores/useAuthStore'
@@ -47,6 +55,7 @@ import useOwnerStore from '@/stores/useOwnerStore'
 import useTaskStore from '@/stores/useTaskStore'
 import { ThemeCustomizer } from '@/components/ThemeCustomizer'
 import logo from '@/assets/logo-estilizado.jpg'
+import { AppContext } from '@/stores/AppContext'
 
 export function AppHeader() {
   const { currentUser, setCurrentUser, allUsers, logout } = useAuthStore()
@@ -59,6 +68,11 @@ export function AppHeader() {
   const { tenants } = useTenantStore()
   const { owners } = useOwnerStore()
   const { tasks } = useTaskStore()
+
+  // Property Context for Multi-Property Management
+  const context = useContext(AppContext)
+  const selectedPropertyId = context?.selectedPropertyId || 'all'
+  const setSelectedPropertyId = context?.setSelectedPropertyId
 
   const [openSearch, setOpenSearch] = useState(false)
 
@@ -128,6 +142,29 @@ export function AppHeader() {
           COREPM
         </h2>
       </Link>
+
+      {/* Property Selector for Multi-Property Management */}
+      {setSelectedPropertyId && (
+        <div className="flex items-center gap-2 ml-4">
+          <Building2 className="w-4 h-4 text-muted-foreground hidden md:block" />
+          <Select
+            value={selectedPropertyId}
+            onValueChange={setSelectedPropertyId}
+          >
+            <SelectTrigger className="w-[180px] md:w-[240px] border-none shadow-none focus:ring-0 bg-transparent hover:bg-muted/50 transition-colors h-9">
+              <SelectValue placeholder="Select Property" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('common.all')}</SelectItem>
+              {properties.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* Global Search Button */}
       <div className="relative ml-auto flex-1 md:grow-0">

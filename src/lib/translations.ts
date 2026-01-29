@@ -2,7 +2,6 @@ export type Language = 'pt' | 'en' | 'es'
 
 export const translations = {
   pt: {
-    // ... (Keep existing Portuguese translations)
     common: {
       dashboard: 'Painel',
       properties: 'Propriedades',
@@ -84,6 +83,7 @@ export const translations = {
       renewals: 'Renovação de Contrato',
       short_term: 'Short Term',
       market_analysis: 'Análise de Mercado',
+      user_analysis: 'Análise de Usuário',
       workflows: 'Workflows',
       audit_logs: 'Logs de Auditoria',
       portal: 'Portal',
@@ -110,7 +110,6 @@ export const translations = {
       utilities: 'Utilidades',
       cleaning: 'Limpeza',
     },
-    // ... existing pt keys
     dashboard: {
       title: 'Painel',
       subtitle: 'Visão Geral',
@@ -222,7 +221,7 @@ export const translations = {
       review_needed: 'Revisão Necessária',
       review_period_config: 'Configuração do Período de Revisão',
       review_period_desc:
-        'Defina o número de dias antes que um preço de serviço seja considerado desatualizado.',
+        'Defina o número de dias antes que um preço de serviço seje considerado desatualizado.',
       threshold_days: 'Limite (Dias)',
       config_saved: 'Configuração Salva',
       config_saved_desc: 'Limite de revisão de preços atualizado com sucesso.',
@@ -367,7 +366,7 @@ export const translations = {
         },
         professional: {
           name: 'Profissional',
-          desc: 'Potência para agências em crescimento.',
+          desc: 'Potência para agencias em crescimento.',
           cta: 'Começar',
         },
         enterprise: {
@@ -453,7 +452,6 @@ export const translations = {
     },
   },
   en: {
-    // ... (Keep existing English translations)
     common: {
       dashboard: 'Dashboard',
       properties: 'Properties',
@@ -535,6 +533,7 @@ export const translations = {
       renewals: 'Contract Renewals',
       short_term: 'Short Term',
       market_analysis: 'Market Analysis',
+      user_analysis: 'User Analysis',
       workflows: 'Workflows',
       audit_logs: 'Audit Logs',
       portal: 'Portal',
@@ -561,7 +560,6 @@ export const translations = {
       utilities: 'Utilities',
       cleaning: 'Cleaning',
     },
-    // ... existing en keys
     dashboard: {
       title: 'Dashboard',
       subtitle: 'Overview',
@@ -981,6 +979,7 @@ export const translations = {
       renewals: 'Renovaciones',
       short_term: 'Alquiler Corto',
       market_analysis: 'Análisis de Mercado',
+      user_analysis: 'Análisis de Usuario',
       workflows: 'Flujos de Trabajo',
       audit_logs: 'Registros de Auditoría',
       portal: 'Portal',

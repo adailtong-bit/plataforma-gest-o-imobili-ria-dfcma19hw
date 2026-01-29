@@ -51,7 +51,7 @@ export default function Properties() {
   const { properties, addProperty, deleteProperty } = usePropertyStore()
   const { condominiums } = useCondominiumStore()
   const { currentUser } = useAuthStore()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const [filter, setFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [profileFilter, setProfileFilter] = useState<
@@ -402,6 +402,13 @@ export default function Properties() {
                         setNewProp({ ...newProp, listingPrice: val })
                       }
                       placeholder="0.00"
+                      locale={
+                        language === 'pt'
+                          ? 'pt-BR'
+                          : language === 'es'
+                            ? 'es-ES'
+                            : 'en-US'
+                      }
                     />
                   </div>
                   <div className="grid gap-2">
@@ -412,6 +419,13 @@ export default function Properties() {
                         setNewProp({ ...newProp, hoaValue: val })
                       }
                       placeholder="0.00"
+                      locale={
+                        language === 'pt'
+                          ? 'pt-BR'
+                          : language === 'es'
+                            ? 'es-ES'
+                            : 'en-US'
+                      }
                     />
                     <span className="text-[10px] text-muted-foreground">
                       O valor será lançado automaticamente no financeiro.

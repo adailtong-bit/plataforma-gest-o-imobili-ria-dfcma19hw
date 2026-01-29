@@ -34,7 +34,7 @@ import {
   Building,
   CheckCircle,
   RefreshCw,
-  AlertCircle,
+  Mail,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
@@ -361,28 +361,34 @@ export default function Settings() {
             <CardContent className="space-y-6">
               {/* Alert Configuration */}
               <div className="p-4 bg-blue-50 text-blue-800 rounded-md text-sm mb-4 border border-blue-200">
-                <h4 className="font-semibold mb-2">Alert Configuration</h4>
+                <div className="flex items-center gap-2 mb-2">
+                  <Mail className="h-4 w-4" />
+                  <h4 className="font-semibold">Email Alerts Configuration</h4>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                   <div>
                     <Label htmlFor="priceReviewThreshold">
                       {t('settings.price_review_threshold')}
                     </Label>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {t('settings.price_review_desc')}
                     </p>
                   </div>
-                  <Input
-                    id="priceReviewThreshold"
-                    type="number"
-                    value={financialData.priceReviewThresholdDays || 180}
-                    onChange={(e) =>
-                      handleFinancialChange(
-                        'priceReviewThresholdDays',
-                        Number(e.target.value),
-                      )
-                    }
-                    className="max-w-[100px]"
-                  />
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="priceReviewThreshold"
+                      type="number"
+                      value={financialData.priceReviewThresholdDays || 180}
+                      onChange={(e) =>
+                        handleFinancialChange(
+                          'priceReviewThresholdDays',
+                          Number(e.target.value),
+                        )
+                      }
+                      className="max-w-[100px]"
+                    />
+                    <span className="text-xs text-muted-foreground">days</span>
+                  </div>
                 </div>
               </div>
 

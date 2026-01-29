@@ -88,7 +88,7 @@ export const formatCurrency = (
 ) => {
   let locale = 'en-US'
   if (language === 'pt') locale = 'pt-BR'
-  if (language === 'es') locale = 'es-US' // Spanish in US typically uses es-US formatting or similar
+  if (language === 'es') locale = 'es-ES' // Uses 1.200,00 format for Spanish
 
   return new Intl.NumberFormat(locale, {
     style: 'currency',
