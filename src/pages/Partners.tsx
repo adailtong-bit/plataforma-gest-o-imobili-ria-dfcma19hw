@@ -42,6 +42,7 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
 import { isValidEmail } from '@/lib/utils'
+import { DataMask } from '@/components/DataMask'
 
 export default function Partners() {
   const { partners, addPartner } = usePartnerStore()
@@ -163,8 +164,12 @@ export default function Partners() {
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-lg">{partner.name}</CardTitle>
-                  <CardDescription>{partner.companyName}</CardDescription>
+                  <CardTitle className="text-lg">
+                    <DataMask>{partner.name}</DataMask>
+                  </CardTitle>
+                  <CardDescription>
+                    <DataMask>{partner.companyName}</DataMask>
+                  </CardDescription>
                 </div>
                 <Badge variant="outline" className="flex items-center gap-1">
                   <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
@@ -182,7 +187,9 @@ export default function Partners() {
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Phone className="h-4 w-4" />
-                  <span>{partner.phone}</span>
+                  <span>
+                    <DataMask>{partner.phone}</DataMask>
+                  </span>
                 </div>
                 <div className="pt-2 flex gap-2">
                   <Button

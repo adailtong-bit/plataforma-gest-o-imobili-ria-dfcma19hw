@@ -32,6 +32,7 @@ import {
 import { Button } from '@/components/ui/button'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Download } from 'lucide-react'
+import { DataMask } from '@/components/DataMask'
 
 // Mock Data for Comparative Analysis
 const comparativeDataRaw = [
@@ -189,19 +190,25 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-900">
-              {Math.round(
-                filteredData.reduce((acc, curr) => acc + curr.internalOcc, 0) /
-                  filteredData.length,
-              )}
-              %
+              <DataMask>
+                {Math.round(
+                  filteredData.reduce(
+                    (acc, curr) => acc + curr.internalOcc,
+                    0,
+                  ) / filteredData.length,
+                )}
+                %
+              </DataMask>
             </div>
             <p className="text-xs text-blue-600 font-medium mt-1">
               vs{' '}
-              {Math.round(
-                filteredData.reduce((acc, curr) => acc + curr.marketOcc, 0) /
-                  filteredData.length,
-              )}
-              % {t('analytics.market_avg')}
+              <DataMask>
+                {Math.round(
+                  filteredData.reduce((acc, curr) => acc + curr.marketOcc, 0) /
+                    filteredData.length,
+                )}
+                % {t('analytics.market_avg')}
+              </DataMask>
             </p>
           </CardContent>
         </Card>
@@ -213,21 +220,27 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-900">
-              $
-              {Math.round(
-                filteredData.reduce(
-                  (acc, curr) => acc + curr.internalProfit,
-                  0,
-                ) / filteredData.length,
-              ).toLocaleString()}
+              <DataMask>
+                $
+                {Math.round(
+                  filteredData.reduce(
+                    (acc, curr) => acc + curr.internalProfit,
+                    0,
+                  ) / filteredData.length,
+                ).toLocaleString()}
+              </DataMask>
             </div>
             <p className="text-xs text-green-600 font-medium mt-1">
-              vs $
-              {Math.round(
-                filteredData.reduce((acc, curr) => acc + curr.marketProfit, 0) /
-                  filteredData.length,
-              ).toLocaleString()}{' '}
-              {t('analytics.market_avg')}
+              <DataMask>
+                vs $
+                {Math.round(
+                  filteredData.reduce(
+                    (acc, curr) => acc + curr.marketProfit,
+                    0,
+                  ) / filteredData.length,
+                ).toLocaleString()}{' '}
+                {t('analytics.market_avg')}
+              </DataMask>
             </p>
           </CardContent>
         </Card>
@@ -244,42 +257,44 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
-              <ChartContainer
-                config={{
-                  internalOcc: {
-                    label: t('analytics.internal_perf'),
-                    color: '#2563eb',
-                  },
-                  marketOcc: {
-                    label: t('analytics.market_avg'),
-                    color: '#9ca3af',
-                  },
-                }}
-                className="h-full w-full"
-              >
-                <BarChart
-                  data={filteredData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              <DataMask className="w-full h-full block">
+                <ChartContainer
+                  config={{
+                    internalOcc: {
+                      label: t('analytics.internal_perf'),
+                      color: '#2563eb',
+                    },
+                    marketOcc: {
+                      label: t('analytics.market_avg'),
+                      color: '#9ca3af',
+                    },
+                  }}
+                  className="h-full w-full"
                 >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="month" />
-                  <YAxis unit="%" />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Legend content={<ChartLegendContent />} />
-                  <Bar
-                    dataKey="internalOcc"
-                    fill="#2563eb"
-                    name={t('analytics.internal_perf')}
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="marketOcc"
-                    fill="#9ca3af"
-                    name={t('analytics.market_avg')}
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ChartContainer>
+                  <BarChart
+                    data={filteredData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="month" />
+                    <YAxis unit="%" />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Legend content={<ChartLegendContent />} />
+                    <Bar
+                      dataKey="internalOcc"
+                      fill="#2563eb"
+                      name={t('analytics.internal_perf')}
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="marketOcc"
+                      fill="#9ca3af"
+                      name={t('analytics.market_avg')}
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              </DataMask>
             </div>
           </CardContent>
         </Card>
@@ -294,42 +309,44 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
-              <ChartContainer
-                config={{
-                  internalProfit: {
-                    label: t('analytics.profit_internal'),
-                    color: '#16a34a',
-                  },
-                  marketProfit: {
-                    label: t('analytics.profit_market'),
-                    color: '#9ca3af',
-                  },
-                }}
-                className="h-full w-full"
-              >
-                <BarChart
-                  data={filteredData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              <DataMask className="w-full h-full block">
+                <ChartContainer
+                  config={{
+                    internalProfit: {
+                      label: t('analytics.profit_internal'),
+                      color: '#16a34a',
+                    },
+                    marketProfit: {
+                      label: t('analytics.profit_market'),
+                      color: '#9ca3af',
+                    },
+                  }}
+                  className="h-full w-full"
                 >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="month" />
-                  <YAxis unit="$" />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Legend content={<ChartLegendContent />} />
-                  <Bar
-                    dataKey="internalProfit"
-                    fill="#16a34a"
-                    name={t('analytics.profit_internal')}
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="marketProfit"
-                    fill="#9ca3af"
-                    name={t('analytics.profit_market')}
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ChartContainer>
+                  <BarChart
+                    data={filteredData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="month" />
+                    <YAxis unit="$" />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Legend content={<ChartLegendContent />} />
+                    <Bar
+                      dataKey="internalProfit"
+                      fill="#16a34a"
+                      name={t('analytics.profit_internal')}
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="marketProfit"
+                      fill="#9ca3af"
+                      name={t('analytics.profit_market')}
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              </DataMask>
             </div>
           </CardContent>
         </Card>

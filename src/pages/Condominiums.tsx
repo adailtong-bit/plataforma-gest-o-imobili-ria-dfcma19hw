@@ -311,9 +311,11 @@ export default function Condominiums() {
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col text-xs text-muted-foreground">
-                        <span>
-                          {condo.city || '-'}, {condo.state} {condo.zipCode}
-                        </span>
+                        <DataMask>
+                          <span>
+                            {condo.city || '-'}, {condo.state} {condo.zipCode}
+                          </span>
+                        </DataMask>
                       </div>
                     </TableCell>
                     <TableCell>
