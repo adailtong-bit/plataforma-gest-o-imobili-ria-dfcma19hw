@@ -39,6 +39,7 @@ import {
   ChatMessage,
   ChatAttachment,
   ServiceCategory,
+  Visit,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -65,11 +66,13 @@ import {
   calendarBlocks as initialBlocks,
   messageTemplates as initialTemplates,
   serviceCategories as initialServiceCategories,
+  visits as initialVisits,
 } from '@/lib/mockData'
 import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
 
 interface AppContextType {
+  // ... existing props
   properties: Property[]
   condominiums: Condominium[]
   tasks: Task[]
@@ -100,6 +103,7 @@ interface AppContextType {
   language: Language
   typingStatus: Record<string, boolean>
   selectedPropertyId: string
+  visits: Visit[]
   setLanguage: (lang: Language) => void
   setSelectedPropertyId: (id: string) => void
   t: (key: string, params?: Record<string, string>) => string
@@ -176,17 +180,23 @@ interface AppContextType {
   deleteAdvertiser: (id: string) => void
   updateAdPricing: (pricing: AdPricing) => void
   setCurrentUser: (id: string) => void
+  addVisit: (visit: Visit) => void
+  updateVisit: (visit: Visit) => void
+  deleteVisit: (id: string) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
+  // ... existing states
   const [properties, setProperties] = useState<Property[]>(initialProperties)
   const [condominiums, setCondominiums] =
     useState<Condominium[]>(initialCondominiums)
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
   const [financials, setFinancials] = useState<Financials>(initialFinancials)
+  const [visits, setVisits] = useState<Visit[]>(initialVisits)
 
+  // ... other states (tenants, owners, etc.)
   const [tenants, setTenants] = useState<Tenant[]>(() => {
     const saved = localStorage.getItem('app_tenants')
     return saved ? JSON.parse(saved) : initialTenants
@@ -220,7 +230,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     PaymentIntegration[]
   >(defaultPaymentIntegrations)
 
-  // Initial Financial Settings with Gateways
   const [financialSettings, setFinancialSettings] = useState<FinancialSettings>(
     {
       ...defaultFinancialSettings,
@@ -335,6 +344,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setAuditLogs((prev) => [newLog, ...prev])
   }
 
+  // ... rest of existing functions (addNotification, addTask, updateTask, etc.)
   const addNotification = useCallback(
     (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
       // Check user preferences before adding
@@ -452,7 +462,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  // Other boilerplate functions...
   const addLedgerEntry = (entry: LedgerEntry) => {
     setLedgerEntries((prev) => [...prev, entry])
     addAuditLog({
@@ -970,6 +979,26 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setMessageTemplates((prev) => prev.filter((t) => t.id !== templateId))
   }
 
+  const addVisit = (visit: Visit) => {
+    setVisits((prev) => [...prev, visit])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Visit',
+      entityId: visit.propertyId,
+      details: `Scheduled visit for ${visit.clientName}`,
+    })
+  }
+
+  const updateVisit = (visit: Visit) => {
+    setVisits((prev) => prev.map((v) => (v.id === visit.id ? visit : v)))
+  }
+
+  const deleteVisit = (id: string) => {
+    setVisits((prev) => prev.filter((v) => v.id !== id))
+  }
+
   const visibleMessages = useMemo(
     () => allMessages.filter((m) => m.ownerId === currentUser.id),
     [allMessages, currentUser.id],
@@ -978,6 +1007,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AppContext.Provider
       value={{
+        // ... existing values
         properties,
         condominiums,
         tasks,
@@ -1008,6 +1038,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         language,
         typingStatus,
         selectedPropertyId,
+        visits,
         setTyping,
         setLanguage,
         setSelectedPropertyId,
@@ -1078,6 +1109,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateAdvertiser,
         deleteAdvertiser,
         updateAdPricing,
+        addVisit,
+        updateVisit,
+        deleteVisit,
       }}
     >
       {children}

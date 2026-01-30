@@ -37,6 +37,7 @@ import Analytics from './pages/admin/Analytics'
 import Automation from './pages/admin/Automation'
 import ShortTerm from './pages/ShortTerm'
 import Reports from './pages/Reports'
+import Visits from './pages/Visits'
 import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { useEffect } from 'react'
@@ -92,6 +93,7 @@ const App = () => {
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/workflows" element={<Workflows />} />
                 <Route path="/renewals" element={<Renewals />} />
+                <Route path="/visits" element={<Visits />} />
 
                 {/* Admin */}
                 <Route path="/admin/publicity" element={<PublicityAdmin />} />

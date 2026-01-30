@@ -119,6 +119,12 @@ export default function Properties() {
       case 'suspended':
       case 'maintenance':
         return 'bg-orange-100 text-orange-800 border-orange-200'
+      case 'sold':
+        return 'bg-gray-100 text-gray-800 border-gray-200'
+      case 'sale_pending':
+        return 'bg-purple-100 text-purple-800 border-purple-200'
+      case 'reserved':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
       default:
         return 'bg-gray-100 text-gray-800'
     }
@@ -494,6 +500,10 @@ export default function Properties() {
             <SelectItem value="all">{t('common.all')}</SelectItem>
             <SelectItem value="rented">{t('status.rented')}</SelectItem>
             <SelectItem value="available">{t('status.available')}</SelectItem>
+            <SelectItem value="sold">{t('common.sold')}</SelectItem>
+            <SelectItem value="sale_pending">
+              {t('common.sale_pending')}
+            </SelectItem>
           </SelectContent>
         </Select>
         <Select

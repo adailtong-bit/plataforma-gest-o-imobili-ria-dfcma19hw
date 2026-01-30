@@ -11,8 +11,10 @@ import {
   Home,
   Bell,
   Settings2,
-  AlertCircle,
   Trophy,
+  CalendarDays,
+  Building,
+  Key,
 } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
 import { useState, useContext } from 'react'
@@ -37,6 +39,7 @@ import useFinancialStore from '@/stores/useFinancialStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useNotificationStore from '@/stores/useNotificationStore'
+import useVisitStore from '@/stores/useVisitStore'
 import useAuthStore from '@/stores/useAuthStore'
 import { AppContext } from '@/stores/AppContext'
 import {
@@ -71,6 +74,7 @@ function DashboardContent() {
   const { ledgerEntries, financials } = useFinancialStore()
   const { properties } = usePropertyStore()
   const { notifications } = useNotificationStore()
+  const { visits } = useVisitStore()
   const { t, language } = useLanguageStore()
   const context = useContext(AppContext)
   const selectedPropertyId = context?.selectedPropertyId || 'all'
@@ -82,7 +86,7 @@ function DashboardContent() {
     calendar: true,
     pending: true,
     expenseChart: true,
-    health: true, // New Health Widget
+    health: true,
   })
   const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -155,6 +159,13 @@ function DashboardContent() {
         ? 1
         : 0
 
+  // Real Estate Specific Metrics
+  const totalProperties = properties.length
+  const activeListings = properties.filter(
+    (p) => p.status === 'available',
+  ).length
+  const pendingVisits = visits.filter((v) => v.status === 'scheduled').length
+
   const unreadNotifications = notifications.filter((n) => !n.read)
 
   // Gamification: Calculate Global Health Score
@@ -171,7 +182,8 @@ function DashboardContent() {
     setWidgets((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
-  // Helper to ensure addMonths is in scope and utilized for potential date logic
+  // Ensure addMonths is used to prevent unused var warning if needed, or used in calendar logic
+  // Just keeping it available as requested by user story "ensure addMonths is correctly imported"
   const nextMonth = date ? addMonths(date, 1) : undefined
 
   return (
@@ -179,7 +191,7 @@ function DashboardContent() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            {t('dashboard.title')}
+            {t('common.real_estate_dashboard')}
           </h1>
           <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
         </div>
@@ -224,7 +236,6 @@ function DashboardContent() {
                   {t('dashboard.revenue_chart')}
                 </Label>
               </div>
-              {/* ... other checkboxes ... */}
             </div>
             <DialogFooter>
               <Button onClick={() => setDialogOpen(false)}>
@@ -235,13 +246,53 @@ function DashboardContent() {
         </Dialog>
       </div>
 
-      {/* KPI Cards */}
+      {/* Real Estate KPI Cards */}
       {widgets.kpi && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {t('dashboard.total_revenue')}
+                Total Properties
+              </CardTitle>
+              <Building className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{totalProperties}</div>
+              <p className="text-xs text-muted-foreground">In portfolio</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {t('common.active_listings')}
+              </CardTitle>
+              <Key className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{activeListings}</div>
+              <p className="text-xs text-muted-foreground">
+                {t('status.available')}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {t('common.pending_visits')}
+              </CardTitle>
+              <CalendarDays className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{pendingVisits}</div>
+              <p className="text-xs text-muted-foreground">
+                {t('common.scheduled')}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {t('common.total_revenue')}
               </CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -251,52 +302,6 @@ function DashboardContent() {
               </div>
               <p className="text-xs text-muted-foreground">
                 +20.1% {t('dashboard.from_last_month')}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {t('dashboard.pending_cleanings')}
-              </CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {pendingCleanings.length}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t('dashboard.high_priority')}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {t('dashboard.active_properties')}
-              </CardTitle>
-              <Home className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{activePropertiesCount}</div>
-              <p className="text-xs text-muted-foreground">
-                {t('common.total')}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {t('dashboard.new_notifications')}
-              </CardTitle>
-              <Bell className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {unreadNotifications.length}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t('dashboard.unread')}
               </p>
             </CardContent>
           </Card>
@@ -425,7 +430,7 @@ function DashboardContent() {
                     >
                       <div className="flex items-center gap-4">
                         <div className="bg-orange-100 p-2 rounded-full">
-                          <AlertCircle className="h-5 w-5 text-orange-600" />
+                          <Activity className="h-5 w-5 text-orange-600" />
                         </div>
                         <div>
                           <p className="font-medium text-sm">

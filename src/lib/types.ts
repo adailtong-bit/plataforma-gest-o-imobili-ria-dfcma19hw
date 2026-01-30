@@ -31,6 +31,7 @@ export type Resource =
   | 'analytics'
   | 'automation'
   | 'reports'
+  | 'visits'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -190,6 +191,8 @@ export type PropertyStatus =
   | 'suspended'
   | 'released'
   | 'reserved'
+  | 'sold'
+  | 'sale_pending'
 
 export interface FixedExpense {
   id: string
@@ -825,4 +828,15 @@ export interface Advertisement {
   price?: number
   startDate?: string
   endDate?: string
+}
+
+export interface Visit {
+  id: string
+  propertyId: string
+  propertyName: string
+  clientName: string
+  date: string // ISO string
+  status: 'scheduled' | 'completed' | 'canceled'
+  notes?: string
+  agentId?: string
 }

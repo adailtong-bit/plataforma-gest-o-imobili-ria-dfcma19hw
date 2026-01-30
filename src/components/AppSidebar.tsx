@@ -36,6 +36,7 @@ import {
   BarChart2,
   Zap,
   PieChart,
+  CalendarDays,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -146,6 +147,12 @@ export function AppSidebar() {
       url: '/calendar',
       icon: Calendar,
       resource: 'calendar',
+    },
+    {
+      title: t('common.visits'),
+      url: '/visits',
+      icon: CalendarDays,
+      resource: 'calendar', // Using calendar permission for visits
     },
     {
       title: t('common.tasks'),
