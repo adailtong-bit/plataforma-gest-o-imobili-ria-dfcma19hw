@@ -215,7 +215,7 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      className="bg-slate-50 dark:bg-slate-900 border-r z-50 fixed left-0 top-0 h-screen shadow-md"
+      className="bg-background border-r z-50 fixed left-0 top-0 h-screen shadow-md"
     >
       <SidebarHeader className="h-16 flex items-center px-4 border-b bg-inherit">
         <Link
