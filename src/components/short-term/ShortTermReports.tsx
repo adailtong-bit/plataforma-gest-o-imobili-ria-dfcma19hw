@@ -42,14 +42,15 @@ import {
   endOfMonth,
   parseISO,
 } from 'date-fns'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export function ShortTermReports() {
   const { bookings } = useShortTermStore()
   const { tasks } = useTaskStore()
   const { properties } = usePropertyStore()
+  const { t } = useLanguageStore()
   const [timeRange, setTimeRange] = useState<'3m' | '6m' | '1y'>('6m')
 
-  // Filter Short Term Properties
   const shortTermProperties = properties.filter(
     (p) => p.profileType === 'short_term',
   )
@@ -65,7 +66,6 @@ export function ShortTermReports() {
       const monthEnd = endOfMonth(date)
       const monthLabel = format(date, 'MMM')
 
-      // Revenue
       const monthlyRevenue = bookings
         .filter((b) => shortTermPropIds.includes(b.propertyId))
         .filter((b) => {
@@ -74,7 +74,6 @@ export function ShortTermReports() {
         })
         .reduce((acc, curr) => acc + curr.totalAmount, 0)
 
-      // Expenses (Tasks)
       const monthlyExpenses = tasks
         .filter((t) => shortTermPropIds.includes(t.propertyId))
         .filter((t) => {
@@ -86,8 +85,6 @@ export function ShortTermReports() {
         })
         .reduce((acc, curr) => acc + (curr.price || 0), 0)
 
-      // Occupancy
-      // Simplified: Count nights booked starting in this month
       const nightsBooked = bookings
         .filter((b) => shortTermPropIds.includes(b.propertyId))
         .filter((b) => {
@@ -103,11 +100,10 @@ export function ShortTermReports() {
           return acc + diff
         }, 0)
 
-      const totalCapacity = shortTermProperties.length * 30 // Approx capacity
+      const totalCapacity = shortTermProperties.length * 30
       const occupancyRate =
         totalCapacity > 0 ? (nightsBooked / totalCapacity) * 100 : 0
 
-      // ADR
       const adr = nightsBooked > 0 ? monthlyRevenue / nightsBooked : 0
 
       data.push({
@@ -122,7 +118,6 @@ export function ShortTermReports() {
     return data
   }, [bookings, tasks, timeRange, shortTermProperties])
 
-  // Pie Chart for Booking Sources
   const sourceData = useMemo(() => {
     const sources: Record<string, number> = {}
     bookings
@@ -152,10 +147,9 @@ export function ShortTermReports() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Revenue & Profit */}
         <Card>
           <CardHeader>
-            <CardTitle>Revenue & Profitability</CardTitle>
+            <CardTitle>{t('common.total_revenue')}</CardTitle>
             <CardDescription>
               Gross revenue vs estimated profit (Revenue - Task Costs)
             </CardDescription>
@@ -163,7 +157,7 @@ export function ShortTermReports() {
           <CardContent>
             <ChartContainer
               config={{
-                revenue: { label: 'Revenue', color: '#2563eb' },
+                revenue: { label: t('common.total_revenue'), color: '#2563eb' },
                 profit: { label: 'Profit', color: '#16a34a' },
               }}
               className="h-[300px] w-full"
@@ -177,7 +171,7 @@ export function ShortTermReports() {
                   dataKey="revenue"
                   fill="#2563eb"
                   radius={[4, 4, 0, 0]}
-                  name="Revenue"
+                  name={t('common.total_revenue')}
                 />
                 <Bar
                   dataKey="profit"
@@ -190,17 +184,21 @@ export function ShortTermReports() {
           </CardContent>
         </Card>
 
-        {/* Occupancy Rate */}
         <Card>
           <CardHeader>
-            <CardTitle>Occupancy Rate (%)</CardTitle>
+            <CardTitle>{t('market.avg_occupancy')} (%)</CardTitle>
             <CardDescription>
               Percentage of nights booked per month
             </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
-              config={{ occupancy: { label: 'Occupancy', color: '#f97316' } }}
+              config={{
+                occupancy: {
+                  label: t('market.avg_occupancy'),
+                  color: '#f97316',
+                },
+              }}
               className="h-[300px] w-full"
             >
               <LineChart data={chartData}>
@@ -213,22 +211,23 @@ export function ShortTermReports() {
                   stroke="#f97316"
                   strokeWidth={2}
                   dot={{ r: 4 }}
-                  name="Occupancy %"
+                  name={t('market.avg_occupancy')}
                 />
               </LineChart>
             </ChartContainer>
           </CardContent>
         </Card>
 
-        {/* ADR */}
         <Card>
           <CardHeader>
-            <CardTitle>Average Daily Rate (ADR)</CardTitle>
+            <CardTitle>{t('market.avg_daily_rate')} (ADR)</CardTitle>
             <CardDescription>Average revenue per booked night</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
-              config={{ adr: { label: 'ADR', color: '#8b5cf6' } }}
+              config={{
+                adr: { label: t('market.avg_daily_rate'), color: '#8b5cf6' },
+              }}
               className="h-[300px] w-full"
             >
               <LineChart data={chartData}>
@@ -241,14 +240,13 @@ export function ShortTermReports() {
                   stroke="#8b5cf6"
                   strokeWidth={2}
                   dot={{ r: 4 }}
-                  name="ADR ($)"
+                  name={t('market.avg_daily_rate')}
                 />
               </LineChart>
             </ChartContainer>
           </CardContent>
         </Card>
 
-        {/* Booking Sources */}
         <Card>
           <CardHeader>
             <CardTitle>Booking Sources</CardTitle>

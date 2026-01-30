@@ -20,6 +20,7 @@ import { InventoryInspection, ItemCondition } from '@/lib/types'
 import { format } from 'date-fns'
 import { Printer, FileText, AlertTriangle } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface InventoryReportViewerProps {
   isOpen: boolean
@@ -35,6 +36,7 @@ export function InventoryReportViewer({
   title,
 }: InventoryReportViewerProps) {
   const { toast } = useToast()
+  const { t } = useLanguageStore()
 
   if (!inspection) return null
 
@@ -43,7 +45,6 @@ export function InventoryReportViewer({
       title: 'Exporting...',
       description: 'Generating PDF report for download.',
     })
-    // Mock print/export
     setTimeout(() => {
       window.print()
     }, 500)
@@ -80,7 +81,7 @@ export function InventoryReportViewer({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            {title || 'Inspection Report'}
+            {title || t('common.reports')}
           </DialogTitle>
           <DialogDescription>
             Performed on {format(new Date(inspection.date), 'PPP p')} by{' '}
@@ -100,12 +101,12 @@ export function InventoryReportViewer({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Item</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Quantity</TableHead>
-                <TableHead>Original Condition</TableHead>
-                <TableHead>Observed Condition</TableHead>
-                <TableHead>Notes</TableHead>
+                <TableHead>{t('common.name')}</TableHead>
+                <TableHead>{t('common.type')}</TableHead>
+                <TableHead>Qty</TableHead>
+                <TableHead>Original</TableHead>
+                <TableHead>Observed</TableHead>
+                <TableHead>{t('common.description')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -136,17 +137,19 @@ export function InventoryReportViewer({
 
         {inspection.notes && (
           <div className="bg-muted p-4 rounded-md text-sm">
-            <span className="font-semibold block mb-1">General Notes:</span>
+            <span className="font-semibold block mb-1">
+              {t('common.description')}:
+            </span>
             {inspection.notes}
           </div>
         )}
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            Close
+            {t('common.close')}
           </Button>
           <Button onClick={handlePrint} className="gap-2">
-            <Printer className="h-4 w-4" /> Print / Export PDF
+            <Printer className="h-4 w-4" /> {t('common.print')}
           </Button>
         </DialogFooter>
       </DialogContent>

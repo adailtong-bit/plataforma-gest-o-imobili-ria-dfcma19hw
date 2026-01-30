@@ -75,7 +75,7 @@ const formSchema = z.object({
   partnerEmployeeId: z.string().optional(),
   priority: z.enum(['low', 'medium', 'high', 'critical']),
   date: z.date({ required_error: 'Selecione uma data.' }),
-  price: z.string().optional(), // Base Vendor Price
+  price: z.string().optional(),
   materialCost: z.string().optional(),
   teamMemberPayout: z.string().optional(),
   description: z.string().optional(),
@@ -83,7 +83,6 @@ const formSchema = z.object({
   recurrence: z
     .enum(['none', 'daily', 'weekly', 'monthly', 'yearly'])
     .default('none'),
-  // Fields for tracking template values
   templateServicePrice: z.number().optional(),
   templatePmValue: z.number().optional(),
 })
@@ -139,7 +138,6 @@ export function CreateTaskDialog({
     },
   })
 
-  // Update form defaults when props change
   useEffect(() => {
     if (initialPropertyId) {
       form.setValue('propertyId', initialPropertyId)
@@ -158,7 +156,6 @@ export function CreateTaskDialog({
 
   const selectedProperty = properties.find((p) => p.id === watchPropertyId)
 
-  // Calculate profit margin display
   const laborCost = parseFloat(watchPrice || '0')
   const materialCost = parseFloat(watchMaterial || '0')
 
@@ -304,7 +301,7 @@ export function CreateTaskDialog({
                   name="propertyId"
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>{t('tenants.property')}</FormLabel>
+                      <FormLabel>{t('properties.title')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -312,7 +309,7 @@ export function CreateTaskDialog({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione uma propriedade" />
+                            <SelectValue placeholder={t('common.select')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -340,7 +337,7 @@ export function CreateTaskDialog({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione" />
+                            <SelectValue placeholder={t('common.select')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -370,7 +367,7 @@ export function CreateTaskDialog({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione" />
+                            <SelectValue placeholder={t('common.select')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -398,7 +395,7 @@ export function CreateTaskDialog({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione Parceiro" />
+                            <SelectValue placeholder={t('common.select')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -454,7 +451,6 @@ export function CreateTaskDialog({
                                       key={`${template.value}-${template.rate.id}`}
                                       onSelect={() => {
                                         form.setValue('title', template.value)
-                                        // Populate financial fields from template
                                         if (template.rate) {
                                           form.setValue(
                                             'price',
@@ -630,7 +626,7 @@ export function CreateTaskDialog({
                               {field.value ? (
                                 format(field.value, 'PPP')
                               ) : (
-                                <span>Selecione uma data</span>
+                                <span>{t('common.select')}</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>

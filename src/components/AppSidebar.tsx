@@ -64,22 +64,10 @@ export function AppSidebar() {
     }
   }
 
-  // Calculate unread messages
   const unreadMessagesCount = messages.reduce(
     (acc, msg) => acc + (msg.unread || 0),
     0,
   )
-
-  // NOTE: When unauthenticated, we don't check permissions, just show a minimal set or all masked.
-  // For better UX in "guest" mode, we might want to hide menu items that require auth,
-  // but the user story says "replace real data strings with ... masking patterns".
-  // It doesn't explicitly say "hide navigation".
-  // However, `hasPermission` might fail or return false if currentUser is a dummy guest.
-  // In `useAuthStore`/`AppContext`, default currentUser is `systemUsers[0]` which is admin.
-  // But `isAuthenticated` starts false.
-  // If `isAuthenticated` is false, we should probably treat `currentUser` as potentially null or guest.
-  // Since the mock data has a default user, `currentUser` is populated.
-  // We will mask sensitive user info in the footer.
 
   const allMenuItems = [
     {
@@ -152,7 +140,7 @@ export function AppSidebar() {
       title: t('common.service_pricing'),
       url: '/service-pricing',
       icon: Tags,
-      resource: 'settings', // Using settings permission for catalog management
+      resource: 'settings',
     },
     {
       title: t('common.calendar'),
@@ -164,7 +152,7 @@ export function AppSidebar() {
       title: t('common.visits'),
       url: '/visits',
       icon: CalendarDays,
-      resource: 'calendar', // Using calendar permission for visits
+      resource: 'calendar',
     },
     {
       title: t('common.tasks'),
@@ -225,7 +213,10 @@ export function AppSidebar() {
     currentUser.role === 'software_tenant'
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar
+      collapsible="icon"
+      className="bg-slate-50 dark:bg-slate-900 border-r"
+    >
       <SidebarHeader className="h-16 flex items-center px-4 border-b">
         <Link
           to="/"
@@ -248,7 +239,7 @@ export function AppSidebar() {
           currentUser.role === 'partner' ||
           currentUser.role === 'partner_employee') && (
           <SidebarGroup>
-            <SidebarGroupLabel className={cn(isMobile && 'text-white/70')}>
+            <SidebarGroupLabel className={cn(isMobile && 'text-foreground/70')}>
               {t('common.portal')}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -258,9 +249,6 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive('/portal/tenant')}
-                      className={cn(
-                        isMobile && 'text-white font-bold hover:text-white/90',
-                      )}
                     >
                       <Link to="/portal/tenant" onClick={handleLinkClick}>
                         <LayoutTemplate />
@@ -274,9 +262,6 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive('/portal/owner')}
-                      className={cn(
-                        isMobile && 'text-white font-bold hover:text-white/90',
-                      )}
                     >
                       <Link to="/portal/owner" onClick={handleLinkClick}>
                         <LayoutTemplate />
@@ -291,9 +276,6 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive('/portal/partner')}
-                      className={cn(
-                        isMobile && 'text-white font-bold hover:text-white/90',
-                      )}
                     >
                       <Link to="/portal/partner" onClick={handleLinkClick}>
                         <LayoutTemplate />
@@ -309,7 +291,7 @@ export function AppSidebar() {
 
         {visibleMenuItems.length > 0 && (
           <SidebarGroup>
-            <SidebarGroupLabel className={cn(isMobile && 'text-white/70')}>
+            <SidebarGroupLabel className={cn(isMobile && 'text-foreground/70')}>
               {t('sidebar.main_menu')}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -320,9 +302,6 @@ export function AppSidebar() {
                       asChild
                       isActive={isActive(item.url)}
                       tooltip={item.title}
-                      className={cn(
-                        isMobile && 'text-white font-bold hover:text-white/90',
-                      )}
                     >
                       <Link
                         to={item.url}
@@ -351,7 +330,7 @@ export function AppSidebar() {
         )}
 
         <SidebarGroup className="mt-auto">
-          <SidebarGroupLabel className={cn(isMobile && 'text-white/70')}>
+          <SidebarGroupLabel className={cn(isMobile && 'text-foreground/70')}>
             {t('sidebar.system')}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -362,9 +341,6 @@ export function AppSidebar() {
                     asChild
                     isActive={isActive('/admin/migration')}
                     tooltip={t('sidebar.migration_hub')}
-                    className={cn(
-                      isMobile && 'text-white font-bold hover:text-white/90',
-                    )}
                   >
                     <Link to="/admin/migration" onClick={handleLinkClick}>
                       <Database />
@@ -379,9 +355,6 @@ export function AppSidebar() {
                     asChild
                     isActive={isActive('/admin/publicity')}
                     tooltip={t('sidebar.publicity_admin')}
-                    className={cn(
-                      isMobile && 'text-white font-bold hover:text-white/90',
-                    )}
                   >
                     <Link to="/admin/publicity" onClick={handleLinkClick}>
                       <Megaphone />
@@ -396,9 +369,6 @@ export function AppSidebar() {
                     asChild
                     isActive={isActive('/users')}
                     tooltip={t('sidebar.users')}
-                    className={cn(
-                      isMobile && 'text-white font-bold hover:text-white/90',
-                    )}
                   >
                     <Link to="/users" onClick={handleLinkClick}>
                       <Users />
@@ -413,9 +383,6 @@ export function AppSidebar() {
                     asChild
                     isActive={isActive('/settings')}
                     tooltip={t('common.settings')}
-                    className={cn(
-                      isMobile && 'text-white font-bold hover:text-white/90',
-                    )}
                   >
                     <Link to="/settings" onClick={handleLinkClick}>
                       <Settings />
@@ -441,17 +408,13 @@ export function AppSidebar() {
               <div
                 className={cn(
                   'flex flex-col text-sm leading-tight group-data-[collapsible=icon]:hidden',
-                  isMobile && 'text-white',
                 )}
               >
                 <span className="font-semibold truncate w-32">
                   <DataMask>{currentUser.name}</DataMask>
                 </span>
                 <span
-                  className={cn(
-                    'text-xs text-muted-foreground truncate w-32',
-                    isMobile && 'text-white/70',
-                  )}
+                  className={cn('text-xs text-muted-foreground truncate w-32')}
                 >
                   <DataMask>{currentUser.email}</DataMask>
                 </span>

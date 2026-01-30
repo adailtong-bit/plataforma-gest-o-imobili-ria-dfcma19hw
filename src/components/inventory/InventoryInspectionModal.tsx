@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
 import {
-  InventoryItem,
   InventoryInspection,
   InventoryCheckResult,
   ItemCondition,
-  Property,
 } from '@/lib/types'
 import {
   Dialog,
@@ -33,8 +31,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
-import { CheckSquare, AlertTriangle } from 'lucide-react'
+import { CheckSquare } from 'lucide-react'
 import usePropertyStore from '@/stores/usePropertyStore'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface InventoryInspectionModalProps {
   isOpen: boolean
@@ -59,6 +58,7 @@ export function InventoryInspectionModal({
   isOptional,
   performedBy,
 }: InventoryInspectionModalProps) {
+  const { t } = useLanguageStore()
   const { properties } = usePropertyStore()
   const property = properties.find((p) => p.id === propertyId)
   const [items, setItems] = useState<InventoryCheckResult[]>([])
@@ -66,7 +66,6 @@ export function InventoryInspectionModal({
 
   useEffect(() => {
     if (isOpen && property?.inventory) {
-      // Initialize items from master inventory
       const checklist: InventoryCheckResult[] = property.inventory.map(
         (item) => ({
           itemId: item.id,
@@ -74,7 +73,7 @@ export function InventoryInspectionModal({
           category: item.category,
           quantity: item.quantity,
           originalCondition: item.condition,
-          condition: item.condition, // Default to same as master
+          condition: item.condition,
           notes: '',
         }),
       )
@@ -108,7 +107,6 @@ export function InventoryInspectionModal({
     onClose()
   }
 
-  // Calculate changes
   const changesCount = items.filter(
     (i) => i.condition !== i.originalCondition,
   ).length
@@ -121,7 +119,7 @@ export function InventoryInspectionModal({
             <CheckSquare className="h-5 w-5" /> {title}
           </DialogTitle>
           <DialogDescription>
-            Verify the condition of inventory items.
+            {t('common.confirm')} {t('common.details')}
             {changesCount > 0 && (
               <span className="ml-2 text-yellow-600 font-medium">
                 ({changesCount} changes detected)
@@ -134,12 +132,12 @@ export function InventoryInspectionModal({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[200px]">Item</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead className="w-[200px]">{t('common.name')}</TableHead>
+                <TableHead>{t('common.type')}</TableHead>
                 <TableHead>Qty</TableHead>
-                <TableHead>Original State</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
                 <TableHead className="w-[150px]">Observed State</TableHead>
-                <TableHead>Notes</TableHead>
+                <TableHead>{t('common.description')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -217,7 +215,7 @@ export function InventoryInspectionModal({
         </div>
 
         <div className="grid gap-2 py-2">
-          <Label>General Inspection Notes</Label>
+          <Label>{t('common.description')}</Label>
           <Textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
@@ -232,10 +230,10 @@ export function InventoryInspectionModal({
             </Button>
           )}
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleSave} className="bg-trust-blue">
-            Complete Inspection
+            {t('common.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

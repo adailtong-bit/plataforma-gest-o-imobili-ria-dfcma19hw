@@ -1,11 +1,5 @@
 import { useState } from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -37,6 +31,7 @@ import { Plus, Trash2, Edit } from 'lucide-react'
 import useShortTermStore from '@/stores/useShortTermStore'
 import { MessageTemplate } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export function CommunicationSettings() {
   const {
@@ -46,6 +41,7 @@ export function CommunicationSettings() {
     deleteMessageTemplate,
   } = useShortTermStore()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingTemplate, setEditingTemplate] = useState<
     Partial<MessageTemplate>
@@ -107,7 +103,7 @@ export function CommunicationSettings() {
           }}
           className="gap-2"
         >
-          <Plus className="h-4 w-4" /> New Template
+          <Plus className="h-4 w-4" /> {t('common.add_title')}
         </Button>
       </div>
 
@@ -116,10 +112,12 @@ export function CommunicationSettings() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Template Name</TableHead>
+                <TableHead>{t('common.name')}</TableHead>
                 <TableHead>Trigger</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -170,7 +168,7 @@ export function CommunicationSettings() {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label>Template Name</Label>
+              <Label>{t('common.name')}</Label>
               <Input
                 value={editingTemplate.name}
                 onChange={(e) =>
@@ -219,7 +217,7 @@ export function CommunicationSettings() {
               />
             </div>
             <div className="grid gap-2">
-              <Label>Content</Label>
+              <Label>{t('common.description')}</Label>
               <Textarea
                 value={editingTemplate.content}
                 onChange={(e) =>
@@ -261,7 +259,7 @@ export function CommunicationSettings() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleSave}>Save Template</Button>
+            <Button onClick={handleSave}>{t('common.save')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

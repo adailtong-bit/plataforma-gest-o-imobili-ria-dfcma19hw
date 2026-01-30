@@ -78,8 +78,8 @@ export default function Owners() {
   const handleAddOwner = () => {
     if (!newOwner.name || !newOwner.email) {
       toast({
-        title: t('tenants.error_title'),
-        description: t('tenants.error_desc'),
+        title: t('common.error'),
+        description: t('common.required'),
         variant: 'destructive',
       })
       return
@@ -87,7 +87,7 @@ export default function Owners() {
 
     if (!validateEmail(newOwner.email)) {
       toast({
-        title: t('tenants.error_title'),
+        title: t('common.error'),
         description: 'Email inválido',
         variant: 'destructive',
       })
@@ -104,8 +104,8 @@ export default function Owners() {
     })
 
     toast({
-      title: t('tenants.success_title'),
-      description: t('owners.success_desc') || 'Owner registered.',
+      title: t('common.success'),
+      description: t('owners.success_desc'),
     })
     setOpen(false)
     setNewOwner({ name: '', email: '', phone: '' })
@@ -214,7 +214,7 @@ export default function Owners() {
               {filteredOwners.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8">
-                    Nenhum proprietário encontrado.
+                    {t('common.empty')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -272,7 +272,7 @@ export default function Owners() {
                             {properties.filter((p) => p.ownerId === owner.id)
                               .length === 0 && (
                               <div className="p-3 text-sm text-center text-muted-foreground">
-                                Nenhuma propriedade vinculada.
+                                {t('common.empty')}
                               </div>
                             )}
                           </div>
@@ -314,7 +314,7 @@ export default function Owners() {
                               }
                             >
                               <MessageSquare className="mr-2 h-4 w-4" />{' '}
-                              {t('tenants.send_message')}
+                              {t('common.messages')}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>

@@ -13,7 +13,6 @@ import {
   User,
   Building,
   Image as ImageIcon,
-  DollarSign,
   CheckCircle2,
   Clock,
   Navigation,
@@ -30,6 +29,7 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import useShortTermStore from '@/stores/useShortTermStore'
 import useAuthStore from '@/stores/useAuthStore'
 import { Card, CardContent } from '@/components/ui/card'
+import { DataMask } from '@/components/DataMask'
 
 interface TaskDetailsSheetProps {
   task: Task | null
@@ -66,7 +66,6 @@ export function TaskDetailsSheet({
     task.evidence?.filter((e) => e.type === 'completion') || []
   const otherEvidence = task.evidence?.filter((e) => e.type === 'other') || []
 
-  // Combine legacy images and completion photos for gallery
   const galleryImages = [
     ...completionEvidence.map((e) => ({
       url: e.url,
@@ -93,7 +92,6 @@ export function TaskDetailsSheet({
     ? bookings.find((b) => b.id === task.bookingId)
     : null
 
-  // Role-Based Logic
   const isAdminOrPM = ['platform_owner', 'software_tenant'].includes(
     currentUser.role,
   )
@@ -101,7 +99,6 @@ export function TaskDetailsSheet({
   const isTeamMember = currentUser.role === 'partner_employee'
   const isOwner = currentUser.role === 'property_owner'
 
-  // Visibility flags
   const showInternalCosts = isAdminOrPM || isPartner
   const showTeamPayout = isAdminOrPM || isPartner || isTeamMember
   const showBillableToOwner = isAdminOrPM || isOwner
@@ -126,14 +123,15 @@ export function TaskDetailsSheet({
                   </Badge>
                 )}
               </div>
-              <SheetTitle className="text-2xl">{task.title}</SheetTitle>
+              <SheetTitle className="text-2xl">
+                <DataMask>{task.title}</DataMask>
+              </SheetTitle>
               <SheetDescription className="text-base">
-                {task.propertyName}
+                <DataMask>{task.propertyName}</DataMask>
               </SheetDescription>
             </SheetHeader>
 
             <div className="space-y-6">
-              {/* Financial Section - Role Protected */}
               {(showInternalCosts || showBillableToOwner) && (
                 <Card className="bg-emerald-50/50 border-emerald-100">
                   <CardContent className="p-4 space-y-3">
@@ -141,22 +139,22 @@ export function TaskDetailsSheet({
                       <Receipt className="h-4 w-4" /> Detalhes Financeiros
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      {/* Owner / PM View */}
                       {showBillableToOwner && (
                         <div className="col-span-2 md:col-span-1">
                           <span className="text-muted-foreground text-xs block">
                             Total (Fatura Proprietário)
                           </span>
                           <span className="text-xl font-bold text-emerald-700">
-                            $
-                            {(task.billableAmount || task.price || 0).toFixed(
-                              2,
-                            )}
+                            <DataMask>
+                              $
+                              {(task.billableAmount || task.price || 0).toFixed(
+                                2,
+                              )}
+                            </DataMask>
                           </span>
                         </div>
                       )}
 
-                      {/* PM / Partner View */}
                       {showInternalCosts && (
                         <>
                           <div className="col-span-2 md:col-span-1">
@@ -164,7 +162,10 @@ export function TaskDetailsSheet({
                               <Hammer className="h-3 w-3" /> Custo Mão de Obra
                             </span>
                             <span className="font-medium text-gray-700">
-                              ${(task.laborCost || task.price || 0).toFixed(2)}
+                              <DataMask>
+                                $
+                                {(task.laborCost || task.price || 0).toFixed(2)}
+                              </DataMask>
                             </span>
                           </div>
                           {task.materialCost && task.materialCost > 0 && (
@@ -173,21 +174,24 @@ export function TaskDetailsSheet({
                                 <HardHat className="h-3 w-3" /> Custo Materiais
                               </span>
                               <span className="font-medium text-gray-700">
-                                ${task.materialCost.toFixed(2)}
+                                <DataMask>
+                                  ${task.materialCost.toFixed(2)}
+                                </DataMask>
                               </span>
                             </div>
                           )}
                         </>
                       )}
 
-                      {/* Team / PM / Partner View */}
                       {showTeamPayout && task.teamMemberPayout && (
                         <div className="col-span-2 md:col-span-1">
                           <span className="text-muted-foreground text-xs block flex items-center gap-1">
                             <User className="h-3 w-3" /> Pagamento Equipe
                           </span>
                           <span className="font-medium text-blue-600">
-                            ${task.teamMemberPayout.toFixed(2)}
+                            <DataMask>
+                              ${task.teamMemberPayout.toFixed(2)}
+                            </DataMask>
                           </span>
                         </div>
                       )}
@@ -196,7 +200,6 @@ export function TaskDetailsSheet({
                 </Card>
               )}
 
-              {/* Rating Section */}
               {task.rating && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
@@ -214,7 +217,6 @@ export function TaskDetailsSheet({
                 </div>
               )}
 
-              {/* Booking Link Section */}
               {linkedBooking && (
                 <Card className="bg-purple-50/50 border-purple-100">
                   <CardContent className="p-4">
@@ -226,13 +228,17 @@ export function TaskDetailsSheet({
                         <span className="text-muted-foreground text-xs">
                           {t('short_term.guest')}
                         </span>
-                        <p className="font-medium">{linkedBooking.guestName}</p>
+                        <p className="font-medium">
+                          <DataMask>{linkedBooking.guestName}</DataMask>
+                        </p>
                       </div>
                       <div>
                         <span className="text-muted-foreground text-xs">
                           {t('short_term.platform')}
                         </span>
-                        <p className="capitalize">{linkedBooking.platform}</p>
+                        <p className="capitalize">
+                          <DataMask>{linkedBooking.platform}</DataMask>
+                        </p>
                       </div>
                       <div>
                         <span className="text-muted-foreground text-xs">
@@ -261,7 +267,6 @@ export function TaskDetailsSheet({
                 </Card>
               )}
 
-              {/* Location Section */}
               <div className="bg-muted/30 p-4 rounded-lg border space-y-3">
                 <h3 className="font-semibold flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wide">
                   <MapPin className="h-4 w-4" /> {t('tasks.location')}
@@ -271,7 +276,9 @@ export function TaskDetailsSheet({
                     <Building className="h-4 w-4 text-muted-foreground mt-0.5" />
                     <div>
                       <span className="font-medium block">
-                        {task.propertyCommunity || 'Condomínio não informado'}
+                        <DataMask>
+                          {task.propertyCommunity || 'Condomínio não informado'}
+                        </DataMask>
                       </span>
                       <span className="text-sm text-muted-foreground">
                         Comunidade
@@ -282,7 +289,9 @@ export function TaskDetailsSheet({
                     <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                     <div>
                       <span className="font-medium block">
-                        {task.propertyAddress || 'Endereço não informado'}
+                        <DataMask>
+                          {task.propertyAddress || 'Endereço não informado'}
+                        </DataMask>
                       </span>
                       <span className="text-sm text-muted-foreground">
                         Endereço Completo
@@ -294,7 +303,6 @@ export function TaskDetailsSheet({
 
               <Separator />
 
-              {/* Workflow Evidence */}
               <div className="space-y-4">
                 <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4" /> {t('tasks.activity_log')}
@@ -350,13 +358,14 @@ export function TaskDetailsSheet({
 
               <Separator />
 
-              {/* Execution Details */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1">
                     <User className="h-3 w-3" /> {t('tasks.assignee')}
                   </h4>
-                  <p className="font-medium">{task.assignee}</p>
+                  <p className="font-medium">
+                    <DataMask>{task.assignee}</DataMask>
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1">

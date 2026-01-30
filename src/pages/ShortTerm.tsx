@@ -35,6 +35,7 @@ import {
 import { Booking } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import { CurrencyInput } from '@/components/ui/currency-input'
+import { DataMask } from '@/components/DataMask'
 
 export default function ShortTerm() {
   const { t, language } = useLanguageStore()
@@ -64,8 +65,8 @@ export default function ShortTerm() {
       !newBooking.checkOut
     ) {
       toast({
-        title: 'Error',
-        description: 'Missing required fields.',
+        title: t('common.error'),
+        description: t('common.required'),
         variant: 'destructive',
       })
       return
@@ -93,7 +94,7 @@ export default function ShortTerm() {
       platform: 'direct',
       status: 'confirmed',
     })
-    toast({ title: 'Booking created successfully.' })
+    toast({ title: t('common.success') })
   }
 
   return (
@@ -118,7 +119,7 @@ export default function ShortTerm() {
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>{t('tenants.property')}</Label>
+                  <Label>{t('properties.title')}</Label>
                   <Select
                     value={newBooking.propertyId}
                     onValueChange={(v) =>
@@ -126,19 +127,19 @@ export default function ShortTerm() {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select" />
+                      <SelectValue placeholder={t('common.select')} />
                     </SelectTrigger>
                     <SelectContent>
                       {shortTermProperties.map((p) => (
                         <SelectItem key={p.id} value={p.id}>
-                          {p.name}
+                          <DataMask>{p.name}</DataMask>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label>Booking Source</Label>
+                  <Label>{t('short_term.platform')}</Label>
                   <Select
                     value={newBooking.platform}
                     onValueChange={(v: any) =>
@@ -236,7 +237,9 @@ export default function ShortTerm() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="confirmed">Confirmed</SelectItem>
+                      <SelectItem value="confirmed">
+                        {t('common.active')}
+                      </SelectItem>
                       <SelectItem value="checked_in">Checked In</SelectItem>
                       <SelectItem value="checked_out">Checked Out</SelectItem>
                     </SelectContent>
@@ -254,16 +257,16 @@ export default function ShortTerm() {
       <Tabs defaultValue="reports" className="space-y-4">
         <TabsList>
           <TabsTrigger value="reports">
-            <LayoutDashboard className="h-4 w-4 mr-2" /> Reports
+            <LayoutDashboard className="h-4 w-4 mr-2" /> {t('common.reports')}
           </TabsTrigger>
           <TabsTrigger value="calendar">
-            <CalendarDays className="h-4 w-4 mr-2" /> Calendar
+            <CalendarDays className="h-4 w-4 mr-2" /> {t('common.calendar')}
           </TabsTrigger>
           <TabsTrigger value="bookings">
-            <List className="h-4 w-4 mr-2" /> Bookings
+            <List className="h-4 w-4 mr-2" /> Reservas
           </TabsTrigger>
           <TabsTrigger value="communication">
-            <MessageSquare className="h-4 w-4 mr-2" /> Communication
+            <MessageSquare className="h-4 w-4 mr-2" /> Comunicação
           </TabsTrigger>
         </TabsList>
 

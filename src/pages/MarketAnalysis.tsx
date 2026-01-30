@@ -43,7 +43,6 @@ export default function MarketAnalysis() {
   const { properties } = usePropertyStore()
   const { t, language } = useLanguageStore()
 
-  // State for Filters
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all')
   const [filterRegion, setFilterRegion] = useState('all')
   const [filterBedrooms, setFilterBedrooms] = useState('all')
@@ -57,11 +56,9 @@ export default function MarketAnalysis() {
     return true
   })
 
-  // Determine Sample Size Mock
   const sampleSize =
     filterBedrooms !== 'all' ? 45 : filterRegion !== 'all' ? 120 : 350
 
-  // Mock Trend Data generator based on Timeframe
   const generateTrendData = (months: number) => {
     return Array.from({ length: months }).map((_, i) => {
       const monthLabel = `M-${months - i}`
@@ -72,8 +69,8 @@ export default function MarketAnalysis() {
         occupancy: 70 + Math.random() * 20,
         competitors: 100 + i * 2,
         saturation: 50 + i,
-        adr: 180 + i * 5, // Average Daily Rate (STR)
-        monthlyRent: 2200 + i * 20, // Monthly Rent (LTR)
+        adr: 180 + i * 5,
+        monthlyRent: 2200 + i * 20,
       }
     })
   }
@@ -83,12 +80,6 @@ export default function MarketAnalysis() {
   const priceTrendData = generateTrendData(monthsToShow)
 
   const handleExportPDF = () => {
-    const link = document.createElement('a')
-    link.href = '#'
-    link.setAttribute('download', 'market_analysis_report.pdf')
-    document.body.appendChild(link)
-    document.body.removeChild(link)
-
     toast({
       title: 'Exporting Report',
       description:
@@ -119,7 +110,6 @@ export default function MarketAnalysis() {
         </div>
       </div>
 
-      {/* Advanced Filters */}
       <Card className="bg-muted/30">
         <CardHeader>
           <CardTitle className="text-lg">
@@ -141,7 +131,7 @@ export default function MarketAnalysis() {
                 <SelectItem value="all">{t('market.general')}</SelectItem>
                 {properties.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
-                    {p.name}
+                    <DataMask>{p.name}</DataMask>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -195,7 +185,6 @@ export default function MarketAnalysis() {
         </CardContent>
       </Card>
 
-      {/* External Data Sources Summary */}
       <div className="flex gap-4 overflow-x-auto pb-2">
         <Badge variant="outline" className="px-3 py-1 bg-white border-blue-200">
           <img
@@ -288,7 +277,6 @@ export default function MarketAnalysis() {
                 </div>
               </div>
 
-              {/* Occupancy Bar */}
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>{t('market.avg_occupancy')}</span>
@@ -310,7 +298,6 @@ export default function MarketAnalysis() {
         ))}
       </div>
 
-      {/* Historical Charts with Timeframe */}
       <div className="grid grid-cols-1 gap-6">
         <Card>
           <CardHeader>
@@ -346,10 +333,22 @@ export default function MarketAnalysis() {
               <DataMask className="w-full h-full block">
                 <ChartContainer
                   config={{
-                    avgPrice: { label: 'Avg Price', color: '#2563eb' },
-                    adr: { label: 'Avg Daily Rate (ADR)', color: '#9333ea' },
-                    monthlyRent: { label: 'Rent (LTR)', color: '#0ea5e9' },
-                    occupancy: { label: 'Occupancy (%)', color: '#16a34a' },
+                    avgPrice: {
+                      label: t('market.avg_sale_price'),
+                      color: '#2563eb',
+                    },
+                    adr: {
+                      label: t('market.avg_daily_rate'),
+                      color: '#9333ea',
+                    },
+                    monthlyRent: {
+                      label: t('market.monthly_rent'),
+                      color: '#0ea5e9',
+                    },
+                    occupancy: {
+                      label: t('market.avg_occupancy'),
+                      color: '#16a34a',
+                    },
                     saturation: { label: 'Saturation', color: '#f97316' },
                   }}
                   className="h-full w-full"
@@ -368,7 +367,7 @@ export default function MarketAnalysis() {
                       stroke="#2563eb"
                       strokeWidth={2}
                       dot={{ r: 4 }}
-                      name="Avg Price"
+                      name={t('market.avg_sale_price')}
                     />
                     <Line
                       yAxisId="right"
@@ -377,7 +376,7 @@ export default function MarketAnalysis() {
                       stroke="#9333ea"
                       strokeWidth={2}
                       dot={false}
-                      name="ADR"
+                      name={t('market.avg_daily_rate')}
                     />
                     <Line
                       yAxisId="right"
@@ -386,7 +385,7 @@ export default function MarketAnalysis() {
                       stroke="#0ea5e9"
                       strokeWidth={2}
                       dot={false}
-                      name="Rent"
+                      name={t('market.monthly_rent')}
                     />
                     <Line
                       yAxisId="right"
@@ -394,16 +393,7 @@ export default function MarketAnalysis() {
                       dataKey="occupancy"
                       stroke="#16a34a"
                       strokeWidth={2}
-                      name="Occupancy (%)"
-                    />
-                    <Line
-                      yAxisId="right"
-                      type="monotone"
-                      dataKey="saturation"
-                      stroke="#f97316"
-                      strokeDasharray="5 5"
-                      strokeWidth={2}
-                      name="Saturation"
+                      name={t('market.avg_occupancy')}
                     />
                   </LineChart>
                 </ChartContainer>

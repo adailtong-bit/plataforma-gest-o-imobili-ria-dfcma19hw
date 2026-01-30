@@ -14,7 +14,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -51,6 +50,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import useTaskStore from '@/stores/useTaskStore'
+import { DataMask } from '@/components/DataMask'
 
 interface TaskCardProps {
   task: Task
@@ -151,7 +151,6 @@ export function TaskCard({
     })
   }
 
-  // Hierarchical Visibility Logic
   const isTeamMember = currentUser.role === 'partner_employee'
   const isPartner = currentUser.role === 'partner'
   const isOwner = currentUser.role === 'property_owner'
@@ -161,7 +160,6 @@ export function TaskCard({
     'internal_user',
   ].includes(currentUser.role)
 
-  // Determine which financial values to show
   const showPartnerPrice = isAdminOrPM || isPartner
   const showTeamPayout = isAdminOrPM || isPartner || isTeamMember
   const showBillable = isAdminOrPM || isOwner
@@ -292,7 +290,7 @@ export function TaskCard({
           </div>
           <div className="flex justify-between items-start gap-2">
             <CardTitle className="text-sm font-semibold leading-tight line-clamp-2">
-              {task.title}
+              <DataMask>{task.title}</DataMask>
             </CardTitle>
             {canEdit &&
               task.status !== 'completed' &&
@@ -309,13 +307,19 @@ export function TaskCard({
               )}
           </div>
           <div className="text-xs text-muted-foreground space-y-0.5">
-            <div className="font-medium truncate">{task.propertyName}</div>
+            <div className="font-medium truncate">
+              <DataMask>{task.propertyName}</DataMask>
+            </div>
             {(task.propertyAddress || task.propertyCommunity) && (
               <div className="flex items-start gap-1 text-[10px] opacity-80">
                 <MapPin className="h-3 w-3 shrink-0 mt-0.5" />
                 <span className="line-clamp-2">
-                  {task.propertyCommunity ? `${task.propertyCommunity}, ` : ''}
-                  {task.propertyAddress}
+                  <DataMask>
+                    {task.propertyCommunity
+                      ? `${task.propertyCommunity}, `
+                      : ''}
+                    {task.propertyAddress}
+                  </DataMask>
                 </span>
               </div>
             )}
@@ -332,7 +336,9 @@ export function TaskCard({
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Preço Total:</span>
                 <span className="font-bold text-gray-900">
-                  ${(task.billableAmount || task.price || 0).toFixed(2)}
+                  <DataMask>
+                    ${(task.billableAmount || task.price || 0).toFixed(2)}
+                  </DataMask>
                 </span>
               </div>
             )}
@@ -340,7 +346,7 @@ export function TaskCard({
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Custo (Partner):</span>
                 <span className="font-semibold text-green-700">
-                  ${task.price.toFixed(2)}
+                  <DataMask>${task.price.toFixed(2)}</DataMask>
                 </span>
               </div>
             )}
@@ -348,7 +354,7 @@ export function TaskCard({
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Payout (Equipe):</span>
                 <span className="font-semibold text-blue-700">
-                  ${task.teamMemberPayout.toFixed(2)}
+                  <DataMask>${task.teamMemberPayout.toFixed(2)}</DataMask>
                 </span>
               </div>
             )}
@@ -356,7 +362,7 @@ export function TaskCard({
 
           <div className="flex items-center justify-between mt-auto">
             <div className="text-xs font-medium bg-secondary px-2 py-1 rounded-full truncate max-w-[120px]">
-              {task.assignee}
+              <DataMask>{task.assignee}</DataMask>
             </div>
             {((task.images && task.images.length > 0) ||
               (task.evidence && task.evidence.length > 0)) && (
@@ -381,7 +387,7 @@ export function TaskCard({
                 {assignedEmployeeName ? (
                   <div className="flex items-center gap-1">
                     <Badge variant="outline" className="text-[10px]">
-                      {assignedEmployeeName}
+                      <DataMask>{assignedEmployeeName}</DataMask>
                     </Badge>
                     {canDelegate && (
                       <Button

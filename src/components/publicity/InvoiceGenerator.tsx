@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Advertiser, Advertisement } from '@/lib/types'
 import { Printer } from 'lucide-react'
 import { format } from 'date-fns'
+import { DataMask } from '@/components/DataMask'
 
 interface InvoiceGeneratorProps {
   open: boolean
@@ -42,7 +43,6 @@ export function InvoiceGenerator({
           className="border p-8 rounded-md bg-white text-black print:border-none print:p-0"
           id="invoice-content"
         >
-          {/* Header */}
           <div className="flex justify-between items-start mb-8">
             <div>
               <h1 className="text-2xl font-bold text-navy">COREPM</h1>
@@ -65,18 +65,24 @@ export function InvoiceGenerator({
             </div>
           </div>
 
-          {/* Client Info */}
           <div className="mb-8">
             <h3 className="text-sm font-semibold text-gray-400 uppercase mb-2">
               Bill To:
             </h3>
-            <p className="font-bold">{advertiser.name}</p>
-            <p className="text-sm text-gray-600">{advertiser.address}</p>
-            <p className="text-sm text-gray-600">{advertiser.email}</p>
-            <p className="text-sm text-gray-600">{advertiser.phone}</p>
+            <p className="font-bold">
+              <DataMask>{advertiser.name}</DataMask>
+            </p>
+            <p className="text-sm text-gray-600">
+              <DataMask>{advertiser.address}</DataMask>
+            </p>
+            <p className="text-sm text-gray-600">
+              <DataMask>{advertiser.email}</DataMask>
+            </p>
+            <p className="text-sm text-gray-600">
+              <DataMask>{advertiser.phone}</DataMask>
+            </p>
           </div>
 
-          {/* Items */}
           <table className="w-full mb-8">
             <thead className="border-b-2 border-gray-200">
               <tr>
@@ -117,7 +123,6 @@ export function InvoiceGenerator({
             </tbody>
           </table>
 
-          {/* Totals */}
           <div className="flex justify-end">
             <div className="w-1/3 space-y-2">
               <div className="flex justify-between text-sm">
@@ -135,7 +140,6 @@ export function InvoiceGenerator({
             </div>
           </div>
 
-          {/* Footer */}
           <div className="mt-12 text-center text-xs text-gray-400">
             <p>Thank you for your business!</p>
           </div>

@@ -61,37 +61,36 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { InventoryInspectionModal } from '@/components/inventory/InventoryInspectionModal'
 import { InventoryReportViewer } from '@/components/inventory/InventoryReportViewer'
+import { DataMask } from '@/components/DataMask'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export function ShortTermBookings() {
   const { bookings, messageTemplates, updateBooking } = useShortTermStore()
   const { properties } = usePropertyStore()
   const { condominiums } = useCondominiumStore()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
 
   const [filter, setFilter] = useState('')
   const [sourceFilter, setSourceFilter] = useState('all')
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
 
-  // Email/Message Modal State
   const [emailModalOpen, setEmailModalOpen] = useState(false)
   const [emailContent, setEmailContent] = useState('')
   const [appendDetails, setAppendDetails] = useState(false)
   const [selectedTemplateName, setSelectedTemplateName] = useState('')
 
-  // Inspection State
   const [inspectionModalOpen, setInspectionModalOpen] = useState(false)
   const [inspectionAction, setInspectionAction] = useState<
     'check_in' | 'check_out' | null
   >(null)
 
-  // Report Viewer State
   const [reportViewerOpen, setReportViewerOpen] = useState(false)
   const [selectedInspection, setSelectedInspection] =
     useState<InventoryInspection | null>(null)
 
   const filteredBookings = bookings.filter((b) => {
     const prop = properties.find((p) => p.id === b.propertyId)
-    // Strict STR Filter
     if (prop?.profileType !== 'short_term') return false
 
     return (
@@ -191,7 +190,7 @@ export function ShortTermBookings() {
       const condo = condominiums.find((c) => c.id === prop?.condominiumId)
       const accessTemplate = `Hello {GuestName},\n\nHere is everything you need for your check-in at {{property_address}}:\n\nEnjoy your stay!`
       setEmailContent(replacePlaceholders(accessTemplate, booking, prop, condo))
-      setAppendDetails(true) // Auto-enable details for access info
+      setAppendDetails(true)
     } else {
       setEmailContent(`Hello ${booking.guestName},\n\n`)
     }
@@ -213,11 +212,6 @@ export function ShortTermBookings() {
     toast({
       title: 'Email Sent Successfully',
       description: `Message sent to ${selectedBooking.guestEmail}`,
-    })
-
-    console.log('Sending Email:', {
-      to: selectedBooking.guestEmail,
-      body: finalBody,
     })
 
     setEmailModalOpen(false)
@@ -301,7 +295,7 @@ export function ShortTermBookings() {
         <div className="relative flex-1 md:max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search guest or property..."
+            placeholder={t('common.search')}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             className="pl-8"
@@ -316,7 +310,7 @@ export function ShortTermBookings() {
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Sources</SelectItem>
+              <SelectItem value="all">{t('common.all')}</SelectItem>
               <SelectItem value="airbnb">Airbnb</SelectItem>
               <SelectItem value="vrbo">Vrbo</SelectItem>
               <SelectItem value="booking.com">Booking.com</SelectItem>
@@ -330,13 +324,15 @@ export function ShortTermBookings() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Property</TableHead>
-              <TableHead>Guest</TableHead>
-              <TableHead>Dates</TableHead>
-              <TableHead>Source</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t('properties.title')}</TableHead>
+              <TableHead>{t('short_term.guest')}</TableHead>
+              <TableHead>{t('common.date')}</TableHead>
+              <TableHead>{t('short_term.platform')}</TableHead>
+              <TableHead>{t('common.status')}</TableHead>
+              <TableHead>{t('short_term.total')}</TableHead>
+              <TableHead className="text-right">
+                {t('common.actions')}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -346,7 +342,7 @@ export function ShortTermBookings() {
                   colSpan={7}
                   className="text-center py-8 text-muted-foreground"
                 >
-                  No bookings found.
+                  {t('common.empty')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -361,14 +357,20 @@ export function ShortTermBookings() {
 
                 return (
                   <TableRow key={booking.id}>
-                    <TableCell className="font-medium">{prop?.name}</TableCell>
-                    <TableCell>{booking.guestName}</TableCell>
+                    <TableCell className="font-medium">
+                      <DataMask>{prop?.name}</DataMask>
+                    </TableCell>
+                    <TableCell>
+                      <DataMask>{booking.guestName}</DataMask>
+                    </TableCell>
                     <TableCell className="text-xs">
                       {format(parseISO(booking.checkIn), 'MMM dd')} -{' '}
                       {format(parseISO(booking.checkOut), 'MMM dd')}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{booking.platform}</Badge>
+                      <Badge variant="outline">
+                        <DataMask>{booking.platform}</DataMask>
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge

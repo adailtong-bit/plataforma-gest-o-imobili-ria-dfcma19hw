@@ -24,7 +24,6 @@ export default function Tasks() {
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
   const [filterType, setFilterType] = useState<string>('all')
 
-  // Memoized task lists for performance
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
       if (filterType === 'all') return true
@@ -62,10 +61,10 @@ export default function Tasks() {
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-[150px] h-9">
               <Filter className="w-3 h-3 mr-2 text-muted-foreground" />
-              <SelectValue placeholder="Tipo" />
+              <SelectValue placeholder={t('common.type')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos os Tipos</SelectItem>
+              <SelectItem value="all">{t('common.all')}</SelectItem>
               <SelectItem value="cleaning">{t('partners.cleaning')}</SelectItem>
               <SelectItem value="maintenance">
                 {t('partners.maintenance')}
@@ -101,7 +100,6 @@ export default function Tasks() {
 
         <TabsContent value="board" className="flex-1 min-h-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
-            {/* Pending Column */}
             <div className="bg-muted/50 p-4 rounded-lg flex flex-col gap-4 border border-border/50">
               <div className="flex items-center justify-between pb-2 border-b">
                 <h3 className="font-semibold text-sm uppercase text-muted-foreground">
@@ -124,7 +122,6 @@ export default function Tasks() {
               </div>
             </div>
 
-            {/* In Progress Column */}
             <div className="bg-blue-50/50 p-4 rounded-lg flex flex-col gap-4 border border-blue-100">
               <div className="flex items-center justify-between pb-2 border-b border-blue-200">
                 <h3 className="font-semibold text-sm uppercase text-blue-700">
@@ -150,7 +147,6 @@ export default function Tasks() {
               </div>
             </div>
 
-            {/* Approval Column */}
             <div className="bg-orange-50/50 p-4 rounded-lg flex flex-col gap-4 border border-orange-100">
               <div className="flex items-center justify-between pb-2 border-b border-orange-200">
                 <h3 className="font-semibold text-sm uppercase text-orange-700">
@@ -175,7 +171,6 @@ export default function Tasks() {
               </div>
             </div>
 
-            {/* Completed Column */}
             <div className="bg-green-50/50 p-4 rounded-lg flex flex-col gap-4 border border-green-100">
               <div className="flex items-center justify-between pb-2 border-b border-green-200">
                 <h3 className="font-semibold text-sm uppercase text-green-700">

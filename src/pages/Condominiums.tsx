@@ -50,6 +50,7 @@ import { useNavigate } from 'react-router-dom'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
 import { isValidEmail } from '@/lib/utils'
+import { DataMask } from '@/components/DataMask'
 
 export default function Condominiums() {
   const { condominiums, addCondominium, deleteCondominium } =
@@ -71,7 +72,6 @@ export default function Condominiums() {
     managerEmail: '',
   })
 
-  // Expanded Search: Name, Address, Manager Name, Manager Email
   const filteredCondos = condominiums.filter(
     (c) =>
       c.name.toLowerCase().includes(filter.toLowerCase()) ||
@@ -284,7 +284,7 @@ export default function Condominiums() {
               <TableRow>
                 <TableHead>{t('common.name')}</TableHead>
                 <TableHead>{t('common.address')}</TableHead>
-                <TableHead>Location</TableHead>
+                <TableHead>{t('tasks.location')}</TableHead>
                 <TableHead>{t('condominiums.manager')}</TableHead>
                 <TableHead>{t('condominiums.contact')}</TableHead>
                 <TableHead className="text-right">
@@ -304,23 +304,28 @@ export default function Condominiums() {
                   <TableRow key={condo.id}>
                     <TableCell className="font-medium flex items-center gap-2">
                       <Building2 className="h-4 w-4 text-muted-foreground" />
-                      {condo.name}
+                      <DataMask>{condo.name}</DataMask>
                     </TableCell>
-                    <TableCell>{condo.address}</TableCell>
+                    <TableCell>
+                      <DataMask>{condo.address}</DataMask>
+                    </TableCell>
                     <TableCell>
                       <div className="flex flex-col text-xs text-muted-foreground">
-                        <span>{condo.city || '-'}</span>
                         <span>
-                          {condo.state} {condo.zipCode}
+                          {condo.city || '-'}, {condo.state} {condo.zipCode}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>{condo.managerName || '-'}</TableCell>
+                    <TableCell>
+                      <DataMask>{condo.managerName || '-'}</DataMask>
+                    </TableCell>
                     <TableCell>
                       <div className="flex flex-col text-xs">
-                        <span>{condo.managerEmail}</span>
+                        <span>
+                          <DataMask>{condo.managerEmail}</DataMask>
+                        </span>
                         <span className="text-muted-foreground">
-                          {condo.managerPhone}
+                          <DataMask>{condo.managerPhone}</DataMask>
                         </span>
                       </div>
                     </TableCell>

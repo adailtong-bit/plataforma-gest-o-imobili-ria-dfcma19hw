@@ -173,7 +173,6 @@ export function EditTaskDialog({
   const watchPrice = form.watch('price')
   const watchMaterial = form.watch('materialCost')
 
-  // Recalculate billable for preview
   const laborCost = parseFloat(watchPrice || '0')
   const materialCost = parseFloat(watchMaterial || '0')
   const laborMargin = financialSettings.maintenanceMarginLabor || 0
@@ -199,7 +198,6 @@ export function EditTaskDialog({
   useEffect(() => {
     let templates: { label: string; value: string; rate: ServiceRate }[] = []
 
-    // 1. Add generic rates
     if (genericServiceRates && genericServiceRates.length > 0) {
       templates = genericServiceRates.map((rate) => ({
         label: `${rate.serviceName} (Genérico)`,
@@ -208,7 +206,6 @@ export function EditTaskDialog({
       }))
     }
 
-    // 2. Add partner specific rates
     if (selectedPartner && selectedPartner.serviceRates) {
       const partnerTemplates = selectedPartner.serviceRates.map((rate) => ({
         label: rate.serviceName,
@@ -260,10 +257,10 @@ export function EditTaskDialog({
       date: values.date.toISOString(),
       priority: values.priority,
       description: values.description,
-      price: finalLabor, // Vendor Labor Cost
+      price: finalLabor,
       laborCost: finalLabor,
       materialCost: finalMaterial,
-      billableAmount: estimatedBillable, // Updated billable
+      billableAmount: estimatedBillable,
       teamMemberPayout: finalPayout,
       backToBack: values.backToBack,
       recurrence: values.recurrence,
@@ -295,14 +292,14 @@ export function EditTaskDialog({
                   name="propertyId"
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>{t('tenants.property')}</FormLabel>
+                      <FormLabel>{t('properties.title')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione uma propriedade" />
+                            <SelectValue placeholder={t('common.select')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -435,7 +432,7 @@ export function EditTaskDialog({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione" />
+                            <SelectValue placeholder={t('common.select')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -465,7 +462,7 @@ export function EditTaskDialog({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione" />
+                            <SelectValue placeholder={t('common.select')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -493,7 +490,7 @@ export function EditTaskDialog({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione Parceiro" />
+                            <SelectValue placeholder={t('common.select')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -622,7 +619,7 @@ export function EditTaskDialog({
                               {field.value ? (
                                 format(field.value, 'PPP')
                               ) : (
-                                <span>Selecione uma data</span>
+                                <span>{t('common.select')}</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -696,7 +693,7 @@ export function EditTaskDialog({
               />
 
               <Button type="submit" className="w-full bg-trust-blue">
-                <Save className="h-4 w-4 mr-2" /> Salvar Alterações
+                <Save className="h-4 w-4 mr-2" /> {t('common.save')}
               </Button>
             </form>
           </Form>

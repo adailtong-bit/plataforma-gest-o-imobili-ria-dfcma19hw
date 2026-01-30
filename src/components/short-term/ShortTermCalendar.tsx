@@ -23,6 +23,7 @@ import useShortTermStore from '@/stores/useShortTermStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import { parseISO, format, isWithinInterval, addDays } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
+import { DataMask } from '@/components/DataMask'
 
 export function ShortTermCalendar() {
   const { bookings, calendarBlocks, addCalendarBlock, deleteCalendarBlock } =
@@ -40,7 +41,6 @@ export function ShortTermCalendar() {
   const [linkedTaskId, setLinkedTaskId] = useState('')
   const [daysCount, setDaysCount] = useState(1)
 
-  // STRICT STR FILTERING
   const shortTermProperties = properties.filter(
     (p) => p.profileType === 'short_term',
   )
@@ -193,7 +193,9 @@ export function ShortTermCalendar() {
                     className="border p-4 rounded-lg flex justify-between items-center bg-blue-50/50"
                   >
                     <div>
-                      <h4 className="font-semibold">{b.guestName}</h4>
+                      <h4 className="font-semibold">
+                        <DataMask>{b.guestName}</DataMask>
+                      </h4>
                       <p className="text-sm text-muted-foreground">
                         {prop?.name} • {b.platform}
                       </p>
