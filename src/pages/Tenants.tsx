@@ -39,6 +39,7 @@ import { isValidEmail } from '@/lib/utils'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { Label } from '@/components/ui/label'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
+import { DataMask } from '@/components/DataMask'
 
 export default function Tenants() {
   const { tenants, addTenant } = useTenantStore()
@@ -334,9 +335,11 @@ export default function Tenants() {
                   <TableRow key={tenant.id}>
                     <TableCell className="font-medium">
                       <div className="flex flex-col">
-                        <span>{tenant.name}</span>
+                        <span>
+                          <DataMask>{tenant.name}</DataMask>
+                        </span>
                         <span className="text-xs text-muted-foreground">
-                          {tenant.email}
+                          <DataMask>{tenant.email}</DataMask>
                         </span>
                       </div>
                     </TableCell>
@@ -347,7 +350,7 @@ export default function Tenants() {
                           className="flex items-center gap-2 hover:text-blue-600 hover:underline"
                         >
                           <Home className="h-4 w-4" />
-                          {prop.name}
+                          <DataMask>{prop.name}</DataMask>
                         </Link>
                       ) : (
                         <span className="text-muted-foreground">-</span>
@@ -356,13 +359,15 @@ export default function Tenants() {
                     <TableCell>
                       <div className="flex items-center gap-2 text-sm">
                         <Calendar className="h-3 w-3 text-muted-foreground" />
-                        {tenant.leaseStart
-                          ? format(new Date(tenant.leaseStart), 'dd/MM/yyyy')
-                          : 'N/A'}{' '}
-                        -{' '}
-                        {tenant.leaseEnd
-                          ? format(new Date(tenant.leaseEnd), 'dd/MM/yyyy')
-                          : 'N/A'}
+                        <DataMask>
+                          {tenant.leaseStart
+                            ? format(new Date(tenant.leaseStart), 'dd/MM/yyyy')
+                            : 'N/A'}{' '}
+                          -{' '}
+                          {tenant.leaseEnd
+                            ? format(new Date(tenant.leaseEnd), 'dd/MM/yyyy')
+                            : 'N/A'}
+                        </DataMask>
                       </div>
                     </TableCell>
                     <TableCell>

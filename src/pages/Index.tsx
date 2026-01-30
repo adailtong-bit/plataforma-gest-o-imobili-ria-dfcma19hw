@@ -9,7 +9,6 @@ import {
   Activity,
   DollarSign,
   Home,
-  Bell,
   Settings2,
   Trophy,
   CalendarDays,
@@ -40,7 +39,6 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useNotificationStore from '@/stores/useNotificationStore'
 import useVisitStore from '@/stores/useVisitStore'
-import useAuthStore from '@/stores/useAuthStore'
 import { AppContext } from '@/stores/AppContext'
 import {
   Dialog,
@@ -54,17 +52,11 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import Landing from '@/pages/Landing'
 import { formatCurrency } from '@/lib/utils'
-import { addMonths } from 'date-fns'
+import { DataMask } from '@/components/DataMask'
 
 export default function Index() {
-  const { isAuthenticated } = useAuthStore()
-
-  if (!isAuthenticated) {
-    return <Landing />
-  }
-
+  // Removed check for isAuthenticated to allow masked view
   return <DashboardContent />
 }
 
@@ -146,27 +138,12 @@ function DashboardContent() {
     },
   }
 
-  const pendingCleanings = filteredTasks.filter(
-    (t) => t.type === 'cleaning' && t.status === 'pending',
-  )
-
-  const activePropertiesCount =
-    selectedPropertyId === 'all'
-      ? properties.filter(
-          (p) => p.status === 'rented' || p.status === 'available',
-        ).length
-      : properties.find((p) => p.id === selectedPropertyId)
-        ? 1
-        : 0
-
   // Real Estate Specific Metrics
   const totalProperties = properties.length
   const activeListings = properties.filter(
     (p) => p.status === 'available',
   ).length
   const pendingVisits = visits.filter((v) => v.status === 'scheduled').length
-
-  const unreadNotifications = notifications.filter((n) => !n.read)
 
   // Gamification: Calculate Global Health Score
   const relevantProperties =
@@ -181,10 +158,6 @@ function DashboardContent() {
   const toggleWidget = (key: keyof typeof widgets) => {
     setWidgets((prev) => ({ ...prev, [key]: !prev[key] }))
   }
-
-  // Ensure addMonths is used to prevent unused var warning if needed, or used in calendar logic
-  // Just keeping it available as requested by user story "ensure addMonths is correctly imported"
-  const nextMonth = date ? addMonths(date, 1) : undefined
 
   return (
     <div className="flex flex-col gap-6">
@@ -257,7 +230,9 @@ function DashboardContent() {
               <Building className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalProperties}</div>
+              <div className="text-2xl font-bold">
+                <DataMask>{totalProperties}</DataMask>
+              </div>
               <p className="text-xs text-muted-foreground">In portfolio</p>
             </CardContent>
           </Card>
@@ -269,7 +244,9 @@ function DashboardContent() {
               <Key className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{activeListings}</div>
+              <div className="text-2xl font-bold">
+                <DataMask>{activeListings}</DataMask>
+              </div>
               <p className="text-xs text-muted-foreground">
                 {t('status.available')}
               </p>
@@ -283,7 +260,9 @@ function DashboardContent() {
               <CalendarDays className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{pendingVisits}</div>
+              <div className="text-2xl font-bold">
+                <DataMask>{pendingVisits}</DataMask>
+              </div>
               <p className="text-xs text-muted-foreground">
                 {t('common.scheduled')}
               </p>
@@ -298,7 +277,7 @@ function DashboardContent() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {formatCurrency(totalRevenue, language)}
+                <DataMask>{formatCurrency(totalRevenue, language)}</DataMask>
               </div>
               <p className="text-xs text-muted-foreground">
                 +20.1% {t('dashboard.from_last_month')}
@@ -323,7 +302,7 @@ function DashboardContent() {
           <CardContent>
             <div className="flex items-center gap-4">
               <div className="text-4xl font-bold">
-                {avgHealthScore.toFixed(0)}
+                <DataMask>{avgHealthScore.toFixed(0)}</DataMask>
               </div>
               <div className="flex-1 space-y-1">
                 <div className="flex justify-between text-xs text-blue-100">
@@ -352,31 +331,33 @@ function DashboardContent() {
               </CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
-              <ChartContainer
-                config={{
-                  revenue: {
-                    label: t('common.total'),
-                    color: 'hsl(var(--primary))',
-                  },
-                }}
-                className="h-[300px] w-full"
-              >
-                <BarChart data={revenueData}>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                  />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar
-                    dataKey="value"
-                    fill="var(--color-revenue)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ChartContainer>
+              <DataMask className="w-full h-[300px] block">
+                <ChartContainer
+                  config={{
+                    revenue: {
+                      label: t('common.total'),
+                      color: 'hsl(var(--primary))',
+                    },
+                  }}
+                  className="h-[300px] w-full"
+                >
+                  <BarChart data={revenueData}>
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="month"
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                    />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar
+                      dataKey="value"
+                      fill="var(--color-revenue)"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              </DataMask>
             </CardContent>
           </Card>
         )}
@@ -434,16 +415,18 @@ function DashboardContent() {
                         </div>
                         <div>
                           <p className="font-medium text-sm">
-                            {invoice.description}
+                            <DataMask>{invoice.description}</DataMask>
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {invoice.date} • {invoice.id}
+                            {invoice.date} • <DataMask>{invoice.id}</DataMask>
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-sm">
-                          {formatCurrency(invoice.amount, language)}
+                          <DataMask>
+                            {formatCurrency(invoice.amount, language)}
+                          </DataMask>
                         </span>
                         <Button size="sm" variant="outline">
                           {t('dashboard.review')}
@@ -463,9 +446,12 @@ function DashboardContent() {
                           <Activity className="h-5 w-5 text-blue-600" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">{task.title}</p>
+                          <p className="font-medium text-sm">
+                            <DataMask>{task.title}</DataMask>
+                          </p>
                           <p className="text-xs text-muted-foreground">
-                            {task.propertyName} • {task.assignee}
+                            <DataMask>{task.propertyName}</DataMask> •{' '}
+                            <DataMask>{task.assignee}</DataMask>
                           </p>
                         </div>
                       </div>
@@ -492,25 +478,27 @@ function DashboardContent() {
               <CardDescription>{t('dashboard.expense_desc')}</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer
-                config={chartConfig}
-                className="mx-auto aspect-square max-h-[250px]"
-              >
-                <PieChart>
-                  <Pie
-                    data={financials.expenses}
-                    dataKey="value"
-                    nameKey="category"
-                    innerRadius={60}
-                    strokeWidth={5}
-                  >
-                    {financials.expenses.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Pie>
-                  <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                </PieChart>
-              </ChartContainer>
+              <DataMask className="w-full h-[250px] block">
+                <ChartContainer
+                  config={chartConfig}
+                  className="mx-auto aspect-square max-h-[250px]"
+                >
+                  <PieChart>
+                    <Pie
+                      data={financials.expenses}
+                      dataKey="value"
+                      nameKey="category"
+                      innerRadius={60}
+                      strokeWidth={5}
+                    >
+                      {financials.expenses.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                  </PieChart>
+                </ChartContainer>
+              </DataMask>
             </CardContent>
           </Card>
         )}

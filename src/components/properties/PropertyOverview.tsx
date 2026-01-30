@@ -16,6 +16,7 @@ import useAuthStore from '@/stores/useAuthStore'
 import { User } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { Trophy } from 'lucide-react'
+import { DataMask } from '@/components/DataMask'
 
 interface PropertyOverviewProps {
   data: Property
@@ -29,7 +30,7 @@ export function PropertyOverview({
   canEdit,
 }: PropertyOverviewProps) {
   const { t } = useLanguageStore()
-  const { currentUser } = useAuthStore()
+  const { currentUser, isAuthenticated } = useAuthStore()
 
   // Access Control for Media
   const canViewMedia =
@@ -41,6 +42,43 @@ export function PropertyOverview({
 
   // Health Score Color
   const score = data.healthScore || 80
+
+  if (!isAuthenticated) {
+    return (
+      <Card>
+        <CardHeader className="flex flex-row justify-between items-start">
+          <CardTitle>{t('properties.overview')}</CardTitle>
+          <DataMask className="h-6 w-24" />
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid gap-2">
+            <Label>{t('common.name')}</Label>
+            <DataMask className="h-10 w-full rounded-md" />
+          </div>
+          <div className="grid gap-2">
+            <Label>{t('properties.profile_filter')}</Label>
+            <DataMask className="h-10 w-full rounded-md" />
+          </div>
+          <div className="grid gap-2">
+            <Label>{t('common.type')}</Label>
+            <DataMask className="h-10 w-full rounded-md" />
+          </div>
+          <div className="grid gap-2">
+            <Label>{t('common.status')}</Label>
+            <DataMask className="h-10 w-full rounded-md" />
+          </div>
+          <div className="grid gap-2">
+            <Label>{t('properties.marketing')}</Label>
+            <DataMask className="h-10 w-full rounded-md" />
+          </div>
+          <div className="grid gap-2 col-span-1 md:col-span-2">
+            <Label>{t('properties.cover_image')}</Label>
+            <DataMask className="w-full aspect-video rounded-md" />
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card>

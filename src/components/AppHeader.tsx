@@ -56,6 +56,7 @@ import useTaskStore from '@/stores/useTaskStore'
 import { ThemeCustomizer } from '@/components/ThemeCustomizer'
 import logo from '@/assets/logo-estilizado.jpg'
 import { AppContext } from '@/stores/AppContext'
+import { DataMask } from '@/components/DataMask'
 
 export function AppHeader() {
   const { currentUser, setCurrentUser, allUsers, logout } = useAuthStore()
@@ -192,7 +193,7 @@ export function AppHeader() {
                 onSelect={() => handleSearchSelect('property', p.id)}
               >
                 <Building className="mr-2 h-4 w-4" />
-                {p.name}
+                <DataMask>{p.name}</DataMask>
               </CommandItem>
             ))}
           </CommandGroup>
@@ -204,7 +205,7 @@ export function AppHeader() {
                 onSelect={() => handleSearchSelect('tenant', t.id)}
               >
                 <User className="mr-2 h-4 w-4" />
-                {t.name}
+                <DataMask>{t.name}</DataMask>
               </CommandItem>
             ))}
           </CommandGroup>
@@ -216,7 +217,7 @@ export function AppHeader() {
                 onSelect={() => handleSearchSelect('owner', o.id)}
               >
                 <User className="mr-2 h-4 w-4" />
-                {o.name}
+                <DataMask>{o.name}</DataMask>
               </CommandItem>
             ))}
           </CommandGroup>
@@ -228,7 +229,7 @@ export function AppHeader() {
                 onSelect={() => handleSearchSelect('task', task.id)}
               >
                 <CheckSquare className="mr-2 h-4 w-4" />
-                {task.title}
+                <DataMask>{task.title}</DataMask>
               </CommandItem>
             ))}
           </CommandGroup>
@@ -281,7 +282,7 @@ export function AppHeader() {
                 {t('common.notifications')}
               </h4>
               <Badge variant="secondary">
-                {unreadCount} {t('dashboard.unread')}
+                <DataMask>{unreadCount}</DataMask> {t('dashboard.unread')}
               </Badge>
             </div>
             <ScrollArea className="h-[300px]">
@@ -301,17 +302,19 @@ export function AppHeader() {
                         <span
                           className={`text-sm ${!notif.read ? 'font-semibold' : 'font-medium'}`}
                         >
-                          {notif.title}
+                          <DataMask>{notif.title}</DataMask>
                         </span>
                         {!notif.read && (
                           <Circle className="h-2 w-2 fill-blue-500 text-blue-500" />
                         )}
                       </div>
                       <span className="text-xs text-muted-foreground line-clamp-2">
-                        {notif.message}
+                        <DataMask>{notif.message}</DataMask>
                       </span>
                       <span className="text-[10px] text-muted-foreground mt-1">
-                        {format(new Date(notif.timestamp), 'dd/MM HH:mm')}
+                        <DataMask>
+                          {format(new Date(notif.timestamp), 'dd/MM HH:mm')}
+                        </DataMask>
                       </span>
                     </button>
                   ))}
@@ -339,10 +342,10 @@ export function AppHeader() {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">
-                  {currentUser?.name}
+                  <DataMask>{currentUser?.name}</DataMask>
                 </p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  {currentUser?.email}
+                  <DataMask>{currentUser?.email}</DataMask>
                 </p>
                 <Badge
                   className="mt-2 w-fit bg-navy hover:bg-navy/90 text-white"

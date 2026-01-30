@@ -36,6 +36,7 @@ import { Label } from '@/components/ui/label'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { formatCurrency } from '@/lib/utils'
+import { DataMask } from '@/components/DataMask'
 
 export default function MarketAnalysis() {
   const { toast } = useToast()
@@ -228,10 +229,12 @@ export default function MarketAnalysis() {
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-xl">{data.region}</CardTitle>
+                  <CardTitle className="text-xl">
+                    <DataMask>{data.region}</DataMask>
+                  </CardTitle>
                   <CardDescription className="flex items-center gap-1 mt-1">
                     <Info className="h-3 w-3" /> Based on a sample of{' '}
-                    {sampleSize} comparable properties.
+                    <DataMask>{sampleSize}</DataMask> comparable properties.
                   </CardDescription>
                 </div>
                 {data.trend === 'up' && (
@@ -248,7 +251,9 @@ export default function MarketAnalysis() {
                     {t('market.avg_sale_price')}
                   </span>
                   <div className="text-2xl font-bold">
-                    {formatCurrency(data.averagePrice, language)}
+                    <DataMask>
+                      {formatCurrency(data.averagePrice, language)}
+                    </DataMask>
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -256,7 +261,9 @@ export default function MarketAnalysis() {
                     {t('market.price_sqft')}
                   </span>
                   <div className="text-2xl font-bold">
-                    {formatCurrency(data.pricePerSqFt, language)}
+                    <DataMask>
+                      {formatCurrency(data.pricePerSqFt, language)}
+                    </DataMask>
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -264,7 +271,9 @@ export default function MarketAnalysis() {
                     {t('market.avg_daily_rate')}
                   </span>
                   <div className="text-xl font-semibold text-green-600">
-                    {formatCurrency(data.shortTermRate, language)}
+                    <DataMask>
+                      {formatCurrency(data.shortTermRate, language)}
+                    </DataMask>
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -272,7 +281,9 @@ export default function MarketAnalysis() {
                     {t('market.monthly_rent')}
                   </span>
                   <div className="text-xl font-semibold text-blue-600">
-                    {formatCurrency(data.longTermRate, language)}
+                    <DataMask>
+                      {formatCurrency(data.longTermRate, language)}
+                    </DataMask>
                   </div>
                 </div>
               </div>
@@ -281,14 +292,18 @@ export default function MarketAnalysis() {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>{t('market.avg_occupancy')}</span>
-                  <span className="font-bold">{data.occupancyRate}%</span>
+                  <span className="font-bold">
+                    <DataMask>{data.occupancyRate}%</DataMask>
+                  </span>
                 </div>
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-trust-blue"
-                    style={{ width: `${data.occupancyRate}%` }}
-                  />
-                </div>
+                <DataMask className="w-full h-2 block rounded-full bg-secondary">
+                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-trust-blue"
+                      style={{ width: `${data.occupancyRate}%` }}
+                    />
+                  </div>
+                </DataMask>
               </div>
             </CardContent>
           </Card>
@@ -328,69 +343,71 @@ export default function MarketAnalysis() {
           </CardHeader>
           <CardContent>
             <div className="h-[400px] w-full">
-              <ChartContainer
-                config={{
-                  avgPrice: { label: 'Avg Price', color: '#2563eb' },
-                  adr: { label: 'Avg Daily Rate (ADR)', color: '#9333ea' },
-                  monthlyRent: { label: 'Rent (LTR)', color: '#0ea5e9' },
-                  occupancy: { label: 'Occupancy (%)', color: '#16a34a' },
-                  saturation: { label: 'Saturation', color: '#f97316' },
-                }}
-                className="h-full w-full"
-              >
-                <LineChart data={priceTrendData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="month" />
-                  <YAxis yAxisId="left" />
-                  <YAxis yAxisId="right" orientation="right" />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Legend content={<ChartLegendContent />} />
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="avgPrice"
-                    stroke="#2563eb"
-                    strokeWidth={2}
-                    dot={{ r: 4 }}
-                    name="Avg Price"
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="adr"
-                    stroke="#9333ea"
-                    strokeWidth={2}
-                    dot={false}
-                    name="ADR"
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="monthlyRent"
-                    stroke="#0ea5e9"
-                    strokeWidth={2}
-                    dot={false}
-                    name="Rent"
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="occupancy"
-                    stroke="#16a34a"
-                    strokeWidth={2}
-                    name="Occupancy (%)"
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="saturation"
-                    stroke="#f97316"
-                    strokeDasharray="5 5"
-                    strokeWidth={2}
-                    name="Saturation"
-                  />
-                </LineChart>
-              </ChartContainer>
+              <DataMask className="w-full h-full block">
+                <ChartContainer
+                  config={{
+                    avgPrice: { label: 'Avg Price', color: '#2563eb' },
+                    adr: { label: 'Avg Daily Rate (ADR)', color: '#9333ea' },
+                    monthlyRent: { label: 'Rent (LTR)', color: '#0ea5e9' },
+                    occupancy: { label: 'Occupancy (%)', color: '#16a34a' },
+                    saturation: { label: 'Saturation', color: '#f97316' },
+                  }}
+                  className="h-full w-full"
+                >
+                  <LineChart data={priceTrendData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="month" />
+                    <YAxis yAxisId="left" />
+                    <YAxis yAxisId="right" orientation="right" />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Legend content={<ChartLegendContent />} />
+                    <Line
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey="avgPrice"
+                      stroke="#2563eb"
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                      name="Avg Price"
+                    />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="adr"
+                      stroke="#9333ea"
+                      strokeWidth={2}
+                      dot={false}
+                      name="ADR"
+                    />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="monthlyRent"
+                      stroke="#0ea5e9"
+                      strokeWidth={2}
+                      dot={false}
+                      name="Rent"
+                    />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="occupancy"
+                      stroke="#16a34a"
+                      strokeWidth={2}
+                      name="Occupancy (%)"
+                    />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="saturation"
+                      stroke="#f97316"
+                      strokeDasharray="5 5"
+                      strokeWidth={2}
+                      name="Saturation"
+                    />
+                  </LineChart>
+                </ChartContainer>
+              </DataMask>
             </div>
           </CardContent>
         </Card>

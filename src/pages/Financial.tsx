@@ -26,6 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
 import { FinancialReports } from '@/components/financial/FinancialReports'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { DataMask } from '@/components/DataMask'
 
 export default function Financial() {
   const { t, language } = useLanguageStore()
@@ -142,10 +143,12 @@ export default function Financial() {
                       <TableRow key={stmt.id}>
                         <TableCell className="font-medium flex items-center gap-2">
                           <FileText className="h-4 w-4 text-blue-500" />
-                          {stmt.fileName}
+                          <DataMask>{stmt.fileName}</DataMask>
                         </TableCell>
                         <TableCell>
-                          {formatDate(stmt.uploadDate, language)}
+                          <DataMask>
+                            {formatDate(stmt.uploadDate, language)}
+                          </DataMask>
                         </TableCell>
                         <TableCell>
                           {stmt.status === 'reconciled' ? (
@@ -163,9 +166,13 @@ export default function Financial() {
                             </Badge>
                           )}
                         </TableCell>
-                        <TableCell>{stmt.itemsCount}</TableCell>
                         <TableCell>
-                          {formatCurrency(stmt.totalAmount, language)}
+                          <DataMask>{stmt.itemsCount}</DataMask>
+                        </TableCell>
+                        <TableCell>
+                          <DataMask>
+                            {formatCurrency(stmt.totalAmount, language)}
+                          </DataMask>
                         </TableCell>
                         <TableCell className="text-right">
                           {stmt.status === 'pending' && (

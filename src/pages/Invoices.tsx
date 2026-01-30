@@ -35,6 +35,7 @@ import { TaskInvoiceDialog } from '@/components/financial/TaskInvoiceDialog'
 import { InvoiceViewer } from '@/components/financial/InvoiceViewer'
 import { Invoice } from '@/lib/types'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { DataMask } from '@/components/DataMask'
 
 export default function Invoices() {
   const { financials } = useFinancialStore()
@@ -185,27 +186,31 @@ export default function Invoices() {
                     <TableRow key={inv.id}>
                       <TableCell className="font-medium flex items-center gap-2">
                         <FileText className="h-4 w-4 text-muted-foreground" />
-                        {inv.id}
+                        <DataMask>{inv.id}</DataMask>
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate">
-                        {inv.description}
+                        <DataMask>{inv.description}</DataMask>
                       </TableCell>
-                      <TableCell>{formatDate(inv.date, language)}</TableCell>
+                      <TableCell>
+                        <DataMask>{formatDate(inv.date, language)}</DataMask>
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span className="font-medium text-foreground">
-                            {fromName}
+                            <DataMask>{fromName}</DataMask>
                           </span>
                           <ArrowRight className="h-3 w-3" />
                           <span className="font-medium text-foreground">
-                            {toName}
+                            <DataMask>{toName}</DataMask>
                           </span>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1 font-bold">
                           <DollarSign className="h-3 w-3 text-muted-foreground" />
-                          {formatCurrency(inv.amount, language)}
+                          <DataMask>
+                            {formatCurrency(inv.amount, language)}
+                          </DataMask>
                         </div>
                       </TableCell>
                       <TableCell>{getStatusBadge(inv.status)}</TableCell>

@@ -48,12 +48,13 @@ import { User, Resource } from '@/lib/types'
 import logo from '@/assets/logo-estilizado.jpg'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { DataMask } from '@/components/DataMask'
 
 export function AppSidebar() {
   const location = useLocation()
   const pathname = location.pathname
   const { t } = useLanguageStore()
-  const { currentUser } = useAuthStore()
+  const { currentUser, isAuthenticated } = useAuthStore()
   const { messages } = useMessageStore()
   const { setOpenMobile, isMobile } = useSidebar()
 
@@ -68,6 +69,17 @@ export function AppSidebar() {
     (acc, msg) => acc + (msg.unread || 0),
     0,
   )
+
+  // NOTE: When unauthenticated, we don't check permissions, just show a minimal set or all masked.
+  // For better UX in "guest" mode, we might want to hide menu items that require auth,
+  // but the user story says "replace real data strings with ... masking patterns".
+  // It doesn't explicitly say "hide navigation".
+  // However, `hasPermission` might fail or return false if currentUser is a dummy guest.
+  // In `useAuthStore`/`AppContext`, default currentUser is `systemUsers[0]` which is admin.
+  // But `isAuthenticated` starts false.
+  // If `isAuthenticated` is false, we should probably treat `currentUser` as potentially null or guest.
+  // Since the mock data has a default user, `currentUser` is populated.
+  // We will mask sensitive user info in the footer.
 
   const allMenuItems = [
     {
@@ -326,7 +338,7 @@ export function AppSidebar() {
                             variant="destructive"
                             className="h-5 min-w-5 px-1 flex items-center justify-center text-[10px]"
                           >
-                            {item.badge}
+                            <DataMask>{item.badge}</DataMask>
                           </Badge>
                         )}
                       </Link>
@@ -433,7 +445,7 @@ export function AppSidebar() {
                 )}
               >
                 <span className="font-semibold truncate w-32">
-                  {currentUser.name}
+                  <DataMask>{currentUser.name}</DataMask>
                 </span>
                 <span
                   className={cn(
@@ -441,7 +453,7 @@ export function AppSidebar() {
                     isMobile && 'text-white/70',
                   )}
                 >
-                  {currentUser.email}
+                  <DataMask>{currentUser.email}</DataMask>
                 </span>
               </div>
             </div>

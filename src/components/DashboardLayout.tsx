@@ -1,16 +1,11 @@
 import { Outlet } from 'react-router-dom'
 import { AppSidebar } from '@/components/AppSidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
-import useAuthStore from '@/stores/useAuthStore'
-import Landing from '@/pages/Landing'
 import { AppHeader } from '@/components/AppHeader'
 
 export default function DashboardLayout() {
-  const { isAuthenticated } = useAuthStore()
-
-  if (!isAuthenticated) {
-    return <Landing />
-  }
+  // Removed authentication check redirect to Landing
+  // Now allows rendering the application shell in "Guest/Masked" mode
 
   return (
     <SidebarProvider>

@@ -48,6 +48,7 @@ import {
 } from '@/components/ui/popover'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { PhoneInput } from '@/components/ui/phone-input'
+import { DataMask } from '@/components/DataMask'
 
 export default function Owners() {
   const { owners, addOwner } = useOwnerStore()
@@ -224,14 +225,17 @@ export default function Owners() {
                         to={`/owners/${owner.id}`}
                         className="hover:underline text-trust-blue"
                       >
-                        {owner.name}
+                        <DataMask>{owner.name}</DataMask>
                       </Link>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col text-sm">
-                        <span>{owner.email}</span>
+                        <span>
+                          <DataMask>{owner.email}</DataMask>
+                        </span>
                         <span className="text-muted-foreground text-xs flex items-center gap-1">
-                          <Phone className="h-3 w-3" /> {owner.phone}
+                          <Phone className="h-3 w-3" />{' '}
+                          <DataMask>{owner.phone}</DataMask>
                         </span>
                       </div>
                     </TableCell>
@@ -243,13 +247,15 @@ export default function Owners() {
                             className="gap-1 cursor-pointer hover:bg-secondary/80"
                           >
                             <Building2 className="h-3 w-3" />
-                            {getPropertyCount(owner.id)}{' '}
+                            <DataMask>
+                              {getPropertyCount(owner.id)}
+                            </DataMask>{' '}
                             {t('owners.properties_count')}
                           </Badge>
                         </PopoverTrigger>
                         <PopoverContent className="w-64 p-0" align="start">
                           <div className="p-2 font-medium border-b text-xs text-muted-foreground">
-                            Propriedades de {owner.name}
+                            Propriedades de <DataMask>{owner.name}</DataMask>
                           </div>
                           <div className="flex flex-col max-h-60 overflow-y-auto">
                             {properties
@@ -260,7 +266,7 @@ export default function Owners() {
                                   to={`/properties/${p.id}`}
                                   className="px-3 py-2 text-sm hover:bg-muted transition-colors truncate block border-b last:border-0"
                                 >
-                                  {p.name}
+                                  <DataMask>{p.name}</DataMask>
                                 </Link>
                               ))}
                             {properties.filter((p) => p.ownerId === owner.id)

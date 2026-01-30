@@ -39,6 +39,7 @@ import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Property } from '@/lib/types'
 import { exportToCSV } from '@/lib/utils'
+import { DataMask } from '@/components/DataMask'
 
 // Sub-components
 import { PropertyOverview } from '@/components/properties/PropertyOverview'
@@ -214,31 +215,35 @@ export default function PropertyDetails() {
         {/* Breadcrumb / Relations */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-md border w-fit">
           <span className="font-medium">{t('common.relationships')}:</span>
-          {owner ? (
-            <Link
-              to={`/owners/${owner.id}`}
-              className="flex items-center gap-1 hover:text-blue-600 underline"
-            >
-              <User className="h-3 w-3" /> {owner.name} (
-              {t('common.relationship_owner')})
-            </Link>
-          ) : (
-            <span className="text-gray-400">{t('common.no_owner')}</span>
-          )}
+          <DataMask>
+            {owner ? (
+              <Link
+                to={`/owners/${owner.id}`}
+                className="flex items-center gap-1 hover:text-blue-600 underline"
+              >
+                <User className="h-3 w-3" /> {owner.name} (
+                {t('common.relationship_owner')})
+              </Link>
+            ) : (
+              <span className="text-gray-400">{t('common.no_owner')}</span>
+            )}
+          </DataMask>
           <span>/</span>
-          {activeTenant ? (
-            <Link
-              to={`/tenants/${activeTenant.id}`}
-              className="flex items-center gap-1 hover:text-blue-600 underline"
-            >
-              <User className="h-3 w-3" /> {activeTenant.name} (
-              {t('common.relationship_tenant')})
-            </Link>
-          ) : (
-            <span className="text-gray-400">
-              {t('common.no_active_tenant')}
-            </span>
-          )}
+          <DataMask>
+            {activeTenant ? (
+              <Link
+                to={`/tenants/${activeTenant.id}`}
+                className="flex items-center gap-1 hover:text-blue-600 underline"
+              >
+                <User className="h-3 w-3" /> {activeTenant.name} (
+                {t('common.relationship_tenant')})
+              </Link>
+            ) : (
+              <span className="text-gray-400">
+                {t('common.no_active_tenant')}
+              </span>
+            )}
+          </DataMask>
         </div>
 
         <div className="flex items-center justify-between">
@@ -250,9 +255,11 @@ export default function PropertyDetails() {
             </Link>
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-navy">
-                {formData.name}
+                <DataMask>{formData.name}</DataMask>
               </h1>
-              <p className="text-muted-foreground">{formData.address}</p>
+              <p className="text-muted-foreground">
+                <DataMask>{formData.address}</DataMask>
+              </p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -379,14 +386,18 @@ export default function PropertyDetails() {
         </TabsContent>
 
         <TabsContent value="analytics">
-          <PropertyAnalytics property={formData} />
+          <DataMask className="w-full h-[400px] block rounded-md">
+            <PropertyAnalytics property={formData} />
+          </DataMask>
         </TabsContent>
 
         <TabsContent value="reports">
-          <MaintenanceReport
-            tasks={propertyTasks}
-            title={`Maintenance Report: ${formData.name}`}
-          />
+          <DataMask className="w-full h-[400px] block rounded-md">
+            <MaintenanceReport
+              tasks={propertyTasks}
+              title={`Maintenance Report: ${formData.name}`}
+            />
+          </DataMask>
         </TabsContent>
 
         <TabsContent value="maintenance">
@@ -459,13 +470,15 @@ export default function PropertyDetails() {
         </TabsContent>
 
         <TabsContent value="documents">
-          <DocumentVault
-            documents={formData.documents || []}
-            onUpdate={(docs) => handleChange('documents', docs)}
-            canEdit={isEditing}
-            title={t('properties.tabs.documents')}
-            description={t('common.documents')}
-          />
+          <DataMask className="w-full h-[300px] block rounded-md">
+            <DocumentVault
+              documents={formData.documents || []}
+              onUpdate={(docs) => handleChange('documents', docs)}
+              canEdit={isEditing}
+              title={t('properties.tabs.documents')}
+              description={t('common.documents')}
+            />
+          </DataMask>
         </TabsContent>
 
         <TabsContent value="logs">

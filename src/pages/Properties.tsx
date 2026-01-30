@@ -46,6 +46,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { DataMask } from '@/components/DataMask'
 
 export default function Properties() {
   const { properties, addProperty, deleteProperty } = usePropertyStore()
@@ -533,11 +534,13 @@ export default function Properties() {
           >
             <div className="relative h-48 w-full bg-muted">
               {property.image ? (
-                <img
-                  src={property.image}
-                  alt={property.name}
-                  className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
-                />
+                <DataMask className="w-full h-full block rounded-none">
+                  <img
+                    src={property.image}
+                    alt={property.name}
+                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
+                  />
+                </DataMask>
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
                   {t('properties.no_image')}
@@ -591,15 +594,19 @@ export default function Properties() {
               )}
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">{property.name}</CardTitle>
+              <CardTitle className="text-lg">
+                <DataMask>{property.name}</DataMask>
+              </CardTitle>
               <p className="text-xs text-muted-foreground mt-1">
-                {property.community}
+                <DataMask>{property.community}</DataMask>
               </p>
             </CardHeader>
             <CardContent className="flex-1 pb-2">
               <div className="flex items-center gap-1 text-sm text-muted-foreground mb-4">
                 <MapPin className="h-3 w-3" />
-                <span className="truncate">{property.address}</span>
+                <span className="truncate">
+                  <DataMask>{property.address}</DataMask>
+                </span>
               </div>
             </CardContent>
             <CardFooter className="pt-4 border-t bg-muted/20">
