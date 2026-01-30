@@ -81,8 +81,8 @@ export default function Tenants() {
   const handleAddTenant = () => {
     if (!newTenant.name || !newTenant.email) {
       toast({
-        title: 'Validation Error',
-        description: 'Name and email are required.',
+        title: t('common.error'),
+        description: t('common.required'),
         variant: 'destructive',
       })
       return
@@ -90,7 +90,7 @@ export default function Tenants() {
 
     if (!isValidEmail(newTenant.email)) {
       toast({
-        title: 'Validation Error',
+        title: t('common.error'),
         description: 'Invalid email format.',
         variant: 'destructive',
       })
@@ -99,7 +99,7 @@ export default function Tenants() {
 
     if (!newTenant.phone || newTenant.phone.length < 10) {
       toast({
-        title: 'Validation Error',
+        title: t('common.error'),
         description: 'Phone number is invalid or too short.',
         variant: 'destructive',
       })
@@ -115,7 +115,7 @@ export default function Tenants() {
       referralContacts: [],
     } as any)
     setOpen(false)
-    toast({ title: 'Tenant added' })
+    toast({ title: t('common.success') })
     setNewTenant({
       name: '',
       email: '',
@@ -186,8 +186,8 @@ export default function Tenants() {
     document.body.removeChild(link)
 
     toast({
-      title: 'Exportação Concluída',
-      description: 'Arquivo CSV gerado com sucesso.',
+      title: t('common.success'),
+      description: t('common.export_success'),
     })
   }
 
@@ -199,7 +199,7 @@ export default function Tenants() {
         </h1>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleExportCSV}>
-            <Download className="mr-2 h-4 w-4" /> Export CSV
+            <Download className="mr-2 h-4 w-4" /> {t('common.export')} CSV
           </Button>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -214,9 +214,9 @@ export default function Tenants() {
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Name</Label>
+                    <Label>{t('common.name')}</Label>
                     <Input
-                      placeholder="Full Name"
+                      placeholder={t('common.name')}
                       value={newTenant.name}
                       onChange={(e) =>
                         setNewTenant({ ...newTenant, name: e.target.value })
@@ -236,9 +236,9 @@ export default function Tenants() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Email</Label>
+                    <Label>{t('common.email')}</Label>
                     <Input
-                      placeholder="Email"
+                      placeholder={t('common.email')}
                       value={newTenant.email}
                       onChange={(e) =>
                         setNewTenant({ ...newTenant, email: e.target.value })
@@ -246,7 +246,7 @@ export default function Tenants() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Phone</Label>
+                    <Label>{t('common.phone')}</Label>
                     <PhoneInput
                       value={newTenant.phone}
                       onChange={(e) =>
@@ -256,10 +256,10 @@ export default function Tenants() {
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label>Current Address</Label>
+                  <Label>{t('common.address')}</Label>
                   <AddressInput onAddressSelect={handleAddressSelect} />
                   <Input
-                    placeholder="Full Address"
+                    placeholder={t('common.address')}
                     value={newTenant.address}
                     onChange={(e) =>
                       setNewTenant({ ...newTenant, address: e.target.value })
@@ -292,7 +292,7 @@ export default function Tenants() {
                   </div>
                 </div>
                 <Button onClick={handleAddTenant} className="w-full">
-                  Save
+                  {t('common.save')}
                 </Button>
               </div>
             </DialogContent>
@@ -321,7 +321,7 @@ export default function Tenants() {
               <TableRow>
                 <TableHead>{t('common.name')}</TableHead>
                 <TableHead>{t('tenants.property')}</TableHead>
-                <TableHead>Contrato (Início - Fim)</TableHead>
+                <TableHead>{t('common.contracts')}</TableHead>
                 <TableHead>{t('common.status')}</TableHead>
                 <TableHead className="text-right">
                   {t('common.actions')}
@@ -380,7 +380,7 @@ export default function Tenants() {
                           size="icon"
                           onClick={() => handleWhatsApp(tenant.phone)}
                           className="text-green-600"
-                          title={t('tenants.send_message')}
+                          title={t('common.contact_via_whatsapp')}
                         >
                           <MessageCircle className="h-4 w-4" />
                         </Button>

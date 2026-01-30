@@ -215,9 +215,9 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      className="bg-slate-50 dark:bg-slate-900 border-r"
+      className="bg-slate-50 dark:bg-slate-900 border-r z-50 fixed left-0 top-0 h-screen shadow-md"
     >
-      <SidebarHeader className="h-16 flex items-center px-4 border-b">
+      <SidebarHeader className="h-16 flex items-center px-4 border-b bg-inherit">
         <Link
           to="/"
           className="flex items-center gap-2 font-bold text-xl text-brand font-display overflow-hidden hover:opacity-80 transition-opacity"
@@ -233,7 +233,7 @@ export function AppSidebar() {
           </span>
         </Link>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-inherit">
         {(currentUser.role === 'tenant' ||
           currentUser.role === 'property_owner' ||
           currentUser.role === 'partner' ||
@@ -395,7 +395,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="bg-inherit">
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center gap-2 p-2">
