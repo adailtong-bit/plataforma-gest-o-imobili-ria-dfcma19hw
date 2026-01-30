@@ -56,6 +56,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { formatCurrency } from '@/lib/utils'
+import { DataMask } from '@/components/DataMask'
 
 export function ServiceCatalog() {
   const {
@@ -417,7 +418,7 @@ export function ServiceCatalog() {
                             </SelectItem>
                             {partners.map((p) => (
                               <SelectItem key={p.id} value={p.id}>
-                                {p.name} ({p.type})
+                                <DataMask>{p.name}</DataMask> ({p.type})
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -685,20 +686,28 @@ export function ServiceCatalog() {
                                 {t('service_pricing.generic')}
                               </Badge>
                             ) : (
-                              rate.partnerName
+                              <DataMask>{rate.partnerName}</DataMask>
                             )}
                           </TableCell>
                           <TableCell className="font-bold">
-                            {formatCurrency(rate.servicePrice, language)}
+                            <DataMask>
+                              {formatCurrency(rate.servicePrice, language)}
+                            </DataMask>
                           </TableCell>
                           <TableCell>
-                            {formatCurrency(rate.productPrice, language)}
+                            <DataMask>
+                              {formatCurrency(rate.productPrice, language)}
+                            </DataMask>
                           </TableCell>
                           <TableCell className="text-muted-foreground">
-                            {formatCurrency(rate.partnerPayment, language)}
+                            <DataMask>
+                              {formatCurrency(rate.partnerPayment, language)}
+                            </DataMask>
                           </TableCell>
                           <TableCell className="text-green-600 font-medium">
-                            {formatCurrency(rate.pmValue, language)}
+                            <DataMask>
+                              {formatCurrency(rate.pmValue, language)}
+                            </DataMask>
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">

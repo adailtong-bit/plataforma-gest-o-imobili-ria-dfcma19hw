@@ -7,7 +7,7 @@ export default function DashboardLayout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="flex flex-col flex-1 w-full min-h-screen transition-all duration-300 overflow-hidden">
+      <SidebarInset className="flex flex-col flex-1 w-full min-h-screen transition-all duration-300 overflow-hidden bg-background">
         <AppHeader />
         <main className="flex-1 p-6 md:p-8 bg-muted/10 overflow-x-hidden">
           <Outlet />

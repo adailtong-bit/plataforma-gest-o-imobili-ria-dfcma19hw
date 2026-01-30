@@ -380,6 +380,7 @@ export default function Tenants() {
                           size="icon"
                           onClick={() => handleWhatsApp(tenant.phone)}
                           className="text-green-600"
+                          title={t('tenants.send_message')}
                         >
                           <MessageCircle className="h-4 w-4" />
                         </Button>
@@ -390,6 +391,7 @@ export default function Tenants() {
                             navigate(`/messages?contactId=${tenant.id}`)
                           }
                           className="text-blue-600"
+                          title={t('tenants.send_message')}
                         >
                           <MessageSquare className="h-4 w-4" />
                         </Button>
