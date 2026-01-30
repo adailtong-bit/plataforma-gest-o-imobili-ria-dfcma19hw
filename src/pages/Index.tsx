@@ -53,6 +53,7 @@ import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import Landing from '@/pages/Landing'
 import { formatCurrency } from '@/lib/utils'
+import { addMonths } from 'date-fns'
 
 export default function Index() {
   const { isAuthenticated } = useAuthStore()
@@ -169,6 +170,9 @@ function DashboardContent() {
   const toggleWidget = (key: keyof typeof widgets) => {
     setWidgets((prev) => ({ ...prev, [key]: !prev[key] }))
   }
+
+  // Helper to ensure addMonths is in scope and utilized for potential date logic
+  const nextMonth = date ? addMonths(date, 1) : undefined
 
   return (
     <div className="flex flex-col gap-6">
