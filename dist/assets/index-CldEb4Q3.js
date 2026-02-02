@@ -57255,10 +57255,13 @@ var useAuthStore = () => {
 var useAuthStore_default = useAuthStore;
 function DataMask({ children, className, width, showAuth }) {
 	const { isAuthenticated } = useAuthStore_default();
-	if (showAuth || isAuthenticated) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children });
+	if (showAuth || isAuthenticated) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+		className: cn("text-slate-950 dark:text-slate-50", className),
+		children
+	});
 	const style = width ? { width } : {};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-		className: cn("inline-block bg-muted/80 text-transparent rounded select-none animate-pulse align-middle h-[1em] min-w-[3ch]", className),
+		className: cn("inline-block bg-slate-200 text-transparent rounded select-none animate-pulse align-middle h-[1em] min-w-[3ch]", className),
 		style,
 		"aria-hidden": "true",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -57340,10 +57343,10 @@ function DashboardContent() {
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex flex-col gap-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-						className: "text-3xl font-bold tracking-tight text-navy",
+						className: "text-3xl font-bold tracking-tight text-slate-950",
 						children: t$1("common.real_estate_dashboard")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-muted-foreground",
+						className: "text-slate-700 font-medium",
 						children: t$1("dashboard.subtitle")
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
@@ -57353,7 +57356,7 @@ function DashboardContent() {
 						asChild: true,
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							variant: "outline",
-							className: "gap-2",
+							className: "gap-2 border-slate-300 text-slate-900 font-medium",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings2, { className: "h-4 w-4" }),
 								" ",
@@ -57410,80 +57413,92 @@ function DashboardContent() {
 			widgets.kpi && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in slide-in-from-bottom-4 duration-500",
 				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-						className: "flex flex-row items-center justify-between space-y-0 pb-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-							className: "text-sm font-medium",
-							children: "Total Properties"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-muted-foreground" })]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "text-2xl font-bold",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: totalProperties })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-xs text-muted-foreground",
-						children: "In portfolio"
-					})] })] }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-						className: "flex flex-row items-center justify-between space-y-0 pb-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-							className: "text-sm font-medium",
-							children: t$1("common.active_listings")
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-4 w-4 text-muted-foreground" })]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "text-2xl font-bold",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: activeListings })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-xs text-muted-foreground",
-						children: t$1("status.available")
-					})] })] }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-						className: "flex flex-row items-center justify-between space-y-0 pb-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-							className: "text-sm font-medium",
-							children: t$1("common.pending_visits")
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CalendarDays, { className: "h-4 w-4 text-muted-foreground" })]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "text-2xl font-bold",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: pendingVisits })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-xs text-muted-foreground",
-						children: t$1("common.scheduled")
-					})] })] }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-						className: "flex flex-row items-center justify-between space-y-0 pb-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-							className: "text-sm font-medium",
-							children: t$1("common.total_revenue")
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4 text-muted-foreground" })]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "text-2xl font-bold",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(totalRevenue, language) })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-						className: "text-xs text-muted-foreground",
-						children: ["+20.1% ", t$1("dashboard.from_last_month")]
-					})] })] })
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200 shadow-sm",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+							className: "flex flex-row items-center justify-between space-y-0 pb-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-sm font-bold text-slate-900",
+								children: "Total Properties"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-slate-600" })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "text-2xl font-bold text-slate-950",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: totalProperties })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-xs text-slate-700 font-medium",
+							children: "In portfolio"
+						})] })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200 shadow-sm",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+							className: "flex flex-row items-center justify-between space-y-0 pb-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-sm font-bold text-slate-900",
+								children: t$1("common.active_listings")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-4 w-4 text-slate-600" })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "text-2xl font-bold text-slate-950",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: activeListings })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-xs text-slate-700 font-medium",
+							children: t$1("status.available")
+						})] })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200 shadow-sm",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+							className: "flex flex-row items-center justify-between space-y-0 pb-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-sm font-bold text-slate-900",
+								children: t$1("common.pending_visits")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CalendarDays, { className: "h-4 w-4 text-slate-600" })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "text-2xl font-bold text-slate-950",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: pendingVisits })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-xs text-slate-700 font-medium",
+							children: t$1("common.scheduled")
+						})] })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200 shadow-sm",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+							className: "flex flex-row items-center justify-between space-y-0 pb-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-sm font-bold text-slate-900",
+								children: t$1("common.total_revenue")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4 text-slate-600" })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "text-2xl font-bold text-slate-950",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(totalRevenue, language) })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+							className: "text-xs text-slate-700 font-medium",
+							children: ["+20.1% ", t$1("dashboard.from_last_month")]
+						})] })]
+					})
 				]
 			}),
 			widgets.health && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "bg-gradient-to-r from-blue-600 to-purple-600 text-white animate-in fade-in zoom-in-95 duration-500",
+				className: "bg-gradient-to-r from-blue-700 to-purple-800 text-white animate-in fade-in zoom-in-95 duration-500 shadow-md",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 					className: "pb-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-						className: "flex items-center gap-2 text-white",
+						className: "flex items-center gap-2 text-white font-bold",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trophy, { className: "h-6 w-6 text-yellow-300" }), t$1("gamification.portfolio_health")]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
-						className: "text-blue-100",
+						className: "text-blue-100 font-medium",
 						children: t$1("gamification.desc")
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-4",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "text-4xl font-bold",
+						className: "text-4xl font-bold text-white",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: avgHealthScore.toFixed(0) })
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex-1 space-y-1",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex justify-between text-xs text-blue-100",
+							className: "flex justify-between text-xs text-blue-100 font-bold",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
 								t$1("gamification.level"),
 								": ",
@@ -57491,7 +57506,7 @@ function DashboardContent() {
 							] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [t$1("gamification.target"), ": 100"] })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Progress, {
 							value: avgHealthScore,
-							className: "h-3 bg-blue-800"
+							className: "h-3 bg-blue-900"
 						})]
 					})]
 				}) })]
@@ -57499,8 +57514,14 @@ function DashboardContent() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid gap-4 md:grid-cols-2 lg:grid-cols-7",
 				children: [widgets.revenueChart && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: `${widgets.calendar ? "col-span-4" : "col-span-7"} animate-in fade-in zoom-in-95 duration-500`,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("dashboard.revenue_vs_expenses") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("dashboard.revenue_overview") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+					className: `${widgets.calendar ? "col-span-4" : "col-span-7"} animate-in fade-in zoom-in-95 duration-500 border-slate-200 shadow-sm`,
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+						className: "text-slate-950",
+						children: t$1("dashboard.revenue_vs_expenses")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+						className: "text-slate-700 font-medium",
+						children: t$1("dashboard.revenue_overview")
+					})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 						className: "pl-2",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
 							className: "w-full h-[300px] block",
@@ -57521,7 +57542,12 @@ function DashboardContent() {
 											dataKey: "month",
 											tickLine: false,
 											tickMargin: 10,
-											axisLine: false
+											axisLine: false,
+											tick: {
+												fill: "hsl(var(--foreground))",
+												fontSize: 12,
+												fontWeight: "bold"
+											}
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltip, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}) }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
@@ -57540,14 +57566,20 @@ function DashboardContent() {
 						})
 					})]
 				}), widgets.calendar && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: `${widgets.revenueChart ? "col-span-3" : "col-span-7"} animate-in fade-in zoom-in-95 duration-500 delay-100`,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("dashboard.quick_calendar") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("dashboard.todays_activity") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+					className: `${widgets.revenueChart ? "col-span-3" : "col-span-7"} animate-in fade-in zoom-in-95 duration-500 delay-100 border-slate-200 shadow-sm`,
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+						className: "text-slate-950",
+						children: t$1("dashboard.quick_calendar")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+						className: "text-slate-700 font-medium",
+						children: t$1("dashboard.todays_activity")
+					})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 						className: "flex justify-center",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, {
 							mode: "single",
 							selected: date$4,
 							onSelect: setDate$1,
-							className: "rounded-md border"
+							className: "rounded-md border border-slate-200"
 						})
 					})]
 				})]
@@ -57555,8 +57587,14 @@ function DashboardContent() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid gap-4 md:grid-cols-2 lg:grid-cols-7",
 				children: [widgets.pending && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: `${widgets.expenseChart ? "col-span-4" : "col-span-7"} animate-in fade-in slide-in-from-left-4 duration-500 delay-200`,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("dashboard.pending_approvals") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("dashboard.pending_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: `${widgets.expenseChart ? "col-span-4" : "col-span-7"} animate-in fade-in slide-in-from-left-4 duration-500 delay-200 border-slate-200 shadow-sm`,
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+						className: "text-slate-950",
+						children: t$1("dashboard.pending_approvals")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+						className: "text-slate-700 font-medium",
+						children: t$1("dashboard.pending_desc")
+					})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "space-y-4",
 						children: [financials$1.invoices.filter((i$2) => i$2.status === "pending").filter((i$2) => selectedPropertyId === "all" ? true : i$2.propertyId === selectedPropertyId).map((invoice) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center justify-between border-b pb-4 last:border-0 last:pb-0",
@@ -57564,12 +57602,12 @@ function DashboardContent() {
 								className: "flex items-center gap-4",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 									className: "bg-orange-100 p-2 rounded-full",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Activity, { className: "h-5 w-5 text-orange-600" })
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Activity, { className: "h-5 w-5 text-orange-700" })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "font-medium text-sm",
+									className: "font-bold text-sm text-slate-950",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: invoice.description })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-									className: "text-xs text-muted-foreground",
+									className: "text-xs text-slate-700 font-medium",
 									children: [
 										invoice.date,
 										" • ",
@@ -57579,11 +57617,12 @@ function DashboardContent() {
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex items-center gap-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "font-bold text-sm",
+									className: "font-bold text-sm text-slate-950",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(invoice.amount, language) })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 									size: "sm",
 									variant: "outline",
+									className: "border-slate-300 text-slate-900 font-bold",
 									children: t$1("dashboard.review")
 								})]
 							})]
@@ -57593,12 +57632,12 @@ function DashboardContent() {
 								className: "flex items-center gap-4",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 									className: "bg-blue-100 p-2 rounded-full",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Activity, { className: "h-5 w-5 text-blue-600" })
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Activity, { className: "h-5 w-5 text-blue-700" })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "font-medium text-sm",
+									className: "font-bold text-sm text-slate-950",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-									className: "text-xs text-muted-foreground",
+									className: "text-xs text-slate-700 font-medium",
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyName }),
 										" •",
@@ -57610,18 +57649,26 @@ function DashboardContent() {
 								className: "flex items-center gap-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 									variant: "secondary",
+									className: "text-slate-900 border border-slate-300 font-bold",
 									children: t$1("common.pending")
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 									size: "sm",
 									variant: "default",
+									className: "bg-trust-blue text-white font-bold",
 									children: t$1("dashboard.approve")
 								})]
 							})]
 						}, task.id))]
 					}) })]
 				}), widgets.expenseChart && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: `${widgets.pending ? "col-span-3" : "col-span-7"} animate-in fade-in slide-in-from-right-4 duration-500 delay-300`,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("dashboard.expense_distribution") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("dashboard.expense_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+					className: `${widgets.pending ? "col-span-3" : "col-span-7"} animate-in fade-in slide-in-from-right-4 duration-500 delay-300 border-slate-200 shadow-sm`,
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+						className: "text-slate-950",
+						children: t$1("dashboard.expense_distribution")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+						className: "text-slate-700 font-medium",
+						children: t$1("dashboard.expense_desc")
+					})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
 						className: "w-full h-[250px] block",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 							config: chartConfig,
@@ -63335,9 +63382,9 @@ function AppHeader() {
 }
 function DashboardLayout() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarProvider, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppSidebar, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarInset, {
-		className: "flex flex-col flex-1 w-full min-h-screen transition-all duration-300 overflow-hidden bg-background",
+		className: "flex flex-col flex-1 w-full min-h-screen transition-all duration-300 overflow-hidden bg-white",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppHeader, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("main", {
-			className: "flex-1 p-6 md:p-8 bg-muted/10 overflow-x-hidden",
+			className: "flex-1 p-6 md:p-8 bg-white overflow-x-hidden",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {})
 		})]
 	})] });
@@ -63865,15 +63912,15 @@ function Properties() {
 	const getStatusColor = (status) => {
 		switch (status) {
 			case "rented":
-			case "occupied": return "bg-green-100 text-green-800 border-green-200";
+			case "occupied": return "bg-green-100 text-green-800 border-green-300 font-bold";
 			case "available":
-			case "vacant": return "bg-blue-100 text-blue-800 border-blue-200";
+			case "vacant": return "bg-blue-100 text-blue-800 border-blue-300 font-bold";
 			case "suspended":
-			case "maintenance": return "bg-orange-100 text-orange-800 border-orange-200";
-			case "sold": return "bg-gray-100 text-gray-800 border-gray-200";
-			case "sale_pending": return "bg-purple-100 text-purple-800 border-purple-200";
-			case "reserved": return "bg-yellow-100 text-yellow-800 border-yellow-200";
-			default: return "bg-gray-100 text-gray-800";
+			case "maintenance": return "bg-orange-100 text-orange-800 border-orange-300 font-bold";
+			case "sold": return "bg-gray-100 text-gray-800 border-gray-300 font-bold";
+			case "sale_pending": return "bg-purple-100 text-purple-800 border-purple-300 font-bold";
+			case "reserved": return "bg-yellow-100 text-yellow-800 border-yellow-300 font-bold";
+			default: return "bg-gray-100 text-gray-800 border-gray-300";
 		}
 	};
 	const handleAddProperty = () => {
@@ -64001,10 +64048,10 @@ function Properties() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col md:flex-row md:items-center justify-between gap-4",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-					className: "text-3xl font-bold tracking-tight text-navy",
+					className: "text-3xl font-bold tracking-tight text-slate-950",
 					children: t$1("properties.title")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "text-muted-foreground",
+					className: "text-slate-700 font-medium",
 					children: t$1("properties.subtitle")
 				})] }), hasPermission(currentUser, "properties", "create") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 					open,
@@ -64233,11 +64280,11 @@ function Properties() {
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-col md:flex-row gap-4 items-center bg-card p-4 rounded-lg border shadow-sm",
+				className: "flex flex-col md:flex-row gap-4 items-center bg-white p-4 rounded-lg border shadow-sm",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 						placeholder: t$1("properties.search_placeholder"),
-						className: "md:w-[300px]",
+						className: "md:w-[300px] text-black",
 						value: filter,
 						onChange: (e) => setFilter(e.target.value)
 					}),
@@ -64245,7 +64292,7 @@ function Properties() {
 						value: statusFilter,
 						onValueChange: setStatusFilter,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "w-full md:w-[200px]",
+							className: "w-full md:w-[200px] border-slate-300",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("common.status") })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
@@ -64274,7 +64321,7 @@ function Properties() {
 						value: profileFilter,
 						onValueChange: (v) => setProfileFilter(v),
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "w-full md:w-[200px]",
+							className: "w-full md:w-[200px] border-slate-300",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("properties.profile_filter") })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
@@ -64299,7 +64346,7 @@ function Properties() {
 					className: "overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col group relative",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "relative h-48 w-full bg-muted",
+							className: "relative h-48 w-full bg-slate-200",
 							children: [
 								property$2.image ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
 									className: "w-full h-full block rounded-none",
@@ -64309,7 +64356,7 @@ function Properties() {
 										className: "w-full h-full object-cover transition-transform hover:scale-105 duration-500"
 									})
 								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "flex items-center justify-center h-full text-muted-foreground",
+									className: "flex items-center justify-center h-full text-slate-500",
 									children: t$1("properties.no_image")
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
@@ -64317,7 +64364,7 @@ function Properties() {
 									children: t$1(`status.${property$2.status}`)
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-									className: "absolute bottom-2 left-2 bg-black/50 text-white",
+									className: "absolute bottom-2 left-2 bg-black/80 text-white border-none font-bold",
 									children: property$2.profileType === "short_term" ? "STR" : "LTR"
 								}),
 								hasPermission(currentUser, "properties", "delete") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
@@ -64344,31 +64391,31 @@ function Properties() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 							className: "pb-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-								className: "text-lg",
+								className: "text-lg text-slate-950",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: property$2.name })
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "text-xs text-muted-foreground mt-1",
+								className: "text-xs text-slate-700 mt-1 font-medium",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: property$2.community })
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 							className: "flex-1 pb-2",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-1 text-sm text-muted-foreground mb-4",
+								className: "flex items-center gap-1 text-sm text-slate-700 mb-4",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "truncate",
+									className: "truncate font-medium",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: property$2.address })
 								})]
 							})
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
-							className: "pt-4 border-t bg-muted/20",
+							className: "pt-4 border-t bg-slate-50",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 								to: `/properties/${property$2.id}`,
 								className: "w-full",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 									variant: "outline",
-									className: "w-full",
+									className: "w-full text-slate-900 border-slate-300 font-medium",
 									children: t$1("properties.view_details")
 								})
 							})
@@ -76384,15 +76431,15 @@ function PropertyDetails() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex flex-col gap-4",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-md border w-fit",
+				className: "flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded-md border border-slate-300 w-fit font-medium",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-						className: "font-medium",
+						className: "font-bold text-slate-900",
 						children: [t$1("common.relationships"), ":"]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 						to: `/owners/${owner.id}`,
-						className: "flex items-center gap-1 hover:text-blue-600 underline",
+						className: "flex items-center gap-1 hover:text-blue-700 underline text-slate-900",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }),
 							" ",
@@ -76402,13 +76449,13 @@ function PropertyDetails() {
 							")"
 						]
 					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "text-gray-400",
+						className: "text-slate-500 italic",
 						children: t$1("common.no_owner")
 					}) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: activeTenant ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 						to: `/tenants/${activeTenant.id}`,
-						className: "flex items-center gap-1 hover:text-blue-600 underline",
+						className: "flex items-center gap-1 hover:text-blue-700 underline text-slate-900",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }),
 							" ",
@@ -76418,7 +76465,7 @@ function PropertyDetails() {
 							")"
 						]
 					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "text-gray-400",
+						className: "text-slate-500 italic",
 						children: t$1("common.no_active_tenant")
 					}) })
 				]
@@ -76432,13 +76479,14 @@ function PropertyDetails() {
 							variant: "ghost",
 							size: "icon",
 							title: t$1("common.back"),
+							className: "text-slate-800",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-5 w-5" })
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-						className: "text-3xl font-bold tracking-tight text-navy",
+						className: "text-3xl font-bold tracking-tight text-slate-950",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formData.name })
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-muted-foreground",
+						className: "text-slate-700 font-medium",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formData.address })
 					})] })]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -76447,7 +76495,7 @@ function PropertyDetails() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							variant: "outline",
 							onClick: handleExport,
-							className: "gap-2",
+							className: "gap-2 border-slate-300 text-slate-900",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" }),
 								" ",
@@ -76458,7 +76506,7 @@ function PropertyDetails() {
 							asChild: true,
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 								variant: "ghost",
-								className: "text-red-500",
+								className: "text-red-600 hover:text-red-700 hover:bg-red-50",
 								children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
 									" ",
@@ -76467,12 +76515,13 @@ function PropertyDetails() {
 							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t$1("common.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t$1("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t$1("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
 							onClick: handleDelete,
+							className: "bg-red-600",
 							children: t$1("common.delete")
 						})] })] })] }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							onClick: () => setIsEditing(true),
 							variant: "outline",
-							className: "gap-2",
+							className: "gap-2 border-slate-300 text-slate-900",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" }),
 								" ",
@@ -76493,7 +76542,7 @@ function PropertyDetails() {
 						]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						onClick: handleSave,
-						className: "bg-trust-blue gap-2",
+						className: "bg-trust-blue gap-2 text-white",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Save, { className: "h-4 w-4" }),
 							" ",
@@ -76507,22 +76556,26 @@ function PropertyDetails() {
 			className: "space-y-4",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
-					className: "w-full justify-start overflow-x-auto",
+					className: "w-full justify-start overflow-x-auto bg-slate-100 border border-slate-200",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "overview",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: t$1("properties.tabs.overview")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "analytics",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartPie, { className: "h-4 w-4 mr-2" }), " Analytics"]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "reports",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumnIncreasing, { className: "h-4 w-4 mr-2" }), " Reports"]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "maintenance",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hammer, { className: "h-4 w-4 mr-2" }),
 								" ",
@@ -76531,6 +76584,7 @@ function PropertyDetails() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "contracts",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4 mr-2" }),
 								" ",
@@ -76539,6 +76593,7 @@ function PropertyDetails() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "inventory",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Package, { className: "h-4 w-4 mr-2" }),
 								" ",
@@ -76547,6 +76602,7 @@ function PropertyDetails() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "features",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 								className: "flex items-center gap-2",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("properties.tabs.features") })
@@ -76554,10 +76610,12 @@ function PropertyDetails() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "location",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: t$1("properties.tabs.location")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "sync",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RefreshCw, { className: "h-4 w-4 mr-2" }),
 								" ",
@@ -76566,22 +76624,27 @@ function PropertyDetails() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "financial",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: t$1("properties.tabs.financial")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "marketing",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: t$1("properties.tabs.marketing")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "content",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: t$1("properties.tabs.content")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "documents",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: t$1("properties.tabs.documents")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "logs",
+							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(History, { className: "h-4 w-4 mr-2" }),
 								" ",
@@ -76782,11 +76845,11 @@ function CalendarPage() {
 	};
 	const getStatusColor = (status) => {
 		switch (status) {
-			case "pending": return "text-gray-600 border-gray-200 bg-gray-50";
-			case "in_progress": return "text-blue-600 border-blue-200 bg-blue-50";
-			case "completed": return "text-green-600 border-green-200 bg-green-50";
-			case "approved": return "text-orange-600 border-orange-200 bg-orange-50";
-			default: return "text-gray-600 border-gray-200";
+			case "pending": return "text-slate-600 border-slate-300 bg-slate-100 font-bold";
+			case "in_progress": return "text-blue-700 border-blue-300 bg-blue-100 font-bold";
+			case "completed": return "text-green-700 border-green-300 bg-green-100 font-bold";
+			case "approved": return "text-orange-700 border-orange-300 bg-orange-100 font-bold";
+			default: return "text-slate-600 border-slate-300 font-bold";
 		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -76797,19 +76860,19 @@ function CalendarPage() {
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex flex-col gap-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-						className: "text-3xl font-bold tracking-tight text-navy",
+						className: "text-3xl font-bold tracking-tight text-slate-950",
 						children: t$1("calendar.title")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-muted-foreground",
+						className: "text-slate-700 font-medium",
 						children: t$1("calendar.subtitle")
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex gap-2 items-center flex-wrap",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Funnel, { className: "h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Funnel, { className: "h-4 w-4 text-slate-600" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 						value: filterPartner,
 						onValueChange: setFilterPartner,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "w-[180px]",
+							className: "w-[180px] border-slate-300 text-slate-900",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("common.partners") })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 							value: "all",
@@ -76824,15 +76887,18 @@ function CalendarPage() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid grid-cols-1 lg:grid-cols-12 gap-6 lg:h-full h-auto",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: "lg:col-span-8 h-[500px] lg:h-full flex flex-col",
+					className: "lg:col-span-8 h-[500px] lg:h-full flex flex-col border-slate-200",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex flex-wrap justify-between items-center gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("calendar.integrated_view") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+							className: "text-slate-950",
+							children: t$1("calendar.integrated_view")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex flex-wrap gap-2",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
 									variant: "outline",
-									className: "bg-blue-50 text-blue-700 border-blue-200",
+									className: "bg-blue-100 text-blue-800 border-blue-300 font-bold",
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "w-3 h-3 mr-1" }),
 										" ",
@@ -76841,7 +76907,7 @@ function CalendarPage() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
 									variant: "outline",
-									className: "bg-red-50 text-red-700 border-red-200",
+									className: "bg-red-100 text-red-800 border-red-300 font-bold",
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "w-3 h-3 mr-1" }),
 										" ",
@@ -76850,7 +76916,7 @@ function CalendarPage() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
 									variant: "outline",
-									className: "bg-green-50 text-green-700 border-green-200",
+									className: "bg-green-100 text-green-800 border-green-300 font-bold",
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "w-3 h-3 mr-1" }),
 										" ",
@@ -76865,38 +76931,44 @@ function CalendarPage() {
 							mode: "single",
 							selected: date$4,
 							onSelect: setDate$1,
-							className: "rounded-md border shadow-sm w-full h-full",
+							className: "rounded-md border shadow-sm w-full h-full text-slate-900",
 							classNames: {
 								month: "space-y-4 w-full h-full flex flex-col",
 								table: "w-full h-full border-collapse space-y-1",
 								head_row: "flex w-full",
-								head_cell: "text-muted-foreground rounded-md w-full font-normal text-[0.8rem]",
+								head_cell: "text-slate-600 rounded-md w-full font-bold text-[0.8rem]",
 								row: "flex w-full mt-2 flex-1",
-								cell: "h-full w-full text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-								day: "h-full w-full p-0 font-normal aria-selected:opacity-100 flex flex-col items-center justify-start pt-2 hover:bg-accent hover:text-accent-foreground"
+								cell: "h-full w-full text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-slate-100 [&:has([aria-selected])]:bg-slate-100 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+								day: "h-full w-full p-0 font-medium aria-selected:opacity-100 flex flex-col items-center justify-start pt-2 hover:bg-slate-100 text-slate-900"
 							},
 							modifiers,
 							modifiersClassNames: {
-								task: "after:content-[\"•\"] after:text-blue-500 after:block after:text-lg after:leading-[0]",
-								contract: "after:content-[\"•\"] after:text-red-500 after:block after:text-lg after:leading-[0]",
-								financial: "after:content-[\"•\"] after:text-green-500 after:block after:text-lg after:leading-[0]"
+								task: "after:content-[\"•\"] after:text-blue-600 after:block after:text-lg after:leading-[0]",
+								contract: "after:content-[\"•\"] after:text-red-600 after:block after:text-lg after:leading-[0]",
+								financial: "after:content-[\"•\"] after:text-green-600 after:block after:text-lg after:leading-[0]"
 							}
 						})
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: "lg:col-span-4 h-[500px] lg:h-full flex flex-col",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: date$4 ? formatDate(date$4, language) : t$1("calendar.title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [dayEvents.length, " events for this day."] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+					className: "lg:col-span-4 h-[500px] lg:h-full flex flex-col border-slate-200",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+						className: "text-slate-950",
+						children: date$4 ? formatDate(date$4, language) : t$1("calendar.title")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, {
+						className: "text-slate-700 font-medium",
+						children: [dayEvents.length, " events for this day."]
+					})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 						className: "flex-1 overflow-hidden p-0",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
 							className: "h-full px-6",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 								className: "space-y-4 pb-6",
 								children: dayEvents.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "text-sm text-muted-foreground text-center py-8",
+									className: "text-sm text-slate-600 text-center py-8 font-medium",
 									children: t$1("calendar.no_activities")
 								}) : dayEvents.map((event, idx) => {
 									if (event.type === "task") return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex flex-col gap-2 p-3 border rounded-lg hover:bg-accent/50 transition-colors border-l-4 border-l-blue-500 group relative",
+										className: "flex flex-col gap-2 p-3 border rounded-lg hover:bg-slate-50 transition-colors border-l-4 border-l-blue-600 group relative bg-white",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "cursor-pointer",
 											onClick: () => handleTaskClick(event.data),
@@ -76904,7 +76976,7 @@ function CalendarPage() {
 												className: "flex justify-between items-start mb-1",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 													variant: "outline",
-													className: "text-[10px] uppercase bg-blue-50 text-blue-700 border-blue-200",
+													className: "text-[10px] uppercase bg-blue-100 text-blue-800 border-blue-300 font-bold",
 													children: t$1(`partners.${event.data.type}`) || event.data.type
 												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 													variant: "outline",
@@ -76913,20 +76985,20 @@ function CalendarPage() {
 												})]
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-													className: "font-semibold text-sm",
+													className: "font-bold text-sm text-slate-950",
 													children: event.data.title
 												}),
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-													className: "text-xs text-muted-foreground line-clamp-1",
+													className: "text-xs text-slate-700 font-medium line-clamp-1",
 													children: event.data.propertyName
 												}),
 												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 													className: "flex justify-between items-center mt-1",
 													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-														className: "text-xs text-blue-600",
+														className: "text-xs text-blue-700 font-semibold",
 														children: event.data.assignee
 													}), event.data.price && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-														className: "text-xs font-medium text-green-700",
+														className: "text-xs font-bold text-green-700",
 														children: formatCurrency(event.data.price, language)
 													})]
 												})
@@ -76936,7 +77008,7 @@ function CalendarPage() {
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 												variant: "ghost",
 												size: "sm",
-												className: "text-xs h-7 gap-1",
+												className: "text-xs h-7 gap-1 text-slate-800 hover:text-black font-medium",
 												onClick: (e) => {
 													e.stopPropagation();
 													navigate(`/properties/${event.data.propertyId}`);
@@ -76946,21 +77018,21 @@ function CalendarPage() {
 										})]
 									}, `task-${event.data.id}`);
 									if (event.type === "contract") return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex flex-col gap-2 p-3 border rounded-lg border-l-4 border-l-red-500 bg-red-50/10",
+										className: "flex flex-col gap-2 p-3 border rounded-lg border-l-4 border-l-red-600 bg-red-50",
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "flex justify-between items-start",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 													variant: "outline",
-													className: "text-[10px] uppercase bg-red-50 text-red-700 border-red-200",
+													className: "text-[10px] uppercase bg-red-100 text-red-800 border-red-300 font-bold",
 													children: "Expiration"
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "h-4 w-4 text-red-500" })]
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "h-4 w-4 text-red-600" })]
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-												className: "font-semibold text-sm text-red-900",
+												className: "font-bold text-sm text-red-900",
 												children: "Lease End"
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-												className: "text-xs text-muted-foreground",
+												className: "text-xs text-slate-800 font-medium",
 												children: ["Tenant: ", event.data.name]
 											})] }),
 											event.data.propertyId && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -76968,7 +77040,7 @@ function CalendarPage() {
 												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 													variant: "ghost",
 													size: "sm",
-													className: "text-xs h-7 gap-1 text-red-800 hover:text-red-900 hover:bg-red-100",
+													className: "text-xs h-7 gap-1 text-red-900 hover:bg-red-200 font-bold",
 													onClick: () => navigate(`/properties/${event.data.propertyId}`),
 													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-3 w-3" }), " Property"]
 												})
@@ -76976,18 +77048,18 @@ function CalendarPage() {
 										]
 									}, `contract-${event.data.id}`);
 									if (event.type === "financial") return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex flex-col gap-2 p-3 border rounded-lg border-l-4 border-l-green-500 bg-green-50/10",
+										className: "flex flex-col gap-2 p-3 border rounded-lg border-l-4 border-l-green-600 bg-green-50",
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "flex justify-between items-start",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 													variant: "outline",
-													className: "text-[10px] uppercase bg-green-50 text-green-700 border-green-200",
+													className: "text-[10px] uppercase bg-green-100 text-green-800 border-green-300 font-bold",
 													children: "Due Date"
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4 text-green-600" })]
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4 text-green-700" })]
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-												className: "font-semibold text-sm",
+												className: "font-bold text-sm text-slate-950",
 												children: event.data.description
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 												className: "text-xs font-bold text-green-800",
@@ -76998,7 +77070,7 @@ function CalendarPage() {
 												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 													variant: "ghost",
 													size: "sm",
-													className: "text-xs h-7 gap-1 text-green-800 hover:text-green-900 hover:bg-green-100",
+													className: "text-xs h-7 gap-1 text-green-900 hover:bg-green-200 font-bold",
 													onClick: () => navigate(`/properties/${event.data.propertyId}`),
 													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-3 w-3" }), " Property"]
 												})
@@ -77213,10 +77285,10 @@ function Tasks() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-					className: "text-3xl font-bold tracking-tight text-navy",
+					className: "text-3xl font-bold tracking-tight text-slate-950",
 					children: t$1("tasks.title")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "text-muted-foreground",
+					className: "text-slate-700 font-medium",
 					children: t$1("tasks.subtitle")
 				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex flex-wrap gap-2 items-center",
@@ -77225,8 +77297,8 @@ function Tasks() {
 							value: filterType,
 							onValueChange: setFilterType,
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectTrigger, {
-								className: "w-[150px] h-9 text-black",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Funnel, { className: "w-3 h-3 mr-2 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("common.type") })]
+								className: "w-[150px] h-9 text-slate-950 border-slate-300 font-medium",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Funnel, { className: "w-3 h-3 mr-2 text-slate-700" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("common.type") })]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "all",
@@ -77249,7 +77321,7 @@ function Tasks() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							variant: "outline",
 							size: "sm",
-							className: "gap-2 h-9 text-black",
+							className: "gap-2 h-9 text-slate-950 border-slate-300 font-medium",
 							onClick: () => setInvoiceDialogOpen(true),
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4" }), " Generate Invoice"]
 						}),
@@ -77286,11 +77358,11 @@ function Tasks() {
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "flex items-center justify-between pb-2 border-b border-slate-200",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-											className: "font-bold text-sm uppercase text-slate-700",
+											className: "font-bold text-sm uppercase text-slate-950",
 											children: t$1("common.pending")
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 											variant: "secondary",
-											className: "bg-white border text-black font-bold border-slate-200",
+											className: "bg-white border text-slate-950 font-bold border-slate-300",
 											children: pendingTasks.length
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -77308,10 +77380,10 @@ function Tasks() {
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "flex items-center justify-between pb-2 border-b border-blue-200",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-											className: "font-bold text-sm uppercase text-blue-800",
+											className: "font-bold text-sm uppercase text-blue-900",
 											children: t$1("tasks.in_progress")
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-											className: "bg-blue-100 text-blue-800 hover:bg-blue-200 font-bold border-blue-200",
+											className: "bg-blue-100 text-blue-900 font-bold border-blue-300 hover:bg-blue-200",
 											children: inProgressTasks.length
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -77330,10 +77402,10 @@ function Tasks() {
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "flex items-center justify-between pb-2 border-b border-orange-200",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-											className: "font-bold text-sm uppercase text-orange-800",
+											className: "font-bold text-sm uppercase text-orange-900",
 											children: t$1("tasks.approval")
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-											className: "bg-orange-100 text-orange-800 hover:bg-orange-200 font-bold border-orange-200",
+											className: "bg-orange-100 text-orange-900 font-bold border-orange-300 hover:bg-orange-200",
 											children: approvalTasks.length
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -77351,10 +77423,10 @@ function Tasks() {
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "flex items-center justify-between pb-2 border-b border-green-200",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-											className: "font-bold text-sm uppercase text-green-800",
+											className: "font-bold text-sm uppercase text-green-900",
 											children: t$1("common.completed")
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-											className: "bg-green-100 text-green-800 hover:bg-green-200 font-bold border-green-200",
+											className: "bg-green-100 text-green-900 font-bold border-green-300 hover:bg-green-200",
 											children: completedTasks.length
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -77373,7 +77445,7 @@ function Tasks() {
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 						value: "list",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-							className: "p-6 text-center text-slate-500",
+							className: "p-6 text-center text-slate-600 font-medium",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Modo lista otimizado disponível em breve." })
 						}) })
 					})
@@ -77989,7 +78061,7 @@ function Financial() {
 	const fileInputRef = (0, import_react.useRef)(null);
 	const [isUploading, setIsUploading] = (0, import_react.useState)(false);
 	if (!hasPermission(currentUser, "financial", "view")) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "p-8 text-center text-muted-foreground",
+		className: "p-8 text-center text-slate-600 font-medium",
 		children: "Acesso negado ao painel financeiro."
 	});
 	const handleFileUpload = (e) => {
@@ -78019,10 +78091,10 @@ function Financial() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex flex-col gap-2",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-navy",
+				className: "text-3xl font-bold tracking-tight text-slate-950",
 				children: t$1("financial.title")
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-muted-foreground",
+				className: "text-slate-700 font-medium",
 				children: t$1("financial.subtitle")
 			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
@@ -78043,7 +78115,13 @@ function Financial() {
 					value: "reconciliation",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 						className: "flex flex-row items-center justify-between",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("financial.upload_statement") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("financial.upload_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+							className: "text-slate-950",
+							children: t$1("financial.upload_statement")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+							className: "text-slate-700",
+							children: t$1("financial.upload_desc")
+						})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
 							type: "file",
 							ref: fileInputRef,
 							className: "hidden",
@@ -78056,30 +78134,48 @@ function Financial() {
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "mr-2 h-4 w-4" }), isUploading ? "Enviando..." : t$1("financial.upload_statement")]
 						})] })]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-						className: "font-medium mb-4",
+						className: "font-bold text-slate-950 mb-4",
 						children: t$1("financial.statements")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Arquivo" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Data Upload" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Itens" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Valor Total" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
+							className: "font-bold text-slate-950",
+							children: "Arquivo"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "font-bold text-slate-950",
+							children: "Data Upload"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "font-bold text-slate-950",
+							children: "Status"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "font-bold text-slate-950",
+							children: "Itens"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "font-bold text-slate-950",
+							children: "Valor Total"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right font-bold text-slate-950",
 							children: "Ação"
 						})
 					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: bankStatements.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 						colSpan: 6,
-						className: "text-center py-8",
+						className: "text-center py-8 text-slate-600 font-medium",
 						children: t$1("financial.no_statements")
 					}) }) : bankStatements.map((stmt) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-							className: "font-medium flex items-center gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4 text-blue-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: stmt.fileName })]
+							className: "font-bold text-slate-950 flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4 text-blue-700" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: stmt.fileName })]
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatDate(stmt.uploadDate, language) }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-slate-900 font-medium",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatDate(stmt.uploadDate, language) })
+						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: stmt.status === "reconciled" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
-							className: "bg-green-100 text-green-800 hover:bg-green-100 border-green-200",
+							className: "bg-green-100 text-green-800 hover:bg-green-100 border-green-300 font-bold",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "w-3 h-3 mr-1" }),
 								" ",
@@ -78087,16 +78183,23 @@ function Financial() {
 							]
 						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
 							variant: "secondary",
-							className: "bg-yellow-100 text-yellow-800",
+							className: "bg-yellow-100 text-yellow-800 border-yellow-300 font-bold",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { className: "w-3 h-3 mr-1" }), t$1("financial.pending_reconciliation")]
 						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: stmt.itemsCount }) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(stmt.totalAmount, language) }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-slate-950 font-bold",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: stmt.itemsCount })
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-slate-950 font-bold",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(stmt.totalAmount, language) })
+						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
 							children: stmt.status === "pending" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								size: "sm",
 								variant: "outline",
+								className: "border-slate-300 text-slate-900 font-medium",
 								children: "Conciliar"
 							})
 						})
@@ -78509,20 +78612,21 @@ function Invoices() {
 	const getStatusBadge = (status) => {
 		switch (status) {
 			case "paid": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-				className: "bg-green-100 text-green-800 border-green-200 hover:bg-green-100",
+				className: "bg-green-100 text-green-800 border-green-300 font-bold hover:bg-green-100",
 				children: t$1("invoices.status_paid")
 			});
 			case "pending": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 				variant: "secondary",
-				className: "bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-100",
+				className: "bg-yellow-100 text-yellow-800 border-yellow-300 font-bold hover:bg-yellow-100",
 				children: t$1("invoices.status_pending")
 			});
 			case "approved": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-				className: "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100",
+				className: "bg-blue-100 text-blue-800 border-blue-300 font-bold hover:bg-blue-100",
 				children: t$1("invoices.status_approved")
 			});
 			default: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 				variant: "outline",
+				className: "border-slate-400 text-slate-800 font-medium",
 				children: status
 			});
 		}
@@ -78535,10 +78639,10 @@ function Invoices() {
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex flex-col gap-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-						className: "text-3xl font-bold tracking-tight text-navy",
+						className: "text-3xl font-bold tracking-tight text-slate-950",
 						children: t$1("invoices.title")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-muted-foreground",
+						className: "text-slate-700 font-medium",
 						children: t$1("invoices.subtitle")
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
@@ -78564,61 +78668,85 @@ function Invoices() {
 				className: "pb-3",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex justify-between items-center",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("invoices.title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+						className: "text-slate-950",
+						children: t$1("invoices.title")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "relative w-64",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 							placeholder: t$1("common.search"),
-							className: "pl-8",
+							className: "pl-8 text-black",
 							value: filter,
 							onChange: (e) => setFilter(e.target.value)
 						})]
 					})]
 				})
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("invoices.invoice_id") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.description") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.date") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Flow" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("invoices.amount") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-					className: "text-right",
+					className: "font-bold text-slate-950",
+					children: t$1("invoices.invoice_id")
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "font-bold text-slate-950",
+					children: t$1("common.description")
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "font-bold text-slate-950",
+					children: t$1("common.date")
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "font-bold text-slate-950",
+					children: "Flow"
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "font-bold text-slate-950",
+					children: t$1("invoices.amount")
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "font-bold text-slate-950",
+					children: t$1("common.status")
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "text-right font-bold text-slate-950",
 					children: t$1("common.actions")
 				})
 			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredInvoices.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				colSpan: 7,
-				className: "text-center py-10",
+				className: "text-center py-10 text-slate-600 font-medium",
 				children: t$1("invoices.no_invoices")
 			}) }) : filteredInvoices.map((inv) => {
 				const fromName = resolveUserName(inv.fromId);
 				const toName = resolveUserName(inv.toId);
 				return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-						className: "font-medium flex items-center gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: inv.id })]
+						className: "font-bold text-slate-950 flex items-center gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4 text-slate-800" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: inv.id })]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-						className: "max-w-[200px] truncate",
+						className: "max-w-[200px] truncate text-slate-900 font-medium",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: inv.description })
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatDate(inv.date, language) }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: "text-slate-900",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatDate(inv.date, language) })
+					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-2 text-xs text-slate-600",
+						className: "flex items-center gap-2 text-xs text-slate-800 font-medium",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "font-medium text-foreground",
+								className: "font-bold text-slate-950",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: fromName })
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "h-3 w-3" }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "font-medium text-foreground",
+								className: "font-bold text-slate-950",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: toName })
 							})
 						]
 					}) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-1 font-bold",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-3 w-3 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(inv.amount, language) })]
+						className: "flex items-center gap-1 font-bold text-slate-950",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-3 w-3 text-slate-700" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(inv.amount, language) })]
 					}) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: getStatusBadge(inv.status) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -78628,14 +78756,14 @@ function Invoices() {
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								size: "sm",
 								variant: "ghost",
-								className: "h-8 w-8 p-0",
+								className: "h-8 w-8 p-0 text-slate-700",
 								onClick: () => handleViewInvoice(inv),
 								title: t$1("invoices.view"),
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4 text-gray-500" })
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4" })
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 								size: "sm",
 								variant: "outline",
-								className: "h-8 gap-2 text-blue-600 border-blue-200 hover:bg-blue-50",
+								className: "h-8 gap-2 text-blue-700 border-blue-200 hover:bg-blue-50 font-bold",
 								onClick: () => handleSendToPayer(inv.id, toName),
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Send, { className: "h-3 w-3" }), t$1("invoices.send_to_payer")]
 							})]
@@ -80098,7 +80226,7 @@ function Tenants() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex justify-between items-center",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-navy",
+				className: "text-3xl font-bold tracking-tight text-slate-950",
 				children: t$1("tenants.title")
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex gap-2",
@@ -80238,9 +80366,12 @@ function Tenants() {
 			className: "pb-3",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex justify-between items-center",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("tenants.list_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+					className: "text-slate-950",
+					children: t$1("tenants.list_title")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "relative w-64",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 						placeholder: t$1("tenants.search_placeholder"),
 						className: "pl-8",
 						value: filter,
@@ -80249,12 +80380,24 @@ function Tenants() {
 				})]
 			})
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("tenants.property") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.contracts") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-				className: "text-right",
+				className: "font-bold text-slate-950",
+				children: t$1("common.name")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-slate-950",
+				children: t$1("tenants.property")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-slate-950",
+				children: t$1("common.contracts")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-slate-950",
+				children: t$1("common.status")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "text-right font-bold text-slate-950",
 				children: t$1("common.actions")
 			})
 		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredTenants.map((tenant) => {
@@ -80264,23 +80407,26 @@ function Tenants() {
 					className: "font-medium",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex flex-col",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.name }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-xs text-slate-500",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-slate-950 font-semibold",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.name })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-xs text-slate-700 font-medium",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.email })
 						})]
 					})
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: prop ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 					to: `/properties/${prop.id}`,
-					className: "flex items-center gap-2 hover:text-blue-600 hover:underline",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: prop.name })]
+					className: "flex items-center gap-2 hover:text-blue-700 hover:underline text-slate-900",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-4 w-4 text-slate-800" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: prop.name })]
 				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-					className: "text-slate-400",
+					className: "text-slate-500",
 					children: "-"
 				}) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2 text-sm",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-3 w-3 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [
+					className: "flex items-center gap-2 text-sm text-slate-900 font-medium",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-3 w-3 text-slate-800" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [
 						tenant.leaseStart ? format(new Date(tenant.leaseStart), "dd/MM/yyyy") : "N/A",
 						" ",
 						"-",
@@ -80290,6 +80436,7 @@ function Tenants() {
 				}) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 					variant: "outline",
+					className: "text-slate-900 border-slate-400",
 					children: tenant.status
 				}) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -80301,7 +80448,7 @@ function Tenants() {
 								variant: "ghost",
 								size: "icon",
 								onClick: () => handleWhatsApp(tenant.phone),
-								className: "text-green-600",
+								className: "text-green-700 hover:text-green-800",
 								title: t$1("common.contact_via_whatsapp"),
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageCircle, { className: "h-4 w-4" })
 							}),
@@ -80309,7 +80456,7 @@ function Tenants() {
 								variant: "ghost",
 								size: "icon",
 								onClick: () => navigate(`/messages?contactId=${tenant.id}`),
-								className: "text-blue-600",
+								className: "text-blue-700 hover:text-blue-800",
 								title: t$1("tenants.send_message"),
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4" })
 							}),
@@ -80317,6 +80464,7 @@ function Tenants() {
 								variant: "ghost",
 								size: "icon",
 								onClick: () => navigate(`/tenants/${tenant.id}`),
+								className: "text-slate-800 hover:text-black",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4" })
 							})
 						]
@@ -81506,10 +81654,10 @@ function Owners() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-navy",
+				className: "text-3xl font-bold tracking-tight text-slate-950",
 				children: t$1("owners.title")
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-muted-foreground",
+				className: "text-slate-700",
 				children: t$1("owners.subtitle")
 			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 				open,
@@ -81630,42 +81778,60 @@ function Owners() {
 			className: "pb-3",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("owners.base_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+					className: "text-slate-950",
+					children: t$1("owners.base_title")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "relative w-full md:w-64",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 						placeholder: t$1("owners.search_placeholder"),
-						className: "pl-8 w-full",
+						className: "pl-8 w-full text-black",
 						value: filter,
 						onChange: (e) => setFilter(e.target.value)
 					})]
 				})]
 			})
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("owners.contact_details") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("owners.properties_count") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-				className: "text-right",
+				className: "font-bold text-slate-950",
+				children: t$1("common.name")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-slate-950",
+				children: t$1("owners.contact_details")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-slate-950",
+				children: t$1("owners.properties_count")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-slate-950",
+				children: t$1("common.status")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "text-right font-bold text-slate-950",
 				children: t$1("common.actions")
 			})
 		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredOwners.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 			colSpan: 5,
-			className: "text-center py-8",
+			className: "text-center py-8 text-slate-500",
 			children: t$1("common.empty")
 		}) }) : filteredOwners.map((owner) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				className: "font-medium",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 					to: `/owners/${owner.id}`,
-					className: "hover:underline text-trust-blue",
+					className: "hover:underline text-trust-blue font-semibold text-slate-900",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })
 				})
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col text-sm",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.email }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-					className: "text-slate-600 text-xs flex items-center gap-1",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "text-slate-950 font-medium",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.email })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+					className: "text-slate-800 text-xs flex items-center gap-1 font-medium",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Phone, { className: "h-3 w-3" }),
 						" ",
@@ -81677,7 +81843,7 @@ function Owners() {
 				asChild: true,
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
 					variant: "secondary",
-					className: "gap-1 cursor-pointer hover:bg-secondary/80",
+					className: "gap-1 cursor-pointer hover:bg-secondary/80 text-slate-950 border-slate-300",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-3 w-3" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: getPropertyCount(owner.id) }),
@@ -81689,22 +81855,23 @@ function Owners() {
 				className: "w-64 p-0",
 				align: "start",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "p-2 font-medium border-b text-xs text-muted-foreground",
+					className: "p-2 font-bold border-b text-xs text-slate-950",
 					children: ["Propriedades de ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex flex-col max-h-60 overflow-y-auto",
 					children: [properties$1.filter((p$1) => p$1.ownerId === owner.id).map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 						to: `/properties/${p$1.id}`,
-						className: "px-3 py-2 text-sm hover:bg-muted transition-colors truncate block border-b last:border-0",
+						className: "px-3 py-2 text-sm text-slate-900 hover:bg-muted transition-colors truncate block border-b last:border-0",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: p$1.name })
 					}, p$1.id)), properties$1.filter((p$1) => p$1.ownerId === owner.id).length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "p-3 text-sm text-center text-muted-foreground",
+						className: "p-3 text-sm text-center text-slate-500",
 						children: t$1("common.empty")
 					})]
 				})]
 			})] }) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 				variant: owner.status === "active" ? "default" : "secondary",
+				className: "text-slate-950 border-slate-300",
 				children: t$1(`common.${owner.status}`)
 			}) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -81716,12 +81883,14 @@ function Owners() {
 						size: "icon",
 						onClick: () => navigate(`/owners/${owner.id}`),
 						title: t$1("common.details"),
+						className: "text-slate-800",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4" })
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
 						asChild: true,
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "ghost",
 							size: "icon",
+							className: "text-slate-800",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ellipsis, { className: "h-4 w-4" })
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
@@ -84318,10 +84487,10 @@ function Condominiums() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex justify-between items-center",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-navy",
+				className: "text-3xl font-bold tracking-tight text-slate-950",
 				children: t$1("condominiums.title")
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-muted-foreground",
+				className: "text-slate-700",
 				children: t$1("condominiums.subtitle")
 			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 				open,
@@ -84449,38 +84618,59 @@ function Condominiums() {
 			className: "pb-3",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex justify-between items-center",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("condominiums.title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+					className: "text-slate-950",
+					children: t$1("condominiums.title")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "relative w-64",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 						placeholder: "Buscar por nome, endereço, gerente...",
-						className: "pl-8",
+						className: "pl-8 text-black",
 						value: filter,
 						onChange: (e) => setFilter(e.target.value)
 					})]
 				})]
 			})
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.address") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("tasks.location") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("condominiums.manager") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("condominiums.contact") }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-				className: "text-right",
+				className: "font-bold text-slate-950",
+				children: t$1("common.name")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-slate-950",
+				children: t$1("common.address")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-slate-950",
+				children: t$1("tasks.location")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-slate-950",
+				children: t$1("condominiums.manager")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-slate-950",
+				children: t$1("condominiums.contact")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "text-right font-bold text-slate-950",
 				children: t$1("common.actions")
 			})
 		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredCondos.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 			colSpan: 6,
-			className: "text-center py-8",
+			className: "text-center py-8 text-slate-500",
 			children: t$1("condominiums.no_condos")
 		}) }) : filteredCondos.map((condo) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-				className: "font-medium flex items-center gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-4 w-4 text-slate-600" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.name })]
+				className: "font-medium flex items-center gap-2 text-slate-950",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-4 w-4 text-slate-800" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.name })]
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.address }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-slate-950",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.address })
+			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "flex flex-col text-xs text-slate-600",
+				className: "flex flex-col text-xs text-slate-800",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
 					condo.city || "-",
 					", ",
@@ -84489,11 +84679,17 @@ function Condominiums() {
 					condo.zipCode
 				] }) })
 			}) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerName || "-" }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-slate-950",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerName || "-" })
+			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col text-xs",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerEmail }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-					className: "text-slate-600",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "text-slate-950",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerEmail })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "text-slate-800",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerPhone })
 				})]
 			}) }),
@@ -84504,6 +84700,7 @@ function Condominiums() {
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						variant: "ghost",
 						size: "icon",
+						className: "text-slate-800",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ellipsis, { className: "h-4 w-4" })
 					})
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
@@ -88321,24 +88518,33 @@ var RenewalRow = (0, import_react.memo)(({ data, isSelected, onSelect, onOpenShe
 			}) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: property$2 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 				to: `/properties/${property$2.id}`,
-				className: "flex items-center gap-2 hover:text-blue-600 hover:underline font-medium",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-muted-foreground" }), property$2.name]
+				className: "flex items-center gap-2 hover:text-blue-700 hover:underline font-bold text-slate-900",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-slate-600" }), property$2.name]
 			}) : "N/A" }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: owner ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: owner.name })]
+				className: "flex items-center gap-2 text-slate-900 font-medium",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 text-slate-600" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: owner.name })]
 			}) : "-" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: tenant.name }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-slate-900 font-medium",
+				children: tenant.name
+			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BadgeStatus, { status: negotiationStatus }) }),
-			showFinancials && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: tenant.suggestedRenewalPrice ? formatCurrency(tenant.suggestedRenewalPrice, language) : "-" }),
-			showFinancials && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatCurrency(tenant.rentValue ?? 0, language) }),
+			showFinancials && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-slate-900 font-medium",
+				children: tenant.suggestedRenewalPrice ? formatCurrency(tenant.suggestedRenewalPrice, language) : "-"
+			}),
+			showFinancials && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-slate-900 font-medium",
+				children: formatCurrency(tenant.rentValue ?? 0, language)
+			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-					className: displayStatus === "critical" ? "text-red-600 font-bold" : "font-medium",
+					className: displayStatus === "critical" ? "text-red-700 font-bold" : "font-bold text-slate-900",
 					children: tenant.leaseEnd ? formatDate(tenant.leaseEnd, language) : "N/A"
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-					className: "text-xs text-muted-foreground",
+					className: "text-xs text-slate-700 font-medium",
 					children: displayStatus === "renewed" ? "Renovado" : daysLeft > 0 ? `${daysLeft} dias restantes` : "Vencido"
 				})]
 			}) }),
@@ -88353,7 +88559,7 @@ var RenewalRow = (0, import_react.memo)(({ data, isSelected, onSelect, onOpenShe
 								variant: "ghost",
 								size: "icon",
 								onClick: () => onOpenSheet(tenant.id),
-								className: "text-blue-600 hover:text-blue-700 hover:bg-blue-50",
+								className: "text-blue-700 hover:text-blue-800 hover:bg-blue-50",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ClipboardList, { className: "h-4 w-4" })
 							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Unified Negotiation Details & Chat" }) })] }),
@@ -88362,11 +88568,12 @@ var RenewalRow = (0, import_react.memo)(({ data, isSelected, onSelect, onOpenShe
 							size: "sm",
 							onClick: () => onStartNegotiation(tenant.id),
 							title: "Negotiate",
+							className: "text-slate-900 font-medium border-slate-300",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4 mr-2" }), "Chat"]
 						}),
 						negotiationStatus !== "closed" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							size: "sm",
-							className: "bg-trust-blue",
+							className: "bg-trust-blue text-white font-bold",
 							onClick: () => onCloseNegotiation(tenant.id),
 							title: "Close Negotiation",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4 mr-2" }), " Fechar"]
@@ -88381,29 +88588,31 @@ var BadgeStatus = ({ status }) => {
 	switch (status) {
 		case "negotiating": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 			variant: "outline",
-			className: "bg-yellow-50 text-yellow-700",
+			className: "bg-yellow-50 text-yellow-800 border-yellow-300 font-bold",
 			children: "Em Negociação"
 		});
 		case "owner_contacted": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 			variant: "outline",
-			className: "bg-blue-50 text-blue-700",
+			className: "bg-blue-50 text-blue-800 border-blue-300 font-bold",
 			children: "Proprietário Contatado"
 		});
 		case "tenant_contacted": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 			variant: "outline",
-			className: "bg-purple-50 text-purple-700",
+			className: "bg-purple-50 text-purple-800 border-purple-300 font-bold",
 			children: "Inquilino Contatado"
 		});
 		case "vacating": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 			variant: "destructive",
+			className: "font-bold",
 			children: "Inquilino vai desocupar"
 		});
 		case "closed": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-			className: "bg-green-600",
+			className: "bg-green-600 font-bold text-white",
 			children: "Fechado"
 		});
 		default: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 			variant: "secondary",
+			className: "font-bold text-slate-800 border-slate-300",
 			children: "Pendente"
 		});
 	}
@@ -88550,10 +88759,10 @@ function Renewals() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col md:flex-row justify-between md:items-center gap-4",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-					className: "text-3xl font-bold tracking-tight text-navy",
+					className: "text-3xl font-bold tracking-tight text-slate-950",
 					children: t$1("renewals.title")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "text-muted-foreground",
+					className: "text-slate-700 font-medium",
 					children: t$1("renewals.subtitle")
 				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-2",
@@ -88561,23 +88770,25 @@ function Renewals() {
 						variant: viewMode === "list" ? "default" : "outline",
 						size: "sm",
 						onClick: () => setViewMode("list"),
+						className: viewMode === "list" ? "bg-trust-blue text-white" : "text-slate-900 border-slate-300",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(List, { className: "h-4 w-4 mr-2" }), " List"]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						variant: viewMode === "calendar" ? "default" : "outline",
 						size: "sm",
 						onClick: () => setViewMode("calendar"),
+						className: viewMode === "calendar" ? "bg-trust-blue text-white" : "text-slate-900 border-slate-300",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-4 w-4 mr-2" }), " Calendar"]
 					})]
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-col md:flex-row gap-4 items-center bg-card p-4 rounded-lg border shadow-sm",
+				className: "flex flex-col md:flex-row gap-4 items-center bg-white p-4 rounded-lg border shadow-sm",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "relative w-full md:w-64",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 							placeholder: t$1("renewals.search_placeholder"),
-							className: "pl-8",
+							className: "pl-8 text-black",
 							value: searchTerm,
 							onChange: (e) => setSearchTerm(e.target.value)
 						})]
@@ -88586,7 +88797,7 @@ function Renewals() {
 						value: filterStatus,
 						onValueChange: setFilterStatus,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "w-[180px]",
+							className: "w-[180px] border-slate-300",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Status" })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
@@ -88611,7 +88822,7 @@ function Renewals() {
 						asChild: true,
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							variant: "outline",
-							className: "w-[200px] justify-start text-left font-normal",
+							className: "w-[200px] justify-start text-left font-normal border-slate-300 text-slate-900",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "mr-2 h-4 w-4" }), dateRange.from ? dateRange.to ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 								format(dateRange.from, "LLL dd, y"),
 								" -",
@@ -88634,6 +88845,7 @@ function Renewals() {
 					selectedIds.size > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						variant: "outline",
 						onClick: handleBulkExport,
+						className: "border-slate-300 text-slate-900",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4 mr-2" }),
 							" Export (",
@@ -88653,20 +88865,41 @@ function Renewals() {
 							onCheckedChange: (c$1) => handleSelectAll(c$1)
 						})
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.property") }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.owners") }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("tenants.new_tenant") }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
-					showFinancials && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Sugestão ($)" }),
-					showFinancials && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("renewals.current_value") }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.due_date") }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-						className: "text-right",
+						className: "font-bold text-slate-950",
+						children: t$1("common.property")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-slate-950",
+						children: t$1("common.owners")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-slate-950",
+						children: t$1("tenants.new_tenant")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-slate-950",
+						children: "Status"
+					}),
+					showFinancials && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-slate-950",
+						children: "Sugestão ($)"
+					}),
+					showFinancials && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-slate-950",
+						children: t$1("renewals.current_value")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-slate-950",
+						children: t$1("common.due_date")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "text-right font-bold text-slate-950",
 						children: t$1("common.actions")
 					})
 				] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredData.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 					colSpan: 9,
-					className: "text-center py-8",
+					className: "text-center py-8 text-slate-600 font-medium",
 					children: "Nenhuma renovação correspondente aos filtros."
 				}) }) : filteredData.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RenewalRow, {
 					data: item,
@@ -88683,17 +88916,19 @@ function Renewals() {
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center justify-between",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
-						className: "text-xl font-bold",
+						className: "text-xl font-bold text-slate-950",
 						children: format(currentMonth, "MMMM yyyy")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex gap-2",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "outline",
 							onClick: () => setCurrentMonth(addMonths(currentMonth, -1)),
+							className: "border-slate-300 text-slate-900",
 							children: "Anterior"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "outline",
 							onClick: () => setCurrentMonth(addMonths(currentMonth, 1)),
+							className: "border-slate-300 text-slate-900",
 							children: "Próximo"
 						})]
 					})]
@@ -88708,17 +88943,17 @@ function Renewals() {
 						"Fri",
 						"Sat"
 					].map((day) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "font-bold text-center p-2 bg-muted",
+						className: "font-bold text-center p-2 bg-slate-100 text-slate-900",
 						children: day
 					}, day)), monthDays.map((day) => {
 						const events = getDayEvents(day);
 						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: cn("min-h-[100px] border rounded p-2 flex flex-col gap-1 bg-white", events.length > 0 && "bg-blue-50/30"),
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-sm font-semibold text-right block text-muted-foreground",
+								className: "text-sm font-semibold text-right block text-slate-700",
 								children: format(day, "d")
 							}), events.map((ev) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: cn("text-[10px] p-1 rounded truncate cursor-pointer hover:opacity-80", ev.displayStatus === "critical" ? "bg-red-100 text-red-800" : ev.displayStatus === "renewed" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"),
+								className: cn("text-[10px] p-1 rounded truncate cursor-pointer hover:opacity-80 font-bold", ev.displayStatus === "critical" ? "bg-red-100 text-red-800" : ev.displayStatus === "renewed" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"),
 								onClick: () => handleOpenSheet(ev.tenant.id),
 								title: ev.property?.name,
 								children: ev.property?.name
@@ -91807,10 +92042,10 @@ function ShortTerm() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex justify-between items-center",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-navy",
+				className: "text-3xl font-bold tracking-tight text-slate-950",
 				children: t$1("short_term.title")
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-muted-foreground",
+				className: "text-slate-700 font-medium",
 				children: t$1("short_term.subtitle")
 			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 				open,
@@ -92665,4 +92900,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BGfKY-0z.js.map
+//# sourceMappingURL=index-CldEb4Q3.js.map

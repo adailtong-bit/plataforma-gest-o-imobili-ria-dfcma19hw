@@ -160,15 +160,15 @@ export default function CalendarPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'text-gray-600 border-gray-200 bg-gray-50'
+        return 'text-slate-600 border-slate-300 bg-slate-100 font-bold'
       case 'in_progress':
-        return 'text-blue-600 border-blue-200 bg-blue-50'
+        return 'text-blue-700 border-blue-300 bg-blue-100 font-bold'
       case 'completed':
-        return 'text-green-600 border-green-200 bg-green-50'
+        return 'text-green-700 border-green-300 bg-green-100 font-bold'
       case 'approved':
-        return 'text-orange-600 border-orange-200 bg-orange-50'
+        return 'text-orange-700 border-orange-300 bg-orange-100 font-bold'
       default:
-        return 'text-gray-600 border-gray-200'
+        return 'text-slate-600 border-slate-300 font-bold'
     }
   }
 
@@ -176,16 +176,16 @@ export default function CalendarPage() {
     <div className="flex flex-col gap-6 lg:h-[calc(100vh-10rem)] h-auto">
       <div className="flex justify-between items-start flex-wrap gap-4">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
             {t('calendar.title')}
           </h1>
-          <p className="text-muted-foreground">{t('calendar.subtitle')}</p>
+          <p className="text-slate-700 font-medium">{t('calendar.subtitle')}</p>
         </div>
 
         <div className="flex gap-2 items-center flex-wrap">
-          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Filter className="h-4 w-4 text-slate-600" />
           <Select value={filterPartner} onValueChange={setFilterPartner}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] border-slate-300 text-slate-900">
               <SelectValue placeholder={t('common.partners')} />
             </SelectTrigger>
             <SelectContent>
@@ -202,27 +202,29 @@ export default function CalendarPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:h-full h-auto">
         {/* Calendar View */}
-        <Card className="lg:col-span-8 h-[500px] lg:h-full flex flex-col">
+        <Card className="lg:col-span-8 h-[500px] lg:h-full flex flex-col border-slate-200">
           <CardHeader>
             <div className="flex flex-wrap justify-between items-center gap-2">
-              <CardTitle>{t('calendar.integrated_view')}</CardTitle>
+              <CardTitle className="text-slate-950">
+                {t('calendar.integrated_view')}
+              </CardTitle>
               <div className="flex flex-wrap gap-2">
                 <Badge
                   variant="outline"
-                  className="bg-blue-50 text-blue-700 border-blue-200"
+                  className="bg-blue-100 text-blue-800 border-blue-300 font-bold"
                 >
                   <Briefcase className="w-3 h-3 mr-1" />{' '}
                   {t('common.operations')}
                 </Badge>
                 <Badge
                   variant="outline"
-                  className="bg-red-50 text-red-700 border-red-200"
+                  className="bg-red-100 text-red-800 border-red-300 font-bold"
                 >
                   <FileText className="w-3 h-3 mr-1" /> {t('common.contracts')}
                 </Badge>
                 <Badge
                   variant="outline"
-                  className="bg-green-50 text-green-700 border-green-200"
+                  className="bg-green-100 text-green-800 border-green-300 font-bold"
                 >
                   <DollarSign className="w-3 h-3 mr-1" />{' '}
                   {t('common.financial')}
@@ -235,36 +237,36 @@ export default function CalendarPage() {
               mode="single"
               selected={date}
               onSelect={setDate}
-              className="rounded-md border shadow-sm w-full h-full"
+              className="rounded-md border shadow-sm w-full h-full text-slate-900"
               classNames={{
                 month: 'space-y-4 w-full h-full flex flex-col',
                 table: 'w-full h-full border-collapse space-y-1',
                 head_row: 'flex w-full',
                 head_cell:
-                  'text-muted-foreground rounded-md w-full font-normal text-[0.8rem]',
+                  'text-slate-600 rounded-md w-full font-bold text-[0.8rem]',
                 row: 'flex w-full mt-2 flex-1',
-                cell: 'h-full w-full text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
-                day: 'h-full w-full p-0 font-normal aria-selected:opacity-100 flex flex-col items-center justify-start pt-2 hover:bg-accent hover:text-accent-foreground',
+                cell: 'h-full w-full text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-slate-100 [&:has([aria-selected])]:bg-slate-100 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
+                day: 'h-full w-full p-0 font-medium aria-selected:opacity-100 flex flex-col items-center justify-start pt-2 hover:bg-slate-100 text-slate-900',
               }}
               modifiers={modifiers}
               modifiersClassNames={{
-                task: 'after:content-["•"] after:text-blue-500 after:block after:text-lg after:leading-[0]',
+                task: 'after:content-["•"] after:text-blue-600 after:block after:text-lg after:leading-[0]',
                 contract:
-                  'after:content-["•"] after:text-red-500 after:block after:text-lg after:leading-[0]',
+                  'after:content-["•"] after:text-red-600 after:block after:text-lg after:leading-[0]',
                 financial:
-                  'after:content-["•"] after:text-green-500 after:block after:text-lg after:leading-[0]',
+                  'after:content-["•"] after:text-green-600 after:block after:text-lg after:leading-[0]',
               }}
             />
           </CardContent>
         </Card>
 
         {/* Daily Details */}
-        <Card className="lg:col-span-4 h-[500px] lg:h-full flex flex-col">
+        <Card className="lg:col-span-4 h-[500px] lg:h-full flex flex-col border-slate-200">
           <CardHeader>
-            <CardTitle>
+            <CardTitle className="text-slate-950">
               {date ? formatDate(date, language) : t('calendar.title')}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-slate-700 font-medium">
               {dayEvents.length} events for this day.
             </CardDescription>
           </CardHeader>
@@ -272,7 +274,7 @@ export default function CalendarPage() {
             <ScrollArea className="h-full px-6">
               <div className="space-y-4 pb-6">
                 {dayEvents.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-8">
+                  <p className="text-sm text-slate-600 text-center py-8 font-medium">
                     {t('calendar.no_activities')}
                   </p>
                 ) : (
@@ -281,7 +283,7 @@ export default function CalendarPage() {
                       return (
                         <div
                           key={`task-${event.data.id}`}
-                          className="flex flex-col gap-2 p-3 border rounded-lg hover:bg-accent/50 transition-colors border-l-4 border-l-blue-500 group relative"
+                          className="flex flex-col gap-2 p-3 border rounded-lg hover:bg-slate-50 transition-colors border-l-4 border-l-blue-600 group relative bg-white"
                         >
                           <div
                             className="cursor-pointer"
@@ -290,7 +292,7 @@ export default function CalendarPage() {
                             <div className="flex justify-between items-start mb-1">
                               <Badge
                                 variant="outline"
-                                className="text-[10px] uppercase bg-blue-50 text-blue-700 border-blue-200"
+                                className="text-[10px] uppercase bg-blue-100 text-blue-800 border-blue-300 font-bold"
                               >
                                 {t(`partners.${event.data.type}`) ||
                                   event.data.type}
@@ -307,18 +309,18 @@ export default function CalendarPage() {
                               </Badge>
                             </div>
                             <div>
-                              <p className="font-semibold text-sm">
+                              <p className="font-bold text-sm text-slate-950">
                                 {event.data.title}
                               </p>
-                              <p className="text-xs text-muted-foreground line-clamp-1">
+                              <p className="text-xs text-slate-700 font-medium line-clamp-1">
                                 {event.data.propertyName}
                               </p>
                               <div className="flex justify-between items-center mt-1">
-                                <p className="text-xs text-blue-600">
+                                <p className="text-xs text-blue-700 font-semibold">
                                   {event.data.assignee}
                                 </p>
                                 {event.data.price && (
-                                  <p className="text-xs font-medium text-green-700">
+                                  <p className="text-xs font-bold text-green-700">
                                     {formatCurrency(event.data.price, language)}
                                   </p>
                                 )}
@@ -330,7 +332,7 @@ export default function CalendarPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-xs h-7 gap-1"
+                                className="text-xs h-7 gap-1 text-slate-800 hover:text-black font-medium"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   navigate(
@@ -349,22 +351,22 @@ export default function CalendarPage() {
                       return (
                         <div
                           key={`contract-${event.data.id}`}
-                          className="flex flex-col gap-2 p-3 border rounded-lg border-l-4 border-l-red-500 bg-red-50/10"
+                          className="flex flex-col gap-2 p-3 border rounded-lg border-l-4 border-l-red-600 bg-red-50"
                         >
                           <div className="flex justify-between items-start">
                             <Badge
                               variant="outline"
-                              className="text-[10px] uppercase bg-red-50 text-red-700 border-red-200"
+                              className="text-[10px] uppercase bg-red-100 text-red-800 border-red-300 font-bold"
                             >
                               Expiration
                             </Badge>
-                            <AlertTriangle className="h-4 w-4 text-red-500" />
+                            <AlertTriangle className="h-4 w-4 text-red-600" />
                           </div>
                           <div>
-                            <p className="font-semibold text-sm text-red-900">
+                            <p className="font-bold text-sm text-red-900">
                               Lease End
                             </p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-slate-800 font-medium">
                               Tenant: {event.data.name}
                             </p>
                           </div>
@@ -373,7 +375,7 @@ export default function CalendarPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-xs h-7 gap-1 text-red-800 hover:text-red-900 hover:bg-red-100"
+                                className="text-xs h-7 gap-1 text-red-900 hover:bg-red-200 font-bold"
                                 onClick={() =>
                                   navigate(
                                     `/properties/${event.data.propertyId}`,
@@ -391,19 +393,19 @@ export default function CalendarPage() {
                       return (
                         <div
                           key={`fin-${event.data.id}`}
-                          className="flex flex-col gap-2 p-3 border rounded-lg border-l-4 border-l-green-500 bg-green-50/10"
+                          className="flex flex-col gap-2 p-3 border rounded-lg border-l-4 border-l-green-600 bg-green-50"
                         >
                           <div className="flex justify-between items-start">
                             <Badge
                               variant="outline"
-                              className="text-[10px] uppercase bg-green-50 text-green-700 border-green-200"
+                              className="text-[10px] uppercase bg-green-100 text-green-800 border-green-300 font-bold"
                             >
                               Due Date
                             </Badge>
-                            <DollarSign className="h-4 w-4 text-green-600" />
+                            <DollarSign className="h-4 w-4 text-green-700" />
                           </div>
                           <div>
-                            <p className="font-semibold text-sm">
+                            <p className="font-bold text-sm text-slate-950">
                               {event.data.description}
                             </p>
                             <p className="text-xs font-bold text-green-800">
@@ -415,7 +417,7 @@ export default function CalendarPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-xs h-7 gap-1 text-green-800 hover:text-green-900 hover:bg-green-100"
+                                className="text-xs h-7 gap-1 text-green-900 hover:bg-green-200 font-bold"
                                 onClick={() =>
                                   navigate(
                                     `/properties/${event.data.propertyId}`,

@@ -218,7 +218,7 @@ export default function Tenants() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight text-navy">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-950">
           {t('tenants.title')}
         </h1>
         <div className="flex gap-2">
@@ -343,9 +343,11 @@ export default function Tenants() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
-            <CardTitle>{t('tenants.list_title')}</CardTitle>
+            <CardTitle className="text-slate-950">
+              {t('tenants.list_title')}
+            </CardTitle>
             <div className="relative w-64">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-500" />
               <Input
                 placeholder={t('tenants.search_placeholder')}
                 className="pl-8"
@@ -359,11 +361,19 @@ export default function Tenants() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('common.name')}</TableHead>
-                <TableHead>{t('tenants.property')}</TableHead>
-                <TableHead>{t('common.contracts')}</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
-                <TableHead className="text-right">
+                <TableHead className="font-bold text-slate-950">
+                  {t('common.name')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('tenants.property')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('common.contracts')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('common.status')}
+                </TableHead>
+                <TableHead className="text-right font-bold text-slate-950">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>
@@ -375,10 +385,10 @@ export default function Tenants() {
                   <TableRow key={tenant.id}>
                     <TableCell className="font-medium">
                       <div className="flex flex-col">
-                        <span>
+                        <span className="text-slate-950 font-semibold">
                           <DataMask>{tenant.name}</DataMask>
                         </span>
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-slate-700 font-medium">
                           <DataMask>{tenant.email}</DataMask>
                         </span>
                       </div>
@@ -387,18 +397,18 @@ export default function Tenants() {
                       {prop ? (
                         <Link
                           to={`/properties/${prop.id}`}
-                          className="flex items-center gap-2 hover:text-blue-600 hover:underline"
+                          className="flex items-center gap-2 hover:text-blue-700 hover:underline text-slate-900"
                         >
-                          <Home className="h-4 w-4" />
+                          <Home className="h-4 w-4 text-slate-800" />
                           <DataMask>{prop.name}</DataMask>
                         </Link>
                       ) : (
-                        <span className="text-slate-400">-</span>
+                        <span className="text-slate-500">-</span>
                       )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="h-3 w-3 text-slate-500" />
+                      <div className="flex items-center gap-2 text-sm text-slate-900 font-medium">
+                        <Calendar className="h-3 w-3 text-slate-800" />
                         <DataMask>
                           {tenant.leaseStart
                             ? format(new Date(tenant.leaseStart), 'dd/MM/yyyy')
@@ -411,7 +421,12 @@ export default function Tenants() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{tenant.status}</Badge>
+                      <Badge
+                        variant="outline"
+                        className="text-slate-900 border-slate-400"
+                      >
+                        {tenant.status}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -419,7 +434,7 @@ export default function Tenants() {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleWhatsApp(tenant.phone)}
-                          className="text-green-600"
+                          className="text-green-700 hover:text-green-800"
                           title={t('common.contact_via_whatsapp')}
                         >
                           <MessageCircle className="h-4 w-4" />
@@ -430,7 +445,7 @@ export default function Tenants() {
                           onClick={() =>
                             navigate(`/messages?contactId=${tenant.id}`)
                           }
-                          className="text-blue-600"
+                          className="text-blue-700 hover:text-blue-800"
                           title={t('tenants.send_message')}
                         >
                           <MessageSquare className="h-4 w-4" />
@@ -439,6 +454,7 @@ export default function Tenants() {
                           variant="ghost"
                           size="icon"
                           onClick={() => navigate(`/tenants/${tenant.id}`)}
+                          className="text-slate-800 hover:text-black"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>

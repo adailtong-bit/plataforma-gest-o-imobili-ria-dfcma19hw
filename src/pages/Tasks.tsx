@@ -52,15 +52,15 @@ export default function Tasks() {
     <div className="flex flex-col gap-6 h-full">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
             {t('tasks.title')}
           </h1>
-          <p className="text-muted-foreground">{t('tasks.subtitle')}</p>
+          <p className="text-slate-700 font-medium">{t('tasks.subtitle')}</p>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-[150px] h-9 text-black">
-              <Filter className="w-3 h-3 mr-2 text-slate-500" />
+            <SelectTrigger className="w-[150px] h-9 text-slate-950 border-slate-300 font-medium">
+              <Filter className="w-3 h-3 mr-2 text-slate-700" />
               <SelectValue placeholder={t('common.type')} />
             </SelectTrigger>
             <SelectContent>
@@ -76,7 +76,7 @@ export default function Tasks() {
           <Button
             variant="outline"
             size="sm"
-            className="gap-2 h-9 text-black"
+            className="gap-2 h-9 text-slate-950 border-slate-300 font-medium"
             onClick={() => setInvoiceDialogOpen(true)}
           >
             <FileText className="h-4 w-4" /> Generate Invoice
@@ -102,12 +102,12 @@ export default function Tasks() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
             <div className="bg-slate-50 p-4 rounded-lg flex flex-col gap-4 border border-slate-200">
               <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                <h3 className="font-bold text-sm uppercase text-slate-700">
+                <h3 className="font-bold text-sm uppercase text-slate-950">
                   {t('common.pending')}
                 </h3>
                 <Badge
                   variant="secondary"
-                  className="bg-white border text-black font-bold border-slate-200"
+                  className="bg-white border text-slate-950 font-bold border-slate-300"
                 >
                   {pendingTasks.length}
                 </Badge>
@@ -129,10 +129,10 @@ export default function Tasks() {
 
             <div className="bg-blue-50 p-4 rounded-lg flex flex-col gap-4 border border-blue-100">
               <div className="flex items-center justify-between pb-2 border-b border-blue-200">
-                <h3 className="font-bold text-sm uppercase text-blue-800">
+                <h3 className="font-bold text-sm uppercase text-blue-900">
                   {t('tasks.in_progress')}
                 </h3>
-                <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 font-bold border-blue-200">
+                <Badge className="bg-blue-100 text-blue-900 font-bold border-blue-300 hover:bg-blue-200">
                   {inProgressTasks.length}
                 </Badge>
               </div>
@@ -154,10 +154,10 @@ export default function Tasks() {
 
             <div className="bg-orange-50 p-4 rounded-lg flex flex-col gap-4 border border-orange-100">
               <div className="flex items-center justify-between pb-2 border-b border-orange-200">
-                <h3 className="font-bold text-sm uppercase text-orange-800">
+                <h3 className="font-bold text-sm uppercase text-orange-900">
                   {t('tasks.approval')}
                 </h3>
-                <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 font-bold border-orange-200">
+                <Badge className="bg-orange-100 text-orange-900 font-bold border-orange-300 hover:bg-orange-200">
                   {approvalTasks.length}
                 </Badge>
               </div>
@@ -178,10 +178,10 @@ export default function Tasks() {
 
             <div className="bg-green-50 p-4 rounded-lg flex flex-col gap-4 border border-green-100">
               <div className="flex items-center justify-between pb-2 border-b border-green-200">
-                <h3 className="font-bold text-sm uppercase text-green-800">
+                <h3 className="font-bold text-sm uppercase text-green-900">
                   {t('common.completed')}
                 </h3>
-                <Badge className="bg-green-100 text-green-800 hover:bg-green-200 font-bold border-green-200">
+                <Badge className="bg-green-100 text-green-900 font-bold border-green-300 hover:bg-green-200">
                   {completedTasks.length}
                 </Badge>
               </div>
@@ -204,7 +204,7 @@ export default function Tasks() {
 
         <TabsContent value="list">
           <Card>
-            <CardContent className="p-6 text-center text-slate-500">
+            <CardContent className="p-6 text-center text-slate-600 font-medium">
               <p>Modo lista otimizado disponível em breve.</p>
             </CardContent>
           </Card>

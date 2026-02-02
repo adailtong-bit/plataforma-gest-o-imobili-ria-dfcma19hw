@@ -180,10 +180,10 @@ export default function Condominiums() {
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
             {t('condominiums.title')}
           </h1>
-          <p className="text-muted-foreground">{t('condominiums.subtitle')}</p>
+          <p className="text-slate-700">{t('condominiums.subtitle')}</p>
         </div>
         <Dialog
           open={open}
@@ -297,12 +297,14 @@ export default function Condominiums() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
-            <CardTitle>{t('condominiums.title')}</CardTitle>
+            <CardTitle className="text-slate-950">
+              {t('condominiums.title')}
+            </CardTitle>
             <div className="relative w-64">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-500" />
               <Input
                 placeholder="Buscar por nome, endereço, gerente..."
-                className="pl-8"
+                className="pl-8 text-black"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
               />
@@ -313,12 +315,22 @@ export default function Condominiums() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('common.name')}</TableHead>
-                <TableHead>{t('common.address')}</TableHead>
-                <TableHead>{t('tasks.location')}</TableHead>
-                <TableHead>{t('condominiums.manager')}</TableHead>
-                <TableHead>{t('condominiums.contact')}</TableHead>
-                <TableHead className="text-right">
+                <TableHead className="font-bold text-slate-950">
+                  {t('common.name')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('common.address')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('tasks.location')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('condominiums.manager')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('condominiums.contact')}
+                </TableHead>
+                <TableHead className="text-right font-bold text-slate-950">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>
@@ -326,22 +338,25 @@ export default function Condominiums() {
             <TableBody>
               {filteredCondos.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell
+                    colSpan={6}
+                    className="text-center py-8 text-slate-500"
+                  >
                     {t('condominiums.no_condos')}
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredCondos.map((condo) => (
                   <TableRow key={condo.id}>
-                    <TableCell className="font-medium flex items-center gap-2">
-                      <Building2 className="h-4 w-4 text-slate-600" />
+                    <TableCell className="font-medium flex items-center gap-2 text-slate-950">
+                      <Building2 className="h-4 w-4 text-slate-800" />
                       <DataMask>{condo.name}</DataMask>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-slate-950">
                       <DataMask>{condo.address}</DataMask>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col text-xs text-slate-600">
+                      <div className="flex flex-col text-xs text-slate-800">
                         <DataMask>
                           <span>
                             {condo.city || '-'}, {condo.state} {condo.zipCode}
@@ -349,15 +364,15 @@ export default function Condominiums() {
                         </DataMask>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-slate-950">
                       <DataMask>{condo.managerName || '-'}</DataMask>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col text-xs">
-                        <span>
+                        <span className="text-slate-950">
                           <DataMask>{condo.managerEmail}</DataMask>
                         </span>
-                        <span className="text-slate-600">
+                        <span className="text-slate-800">
                           <DataMask>{condo.managerPhone}</DataMask>
                         </span>
                       </div>
@@ -365,7 +380,11 @@ export default function Condominiums() {
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-slate-800"
+                          >
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

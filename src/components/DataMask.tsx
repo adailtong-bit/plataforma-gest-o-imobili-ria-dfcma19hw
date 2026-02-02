@@ -20,7 +20,12 @@ export function DataMask({
   const shouldShow = showAuth || isAuthenticated
 
   if (shouldShow) {
-    return <>{children}</>
+    // Ensure revealed data uses high contrast text color
+    return (
+      <span className={cn('text-slate-950 dark:text-slate-50', className)}>
+        {children}
+      </span>
+    )
   }
 
   // Determine width style
@@ -29,7 +34,7 @@ export function DataMask({
   return (
     <span
       className={cn(
-        'inline-block bg-muted/80 text-transparent rounded select-none animate-pulse align-middle h-[1em] min-w-[3ch]',
+        'inline-block bg-slate-200 text-transparent rounded select-none animate-pulse align-middle h-[1em] min-w-[3ch]',
         className,
       )}
       style={style}

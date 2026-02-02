@@ -8,7 +8,6 @@ import {
 import {
   Activity,
   DollarSign,
-  Home,
   Settings2,
   Trophy,
   CalendarDays,
@@ -163,15 +162,20 @@ function DashboardContent() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
             {t('common.real_estate_dashboard')}
           </h1>
-          <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
+          <p className="text-slate-700 font-medium">
+            {t('dashboard.subtitle')}
+          </p>
         </div>
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" className="gap-2">
+            <Button
+              variant="outline"
+              className="gap-2 border-slate-300 text-slate-900 font-medium"
+            >
               <Settings2 className="h-4 w-4" /> {t('dashboard.customize')}
             </Button>
           </DialogTrigger>
@@ -222,64 +226,64 @@ function DashboardContent() {
       {/* Real Estate KPI Cards */}
       {widgets.kpi && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <Card>
+          <Card className="border-slate-200 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-bold text-slate-900">
                 Total Properties
               </CardTitle>
-              <Building className="h-4 w-4 text-muted-foreground" />
+              <Building className="h-4 w-4 text-slate-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-slate-950">
                 <DataMask>{totalProperties}</DataMask>
               </div>
-              <p className="text-xs text-muted-foreground">In portfolio</p>
+              <p className="text-xs text-slate-700 font-medium">In portfolio</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-slate-200 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-bold text-slate-900">
                 {t('common.active_listings')}
               </CardTitle>
-              <Key className="h-4 w-4 text-muted-foreground" />
+              <Key className="h-4 w-4 text-slate-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-slate-950">
                 <DataMask>{activeListings}</DataMask>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-slate-700 font-medium">
                 {t('status.available')}
               </p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-slate-200 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-bold text-slate-900">
                 {t('common.pending_visits')}
               </CardTitle>
-              <CalendarDays className="h-4 w-4 text-muted-foreground" />
+              <CalendarDays className="h-4 w-4 text-slate-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-slate-950">
                 <DataMask>{pendingVisits}</DataMask>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-slate-700 font-medium">
                 {t('common.scheduled')}
               </p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-slate-200 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-bold text-slate-900">
                 {t('common.total_revenue')}
               </CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <DollarSign className="h-4 w-4 text-slate-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-slate-950">
                 <DataMask>{formatCurrency(totalRevenue, language)}</DataMask>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-slate-700 font-medium">
                 +20.1% {t('dashboard.from_last_month')}
               </p>
             </CardContent>
@@ -289,29 +293,29 @@ function DashboardContent() {
 
       {/* Gamification Widget */}
       {widgets.health && (
-        <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white animate-in fade-in zoom-in-95 duration-500">
+        <Card className="bg-gradient-to-r from-blue-700 to-purple-800 text-white animate-in fade-in zoom-in-95 duration-500 shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-white">
+            <CardTitle className="flex items-center gap-2 text-white font-bold">
               <Trophy className="h-6 w-6 text-yellow-300" />
               {t('gamification.portfolio_health')}
             </CardTitle>
-            <CardDescription className="text-blue-100">
+            <CardDescription className="text-blue-100 font-medium">
               {t('gamification.desc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4">
-              <div className="text-4xl font-bold">
+              <div className="text-4xl font-bold text-white">
                 <DataMask>{avgHealthScore.toFixed(0)}</DataMask>
               </div>
               <div className="flex-1 space-y-1">
-                <div className="flex justify-between text-xs text-blue-100">
+                <div className="flex justify-between text-xs text-blue-100 font-bold">
                   <span>
                     {t('gamification.level')}: {t('gamification.expert')}
                   </span>
                   <span>{t('gamification.target')}: 100</span>
                 </div>
-                <Progress value={avgHealthScore} className="h-3 bg-blue-800" />
+                <Progress value={avgHealthScore} className="h-3 bg-blue-900" />
               </div>
             </div>
           </CardContent>
@@ -322,11 +326,13 @@ function DashboardContent() {
         {/* Main Chart */}
         {widgets.revenueChart && (
           <Card
-            className={`${widgets.calendar ? 'col-span-4' : 'col-span-7'} animate-in fade-in zoom-in-95 duration-500`}
+            className={`${widgets.calendar ? 'col-span-4' : 'col-span-7'} animate-in fade-in zoom-in-95 duration-500 border-slate-200 shadow-sm`}
           >
             <CardHeader>
-              <CardTitle>{t('dashboard.revenue_vs_expenses')}</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-slate-950">
+                {t('dashboard.revenue_vs_expenses')}
+              </CardTitle>
+              <CardDescription className="text-slate-700 font-medium">
                 {t('dashboard.revenue_overview')}
               </CardDescription>
             </CardHeader>
@@ -348,6 +354,11 @@ function DashboardContent() {
                       tickLine={false}
                       tickMargin={10}
                       axisLine={false}
+                      tick={{
+                        fill: 'hsl(var(--foreground))',
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                      }}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} />
                     <Bar
@@ -365,11 +376,13 @@ function DashboardContent() {
         {/* Mini Calendar & Activity */}
         {widgets.calendar && (
           <Card
-            className={`${widgets.revenueChart ? 'col-span-3' : 'col-span-7'} animate-in fade-in zoom-in-95 duration-500 delay-100`}
+            className={`${widgets.revenueChart ? 'col-span-3' : 'col-span-7'} animate-in fade-in zoom-in-95 duration-500 delay-100 border-slate-200 shadow-sm`}
           >
             <CardHeader>
-              <CardTitle>{t('dashboard.quick_calendar')}</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-slate-950">
+                {t('dashboard.quick_calendar')}
+              </CardTitle>
+              <CardDescription className="text-slate-700 font-medium">
                 {t('dashboard.todays_activity')}
               </CardDescription>
             </CardHeader>
@@ -378,7 +391,7 @@ function DashboardContent() {
                 mode="single"
                 selected={date}
                 onSelect={setDate}
-                className="rounded-md border"
+                className="rounded-md border border-slate-200"
               />
             </CardContent>
           </Card>
@@ -389,11 +402,15 @@ function DashboardContent() {
         {/* Pending Approvals */}
         {widgets.pending && (
           <Card
-            className={`${widgets.expenseChart ? 'col-span-4' : 'col-span-7'} animate-in fade-in slide-in-from-left-4 duration-500 delay-200`}
+            className={`${widgets.expenseChart ? 'col-span-4' : 'col-span-7'} animate-in fade-in slide-in-from-left-4 duration-500 delay-200 border-slate-200 shadow-sm`}
           >
             <CardHeader>
-              <CardTitle>{t('dashboard.pending_approvals')}</CardTitle>
-              <CardDescription>{t('dashboard.pending_desc')}</CardDescription>
+              <CardTitle className="text-slate-950">
+                {t('dashboard.pending_approvals')}
+              </CardTitle>
+              <CardDescription className="text-slate-700 font-medium">
+                {t('dashboard.pending_desc')}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -411,24 +428,28 @@ function DashboardContent() {
                     >
                       <div className="flex items-center gap-4">
                         <div className="bg-orange-100 p-2 rounded-full">
-                          <Activity className="h-5 w-5 text-orange-600" />
+                          <Activity className="h-5 w-5 text-orange-700" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">
+                          <p className="font-bold text-sm text-slate-950">
                             <DataMask>{invoice.description}</DataMask>
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-slate-700 font-medium">
                             {invoice.date} • <DataMask>{invoice.id}</DataMask>
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm">
+                        <span className="font-bold text-sm text-slate-950">
                           <DataMask>
                             {formatCurrency(invoice.amount, language)}
                           </DataMask>
                         </span>
-                        <Button size="sm" variant="outline">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-slate-300 text-slate-900 font-bold"
+                        >
                           {t('dashboard.review')}
                         </Button>
                       </div>
@@ -443,21 +464,30 @@ function DashboardContent() {
                     >
                       <div className="flex items-center gap-4">
                         <div className="bg-blue-100 p-2 rounded-full">
-                          <Activity className="h-5 w-5 text-blue-600" />
+                          <Activity className="h-5 w-5 text-blue-700" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">
+                          <p className="font-bold text-sm text-slate-950">
                             <DataMask>{task.title}</DataMask>
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-slate-700 font-medium">
                             <DataMask>{task.propertyName}</DataMask> •{' '}
                             <DataMask>{task.assignee}</DataMask>
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant="secondary">{t('common.pending')}</Badge>
-                        <Button size="sm" variant="default">
+                        <Badge
+                          variant="secondary"
+                          className="text-slate-900 border border-slate-300 font-bold"
+                        >
+                          {t('common.pending')}
+                        </Badge>
+                        <Button
+                          size="sm"
+                          variant="default"
+                          className="bg-trust-blue text-white font-bold"
+                        >
                           {t('dashboard.approve')}
                         </Button>
                       </div>
@@ -471,11 +501,15 @@ function DashboardContent() {
         {/* Expenses Chart */}
         {widgets.expenseChart && (
           <Card
-            className={`${widgets.pending ? 'col-span-3' : 'col-span-7'} animate-in fade-in slide-in-from-right-4 duration-500 delay-300`}
+            className={`${widgets.pending ? 'col-span-3' : 'col-span-7'} animate-in fade-in slide-in-from-right-4 duration-500 delay-300 border-slate-200 shadow-sm`}
           >
             <CardHeader>
-              <CardTitle>{t('dashboard.expense_distribution')}</CardTitle>
-              <CardDescription>{t('dashboard.expense_desc')}</CardDescription>
+              <CardTitle className="text-slate-950">
+                {t('dashboard.expense_distribution')}
+              </CardTitle>
+              <CardDescription className="text-slate-700 font-medium">
+                {t('dashboard.expense_desc')}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <DataMask className="w-full h-[250px] block">

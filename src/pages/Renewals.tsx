@@ -104,9 +104,9 @@ const RenewalRow = memo(
           {property ? (
             <Link
               to={`/properties/${property.id}`}
-              className="flex items-center gap-2 hover:text-blue-600 hover:underline font-medium"
+              className="flex items-center gap-2 hover:text-blue-700 hover:underline font-bold text-slate-900"
             >
-              <Building className="h-4 w-4 text-muted-foreground" />
+              <Building className="h-4 w-4 text-slate-600" />
               {property.name}
             </Link>
           ) : (
@@ -115,27 +115,29 @@ const RenewalRow = memo(
         </TableCell>
         <TableCell>
           {owner ? (
-            <div className="flex items-center gap-2">
-              <User className="h-3 w-3 text-muted-foreground" />
+            <div className="flex items-center gap-2 text-slate-900 font-medium">
+              <User className="h-3 w-3 text-slate-600" />
               <span>{owner.name}</span>
             </div>
           ) : (
             '-'
           )}
         </TableCell>
-        <TableCell>{tenant.name}</TableCell>
+        <TableCell className="text-slate-900 font-medium">
+          {tenant.name}
+        </TableCell>
         <TableCell>
           <BadgeStatus status={negotiationStatus} />
         </TableCell>
         {showFinancials && (
-          <TableCell>
+          <TableCell className="text-slate-900 font-medium">
             {tenant.suggestedRenewalPrice
               ? formatCurrency(tenant.suggestedRenewalPrice, language)
               : '-'}
           </TableCell>
         )}
         {showFinancials && (
-          <TableCell>
+          <TableCell className="text-slate-900 font-medium">
             {formatCurrency(tenant.rentValue ?? 0, language)}
           </TableCell>
         )}
@@ -144,13 +146,13 @@ const RenewalRow = memo(
             <span
               className={
                 displayStatus === 'critical'
-                  ? 'text-red-600 font-bold'
-                  : 'font-medium'
+                  ? 'text-red-700 font-bold'
+                  : 'font-bold text-slate-900'
               }
             >
               {tenant.leaseEnd ? formatDate(tenant.leaseEnd, language) : 'N/A'}
             </span>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-slate-700 font-medium">
               {displayStatus === 'renewed'
                 ? 'Renovado'
                 : daysLeft > 0
@@ -167,7 +169,7 @@ const RenewalRow = memo(
                   variant="ghost"
                   size="icon"
                   onClick={() => onOpenSheet(tenant.id)}
-                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  className="text-blue-700 hover:text-blue-800 hover:bg-blue-50"
                 >
                   <ClipboardList className="h-4 w-4" />
                 </Button>
@@ -182,6 +184,7 @@ const RenewalRow = memo(
               size="sm"
               onClick={() => onStartNegotiation(tenant.id)}
               title="Negotiate"
+              className="text-slate-900 font-medium border-slate-300"
             >
               <MessageSquare className="h-4 w-4 mr-2" />
               Chat
@@ -190,7 +193,7 @@ const RenewalRow = memo(
             {negotiationStatus !== 'closed' && (
               <Button
                 size="sm"
-                className="bg-trust-blue"
+                className="bg-trust-blue text-white font-bold"
                 onClick={() => onCloseNegotiation(tenant.id)}
                 title="Close Negotiation"
               >
@@ -208,28 +211,50 @@ const BadgeStatus = ({ status }: { status: string }) => {
   switch (status) {
     case 'negotiating':
       return (
-        <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
+        <Badge
+          variant="outline"
+          className="bg-yellow-50 text-yellow-800 border-yellow-300 font-bold"
+        >
           Em Negociação
         </Badge>
       )
     case 'owner_contacted':
       return (
-        <Badge variant="outline" className="bg-blue-50 text-blue-700">
+        <Badge
+          variant="outline"
+          className="bg-blue-50 text-blue-800 border-blue-300 font-bold"
+        >
           Proprietário Contatado
         </Badge>
       )
     case 'tenant_contacted':
       return (
-        <Badge variant="outline" className="bg-purple-50 text-purple-700">
+        <Badge
+          variant="outline"
+          className="bg-purple-50 text-purple-800 border-purple-300 font-bold"
+        >
           Inquilino Contatado
         </Badge>
       )
     case 'vacating':
-      return <Badge variant="destructive">Inquilino vai desocupar</Badge>
+      return (
+        <Badge variant="destructive" className="font-bold">
+          Inquilino vai desocupar
+        </Badge>
+      )
     case 'closed':
-      return <Badge className="bg-green-600">Fechado</Badge>
+      return (
+        <Badge className="bg-green-600 font-bold text-white">Fechado</Badge>
+      )
     default:
-      return <Badge variant="secondary">Pendente</Badge>
+      return (
+        <Badge
+          variant="secondary"
+          className="font-bold text-slate-800 border-slate-300"
+        >
+          Pendente
+        </Badge>
+      )
   }
 }
 
@@ -445,16 +470,21 @@ export default function Renewals() {
     <div className="flex flex-col gap-6 h-full">
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
             {t('renewals.title')}
           </h1>
-          <p className="text-muted-foreground">{t('renewals.subtitle')}</p>
+          <p className="text-slate-700 font-medium">{t('renewals.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant={viewMode === 'list' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('list')}
+            className={
+              viewMode === 'list'
+                ? 'bg-trust-blue text-white'
+                : 'text-slate-900 border-slate-300'
+            }
           >
             <ListIcon className="h-4 w-4 mr-2" /> List
           </Button>
@@ -462,25 +492,30 @@ export default function Renewals() {
             variant={viewMode === 'calendar' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('calendar')}
+            className={
+              viewMode === 'calendar'
+                ? 'bg-trust-blue text-white'
+                : 'text-slate-900 border-slate-300'
+            }
           >
             <CalendarIcon className="h-4 w-4 mr-2" /> Calendar
           </Button>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-center bg-card p-4 rounded-lg border shadow-sm">
+      <div className="flex flex-col md:flex-row gap-4 items-center bg-white p-4 rounded-lg border shadow-sm">
         <div className="relative w-full md:w-64">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-500" />
           <Input
             placeholder={t('renewals.search_placeholder')}
-            className="pl-8"
+            className="pl-8 text-black"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] border-slate-300">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -495,7 +530,7 @@ export default function Renewals() {
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="w-[200px] justify-start text-left font-normal"
+              className="w-[200px] justify-start text-left font-normal border-slate-300 text-slate-900"
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               {dateRange.from ? (
@@ -525,7 +560,11 @@ export default function Renewals() {
         </Popover>
 
         {selectedIds.size > 0 && (
-          <Button variant="outline" onClick={handleBulkExport}>
+          <Button
+            variant="outline"
+            onClick={handleBulkExport}
+            className="border-slate-300 text-slate-900"
+          >
             <Download className="h-4 w-4 mr-2" /> Export ({selectedIds.size})
           </Button>
         )}
@@ -546,16 +585,32 @@ export default function Renewals() {
                       onCheckedChange={(c) => handleSelectAll(c as boolean)}
                     />
                   </TableHead>
-                  <TableHead>{t('common.property')}</TableHead>
-                  <TableHead>{t('common.owners')}</TableHead>
-                  <TableHead>{t('tenants.new_tenant')}</TableHead>
-                  <TableHead>Status</TableHead>
-                  {showFinancials && <TableHead>Sugestão ($)</TableHead>}
+                  <TableHead className="font-bold text-slate-950">
+                    {t('common.property')}
+                  </TableHead>
+                  <TableHead className="font-bold text-slate-950">
+                    {t('common.owners')}
+                  </TableHead>
+                  <TableHead className="font-bold text-slate-950">
+                    {t('tenants.new_tenant')}
+                  </TableHead>
+                  <TableHead className="font-bold text-slate-950">
+                    Status
+                  </TableHead>
                   {showFinancials && (
-                    <TableHead>{t('renewals.current_value')}</TableHead>
+                    <TableHead className="font-bold text-slate-950">
+                      Sugestão ($)
+                    </TableHead>
                   )}
-                  <TableHead>{t('common.due_date')}</TableHead>
-                  <TableHead className="text-right">
+                  {showFinancials && (
+                    <TableHead className="font-bold text-slate-950">
+                      {t('renewals.current_value')}
+                    </TableHead>
+                  )}
+                  <TableHead className="font-bold text-slate-950">
+                    {t('common.due_date')}
+                  </TableHead>
+                  <TableHead className="text-right font-bold text-slate-950">
                     {t('common.actions')}
                   </TableHead>
                 </TableRow>
@@ -563,7 +618,10 @@ export default function Renewals() {
               <TableBody>
                 {filteredData.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center py-8">
+                    <TableCell
+                      colSpan={9}
+                      className="text-center py-8 text-slate-600 font-medium"
+                    >
                       Nenhuma renovação correspondente aos filtros.
                     </TableCell>
                   </TableRow>
@@ -589,19 +647,21 @@ export default function Renewals() {
       ) : (
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold">
+            <h2 className="text-xl font-bold text-slate-950">
               {format(currentMonth, 'MMMM yyyy')}
             </h2>
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 onClick={() => setCurrentMonth(addMonths(currentMonth, -1))}
+                className="border-slate-300 text-slate-900"
               >
                 Anterior
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+                className="border-slate-300 text-slate-900"
               >
                 Próximo
               </Button>
@@ -609,7 +669,10 @@ export default function Renewals() {
           </div>
           <div className="grid grid-cols-7 gap-4">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <div key={day} className="font-bold text-center p-2 bg-muted">
+              <div
+                key={day}
+                className="font-bold text-center p-2 bg-slate-100 text-slate-900"
+              >
                 {day}
               </div>
             ))}
@@ -623,14 +686,14 @@ export default function Renewals() {
                     events.length > 0 && 'bg-blue-50/30',
                   )}
                 >
-                  <span className="text-sm font-semibold text-right block text-muted-foreground">
+                  <span className="text-sm font-semibold text-right block text-slate-700">
                     {format(day, 'd')}
                   </span>
                   {events.map((ev) => (
                     <div
                       key={ev.tenant.id}
                       className={cn(
-                        'text-[10px] p-1 rounded truncate cursor-pointer hover:opacity-80',
+                        'text-[10px] p-1 rounded truncate cursor-pointer hover:opacity-80 font-bold',
                         ev.displayStatus === 'critical'
                           ? 'bg-red-100 text-red-800'
                           : ev.displayStatus === 'renewed'

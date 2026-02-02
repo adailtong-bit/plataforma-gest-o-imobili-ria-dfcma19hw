@@ -178,10 +178,10 @@ export default function Owners() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
             {t('owners.title')}
           </h1>
-          <p className="text-muted-foreground">{t('owners.subtitle')}</p>
+          <p className="text-slate-700">{t('owners.subtitle')}</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -283,12 +283,14 @@ export default function Owners() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <CardTitle>{t('owners.base_title')}</CardTitle>
+            <CardTitle className="text-slate-950">
+              {t('owners.base_title')}
+            </CardTitle>
             <div className="relative w-full md:w-64">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-500" />
               <Input
                 placeholder={t('owners.search_placeholder')}
-                className="pl-8 w-full"
+                className="pl-8 w-full text-black"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
               />
@@ -299,11 +301,19 @@ export default function Owners() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('common.name')}</TableHead>
-                <TableHead>{t('owners.contact_details')}</TableHead>
-                <TableHead>{t('owners.properties_count')}</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
-                <TableHead className="text-right">
+                <TableHead className="font-bold text-slate-950">
+                  {t('common.name')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('owners.contact_details')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('owners.properties_count')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('common.status')}
+                </TableHead>
+                <TableHead className="text-right font-bold text-slate-950">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>
@@ -311,7 +321,10 @@ export default function Owners() {
             <TableBody>
               {filteredOwners.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-8 text-slate-500"
+                  >
                     {t('common.empty')}
                   </TableCell>
                 </TableRow>
@@ -321,17 +334,17 @@ export default function Owners() {
                     <TableCell className="font-medium">
                       <Link
                         to={`/owners/${owner.id}`}
-                        className="hover:underline text-trust-blue"
+                        className="hover:underline text-trust-blue font-semibold text-slate-900"
                       >
                         <DataMask>{owner.name}</DataMask>
                       </Link>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col text-sm">
-                        <span>
+                        <span className="text-slate-950 font-medium">
                           <DataMask>{owner.email}</DataMask>
                         </span>
-                        <span className="text-slate-600 text-xs flex items-center gap-1">
+                        <span className="text-slate-800 text-xs flex items-center gap-1 font-medium">
                           <Phone className="h-3 w-3" />{' '}
                           <DataMask>{owner.phone}</DataMask>
                         </span>
@@ -342,7 +355,7 @@ export default function Owners() {
                         <PopoverTrigger asChild>
                           <Badge
                             variant="secondary"
-                            className="gap-1 cursor-pointer hover:bg-secondary/80"
+                            className="gap-1 cursor-pointer hover:bg-secondary/80 text-slate-950 border-slate-300"
                           >
                             <Building2 className="h-3 w-3" />
                             <DataMask>
@@ -352,7 +365,7 @@ export default function Owners() {
                           </Badge>
                         </PopoverTrigger>
                         <PopoverContent className="w-64 p-0" align="start">
-                          <div className="p-2 font-medium border-b text-xs text-muted-foreground">
+                          <div className="p-2 font-bold border-b text-xs text-slate-950">
                             Propriedades de <DataMask>{owner.name}</DataMask>
                           </div>
                           <div className="flex flex-col max-h-60 overflow-y-auto">
@@ -362,14 +375,14 @@ export default function Owners() {
                                 <Link
                                   key={p.id}
                                   to={`/properties/${p.id}`}
-                                  className="px-3 py-2 text-sm hover:bg-muted transition-colors truncate block border-b last:border-0"
+                                  className="px-3 py-2 text-sm text-slate-900 hover:bg-muted transition-colors truncate block border-b last:border-0"
                                 >
                                   <DataMask>{p.name}</DataMask>
                                 </Link>
                               ))}
                             {properties.filter((p) => p.ownerId === owner.id)
                               .length === 0 && (
-                              <div className="p-3 text-sm text-center text-muted-foreground">
+                              <div className="p-3 text-sm text-center text-slate-500">
                                 {t('common.empty')}
                               </div>
                             )}
@@ -382,6 +395,7 @@ export default function Owners() {
                         variant={
                           owner.status === 'active' ? 'default' : 'secondary'
                         }
+                        className="text-slate-950 border-slate-300"
                       >
                         {t(`common.${owner.status}`)}
                       </Badge>
@@ -393,12 +407,17 @@ export default function Owners() {
                           size="icon"
                           onClick={() => navigate(`/owners/${owner.id}`)}
                           title={t('common.details')}
+                          className="text-slate-800"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-slate-800"
+                            >
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>

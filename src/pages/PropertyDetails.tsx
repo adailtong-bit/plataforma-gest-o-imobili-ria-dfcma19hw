@@ -213,19 +213,23 @@ export default function PropertyDetails() {
       {/* Header with Traceability */}
       <div className="flex flex-col gap-4">
         {/* Breadcrumb / Relations */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-md border w-fit">
-          <span className="font-medium">{t('common.relationships')}:</span>
+        <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded-md border border-slate-300 w-fit font-medium">
+          <span className="font-bold text-slate-900">
+            {t('common.relationships')}:
+          </span>
           <DataMask>
             {owner ? (
               <Link
                 to={`/owners/${owner.id}`}
-                className="flex items-center gap-1 hover:text-blue-600 underline"
+                className="flex items-center gap-1 hover:text-blue-700 underline text-slate-900"
               >
                 <User className="h-3 w-3" /> {owner.name} (
                 {t('common.relationship_owner')})
               </Link>
             ) : (
-              <span className="text-gray-400">{t('common.no_owner')}</span>
+              <span className="text-slate-500 italic">
+                {t('common.no_owner')}
+              </span>
             )}
           </DataMask>
           <span>/</span>
@@ -233,13 +237,13 @@ export default function PropertyDetails() {
             {activeTenant ? (
               <Link
                 to={`/tenants/${activeTenant.id}`}
-                className="flex items-center gap-1 hover:text-blue-600 underline"
+                className="flex items-center gap-1 hover:text-blue-700 underline text-slate-900"
               >
                 <User className="h-3 w-3" /> {activeTenant.name} (
                 {t('common.relationship_tenant')})
               </Link>
             ) : (
-              <span className="text-gray-400">
+              <span className="text-slate-500 italic">
                 {t('common.no_active_tenant')}
               </span>
             )}
@@ -249,15 +253,20 @@ export default function PropertyDetails() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/properties">
-              <Button variant="ghost" size="icon" title={t('common.back')}>
+              <Button
+                variant="ghost"
+                size="icon"
+                title={t('common.back')}
+                className="text-slate-800"
+              >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-navy">
+              <h1 className="text-3xl font-bold tracking-tight text-slate-950">
                 <DataMask>{formData.name}</DataMask>
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-slate-700 font-medium">
                 <DataMask>{formData.address}</DataMask>
               </p>
             </div>
@@ -268,13 +277,16 @@ export default function PropertyDetails() {
                 <Button
                   variant="outline"
                   onClick={handleExport}
-                  className="gap-2"
+                  className="gap-2 border-slate-300 text-slate-900"
                 >
                   <Download className="h-4 w-4" /> {t('common.export')}
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="ghost" className="text-red-500">
+                    <Button
+                      variant="ghost"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
                       <Trash2 className="h-4 w-4 mr-2" /> {t('common.delete')}
                     </Button>
                   </AlertDialogTrigger>
@@ -291,7 +303,10 @@ export default function PropertyDetails() {
                       <AlertDialogCancel>
                         {t('common.cancel')}
                       </AlertDialogCancel>
-                      <AlertDialogAction onClick={handleDelete}>
+                      <AlertDialogAction
+                        onClick={handleDelete}
+                        className="bg-red-600"
+                      >
                         {t('common.delete')}
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -300,7 +315,7 @@ export default function PropertyDetails() {
                 <Button
                   onClick={() => setIsEditing(true)}
                   variant="outline"
-                  className="gap-2"
+                  className="gap-2 border-slate-300 text-slate-900"
                 >
                   <Edit className="h-4 w-4" /> {t('common.edit')}
                 </Button>
@@ -317,7 +332,10 @@ export default function PropertyDetails() {
                 >
                   <X className="h-4 w-4" /> {t('common.cancel')}
                 </Button>
-                <Button onClick={handleSave} className="bg-trust-blue gap-2">
+                <Button
+                  onClick={handleSave}
+                  className="bg-trust-blue gap-2 text-white"
+                >
                   <Save className="h-4 w-4" /> {t('common.save')}
                 </Button>
               </>
@@ -327,52 +345,94 @@ export default function PropertyDetails() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="w-full justify-start overflow-x-auto">
-          <TabsTrigger value="overview">
+        <TabsList className="w-full justify-start overflow-x-auto bg-slate-100 border border-slate-200">
+          <TabsTrigger
+            value="overview"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             {t('properties.tabs.overview')}
           </TabsTrigger>
-          <TabsTrigger value="analytics">
+          <TabsTrigger
+            value="analytics"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             <PieChart className="h-4 w-4 mr-2" /> Analytics
           </TabsTrigger>
-          <TabsTrigger value="reports">
+          <TabsTrigger
+            value="reports"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             <BarChart className="h-4 w-4 mr-2" /> Reports
           </TabsTrigger>
-          <TabsTrigger value="maintenance">
+          <TabsTrigger
+            value="maintenance"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             <Hammer className="h-4 w-4 mr-2" />{' '}
             {t('properties.tabs.maintenance')}
           </TabsTrigger>
-          <TabsTrigger value="contracts">
+          <TabsTrigger
+            value="contracts"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             <FileText className="h-4 w-4 mr-2" />{' '}
             {t('properties.tabs.contracts')}
           </TabsTrigger>
-          <TabsTrigger value="inventory">
+          <TabsTrigger
+            value="inventory"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             <Package className="h-4 w-4 mr-2" />{' '}
             {t('properties.tabs.inventory')}
           </TabsTrigger>
-          <TabsTrigger value="features">
+          <TabsTrigger
+            value="features"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             <div className="flex items-center gap-2">
               <span>{t('properties.tabs.features')}</span>
             </div>
           </TabsTrigger>
-          <TabsTrigger value="location">
+          <TabsTrigger
+            value="location"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             {t('properties.tabs.location')}
           </TabsTrigger>
-          <TabsTrigger value="sync">
+          <TabsTrigger
+            value="sync"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             <RefreshCw className="h-4 w-4 mr-2" /> {t('properties.tabs.sync')}
           </TabsTrigger>
-          <TabsTrigger value="financial">
+          <TabsTrigger
+            value="financial"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             {t('properties.tabs.financial')}
           </TabsTrigger>
-          <TabsTrigger value="marketing">
+          <TabsTrigger
+            value="marketing"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             {t('properties.tabs.marketing')}
           </TabsTrigger>
-          <TabsTrigger value="content">
+          <TabsTrigger
+            value="content"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             {t('properties.tabs.content')}
           </TabsTrigger>
-          <TabsTrigger value="documents">
+          <TabsTrigger
+            value="documents"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             {t('properties.tabs.documents')}
           </TabsTrigger>
-          <TabsTrigger value="logs">
+          <TabsTrigger
+            value="logs"
+            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+          >
             <History className="h-4 w-4 mr-2" /> {t('properties.tabs.logs')}
           </TabsTrigger>
         </TabsList>

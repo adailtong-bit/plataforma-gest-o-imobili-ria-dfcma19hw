@@ -101,10 +101,12 @@ export default function ShortTerm() {
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
             {t('short_term.title')}
           </h1>
-          <p className="text-muted-foreground">{t('short_term.subtitle')}</p>
+          <p className="text-slate-700 font-medium">
+            {t('short_term.subtitle')}
+          </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>

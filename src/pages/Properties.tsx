@@ -113,21 +113,21 @@ export default function Properties() {
     switch (status) {
       case 'rented':
       case 'occupied':
-        return 'bg-green-100 text-green-800 border-green-200'
+        return 'bg-green-100 text-green-800 border-green-300 font-bold'
       case 'available':
       case 'vacant':
-        return 'bg-blue-100 text-blue-800 border-blue-200'
+        return 'bg-blue-100 text-blue-800 border-blue-300 font-bold'
       case 'suspended':
       case 'maintenance':
-        return 'bg-orange-100 text-orange-800 border-orange-200'
+        return 'bg-orange-100 text-orange-800 border-orange-300 font-bold'
       case 'sold':
-        return 'bg-gray-100 text-gray-800 border-gray-200'
+        return 'bg-gray-100 text-gray-800 border-gray-300 font-bold'
       case 'sale_pending':
-        return 'bg-purple-100 text-purple-800 border-purple-200'
+        return 'bg-purple-100 text-purple-800 border-purple-300 font-bold'
       case 'reserved':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300 font-bold'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800 border-gray-300'
     }
   }
 
@@ -260,10 +260,12 @@ export default function Properties() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
             {t('properties.title')}
           </h1>
-          <p className="text-muted-foreground">{t('properties.subtitle')}</p>
+          <p className="text-slate-700 font-medium">
+            {t('properties.subtitle')}
+          </p>
         </div>
 
         {hasPermission(currentUser as User, 'properties', 'create') && (
@@ -486,15 +488,15 @@ export default function Properties() {
         )}
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-center bg-card p-4 rounded-lg border shadow-sm">
+      <div className="flex flex-col md:flex-row gap-4 items-center bg-white p-4 rounded-lg border shadow-sm">
         <Input
           placeholder={t('properties.search_placeholder')}
-          className="md:w-[300px]"
+          className="md:w-[300px] text-black"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full md:w-[200px]">
+          <SelectTrigger className="w-full md:w-[200px] border-slate-300">
             <SelectValue placeholder={t('common.status')} />
           </SelectTrigger>
           <SelectContent>
@@ -511,7 +513,7 @@ export default function Properties() {
           value={profileFilter}
           onValueChange={(v: any) => setProfileFilter(v)}
         >
-          <SelectTrigger className="w-full md:w-[200px]">
+          <SelectTrigger className="w-full md:w-[200px] border-slate-300">
             <SelectValue placeholder={t('properties.profile_filter')} />
           </SelectTrigger>
           <SelectContent>
@@ -532,7 +534,7 @@ export default function Properties() {
             key={property.id}
             className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col group relative"
           >
-            <div className="relative h-48 w-full bg-muted">
+            <div className="relative h-48 w-full bg-slate-200">
               {property.image ? (
                 <DataMask className="w-full h-full block rounded-none">
                   <img
@@ -542,7 +544,7 @@ export default function Properties() {
                   />
                 </DataMask>
               ) : (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
+                <div className="flex items-center justify-center h-full text-slate-500">
                   {t('properties.no_image')}
                 </div>
               )}
@@ -551,7 +553,7 @@ export default function Properties() {
               >
                 {t(`status.${property.status}`)}
               </Badge>
-              <Badge className="absolute bottom-2 left-2 bg-black/50 text-white">
+              <Badge className="absolute bottom-2 left-2 bg-black/80 text-white border-none font-bold">
                 {property.profileType === 'short_term' ? 'STR' : 'LTR'}
               </Badge>
 
@@ -594,24 +596,27 @@ export default function Properties() {
               )}
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">
+              <CardTitle className="text-lg text-slate-950">
                 <DataMask>{property.name}</DataMask>
               </CardTitle>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-slate-700 mt-1 font-medium">
                 <DataMask>{property.community}</DataMask>
               </p>
             </CardHeader>
             <CardContent className="flex-1 pb-2">
-              <div className="flex items-center gap-1 text-sm text-muted-foreground mb-4">
+              <div className="flex items-center gap-1 text-sm text-slate-700 mb-4">
                 <MapPin className="h-3 w-3" />
-                <span className="truncate">
+                <span className="truncate font-medium">
                   <DataMask>{property.address}</DataMask>
                 </span>
               </div>
             </CardContent>
-            <CardFooter className="pt-4 border-t bg-muted/20">
+            <CardFooter className="pt-4 border-t bg-slate-50">
               <Link to={`/properties/${property.id}`} className="w-full">
-                <Button variant="outline" className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full text-slate-900 border-slate-300 font-medium"
+                >
                   {t('properties.view_details')}
                 </Button>
               </Link>

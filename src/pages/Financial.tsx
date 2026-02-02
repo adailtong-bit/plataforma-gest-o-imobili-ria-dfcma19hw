@@ -38,7 +38,7 @@ export default function Financial() {
 
   if (!hasPermission(currentUser as User, 'financial', 'view')) {
     return (
-      <div className="p-8 text-center text-muted-foreground">
+      <div className="p-8 text-center text-slate-600 font-medium">
         Acesso negado ao painel financeiro.
       </div>
     )
@@ -73,10 +73,10 @@ export default function Financial() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-navy">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-950">
           {t('financial.title')}
         </h1>
-        <p className="text-muted-foreground">{t('financial.subtitle')}</p>
+        <p className="text-slate-700 font-medium">{t('financial.subtitle')}</p>
       </div>
 
       <Tabs defaultValue="reports">
@@ -95,8 +95,12 @@ export default function Financial() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>{t('financial.upload_statement')}</CardTitle>
-                <CardDescription>{t('financial.upload_desc')}</CardDescription>
+                <CardTitle className="text-slate-950">
+                  {t('financial.upload_statement')}
+                </CardTitle>
+                <CardDescription className="text-slate-700">
+                  {t('financial.upload_desc')}
+                </CardDescription>
               </div>
               <div>
                 <input
@@ -119,64 +123,85 @@ export default function Financial() {
               </div>
             </CardHeader>
             <CardContent>
-              <h3 className="font-medium mb-4">{t('financial.statements')}</h3>
+              <h3 className="font-bold text-slate-950 mb-4">
+                {t('financial.statements')}
+              </h3>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Arquivo</TableHead>
-                    <TableHead>Data Upload</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Itens</TableHead>
-                    <TableHead>Valor Total</TableHead>
-                    <TableHead className="text-right">Ação</TableHead>
+                    <TableHead className="font-bold text-slate-950">
+                      Arquivo
+                    </TableHead>
+                    <TableHead className="font-bold text-slate-950">
+                      Data Upload
+                    </TableHead>
+                    <TableHead className="font-bold text-slate-950">
+                      Status
+                    </TableHead>
+                    <TableHead className="font-bold text-slate-950">
+                      Itens
+                    </TableHead>
+                    <TableHead className="font-bold text-slate-950">
+                      Valor Total
+                    </TableHead>
+                    <TableHead className="text-right font-bold text-slate-950">
+                      Ação
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {bankStatements.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8">
+                      <TableCell
+                        colSpan={6}
+                        className="text-center py-8 text-slate-600 font-medium"
+                      >
                         {t('financial.no_statements')}
                       </TableCell>
                     </TableRow>
                   ) : (
                     bankStatements.map((stmt) => (
                       <TableRow key={stmt.id}>
-                        <TableCell className="font-medium flex items-center gap-2">
-                          <FileText className="h-4 w-4 text-blue-500" />
+                        <TableCell className="font-bold text-slate-950 flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-blue-700" />
                           <DataMask>{stmt.fileName}</DataMask>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="text-slate-900 font-medium">
                           <DataMask>
                             {formatDate(stmt.uploadDate, language)}
                           </DataMask>
                         </TableCell>
                         <TableCell>
                           {stmt.status === 'reconciled' ? (
-                            <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">
+                            <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-300 font-bold">
                               <CheckCircle2 className="w-3 h-3 mr-1" />{' '}
                               {t('financial.reconciled')}
                             </Badge>
                           ) : (
                             <Badge
                               variant="secondary"
-                              className="bg-yellow-100 text-yellow-800"
+                              className="bg-yellow-100 text-yellow-800 border-yellow-300 font-bold"
                             >
                               <AlertCircle className="w-3 h-3 mr-1" />
                               {t('financial.pending_reconciliation')}
                             </Badge>
                           )}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="text-slate-950 font-bold">
                           <DataMask>{stmt.itemsCount}</DataMask>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="text-slate-950 font-bold">
                           <DataMask>
                             {formatCurrency(stmt.totalAmount, language)}
                           </DataMask>
                         </TableCell>
                         <TableCell className="text-right">
                           {stmt.status === 'pending' && (
-                            <Button size="sm" variant="outline">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="border-slate-300 text-slate-900 font-medium"
+                            >
                               Conciliar
                             </Button>
                           )}

@@ -88,7 +88,7 @@ export default function Invoices() {
     switch (status) {
       case 'paid':
         return (
-          <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100">
+          <Badge className="bg-green-100 text-green-800 border-green-300 font-bold hover:bg-green-100">
             {t('invoices.status_paid')}
           </Badge>
         )
@@ -96,19 +96,26 @@ export default function Invoices() {
         return (
           <Badge
             variant="secondary"
-            className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-100"
+            className="bg-yellow-100 text-yellow-800 border-yellow-300 font-bold hover:bg-yellow-100"
           >
             {t('invoices.status_pending')}
           </Badge>
         )
       case 'approved':
         return (
-          <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100">
+          <Badge className="bg-blue-100 text-blue-800 border-blue-300 font-bold hover:bg-blue-100">
             {t('invoices.status_approved')}
           </Badge>
         )
       default:
-        return <Badge variant="outline">{status}</Badge>
+        return (
+          <Badge
+            variant="outline"
+            className="border-slate-400 text-slate-800 font-medium"
+          >
+            {status}
+          </Badge>
+        )
     }
   }
 
@@ -116,10 +123,10 @@ export default function Invoices() {
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
             {t('invoices.title')}
           </h1>
-          <p className="text-muted-foreground">{t('invoices.subtitle')}</p>
+          <p className="text-slate-700 font-medium">{t('invoices.subtitle')}</p>
         </div>
         <Button
           className="bg-trust-blue gap-2"
@@ -143,12 +150,14 @@ export default function Invoices() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
-            <CardTitle>{t('invoices.title')}</CardTitle>
+            <CardTitle className="text-slate-950">
+              {t('invoices.title')}
+            </CardTitle>
             <div className="relative w-64">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-500" />
               <Input
                 placeholder={t('common.search')}
-                className="pl-8"
+                className="pl-8 text-black"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
               />
@@ -159,13 +168,23 @@ export default function Invoices() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('invoices.invoice_id')}</TableHead>
-                <TableHead>{t('common.description')}</TableHead>
-                <TableHead>{t('common.date')}</TableHead>
-                <TableHead>Flow</TableHead>
-                <TableHead>{t('invoices.amount')}</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
-                <TableHead className="text-right">
+                <TableHead className="font-bold text-slate-950">
+                  {t('invoices.invoice_id')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('common.description')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('common.date')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">Flow</TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('invoices.amount')}
+                </TableHead>
+                <TableHead className="font-bold text-slate-950">
+                  {t('common.status')}
+                </TableHead>
+                <TableHead className="text-right font-bold text-slate-950">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>
@@ -173,7 +192,10 @@ export default function Invoices() {
             <TableBody>
               {filteredInvoices.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-10">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center py-10 text-slate-600 font-medium"
+                  >
                     {t('invoices.no_invoices')}
                   </TableCell>
                 </TableRow>
@@ -184,30 +206,30 @@ export default function Invoices() {
 
                   return (
                     <TableRow key={inv.id}>
-                      <TableCell className="font-medium flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-slate-500" />
+                      <TableCell className="font-bold text-slate-950 flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-slate-800" />
                         <DataMask>{inv.id}</DataMask>
                       </TableCell>
-                      <TableCell className="max-w-[200px] truncate">
+                      <TableCell className="max-w-[200px] truncate text-slate-900 font-medium">
                         <DataMask>{inv.description}</DataMask>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-slate-900">
                         <DataMask>{formatDate(inv.date, language)}</DataMask>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2 text-xs text-slate-600">
-                          <span className="font-medium text-foreground">
+                        <div className="flex items-center gap-2 text-xs text-slate-800 font-medium">
+                          <span className="font-bold text-slate-950">
                             <DataMask>{fromName}</DataMask>
                           </span>
                           <ArrowRight className="h-3 w-3" />
-                          <span className="font-medium text-foreground">
+                          <span className="font-bold text-slate-950">
                             <DataMask>{toName}</DataMask>
                           </span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1 font-bold">
-                          <DollarSign className="h-3 w-3 text-slate-500" />
+                        <div className="flex items-center gap-1 font-bold text-slate-950">
+                          <DollarSign className="h-3 w-3 text-slate-700" />
                           <DataMask>
                             {formatCurrency(inv.amount, language)}
                           </DataMask>
@@ -219,16 +241,16 @@ export default function Invoices() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-8 w-8 p-0"
+                            className="h-8 w-8 p-0 text-slate-700"
                             onClick={() => handleViewInvoice(inv)}
                             title={t('invoices.view')}
                           >
-                            <Eye className="h-4 w-4 text-gray-500" />
+                            <Eye className="h-4 w-4" />
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-8 gap-2 text-blue-600 border-blue-200 hover:bg-blue-50"
+                            className="h-8 gap-2 text-blue-700 border-blue-200 hover:bg-blue-50 font-bold"
                             onClick={() => handleSendToPayer(inv.id, toName)}
                           >
                             <Send className="h-3 w-3" />

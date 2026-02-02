@@ -81,12 +81,12 @@
   td,
   .table-text,
   .list-text {
-    @apply text-black dark:text-white !important;
+    @apply text-slate-950 dark:text-white !important;
   }
 
   /* Table Headers - Bold and Black */
   th {
-    @apply font-bold text-black dark:text-white bg-slate-50 dark:bg-slate-900 border-b-2 border-slate-200 dark:border-slate-700 !important;
+    @apply font-bold text-slate-950 dark:text-white bg-slate-50 dark:bg-slate-900 border-b-2 border-slate-200 dark:border-slate-700 !important;
   }
 
   /* Table Cells - Ensure Background Contrast */
@@ -96,14 +96,19 @@
 
   /* Override muted foregrounds inside tables to ensure legibility */
   table .text-muted-foreground {
-    @apply text-slate-600 dark:text-slate-400 !important;
+    @apply text-slate-800 dark:text-slate-300 !important;
   }
 
   /* Ensure inputs have readable text */
   input,
   textarea,
   select {
-    @apply text-foreground font-medium;
+    @apply text-slate-950 font-medium bg-white border-slate-300;
+  }
+
+  /* Card content high contrast */
+  .card-content-text {
+    @apply text-slate-950;
   }
 }
 
@@ -125,6 +130,15 @@
   }
   .text-brand {
     @apply text-[#0052cc];
+  }
+
+  /* High contrast text utilities */
+  .text-high-contrast {
+    @apply text-slate-950 dark:text-white;
+  }
+
+  .text-secondary-contrast {
+    @apply text-slate-700 dark:text-slate-300;
   }
 
   /* Custom scrollbar for better visibility */
