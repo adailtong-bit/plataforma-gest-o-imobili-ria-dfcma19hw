@@ -155,23 +155,29 @@ export default function Partners() {
   const PartnerList = ({ list }: { list: Partner[] }) => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {list.length === 0 ? (
-        <div className="col-span-full text-center py-10 text-muted-foreground">
+        <div className="col-span-full text-center py-10 text-black font-medium">
           {t('partners.no_partners')}
         </div>
       ) : (
         list.map((partner) => (
-          <Card key={partner.id} className="hover:shadow-md transition-shadow">
+          <Card
+            key={partner.id}
+            className="hover:shadow-md transition-shadow bg-white"
+          >
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-lg">
+                  <CardTitle className="text-lg text-black font-bold">
                     <DataMask>{partner.name}</DataMask>
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-black font-medium">
                     <DataMask>{partner.companyName}</DataMask>
                   </CardDescription>
                 </div>
-                <Badge variant="outline" className="flex items-center gap-1">
+                <Badge
+                  variant="outline"
+                  className="flex items-center gap-1 border-slate-300 text-black font-bold"
+                >
                   <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                   {partner.rating}
                 </Badge>
@@ -179,14 +185,14 @@ export default function Partners() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Briefcase className="h-4 w-4" />
+                <div className="flex items-center gap-2 text-black font-medium">
+                  <Briefcase className="h-4 w-4 text-black" />
                   <span className="capitalize">
                     {t(`partners.${partner.type}`)}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Phone className="h-4 w-4" />
+                <div className="flex items-center gap-2 text-black font-medium">
+                  <Phone className="h-4 w-4 text-black" />
                   <span>
                     <DataMask>{partner.phone}</DataMask>
                   </span>
@@ -194,14 +200,14 @@ export default function Partners() {
                 <div className="pt-2 flex gap-2">
                   <Button
                     variant="outline"
-                    className="flex-1 gap-2"
+                    className="flex-1 gap-2 text-black border-slate-300 font-medium"
                     onClick={() => navigate('/messages')}
                   >
                     <MessageSquare className="h-4 w-4" />{' '}
                     {t('tenants.send_message')}
                   </Button>
                   <Button
-                    className="flex-1 gap-2 bg-trust-blue"
+                    className="flex-1 gap-2 bg-trust-blue text-white font-bold"
                     onClick={() => navigate(`/partners/${partner.id}`)}
                   >
                     <Eye className="h-4 w-4" /> {t('common.details')}
@@ -219,10 +225,10 @@ export default function Partners() {
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
+          <h1 className="text-3xl font-bold tracking-tight text-black">
             {t('partners.title')}
           </h1>
-          <p className="text-muted-foreground">{t('partners.subtitle')}</p>
+          <p className="text-black font-medium">{t('partners.subtitle')}</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -237,7 +243,7 @@ export default function Partners() {
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>
+                  <Label className="text-black font-bold">
                     {t('partners.contact_name')}{' '}
                     <span className="text-red-500">*</span>
                   </Label>
@@ -247,10 +253,13 @@ export default function Partners() {
                       setNewPartner({ ...newPartner, name: e.target.value })
                     }
                     placeholder="Ex: Maria Silva"
+                    className="text-black"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>{t('partners.company_name')}</Label>
+                  <Label className="text-black font-bold">
+                    {t('partners.company_name')}
+                  </Label>
                   <Input
                     value={newPartner.companyName}
                     onChange={(e) =>
@@ -260,19 +269,22 @@ export default function Partners() {
                       })
                     }
                     placeholder="Ex: Silva Services LLC"
+                    className="text-black"
                   />
                 </div>
               </div>
 
               <div className="grid gap-2">
-                <Label>{t('partners.category')}</Label>
+                <Label className="text-black font-bold">
+                  {t('partners.category')}
+                </Label>
                 <Select
                   value={newPartner.type}
                   onValueChange={(val: any) =>
                     setNewPartner({ ...newPartner, type: val })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="text-black">
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
                   <SelectContent>
@@ -289,7 +301,7 @@ export default function Partners() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>
+                  <Label className="text-black font-bold">
                     {t('common.email')} <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -298,10 +310,13 @@ export default function Partners() {
                       setNewPartner({ ...newPartner, email: e.target.value })
                     }
                     placeholder="contato@empresa.com"
+                    className="text-black"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>{t('common.phone')}</Label>
+                  <Label className="text-black font-bold">
+                    {t('common.phone')}
+                  </Label>
                   <PhoneInput
                     value={newPartner.phone || ''}
                     onChange={(e) =>
@@ -312,53 +327,59 @@ export default function Partners() {
               </div>
 
               <div className="grid gap-2">
-                <Label>Buscar Endereço</Label>
+                <Label className="text-black font-bold">Buscar Endereço</Label>
                 <AddressInput onAddressSelect={handleAddressSelect} />
               </div>
 
               <div className="grid gap-2">
-                <Label>{t('common.address')}</Label>
+                <Label className="text-black font-bold">
+                  {t('common.address')}
+                </Label>
                 <Input
                   value={newPartner.address}
                   onChange={(e) =>
                     setNewPartner({ ...newPartner, address: e.target.value })
                   }
                   placeholder="Address Line 1"
+                  className="text-black"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-2">
                 <div className="grid gap-2">
-                  <Label>Cidade</Label>
+                  <Label className="text-black font-bold">Cidade</Label>
                   <Input
                     value={newPartner.city}
                     onChange={(e) =>
                       setNewPartner({ ...newPartner, city: e.target.value })
                     }
+                    className="text-black"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Estado</Label>
+                  <Label className="text-black font-bold">Estado</Label>
                   <Input
                     value={newPartner.state}
                     onChange={(e) =>
                       setNewPartner({ ...newPartner, state: e.target.value })
                     }
+                    className="text-black"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>CEP / ZIP</Label>
+                  <Label className="text-black font-bold">CEP / ZIP</Label>
                   <Input
                     value={newPartner.zipCode}
                     onChange={(e) =>
                       setNewPartner({ ...newPartner, zipCode: e.target.value })
                     }
+                    className="text-black"
                   />
                 </div>
               </div>
 
-              <div className="border rounded-md p-3 space-y-3 bg-muted/20">
-                <Label className="font-semibold">
+              <div className="border rounded-md p-3 space-y-3 bg-white">
+                <Label className="font-bold text-black">
                   {t('partners.bank_info')}
                 </Label>
                 <div className="grid grid-cols-2 gap-2">
@@ -374,6 +395,7 @@ export default function Partners() {
                         },
                       })
                     }
+                    className="text-black"
                   />
                   <Input
                     placeholder="Bank Number"
@@ -387,6 +409,7 @@ export default function Partners() {
                         },
                       })
                     }
+                    className="text-black"
                   />
                   <Input
                     placeholder={t('partners.routing')}
@@ -400,6 +423,7 @@ export default function Partners() {
                         },
                       })
                     }
+                    className="text-black"
                   />
                   <Input
                     placeholder={t('partners.account')}
@@ -413,6 +437,7 @@ export default function Partners() {
                         },
                       })
                     }
+                    className="text-black"
                   />
                   <Input
                     placeholder="Zelle (Email/Phone)"
@@ -426,6 +451,7 @@ export default function Partners() {
                         },
                       })
                     }
+                    className="text-black"
                   />
                 </div>
               </div>
@@ -442,10 +468,10 @@ export default function Partners() {
       </div>
 
       <div className="relative w-full md:w-1/3">
-        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
         <Input
           placeholder={t('partners.search_placeholder')}
-          className="pl-8"
+          className="pl-8 text-black bg-white"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />

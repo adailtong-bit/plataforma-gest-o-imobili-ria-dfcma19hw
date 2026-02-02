@@ -162,19 +162,17 @@ function DashboardContent() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
+          <h1 className="text-3xl font-bold tracking-tight text-black">
             {t('common.real_estate_dashboard')}
           </h1>
-          <p className="text-slate-700 font-medium">
-            {t('dashboard.subtitle')}
-          </p>
+          <p className="text-black font-medium">{t('dashboard.subtitle')}</p>
         </div>
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button
               variant="outline"
-              className="gap-2 border-slate-300 text-slate-900 font-medium"
+              className="gap-2 border-slate-300 text-black font-bold"
             >
               <Settings2 className="h-4 w-4" /> {t('dashboard.customize')}
             </Button>
@@ -226,64 +224,64 @@ function DashboardContent() {
       {/* Real Estate KPI Cards */}
       {widgets.kpi && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <Card className="border-slate-200 shadow-sm">
+          <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-bold text-slate-900">
+              <CardTitle className="text-sm font-bold text-black">
                 Total Properties
               </CardTitle>
-              <Building className="h-4 w-4 text-slate-600" />
+              <Building className="h-4 w-4 text-black" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-950">
+              <div className="text-2xl font-bold text-black">
                 <DataMask>{totalProperties}</DataMask>
               </div>
-              <p className="text-xs text-slate-700 font-medium">In portfolio</p>
+              <p className="text-xs text-black font-bold">In portfolio</p>
             </CardContent>
           </Card>
-          <Card className="border-slate-200 shadow-sm">
+          <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-bold text-slate-900">
+              <CardTitle className="text-sm font-bold text-black">
                 {t('common.active_listings')}
               </CardTitle>
-              <Key className="h-4 w-4 text-slate-600" />
+              <Key className="h-4 w-4 text-black" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-950">
+              <div className="text-2xl font-bold text-black">
                 <DataMask>{activeListings}</DataMask>
               </div>
-              <p className="text-xs text-slate-700 font-medium">
+              <p className="text-xs text-black font-bold">
                 {t('status.available')}
               </p>
             </CardContent>
           </Card>
-          <Card className="border-slate-200 shadow-sm">
+          <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-bold text-slate-900">
+              <CardTitle className="text-sm font-bold text-black">
                 {t('common.pending_visits')}
               </CardTitle>
-              <CalendarDays className="h-4 w-4 text-slate-600" />
+              <CalendarDays className="h-4 w-4 text-black" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-950">
+              <div className="text-2xl font-bold text-black">
                 <DataMask>{pendingVisits}</DataMask>
               </div>
-              <p className="text-xs text-slate-700 font-medium">
+              <p className="text-xs text-black font-bold">
                 {t('common.scheduled')}
               </p>
             </CardContent>
           </Card>
-          <Card className="border-slate-200 shadow-sm">
+          <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-bold text-slate-900">
+              <CardTitle className="text-sm font-bold text-black">
                 {t('common.total_revenue')}
               </CardTitle>
-              <DollarSign className="h-4 w-4 text-slate-600" />
+              <DollarSign className="h-4 w-4 text-black" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-950">
+              <div className="text-2xl font-bold text-black">
                 <DataMask>{formatCurrency(totalRevenue, language)}</DataMask>
               </div>
-              <p className="text-xs text-slate-700 font-medium">
+              <p className="text-xs text-black font-bold">
                 +20.1% {t('dashboard.from_last_month')}
               </p>
             </CardContent>
@@ -293,29 +291,29 @@ function DashboardContent() {
 
       {/* Gamification Widget */}
       {widgets.health && (
-        <Card className="bg-gradient-to-r from-blue-700 to-purple-800 text-white animate-in fade-in zoom-in-95 duration-500 shadow-md">
+        <Card className="bg-white text-black animate-in fade-in zoom-in-95 duration-500 shadow-md border-2 border-trust-blue">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-white font-bold">
-              <Trophy className="h-6 w-6 text-yellow-300" />
+            <CardTitle className="flex items-center gap-2 text-black font-bold">
+              <Trophy className="h-6 w-6 text-yellow-600" />
               {t('gamification.portfolio_health')}
             </CardTitle>
-            <CardDescription className="text-blue-100 font-medium">
+            <CardDescription className="text-black font-medium">
               {t('gamification.desc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4">
-              <div className="text-4xl font-bold text-white">
+              <div className="text-4xl font-bold text-black">
                 <DataMask>{avgHealthScore.toFixed(0)}</DataMask>
               </div>
               <div className="flex-1 space-y-1">
-                <div className="flex justify-between text-xs text-blue-100 font-bold">
+                <div className="flex justify-between text-xs text-black font-bold">
                   <span>
                     {t('gamification.level')}: {t('gamification.expert')}
                   </span>
                   <span>{t('gamification.target')}: 100</span>
                 </div>
-                <Progress value={avgHealthScore} className="h-3 bg-blue-900" />
+                <Progress value={avgHealthScore} className="h-3 bg-slate-200" />
               </div>
             </div>
           </CardContent>
@@ -326,13 +324,13 @@ function DashboardContent() {
         {/* Main Chart */}
         {widgets.revenueChart && (
           <Card
-            className={`${widgets.calendar ? 'col-span-4' : 'col-span-7'} animate-in fade-in zoom-in-95 duration-500 border-slate-200 shadow-sm`}
+            className={`${widgets.calendar ? 'col-span-4' : 'col-span-7'} animate-in fade-in zoom-in-95 duration-500 border-slate-200 shadow-sm bg-white`}
           >
             <CardHeader>
-              <CardTitle className="text-slate-950">
+              <CardTitle className="text-black">
                 {t('dashboard.revenue_vs_expenses')}
               </CardTitle>
-              <CardDescription className="text-slate-700 font-medium">
+              <CardDescription className="text-black font-medium">
                 {t('dashboard.revenue_overview')}
               </CardDescription>
             </CardHeader>
@@ -354,11 +352,7 @@ function DashboardContent() {
                       tickLine={false}
                       tickMargin={10}
                       axisLine={false}
-                      tick={{
-                        fill: 'hsl(var(--foreground))',
-                        fontSize: 12,
-                        fontWeight: 'bold',
-                      }}
+                      tick={{ fill: 'black', fontSize: 12, fontWeight: 'bold' }}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} />
                     <Bar
@@ -376,13 +370,13 @@ function DashboardContent() {
         {/* Mini Calendar & Activity */}
         {widgets.calendar && (
           <Card
-            className={`${widgets.revenueChart ? 'col-span-3' : 'col-span-7'} animate-in fade-in zoom-in-95 duration-500 delay-100 border-slate-200 shadow-sm`}
+            className={`${widgets.revenueChart ? 'col-span-3' : 'col-span-7'} animate-in fade-in zoom-in-95 duration-500 delay-100 border-slate-200 shadow-sm bg-white`}
           >
             <CardHeader>
-              <CardTitle className="text-slate-950">
+              <CardTitle className="text-black">
                 {t('dashboard.quick_calendar')}
               </CardTitle>
-              <CardDescription className="text-slate-700 font-medium">
+              <CardDescription className="text-black font-medium">
                 {t('dashboard.todays_activity')}
               </CardDescription>
             </CardHeader>
@@ -391,7 +385,7 @@ function DashboardContent() {
                 mode="single"
                 selected={date}
                 onSelect={setDate}
-                className="rounded-md border border-slate-200"
+                className="rounded-md border border-slate-200 text-black font-medium"
               />
             </CardContent>
           </Card>
@@ -402,13 +396,13 @@ function DashboardContent() {
         {/* Pending Approvals */}
         {widgets.pending && (
           <Card
-            className={`${widgets.expenseChart ? 'col-span-4' : 'col-span-7'} animate-in fade-in slide-in-from-left-4 duration-500 delay-200 border-slate-200 shadow-sm`}
+            className={`${widgets.expenseChart ? 'col-span-4' : 'col-span-7'} animate-in fade-in slide-in-from-left-4 duration-500 delay-200 border-slate-200 shadow-sm bg-white`}
           >
             <CardHeader>
-              <CardTitle className="text-slate-950">
+              <CardTitle className="text-black">
                 {t('dashboard.pending_approvals')}
               </CardTitle>
-              <CardDescription className="text-slate-700 font-medium">
+              <CardDescription className="text-black font-medium">
                 {t('dashboard.pending_desc')}
               </CardDescription>
             </CardHeader>
@@ -431,16 +425,16 @@ function DashboardContent() {
                           <Activity className="h-5 w-5 text-orange-700" />
                         </div>
                         <div>
-                          <p className="font-bold text-sm text-slate-950">
+                          <p className="font-bold text-sm text-black">
                             <DataMask>{invoice.description}</DataMask>
                           </p>
-                          <p className="text-xs text-slate-700 font-medium">
+                          <p className="text-xs text-black font-bold">
                             {invoice.date} • <DataMask>{invoice.id}</DataMask>
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-slate-950">
+                        <span className="font-bold text-sm text-black">
                           <DataMask>
                             {formatCurrency(invoice.amount, language)}
                           </DataMask>
@@ -448,7 +442,7 @@ function DashboardContent() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-slate-300 text-slate-900 font-bold"
+                          className="border-slate-300 text-black font-bold"
                         >
                           {t('dashboard.review')}
                         </Button>
@@ -467,10 +461,10 @@ function DashboardContent() {
                           <Activity className="h-5 w-5 text-blue-700" />
                         </div>
                         <div>
-                          <p className="font-bold text-sm text-slate-950">
+                          <p className="font-bold text-sm text-black">
                             <DataMask>{task.title}</DataMask>
                           </p>
-                          <p className="text-xs text-slate-700 font-medium">
+                          <p className="text-xs text-black font-bold">
                             <DataMask>{task.propertyName}</DataMask> •{' '}
                             <DataMask>{task.assignee}</DataMask>
                           </p>
@@ -479,7 +473,7 @@ function DashboardContent() {
                       <div className="flex items-center gap-2">
                         <Badge
                           variant="secondary"
-                          className="text-slate-900 border border-slate-300 font-bold"
+                          className="text-black border border-slate-300 font-bold"
                         >
                           {t('common.pending')}
                         </Badge>
@@ -501,13 +495,13 @@ function DashboardContent() {
         {/* Expenses Chart */}
         {widgets.expenseChart && (
           <Card
-            className={`${widgets.pending ? 'col-span-3' : 'col-span-7'} animate-in fade-in slide-in-from-right-4 duration-500 delay-300 border-slate-200 shadow-sm`}
+            className={`${widgets.pending ? 'col-span-3' : 'col-span-7'} animate-in fade-in slide-in-from-right-4 duration-500 delay-300 border-slate-200 shadow-sm bg-white`}
           >
             <CardHeader>
-              <CardTitle className="text-slate-950">
+              <CardTitle className="text-black">
                 {t('dashboard.expense_distribution')}
               </CardTitle>
-              <CardDescription className="text-slate-700 font-medium">
+              <CardDescription className="text-black font-medium">
                 {t('dashboard.expense_desc')}
               </CardDescription>
             </CardHeader>

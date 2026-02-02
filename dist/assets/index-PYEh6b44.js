@@ -57256,7 +57256,7 @@ var useAuthStore_default = useAuthStore;
 function DataMask({ children, className, width, showAuth }) {
 	const { isAuthenticated } = useAuthStore_default();
 	if (showAuth || isAuthenticated) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-		className: cn("text-slate-950 dark:text-slate-50 opacity-100 mix-blend-normal", className),
+		className: cn("text-black opacity-100 mix-blend-normal", className),
 		children
 	});
 	const style = width ? { width } : {};
@@ -57343,10 +57343,10 @@ function DashboardContent() {
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex flex-col gap-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-						className: "text-3xl font-bold tracking-tight text-slate-950",
+						className: "text-3xl font-bold tracking-tight text-black",
 						children: t$1("common.real_estate_dashboard")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-slate-700 font-medium",
+						className: "text-black font-medium",
 						children: t$1("dashboard.subtitle")
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
@@ -57356,7 +57356,7 @@ function DashboardContent() {
 						asChild: true,
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							variant: "outline",
-							className: "gap-2 border-slate-300 text-slate-900 font-medium",
+							className: "gap-2 border-slate-300 text-black font-bold",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings2, { className: "h-4 w-4" }),
 								" ",
@@ -57414,91 +57414,91 @@ function DashboardContent() {
 				className: "grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in slide-in-from-bottom-4 duration-500",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-						className: "border-slate-200 shadow-sm",
+						className: "border-slate-200 shadow-sm bg-white",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 							className: "flex flex-row items-center justify-between space-y-0 pb-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-								className: "text-sm font-bold text-slate-900",
+								className: "text-sm font-bold text-black",
 								children: "Total Properties"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-slate-600" })]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "text-2xl font-bold text-slate-950",
+							className: "text-2xl font-bold text-black",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: totalProperties })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-xs text-slate-700 font-medium",
+							className: "text-xs text-black font-bold",
 							children: "In portfolio"
 						})] })]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-						className: "border-slate-200 shadow-sm",
+						className: "border-slate-200 shadow-sm bg-white",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 							className: "flex flex-row items-center justify-between space-y-0 pb-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-								className: "text-sm font-bold text-slate-900",
+								className: "text-sm font-bold text-black",
 								children: t$1("common.active_listings")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-4 w-4 text-slate-600" })]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "text-2xl font-bold text-slate-950",
+							className: "text-2xl font-bold text-black",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: activeListings })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-xs text-slate-700 font-medium",
+							className: "text-xs text-black font-bold",
 							children: t$1("status.available")
 						})] })]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-						className: "border-slate-200 shadow-sm",
+						className: "border-slate-200 shadow-sm bg-white",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 							className: "flex flex-row items-center justify-between space-y-0 pb-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-								className: "text-sm font-bold text-slate-900",
+								className: "text-sm font-bold text-black",
 								children: t$1("common.pending_visits")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CalendarDays, { className: "h-4 w-4 text-slate-600" })]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CalendarDays, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "text-2xl font-bold text-slate-950",
+							className: "text-2xl font-bold text-black",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: pendingVisits })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-xs text-slate-700 font-medium",
+							className: "text-xs text-black font-bold",
 							children: t$1("common.scheduled")
 						})] })]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-						className: "border-slate-200 shadow-sm",
+						className: "border-slate-200 shadow-sm bg-white",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 							className: "flex flex-row items-center justify-between space-y-0 pb-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-								className: "text-sm font-bold text-slate-900",
+								className: "text-sm font-bold text-black",
 								children: t$1("common.total_revenue")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4 text-slate-600" })]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "text-2xl font-bold text-slate-950",
+							className: "text-2xl font-bold text-black",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(totalRevenue, language) })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-							className: "text-xs text-slate-700 font-medium",
+							className: "text-xs text-black font-bold",
 							children: ["+20.1% ", t$1("dashboard.from_last_month")]
 						})] })]
 					})
 				]
 			}),
 			widgets.health && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "bg-gradient-to-r from-blue-700 to-purple-800 text-white animate-in fade-in zoom-in-95 duration-500 shadow-md",
+				className: "bg-white text-black animate-in fade-in zoom-in-95 duration-500 shadow-md border-2 border-trust-blue",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 					className: "pb-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-						className: "flex items-center gap-2 text-white font-bold",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trophy, { className: "h-6 w-6 text-yellow-300" }), t$1("gamification.portfolio_health")]
+						className: "flex items-center gap-2 text-black font-bold",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trophy, { className: "h-6 w-6 text-yellow-600" }), t$1("gamification.portfolio_health")]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
-						className: "text-blue-100 font-medium",
+						className: "text-black font-medium",
 						children: t$1("gamification.desc")
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-4",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "text-4xl font-bold text-white",
+						className: "text-4xl font-bold text-black",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: avgHealthScore.toFixed(0) })
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex-1 space-y-1",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex justify-between text-xs text-blue-100 font-bold",
+							className: "flex justify-between text-xs text-black font-bold",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
 								t$1("gamification.level"),
 								": ",
@@ -57506,7 +57506,7 @@ function DashboardContent() {
 							] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [t$1("gamification.target"), ": 100"] })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Progress, {
 							value: avgHealthScore,
-							className: "h-3 bg-blue-900"
+							className: "h-3 bg-slate-200"
 						})]
 					})]
 				}) })]
@@ -57514,12 +57514,12 @@ function DashboardContent() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid gap-4 md:grid-cols-2 lg:grid-cols-7",
 				children: [widgets.revenueChart && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: `${widgets.calendar ? "col-span-4" : "col-span-7"} animate-in fade-in zoom-in-95 duration-500 border-slate-200 shadow-sm`,
+					className: `${widgets.calendar ? "col-span-4" : "col-span-7"} animate-in fade-in zoom-in-95 duration-500 border-slate-200 shadow-sm bg-white`,
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-						className: "text-slate-950",
+						className: "text-black",
 						children: t$1("dashboard.revenue_vs_expenses")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
-						className: "text-slate-700 font-medium",
+						className: "text-black font-medium",
 						children: t$1("dashboard.revenue_overview")
 					})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 						className: "pl-2",
@@ -57544,7 +57544,7 @@ function DashboardContent() {
 											tickMargin: 10,
 											axisLine: false,
 											tick: {
-												fill: "hsl(var(--foreground))",
+												fill: "black",
 												fontSize: 12,
 												fontWeight: "bold"
 											}
@@ -57566,12 +57566,12 @@ function DashboardContent() {
 						})
 					})]
 				}), widgets.calendar && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: `${widgets.revenueChart ? "col-span-3" : "col-span-7"} animate-in fade-in zoom-in-95 duration-500 delay-100 border-slate-200 shadow-sm`,
+					className: `${widgets.revenueChart ? "col-span-3" : "col-span-7"} animate-in fade-in zoom-in-95 duration-500 delay-100 border-slate-200 shadow-sm bg-white`,
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-						className: "text-slate-950",
+						className: "text-black",
 						children: t$1("dashboard.quick_calendar")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
-						className: "text-slate-700 font-medium",
+						className: "text-black font-medium",
 						children: t$1("dashboard.todays_activity")
 					})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 						className: "flex justify-center",
@@ -57579,7 +57579,7 @@ function DashboardContent() {
 							mode: "single",
 							selected: date$4,
 							onSelect: setDate$1,
-							className: "rounded-md border border-slate-200"
+							className: "rounded-md border border-slate-200 text-black font-medium"
 						})
 					})]
 				})]
@@ -57587,12 +57587,12 @@ function DashboardContent() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid gap-4 md:grid-cols-2 lg:grid-cols-7",
 				children: [widgets.pending && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: `${widgets.expenseChart ? "col-span-4" : "col-span-7"} animate-in fade-in slide-in-from-left-4 duration-500 delay-200 border-slate-200 shadow-sm`,
+					className: `${widgets.expenseChart ? "col-span-4" : "col-span-7"} animate-in fade-in slide-in-from-left-4 duration-500 delay-200 border-slate-200 shadow-sm bg-white`,
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-						className: "text-slate-950",
+						className: "text-black",
 						children: t$1("dashboard.pending_approvals")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
-						className: "text-slate-700 font-medium",
+						className: "text-black font-medium",
 						children: t$1("dashboard.pending_desc")
 					})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "space-y-4",
@@ -57604,10 +57604,10 @@ function DashboardContent() {
 									className: "bg-orange-100 p-2 rounded-full",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Activity, { className: "h-5 w-5 text-orange-700" })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "font-bold text-sm text-slate-950",
+									className: "font-bold text-sm text-black",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: invoice.description })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-									className: "text-xs text-slate-700 font-medium",
+									className: "text-xs text-black font-bold",
 									children: [
 										invoice.date,
 										" • ",
@@ -57617,12 +57617,12 @@ function DashboardContent() {
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex items-center gap-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "font-bold text-sm text-slate-950",
+									className: "font-bold text-sm text-black",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(invoice.amount, language) })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 									size: "sm",
 									variant: "outline",
-									className: "border-slate-300 text-slate-900 font-bold",
+									className: "border-slate-300 text-black font-bold",
 									children: t$1("dashboard.review")
 								})]
 							})]
@@ -57634,10 +57634,10 @@ function DashboardContent() {
 									className: "bg-blue-100 p-2 rounded-full",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Activity, { className: "h-5 w-5 text-blue-700" })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "font-bold text-sm text-slate-950",
+									className: "font-bold text-sm text-black",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-									className: "text-xs text-slate-700 font-medium",
+									className: "text-xs text-black font-bold",
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyName }),
 										" •",
@@ -57649,7 +57649,7 @@ function DashboardContent() {
 								className: "flex items-center gap-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 									variant: "secondary",
-									className: "text-slate-900 border border-slate-300 font-bold",
+									className: "text-black border border-slate-300 font-bold",
 									children: t$1("common.pending")
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 									size: "sm",
@@ -57661,12 +57661,12 @@ function DashboardContent() {
 						}, task.id))]
 					}) })]
 				}), widgets.expenseChart && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: `${widgets.pending ? "col-span-3" : "col-span-7"} animate-in fade-in slide-in-from-right-4 duration-500 delay-300 border-slate-200 shadow-sm`,
+					className: `${widgets.pending ? "col-span-3" : "col-span-7"} animate-in fade-in slide-in-from-right-4 duration-500 delay-300 border-slate-200 shadow-sm bg-white`,
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-						className: "text-slate-950",
+						className: "text-black",
 						children: t$1("dashboard.expense_distribution")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
-						className: "text-slate-700 font-medium",
+						className: "text-black font-medium",
 						children: t$1("dashboard.expense_desc")
 					})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
 						className: "w-full h-[250px] block",
@@ -60107,34 +60107,35 @@ function AppSidebar() {
 	const showMigration = currentUser.role === "platform_owner" || currentUser.role === "software_tenant";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Sidebar, {
 		collapsible: "icon",
-		className: "bg-background border-r z-50 fixed left-0 top-0 h-screen shadow-md",
+		className: "bg-white border-r z-50 fixed left-0 top-0 h-screen shadow-md",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarHeader, {
-				className: "h-16 flex items-center px-4 border-b bg-inherit",
+				className: "h-16 flex items-center px-4 border-b bg-white",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 					to: "/",
-					className: "flex items-center gap-2 font-bold text-xl text-brand font-display overflow-hidden hover:opacity-80 transition-opacity",
+					className: "flex items-center gap-2 font-bold text-xl text-black font-display overflow-hidden hover:opacity-80 transition-opacity",
 					onClick: handleLinkClick,
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
 						src: logo_estilizado_default,
 						alt: "COREPM Logo",
 						className: "h-8 w-8 rounded-md shrink-0 object-contain"
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "truncate tracking-tight group-data-[collapsible=icon]:hidden",
+						className: "truncate tracking-tight group-data-[collapsible=icon]:hidden text-black",
 						children: "COREPM"
 					})]
 				})
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarContent, {
-				className: "bg-inherit",
+				className: "bg-white",
 				children: [
 					(currentUser.role === "tenant" || currentUser.role === "property_owner" || currentUser.role === "partner" || currentUser.role === "partner_employee") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
-						className: cn(isMobile && "text-foreground/70"),
+						className: cn(isMobile && "text-black", "text-black font-bold"),
 						children: t$1("common.portal")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenu, { children: [
 						currentUser.role === "tenant" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 							asChild: true,
 							isActive: isActive("/portal/tenant"),
+							className: "text-black font-medium hover:bg-slate-100",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 								to: "/portal/tenant",
 								onClick: handleLinkClick,
@@ -60144,6 +60145,7 @@ function AppSidebar() {
 						currentUser.role === "property_owner" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 							asChild: true,
 							isActive: isActive("/portal/owner"),
+							className: "text-black font-medium hover:bg-slate-100",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 								to: "/portal/owner",
 								onClick: handleLinkClick,
@@ -60153,6 +60155,7 @@ function AppSidebar() {
 						(currentUser.role === "partner" || currentUser.role === "partner_employee") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 							asChild: true,
 							isActive: isActive("/portal/partner"),
+							className: "text-black font-medium hover:bg-slate-100",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 								to: "/portal/partner",
 								onClick: handleLinkClick,
@@ -60161,19 +60164,20 @@ function AppSidebar() {
 						}) })
 					] }) })] }),
 					visibleMenuItems.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
-						className: cn(isMobile && "text-foreground/70"),
+						className: cn(isMobile && "text-black", "text-black font-bold"),
 						children: t$1("sidebar.main_menu")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenu, { children: visibleMenuItems.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 						asChild: true,
 						isActive: isActive(item.url),
 						tooltip: item.title,
+						className: "text-black font-medium hover:bg-slate-100",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 							to: item.url,
 							onClick: handleLinkClick,
 							className: "flex justify-between items-center w-full",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex items-center gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.title })]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.title })]
 							}), item.badge !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 								variant: "destructive",
 								className: "h-5 min-w-5 px-1 flex items-center justify-center text-[10px]",
@@ -60184,47 +60188,51 @@ function AppSidebar() {
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, {
 						className: "mt-auto",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
-							className: cn(isMobile && "text-foreground/70"),
+							className: cn(isMobile && "text-black", "text-black font-bold"),
 							children: t$1("sidebar.system")
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenu, { children: [
 							showMigration && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 								asChild: true,
 								isActive: isActive("/admin/migration"),
 								tooltip: t$1("sidebar.migration_hub"),
+								className: "text-black font-medium hover:bg-slate-100",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 									to: "/admin/migration",
 									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Database, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("sidebar.migration_hub") })]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Database, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("sidebar.migration_hub") })]
 								})
 							}) }),
 							showPublicity && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 								asChild: true,
 								isActive: isActive("/admin/publicity"),
 								tooltip: t$1("sidebar.publicity_admin"),
+								className: "text-black font-medium hover:bg-slate-100",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 									to: "/admin/publicity",
 									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Megaphone, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("sidebar.publicity_admin") })]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Megaphone, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("sidebar.publicity_admin") })]
 								})
 							}) }),
 							showUsers && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 								asChild: true,
 								isActive: isActive("/users"),
 								tooltip: t$1("sidebar.users"),
+								className: "text-black font-medium hover:bg-slate-100",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 									to: "/users",
 									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("sidebar.users") })]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("sidebar.users") })]
 								})
 							}) }),
 							showSettings && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 								asChild: true,
 								isActive: isActive("/settings"),
 								tooltip: t$1("common.settings"),
+								className: "text-black font-medium hover:bg-slate-100",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 									to: "/settings",
 									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings$1, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("common.settings") })]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings$1, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("common.settings") })]
 								})
 							}) })
 						] }) })]
@@ -60232,22 +60240,22 @@ function AppSidebar() {
 				]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarFooter, {
-				className: "bg-inherit",
+				className: "bg-white",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenu, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-2 p-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
-						className: "h-8 w-8 border border-muted/20",
+						className: "h-8 w-8 border border-slate-200",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, { src: currentUser.avatar }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
-							className: "bg-muted text-muted-foreground",
+							className: "bg-slate-100 text-black font-bold",
 							children: currentUser.name.charAt(0)
 						})]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: cn("flex flex-col text-sm leading-tight group-data-[collapsible=icon]:hidden"),
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "font-semibold truncate w-32",
+							className: "font-bold truncate w-32 text-black",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: currentUser.name })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: cn("text-xs text-muted-foreground truncate w-32"),
+							className: cn("text-xs text-black truncate w-32 font-medium"),
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: currentUser.email })
 						})]
 					})]
@@ -63114,10 +63122,10 @@ function AppHeader() {
 		navigate("/");
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
-		className: "flex h-16 items-center gap-4 border-b bg-background px-6 sticky top-0 z-50 shadow-sm w-full",
+		className: "flex h-16 items-center gap-4 border-b bg-white px-6 sticky top-0 z-50 shadow-sm w-full",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarTrigger, {
-				className: "-ml-2",
+				className: "-ml-2 text-black",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Menu, { className: "h-5 w-5" })
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
@@ -63128,17 +63136,17 @@ function AppHeader() {
 					alt: "COREPM Logo",
 					className: "h-8 w-8 rounded-md shrink-0 object-contain"
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
-					className: "text-lg font-bold md:text-xl text-brand font-display tracking-tight hidden sm:block",
+					className: "text-lg font-bold md:text-xl text-black font-display tracking-tight hidden sm:block",
 					children: "COREPM"
 				})]
 			}),
 			setSelectedPropertyId && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex items-center gap-2 ml-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "w-4 h-4 text-muted-foreground hidden md:block" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "w-4 h-4 text-black hidden md:block" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 					value: selectedPropertyId,
 					onValueChange: setSelectedPropertyId,
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-						className: "w-[180px] md:w-[240px] border-none shadow-none focus:ring-0 bg-transparent hover:bg-muted/50 transition-colors h-9",
+						className: "w-[180px] md:w-[240px] border-none shadow-none focus:ring-0 bg-transparent hover:bg-slate-100 transition-colors h-9 text-black font-medium",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Property" })
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 						value: "all",
@@ -63153,14 +63161,14 @@ function AppHeader() {
 				className: "relative ml-auto flex-1 md:grow-0",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 					variant: "outline",
-					className: "relative w-full justify-start text-sm text-muted-foreground sm:pr-12 md:w-64 lg:w-80",
+					className: "relative w-full justify-start text-sm text-black border-slate-300 font-medium sm:pr-12 md:w-64 lg:w-80",
 					onClick: () => setOpenSearch(true),
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "mr-2 h-4 w-4" }),
 						t$1("common.search"),
 						"...",
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("kbd", {
-							className: "pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex",
+							className: "pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-slate-100 px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex text-black",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 								className: "text-xs",
 								children: "⌘"
@@ -63178,7 +63186,7 @@ function AppHeader() {
 						heading: t$1("properties.title"),
 						children: properties$1.slice(0, 5).map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
 							onSelect: () => handleSearchSelect("property", p$1.id),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "mr-2 h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: p$1.name })]
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "mr-2 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: p$1.name })]
 						}, p$1.id))
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandSeparator, {}),
@@ -63186,7 +63194,7 @@ function AppHeader() {
 						heading: t$1("common.tenants"),
 						children: tenants$1.slice(0, 5).map((t$2) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
 							onSelect: () => handleSearchSelect("tenant", t$2.id),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "mr-2 h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t$2.name })]
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "mr-2 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t$2.name })]
 						}, t$2.id))
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandSeparator, {}),
@@ -63194,7 +63202,7 @@ function AppHeader() {
 						heading: t$1("common.owners"),
 						children: owners$1.slice(0, 5).map((o$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
 							onSelect: () => handleSearchSelect("owner", o$1.id),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "mr-2 h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: o$1.name })]
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "mr-2 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: o$1.name })]
 						}, o$1.id))
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandSeparator, {}),
@@ -63202,7 +63210,7 @@ function AppHeader() {
 						heading: t$1("common.tasks"),
 						children: tasks$1.slice(0, 5).map((task) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
 							onSelect: () => handleSearchSelect("task", task.id),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquareCheckBig, { className: "mr-2 h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })]
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquareCheckBig, { className: "mr-2 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })]
 						}, task.id))
 					})
 				] })]
@@ -63216,24 +63224,25 @@ function AppHeader() {
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "ghost",
 							size: "icon",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-5 w-5 text-muted-foreground" })
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-5 w-5 text-black" })
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
 						align: "end",
+						className: "bg-white",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
 								onClick: () => setLanguage("pt"),
-								className: language === "pt" ? "bg-accent" : "",
+								className: language === "pt" ? "bg-slate-100 font-bold" : "",
 								children: "🇵🇹 Português"
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
 								onClick: () => setLanguage("en"),
-								className: language === "en" ? "bg-accent" : "",
+								className: language === "en" ? "bg-slate-100 font-bold" : "",
 								children: "🇺🇸 English"
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
 								onClick: () => setLanguage("es"),
-								className: language === "es" ? "bg-accent" : "",
+								className: language === "es" ? "bg-slate-100 font-bold" : "",
 								children: "🇪🇸 Español"
 							})
 						]
@@ -63243,19 +63252,20 @@ function AppHeader() {
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							variant: "ghost",
 							size: "icon",
-							className: "relative",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, { className: "h-5 w-5" }), unreadCount > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600 animate-pulse ring-2 ring-background" })]
+							className: "relative text-black",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, { className: "h-5 w-5" }), unreadCount > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600 animate-pulse ring-2 ring-white" })]
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PopoverContent, {
-						className: "w-80 p-0",
+						className: "w-80 p-0 bg-white",
 						align: "end",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center justify-between p-4 border-b",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
-								className: "font-semibold leading-none",
+								className: "font-bold leading-none text-black",
 								children: t$1("common.notifications")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
 								variant: "secondary",
+								className: "text-black bg-slate-100 font-bold",
 								children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: unreadCount }),
 									" ",
@@ -63265,27 +63275,27 @@ function AppHeader() {
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
 							className: "h-[300px]",
 							children: notifications$1.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "p-8 text-center text-sm text-muted-foreground",
+								className: "p-8 text-center text-sm text-black font-medium",
 								children: "Nenhuma notificação."
 							}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 								className: "flex flex-col",
 								children: notifications$1.map((notif) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-									className: `flex flex-col items-start gap-1 p-4 text-left hover:bg-muted/50 transition-colors border-b last:border-0 ${!notif.read ? "bg-blue-50/50" : ""}`,
+									className: `flex flex-col items-start gap-1 p-4 text-left hover:bg-slate-50 transition-colors border-b last:border-0 ${!notif.read ? "bg-blue-50" : ""}`,
 									onClick: () => handleNotificationClick(notif.id),
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "flex items-center justify-between w-full",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: `text-sm ${!notif.read ? "font-semibold" : "font-medium"}`,
+												className: `text-sm text-black ${!notif.read ? "font-bold" : "font-medium"}`,
 												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: notif.title })
-											}), !notif.read && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Circle, { className: "h-2 w-2 fill-blue-500 text-blue-500" })]
+											}), !notif.read && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Circle, { className: "h-2 w-2 fill-blue-600 text-blue-600" })]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-xs text-muted-foreground line-clamp-2",
+											className: "text-xs text-black font-medium line-clamp-2",
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: notif.message })
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-[10px] text-muted-foreground mt-1",
+											className: "text-[10px] text-black font-bold mt-1",
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: format(new Date(notif.timestamp), "dd/MM HH:mm") })
 										})
 									]
@@ -63299,18 +63309,18 @@ function AppHeader() {
 							variant: "ghost",
 							className: "relative h-10 w-10 rounded-full",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
-								className: "h-10 w-10 border border-muted/20",
+								className: "h-10 w-10 border border-slate-200",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, {
 									src: currentUser?.avatar,
 									alt: currentUser?.name
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
-									className: "bg-muted text-muted-foreground",
+									className: "bg-slate-100 text-black font-bold",
 									children: currentUser?.name?.charAt(0)
 								})]
 							})
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
-						className: "w-56",
+						className: "w-56 bg-white",
 						align: "end",
 						forceMount: true,
 						children: [
@@ -63320,15 +63330,15 @@ function AppHeader() {
 									className: "flex flex-col space-y-1",
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "text-sm font-medium leading-none",
+											className: "text-sm font-bold leading-none text-black",
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: currentUser?.name })
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "text-xs leading-none text-muted-foreground",
+											className: "text-xs leading-none text-black font-medium",
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: currentUser?.email })
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-											className: "mt-2 w-fit bg-navy hover:bg-navy/90 text-white",
+											className: "mt-2 w-fit bg-black hover:bg-black/90 text-white font-bold",
 											variant: "secondary",
 											children: t$1(`roles.${currentUser?.role}`)
 										})
@@ -63338,32 +63348,39 @@ function AppHeader() {
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
 							demoUsers.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
-									className: "text-xs font-semibold text-blue-600",
+									className: "text-xs font-bold text-blue-700",
 									children: t$1("header.demo_profiles")
 								}),
 								demoUsers.map((user) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
 									onClick: () => setCurrentUser(user.id),
-									className: "cursor-pointer bg-blue-50/50 hover:bg-blue-50",
+									className: "cursor-pointer bg-blue-50 hover:bg-blue-100",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "flex flex-col w-full",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "font-medium",
+											className: "font-bold text-black",
 											children: user.name
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-[10px] text-muted-foreground capitalize",
+											className: "text-[10px] text-black font-medium capitalize",
 											children: t$1(`roles.${user.role}`)
 										})]
 									})
 								}, user.id)),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {})
 							] }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, { children: t$1("header.other_users") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
+								className: "font-bold text-black",
+								children: t$1("header.other_users")
+							}),
 							otherDemoUsers.map((user) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
 								onClick: () => setCurrentUser(user.id),
+								className: "hover:bg-slate-50",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "flex flex-col",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: user.name }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "text-[10px] text-muted-foreground",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "font-medium text-black",
+										children: user.name
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-[10px] text-black font-medium",
 										children: t$1(`roles.${user.role}`)
 									})]
 								})
@@ -63371,6 +63388,7 @@ function AppHeader() {
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
 								onClick: handleLogout,
+								className: "font-medium text-black hover:bg-slate-50",
 								children: t$1("common.logout")
 							})
 						]
@@ -64048,10 +64066,10 @@ function Properties() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col md:flex-row md:items-center justify-between gap-4",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-					className: "text-3xl font-bold tracking-tight text-slate-950",
+					className: "text-3xl font-bold tracking-tight text-black",
 					children: t$1("properties.title")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "text-slate-700 font-medium",
+					className: "text-black font-medium",
 					children: t$1("properties.subtitle")
 				})] }), hasPermission(currentUser, "properties", "create") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 					open,
@@ -64072,9 +64090,9 @@ function Properties() {
 							className: "grid gap-4 py-4",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-3 p-4 border rounded-md bg-muted/20",
+									className: "grid gap-3 p-4 border rounded-md bg-white",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
-										className: "text-base font-semibold",
+										className: "text-base font-bold text-black",
 										children: [
 											t$1("properties.rental_type"),
 											" ",
@@ -64096,53 +64114,67 @@ function Properties() {
 											className: "peer sr-only"
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
 											htmlFor: "str",
-											className: "flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "mb-2 h-6 w-6" }), t$1("properties.profile_short")]
+											className: "flex flex-col items-center justify-between rounded-md border-2 border-slate-200 bg-white p-4 hover:bg-slate-50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-blue-50 cursor-pointer",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "mb-2 h-6 w-6 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "font-bold text-black",
+												children: t$1("properties.profile_short")
+											})]
 										})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RadioGroupItem, {
 											value: "long_term",
 											id: "ltr",
 											className: "peer sr-only"
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
 											htmlFor: "ltr",
-											className: "flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "mb-2 h-6 w-6" }), t$1("properties.profile_long")]
+											className: "flex flex-col items-center justify-between rounded-md border-2 border-slate-200 bg-white p-4 hover:bg-slate-50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-blue-50 cursor-pointer",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "mb-2 h-6 w-6 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "font-bold text-black",
+												children: t$1("properties.profile_long")
+											})]
 										})] })]
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-										t$1("common.name"),
-										" ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-red-500",
-											children: "*"
-										})
-									] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+										className: "text-black font-bold",
+										children: [
+											t$1("common.name"),
+											" ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-red-500",
+												children: "*"
+											})
+										]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: newProp.name,
 										onChange: (e) => setNewProp({
 											...newProp,
 											name: e.target.value
 										}),
-										placeholder: t$1("properties.search_placeholder")
+										placeholder: t$1("properties.search_placeholder"),
+										className: "text-black"
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-										t$1("common.address"),
-										" ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-red-500",
-											children: "*"
-										})
-									] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+										className: "text-black font-bold",
+										children: [
+											t$1("common.address"),
+											" ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-red-500",
+												children: "*"
+											})
+										]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: newProp.address,
 										onChange: (e) => setNewProp({
 											...newProp,
 											address: e.target.value
 										}),
-										placeholder: t$1("properties.address_placeholder")
+										placeholder: t$1("properties.address_placeholder"),
+										className: "text-black"
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -64150,7 +64182,7 @@ function Properties() {
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-1",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
-											className: "text-xs",
+											className: "text-xs text-black font-bold",
 											children: [
 												t$1("properties.zip_code"),
 												" ",
@@ -64165,12 +64197,13 @@ function Properties() {
 												...newProp,
 												zipCode: e.target.value
 											}),
-											placeholder: "00000"
+											placeholder: "00000",
+											className: "text-black"
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-1",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-											className: "text-xs",
+											className: "text-xs text-black font-bold",
 											children: t$1("properties.info_label")
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											value: newProp.additionalInfo,
@@ -64178,7 +64211,8 @@ function Properties() {
 												...newProp,
 												additionalInfo: e.target.value
 											}),
-											placeholder: "Apto, Bloco, etc."
+											placeholder: "Apto, Bloco, etc.",
+											className: "text-black"
 										})]
 									})]
 								}),
@@ -64187,7 +64221,7 @@ function Properties() {
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-1",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-											className: "text-xs",
+											className: "text-xs text-black font-bold",
 											children: t$1("properties.city_placeholder")
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											placeholder: t$1("properties.city_placeholder"),
@@ -64195,12 +64229,13 @@ function Properties() {
 											onChange: (e) => setNewProp({
 												...newProp,
 												city: e.target.value
-											})
+											}),
+											className: "text-black"
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-1",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-											className: "text-xs",
+											className: "text-xs text-black font-bold",
 											children: t$1("properties.state_placeholder")
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											placeholder: t$1("properties.state_placeholder"),
@@ -64208,7 +64243,8 @@ function Properties() {
 											onChange: (e) => setNewProp({
 												...newProp,
 												state: e.target.value
-											})
+											}),
+											className: "text-black"
 										})]
 									})]
 								}),
@@ -64216,19 +64252,26 @@ function Properties() {
 									className: "grid grid-cols-2 gap-4",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t$1("properties.property_value"), " ($)"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+											className: "text-black font-bold",
+											children: [t$1("properties.property_value"), " ($)"]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
 											value: newProp.listingPrice,
 											onChange: (val) => setNewProp({
 												...newProp,
 												listingPrice: val
 											}),
 											placeholder: "0.00",
-											locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US"
+											locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US",
+											className: "text-black"
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
 										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t$1("properties.hoa_fee"), " ($)"] }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+												className: "text-black font-bold",
+												children: [t$1("properties.hoa_fee"), " ($)"]
+											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
 												value: newProp.hoaValue,
 												onChange: (val) => setNewProp({
@@ -64236,10 +64279,11 @@ function Properties() {
 													hoaValue: val
 												}),
 												placeholder: "0.00",
-												locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US"
+												locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US",
+												className: "text-black"
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-[10px] text-muted-foreground",
+												className: "text-[10px] text-black font-medium",
 												children: t$1("properties.hoa_auto_hint")
 											})
 										]
@@ -64248,7 +64292,10 @@ function Properties() {
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
 									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.cover_image") }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+											className: "text-black font-bold",
+											children: t$1("properties.cover_image")
+										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											type: "file",
 											accept: "image/*",
@@ -64257,10 +64304,11 @@ function Properties() {
 													...newProp,
 													image: URL.createObjectURL(e.target.files[0])
 												});
-											}
+											},
+											className: "text-black"
 										}),
 										!newProp.image && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "text-xs text-muted-foreground italic",
+											className: "text-xs text-black italic",
 											children: t$1("properties.no_image_selected")
 										}),
 										newProp.image && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
@@ -64284,7 +64332,7 @@ function Properties() {
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 						placeholder: t$1("properties.search_placeholder"),
-						className: "md:w-[300px] text-black",
+						className: "md:w-[300px] text-black bg-white",
 						value: filter,
 						onChange: (e) => setFilter(e.target.value)
 					}),
@@ -64292,7 +64340,7 @@ function Properties() {
 						value: statusFilter,
 						onValueChange: setStatusFilter,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "w-full md:w-[200px] border-slate-300",
+							className: "w-full md:w-[200px] border-slate-300 text-black",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("common.status") })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
@@ -64321,7 +64369,7 @@ function Properties() {
 						value: profileFilter,
 						onValueChange: (v) => setProfileFilter(v),
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "w-full md:w-[200px] border-slate-300",
+							className: "w-full md:w-[200px] border-slate-300 text-black",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("properties.profile_filter") })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
@@ -64343,7 +64391,7 @@ function Properties() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6",
 				children: filteredProperties.map((property$2) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: "overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col group relative",
+					className: "overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col group relative bg-white",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "relative h-48 w-full bg-slate-200",
@@ -64356,7 +64404,7 @@ function Properties() {
 										className: "w-full h-full object-cover transition-transform hover:scale-105 duration-500"
 									})
 								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "flex items-center justify-center h-full text-slate-500",
+									className: "flex items-center justify-center h-full text-black font-medium",
 									children: t$1("properties.no_image")
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
@@ -64364,7 +64412,7 @@ function Properties() {
 									children: t$1(`status.${property$2.status}`)
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-									className: "absolute bottom-2 left-2 bg-black/80 text-white border-none font-bold",
+									className: "absolute bottom-2 left-2 bg-black text-white border-none font-bold",
 									children: property$2.profileType === "short_term" ? "STR" : "LTR"
 								}),
 								hasPermission(currentUser, "properties", "delete") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
@@ -64391,31 +64439,31 @@ function Properties() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 							className: "pb-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-								className: "text-lg text-slate-950",
+								className: "text-lg text-black",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: property$2.name })
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "text-xs text-slate-700 mt-1 font-medium",
+								className: "text-xs text-black mt-1 font-medium",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: property$2.community })
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 							className: "flex-1 pb-2",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-1 text-sm text-slate-700 mb-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "flex items-center gap-1 text-sm text-black mb-4",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-3 w-3 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 									className: "truncate font-medium",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: property$2.address })
 								})]
 							})
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
-							className: "pt-4 border-t bg-slate-50",
+							className: "pt-4 border-t bg-white",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 								to: `/properties/${property$2.id}`,
 								className: "w-full",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 									variant: "outline",
-									className: "w-full text-slate-900 border-slate-300 font-medium",
+									className: "w-full text-black border-slate-300 font-medium",
 									children: t$1("properties.view_details")
 								})
 							})
@@ -80226,7 +80274,7 @@ function Tenants() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex justify-between items-center",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-slate-950",
+				className: "text-3xl font-bold tracking-tight text-black",
 				children: t$1("tenants.title")
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex gap-2",
@@ -80369,13 +80417,13 @@ function Tenants() {
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex justify-between items-center",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-						className: "text-slate-950",
+						className: "text-black",
 						children: t$1("tenants.list_title")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "relative w-64",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-slate-950" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 							placeholder: t$1("tenants.search_placeholder"),
-							className: "pl-8 text-black",
+							className: "pl-8 text-black bg-white",
 							value: filter,
 							onChange: (e) => setFilter(e.target.value)
 						})]
@@ -80415,25 +80463,25 @@ function Tenants() {
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex flex-col",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "text-slate-950 font-bold",
+									className: "text-black font-bold",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.name })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "text-xs text-slate-950 font-medium mt-0.5",
+									className: "text-xs text-black font-medium mt-0.5",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.email })
 								})]
 							})
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: prop ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 							to: `/properties/${prop.id}`,
-							className: "flex items-center gap-2 hover:text-blue-700 hover:underline text-slate-950",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-4 w-4 text-slate-950" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: prop.name })]
+							className: "flex items-center gap-2 hover:text-blue-700 hover:underline text-black",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: prop.name })]
 						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-slate-950",
+							className: "text-black",
 							children: "-"
 						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center gap-2 text-sm text-slate-950 font-medium",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-3 w-3 text-slate-950" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [
+							className: "flex items-center gap-2 text-sm text-black font-medium",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-3 w-3 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [
 								tenant.leaseStart ? format(new Date(tenant.leaseStart), "dd/MM/yyyy") : "N/A",
 								" ",
 								"-",
@@ -80443,7 +80491,7 @@ function Tenants() {
 						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 							variant: "outline",
-							className: "text-slate-950 border-slate-400 font-medium",
+							className: "text-black border-slate-400 font-medium",
 							children: tenant.status
 						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -80471,7 +80519,7 @@ function Tenants() {
 										variant: "ghost",
 										size: "icon",
 										onClick: () => navigate(`/tenants/${tenant.id}`),
-										className: "text-slate-950 hover:text-black",
+										className: "text-black hover:text-slate-700",
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4" })
 									})
 								]
@@ -81768,10 +81816,10 @@ function Owners() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-slate-950",
+				className: "text-3xl font-bold tracking-tight text-black",
 				children: t$1("owners.title")
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-slate-700",
+				className: "text-black font-medium",
 				children: t$1("owners.subtitle")
 			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 				open,
@@ -81793,30 +81841,41 @@ function Owners() {
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									className: "text-black font-bold",
+									children: t$1("common.name")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									value: newOwner.name,
 									onChange: (e) => setNewOwner({
 										...newOwner,
 										name: e.target.value
 									}),
-									placeholder: "Ex: John Doe"
+									placeholder: "Ex: John Doe",
+									className: "text-black"
 								})]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid grid-cols-2 gap-4",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+										className: "text-black font-bold",
+										children: t$1("common.email")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: newOwner.email,
 										onChange: (e) => setNewOwner({
 											...newOwner,
 											email: e.target.value
 										}),
-										placeholder: "email@exemplo.com"
+										placeholder: "email@exemplo.com",
+										className: "text-black"
 									})]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+										className: "text-black font-bold",
+										children: t$1("common.phone")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
 										value: newOwner.phone,
 										onChange: (e) => setNewOwner({
 											...newOwner,
@@ -81832,16 +81891,23 @@ function Owners() {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Address Search" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddressInput, { onAddressSelect: handleAddressSelect })]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									className: "text-black font-bold",
+									children: "Address Search"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddressInput, { onAddressSelect: handleAddressSelect })]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Full Address" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									className: "text-black font-bold",
+									children: "Full Address"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									value: newOwner.address,
 									onChange: (e) => setNewOwner({
 										...newOwner,
 										address: e.target.value
-									})
+									}),
+									className: "text-black"
 								})]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -81849,32 +81915,44 @@ function Owners() {
 								children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "City" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+											className: "text-black font-bold",
+											children: "City"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											value: newOwner.city,
 											onChange: (e) => setNewOwner({
 												...newOwner,
 												city: e.target.value
-											})
+											}),
+											className: "text-black"
 										})]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "State" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+											className: "text-black font-bold",
+											children: "State"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											value: newOwner.state,
 											onChange: (e) => setNewOwner({
 												...newOwner,
 												state: e.target.value
-											})
+											}),
+											className: "text-black"
 										})]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Zip" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+											className: "text-black font-bold",
+											children: "Zip"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											value: newOwner.zipCode,
 											onChange: (e) => setNewOwner({
 												...newOwner,
 												zipCode: e.target.value
-											})
+											}),
+											className: "text-black"
 										})]
 									})
 								]
@@ -81888,159 +81966,175 @@ function Owners() {
 					})]
 				})]
 			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
-			className: "pb-3",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-					className: "text-slate-950",
-					children: t$1("owners.base_title")
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "relative w-full md:w-64",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-						placeholder: t$1("owners.search_placeholder"),
-						className: "pl-8 w-full text-black",
-						value: filter,
-						onChange: (e) => setFilter(e.target.value)
-					})]
-				})]
-			})
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-				className: "font-bold text-slate-950",
-				children: t$1("common.name")
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-				className: "font-bold text-slate-950",
-				children: t$1("owners.contact_details")
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-				className: "font-bold text-slate-950",
-				children: t$1("owners.properties_count")
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-				className: "font-bold text-slate-950",
-				children: t$1("common.status")
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-				className: "text-right font-bold text-slate-950",
-				children: t$1("common.actions")
-			})
-		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredOwners.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-			colSpan: 5,
-			className: "text-center py-8 text-slate-500",
-			children: t$1("common.empty")
-		}) }) : filteredOwners.map((owner) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-				className: "font-medium",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-					to: `/owners/${owner.id}`,
-					className: "hover:underline text-trust-blue font-semibold text-slate-900",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })
-				})
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-col text-sm",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-					className: "text-slate-950 font-medium",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.email })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-					className: "text-slate-800 text-xs flex items-center gap-1 font-medium",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Phone, { className: "h-3 w-3" }),
-						" ",
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.phone })
-					]
-				})]
-			}) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
-				asChild: true,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
-					variant: "secondary",
-					className: "gap-1 cursor-pointer hover:bg-secondary/80 text-slate-950 border-slate-300",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-3 w-3" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: getPropertyCount(owner.id) }),
-						" ",
-						t$1("owners.properties_count")
-					]
-				})
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PopoverContent, {
-				className: "w-64 p-0",
-				align: "start",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "p-2 font-bold border-b text-xs text-slate-950",
-					children: ["Propriedades de ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex flex-col max-h-60 overflow-y-auto",
-					children: [properties$1.filter((p$1) => p$1.ownerId === owner.id).map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-						to: `/properties/${p$1.id}`,
-						className: "px-3 py-2 text-sm text-slate-900 hover:bg-muted transition-colors truncate block border-b last:border-0",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: p$1.name })
-					}, p$1.id)), properties$1.filter((p$1) => p$1.ownerId === owner.id).length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "p-3 text-sm text-center text-slate-500",
-						children: t$1("common.empty")
-					})]
-				})]
-			})] }) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-				variant: owner.status === "active" ? "default" : "secondary",
-				className: "text-slate-950 border-slate-300",
-				children: t$1(`common.${owner.status}`)
-			}) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-				className: "text-right",
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+			className: "bg-white",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+				className: "pb-3",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex justify-end gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						size: "icon",
-						onClick: () => navigate(`/owners/${owner.id}`),
-						title: t$1("common.details"),
-						className: "text-slate-800",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4" })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
-						asChild: true,
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "ghost",
-							size: "icon",
-							className: "text-slate-800",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ellipsis, { className: "h-4 w-4" })
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
-						align: "end",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, { children: t$1("common.actions") }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
-								onClick: () => navigate(`/messages?contactId=${owner.id}`),
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "mr-2 h-4 w-4" }),
-									" ",
-									t$1("common.messages")
-								]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
-								onClick: () => handleAction(owner.name, t$1("owners.renew_contract")),
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "mr-2 h-4 w-4" }),
-									" ",
-									t$1("owners.renew_contract")
-								]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
-								onClick: () => navigate(`/owners/${owner.id}`),
-								children: [
-									t$1("common.view"),
-									" ",
-									t$1("common.profile")
-								]
-							})
-						]
-					})] })]
+					className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+						className: "text-black",
+						children: t$1("owners.base_title")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "relative w-full md:w-64",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							placeholder: t$1("owners.search_placeholder"),
+							className: "pl-8 w-full text-black bg-white",
+							value: filter,
+							onChange: (e) => setFilter(e.target.value)
+						})]
+					})]
 				})
-			})
-		] }, owner.id)) })] }) })] })]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+				className: "bg-white hover:bg-white border-b border-slate-200",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-black",
+						children: t$1("common.name")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-black",
+						children: t$1("owners.contact_details")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-black",
+						children: t$1("owners.properties_count")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-black",
+						children: t$1("common.status")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "text-right font-bold text-black",
+						children: t$1("common.actions")
+					})
+				]
+			}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredOwners.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				colSpan: 5,
+				className: "text-center py-8 text-black font-medium",
+				children: t$1("common.empty")
+			}) }) : filteredOwners.map((owner) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+				className: "bg-white hover:bg-slate-50 transition-colors",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: "font-medium",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+							to: `/owners/${owner.id}`,
+							className: "hover:underline text-trust-blue font-bold text-black",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })
+						})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex flex-col text-sm",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-black font-medium",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.email })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+							className: "text-black text-xs flex items-center gap-1 font-medium",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Phone, { className: "h-3 w-3 text-black" }),
+								" ",
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.phone })
+							]
+						})]
+					}) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+							variant: "secondary",
+							className: "gap-1 cursor-pointer hover:bg-slate-200 text-black border-slate-300 font-bold",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-3 w-3 text-black" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: getPropertyCount(owner.id) }),
+								" ",
+								t$1("owners.properties_count")
+							]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PopoverContent, {
+						className: "w-64 p-0 bg-white",
+						align: "start",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "p-2 font-bold border-b text-xs text-black",
+							children: ["Propriedades de ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-col max-h-60 overflow-y-auto",
+							children: [properties$1.filter((p$1) => p$1.ownerId === owner.id).map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+								to: `/properties/${p$1.id}`,
+								className: "px-3 py-2 text-sm text-black hover:bg-slate-100 transition-colors truncate block border-b last:border-0 font-medium",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: p$1.name })
+							}, p$1.id)), properties$1.filter((p$1) => p$1.ownerId === owner.id).length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "p-3 text-sm text-center text-black",
+								children: t$1("common.empty")
+							})]
+						})]
+					})] }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+						variant: owner.status === "active" ? "default" : "secondary",
+						className: "text-black border-slate-300 font-bold",
+						children: t$1(`common.${owner.status}`)
+					}) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: "text-right",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex justify-end gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								onClick: () => navigate(`/owners/${owner.id}`),
+								title: t$1("common.details"),
+								className: "text-black hover:bg-slate-100",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4" })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "ghost",
+									size: "icon",
+									className: "text-black hover:bg-slate-100",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ellipsis, { className: "h-4 w-4" })
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
+								align: "end",
+								className: "bg-white",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
+										className: "text-black font-bold",
+										children: t$1("common.actions")
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
+										className: "text-black font-medium hover:bg-slate-100",
+										onClick: () => navigate(`/messages?contactId=${owner.id}`),
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "mr-2 h-4 w-4" }),
+											" ",
+											t$1("common.messages")
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
+										className: "text-black font-medium hover:bg-slate-100",
+										onClick: () => handleAction(owner.name, t$1("owners.renew_contract")),
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "mr-2 h-4 w-4" }),
+											" ",
+											t$1("owners.renew_contract")
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
+										className: "text-black font-medium hover:bg-slate-100",
+										onClick: () => navigate(`/owners/${owner.id}`),
+										children: [
+											t$1("common.view"),
+											" ",
+											t$1("common.profile")
+										]
+									})
+								]
+							})] })]
+						})
+					})
+				]
+			}, owner.id)) })] }) })]
+		})]
 	});
 }
 function OwnerStatement({ ownerId, properties: properties$1, ledgerEntries: ledgerEntries$1 }) {
@@ -82842,20 +82936,23 @@ function Partners() {
 	const PartnerList = ({ list }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
 		children: list.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "col-span-full text-center py-10 text-muted-foreground",
+			className: "col-span-full text-center py-10 text-black font-medium",
 			children: t$1("partners.no_partners")
 		}) : list.map((partner) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-			className: "hover:shadow-md transition-shadow",
+			className: "hover:shadow-md transition-shadow bg-white",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
 				className: "pb-3",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex justify-between items-start",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-						className: "text-lg",
+						className: "text-lg text-black font-bold",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner.name })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner.companyName }) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+						className: "text-black font-medium",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner.companyName })
+					})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
 						variant: "outline",
-						className: "flex items-center gap-1",
+						className: "flex items-center gap-1 border-slate-300 text-black font-bold",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: "h-3 w-3 fill-yellow-400 text-yellow-400" }), partner.rating]
 					})]
 				})
@@ -82863,21 +82960,21 @@ function Partners() {
 				className: "space-y-2 text-sm",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-2 text-muted-foreground",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "flex items-center gap-2 text-black font-medium",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "capitalize",
 							children: t$1(`partners.${partner.type}`)
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-2 text-muted-foreground",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Phone, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner.phone }) })]
+						className: "flex items-center gap-2 text-black font-medium",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Phone, { className: "h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner.phone }) })]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "pt-2 flex gap-2",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							variant: "outline",
-							className: "flex-1 gap-2",
+							className: "flex-1 gap-2 text-black border-slate-300 font-medium",
 							onClick: () => navigate("/messages"),
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4" }),
@@ -82885,7 +82982,7 @@ function Partners() {
 								t$1("tenants.send_message")
 							]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-							className: "flex-1 gap-2 bg-trust-blue",
+							className: "flex-1 gap-2 bg-trust-blue text-white font-bold",
 							onClick: () => navigate(`/partners/${partner.id}`),
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4" }),
@@ -82904,10 +83001,10 @@ function Partners() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex justify-between items-center",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-					className: "text-3xl font-bold tracking-tight text-navy",
+					className: "text-3xl font-bold tracking-tight text-black",
 					children: t$1("partners.title")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "text-muted-foreground",
+					className: "text-black font-medium",
 					children: t$1("partners.subtitle")
 				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 					open,
@@ -82931,42 +83028,56 @@ function Partners() {
 									className: "grid grid-cols-2 gap-4",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-											t$1("partners.contact_name"),
-											" ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-red-500",
-												children: "*"
-											})
-										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+											className: "text-black font-bold",
+											children: [
+												t$1("partners.contact_name"),
+												" ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "text-red-500",
+													children: "*"
+												})
+											]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											value: newPartner.name,
 											onChange: (e) => setNewPartner({
 												...newPartner,
 												name: e.target.value
 											}),
-											placeholder: "Ex: Maria Silva"
+											placeholder: "Ex: Maria Silva",
+											className: "text-black"
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.company_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+											className: "text-black font-bold",
+											children: t$1("partners.company_name")
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											value: newPartner.companyName,
 											onChange: (e) => setNewPartner({
 												...newPartner,
 												companyName: e.target.value
 											}),
-											placeholder: "Ex: Silva Services LLC"
+											placeholder: "Ex: Silva Services LLC",
+											className: "text-black"
 										})]
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.category") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+										className: "text-black font-bold",
+										children: t$1("partners.category")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 										value: newPartner.type,
 										onValueChange: (val) => setNewPartner({
 											...newPartner,
 											type: val
 										}),
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione o tipo" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+											className: "text-black",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione o tipo" })
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 												value: "agent",
 												children: t$1("partners.agent")
@@ -82986,24 +83097,31 @@ function Partners() {
 									className: "grid grid-cols-2 gap-4",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-											t$1("common.email"),
-											" ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-red-500",
-												children: "*"
-											})
-										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+											className: "text-black font-bold",
+											children: [
+												t$1("common.email"),
+												" ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "text-red-500",
+													children: "*"
+												})
+											]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											value: newPartner.email,
 											onChange: (e) => setNewPartner({
 												...newPartner,
 												email: e.target.value
 											}),
-											placeholder: "contato@empresa.com"
+											placeholder: "contato@empresa.com",
+											className: "text-black"
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+											className: "text-black font-bold",
+											children: t$1("common.phone")
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
 											value: newPartner.phone || "",
 											onChange: (e) => setNewPartner({
 												...newPartner,
@@ -83014,17 +83132,24 @@ function Partners() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Buscar Endereço" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddressInput, { onAddressSelect: handleAddressSelect })]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+										className: "text-black font-bold",
+										children: "Buscar Endereço"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddressInput, { onAddressSelect: handleAddressSelect })]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.address") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+										className: "text-black font-bold",
+										children: t$1("common.address")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: newPartner.address,
 										onChange: (e) => setNewPartner({
 											...newPartner,
 											address: e.target.value
 										}),
-										placeholder: "Address Line 1"
+										placeholder: "Address Line 1",
+										className: "text-black"
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -83032,40 +83157,52 @@ function Partners() {
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Cidade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												className: "text-black font-bold",
+												children: "Cidade"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												value: newPartner.city,
 												onChange: (e) => setNewPartner({
 													...newPartner,
 													city: e.target.value
-												})
+												}),
+												className: "text-black"
 											})]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Estado" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												className: "text-black font-bold",
+												children: "Estado"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												value: newPartner.state,
 												onChange: (e) => setNewPartner({
 													...newPartner,
 													state: e.target.value
-												})
+												}),
+												className: "text-black"
 											})]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CEP / ZIP" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												className: "text-black font-bold",
+												children: "CEP / ZIP"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												value: newPartner.zipCode,
 												onChange: (e) => setNewPartner({
 													...newPartner,
 													zipCode: e.target.value
-												})
+												}),
+												className: "text-black"
 											})]
 										})
 									]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "border rounded-md p-3 space-y-3 bg-muted/20",
+									className: "border rounded-md p-3 space-y-3 bg-white",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-										className: "font-semibold",
+										className: "font-bold text-black",
 										children: t$1("partners.bank_info")
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid grid-cols-2 gap-2",
@@ -83079,7 +83216,8 @@ function Partners() {
 														...newPartner.paymentInfo,
 														bankName: e.target.value
 													}
-												})
+												}),
+												className: "text-black"
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												placeholder: "Bank Number",
@@ -83090,7 +83228,8 @@ function Partners() {
 														...newPartner.paymentInfo,
 														bankNumber: e.target.value
 													}
-												})
+												}),
+												className: "text-black"
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												placeholder: t$1("partners.routing"),
@@ -83101,7 +83240,8 @@ function Partners() {
 														...newPartner.paymentInfo,
 														routingNumber: e.target.value
 													}
-												})
+												}),
+												className: "text-black"
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												placeholder: t$1("partners.account"),
@@ -83112,7 +83252,8 @@ function Partners() {
 														...newPartner.paymentInfo,
 														accountNumber: e.target.value
 													}
-												})
+												}),
+												className: "text-black"
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												placeholder: "Zelle (Email/Phone)",
@@ -83123,7 +83264,8 @@ function Partners() {
 														...newPartner.paymentInfo,
 														zelle: e.target.value
 													}
-												})
+												}),
+												className: "text-black"
 											})
 										]
 									})]
@@ -83140,9 +83282,9 @@ function Partners() {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "relative w-full md:w-1/3",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 					placeholder: t$1("partners.search_placeholder"),
-					className: "pl-8",
+					className: "pl-8 text-black bg-white",
 					value: filter,
 					onChange: (e) => setFilter(e.target.value)
 				})]
@@ -84601,10 +84743,10 @@ function Condominiums() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex justify-between items-center",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-slate-950",
+				className: "text-3xl font-bold tracking-tight text-black",
 				children: t$1("condominiums.title")
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-slate-950 font-medium",
+				className: "text-black font-medium",
 				children: t$1("condominiums.subtitle")
 			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 				open,
@@ -84735,13 +84877,13 @@ function Condominiums() {
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex justify-between items-center",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-						className: "text-slate-950",
+						className: "text-black",
 						children: t$1("condominiums.title")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "relative w-64",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-slate-950" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 							placeholder: "Buscar por nome, endereço, gerente...",
-							className: "pl-8 text-black",
+							className: "pl-8 text-black bg-white",
 							value: filter,
 							onChange: (e) => setFilter(e.target.value)
 						})]
@@ -84783,15 +84925,15 @@ function Condominiums() {
 				className: "bg-white hover:bg-slate-50 transition-colors",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-						className: "font-medium flex items-center gap-2 text-slate-950",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-4 w-4 text-slate-950" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.name })]
+						className: "font-medium flex items-center gap-2 text-black",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.name })]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-						className: "text-slate-950",
+						className: "text-black",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.address })
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "flex flex-col text-xs text-slate-950 font-medium",
+						className: "flex flex-col text-xs text-black font-medium",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
 							condo.city || "-",
 							", ",
@@ -84801,16 +84943,16 @@ function Condominiums() {
 						] }) })
 					}) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-						className: "text-slate-950",
+						className: "text-black",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerName || "-" })
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex flex-col text-xs font-medium",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-slate-950",
+							className: "text-black",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerEmail })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-slate-950",
+							className: "text-black",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerPhone })
 						})]
 					}) }),
@@ -84821,7 +84963,7 @@ function Condominiums() {
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								variant: "ghost",
 								size: "icon",
-								className: "text-slate-950",
+								className: "text-black",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ellipsis, { className: "h-4 w-4" })
 							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
@@ -93184,4 +93326,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-ByDwqmn_.js.map
+//# sourceMappingURL=index-PYEh6b44.js.map

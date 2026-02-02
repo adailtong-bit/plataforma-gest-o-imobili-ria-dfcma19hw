@@ -260,12 +260,10 @@ export default function Properties() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
+          <h1 className="text-3xl font-bold tracking-tight text-black">
             {t('properties.title')}
           </h1>
-          <p className="text-slate-700 font-medium">
-            {t('properties.subtitle')}
-          </p>
+          <p className="text-black font-medium">{t('properties.subtitle')}</p>
         </div>
 
         {hasPermission(currentUser as User, 'properties', 'create') && (
@@ -281,8 +279,8 @@ export default function Properties() {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 {/* Manual Rental Type Selection */}
-                <div className="grid gap-3 p-4 border rounded-md bg-muted/20">
-                  <Label className="text-base font-semibold">
+                <div className="grid gap-3 p-4 border rounded-md bg-white">
+                  <Label className="text-base font-bold text-black">
                     {t('properties.rental_type')}{' '}
                     <span className="text-red-500">*</span>
                   </Label>
@@ -301,10 +299,12 @@ export default function Properties() {
                       />
                       <Label
                         htmlFor="str"
-                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-slate-200 bg-white p-4 hover:bg-slate-50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-blue-50 cursor-pointer"
                       >
-                        <Home className="mb-2 h-6 w-6" />
-                        {t('properties.profile_short')}
+                        <Home className="mb-2 h-6 w-6 text-black" />
+                        <span className="font-bold text-black">
+                          {t('properties.profile_short')}
+                        </span>
                       </Label>
                     </div>
                     <div>
@@ -315,17 +315,19 @@ export default function Properties() {
                       />
                       <Label
                         htmlFor="ltr"
-                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-slate-200 bg-white p-4 hover:bg-slate-50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-blue-50 cursor-pointer"
                       >
-                        <Building className="mb-2 h-6 w-6" />
-                        {t('properties.profile_long')}
+                        <Building className="mb-2 h-6 w-6 text-black" />
+                        <span className="font-bold text-black">
+                          {t('properties.profile_long')}
+                        </span>
                       </Label>
                     </div>
                   </RadioGroup>
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>
+                  <Label className="text-black font-bold">
                     {t('common.name')} <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -334,11 +336,12 @@ export default function Properties() {
                       setNewProp({ ...newProp, name: e.target.value })
                     }
                     placeholder={t('properties.search_placeholder')}
+                    className="text-black"
                   />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>
+                  <Label className="text-black font-bold">
                     {t('common.address')}{' '}
                     <span className="text-red-500">*</span>
                   </Label>
@@ -348,12 +351,13 @@ export default function Properties() {
                       setNewProp({ ...newProp, address: e.target.value })
                     }
                     placeholder={t('properties.address_placeholder')}
+                    className="text-black"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="grid gap-1">
-                    <Label className="text-xs">
+                    <Label className="text-xs text-black font-bold">
                       {t('properties.zip_code')}{' '}
                       <span className="text-red-500">*</span>
                     </Label>
@@ -363,10 +367,11 @@ export default function Properties() {
                         setNewProp({ ...newProp, zipCode: e.target.value })
                       }
                       placeholder="00000"
+                      className="text-black"
                     />
                   </div>
                   <div className="grid gap-1">
-                    <Label className="text-xs">
+                    <Label className="text-xs text-black font-bold">
                       {t('properties.info_label')}
                     </Label>
                     <Input
@@ -378,13 +383,14 @@ export default function Properties() {
                         })
                       }
                       placeholder="Apto, Bloco, etc."
+                      className="text-black"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="grid gap-1">
-                    <Label className="text-xs">
+                    <Label className="text-xs text-black font-bold">
                       {t('properties.city_placeholder')}
                     </Label>
                     <Input
@@ -393,10 +399,11 @@ export default function Properties() {
                       onChange={(e) =>
                         setNewProp({ ...newProp, city: e.target.value })
                       }
+                      className="text-black"
                     />
                   </div>
                   <div className="grid gap-1">
-                    <Label className="text-xs">
+                    <Label className="text-xs text-black font-bold">
                       {t('properties.state_placeholder')}
                     </Label>
                     <Input
@@ -405,13 +412,16 @@ export default function Properties() {
                       onChange={(e) =>
                         setNewProp({ ...newProp, state: e.target.value })
                       }
+                      className="text-black"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>{t('properties.property_value')} ($)</Label>
+                    <Label className="text-black font-bold">
+                      {t('properties.property_value')} ($)
+                    </Label>
                     <CurrencyInput
                       value={newProp.listingPrice}
                       onChange={(val) =>
@@ -425,10 +435,13 @@ export default function Properties() {
                             ? 'es-ES'
                             : 'en-US'
                       }
+                      className="text-black"
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>{t('properties.hoa_fee')} ($)</Label>
+                    <Label className="text-black font-bold">
+                      {t('properties.hoa_fee')} ($)
+                    </Label>
                     <CurrencyInput
                       value={newProp.hoaValue}
                       onChange={(val) =>
@@ -442,15 +455,18 @@ export default function Properties() {
                             ? 'es-ES'
                             : 'en-US'
                       }
+                      className="text-black"
                     />
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-[10px] text-black font-medium">
                       {t('properties.hoa_auto_hint')}
                     </span>
                   </div>
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>{t('properties.cover_image')}</Label>
+                  <Label className="text-black font-bold">
+                    {t('properties.cover_image')}
+                  </Label>
                   <Input
                     type="file"
                     accept="image/*"
@@ -462,9 +478,10 @@ export default function Properties() {
                         })
                       }
                     }}
+                    className="text-black"
                   />
                   {!newProp.image && (
-                    <p className="text-xs text-muted-foreground italic">
+                    <p className="text-xs text-black italic">
                       {t('properties.no_image_selected')}
                     </p>
                   )}
@@ -491,12 +508,12 @@ export default function Properties() {
       <div className="flex flex-col md:flex-row gap-4 items-center bg-white p-4 rounded-lg border shadow-sm">
         <Input
           placeholder={t('properties.search_placeholder')}
-          className="md:w-[300px] text-black"
+          className="md:w-[300px] text-black bg-white"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full md:w-[200px] border-slate-300">
+          <SelectTrigger className="w-full md:w-[200px] border-slate-300 text-black">
             <SelectValue placeholder={t('common.status')} />
           </SelectTrigger>
           <SelectContent>
@@ -513,7 +530,7 @@ export default function Properties() {
           value={profileFilter}
           onValueChange={(v: any) => setProfileFilter(v)}
         >
-          <SelectTrigger className="w-full md:w-[200px] border-slate-300">
+          <SelectTrigger className="w-full md:w-[200px] border-slate-300 text-black">
             <SelectValue placeholder={t('properties.profile_filter')} />
           </SelectTrigger>
           <SelectContent>
@@ -532,7 +549,7 @@ export default function Properties() {
         {filteredProperties.map((property) => (
           <Card
             key={property.id}
-            className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col group relative"
+            className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col group relative bg-white"
           >
             <div className="relative h-48 w-full bg-slate-200">
               {property.image ? (
@@ -544,7 +561,7 @@ export default function Properties() {
                   />
                 </DataMask>
               ) : (
-                <div className="flex items-center justify-center h-full text-slate-500">
+                <div className="flex items-center justify-center h-full text-black font-medium">
                   {t('properties.no_image')}
                 </div>
               )}
@@ -553,7 +570,7 @@ export default function Properties() {
               >
                 {t(`status.${property.status}`)}
               </Badge>
-              <Badge className="absolute bottom-2 left-2 bg-black/80 text-white border-none font-bold">
+              <Badge className="absolute bottom-2 left-2 bg-black text-white border-none font-bold">
                 {property.profileType === 'short_term' ? 'STR' : 'LTR'}
               </Badge>
 
@@ -596,26 +613,26 @@ export default function Properties() {
               )}
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-slate-950">
+              <CardTitle className="text-lg text-black">
                 <DataMask>{property.name}</DataMask>
               </CardTitle>
-              <p className="text-xs text-slate-700 mt-1 font-medium">
+              <p className="text-xs text-black mt-1 font-medium">
                 <DataMask>{property.community}</DataMask>
               </p>
             </CardHeader>
             <CardContent className="flex-1 pb-2">
-              <div className="flex items-center gap-1 text-sm text-slate-700 mb-4">
-                <MapPin className="h-3 w-3" />
+              <div className="flex items-center gap-1 text-sm text-black mb-4">
+                <MapPin className="h-3 w-3 text-black" />
                 <span className="truncate font-medium">
                   <DataMask>{property.address}</DataMask>
                 </span>
               </div>
             </CardContent>
-            <CardFooter className="pt-4 border-t bg-slate-50">
+            <CardFooter className="pt-4 border-t bg-white">
               <Link to={`/properties/${property.id}`} className="w-full">
                 <Button
                   variant="outline"
-                  className="w-full text-slate-900 border-slate-300 font-medium"
+                  className="w-full text-black border-slate-300 font-medium"
                 >
                   {t('properties.view_details')}
                 </Button>

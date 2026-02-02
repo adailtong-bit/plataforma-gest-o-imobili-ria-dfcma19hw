@@ -111,7 +111,6 @@ export default function Tenants() {
       return
     }
 
-    // Strict Phone Length Validation based on selected country
     if (!isPhoneValid(newTenant.phone, newTenant.country as any)) {
       toast({
         title: t('common.error'),
@@ -121,7 +120,6 @@ export default function Tenants() {
       return
     }
 
-    // Link Property Logic - Auto Reserve
     if (newTenant.propertyId) {
       const prop = properties.find((p) => p.id === newTenant.propertyId)
       if (prop) {
@@ -218,7 +216,7 @@ export default function Tenants() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-950">
+        <h1 className="text-3xl font-bold tracking-tight text-black">
           {t('tenants.title')}
         </h1>
         <div className="flex gap-2">
@@ -281,7 +279,6 @@ export default function Tenants() {
                   </div>
                   <div className="grid gap-2">
                     <Label>{t('common.phone')}</Label>
-                    {/* Controlled Phone Input to track country */}
                     <PhoneInput
                       value={newTenant.phone}
                       onChange={(e) =>
@@ -343,14 +340,14 @@ export default function Tenants() {
       <Card className="bg-white">
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
-            <CardTitle className="text-slate-950">
+            <CardTitle className="text-black">
               {t('tenants.list_title')}
             </CardTitle>
             <div className="relative w-64">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-950" />
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
               <Input
                 placeholder={t('tenants.search_placeholder')}
-                className="pl-8 text-black"
+                className="pl-8 text-black bg-white"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
               />
@@ -388,10 +385,10 @@ export default function Tenants() {
                   >
                     <TableCell className="font-medium">
                       <div className="flex flex-col">
-                        <span className="text-slate-950 font-bold">
+                        <span className="text-black font-bold">
                           <DataMask>{tenant.name}</DataMask>
                         </span>
-                        <span className="text-xs text-slate-950 font-medium mt-0.5">
+                        <span className="text-xs text-black font-medium mt-0.5">
                           <DataMask>{tenant.email}</DataMask>
                         </span>
                       </div>
@@ -400,18 +397,18 @@ export default function Tenants() {
                       {prop ? (
                         <Link
                           to={`/properties/${prop.id}`}
-                          className="flex items-center gap-2 hover:text-blue-700 hover:underline text-slate-950"
+                          className="flex items-center gap-2 hover:text-blue-700 hover:underline text-black"
                         >
-                          <Home className="h-4 w-4 text-slate-950" />
+                          <Home className="h-4 w-4 text-black" />
                           <DataMask>{prop.name}</DataMask>
                         </Link>
                       ) : (
-                        <span className="text-slate-950">-</span>
+                        <span className="text-black">-</span>
                       )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2 text-sm text-slate-950 font-medium">
-                        <Calendar className="h-3 w-3 text-slate-950" />
+                      <div className="flex items-center gap-2 text-sm text-black font-medium">
+                        <Calendar className="h-3 w-3 text-black" />
                         <DataMask>
                           {tenant.leaseStart
                             ? format(new Date(tenant.leaseStart), 'dd/MM/yyyy')
@@ -426,7 +423,7 @@ export default function Tenants() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className="text-slate-950 border-slate-400 font-medium"
+                        className="text-black border-slate-400 font-medium"
                       >
                         {tenant.status}
                       </Badge>
@@ -457,7 +454,7 @@ export default function Tenants() {
                           variant="ghost"
                           size="icon"
                           onClick={() => navigate(`/tenants/${tenant.id}`)}
-                          className="text-slate-950 hover:text-black"
+                          className="text-black hover:text-slate-700"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>

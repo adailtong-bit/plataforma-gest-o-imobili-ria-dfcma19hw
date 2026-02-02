@@ -20,13 +20,11 @@ export function DataMask({
   const shouldShow = showAuth || isAuthenticated
 
   if (shouldShow) {
-    // Ensure revealed data uses high contrast text color and no opacity/blur
+    // Ensure revealed data uses pure black text color and no opacity/blur
+    // Using text-black which maps to #000000 in Tailwind
     return (
       <span
-        className={cn(
-          'text-slate-950 dark:text-slate-50 opacity-100 mix-blend-normal',
-          className,
-        )}
+        className={cn('text-black opacity-100 mix-blend-normal', className)}
       >
         {children}
       </span>

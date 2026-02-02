@@ -505,11 +505,12 @@ video {
 }
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Absolute black for foreground to ensure high contrast by default */
+    --foreground: 0 0% 0%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 0%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 0%;
     --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
@@ -572,15 +573,17 @@ video {
 }
 
   /* Global UI Visibility Enhancement - High Contrast for Tables and Lists */
-  /* Force all table text to be black or very dark slate for high contrast */
+  /* Force all table text to be absolute black (#000000) on white (#FFFFFF) */
   table,
   [role='row'],
   th,
   td,
   .table-text,
   .list-text {
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
   --tw-text-opacity: 1 !important;
-  color: rgb(2 6 23 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
   table:is(.dark *),
   [role='row']:is(.dark *),
@@ -588,6 +591,8 @@ video {
   td:is(.dark *),
   .table-text:is(.dark *),
   .list-text:is(.dark *) {
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(2 6 23 / var(--tw-bg-opacity, 1)) !important;
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
@@ -642,32 +647,34 @@ video {
   table .text-muted-foreground,
   table .text-slate-500,
   table .text-slate-600,
-  table .text-slate-700 {
+  table .text-slate-700,
+  table .text-slate-950 {
   --tw-text-opacity: 1 !important;
-  color: rgb(2 6 23 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
   table .text-muted-foreground:is(.dark *),
   table .text-slate-500:is(.dark *),
   table .text-slate-600:is(.dark *),
-  table .text-slate-700:is(.dark *) {
+  table .text-slate-700:is(.dark *),
+  table .text-slate-950:is(.dark *) {
   --tw-text-opacity: 1 !important;
-  color: rgb(248 250 252 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
 
-  /* Ensure inputs have readable text */
+  /* Ensure inputs have readable text in pure black on white */
   input,
   textarea,
   select {
-  --tw-border-opacity: 1;
-  border-color: rgb(203 213 225 / var(--tw-border-opacity, 1));
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
-  font-weight: 500;
-  --tw-text-opacity: 1;
-  color: rgb(2 6 23 / var(--tw-text-opacity, 1));
+  --tw-border-opacity: 1 !important;
+  border-color: rgb(203 213 225 / var(--tw-border-opacity, 1)) !important;
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
+  font-weight: 500 !important;
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
 
-  /* Card content high contrast */
+  /* Ensure card content is high contrast */
 .container {
   width: 100%;
   margin-right: auto;
@@ -2006,9 +2013,6 @@ video {
 .border-muted {
   border-color: hsl(var(--muted));
 }
-.border-muted\/20 {
-  border-color: hsl(var(--muted) / 0.2);
-}
 .border-orange-100 {
   --tw-border-opacity: 1;
   border-color: rgb(255 237 213 / var(--tw-border-opacity, 1));
@@ -2182,10 +2186,6 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1));
 }
-.bg-blue-900 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(30 58 138 / var(--tw-bg-opacity, 1));
-}
 .bg-border {
   background-color: hsl(var(--border));
 }
@@ -2241,9 +2241,6 @@ video {
 .bg-green-700 {
   --tw-bg-opacity: 1;
   background-color: rgb(21 128 61 / var(--tw-bg-opacity, 1));
-}
-.bg-inherit {
-  background-color: inherit;
 }
 .bg-muted {
   background-color: hsl(var(--muted));
@@ -2422,11 +2419,6 @@ video {
   --tw-gradient-to: rgb(239 246 255 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
-.from-blue-700 {
-  --tw-gradient-from: #1d4ed8 var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(29 78 216 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
 .via-background {
   --tw-gradient-to: hsl(var(--background) / 0)  var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), hsl(var(--background)) var(--tw-gradient-via-position), var(--tw-gradient-to);
@@ -2444,9 +2436,6 @@ video {
 .to-blue-800 {
   --tw-gradient-to: #1e40af var(--tw-gradient-to-position);
 }
-.to-purple-800 {
-  --tw-gradient-to: #6b21a8 var(--tw-gradient-to-position);
-}
 .to-transparent {
   --tw-gradient-to: transparent var(--tw-gradient-to-position);
 }
@@ -2463,8 +2452,8 @@ video {
 .bg-repeat {
   background-repeat: repeat;
 }
-.fill-blue-500 {
-  fill: #3b82f6;
+.fill-blue-600 {
+  fill: #2563eb;
 }
 .fill-current {
   fill: currentColor;
@@ -2870,9 +2859,6 @@ video {
 .text-foreground\/50 {
   color: hsl(var(--foreground) / 0.5);
 }
-.text-foreground\/70 {
-  color: hsl(var(--foreground) / 0.7);
-}
 .text-foreground\/80 {
   color: hsl(var(--foreground) / 0.8);
 }
@@ -3051,10 +3037,6 @@ video {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
-.text-yellow-300 {
-  --tw-text-opacity: 1;
-  color: rgb(253 224 71 / var(--tw-text-opacity, 1));
-}
 .text-yellow-400 {
   --tw-text-opacity: 1;
   color: rgb(250 204 21 / var(--tw-text-opacity, 1));
@@ -3196,6 +3178,10 @@ video {
 }
 .ring-sidebar-ring {
   --tw-ring-color: hsl(var(--sidebar-ring));
+}
+.ring-white {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(255 255 255 / var(--tw-ring-opacity, 1));
 }
 .ring-offset-background {
   --tw-ring-offset-color: hsl(var(--background));
@@ -3418,7 +3404,7 @@ video {
   }
 .text-navy {
   --tw-text-opacity: 1;
-  color: rgb(15 23 42 / var(--tw-text-opacity, 1));
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
 }
 .bg-trust-blue {
   --tw-bg-opacity: 1;
@@ -3429,10 +3415,6 @@ video {
 .bg-trust-blue:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(0 67 168 / var(--tw-bg-opacity, 1));
-}
-.text-brand {
-  --tw-text-opacity: 1;
-  color: rgb(0 82 204 / var(--tw-text-opacity, 1));
 }
 /* High contrast text utilities */
 /* Custom scrollbar for better visibility */
@@ -3451,75 +3433,95 @@ video {
 }
 table .placeholder\:text-muted-foreground::-moz-placeholder {
   --tw-text-opacity: 1 !important;
-  color: rgb(2 6 23 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
 table .placeholder\:text-muted-foreground::placeholder {
   --tw-text-opacity: 1 !important;
-  color: rgb(2 6 23 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
 table .placeholder\:text-muted-foreground:is(.dark *)::-moz-placeholder {
   --tw-text-opacity: 1 !important;
-  color: rgb(248 250 252 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
 table .placeholder\:text-muted-foreground:is(.dark *)::placeholder {
   --tw-text-opacity: 1 !important;
-  color: rgb(248 250 252 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
 table .hover\:text-muted-foreground:hover {
   --tw-text-opacity: 1 !important;
-  color: rgb(2 6 23 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
 table .hover\:text-muted-foreground:hover:is(.dark *) {
   --tw-text-opacity: 1 !important;
-  color: rgb(248 250 252 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+
+  table .hover\:text-slate-700:hover {
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+}
+
+  table .hover\:text-slate-700:hover:is(.dark *) {
+  --tw-text-opacity: 1 !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
 table .group.toast .group-\[\.toast\]\:text-muted-foreground {
   --tw-text-opacity: 1 !important;
-  color: rgb(2 6 23 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
 table .group.toast .group-\[\.toast\]\:text-muted-foreground:is(.dark *) {
   --tw-text-opacity: 1 !important;
-  color: rgb(248 250 252 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
 table .aria-selected\:text-muted-foreground[aria-selected="true"] {
   --tw-text-opacity: 1 !important;
-  color: rgb(2 6 23 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
 table .aria-selected\:text-muted-foreground[aria-selected="true"]:is(.dark *) {
   --tw-text-opacity: 1 !important;
-  color: rgb(248 250 252 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
 table .data-\[placeholder\]\:text-muted-foreground[data-placeholder] {
   --tw-text-opacity: 1 !important;
-  color: rgb(2 6 23 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
 table .data-\[placeholder\]\:text-muted-foreground[data-placeholder]:is(.dark *) {
   --tw-text-opacity: 1 !important;
-  color: rgb(248 250 252 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
 table .data-\[state\=open\]\:text-muted-foreground[data-state="open"] {
   --tw-text-opacity: 1 !important;
-  color: rgb(2 6 23 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
 table .data-\[state\=open\]\:text-muted-foreground[data-state="open"]:is(.dark *) {
   --tw-text-opacity: 1 !important;
-  color: rgb(248 250 252 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+
+  table .data-\[state\=active\]\:text-slate-950[data-state="active"] {
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+}
+
+  table .data-\[state\=active\]\:text-slate-950[data-state="active"]:is(.dark *) {
+  --tw-text-opacity: 1 !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
 table .\[\&\>svg\]\:text-muted-foreground>svg {
   --tw-text-opacity: 1 !important;
-  color: rgb(2 6 23 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
 table .\[\&\>svg\]\:text-muted-foreground>svg:is(.dark *) {
   --tw-text-opacity: 1 !important;
-  color: rgb(248 250 252 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
 table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading] {
   --tw-text-opacity: 1 !important;
-  color: rgb(2 6 23 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
 table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]:is(.dark *) {
   --tw-text-opacity: 1 !important;
-  color: rgb(248 250 252 / var(--tw-text-opacity, 1)) !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
 .selection\:text-white *::-moz-selection {
   --tw-text-opacity: 1;
@@ -3708,6 +3710,9 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 .hover\:bg-accent\/50:hover {
   background-color: hsl(var(--accent) / 0.5);
 }
+.hover\:bg-black\/90:hover {
+  background-color: rgb(0 0 0 / 0.9);
+}
 .hover\:bg-blue-100:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(219 234 254 / var(--tw-bg-opacity, 1));
@@ -3819,6 +3824,10 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
   --tw-bg-opacity: 1;
   background-color: rgb(241 245 249 / var(--tw-bg-opacity, 1));
 }
+.hover\:bg-slate-200:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(226 232 240 / var(--tw-bg-opacity, 1));
+}
 .hover\:bg-slate-50:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(248 250 252 / var(--tw-bg-opacity, 1));
@@ -3907,6 +3916,10 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 }
 .hover\:text-sidebar-accent-foreground:hover {
   color: hsl(var(--sidebar-accent-foreground));
+}
+.hover\:text-slate-700:hover {
+  --tw-text-opacity: 1;
+  color: rgb(51 65 85 / var(--tw-text-opacity, 1));
 }
 .hover\:text-white:hover {
   --tw-text-opacity: 1;
@@ -4680,6 +4693,10 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 .peer[data-state="checked"] ~ .peer-data-\[state\=checked\]\:border-primary {
   border-color: hsl(var(--primary));
 }
+.peer[data-state="checked"] ~ .peer-data-\[state\=checked\]\:bg-blue-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 246 255 / var(--tw-bg-opacity, 1));
+}
 .peer\/menu-button[data-active="true"] ~ .peer-data-\[active\=true\]\/menu-button\:text-sidebar-accent-foreground {
   color: hsl(var(--sidebar-accent-foreground));
 }
@@ -4694,10 +4711,6 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 }
 .dark\:bg-muted:is(.dark *) {
   background-color: hsl(var(--muted));
-}
-.dark\:text-slate-50:is(.dark *) {
-  --tw-text-opacity: 1;
-  color: rgb(248 250 252 / var(--tw-text-opacity, 1));
 }
 @media (min-width: 640px) {
 
@@ -5107,9 +5120,6 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 .\[\&\:has\(\[aria-selected\]\.day-range-end\)\]\:rounded-r-md:has([aria-selected].day-range-end) {
   border-top-right-radius: calc(var(--radius) - 2px);
   border-bottom-right-radius: calc(var(--radius) - 2px);
-}
-.\[\&\:has\(\[data-state\=checked\]\)\]\:border-primary:has([data-state=checked]) {
-  border-color: hsl(var(--primary));
 }
 .\[\&\:has\(\[role\=checkbox\]\)\]\:pr-0:has([role=checkbox]) {
   padding-right: 0px;

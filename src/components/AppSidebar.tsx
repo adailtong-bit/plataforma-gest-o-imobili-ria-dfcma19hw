@@ -215,12 +215,12 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      className="bg-background border-r z-50 fixed left-0 top-0 h-screen shadow-md"
+      className="bg-white border-r z-50 fixed left-0 top-0 h-screen shadow-md"
     >
-      <SidebarHeader className="h-16 flex items-center px-4 border-b bg-inherit">
+      <SidebarHeader className="h-16 flex items-center px-4 border-b bg-white">
         <Link
           to="/"
-          className="flex items-center gap-2 font-bold text-xl text-brand font-display overflow-hidden hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 font-bold text-xl text-black font-display overflow-hidden hover:opacity-80 transition-opacity"
           onClick={handleLinkClick}
         >
           <img
@@ -228,18 +228,20 @@ export function AppSidebar() {
             alt="COREPM Logo"
             className="h-8 w-8 rounded-md shrink-0 object-contain"
           />
-          <span className="truncate tracking-tight group-data-[collapsible=icon]:hidden">
+          <span className="truncate tracking-tight group-data-[collapsible=icon]:hidden text-black">
             COREPM
           </span>
         </Link>
       </SidebarHeader>
-      <SidebarContent className="bg-inherit">
+      <SidebarContent className="bg-white">
         {(currentUser.role === 'tenant' ||
           currentUser.role === 'property_owner' ||
           currentUser.role === 'partner' ||
           currentUser.role === 'partner_employee') && (
           <SidebarGroup>
-            <SidebarGroupLabel className={cn(isMobile && 'text-foreground/70')}>
+            <SidebarGroupLabel
+              className={cn(isMobile && 'text-black', 'text-black font-bold')}
+            >
               {t('common.portal')}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -249,6 +251,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive('/portal/tenant')}
+                      className="text-black font-medium hover:bg-slate-100"
                     >
                       <Link to="/portal/tenant" onClick={handleLinkClick}>
                         <LayoutTemplate />
@@ -262,6 +265,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive('/portal/owner')}
+                      className="text-black font-medium hover:bg-slate-100"
                     >
                       <Link to="/portal/owner" onClick={handleLinkClick}>
                         <LayoutTemplate />
@@ -276,6 +280,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive('/portal/partner')}
+                      className="text-black font-medium hover:bg-slate-100"
                     >
                       <Link to="/portal/partner" onClick={handleLinkClick}>
                         <LayoutTemplate />
@@ -291,7 +296,9 @@ export function AppSidebar() {
 
         {visibleMenuItems.length > 0 && (
           <SidebarGroup>
-            <SidebarGroupLabel className={cn(isMobile && 'text-foreground/70')}>
+            <SidebarGroupLabel
+              className={cn(isMobile && 'text-black', 'text-black font-bold')}
+            >
               {t('sidebar.main_menu')}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -302,6 +309,7 @@ export function AppSidebar() {
                       asChild
                       isActive={isActive(item.url)}
                       tooltip={item.title}
+                      className="text-black font-medium hover:bg-slate-100"
                     >
                       <Link
                         to={item.url}
@@ -309,7 +317,7 @@ export function AppSidebar() {
                         className="flex justify-between items-center w-full"
                       >
                         <div className="flex items-center gap-2">
-                          <item.icon />
+                          <item.icon className="text-black" />
                           <span>{item.title}</span>
                         </div>
                         {item.badge !== undefined && (
@@ -330,7 +338,9 @@ export function AppSidebar() {
         )}
 
         <SidebarGroup className="mt-auto">
-          <SidebarGroupLabel className={cn(isMobile && 'text-foreground/70')}>
+          <SidebarGroupLabel
+            className={cn(isMobile && 'text-black', 'text-black font-bold')}
+          >
             {t('sidebar.system')}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -341,9 +351,10 @@ export function AppSidebar() {
                     asChild
                     isActive={isActive('/admin/migration')}
                     tooltip={t('sidebar.migration_hub')}
+                    className="text-black font-medium hover:bg-slate-100"
                   >
                     <Link to="/admin/migration" onClick={handleLinkClick}>
-                      <Database />
+                      <Database className="text-black" />
                       <span>{t('sidebar.migration_hub')}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -355,9 +366,10 @@ export function AppSidebar() {
                     asChild
                     isActive={isActive('/admin/publicity')}
                     tooltip={t('sidebar.publicity_admin')}
+                    className="text-black font-medium hover:bg-slate-100"
                   >
                     <Link to="/admin/publicity" onClick={handleLinkClick}>
-                      <Megaphone />
+                      <Megaphone className="text-black" />
                       <span>{t('sidebar.publicity_admin')}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -369,9 +381,10 @@ export function AppSidebar() {
                     asChild
                     isActive={isActive('/users')}
                     tooltip={t('sidebar.users')}
+                    className="text-black font-medium hover:bg-slate-100"
                   >
                     <Link to="/users" onClick={handleLinkClick}>
-                      <Users />
+                      <Users className="text-black" />
                       <span>{t('sidebar.users')}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -383,9 +396,10 @@ export function AppSidebar() {
                     asChild
                     isActive={isActive('/settings')}
                     tooltip={t('common.settings')}
+                    className="text-black font-medium hover:bg-slate-100"
                   >
                     <Link to="/settings" onClick={handleLinkClick}>
-                      <Settings />
+                      <Settings className="text-black" />
                       <span>{t('common.settings')}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -395,13 +409,13 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="bg-inherit">
+      <SidebarFooter className="bg-white">
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center gap-2 p-2">
-              <Avatar className="h-8 w-8 border border-muted/20">
+              <Avatar className="h-8 w-8 border border-slate-200">
                 <AvatarImage src={currentUser.avatar} />
-                <AvatarFallback className="bg-muted text-muted-foreground">
+                <AvatarFallback className="bg-slate-100 text-black font-bold">
                   {currentUser.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
@@ -410,11 +424,11 @@ export function AppSidebar() {
                   'flex flex-col text-sm leading-tight group-data-[collapsible=icon]:hidden',
                 )}
               >
-                <span className="font-semibold truncate w-32">
+                <span className="font-bold truncate w-32 text-black">
                   <DataMask>{currentUser.name}</DataMask>
                 </span>
                 <span
-                  className={cn('text-xs text-muted-foreground truncate w-32')}
+                  className={cn('text-xs text-black truncate w-32 font-medium')}
                 >
                   <DataMask>{currentUser.email}</DataMask>
                 </span>

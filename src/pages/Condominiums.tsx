@@ -180,12 +180,10 @@ export default function Condominiums() {
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
+          <h1 className="text-3xl font-bold tracking-tight text-black">
             {t('condominiums.title')}
           </h1>
-          <p className="text-slate-950 font-medium">
-            {t('condominiums.subtitle')}
-          </p>
+          <p className="text-black font-medium">{t('condominiums.subtitle')}</p>
         </div>
         <Dialog
           open={open}
@@ -299,14 +297,14 @@ export default function Condominiums() {
       <Card className="bg-white">
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
-            <CardTitle className="text-slate-950">
+            <CardTitle className="text-black">
               {t('condominiums.title')}
             </CardTitle>
             <div className="relative w-64">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-950" />
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
               <Input
                 placeholder="Buscar por nome, endereço, gerente..."
-                className="pl-8 text-black"
+                className="pl-8 text-black bg-white"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
               />
@@ -353,15 +351,15 @@ export default function Condominiums() {
                     key={condo.id}
                     className="bg-white hover:bg-slate-50 transition-colors"
                   >
-                    <TableCell className="font-medium flex items-center gap-2 text-slate-950">
-                      <Building2 className="h-4 w-4 text-slate-950" />
+                    <TableCell className="font-medium flex items-center gap-2 text-black">
+                      <Building2 className="h-4 w-4 text-black" />
                       <DataMask>{condo.name}</DataMask>
                     </TableCell>
-                    <TableCell className="text-slate-950">
+                    <TableCell className="text-black">
                       <DataMask>{condo.address}</DataMask>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col text-xs text-slate-950 font-medium">
+                      <div className="flex flex-col text-xs text-black font-medium">
                         <DataMask>
                           <span>
                             {condo.city || '-'}, {condo.state} {condo.zipCode}
@@ -369,15 +367,15 @@ export default function Condominiums() {
                         </DataMask>
                       </div>
                     </TableCell>
-                    <TableCell className="text-slate-950">
+                    <TableCell className="text-black">
                       <DataMask>{condo.managerName || '-'}</DataMask>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col text-xs font-medium">
-                        <span className="text-slate-950">
+                        <span className="text-black">
                           <DataMask>{condo.managerEmail}</DataMask>
                         </span>
-                        <span className="text-slate-950">
+                        <span className="text-black">
                           <DataMask>{condo.managerPhone}</DataMask>
                         </span>
                       </div>
@@ -388,7 +386,7 @@ export default function Condominiums() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-slate-950"
+                            className="text-black"
                           >
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
