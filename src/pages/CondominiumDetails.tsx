@@ -229,10 +229,10 @@ export default function CondominiumDetails() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-navy">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-950">
               {formData.name}
             </h1>
-            <p className="text-muted-foreground">{formData.address}</p>
+            <p className="text-slate-950 font-medium">{formData.address}</p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -274,21 +274,28 @@ export default function CondominiumDetails() {
         </TabsList>
 
         <TabsContent value="overview">
-          <Card>
+          <Card className="bg-white">
             <CardHeader>
-              <CardTitle>{t('common.details')}</CardTitle>
+              <CardTitle className="text-slate-950">
+                {t('common.details')}
+              </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>{t('common.name')}</Label>
+                <Label className="text-slate-900 font-bold">
+                  {t('common.name')}
+                </Label>
                 <Input
                   value={formData.name}
                   onChange={(e) => handleChange('name', e.target.value)}
                   disabled={!isEditing}
+                  className="text-black font-medium"
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Buscar Endereço</Label>
+                <Label className="text-slate-900 font-bold">
+                  Buscar Endereço
+                </Label>
                 <AddressInput
                   onAddressSelect={handleAddressSelect}
                   defaultValue={formData.address}
@@ -296,47 +303,56 @@ export default function CondominiumDetails() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Endereço</Label>
+                <Label className="text-slate-900 font-bold">Endereço</Label>
                 <Input
                   value={formData.address}
                   onChange={(e) => handleChange('address', e.target.value)}
                   disabled={!isEditing}
+                  className="text-black font-medium"
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Cidade</Label>
+                <Label className="text-slate-900 font-bold">Cidade</Label>
                 <Input
                   value={formData.city || ''}
                   onChange={(e) => handleChange('city', e.target.value)}
                   disabled={!isEditing}
+                  className="text-black font-medium"
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Estado</Label>
+                <Label className="text-slate-900 font-bold">Estado</Label>
                 <Input
                   value={formData.state || ''}
                   onChange={(e) => handleChange('state', e.target.value)}
                   disabled={!isEditing}
+                  className="text-black font-medium"
                 />
               </div>
               <div className="grid gap-2">
-                <Label>CEP / ZIP</Label>
+                <Label className="text-slate-900 font-bold">CEP / ZIP</Label>
                 <Input
                   value={formData.zipCode || ''}
                   onChange={(e) => handleChange('zipCode', e.target.value)}
                   disabled={!isEditing}
+                  className="text-black font-medium"
                 />
               </div>
               <div className="grid gap-2">
-                <Label>{t('condominiums.manager')}</Label>
+                <Label className="text-slate-900 font-bold">
+                  {t('condominiums.manager')}
+                </Label>
                 <Input
                   value={formData.managerName || ''}
                   onChange={(e) => handleChange('managerName', e.target.value)}
                   disabled={!isEditing}
+                  className="text-black font-medium"
                 />
               </div>
               <div className="grid gap-2">
-                <Label>{t('common.phone')}</Label>
+                <Label className="text-slate-900 font-bold">
+                  {t('common.phone')}
+                </Label>
                 {/* Data masking for manager phone in overview */}
                 {isEditing ? (
                   <PhoneInput
@@ -348,17 +364,22 @@ export default function CondominiumDetails() {
                     onCountryChange={setManagerCountry}
                   />
                 ) : (
-                  <div className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                    <DataMask>{formData.managerPhone}</DataMask>
+                  <div className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    <span className="text-black font-medium">
+                      <DataMask>{formData.managerPhone}</DataMask>
+                    </span>
                   </div>
                 )}
               </div>
               <div className="grid gap-2 md:col-span-2">
-                <Label>{t('common.description')}</Label>
+                <Label className="text-slate-900 font-bold">
+                  {t('common.description')}
+                </Label>
                 <Textarea
                   value={formData.description || ''}
                   onChange={(e) => handleChange('description', e.target.value)}
                   disabled={!isEditing}
+                  className="text-black font-medium"
                 />
               </div>
             </CardContent>
@@ -366,19 +387,21 @@ export default function CondominiumDetails() {
         </TabsContent>
 
         <TabsContent value="access">
-          <Card>
+          <Card className="bg-white">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-slate-950">
                 <Lock className="h-5 w-5" /> Credenciais de Acesso
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-slate-600">
                 Gerencie senhas, gates e QR codes.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label>Main Gate (Carros)</Label>
+                  <Label className="text-slate-900 font-bold">
+                    Main Gate (Carros)
+                  </Label>
                   <Input
                     value={formData.accessCredentials?.mainGateCar || ''}
                     onChange={(e) =>
@@ -390,10 +413,13 @@ export default function CondominiumDetails() {
                     }
                     placeholder="****"
                     disabled={!isEditing}
+                    className="text-black font-medium"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Pedestrian Gate</Label>
+                  <Label className="text-slate-900 font-bold">
+                    Pedestrian Gate
+                  </Label>
                   <Input
                     value={formData.accessCredentials?.pedestrianGate || ''}
                     onChange={(e) =>
@@ -405,10 +431,13 @@ export default function CondominiumDetails() {
                     }
                     placeholder="****"
                     disabled={!isEditing}
+                    className="text-black font-medium"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Amenities / Game Room / Water Park</Label>
+                  <Label className="text-slate-900 font-bold">
+                    Amenities / Game Room / Water Park
+                  </Label>
                   <Input
                     value={formData.accessCredentials?.poolCode || ''}
                     onChange={(e) =>
@@ -420,10 +449,13 @@ export default function CondominiumDetails() {
                     }
                     placeholder="****"
                     disabled={!isEditing}
+                    className="text-black font-medium"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>QR Code URL (Link)</Label>
+                  <Label className="text-slate-900 font-bold">
+                    QR Code URL (Link)
+                  </Label>
                   <div className="flex gap-2">
                     <Input
                       value={formData.accessCredentials?.qrCodeUrl || ''}
@@ -436,6 +468,7 @@ export default function CondominiumDetails() {
                       }
                       placeholder="https://..."
                       disabled={!isEditing}
+                      className="text-black font-medium"
                     />
                     <Button
                       variant="outline"
@@ -453,26 +486,28 @@ export default function CondominiumDetails() {
         </TabsContent>
 
         <TabsContent value="contacts">
-          <Card>
+          <Card className="bg-white">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-slate-950">
                 <Users className="h-5 w-5" /> Contatos Importantes
               </CardTitle>
             </CardHeader>
             <CardContent>
               {isEditing && (
-                <div className="flex flex-col gap-2 mb-6 border p-4 rounded-md bg-muted/20">
-                  <h4 className="font-semibold text-sm">Novo Contato</h4>
+                <div className="flex flex-col gap-2 mb-6 border p-4 rounded-md bg-white">
+                  <h4 className="font-bold text-sm text-slate-950">
+                    Novo Contato
+                  </h4>
                   <div className="flex gap-2 items-end flex-wrap">
                     <div className="grid gap-2 w-full md:w-1/5">
-                      <Label>Função</Label>
+                      <Label className="font-bold">Função</Label>
                       <Select
                         value={newContact.role}
                         onValueChange={(v) =>
                           setNewContact({ ...newContact, role: v })
                         }
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="text-black">
                           <SelectValue placeholder="Selecione" />
                         </SelectTrigger>
                         <SelectContent>
@@ -490,16 +525,17 @@ export default function CondominiumDetails() {
                       </Select>
                     </div>
                     <div className="grid gap-2 w-full md:w-1/5">
-                      <Label>Nome</Label>
+                      <Label className="font-bold">Nome</Label>
                       <Input
                         value={newContact.name}
                         onChange={(e) =>
                           setNewContact({ ...newContact, name: e.target.value })
                         }
+                        className="text-black"
                       />
                     </div>
                     <div className="grid gap-2 w-full md:w-1/4">
-                      <Label>Telefone</Label>
+                      <Label className="font-bold">Telefone</Label>
                       <PhoneInput
                         value={newContact.phone || ''}
                         onChange={(e) =>
@@ -513,7 +549,7 @@ export default function CondominiumDetails() {
                       />
                     </div>
                     <div className="grid gap-2 w-full md:w-1/4">
-                      <Label>Email</Label>
+                      <Label className="font-bold">Email</Label>
                       <Input
                         value={newContact.email}
                         onChange={(e) =>
@@ -522,6 +558,7 @@ export default function CondominiumDetails() {
                             email: e.target.value,
                           })
                         }
+                        className="text-black"
                       />
                     </div>
                     <Button onClick={addContact} className="bg-trust-blue">
@@ -534,20 +571,38 @@ export default function CondominiumDetails() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Função</TableHead>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Telefone</TableHead>
-                    <TableHead>Email</TableHead>
-                    {isEditing && <TableHead>Ação</TableHead>}
+                    <TableHead className="font-bold text-black">
+                      Função
+                    </TableHead>
+                    <TableHead className="font-bold text-black">Nome</TableHead>
+                    <TableHead className="font-bold text-black">
+                      Telefone
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      Email
+                    </TableHead>
+                    {isEditing && (
+                      <TableHead className="font-bold text-black">
+                        Ação
+                      </TableHead>
+                    )}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {formData.contacts?.map((c) => (
-                    <TableRow key={c.id}>
-                      <TableCell className="font-medium">{c.role}</TableCell>
-                      <TableCell>{c.name}</TableCell>
-                      <TableCell>{c.phone}</TableCell>
-                      <TableCell>{c.email}</TableCell>
+                    <TableRow key={c.id} className="bg-white hover:bg-slate-50">
+                      <TableCell className="font-bold text-slate-950">
+                        {c.role}
+                      </TableCell>
+                      <TableCell className="text-slate-950 font-medium">
+                        {c.name}
+                      </TableCell>
+                      <TableCell className="text-slate-950 font-medium">
+                        {c.phone}
+                      </TableCell>
+                      <TableCell className="text-slate-950 font-medium">
+                        {c.email}
+                      </TableCell>
                       {isEditing && (
                         <TableCell>
                           <Button
@@ -568,18 +623,20 @@ export default function CondominiumDetails() {
         </TabsContent>
 
         <TabsContent value="financial">
-          <Card>
+          <Card className="bg-white">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-slate-950">
                 <DollarSign className="h-5 w-5" /> Integração Financeira
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-slate-600">
                 Valores configurados aqui serão espelhados nas propriedades.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>{t('properties.hoa_fee')} (Atual)</Label>
+                <Label className="text-slate-900 font-bold">
+                  {t('properties.hoa_fee')} (Atual)
+                </Label>
                 <Input
                   type="number"
                   value={formData.hoaFee || ''}
@@ -587,16 +644,19 @@ export default function CondominiumDetails() {
                     handleChange('hoaFee', parseFloat(e.target.value))
                   }
                   disabled={!isEditing}
+                  className="text-black font-medium"
                 />
               </div>
               <div className="grid gap-2">
-                <Label>{t('properties.hoa_freq')}</Label>
+                <Label className="text-slate-900 font-bold">
+                  {t('properties.hoa_freq')}
+                </Label>
                 <Select
                   value={formData.hoaFrequency || 'monthly'}
                   onValueChange={(val) => handleChange('hoaFrequency', val)}
                   disabled={!isEditing}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="text-black font-medium">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -614,11 +674,13 @@ export default function CondominiumDetails() {
               </div>
 
               <div className="col-span-2 pt-6">
-                <h3 className="font-semibold mb-2">Histórico de Ajustes</h3>
+                <h3 className="font-bold mb-2 text-slate-950">
+                  Histórico de Ajustes
+                </h3>
                 {isEditing && (
-                  <div className="flex gap-2 items-end mb-4 border p-2 rounded bg-muted/20">
+                  <div className="flex gap-2 items-end mb-4 border p-2 rounded bg-white">
                     <div className="grid gap-2">
-                      <Label>Valor ($)</Label>
+                      <Label className="font-bold">Valor ($)</Label>
                       <Input
                         type="number"
                         value={newFee.amount}
@@ -628,26 +690,29 @@ export default function CondominiumDetails() {
                             amount: Number(e.target.value),
                           })
                         }
+                        className="text-black"
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>Válido De</Label>
+                      <Label className="font-bold">Válido De</Label>
                       <Input
                         type="date"
                         value={newFee.validFrom}
                         onChange={(e) =>
                           setNewFee({ ...newFee, validFrom: e.target.value })
                         }
+                        className="text-black"
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>Válido Até</Label>
+                      <Label className="font-bold">Válido Até</Label>
                       <Input
                         type="date"
                         value={newFee.validTo || ''}
                         onChange={(e) =>
                           setNewFee({ ...newFee, validTo: e.target.value })
                         }
+                        className="text-black"
                       />
                     </div>
                     <Button onClick={addFeeHistory}>
@@ -658,17 +723,30 @@ export default function CondominiumDetails() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Valor</TableHead>
-                      <TableHead>De</TableHead>
-                      <TableHead>Até</TableHead>
+                      <TableHead className="font-bold text-black">
+                        Valor
+                      </TableHead>
+                      <TableHead className="font-bold text-black">De</TableHead>
+                      <TableHead className="font-bold text-black">
+                        Até
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {formData.feeHistory?.map((fh) => (
-                      <TableRow key={fh.id}>
-                        <TableCell>${fh.amount}</TableCell>
-                        <TableCell>{fh.validFrom}</TableCell>
-                        <TableCell>{fh.validTo || 'Atual'}</TableCell>
+                      <TableRow
+                        key={fh.id}
+                        className="bg-white hover:bg-slate-50"
+                      >
+                        <TableCell className="text-slate-950 font-bold">
+                          ${fh.amount}
+                        </TableCell>
+                        <TableCell className="text-slate-950 font-medium">
+                          {fh.validFrom}
+                        </TableCell>
+                        <TableCell className="text-slate-950 font-medium">
+                          {fh.validTo || 'Atual'}
+                        </TableCell>
                       </TableRow>
                     ))}
                     {(!formData.feeHistory ||

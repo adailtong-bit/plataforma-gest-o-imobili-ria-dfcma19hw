@@ -340,17 +340,17 @@ export default function Tenants() {
         </div>
       </div>
 
-      <Card>
+      <Card className="bg-white">
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
             <CardTitle className="text-slate-950">
               {t('tenants.list_title')}
             </CardTitle>
             <div className="relative w-64">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-500" />
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-950" />
               <Input
                 placeholder={t('tenants.search_placeholder')}
-                className="pl-8"
+                className="pl-8 text-black"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
               />
@@ -360,20 +360,20 @@ export default function Tenants() {
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="font-bold text-slate-950">
+              <TableRow className="bg-white hover:bg-white border-b border-slate-200">
+                <TableHead className="font-bold text-black">
                   {t('common.name')}
                 </TableHead>
-                <TableHead className="font-bold text-slate-950">
+                <TableHead className="font-bold text-black">
                   {t('tenants.property')}
                 </TableHead>
-                <TableHead className="font-bold text-slate-950">
+                <TableHead className="font-bold text-black">
                   {t('common.contracts')}
                 </TableHead>
-                <TableHead className="font-bold text-slate-950">
+                <TableHead className="font-bold text-black">
                   {t('common.status')}
                 </TableHead>
-                <TableHead className="text-right font-bold text-slate-950">
+                <TableHead className="text-right font-bold text-black">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>
@@ -382,13 +382,16 @@ export default function Tenants() {
               {filteredTenants.map((tenant) => {
                 const prop = properties.find((p) => p.id === tenant.propertyId)
                 return (
-                  <TableRow key={tenant.id}>
+                  <TableRow
+                    key={tenant.id}
+                    className="bg-white hover:bg-slate-50 transition-colors"
+                  >
                     <TableCell className="font-medium">
                       <div className="flex flex-col">
-                        <span className="text-slate-950 font-semibold">
+                        <span className="text-slate-950 font-bold">
                           <DataMask>{tenant.name}</DataMask>
                         </span>
-                        <span className="text-xs text-slate-700 font-medium">
+                        <span className="text-xs text-slate-950 font-medium mt-0.5">
                           <DataMask>{tenant.email}</DataMask>
                         </span>
                       </div>
@@ -397,18 +400,18 @@ export default function Tenants() {
                       {prop ? (
                         <Link
                           to={`/properties/${prop.id}`}
-                          className="flex items-center gap-2 hover:text-blue-700 hover:underline text-slate-900"
+                          className="flex items-center gap-2 hover:text-blue-700 hover:underline text-slate-950"
                         >
-                          <Home className="h-4 w-4 text-slate-800" />
+                          <Home className="h-4 w-4 text-slate-950" />
                           <DataMask>{prop.name}</DataMask>
                         </Link>
                       ) : (
-                        <span className="text-slate-500">-</span>
+                        <span className="text-slate-950">-</span>
                       )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2 text-sm text-slate-900 font-medium">
-                        <Calendar className="h-3 w-3 text-slate-800" />
+                      <div className="flex items-center gap-2 text-sm text-slate-950 font-medium">
+                        <Calendar className="h-3 w-3 text-slate-950" />
                         <DataMask>
                           {tenant.leaseStart
                             ? format(new Date(tenant.leaseStart), 'dd/MM/yyyy')
@@ -423,7 +426,7 @@ export default function Tenants() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className="text-slate-900 border-slate-400"
+                        className="text-slate-950 border-slate-400 font-medium"
                       >
                         {tenant.status}
                       </Badge>
@@ -454,7 +457,7 @@ export default function Tenants() {
                           variant="ghost"
                           size="icon"
                           onClick={() => navigate(`/tenants/${tenant.id}`)}
-                          className="text-slate-800 hover:text-black"
+                          className="text-slate-950 hover:text-black"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>

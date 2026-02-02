@@ -86,17 +86,20 @@
 
   /* Table Headers - Bold and Black */
   th {
-    @apply font-bold text-slate-950 dark:text-white bg-slate-50 dark:bg-slate-900 border-b-2 border-slate-200 dark:border-slate-700 !important;
+    @apply font-bold text-black dark:text-white bg-white dark:bg-slate-900 border-b-2 border-slate-200 dark:border-slate-700 !important;
   }
 
   /* Table Cells - Ensure Background Contrast */
   tr {
-    @apply bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors;
+    @apply bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors border-b border-slate-200 dark:border-slate-800;
   }
 
   /* Override muted foregrounds inside tables to ensure legibility */
-  table .text-muted-foreground {
-    @apply text-slate-800 dark:text-slate-300 !important;
+  table .text-muted-foreground,
+  table .text-slate-500,
+  table .text-slate-600,
+  table .text-slate-700 {
+    @apply text-slate-950 dark:text-slate-50 !important;
   }
 
   /* Ensure inputs have readable text */
@@ -134,11 +137,11 @@
 
   /* High contrast text utilities */
   .text-high-contrast {
-    @apply text-slate-950 dark:text-white;
+    @apply text-black dark:text-white;
   }
 
   .text-secondary-contrast {
-    @apply text-slate-700 dark:text-slate-300;
+    @apply text-slate-900 dark:text-slate-200;
   }
 
   /* Custom scrollbar for better visibility */

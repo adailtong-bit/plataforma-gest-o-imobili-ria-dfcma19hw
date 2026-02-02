@@ -20,9 +20,14 @@ export function DataMask({
   const shouldShow = showAuth || isAuthenticated
 
   if (shouldShow) {
-    // Ensure revealed data uses high contrast text color
+    // Ensure revealed data uses high contrast text color and no opacity/blur
     return (
-      <span className={cn('text-slate-950 dark:text-slate-50', className)}>
+      <span
+        className={cn(
+          'text-slate-950 dark:text-slate-50 opacity-100 mix-blend-normal',
+          className,
+        )}
+      >
         {children}
       </span>
     )
@@ -40,8 +45,7 @@ export function DataMask({
       style={style}
       aria-hidden="true"
     >
-      {/* Invisible content to maintain approximate layout flow if needed, 
-          though fixed height/width usually better for skeletons */}
+      {/* Invisible content to maintain approximate layout flow if needed */}
       <span className="invisible">{children}</span>
     </span>
   )
