@@ -74,8 +74,9 @@
     @apply bg-background text-foreground;
   }
 
-  /* Global UI Visibility Enhancement - High Contrast for Tables and Lists */
-  /* Force all table text and inputs to be absolute black (#000000) on white (#FFFFFF) */
+  /* Global UI Visibility Enhancement - High Contrast */
+
+  /* Force all table text, inputs, and textareas to be absolute black on white */
   table,
   [role='row'],
   th,
@@ -86,6 +87,15 @@
   textarea,
   select {
     @apply text-black dark:text-white bg-white dark:bg-slate-950 opacity-100 !important;
+  }
+
+  /* Override browser defaults for disabled inputs to ensure full legibility */
+  input:disabled,
+  textarea:disabled,
+  select:disabled,
+  button:disabled {
+    @apply opacity-100 bg-white text-black cursor-default border-slate-200 !important;
+    -webkit-text-fill-color: #000000 !important; /* Fix for Safari/iOS gray text */
   }
 
   /* Explicitly remove shadows and ensure border visibility */

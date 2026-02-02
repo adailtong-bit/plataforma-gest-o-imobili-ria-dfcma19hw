@@ -57667,7 +57667,7 @@ function DashboardContent() {
 var Input = import_react.forwardRef(({ className, type, ...props }, ref) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
 		type,
-		className: cn("flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-base text-black ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-black placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm shadow-none", className),
+		className: cn("flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-base text-black ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-black placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-100 md:text-sm shadow-none", "disabled:text-black disabled:bg-white", className),
 		ref,
 		...props
 	});
@@ -58871,7 +58871,7 @@ var Select = Root2$5;
 var SelectValue = Value;
 var SelectTrigger = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Trigger$3, {
 	ref,
-	className: cn("flex h-10 w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm text-black ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 shadow-none", className),
+	className: cn("flex h-10 w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm text-black ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-100 [&>span]:line-clamp-1 shadow-none", "disabled:text-black disabled:bg-white", className),
 	...props,
 	children: [children, /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, {
 		asChild: true,
@@ -64694,8 +64694,8 @@ function FileUpload({ value, onChange, disabled, label = "Upload", accept = ".jp
 				className: "w-full h-full object-cover"
 			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col items-center gap-2 p-4 text-muted-foreground",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-10 w-10" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-					className: "text-xs font-medium",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-10 w-10 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "text-xs font-medium text-black",
 					children: "Documento Anexado"
 				})]
 			}), !disabled && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -64710,18 +64710,18 @@ function FileUpload({ value, onChange, disabled, label = "Upload", accept = ".jp
 				})
 			})]
 		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: cn("flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-md bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer relative", disabled && "opacity-50 cursor-not-allowed"),
+			className: cn("flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-md bg-white hover:bg-slate-50 transition-colors cursor-pointer relative", disabled && "opacity-100 cursor-not-allowed bg-slate-50"),
 			onClick: () => !disabled && fileInputRef.current?.click(),
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-col items-center gap-2 text-muted-foreground",
+				className: "flex flex-col items-center gap-2 text-black",
 				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "h-8 w-8" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "h-8 w-8 text-black" }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "text-sm font-medium",
+						className: "text-sm font-medium text-black",
 						children: label
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "text-xs text-muted-foreground/70",
+						className: "text-xs text-black",
 						children: "PDF, DOC, JPG, PNG"
 					})
 				]
@@ -66638,7 +66638,7 @@ function PropertyMarketing({ data, onChange, canEdit }) {
 }
 var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
-		className: cn("flex min-h-[80px] w-full rounded-md border border-input bg-white px-3 py-2 text-base text-black ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm shadow-none", className),
+		className: cn("flex min-h-[80px] w-full rounded-md border border-input bg-white px-3 py-2 text-base text-black ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-100 md:text-sm shadow-none", "disabled:text-black disabled:bg-white", className),
 		ref,
 		...props
 	});
@@ -93346,4 +93346,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Ba-cTgNe.js.map
+//# sourceMappingURL=index-CeKz1rjW.js.map

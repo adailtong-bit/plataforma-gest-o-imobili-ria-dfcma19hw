@@ -77,8 +77,10 @@ export function FileUpload({
             />
           ) : (
             <div className="flex flex-col items-center gap-2 p-4 text-muted-foreground">
-              <FileText className="h-10 w-10" />
-              <span className="text-xs font-medium">Documento Anexado</span>
+              <FileText className="h-10 w-10 text-black" />
+              <span className="text-xs font-medium text-black">
+                Documento Anexado
+              </span>
             </div>
           )}
           {!disabled && (
@@ -98,17 +100,16 @@ export function FileUpload({
       ) : (
         <div
           className={cn(
-            'flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-md bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer relative',
-            disabled && 'opacity-50 cursor-not-allowed',
+            'flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-md bg-white hover:bg-slate-50 transition-colors cursor-pointer relative',
+            // Updated to ensure visibility when disabled
+            disabled && 'opacity-100 cursor-not-allowed bg-slate-50',
           )}
           onClick={() => !disabled && fileInputRef.current?.click()}
         >
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <Upload className="h-8 w-8" />
-            <span className="text-sm font-medium">{label}</span>
-            <span className="text-xs text-muted-foreground/70">
-              PDF, DOC, JPG, PNG
-            </span>
+          <div className="flex flex-col items-center gap-2 text-black">
+            <Upload className="h-8 w-8 text-black" />
+            <span className="text-sm font-medium text-black">{label}</span>
+            <span className="text-xs text-black">PDF, DOC, JPG, PNG</span>
           </div>
           <Input
             ref={fileInputRef}

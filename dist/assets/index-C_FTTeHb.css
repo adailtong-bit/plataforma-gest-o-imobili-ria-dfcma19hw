@@ -572,8 +572,9 @@ video {
   color: hsl(var(--foreground));
 }
 
-  /* Global UI Visibility Enhancement - High Contrast for Tables and Lists */
-  /* Force all table text and inputs to be absolute black (#000000) on white (#FFFFFF) */
+  /* Global UI Visibility Enhancement - High Contrast */
+
+  /* Force all table text, inputs, and textareas to be absolute black on white */
   table,
   [role='row'],
   th,
@@ -602,6 +603,22 @@ video {
   background-color: rgb(2 6 23 / var(--tw-bg-opacity, 1)) !important;
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+
+  /* Override browser defaults for disabled inputs to ensure full legibility */
+  input:disabled,
+  textarea:disabled,
+  select:disabled,
+  button:disabled {
+  cursor: default !important;
+  --tw-border-opacity: 1 !important;
+  border-color: rgb(226 232 240 / var(--tw-border-opacity, 1)) !important;
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+  opacity: 1 !important;
+    -webkit-text-fill-color: #000000 !important; /* Fix for Safari/iOS gray text */
 }
 
   /* Explicitly remove shadows and ensure border visibility */
@@ -2933,9 +2950,6 @@ video {
 .text-muted-foreground\/50 {
   color: hsl(var(--muted-foreground) / 0.5);
 }
-.text-muted-foreground\/70 {
-  color: hsl(var(--muted-foreground) / 0.7);
-}
 .text-muted-foreground\/80 {
   color: hsl(var(--muted-foreground) / 0.8);
 }
@@ -4181,6 +4195,17 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 }
 .disabled\:cursor-not-allowed:disabled {
   cursor: not-allowed;
+}
+.disabled\:bg-white:disabled {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+.disabled\:text-black:disabled {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+}
+.disabled\:opacity-100:disabled {
+  opacity: 1;
 }
 .disabled\:opacity-50:disabled {
   opacity: 0.5;
