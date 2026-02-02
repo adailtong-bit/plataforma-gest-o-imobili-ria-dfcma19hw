@@ -39,7 +39,6 @@ import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Property } from '@/lib/types'
 import { exportToCSV } from '@/lib/utils'
-import { DataMask } from '@/components/DataMask'
 
 // Sub-components
 import { PropertyOverview } from '@/components/properties/PropertyOverview'
@@ -213,17 +212,17 @@ export default function PropertyDetails() {
       {/* Header with Traceability */}
       <div className="flex flex-col gap-4">
         {/* Breadcrumb / Relations */}
-        <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded-md border border-slate-300 w-fit font-medium">
-          <span className="font-bold text-slate-900">
+        <div className="flex items-center gap-2 text-sm text-black bg-white p-2 rounded-md border border-slate-300 w-fit font-medium shadow-sm">
+          <span className="font-bold text-black">
             {t('common.relationships')}:
           </span>
-          <DataMask>
+          <span className="text-black">
             {owner ? (
               <Link
                 to={`/owners/${owner.id}`}
-                className="flex items-center gap-1 hover:text-blue-700 underline text-slate-900"
+                className="flex items-center gap-1 hover:text-blue-700 underline text-black"
               >
-                <User className="h-3 w-3" /> {owner.name} (
+                <User className="h-3 w-3 text-black" /> {owner.name} (
                 {t('common.relationship_owner')})
               </Link>
             ) : (
@@ -231,15 +230,15 @@ export default function PropertyDetails() {
                 {t('common.no_owner')}
               </span>
             )}
-          </DataMask>
-          <span>/</span>
-          <DataMask>
+          </span>
+          <span className="text-black">/</span>
+          <span className="text-black">
             {activeTenant ? (
               <Link
                 to={`/tenants/${activeTenant.id}`}
-                className="flex items-center gap-1 hover:text-blue-700 underline text-slate-900"
+                className="flex items-center gap-1 hover:text-blue-700 underline text-black"
               >
-                <User className="h-3 w-3" /> {activeTenant.name} (
+                <User className="h-3 w-3 text-black" /> {activeTenant.name} (
                 {t('common.relationship_tenant')})
               </Link>
             ) : (
@@ -247,7 +246,7 @@ export default function PropertyDetails() {
                 {t('common.no_active_tenant')}
               </span>
             )}
-          </DataMask>
+          </span>
         </div>
 
         <div className="flex items-center justify-between">
@@ -257,18 +256,16 @@ export default function PropertyDetails() {
                 variant="ghost"
                 size="icon"
                 title={t('common.back')}
-                className="text-slate-800"
+                className="text-black hover:bg-slate-100"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-slate-950">
-                <DataMask>{formData.name}</DataMask>
+              <h1 className="text-3xl font-bold tracking-tight text-black">
+                {formData.name}
               </h1>
-              <p className="text-slate-700 font-medium">
-                <DataMask>{formData.address}</DataMask>
-              </p>
+              <p className="text-black font-medium">{formData.address}</p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -277,7 +274,7 @@ export default function PropertyDetails() {
                 <Button
                   variant="outline"
                   onClick={handleExport}
-                  className="gap-2 border-slate-300 text-slate-900"
+                  className="gap-2 border-slate-300 text-black bg-white hover:bg-slate-50"
                 >
                   <Download className="h-4 w-4" /> {t('common.export')}
                 </Button>
@@ -315,7 +312,7 @@ export default function PropertyDetails() {
                 <Button
                   onClick={() => setIsEditing(true)}
                   variant="outline"
-                  className="gap-2 border-slate-300 text-slate-900"
+                  className="gap-2 border-slate-300 text-black bg-white hover:bg-slate-50"
                 >
                   <Edit className="h-4 w-4" /> {t('common.edit')}
                 </Button>
@@ -328,7 +325,7 @@ export default function PropertyDetails() {
                     setFormData(JSON.parse(JSON.stringify(property))) // Reset
                   }}
                   variant="ghost"
-                  className="gap-2"
+                  className="gap-2 text-black"
                 >
                   <X className="h-4 w-4" /> {t('common.cancel')}
                 </Button>
@@ -348,46 +345,46 @@ export default function PropertyDetails() {
         <TabsList className="w-full justify-start overflow-x-auto bg-slate-100 border border-slate-200">
           <TabsTrigger
             value="overview"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             {t('properties.tabs.overview')}
           </TabsTrigger>
           <TabsTrigger
             value="analytics"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             <PieChart className="h-4 w-4 mr-2" /> Analytics
           </TabsTrigger>
           <TabsTrigger
             value="reports"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             <BarChart className="h-4 w-4 mr-2" /> Reports
           </TabsTrigger>
           <TabsTrigger
             value="maintenance"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             <Hammer className="h-4 w-4 mr-2" />{' '}
             {t('properties.tabs.maintenance')}
           </TabsTrigger>
           <TabsTrigger
             value="contracts"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             <FileText className="h-4 w-4 mr-2" />{' '}
             {t('properties.tabs.contracts')}
           </TabsTrigger>
           <TabsTrigger
             value="inventory"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             <Package className="h-4 w-4 mr-2" />{' '}
             {t('properties.tabs.inventory')}
           </TabsTrigger>
           <TabsTrigger
             value="features"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             <div className="flex items-center gap-2">
               <span>{t('properties.tabs.features')}</span>
@@ -395,43 +392,43 @@ export default function PropertyDetails() {
           </TabsTrigger>
           <TabsTrigger
             value="location"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             {t('properties.tabs.location')}
           </TabsTrigger>
           <TabsTrigger
             value="sync"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             <RefreshCw className="h-4 w-4 mr-2" /> {t('properties.tabs.sync')}
           </TabsTrigger>
           <TabsTrigger
             value="financial"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             {t('properties.tabs.financial')}
           </TabsTrigger>
           <TabsTrigger
             value="marketing"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             {t('properties.tabs.marketing')}
           </TabsTrigger>
           <TabsTrigger
             value="content"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             {t('properties.tabs.content')}
           </TabsTrigger>
           <TabsTrigger
             value="documents"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             {t('properties.tabs.documents')}
           </TabsTrigger>
           <TabsTrigger
             value="logs"
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             <History className="h-4 w-4 mr-2" /> {t('properties.tabs.logs')}
           </TabsTrigger>
@@ -446,18 +443,18 @@ export default function PropertyDetails() {
         </TabsContent>
 
         <TabsContent value="analytics">
-          <DataMask className="w-full h-[400px] block rounded-md">
+          <div className="w-full h-auto block rounded-md">
             <PropertyAnalytics property={formData} />
-          </DataMask>
+          </div>
         </TabsContent>
 
         <TabsContent value="reports">
-          <DataMask className="w-full h-[400px] block rounded-md">
+          <div className="w-full h-auto block rounded-md">
             <MaintenanceReport
               tasks={propertyTasks}
               title={`Maintenance Report: ${formData.name}`}
             />
-          </DataMask>
+          </div>
         </TabsContent>
 
         <TabsContent value="maintenance">
@@ -530,7 +527,7 @@ export default function PropertyDetails() {
         </TabsContent>
 
         <TabsContent value="documents">
-          <DataMask className="w-full h-[300px] block rounded-md">
+          <div className="w-full h-auto block rounded-md">
             <DocumentVault
               documents={formData.documents || []}
               onUpdate={(docs) => handleChange('documents', docs)}
@@ -538,7 +535,7 @@ export default function PropertyDetails() {
               title={t('properties.tabs.documents')}
               description={t('common.documents')}
             />
-          </DataMask>
+          </div>
         </TabsContent>
 
         <TabsContent value="logs">

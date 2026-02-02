@@ -57089,7 +57089,7 @@ var Label$3 = import_react.forwardRef((props, forwardedRef) => {
 });
 Label$3.displayName = NAME$1;
 var Root$6 = Label$3;
-var labelVariants = cva("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70");
+var labelVariants = cva("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-black");
 var Label = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$6, {
 	ref,
 	className: cn(labelVariants(), className),
@@ -64738,182 +64738,191 @@ function FileUpload({ value, onChange, disabled, label = "Upload", accept = ".jp
 }
 function PropertyOverview({ data, onChange, canEdit }) {
 	const { t: t$1 } = useLanguageStore_default();
-	const { currentUser, isAuthenticated } = useAuthStore_default();
-	const canViewMedia = currentUser.role === "platform_owner" || currentUser.role === "property_owner" || currentUser.role === "software_tenant" || currentUser.role === "internal_user" && hasPermission(currentUser, "properties", "view");
 	const score = data.healthScore || 80;
-	if (!isAuthenticated) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-		className: "flex flex-row justify-between items-start",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("properties.overview") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { className: "h-6 w-24" })]
-	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-		className: "grid grid-cols-1 md:grid-cols-2 gap-4",
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { className: "h-10 w-full rounded-md" })]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.profile_filter") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { className: "h-10 w-full rounded-md" })]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.type") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { className: "h-10 w-full rounded-md" })]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.status") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { className: "h-10 w-full rounded-md" })]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.marketing") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { className: "h-10 w-full rounded-md" })]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2 col-span-1 md:col-span-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.cover_image") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { className: "w-full aspect-video rounded-md" })]
-			})
-		]
-	})] });
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-		className: "flex flex-row justify-between items-start",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("properties.overview") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
-			variant: "outline",
-			className: "flex items-center gap-1 px-3 py-1",
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+		className: "bg-white",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+			className: "flex flex-row justify-between items-start",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+				className: "text-black",
+				children: t$1("properties.overview")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+				variant: "outline",
+				className: "flex items-center gap-1 px-3 py-1 bg-white border-slate-200",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trophy, { className: "h-3 w-3 text-yellow-500" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+						className: "text-black",
+						children: [t$1("gamification.health_score"), ":"]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+						className: `ml-1 font-bold ${score >= 90 ? "text-green-600" : "text-yellow-600"}`,
+						children: [score, "/100"]
+					})
+				]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+			className: "grid grid-cols-1 md:grid-cols-2 gap-4",
 			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trophy, { className: "h-3 w-3 text-yellow-500" }),
-				t$1("gamification.health_score"),
-				":",
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-					className: `ml-1 font-bold ${score >= 90 ? "text-green-600" : "text-yellow-600"}`,
-					children: [score, "/100"]
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+						value: data.name,
+						onChange: (e) => onChange("name", e.target.value),
+						disabled: !canEdit,
+						placeholder: t$1("properties.search_placeholder"),
+						className: "text-black bg-white border-slate-300"
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.profile_filter") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: data.profileType,
+						onValueChange: (v) => onChange("profileType", v),
+						disabled: !canEdit,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+							className: "text-black bg-white border-slate-300",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, {
+							className: "bg-white",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "short_term",
+								className: "text-black",
+								children: t$1("properties.profile_short")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "long_term",
+								className: "text-black",
+								children: t$1("properties.profile_long")
+							})]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.type") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: data.type,
+						onValueChange: (v) => onChange("type", v),
+						disabled: !canEdit,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+							className: "text-black bg-white border-slate-300",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, {
+							className: "bg-white",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "House",
+									className: "text-black",
+									children: t$1("properties.house")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Condo",
+									className: "text-black",
+									children: t$1("properties.condo")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Townhouse",
+									className: "text-black",
+									children: t$1("properties.townhouse")
+								})
+							]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.status") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: data.status,
+						onValueChange: (v) => onChange("status", v),
+						disabled: !canEdit,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+							className: "text-black bg-white border-slate-300",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, {
+							className: "bg-white",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "interested",
+									className: "text-black",
+									children: t$1("status.interested")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "rented",
+									className: "text-black",
+									children: t$1("status.rented")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "available",
+									className: "text-black",
+									children: t$1("status.available")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "in_registration",
+									className: "text-black",
+									children: t$1("status.in_registration")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "suspended",
+									className: "text-black",
+									children: t$1("status.suspended")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "released",
+									className: "text-black",
+									children: t$1("status.released")
+								})
+							]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.marketing") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: data.marketingStatus || "unlisted",
+						onValueChange: (v) => onChange("marketingStatus", v),
+						disabled: !canEdit,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+							className: "text-black bg-white border-slate-300",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, {
+							className: "bg-white",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "listed",
+								className: "text-black",
+								children: t$1("properties.publish_portals")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "unlisted",
+								className: "text-black",
+								children: t$1("common.inactive")
+							})]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2 col-span-1 md:col-span-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.cover_image") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "space-y-2",
+						children: data.image ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "relative w-full aspect-video rounded-md overflow-hidden bg-slate-100 border border-slate-200",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+								src: data.image,
+								alt: "Property",
+								className: "w-full h-full object-cover"
+							}), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: "absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full text-xs hover:bg-red-600 transition-colors",
+								onClick: () => onChange("image", ""),
+								children: t$1("common.delete")
+							})]
+						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
+							value: data.image,
+							onChange: (url) => onChange("image", url),
+							disabled: !canEdit,
+							label: t$1("properties.upload_image")
+						})
+					})]
 				})
 			]
 		})]
-	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-		className: "grid grid-cols-1 md:grid-cols-2 gap-4",
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					value: data.name,
-					onChange: (e) => onChange("name", e.target.value),
-					disabled: !canEdit,
-					placeholder: t$1("properties.search_placeholder")
-				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.profile_filter") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-					value: data.profileType,
-					onValueChange: (v) => onChange("profileType", v),
-					disabled: !canEdit,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-						value: "short_term",
-						children: t$1("properties.profile_short")
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-						value: "long_term",
-						children: t$1("properties.profile_long")
-					})] })]
-				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.type") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-					value: data.type,
-					onValueChange: (v) => onChange("type", v),
-					disabled: !canEdit,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: "House",
-							children: t$1("properties.house")
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: "Condo",
-							children: t$1("properties.condo")
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: "Townhouse",
-							children: t$1("properties.townhouse")
-						})
-					] })]
-				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.status") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-					value: data.status,
-					onValueChange: (v) => onChange("status", v),
-					disabled: !canEdit,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: "interested",
-							children: t$1("status.interested")
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: "rented",
-							children: t$1("status.rented")
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: "available",
-							children: t$1("status.available")
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: "in_registration",
-							children: t$1("status.in_registration")
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: "suspended",
-							children: t$1("status.suspended")
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: "released",
-							children: t$1("status.released")
-						})
-					] })]
-				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.marketing") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-					value: data.marketingStatus || "unlisted",
-					onValueChange: (v) => onChange("marketingStatus", v),
-					disabled: !canEdit,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-						value: "listed",
-						children: t$1("properties.publish_portals")
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-						value: "unlisted",
-						children: t$1("common.inactive")
-					})] })]
-				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2 col-span-1 md:col-span-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.cover_image") }), canViewMedia ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "space-y-2",
-					children: data.image ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "relative w-full aspect-video rounded-md overflow-hidden bg-muted",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-							src: data.image,
-							alt: "Property",
-							className: "w-full h-full object-cover"
-						}), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-							className: "absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full text-xs hover:bg-red-600 transition-colors",
-							onClick: () => onChange("image", ""),
-							children: t$1("common.delete")
-						})]
-					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
-						value: data.image,
-						onChange: (url) => onChange("image", url),
-						disabled: !canEdit,
-						label: t$1("properties.upload_image")
-					})
-				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "p-4 border border-dashed rounded bg-muted text-muted-foreground text-center text-sm",
-					children: t$1("properties.image_access_restricted")
-				})]
-			})
-		]
-	})] });
+	});
 }
 function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$1 }) {
 	const { t: t$1 } = useLanguageStore_default();
@@ -76472,43 +76481,52 @@ function PropertyDetails() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex flex-col gap-4",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded-md border border-slate-300 w-fit font-medium",
+				className: "flex items-center gap-2 text-sm text-black bg-white p-2 rounded-md border border-slate-300 w-fit font-medium shadow-sm",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-						className: "font-bold text-slate-900",
+						className: "font-bold text-black",
 						children: [t$1("common.relationships"), ":"]
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-						to: `/owners/${owner.id}`,
-						className: "flex items-center gap-1 hover:text-blue-700 underline text-slate-900",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }),
-							" ",
-							owner.name,
-							" (",
-							t$1("common.relationship_owner"),
-							")"
-						]
-					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "text-slate-500 italic",
-						children: t$1("common.no_owner")
-					}) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: activeTenant ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-						to: `/tenants/${activeTenant.id}`,
-						className: "flex items-center gap-1 hover:text-blue-700 underline text-slate-900",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }),
-							" ",
-							activeTenant.name,
-							" (",
-							t$1("common.relationship_tenant"),
-							")"
-						]
-					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "text-slate-500 italic",
-						children: t$1("common.no_active_tenant")
-					}) })
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "text-black",
+						children: owner ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							to: `/owners/${owner.id}`,
+							className: "flex items-center gap-1 hover:text-blue-700 underline text-black",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 text-black" }),
+								" ",
+								owner.name,
+								" (",
+								t$1("common.relationship_owner"),
+								")"
+							]
+						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-slate-500 italic",
+							children: t$1("common.no_owner")
+						})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "text-black",
+						children: "/"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "text-black",
+						children: activeTenant ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							to: `/tenants/${activeTenant.id}`,
+							className: "flex items-center gap-1 hover:text-blue-700 underline text-black",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 text-black" }),
+								" ",
+								activeTenant.name,
+								" (",
+								t$1("common.relationship_tenant"),
+								")"
+							]
+						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-slate-500 italic",
+							children: t$1("common.no_active_tenant")
+						})
+					})
 				]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex items-center justify-between",
@@ -76520,15 +76538,15 @@ function PropertyDetails() {
 							variant: "ghost",
 							size: "icon",
 							title: t$1("common.back"),
-							className: "text-slate-800",
+							className: "text-black hover:bg-slate-100",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-5 w-5" })
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-						className: "text-3xl font-bold tracking-tight text-slate-950",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formData.name })
+						className: "text-3xl font-bold tracking-tight text-black",
+						children: formData.name
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-slate-700 font-medium",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formData.address })
+						className: "text-black font-medium",
+						children: formData.address
 					})] })]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "flex gap-2",
@@ -76536,7 +76554,7 @@ function PropertyDetails() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							variant: "outline",
 							onClick: handleExport,
-							className: "gap-2 border-slate-300 text-slate-900",
+							className: "gap-2 border-slate-300 text-black bg-white hover:bg-slate-50",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" }),
 								" ",
@@ -76562,7 +76580,7 @@ function PropertyDetails() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							onClick: () => setIsEditing(true),
 							variant: "outline",
-							className: "gap-2 border-slate-300 text-slate-900",
+							className: "gap-2 border-slate-300 text-black bg-white hover:bg-slate-50",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" }),
 								" ",
@@ -76575,7 +76593,7 @@ function PropertyDetails() {
 							setFormData(JSON.parse(JSON.stringify(property$2)));
 						},
 						variant: "ghost",
-						className: "gap-2",
+						className: "gap-2 text-black",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" }),
 							" ",
@@ -76601,22 +76619,22 @@ function PropertyDetails() {
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "overview",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: t$1("properties.tabs.overview")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "analytics",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartPie, { className: "h-4 w-4 mr-2" }), " Analytics"]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "reports",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumnIncreasing, { className: "h-4 w-4 mr-2" }), " Reports"]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "maintenance",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hammer, { className: "h-4 w-4 mr-2" }),
 								" ",
@@ -76625,7 +76643,7 @@ function PropertyDetails() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "contracts",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4 mr-2" }),
 								" ",
@@ -76634,7 +76652,7 @@ function PropertyDetails() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "inventory",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Package, { className: "h-4 w-4 mr-2" }),
 								" ",
@@ -76643,7 +76661,7 @@ function PropertyDetails() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "features",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 								className: "flex items-center gap-2",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("properties.tabs.features") })
@@ -76651,12 +76669,12 @@ function PropertyDetails() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "location",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: t$1("properties.tabs.location")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "sync",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RefreshCw, { className: "h-4 w-4 mr-2" }),
 								" ",
@@ -76665,27 +76683,27 @@ function PropertyDetails() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "financial",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: t$1("properties.tabs.financial")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "marketing",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: t$1("properties.tabs.marketing")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "content",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: t$1("properties.tabs.content")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "documents",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: t$1("properties.tabs.documents")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "logs",
-							className: "data-[state=active]:bg-white data-[state=active]:text-slate-950 font-bold",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(History, { className: "h-4 w-4 mr-2" }),
 								" ",
@@ -76704,15 +76722,15 @@ function PropertyDetails() {
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "analytics",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-						className: "w-full h-[400px] block rounded-md",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "w-full h-auto block rounded-md",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyAnalytics, { property: formData })
 					})
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "reports",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-						className: "w-full h-[400px] block rounded-md",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "w-full h-auto block rounded-md",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MaintenanceReport, {
 							tasks: propertyTasks,
 							title: `Maintenance Report: ${formData.name}`
@@ -76796,8 +76814,8 @@ function PropertyDetails() {
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "documents",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-						className: "w-full h-[300px] block rounded-md",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "w-full h-auto block rounded-md",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DocumentVault, {
 							documents: formData.documents || [],
 							onUpdate: (docs) => handleChange("documents", docs),
@@ -93346,4 +93364,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-CeKz1rjW.js.map
+//# sourceMappingURL=index-jaO8azOq.js.map

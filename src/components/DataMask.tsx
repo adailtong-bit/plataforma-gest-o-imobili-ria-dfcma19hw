@@ -4,13 +4,12 @@ interface DataMaskProps {
   children?: React.ReactNode
   className?: string
   width?: string | number
-  showAuth?: boolean // Kept for compatibility but ignored
+  showAuth?: boolean
 }
 
 export function DataMask({ children, className }: DataMaskProps) {
-  // Refactored to always render text directly without masking
-  // Enforces high contrast black text and full opacity.
-  // We strictly avoid applying any background or opacity reduction that could obscure data.
+  // Pass-through component that renders children directly without any masking,
+  // obscuring, or opacity reduction, ensuring full visibility.
   return (
     <span
       className={cn(
