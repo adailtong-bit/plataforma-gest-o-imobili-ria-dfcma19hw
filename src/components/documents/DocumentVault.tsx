@@ -93,7 +93,7 @@ export function DocumentVault({
       if (docInputRef.current) docInputRef.current.value = ''
       toast({
         title: t('common.success'),
-        description: 'Document stored.',
+        description: t('common.upload') + ' ' + t('common.completed'),
       })
     }, 1000)
   }
@@ -103,7 +103,7 @@ export function DocumentVault({
     onUpdate(newDocs)
     toast({
       title: t('common.removed'),
-      description: 'Document deleted.',
+      description: t('common.delete_success'),
     })
   }
 
@@ -112,7 +112,9 @@ export function DocumentVault({
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle>{title || t('common.documents')}</CardTitle>
-          <CardDescription>{description || 'Manage files.'}</CardDescription>
+          <CardDescription>
+            {description || t('common.documents')}
+          </CardDescription>
         </div>
         {canEdit && (
           <div>
@@ -138,18 +140,18 @@ export function DocumentVault({
         <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Classify Document</DialogTitle>
+              <DialogTitle>{t('common.upload')}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label>Selected File</Label>
-                <div className="p-2 border rounded bg-muted text-sm flex items-center gap-2">
+                <Label>{t('common.details')}</Label>
+                <div className="p-2 border rounded bg-muted text-sm flex items-center gap-2 text-black">
                   <File className="h-4 w-4 text-blue-500" />
                   {selectedFile?.name}
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label>Category</Label>
+                <Label>{t('common.category')}</Label>
                 <Select
                   value={selectedCategory}
                   onValueChange={(v) =>
@@ -160,14 +162,18 @@ export function DocumentVault({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Contract">Contract</SelectItem>
-                    <SelectItem value="ID">ID</SelectItem>
+                    <SelectItem value="Contract">
+                      {t('common.contracts')}
+                    </SelectItem>
+                    <SelectItem value="ID">
+                      ID / {t('common.tax_id')}
+                    </SelectItem>
                     <SelectItem value="Passport">Passport</SelectItem>
                     <SelectItem value="SSN">SSN / Tax ID</SelectItem>
                     <SelectItem value="Insurance">Insurance</SelectItem>
                     <SelectItem value="Deed">Deed</SelectItem>
                     <SelectItem value="Inspection">Inspection</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
+                    <SelectItem value="Other">{t('common.none')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -180,7 +186,7 @@ export function DocumentVault({
                 {t('common.cancel')}
               </Button>
               <Button onClick={handleConfirmUpload} disabled={isUploading}>
-                {isUploading ? 'Saving...' : t('common.confirm')}
+                {isUploading ? '...' : t('common.confirm')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -203,12 +209,14 @@ export function DocumentVault({
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-medium text-sm">{doc.name}</p>
+                      <p className="font-medium text-sm text-black">
+                        {doc.name}
+                      </p>
                       <Badge variant="secondary" className="text-xs">
                         {doc.category}
                       </Badge>
                     </div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground text-black">
                       {formatDate(doc.date, language)} •{' '}
                       {doc.size || 'Unknown size'}
                     </p>

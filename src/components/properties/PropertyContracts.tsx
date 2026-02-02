@@ -111,7 +111,7 @@ export function PropertyContracts({
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle>{t('common.contracts')}</CardTitle>
-          <CardDescription>Manage lease agreements.</CardDescription>
+          <CardDescription>{t('properties.tabs.contracts')}</CardDescription>
         </div>
         {canEdit && (
           <Button
@@ -127,8 +127,8 @@ export function PropertyContracts({
           <TableHeader>
             <TableRow>
               <TableHead>{t('common.tenants')}</TableHead>
-              <TableHead>Start Date</TableHead>
-              <TableHead>End Date</TableHead>
+              <TableHead>{t('common.start_date')}</TableHead>
+              <TableHead>{t('common.end_date')}</TableHead>
               <TableHead>{t('common.value')}</TableHead>
               <TableHead>{t('common.status')}</TableHead>
             </TableRow>
@@ -188,7 +188,7 @@ export function PropertyContracts({
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('common.new')} Contract</DialogTitle>
+            <DialogTitle>{t('common.new')}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
@@ -203,7 +203,7 @@ export function PropertyContracts({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Start Date</Label>
+                <Label>{t('common.start_date')}</Label>
                 <Input
                   type="date"
                   value={newContract.leaseStart}
@@ -216,7 +216,7 @@ export function PropertyContracts({
                 />
               </div>
               <div className="grid gap-2">
-                <Label>End Date</Label>
+                <Label>{t('common.end_date')}</Label>
                 <Input
                   type="date"
                   value={newContract.leaseEnd}

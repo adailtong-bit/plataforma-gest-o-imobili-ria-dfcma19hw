@@ -147,7 +147,7 @@ export function MaintenanceReport({ tasks, title }: MaintenanceReportProps) {
     exportToCSV('maintenance_report', headers, rows)
     toast({
       title: t('common.success'),
-      description: 'Maintenance report exported.',
+      description: t('common.export_success'),
     })
   }
 
@@ -155,12 +155,12 @@ export function MaintenanceReport({ tasks, title }: MaintenanceReportProps) {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h3 className="text-lg font-semibold">
-          {title || 'Maintenance Analytics'}
+          {title || t('reports.maintenance_analytics')}
         </h3>
         <div className="flex gap-2">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder={t('common.category')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t('common.all')}</SelectItem>
@@ -175,7 +175,7 @@ export function MaintenanceReport({ tasks, title }: MaintenanceReportProps) {
             variant="outline"
             size="icon"
             onClick={handleExport}
-            title="Export CSV"
+            title={t('common.export')}
           >
             <Download className="h-4 w-4" />
           </Button>
@@ -186,7 +186,7 @@ export function MaintenanceReport({ tasks, title }: MaintenanceReportProps) {
         <Card>
           <CardContent className="p-6 flex flex-col gap-1">
             <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <DollarSign className="h-4 w-4" /> Total Spend
+              <DollarSign className="h-4 w-4" /> {t('reports.total_spend')}
             </span>
             <span className="text-2xl font-bold">
               {formatCurrency(metrics.totalCost, language)}
@@ -196,18 +196,18 @@ export function MaintenanceReport({ tasks, title }: MaintenanceReportProps) {
         <Card>
           <CardContent className="p-6 flex flex-col gap-1">
             <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Wrench className="h-4 w-4" /> Total Tasks
+              <Wrench className="h-4 w-4" /> {t('reports.total_tasks')}
             </span>
             <span className="text-2xl font-bold">{metrics.totalTasks}</span>
             <span className="text-xs text-muted-foreground">
-              {metrics.completedCount} completed
+              {metrics.completedCount} {t('common.completed').toLowerCase()}
             </span>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6 flex flex-col gap-1">
             <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Clock className="h-4 w-4" /> Avg. Resolution
+              <Clock className="h-4 w-4" /> {t('reports.avg_resolution')}
             </span>
             <span className="text-2xl font-bold">
               {metrics.avgDaysToComplete.toFixed(1)} Days
@@ -217,7 +217,7 @@ export function MaintenanceReport({ tasks, title }: MaintenanceReportProps) {
         <Card>
           <CardContent className="p-6 flex flex-col gap-1">
             <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Calendar className="h-4 w-4" /> Avg. Cost / Task
+              <Calendar className="h-4 w-4" /> {t('reports.avg_cost_task')}
             </span>
             <span className="text-2xl font-bold">
               {formatCurrency(metrics.avgCost, language)}
@@ -229,15 +229,20 @@ export function MaintenanceReport({ tasks, title }: MaintenanceReportProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Cost Breakdown by Category</CardTitle>
-            <CardDescription>Distribution of expenses.</CardDescription>
+            <CardTitle>{t('reports.cost_breakdown')}</CardTitle>
+            <CardDescription>
+              {t('reports.distribution_expenses')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
               <ChartContainer
                 config={{
-                  maintenance: { label: 'Maintenance', color: '#0088FE' },
-                  cleaning: { label: 'Cleaning', color: '#00C49F' },
+                  maintenance: {
+                    label: t('partners.maintenance'),
+                    color: '#0088FE',
+                  },
+                  cleaning: { label: t('partners.cleaning'), color: '#00C49F' },
                   inspection: { label: 'Inspection', color: '#FFBB28' },
                 }}
                 className="h-full w-full"
@@ -271,27 +276,27 @@ export function MaintenanceReport({ tasks, title }: MaintenanceReportProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Expenditure</CardTitle>
-            <CardDescription>Trends in maintenance spending.</CardDescription>
+            <CardTitle>{t('reports.monthly_expenditure')}</CardTitle>
+            <CardDescription>{t('reports.spending_trends')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
               <ChartContainer
                 config={{
-                  value: { label: 'Cost', color: '#8884d8' },
+                  value: { label: t('common.value'), color: '#8884d8' },
                 }}
                 className="h-full w-full"
               >
                 <BarChart data={costOverTime}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <XAxis dataKey="name" stroke="#000" />
+                  <YAxis stroke="#000" />
                   <Tooltip content={<ChartTooltipContent />} />
                   <Bar
                     dataKey="value"
                     fill="#8884d8"
                     radius={[4, 4, 0, 0]}
-                    name="Cost"
+                    name={t('common.value')}
                   />
                 </BarChart>
               </ChartContainer>

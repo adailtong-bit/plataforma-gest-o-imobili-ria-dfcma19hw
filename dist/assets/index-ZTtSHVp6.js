@@ -53357,171 +53357,17 @@ const translations = {
 			active_listings: "Listagens Ativas",
 			sold: "Vendido",
 			sale_pending: "Venda Pendente",
-			partners: "Parceiros"
-		},
-		dashboard: {
-			subtitle: "Visão geral de desempenho e atividades.",
-			customize: "Personalizar",
-			customize_view: "Personalizar Visão",
-			customize_desc: "Escolha quais widgets exibir no seu painel.",
-			from_last_month: "do mês passado",
-			unread: "Não lidas",
-			revenue_vs_expenses: "Receita vs Despesas",
-			revenue_overview: "Visão geral financeira mensal.",
-			quick_calendar: "Calendário Rápido",
-			todays_activity: "Atividades de hoje.",
-			pending_approvals: "Aprovações Pendentes",
-			pending_desc: "Tarefas e faturas aguardando sua revisão.",
-			review: "Revisar",
-			approve: "Aprovar",
-			expense_distribution: "Distribuição de Despesas",
-			expense_desc: "Despesas por categoria.",
-			kpi_indicators: "Indicadores KPI",
-			revenue_chart: "Gráfico de Receita"
-		},
-		calendar: {
-			title: "Calendário",
-			subtitle: "Gerencie eventos, tarefas e datas importantes.",
-			integrated_view: "Visão Integrada",
-			no_activities: "Nenhuma atividade para este dia."
-		},
-		tenants: {
-			title: "Inquilinos",
-			subtitle: "Gerencie seus inquilinos e contratos.",
-			list_title: "Lista de Inquilinos",
-			new_tenant: "Novo Inquilino",
-			search_placeholder: "Buscar inquilinos...",
-			property: "Propriedade",
-			register_title: "Cadastrar Inquilino",
-			send_message: "Enviar Mensagem"
-		},
-		service_pricing: {
-			title: "Catálogo de Preços",
-			subtitle: "Gerencie serviços, tarifas e preços de parceiros.",
-			manage_categories: "Gerenciar Categorias",
-			add_service: "Adicionar Serviço",
-			edit_service: "Editar Serviço",
-			service_name: "Nome do Serviço",
+			partners: "Parceiros",
 			category: "Categoria",
-			partner_vendor: "Parceiro / Fornecedor",
-			service_price: "Preço do Serviço ($)",
-			partner_payment: "Pagamento Parceiro ($)",
-			pm_value: "Margem PM ($)",
-			product_price: "Custo Produto ($)",
-			valid_from: "Válido De",
-			valid_to: "Válido Até",
-			review_period_config: "Configuração de Revisão",
-			review_period_desc: "Defina o intervalo para revisão de preços.",
-			threshold_days: "Dias Limite",
-			stale_alert: "{count} serviços não revisados há mais de {days} dias.",
-			review_needed: "Revisão Necessária",
-			generic: "Genérico",
-			config_saved: "Configuração Salva",
-			config_saved_desc: "Preferências de revisão atualizadas."
-		},
-		sidebar: {
-			main_menu: "Menu Principal",
-			system: "Sistema",
-			tenant_portal: "Portal do Inquilino",
-			owner_portal: "Portal do Proprietário",
-			partner_portal: "Portal do Parceiro",
-			migration_hub: "Central de Migração",
-			publicity_admin: "Admin Publicidade",
-			users: "Usuários"
-		},
-		owners: {
-			title: "Proprietários",
-			subtitle: "Gerencie os proprietários.",
-			base_title: "Lista de Proprietários",
-			contact_details: "Detalhes de Contato",
-			properties_count: "Propriedades",
-			new_owner: "Novo Proprietário",
-			register_title: "Cadastrar Proprietário",
-			search_placeholder: "Buscar proprietários...",
-			workflow_started: "Workflow Iniciado",
-			workflow_desc: "Workflow {action} para {name} iniciado.",
-			renew_contract: "Renovar Contrato",
-			success_desc: "Proprietário adicionado com sucesso."
-		},
-		condominiums: {
-			title: "Condomínios",
-			subtitle: "Gerencie taxas e detalhes da comunidade.",
-			manager: "Síndico/Gerente",
-			contact: "Contato",
-			new_condo: "Novo Condomínio",
-			add_title: "Adicionar Condomínio",
-			no_condos: "Nenhum condomínio encontrado.",
-			financial_hoa: "Financeiro HOA",
-			access_credentials: "Credenciais de Acesso"
-		},
-		market: {
-			title: "Análise de Mercado",
-			subtitle: "Insights e tendências.",
-			export_pdf: "Exportar PDF",
-			comparison_params: "Parâmetros de Comparação",
-			comparison_desc: "Selecione critérios.",
-			base_property: "Propriedade Base",
-			region: "Região",
-			bedrooms: "Quartos",
-			bathrooms: "Banheiros",
-			analyze: "Analisar",
-			general: "Mercado Geral",
-			select: "Selecione...",
-			avg_sale_price: "Preço Médio Venda",
-			price_sqft: "Preço por m²",
-			avg_daily_rate: "Diária Média",
-			monthly_rent: "Aluguel Mensal",
-			avg_occupancy: "Ocupação Média",
-			historical_trends: "Tendências Históricas",
-			trends_desc: "Preço e ocupação ao longo do tempo."
-		},
-		short_term: {
-			title: "Aluguel Temporada",
-			subtitle: "Gerencie reservas e hóspedes.",
-			new_booking: "Nova Reserva",
-			guest: "Hóspede",
-			check_in: "Check-in",
-			check_out: "Check-out",
-			total: "Total",
-			platform: "Plataforma"
-		},
-		tasks: {
-			title: "Tarefas",
-			subtitle: "Gerencie manutenção e serviços.",
-			board: "Quadro",
-			list: "Lista",
-			in_progress: "Em Andamento",
-			approval: "Aprovação",
-			create_title: "Nova Tarefa",
-			create_desc: "Crie uma nova tarefa de serviço.",
-			new_task: "Nova Tarefa",
-			task_title: "Título da Tarefa",
-			assignee: "Responsável",
-			service_type: "Tipo de Serviço",
-			scheduled_date: "Data Agendada",
-			photos_ref: "Fotos de Referência",
-			detailed_desc: "Descrição Detalhada",
-			desc_placeholder: "Descreva o problema ou serviço...",
-			create_btn: "Criar Tarefa",
-			b2b_label: "Back to Back (B2B)",
-			success_created: "Tarefa criada com sucesso",
-			checkin_title: "Check-in",
-			checkin_desc: "Envie foto da chegada.",
-			checkout_title: "Check-out",
-			checkout_desc: "Envie foto da conclusão.",
-			confirm_arrival: "Confirmar Chegada",
-			finalize_service: "Finalizar Serviço",
-			gps_loading: "Carregando GPS...",
-			location: "Localização",
-			activity_log: "Registro de Atividade",
-			arrival: "Chegada",
-			evidence_upload: "Enviar Evidência",
-			evidence_photo: "Foto",
-			send: "Enviar",
-			finish: "Finalizar",
-			details_evidence: "Detalhes e Evidências",
-			photos: "Fotos",
-			start_checkin: "Iniciar Check-in"
+			quantity: "Quantidade",
+			condition: "Condição",
+			analytics: "Análises",
+			schedule_maintenance: "Agendar Manutenção",
+			start_date: "Data Início",
+			end_date: "Data Fim",
+			provider: "Fornecedor",
+			account_number: "Número da Conta",
+			recurring: "Recorrente"
 		},
 		properties: {
 			title: "Propriedades",
@@ -53533,7 +53379,7 @@ const translations = {
 			profile_long: "Anual (Long Term)",
 			search_placeholder: "Buscar propriedades...",
 			address_placeholder: "Endereço completo",
-			zip_code: "CEP / Zip Code",
+			zip_code: "CEP",
 			zip_required: "CEP é obrigatório",
 			name_required: "Nome é obrigatório",
 			address_required: "Endereço é obrigatório",
@@ -53567,12 +53413,100 @@ const translations = {
 				marketing: "Marketing",
 				content: "Conteúdo",
 				documents: "Documentos",
-				logs: "Histórico"
+				logs: "Histórico",
+				analytics: "Analytics",
+				reports: "Relatórios"
 			},
 			hoa_freq: "Frequência HOA",
 			monthly: "Mensal",
 			quarterly: "Trimestral",
-			annually: "Anual"
+			annually: "Anual",
+			overview: "Visão Geral",
+			marketing: "Marketing",
+			financial: "Informações Financeiras",
+			house: "Casa",
+			condo: "Apartamento",
+			townhouse: "Sobrado/Townhouse",
+			public_desc: "Descrição Pública",
+			publish_portals: "Publicar nos Portais",
+			upload_image: "Enviar Imagem",
+			features: {
+				bedrooms: "Quartos",
+				bathrooms: "Banheiros",
+				guests: "Hóspedes",
+				wifi_connectivity: "Conectividade Wi-Fi",
+				ssid: "Rede (SSID)",
+				password: "Senha",
+				access_codes: "Códigos de Acesso",
+				unit_code: "Código da Unidade",
+				building_code: "Código do Prédio",
+				pool_code: "Código da Piscina",
+				staff_code: "Código de Serviço",
+				condo_read_only: "Acesso Condomínio (Leitura)",
+				condo_hint: "Sincronizado de {condo}"
+			},
+			location: {
+				address: "Endereço",
+				neighborhood: "Bairro",
+				community: "Condomínio/Comunidade",
+				linked_condo: "Condomínio Vinculado",
+				map_title: "Mapa da Propriedade",
+				map_hint: "Endereço não encontrado para exibir mapa."
+			},
+			content: {
+				house_rules: "Regras da Casa",
+				auto_translate: "Tradução Automática",
+				copy_from: "Copiar de"
+			}
+		},
+		analytics: {
+			benchmark_title: "Comparativo de Performance",
+			benchmark_desc: "Analise o desempenho do seu portfólio em relação ao mercado.",
+			house_model: "Modelo de Casa",
+			internal_perf: "Performance Interna",
+			market_avg: "Média de Mercado",
+			occupancy: "Ocupação",
+			profitability_title: "Análise de Rentabilidade",
+			profitability_desc: "Comparação de lucro líquido.",
+			profit_internal: "Lucro Interno",
+			profit_market: "Lucro Mercado",
+			noi: "NOI (Lucro Operacional Líquido)",
+			roi: "ROI (Retorno sobre Investimento)",
+			cap_rate: "Taxa de Capitalização (Cap Rate)",
+			revenue_sqm: "Receita por m²",
+			cash_flow_projection: "Projeção de Fluxo de Caixa",
+			projected_income: "Receita Projetada",
+			projected_expenses: "Despesas Projetadas",
+			net_flow: "Fluxo Líquido",
+			income_vs_expenses: "Receitas vs. Despesas Projetadas"
+		},
+		reports: {
+			maintenance_analytics: "Análise de Manutenção",
+			total_spend: "Gasto Total",
+			total_tasks: "Total de Tarefas",
+			avg_resolution: "Tempo Médio de Resolução",
+			avg_cost_task: "Custo Médio / Tarefa",
+			cost_breakdown: "Detalhamento de Custos por Categoria",
+			distribution_expenses: "Distribuição de despesas.",
+			monthly_expenditure: "Despesa Mensal",
+			spending_trends: "Tendências de gastos com manutenção."
+		},
+		inventory: {
+			manage_items: "Gerencie itens e condições.",
+			import: "Importar",
+			delete_all: "Excluir Tudo"
+		},
+		marketing_tab: {
+			portal_sync: "Sincronização com Portais",
+			manage_listings: "Gerencie listagens automatizadas nos principais portais imobiliários.",
+			leads: "Leads",
+			inquiries_desc: "Consultas capturadas de portais externos.",
+			publish_btn: "Publicar",
+			publish_success: "Publicação iniciada.",
+			contact_info: "Contato",
+			source: "Origem",
+			inquiry_date: "Data da Consulta",
+			status: "Status"
 		},
 		sync: {
 			title: "Sincronização",
@@ -53636,18 +53570,6 @@ const translations = {
 			partner: "Parceiro",
 			partner_employee: "Funcionário Parceiro",
 			tenant: "Inquilino"
-		},
-		analytics: {
-			benchmark_title: "Comparativo de Performance",
-			benchmark_desc: "Analise o desempenho do seu portfólio em relação ao mercado.",
-			house_model: "Modelo de Casa",
-			internal_perf: "Performance Interna",
-			market_avg: "Média de Mercado",
-			occupancy: "Ocupação",
-			profitability_title: "Análise de Rentabilidade",
-			profitability_desc: "Comparação de lucro líquido.",
-			profit_internal: "Lucro Interno",
-			profit_market: "Lucro Mercado"
 		},
 		renewals: {
 			title: "Renovações",
@@ -53898,171 +53820,17 @@ const translations = {
 			active_listings: "Active Listings",
 			sold: "Sold",
 			sale_pending: "Sale Pending",
-			partners: "Partners"
-		},
-		dashboard: {
-			subtitle: "Overview of performance and activities.",
-			customize: "Customize",
-			customize_view: "Customize View",
-			customize_desc: "Choose which widgets to display on your dashboard.",
-			from_last_month: "from last month",
-			unread: "Unread",
-			revenue_vs_expenses: "Revenue vs Expenses",
-			revenue_overview: "Monthly financial overview.",
-			quick_calendar: "Quick Calendar",
-			todays_activity: "Today's activity.",
-			pending_approvals: "Pending Approvals",
-			pending_desc: "Tasks and invoices awaiting your review.",
-			review: "Review",
-			approve: "Approve",
-			expense_distribution: "Expense Distribution",
-			expense_desc: "Expenses by category.",
-			kpi_indicators: "KPI Indicators",
-			revenue_chart: "Revenue Chart"
-		},
-		calendar: {
-			title: "Calendar",
-			subtitle: "Manage events, tasks, and important dates.",
-			integrated_view: "Integrated View",
-			no_activities: "No activities for this day."
-		},
-		tenants: {
-			title: "Tenants",
-			subtitle: "Manage your tenants and contracts.",
-			list_title: "Tenant List",
-			new_tenant: "New Tenant",
-			search_placeholder: "Search tenants...",
-			property: "Property",
-			register_title: "Register Tenant",
-			send_message: "Send Message"
-		},
-		service_pricing: {
-			title: "Service Pricing",
-			subtitle: "Manage services, rates, and partner pricing.",
-			manage_categories: "Manage Categories",
-			add_service: "Add Service",
-			edit_service: "Edit Service",
-			service_name: "Service Name",
+			partners: "Partners",
 			category: "Category",
-			partner_vendor: "Partner / Vendor",
-			service_price: "Service Price ($)",
-			partner_payment: "Partner Payment ($)",
-			pm_value: "PM Margin ($)",
-			product_price: "Product Cost ($)",
-			valid_from: "Valid From",
-			valid_to: "Valid To",
-			review_period_config: "Review Configuration",
-			review_period_desc: "Set the interval for price review.",
-			threshold_days: "Threshold Days",
-			stale_alert: "{count} services not reviewed for over {days} days.",
-			review_needed: "Review Needed",
-			generic: "Generic",
-			config_saved: "Configuration Saved",
-			config_saved_desc: "Review preferences updated."
-		},
-		sidebar: {
-			main_menu: "Main Menu",
-			system: "System",
-			tenant_portal: "Tenant Portal",
-			owner_portal: "Owner Portal",
-			partner_portal: "Partner Portal",
-			migration_hub: "Migration Hub",
-			publicity_admin: "Publicity Admin",
-			users: "Users"
-		},
-		owners: {
-			title: "Owners",
-			subtitle: "Manage property owners.",
-			base_title: "Owner List",
-			contact_details: "Contact Details",
-			properties_count: "Properties",
-			new_owner: "New Owner",
-			register_title: "Register Owner",
-			search_placeholder: "Search owners...",
-			workflow_started: "Workflow Started",
-			workflow_desc: "Workflow {action} for {name} started.",
-			renew_contract: "Renew Contract",
-			success_desc: "Owner added successfully."
-		},
-		condominiums: {
-			title: "Condominiums",
-			subtitle: "Manage HOA and community details.",
-			manager: "Manager",
-			contact: "Contact",
-			new_condo: "New Condominium",
-			add_title: "Add Condominium",
-			no_condos: "No condominiums found.",
-			financial_hoa: "HOA Financials",
-			access_credentials: "Access Credentials"
-		},
-		market: {
-			title: "Market Analysis",
-			subtitle: "Insights and trends.",
-			export_pdf: "Export PDF",
-			comparison_params: "Comparison Parameters",
-			comparison_desc: "Select criteria.",
-			base_property: "Base Property",
-			region: "Region",
-			bedrooms: "Bedrooms",
-			bathrooms: "Bathrooms",
-			analyze: "Analyze",
-			general: "General Market",
-			select: "Select...",
-			avg_sale_price: "Avg Sale Price",
-			price_sqft: "Price per SqFt",
-			avg_daily_rate: "Avg Daily Rate",
-			monthly_rent: "Monthly Rent",
-			avg_occupancy: "Avg Occupancy",
-			historical_trends: "Historical Trends",
-			trends_desc: "Price and occupancy over time."
-		},
-		short_term: {
-			title: "Short Term",
-			subtitle: "Manage bookings and guests.",
-			new_booking: "New Booking",
-			guest: "Guest",
-			check_in: "Check-in",
-			check_out: "Check-out",
-			total: "Total",
-			platform: "Platform"
-		},
-		tasks: {
-			title: "Tasks",
-			subtitle: "Manage maintenance and services.",
-			board: "Board",
-			list: "List",
-			in_progress: "In Progress",
-			approval: "Approval",
-			create_title: "New Task",
-			create_desc: "Create a new service task.",
-			new_task: "New Task",
-			task_title: "Task Title",
-			assignee: "Assignee",
-			service_type: "Service Type",
-			scheduled_date: "Scheduled Date",
-			photos_ref: "Reference Photos",
-			detailed_desc: "Detailed Description",
-			desc_placeholder: "Describe the issue or service...",
-			create_btn: "Create Task",
-			b2b_label: "Back to Back (B2B)",
-			success_created: "Task created successfully",
-			checkin_title: "Check-in",
-			checkin_desc: "Upload arrival photo.",
-			checkout_title: "Check-out",
-			checkout_desc: "Upload completion photo.",
-			confirm_arrival: "Confirm Arrival",
-			finalize_service: "Finalize Service",
-			gps_loading: "Loading GPS...",
-			location: "Location",
-			activity_log: "Activity Log",
-			arrival: "Arrival",
-			evidence_upload: "Upload Evidence",
-			evidence_photo: "Photo",
-			send: "Send",
-			finish: "Finish",
-			details_evidence: "Details & Evidence",
-			photos: "Photos",
-			start_checkin: "Start Check-in"
+			quantity: "Quantity",
+			condition: "Condition",
+			analytics: "Analytics",
+			schedule_maintenance: "Schedule Maintenance",
+			start_date: "Start Date",
+			end_date: "End Date",
+			provider: "Provider",
+			account_number: "Account Number",
+			recurring: "Recurring"
 		},
 		properties: {
 			title: "Properties",
@@ -54108,12 +53876,100 @@ const translations = {
 				marketing: "Marketing",
 				content: "Content",
 				documents: "Documents",
-				logs: "History"
+				logs: "History",
+				analytics: "Analytics",
+				reports: "Reports"
 			},
 			hoa_freq: "HOA Frequency",
 			monthly: "Monthly",
 			quarterly: "Quarterly",
-			annually: "Annually"
+			annually: "Annually",
+			overview: "Overview",
+			marketing: "Marketing",
+			financial: "Financial Information",
+			house: "House",
+			condo: "Condo",
+			townhouse: "Townhouse",
+			public_desc: "Public Description",
+			publish_portals: "Publish to Portals",
+			upload_image: "Upload Image",
+			features: {
+				bedrooms: "Bedrooms",
+				bathrooms: "Bathrooms",
+				guests: "Guests",
+				wifi_connectivity: "WiFi Connectivity",
+				ssid: "SSID",
+				password: "Password",
+				access_codes: "Access Codes",
+				unit_code: "Unit Code",
+				building_code: "Building Code",
+				pool_code: "Pool Code",
+				staff_code: "Staff Code",
+				condo_read_only: "Condo Access (Read Only)",
+				condo_hint: "Synced from {condo}"
+			},
+			location: {
+				address: "Address",
+				neighborhood: "Neighborhood",
+				community: "Community",
+				linked_condo: "Linked Condominium",
+				map_title: "Property Map",
+				map_hint: "Address not found to display map."
+			},
+			content: {
+				house_rules: "House Rules",
+				auto_translate: "Auto Translate",
+				copy_from: "Copy from"
+			}
+		},
+		analytics: {
+			benchmark_title: "Performance Benchmark",
+			benchmark_desc: "Analyze your portfolio performance against the market.",
+			house_model: "House Model",
+			internal_perf: "Internal Performance",
+			market_avg: "Market Average",
+			occupancy: "Occupancy",
+			profitability_title: "Profitability Analysis",
+			profitability_desc: "Net profit comparison.",
+			profit_internal: "Internal Profit",
+			profit_market: "Market Profit",
+			noi: "NOI (Net Operating Income)",
+			roi: "ROI (Return on Investment)",
+			cap_rate: "Cap Rate",
+			revenue_sqm: "Revenue per SqM",
+			cash_flow_projection: "Cash Flow Projection",
+			projected_income: "Projected Income",
+			projected_expenses: "Projected Expenses",
+			net_flow: "Net Flow",
+			income_vs_expenses: "Projected Income vs. Expenses"
+		},
+		reports: {
+			maintenance_analytics: "Maintenance Analytics",
+			total_spend: "Total Spend",
+			total_tasks: "Total Tasks",
+			avg_resolution: "Avg. Resolution",
+			avg_cost_task: "Avg. Cost / Task",
+			cost_breakdown: "Cost Breakdown by Category",
+			distribution_expenses: "Distribution of expenses.",
+			monthly_expenditure: "Monthly Expenditure",
+			spending_trends: "Trends in maintenance spending."
+		},
+		inventory: {
+			manage_items: "Manage items and conditions.",
+			import: "Import",
+			delete_all: "Delete All"
+		},
+		marketing_tab: {
+			portal_sync: "Portal Synchronization",
+			manage_listings: "Manage automated listings on major real estate platforms.",
+			leads: "Leads",
+			inquiries_desc: "Inquiries captured from external portals.",
+			publish_btn: "Publish",
+			publish_success: "Publishing started.",
+			contact_info: "Contact Info",
+			source: "Source",
+			inquiry_date: "Inquiry Date",
+			status: "Status"
 		},
 		sync: {
 			title: "Synchronization",
@@ -54177,18 +54033,6 @@ const translations = {
 			partner: "Partner",
 			partner_employee: "Partner Employee",
 			tenant: "Tenant"
-		},
-		analytics: {
-			benchmark_title: "Performance Benchmark",
-			benchmark_desc: "Analyze your portfolio performance against the market.",
-			house_model: "House Model",
-			internal_perf: "Internal Performance",
-			market_avg: "Market Average",
-			occupancy: "Occupancy",
-			profitability_title: "Profitability Analysis",
-			profitability_desc: "Net profit comparison.",
-			profit_internal: "Internal Profit",
-			profit_market: "Market Profit"
 		},
 		renewals: {
 			title: "Renewals",
@@ -54439,171 +54283,17 @@ const translations = {
 			active_listings: "Listados Activos",
 			sold: "Vendido",
 			sale_pending: "Venta Pendiente",
-			partners: "Socios"
-		},
-		dashboard: {
-			subtitle: "Resumen de rendimiento y actividades.",
-			customize: "Personalizar",
-			customize_view: "Personalizar Vista",
-			customize_desc: "Elija qué widgets mostrar en su panel.",
-			from_last_month: "del mes pasado",
-			unread: "No leídos",
-			revenue_vs_expenses: "Ingresos vs Gastos",
-			revenue_overview: "Resumen financiero mensual.",
-			quick_calendar: "Calendario Rápido",
-			todays_activity: "Actividad de hoy.",
-			pending_approvals: "Aprobaciones Pendientes",
-			pending_desc: "Tareas y facturas esperando su revisión.",
-			review: "Revisar",
-			approve: "Aprobar",
-			expense_distribution: "Distribución de Gastos",
-			expense_desc: "Gastos por categoría.",
-			kpi_indicators: "Indicadores KPI",
-			revenue_chart: "Gráfico de Ingresos"
-		},
-		calendar: {
-			title: "Calendario",
-			subtitle: "Administrar eventos, tareas y fechas importantes.",
-			integrated_view: "Vista Integrada",
-			no_activities: "No hay actividades para este día."
-		},
-		tenants: {
-			title: "Inquilinos",
-			subtitle: "Gestione sus inquilinos y contratos.",
-			list_title: "Lista de Inquilinos",
-			new_tenant: "Nuevo Inquilino",
-			search_placeholder: "Buscar inquilinos...",
-			property: "Propiedad",
-			register_title: "Registrar Inquilino",
-			send_message: "Enviar Mensaje"
-		},
-		service_pricing: {
-			title: "Catálogo de Precios",
-			subtitle: "Gestione servicios, tarifas y precios de socios.",
-			manage_categories: "Gestionar Categorías",
-			add_service: "Añadir Servicio",
-			edit_service: "Editar Servicio",
-			service_name: "Nombre del Servicio",
+			partners: "Socios",
 			category: "Categoría",
-			partner_vendor: "Socio / Vendedor",
-			service_price: "Precio del Servicio ($)",
-			partner_payment: "Pago Socio ($)",
-			pm_value: "Margen PM ($)",
-			product_price: "Costo Producto ($)",
-			valid_from: "Válido Desde",
-			valid_to: "Válido Hasta",
-			review_period_config: "Configuración de Revisión",
-			review_period_desc: "Establecer intervalo para revisión de precios.",
-			threshold_days: "Días Límite",
-			stale_alert: "{count} servicios no revisados por más de {days} días.",
-			review_needed: "Revisión Necesaria",
-			generic: "Genérico",
-			config_saved: "Configuración Guardada",
-			config_saved_desc: "Preferencias de revisión actualizadas."
-		},
-		sidebar: {
-			main_menu: "Menú Principal",
-			system: "Sistema",
-			tenant_portal: "Portal del Inquilino",
-			owner_portal: "Portal del Propietario",
-			partner_portal: "Portal del Socio",
-			migration_hub: "Centro de Migración",
-			publicity_admin: "Admin Publicidad",
-			users: "Usuarios"
-		},
-		owners: {
-			title: "Propietarios",
-			subtitle: "Administrar propietarios.",
-			base_title: "Lista de Propietarios",
-			contact_details: "Detalles de Contacto",
-			properties_count: "Propiedades",
-			new_owner: "Nuevo Propietario",
-			register_title: "Registrar Propietario",
-			search_placeholder: "Buscar propietarios...",
-			workflow_started: "Flujo Iniciado",
-			workflow_desc: "Flujo {action} para {name} iniciado.",
-			renew_contract: "Renovar Contrato",
-			success_desc: "Propietario añadido con éxito."
-		},
-		condominiums: {
-			title: "Condominios",
-			subtitle: "Administrar HOA y detalles de la comunidad.",
-			manager: "Gerente",
-			contact: "Contacto",
-			new_condo: "Nuevo Condominio",
-			add_title: "Añadir Condominio",
-			no_condos: "No se encontraron condominios.",
-			financial_hoa: "Financiero HOA",
-			access_credentials: "Credenciales de Acceso"
-		},
-		market: {
-			title: "Análisis de Mercado",
-			subtitle: "Perspectivas y tendencias.",
-			export_pdf: "Exportar PDF",
-			comparison_params: "Parámetros de Comparación",
-			comparison_desc: "Seleccione criterios.",
-			base_property: "Propiedad Base",
-			region: "Región",
-			bedrooms: "Dormitorios",
-			bathrooms: "Baños",
-			analyze: "Analizar",
-			general: "Mercado General",
-			select: "Seleccione...",
-			avg_sale_price: "Precio Medio Venta",
-			price_sqft: "Precio por Pie Cuadrado",
-			avg_daily_rate: "Tarifa Diaria Promedio",
-			monthly_rent: "Alquiler Mensual",
-			avg_occupancy: "Ocupación Media",
-			historical_trends: "Tendencias Históricas",
-			trends_desc: "Precio y ocupación a lo largo del tiempo."
-		},
-		short_term: {
-			title: "Alquiler Corto",
-			subtitle: "Administrar reservas y huéspedes.",
-			new_booking: "Nueva Reserva",
-			guest: "Huésped",
-			check_in: "Check-in",
-			check_out: "Check-out",
-			total: "Total",
-			platform: "Plataforma"
-		},
-		tasks: {
-			title: "Tareas",
-			subtitle: "Administrar mantenimiento y servicios.",
-			board: "Tablero",
-			list: "Lista",
-			in_progress: "En Progreso",
-			approval: "Aprobación",
-			create_title: "Nueva Tarea",
-			create_desc: "Crear una nueva tarea de servicio.",
-			new_task: "Nueva Tarea",
-			task_title: "Título de la Tarea",
-			assignee: "Asignado",
-			service_type: "Tipo de Servicio",
-			scheduled_date: "Fecha Programada",
-			photos_ref: "Fotos de Referencia",
-			detailed_desc: "Descripción Detallada",
-			desc_placeholder: "Describa el problema o servicio...",
-			create_btn: "Crear Tarea",
-			b2b_label: "Back to Back (B2B)",
-			success_created: "Tarea creada con éxito",
-			checkin_title: "Check-in",
-			checkin_desc: "Subir foto de llegada.",
-			checkout_title: "Check-out",
-			checkout_desc: "Subir foto de finalización.",
-			confirm_arrival: "Confirmar Llegada",
-			finalize_service: "Finalizar Servicio",
-			gps_loading: "Cargando GPS...",
-			location: "Ubicación",
-			activity_log: "Registro de Actividad",
-			arrival: "Llegada",
-			evidence_upload: "Subir Evidencia",
-			evidence_photo: "Foto",
-			send: "Enviar",
-			finish: "Terminar",
-			details_evidence: "Detalles y Evidencia",
-			photos: "Fotos",
-			start_checkin: "Iniciar Check-in"
+			quantity: "Cantidad",
+			condition: "Condición",
+			analytics: "Análisis",
+			schedule_maintenance: "Programar Mantenimiento",
+			start_date: "Fecha Inicio",
+			end_date: "Fecha Fin",
+			provider: "Proveedor",
+			account_number: "Número de Cuenta",
+			recurring: "Recurrente"
 		},
 		properties: {
 			title: "Propiedades",
@@ -54649,12 +54339,100 @@ const translations = {
 				marketing: "Marketing",
 				content: "Contenido",
 				documents: "Documentos",
-				logs: "Historial"
+				logs: "Historial",
+				analytics: "Análisis",
+				reports: "Informes"
 			},
 			hoa_freq: "Frecuencia HOA",
 			monthly: "Mensual",
 			quarterly: "Trimestral",
-			annually: "Anual"
+			annually: "Anual",
+			overview: "Visión General",
+			marketing: "Marketing",
+			financial: "Información Financiera",
+			house: "Casa",
+			condo: "Condominio",
+			townhouse: "Adosado",
+			public_desc: "Descripción Pública",
+			publish_portals: "Publicar en Portales",
+			upload_image: "Subir Imagen",
+			features: {
+				bedrooms: "Dormitorios",
+				bathrooms: "Baños",
+				guests: "Huéspedes",
+				wifi_connectivity: "Conectividad WiFi",
+				ssid: "SSID",
+				password: "Clave",
+				access_codes: "Códigos de Acceso",
+				unit_code: "Código Unidad",
+				building_code: "Código Edificio",
+				pool_code: "Código Piscina",
+				staff_code: "Código Personal",
+				condo_read_only: "Acceso Condominio (Lectura)",
+				condo_hint: "Sincronizado de {condo}"
+			},
+			location: {
+				address: "Dirección",
+				neighborhood: "Barrio",
+				community: "Comunidad",
+				linked_condo: "Condominio Vinculado",
+				map_title: "Mapa de Propiedad",
+				map_hint: "Dirección no encontrada para mostrar mapa."
+			},
+			content: {
+				house_rules: "Reglas de la Casa",
+				auto_translate: "Traducción Automática",
+				copy_from: "Copiar de"
+			}
+		},
+		analytics: {
+			benchmark_title: "Punto de Referencia de Rendimiento",
+			benchmark_desc: "Analice el rendimiento de su cartera frente al mercado.",
+			house_model: "Modelo de Casa",
+			internal_perf: "Rendimiento Interno",
+			market_avg: "Promedio del Mercado",
+			occupancy: "Ocupación",
+			profitability_title: "Análisis de Rentabilidad",
+			profitability_desc: "Comparación de beneficio neto.",
+			profit_internal: "Beneficio Interno",
+			profit_market: "Beneficio de Mercado",
+			noi: "NOI (Ingreso Operativo Neto)",
+			roi: "ROI (Retorno de Inversión)",
+			cap_rate: "Tasa de Capitalización",
+			revenue_sqm: "Ingresos por m²",
+			cash_flow_projection: "Proyección de Flujo de Caja",
+			projected_income: "Ingresos Proyectados",
+			projected_expenses: "Gastos Proyectados",
+			net_flow: "Flujo Neto",
+			income_vs_expenses: "Ingresos vs Gastos Proyectados"
+		},
+		reports: {
+			maintenance_analytics: "Análisis de Mantenimiento",
+			total_spend: "Gasto Total",
+			total_tasks: "Total Tareas",
+			avg_resolution: "Resolución Promedio",
+			avg_cost_task: "Costo Promedio / Tarea",
+			cost_breakdown: "Desglose de Costos por Categoría",
+			distribution_expenses: "Distribución de gastos.",
+			monthly_expenditure: "Gasto Mensual",
+			spending_trends: "Tendencias en gastos de mantenimiento."
+		},
+		inventory: {
+			manage_items: "Gestionar artículos y condiciones.",
+			import: "Importar",
+			delete_all: "Eliminar Todo"
+		},
+		marketing_tab: {
+			portal_sync: "Sincronización de Portales",
+			manage_listings: "Administrar listados automatizados en principales plataformas.",
+			leads: "Clientes Potenciales",
+			inquiries_desc: "Consultas capturadas de portales externos.",
+			publish_btn: "Publicar",
+			publish_success: "Publicación iniciada.",
+			contact_info: "Información de Contacto",
+			source: "Fuente",
+			inquiry_date: "Fecha Consulta",
+			status: "Estado"
 		},
 		sync: {
 			title: "Sincronización",
@@ -54718,18 +54496,6 @@ const translations = {
 			partner: "Socio",
 			partner_employee: "Empleado Socio",
 			tenant: "Inquilino"
-		},
-		analytics: {
-			benchmark_title: "Punto de Referencia de Rendimiento",
-			benchmark_desc: "Analice el rendimiento de su cartera frente al mercado.",
-			house_model: "Modelo de Casa",
-			internal_perf: "Rendimiento Interno",
-			market_avg: "Promedio del Mercado",
-			occupancy: "Ocupación",
-			profitability_title: "Análisis de Rentabilidad",
-			profitability_desc: "Comparación de beneficio neto.",
-			profit_internal: "Beneficio Interno",
-			profit_market: "Beneficio de Mercado"
 		},
 		renewals: {
 			title: "Renovaciones",
@@ -66068,7 +65834,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 						className: "grid gap-2 md:col-span-2 pt-4",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
 							className: "font-semibold text-sm",
-							children: "HOA"
+							children: t$1("properties.hoa_fee")
 						})
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -66121,7 +65887,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 				})]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.description") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("partners.agent") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.provider") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.contracts") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.value") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.due_date") }),
@@ -66208,10 +65974,14 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 									className: "grid grid-cols-2 gap-4",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: ["Provider ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-red-500",
-											children: "*"
-										})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+											t$1("common.provider"),
+											" ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-red-500",
+												children: "*"
+											})
+										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											value: formData.provider,
 											onChange: (e) => setFormData({
 												...formData,
@@ -66221,7 +65991,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.account") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.account_number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											value: formData.accountNumber,
 											onChange: (e) => setFormData({
 												...formData,
@@ -66280,7 +66050,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Start" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.start_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													type: "date",
 													value: formData.contractStartDate,
 													onChange: (e) => setFormData({
@@ -66291,7 +66061,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "End" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.end_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													type: "date",
 													value: formData.contractEndDate,
 													onChange: (e) => setFormData({
@@ -66302,7 +66072,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Recurring" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.recurring") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
 													value: formData.recurringValue,
 													onChange: (val) => setFormData({
 														...formData,
@@ -66527,7 +66297,7 @@ function PropertyMarketing({ data, onChange, canEdit }) {
 				" ",
 				t$1("marketing_tab.portal_sync")
 			]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Manage automated listings on major real estate platforms." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("marketing_tab.manage_listings") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 			className: "space-y-6",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -66595,7 +66365,7 @@ function PropertyMarketing({ data, onChange, canEdit }) {
 				" ",
 				t$1("marketing_tab.leads")
 			]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Inquiries captured from external portals." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("marketing_tab.inquiries_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 			className: "rounded-md border",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
@@ -66605,12 +66375,12 @@ function PropertyMarketing({ data, onChange, canEdit }) {
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("marketing_tab.status") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 					className: "text-right",
-					children: "Action"
+					children: t$1("common.actions")
 				})
 			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: leads.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				colSpan: 6,
 				className: "text-center py-8 text-muted-foreground",
-				children: "No leads yet."
+				children: t$1("common.empty")
 			}) }) : leads.map((lead) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 					className: "font-medium",
@@ -66807,7 +66577,7 @@ function PropertyContent({ data, onChange, onNestedChange, canEdit }) {
 					value: "pt",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-2 mt-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Regras (PT)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t$1("properties.content.house_rules"), " (PT)"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
 							value: getRules("pt"),
 							onChange: (e) => onNestedChange("hoaRules", "pt", e.target.value),
 							disabled: !canEdit,
@@ -66822,7 +66592,7 @@ function PropertyContent({ data, onChange, onNestedChange, canEdit }) {
 						className: "grid gap-2 mt-2",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex justify-between items-center",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Rules (EN)" }), canEdit && !getRules("en") && getRules("pt") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t$1("properties.content.house_rules"), " (EN)"] }), canEdit && !getRules("en") && getRules("pt") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 								variant: "ghost",
 								size: "sm",
 								onClick: () => copyContent("hoaRules", "pt", "en"),
@@ -66848,7 +66618,7 @@ function PropertyContent({ data, onChange, onNestedChange, canEdit }) {
 						className: "grid gap-2 mt-2",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex justify-between items-center",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Reglas (ES)" }), canEdit && !getRules("es") && getRules("pt") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t$1("properties.content.house_rules"), " (ES)"] }), canEdit && !getRules("es") && getRules("pt") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 								variant: "ghost",
 								size: "sm",
 								onClick: () => copyContent("hoaRules", "pt", "es"),
@@ -66907,7 +66677,7 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description }) {
 			if (docInputRef.current) docInputRef.current.value = "";
 			toast$2({
 				title: t$1("common.success"),
-				description: "Document stored."
+				description: t$1("common.upload") + " " + t$1("common.completed")
 			});
 		}, 1e3);
 	};
@@ -66915,12 +66685,12 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description }) {
 		onUpdate((documents || []).filter((d) => d.id !== docId));
 		toast$2({
 			title: t$1("common.removed"),
-			description: "Document deleted."
+			description: t$1("common.delete_success")
 		});
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 		className: "flex flex-row items-center justify-between",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: title || t$1("common.documents") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: description || "Manage files." })] }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: title || t$1("common.documents") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: description || t$1("common.documents") })] }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
 			type: "file",
 			ref: docInputRef,
 			className: "hidden",
@@ -66935,28 +66705,28 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description }) {
 		open: uploadDialogOpen,
 		onOpenChange: setUploadDialogOpen,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Classify Document" }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("common.upload") }) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid gap-4 py-4",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Selected File" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "p-2 border rounded bg-muted text-sm flex items-center gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.details") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "p-2 border rounded bg-muted text-sm flex items-center gap-2 text-black",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(File$1, { className: "h-4 w-4 text-blue-500" }), selectedFile?.name]
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Category" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.category") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 						value: selectedCategory,
 						onValueChange: (v) => setSelectedCategory(v),
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "Contract",
-								children: "Contract"
+								children: t$1("common.contracts")
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
 								value: "ID",
-								children: "ID"
+								children: ["ID / ", t$1("common.tax_id")]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "Passport",
@@ -66980,7 +66750,7 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description }) {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "Other",
-								children: "Other"
+								children: t$1("common.none")
 							})
 						] })]
 					})]
@@ -66993,7 +66763,7 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description }) {
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 				onClick: handleConfirmUpload,
 				disabled: isUploading,
-				children: isUploading ? "Saving..." : t$1("common.confirm")
+				children: isUploading ? "..." : t$1("common.confirm")
 			})] })
 		] })
 	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -67011,7 +66781,7 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description }) {
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "font-medium text-sm",
+						className: "font-medium text-sm text-black",
 						children: doc.name
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 						variant: "secondary",
@@ -67019,7 +66789,7 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description }) {
 						children: doc.category
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-					className: "text-xs text-muted-foreground",
+					className: "text-xs text-muted-foreground text-black",
 					children: [
 						formatDate(doc.date, language),
 						" •",
@@ -74320,7 +74090,11 @@ function PropertyTasks({ propertyId, canEdit }) {
 				size: "sm",
 				onClick: handleScheduleMaintenance,
 				className: "hidden md:flex gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Schedule Maintenance"]
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+					" ",
+					t$1("common.schedule_maintenance")
+				]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex bg-muted rounded-md p-1",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tooltip$1, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipTrigger, {
@@ -74384,7 +74158,11 @@ function PropertyTasks({ propertyId, canEdit }) {
 					size: "sm",
 					onClick: handleScheduleMaintenance,
 					className: "text-blue-600 hover:text-blue-700",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4 mr-1" }), " Schedule on this day"]
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4 mr-1" }),
+						" ",
+						t$1("common.add_title")
+					]
 				})]
 			}), dayTasks.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "text-center py-8 text-muted-foreground border rounded-lg bg-muted/20",
@@ -74578,7 +74356,7 @@ function PropertyActivityLog({ propertyId }) {
 			" ",
 			t$1("common.activity_log")
 		]
-	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Comprehensive audit trail." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("common.system_activity") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
 		className: "h-[400px] w-full pr-4",
 		children: propertyLogs.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 			className: "text-center py-12 text-muted-foreground bg-muted/20 rounded-lg border border-dashed",
@@ -74795,7 +74573,7 @@ function PropertySync({ data, onChange, canEdit }) {
 					})
 				})
 			]
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("sync.export_calendar") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Share this property's calendar with other platforms." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("sync.export_calendar") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("sync.copy_link") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex gap-2",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 				readOnly: true,
@@ -75518,12 +75296,12 @@ function PropertyInventory({ data, onChange, canEdit }) {
 	};
 	const handleExportInventory = () => {
 		const headers = [
-			"Item Name",
-			"Category",
-			"Quantity",
-			"Condition",
-			"Description",
-			"Last Updated"
+			t$1("common.name"),
+			t$1("common.category"),
+			t$1("common.quantity"),
+			t$1("common.condition"),
+			t$1("common.description"),
+			t$1("common.updated_at")
 		];
 		const rows = filteredItems.map((item) => [
 			item.name,
@@ -75551,7 +75329,7 @@ function PropertyInventory({ data, onChange, canEdit }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 			className: "flex flex-col md:flex-row md:items-center justify-between gap-4",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("common.inventory") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Manage items and conditions." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("common.inventory") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("inventory.manage_items") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-wrap gap-2",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
 					asChild: true,
@@ -75573,7 +75351,11 @@ function PropertyInventory({ data, onChange, canEdit }) {
 						variant: "outline",
 						size: "sm",
 						onClick: () => setIsImportOpen(true),
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "h-4 w-4 mr-2" }), " Import"]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t$1("inventory.import")
+						]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						variant: "outline",
@@ -75584,8 +75366,7 @@ function PropertyInventory({ data, onChange, canEdit }) {
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
 							" ",
-							t$1("common.delete"),
-							" All"
+							t$1("inventory.delete_all")
 						]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
@@ -75617,9 +75398,9 @@ function PropertyInventory({ data, onChange, canEdit }) {
 				className: "border rounded-md overflow-hidden",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Category" }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Qty" }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Condition" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.category") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.quantity") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.condition") }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 						className: "text-right",
@@ -75768,7 +75549,7 @@ function PropertyContracts({ propertyId, canEdit }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 			className: "flex flex-row items-center justify-between",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("common.contracts") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Manage lease agreements." })] }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("common.contracts") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("properties.tabs.contracts") })] }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 				onClick: () => setIsOpen(true),
 				className: "bg-trust-blue gap-2",
 				children: [
@@ -75780,8 +75561,8 @@ function PropertyContracts({ propertyId, canEdit }) {
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.tenants") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Start Date" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "End Date" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.start_date") }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.end_date") }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.value") }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") })
 		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: propertyTenants.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -75811,7 +75592,7 @@ function PropertyContracts({ propertyId, canEdit }) {
 			open: isOpen,
 			onOpenChange: setIsOpen,
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogTitle, { children: [t$1("common.new"), " Contract"] }) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("common.new") }) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "grid gap-4 py-4",
 					children: [
@@ -75830,7 +75611,7 @@ function PropertyContracts({ propertyId, canEdit }) {
 							className: "grid grid-cols-2 gap-4",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Start Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.start_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									type: "date",
 									value: newContract.leaseStart,
 									onChange: (e) => setNewContract({
@@ -75840,7 +75621,7 @@ function PropertyContracts({ propertyId, canEdit }) {
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "End Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.end_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									type: "date",
 									value: newContract.leaseEnd,
 									onChange: (e) => setNewContract({
@@ -75982,7 +75763,7 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 		]));
 		toast$2({
 			title: t$1("common.success"),
-			description: "Maintenance report exported."
+			description: t$1("common.export_success")
 		});
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -75992,7 +75773,7 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 				className: "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
 					className: "text-lg font-semibold",
-					children: title || "Maintenance Analytics"
+					children: title || t$1("reports.maintenance_analytics")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex gap-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
@@ -76000,7 +75781,7 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 						onValueChange: setCategoryFilter,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
 							className: "w-[180px]",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Category" })
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("common.category") })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "all",
@@ -76023,7 +75804,7 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 						variant: "outline",
 						size: "icon",
 						onClick: handleExport,
-						title: "Export CSV",
+						title: t$1("common.export"),
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" })
 					})]
 				})]
@@ -76035,7 +75816,11 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 						className: "p-6 flex flex-col gap-1",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 							className: "text-sm font-medium text-muted-foreground flex items-center gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4" }), " Total Spend"]
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4" }),
+								" ",
+								t$1("reports.total_spend")
+							]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "text-2xl font-bold",
 							children: formatCurrency(metrics.totalCost, language)
@@ -76046,7 +75831,11 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 								className: "text-sm font-medium text-muted-foreground flex items-center gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Wrench, { className: "h-4 w-4" }), " Total Tasks"]
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Wrench, { className: "h-4 w-4" }),
+									" ",
+									t$1("reports.total_tasks")
+								]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 								className: "text-2xl font-bold",
@@ -76054,7 +75843,11 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 								className: "text-xs text-muted-foreground",
-								children: [metrics.completedCount, " completed"]
+								children: [
+									metrics.completedCount,
+									" ",
+									t$1("common.completed").toLowerCase()
+								]
 							})
 						]
 					}) }),
@@ -76062,7 +75855,11 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 						className: "p-6 flex flex-col gap-1",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 							className: "text-sm font-medium text-muted-foreground flex items-center gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "h-4 w-4" }), " Avg. Resolution"]
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "h-4 w-4" }),
+								" ",
+								t$1("reports.avg_resolution")
+							]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 							className: "text-2xl font-bold",
 							children: [metrics.avgDaysToComplete.toFixed(1), " Days"]
@@ -76072,7 +75869,11 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 						className: "p-6 flex flex-col gap-1",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 							className: "text-sm font-medium text-muted-foreground flex items-center gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-4 w-4" }), " Avg. Cost / Task"]
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-4 w-4" }),
+								" ",
+								t$1("reports.avg_cost_task")
+							]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "text-2xl font-bold",
 							children: formatCurrency(metrics.avgCost, language)
@@ -76082,16 +75883,16 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid grid-cols-1 md:grid-cols-2 gap-6",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Cost Breakdown by Category" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Distribution of expenses." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("reports.cost_breakdown") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("reports.distribution_expenses") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "h-[300px] w-full",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 						config: {
 							maintenance: {
-								label: "Maintenance",
+								label: t$1("partners.maintenance"),
 								color: "#0088FE"
 							},
 							cleaning: {
-								label: "Cleaning",
+								label: t$1("partners.cleaning"),
 								color: "#00C49F"
 							},
 							inspection: {
@@ -76115,11 +75916,11 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, {})
 						] })
 					})
-				}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Monthly Expenditure" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Trends in maintenance spending." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("reports.monthly_expenditure") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("reports.spending_trends") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "h-[300px] w-full",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 						config: { value: {
-							label: "Cost",
+							label: t$1("common.value"),
 							color: "#8884d8"
 						} },
 						className: "h-full w-full",
@@ -76130,8 +75931,11 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 									strokeDasharray: "3 3",
 									vertical: false
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, { dataKey: "name" }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, {
+									dataKey: "name",
+									stroke: "#000"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, { stroke: "#000" }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}) }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
 									dataKey: "value",
@@ -76142,7 +75946,7 @@ function MaintenanceReport({ tasks: tasks$1, title }) {
 										0,
 										0
 									],
-									name: "Cost"
+									name: t$1("common.value")
 								})
 							]
 						})
@@ -76213,7 +76017,7 @@ function PropertyAnalytics({ property: property$2 }) {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "text-xs text-muted-foreground",
-							children: "Last 12 Months"
+							children: t$1("dashboard.from_last_month")
 						})
 					]
 				}) }),
@@ -76271,7 +76075,7 @@ function PropertyAnalytics({ property: property$2 }) {
 			]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("analytics.cash_flow_projection") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Projected Income vs. Expenses (12 Months)" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("analytics.cash_flow_projection") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("analytics.income_vs_expenses") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "h-[300px] w-full",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 					config: {
@@ -76292,8 +76096,11 @@ function PropertyAnalytics({ property: property$2 }) {
 								strokeDasharray: "3 3",
 								vertical: false
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, { dataKey: "month" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, {
+								dataKey: "month",
+								stroke: "#000"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, { stroke: "#000" }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}) }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, {}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
@@ -76336,8 +76143,11 @@ function PropertyAnalytics({ property: property$2 }) {
 								strokeDasharray: "3 3",
 								vertical: false
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, { dataKey: "month" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, {
+								dataKey: "month",
+								stroke: "#000"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, { stroke: "#000" }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}) }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, {}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Line, {
@@ -76625,12 +76435,20 @@ function PropertyDetails() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "analytics",
 							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartPie, { className: "h-4 w-4 mr-2" }), " Analytics"]
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartPie, { className: "h-4 w-4 mr-2" }),
+								" ",
+								t$1("properties.tabs.analytics")
+							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "reports",
 							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumnIncreasing, { className: "h-4 w-4 mr-2" }), " Reports"]
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumnIncreasing, { className: "h-4 w-4 mr-2" }),
+								" ",
+								t$1("properties.tabs.reports")
+							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "maintenance",
@@ -76733,7 +76551,7 @@ function PropertyDetails() {
 						className: "w-full h-auto block rounded-md",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MaintenanceReport, {
 							tasks: propertyTasks,
-							title: `Maintenance Report: ${formData.name}`
+							title: `${t$1("reports.maintenance_analytics")}: ${formData.name}`
 						})
 					})
 				}),
@@ -93364,4 +93182,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-jaO8azOq.js.map
+//# sourceMappingURL=index-ZTtSHVp6.js.map

@@ -182,7 +182,7 @@ export function PropertyContent({
             </TabsList>
             <TabsContent value="pt">
               <div className="grid gap-2 mt-2">
-                <Label>Regras (PT)</Label>
+                <Label>{t('properties.content.house_rules')} (PT)</Label>
                 <Textarea
                   value={getRules('pt')}
                   onChange={(e) =>
@@ -197,7 +197,7 @@ export function PropertyContent({
             <TabsContent value="en">
               <div className="grid gap-2 mt-2">
                 <div className="flex justify-between items-center">
-                  <Label>Rules (EN)</Label>
+                  <Label>{t('properties.content.house_rules')} (EN)</Label>
                   {canEdit && !getRules('en') && getRules('pt') && (
                     <Button
                       variant="ghost"
@@ -223,7 +223,7 @@ export function PropertyContent({
             <TabsContent value="es">
               <div className="grid gap-2 mt-2">
                 <div className="flex justify-between items-center">
-                  <Label>Reglas (ES)</Label>
+                  <Label>{t('properties.content.house_rules')} (ES)</Label>
                   {canEdit && !getRules('es') && getRules('pt') && (
                     <Button
                       variant="ghost"

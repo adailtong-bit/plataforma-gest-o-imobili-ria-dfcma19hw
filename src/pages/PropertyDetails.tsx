@@ -353,13 +353,14 @@ export default function PropertyDetails() {
             value="analytics"
             className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
-            <PieChart className="h-4 w-4 mr-2" /> Analytics
+            <PieChart className="h-4 w-4 mr-2" />{' '}
+            {t('properties.tabs.analytics')}
           </TabsTrigger>
           <TabsTrigger
             value="reports"
             className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
-            <BarChart className="h-4 w-4 mr-2" /> Reports
+            <BarChart className="h-4 w-4 mr-2" /> {t('properties.tabs.reports')}
           </TabsTrigger>
           <TabsTrigger
             value="maintenance"
@@ -452,7 +453,7 @@ export default function PropertyDetails() {
           <div className="w-full h-auto block rounded-md">
             <MaintenanceReport
               tasks={propertyTasks}
-              title={`Maintenance Report: ${formData.name}`}
+              title={`${t('reports.maintenance_analytics')}: ${formData.name}`}
             />
           </div>
         </TabsContent>

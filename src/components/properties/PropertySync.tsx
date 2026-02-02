@@ -223,9 +223,7 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
       <Card>
         <CardHeader>
           <CardTitle>{t('sync.export_calendar')}</CardTitle>
-          <CardDescription>
-            Share this property's calendar with other platforms.
-          </CardDescription>
+          <CardDescription>{t('sync.copy_link')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">

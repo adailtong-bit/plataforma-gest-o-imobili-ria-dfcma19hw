@@ -99,7 +99,7 @@ export function PropertyMarketing({
             <Globe className="h-5 w-5" /> {t('marketing_tab.portal_sync')}
           </CardTitle>
           <CardDescription>
-            Manage automated listings on major real estate platforms.
+            {t('marketing_tab.manage_listings')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -167,9 +167,7 @@ export function PropertyMarketing({
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" /> {t('marketing_tab.leads')}
           </CardTitle>
-          <CardDescription>
-            Inquiries captured from external portals.
-          </CardDescription>
+          <CardDescription>{t('marketing_tab.inquiries_desc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
@@ -181,7 +179,9 @@ export function PropertyMarketing({
                   <TableHead>{t('marketing_tab.source')}</TableHead>
                   <TableHead>{t('marketing_tab.inquiry_date')}</TableHead>
                   <TableHead>{t('marketing_tab.status')}</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  <TableHead className="text-right">
+                    {t('common.actions')}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -191,7 +191,7 @@ export function PropertyMarketing({
                       colSpan={6}
                       className="text-center py-8 text-muted-foreground"
                     >
-                      No leads yet.
+                      {t('common.empty')}
                     </TableCell>
                   </TableRow>
                 ) : (

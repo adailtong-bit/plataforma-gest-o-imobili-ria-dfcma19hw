@@ -120,7 +120,7 @@ export function PropertyAnalytics({ property }: PropertyAnalyticsProps) {
               {formatCurrency(financialMetrics.noi, language)}
             </span>
             <span className="text-xs text-muted-foreground">
-              Last 12 Months
+              {t('dashboard.from_last_month')}
             </span>
           </CardContent>
         </Card>
@@ -174,7 +174,7 @@ export function PropertyAnalytics({ property }: PropertyAnalyticsProps) {
           <CardHeader>
             <CardTitle>{t('analytics.cash_flow_projection')}</CardTitle>
             <CardDescription>
-              Projected Income vs. Expenses (12 Months)
+              {t('analytics.income_vs_expenses')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -194,8 +194,8 @@ export function PropertyAnalytics({ property }: PropertyAnalyticsProps) {
               >
                 <BarChart data={projections}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="month" />
-                  <YAxis />
+                  <XAxis dataKey="month" stroke="#000" />
+                  <YAxis stroke="#000" />
                   <Tooltip content={<ChartTooltipContent />} />
                   <Legend />
                   <Bar
@@ -233,8 +233,8 @@ export function PropertyAnalytics({ property }: PropertyAnalyticsProps) {
               >
                 <LineChart data={projections}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="month" />
-                  <YAxis />
+                  <XAxis dataKey="month" stroke="#000" />
+                  <YAxis stroke="#000" />
                   <Tooltip content={<ChartTooltipContent />} />
                   <Legend />
                   <Line

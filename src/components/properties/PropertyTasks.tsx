@@ -68,7 +68,7 @@ export function PropertyTasks({ propertyId, canEdit }: PropertyTasksProps) {
                 onClick={handleScheduleMaintenance}
                 className="hidden md:flex gap-2"
               >
-                <Plus className="h-4 w-4" /> Schedule Maintenance
+                <Plus className="h-4 w-4" /> {t('common.schedule_maintenance')}
               </Button>
             )}
             <div className="flex bg-muted rounded-md p-1">
@@ -156,7 +156,7 @@ export function PropertyTasks({ propertyId, canEdit }: PropertyTasksProps) {
                       onClick={handleScheduleMaintenance}
                       className="text-blue-600 hover:text-blue-700"
                     >
-                      <Plus className="h-4 w-4 mr-1" /> Schedule on this day
+                      <Plus className="h-4 w-4 mr-1" /> {t('common.add_title')}
                     </Button>
                   )}
                 </div>

@@ -356,7 +356,7 @@ export function PropertyFinancials({
             </Select>
           </div>
           <div className="grid gap-2 md:col-span-2 pt-4">
-            <h3 className="font-semibold text-sm">HOA</h3>
+            <h3 className="font-semibold text-sm">{t('properties.hoa_fee')}</h3>
           </div>
           <div className="grid gap-2">
             <Label>{t('properties.hoa_fee')}</Label>
@@ -414,7 +414,7 @@ export function PropertyFinancials({
             <TableHeader>
               <TableRow>
                 <TableHead>{t('common.description')}</TableHead>
-                <TableHead>{t('partners.agent')}</TableHead>
+                <TableHead>{t('common.provider')}</TableHead>
                 <TableHead>{t('common.contracts')}</TableHead>
                 <TableHead>{t('common.value')}</TableHead>
                 <TableHead>{t('common.due_date')}</TableHead>
@@ -531,7 +531,7 @@ export function PropertyFinancials({
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>
-                  Provider <span className="text-red-500">*</span>
+                  {t('common.provider')} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   value={formData.provider}
@@ -542,7 +542,7 @@ export function PropertyFinancials({
                 />
               </div>
               <div className="grid gap-2">
-                <Label>{t('partners.account')}</Label>
+                <Label>{t('common.account_number')}</Label>
                 <Input
                   value={formData.accountNumber}
                   onChange={(e) =>
@@ -595,7 +595,7 @@ export function PropertyFinancials({
               </h4>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>Start</Label>
+                  <Label>{t('common.start_date')}</Label>
                   <Input
                     type="date"
                     value={formData.contractStartDate}
@@ -608,7 +608,7 @@ export function PropertyFinancials({
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>End</Label>
+                  <Label>{t('common.end_date')}</Label>
                   <Input
                     type="date"
                     value={formData.contractEndDate}
@@ -621,7 +621,7 @@ export function PropertyFinancials({
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Recurring</Label>
+                  <Label>{t('common.recurring')}</Label>
                   <CurrencyInput
                     value={formData.recurringValue}
                     onChange={(val) =>

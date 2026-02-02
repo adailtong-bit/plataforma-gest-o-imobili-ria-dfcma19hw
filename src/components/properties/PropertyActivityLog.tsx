@@ -54,7 +54,7 @@ export function PropertyActivityLog({ propertyId }: PropertyActivityLogProps) {
         <CardTitle className="flex items-center gap-2">
           <History className="h-5 w-5" /> {t('common.activity_log')}
         </CardTitle>
-        <CardDescription>Comprehensive audit trail.</CardDescription>
+        <CardDescription>{t('common.system_activity')}</CardDescription>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[400px] w-full pr-4">

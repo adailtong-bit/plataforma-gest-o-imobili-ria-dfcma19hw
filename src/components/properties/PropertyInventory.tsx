@@ -216,12 +216,12 @@ export function PropertyInventory({
 
   const handleExportInventory = () => {
     const headers = [
-      'Item Name',
-      'Category',
-      'Quantity',
-      'Condition',
-      'Description',
-      'Last Updated',
+      t('common.name'),
+      t('common.category'),
+      t('common.quantity'),
+      t('common.condition'),
+      t('common.description'),
+      t('common.updated_at'),
     ]
 
     const rows = filteredItems.map((item) => [
@@ -260,7 +260,7 @@ export function PropertyInventory({
       <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <CardTitle>{t('common.inventory')}</CardTitle>
-          <CardDescription>Manage items and conditions.</CardDescription>
+          <CardDescription>{t('inventory.manage_items')}</CardDescription>
         </div>
         <div className="flex flex-wrap gap-2">
           <DropdownMenu>
@@ -283,7 +283,7 @@ export function PropertyInventory({
                 size="sm"
                 onClick={() => setIsImportOpen(true)}
               >
-                <Upload className="h-4 w-4 mr-2" /> Import
+                <Upload className="h-4 w-4 mr-2" /> {t('inventory.import')}
               </Button>
               <Button
                 variant="outline"
@@ -292,7 +292,7 @@ export function PropertyInventory({
                 disabled={inventory.length === 0}
                 className="text-red-600 hover:text-red-700"
               >
-                <Trash2 className="h-4 w-4 mr-2" /> {t('common.delete')} All
+                <Trash2 className="h-4 w-4 mr-2" /> {t('inventory.delete_all')}
               </Button>
               <Button
                 onClick={() => {
@@ -323,9 +323,9 @@ export function PropertyInventory({
             <TableHeader>
               <TableRow>
                 <TableHead>{t('common.name')}</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Qty</TableHead>
-                <TableHead>Condition</TableHead>
+                <TableHead>{t('common.category')}</TableHead>
+                <TableHead>{t('common.quantity')}</TableHead>
+                <TableHead>{t('common.condition')}</TableHead>
                 <TableHead>{t('common.status')}</TableHead>
                 <TableHead className="text-right">
                   {t('common.actions')}
