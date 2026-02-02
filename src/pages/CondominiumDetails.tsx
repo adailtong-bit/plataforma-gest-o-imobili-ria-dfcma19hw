@@ -534,24 +534,20 @@ export default function CondominiumDetails() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="table-text">Função</TableHead>
-                    <TableHead className="table-text">Nome</TableHead>
-                    <TableHead className="table-text">Telefone</TableHead>
-                    <TableHead className="table-text">Email</TableHead>
-                    {isEditing && (
-                      <TableHead className="table-text">Ação</TableHead>
-                    )}
+                    <TableHead>Função</TableHead>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Telefone</TableHead>
+                    <TableHead>Email</TableHead>
+                    {isEditing && <TableHead>Ação</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {formData.contacts?.map((c) => (
                     <TableRow key={c.id}>
-                      <TableCell className="font-medium table-text">
-                        {c.role}
-                      </TableCell>
-                      <TableCell className="table-text">{c.name}</TableCell>
-                      <TableCell className="table-text">{c.phone}</TableCell>
-                      <TableCell className="table-text">{c.email}</TableCell>
+                      <TableCell className="font-medium">{c.role}</TableCell>
+                      <TableCell>{c.name}</TableCell>
+                      <TableCell>{c.phone}</TableCell>
+                      <TableCell>{c.email}</TableCell>
                       {isEditing && (
                         <TableCell>
                           <Button
@@ -662,23 +658,17 @@ export default function CondominiumDetails() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="table-text">Valor</TableHead>
-                      <TableHead className="table-text">De</TableHead>
-                      <TableHead className="table-text">Até</TableHead>
+                      <TableHead>Valor</TableHead>
+                      <TableHead>De</TableHead>
+                      <TableHead>Até</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {formData.feeHistory?.map((fh) => (
                       <TableRow key={fh.id}>
-                        <TableCell className="table-text">
-                          ${fh.amount}
-                        </TableCell>
-                        <TableCell className="table-text">
-                          {fh.validFrom}
-                        </TableCell>
-                        <TableCell className="table-text">
-                          {fh.validTo || 'Atual'}
-                        </TableCell>
+                        <TableCell>${fh.amount}</TableCell>
+                        <TableCell>{fh.validFrom}</TableCell>
+                        <TableCell>{fh.validTo || 'Atual'}</TableCell>
                       </TableRow>
                     ))}
                     {(!formData.feeHistory ||
@@ -686,7 +676,7 @@ export default function CondominiumDetails() {
                       <TableRow>
                         <TableCell
                           colSpan={3}
-                          className="text-center text-muted-foreground table-text"
+                          className="text-center text-slate-500"
                         >
                           Sem histórico.
                         </TableCell>

@@ -123,14 +123,12 @@ export default function Financial() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="table-text">Arquivo</TableHead>
-                    <TableHead className="table-text">Data Upload</TableHead>
-                    <TableHead className="table-text">Status</TableHead>
-                    <TableHead className="table-text">Itens</TableHead>
-                    <TableHead className="table-text">Valor Total</TableHead>
-                    <TableHead className="text-right table-text">
-                      Ação
-                    </TableHead>
+                    <TableHead>Arquivo</TableHead>
+                    <TableHead>Data Upload</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Itens</TableHead>
+                    <TableHead>Valor Total</TableHead>
+                    <TableHead className="text-right">Ação</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -143,16 +141,16 @@ export default function Financial() {
                   ) : (
                     bankStatements.map((stmt) => (
                       <TableRow key={stmt.id}>
-                        <TableCell className="font-medium flex items-center gap-2 table-text">
+                        <TableCell className="font-medium flex items-center gap-2">
                           <FileText className="h-4 w-4 text-blue-500" />
                           <DataMask>{stmt.fileName}</DataMask>
                         </TableCell>
-                        <TableCell className="table-text">
+                        <TableCell>
                           <DataMask>
                             {formatDate(stmt.uploadDate, language)}
                           </DataMask>
                         </TableCell>
-                        <TableCell className="table-text">
+                        <TableCell>
                           {stmt.status === 'reconciled' ? (
                             <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">
                               <CheckCircle2 className="w-3 h-3 mr-1" />{' '}
@@ -168,15 +166,15 @@ export default function Financial() {
                             </Badge>
                           )}
                         </TableCell>
-                        <TableCell className="table-text">
+                        <TableCell>
                           <DataMask>{stmt.itemsCount}</DataMask>
                         </TableCell>
-                        <TableCell className="table-text">
+                        <TableCell>
                           <DataMask>
                             {formatCurrency(stmt.totalAmount, language)}
                           </DataMask>
                         </TableCell>
-                        <TableCell className="text-right table-text">
+                        <TableCell className="text-right">
                           {stmt.status === 'pending' && (
                             <Button size="sm" variant="outline">
                               Conciliar

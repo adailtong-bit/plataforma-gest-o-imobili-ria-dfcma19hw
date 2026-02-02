@@ -24,6 +24,8 @@ import { DocumentVault } from '@/components/documents/DocumentVault'
 import { OwnerStatement } from '@/components/financial/OwnerStatement'
 import { OwnerProperties } from '@/components/owners/OwnerProperties'
 import { OwnerTasks } from '@/components/owners/OwnerTasks'
+import { PhoneInput } from '@/components/ui/phone-input'
+import { isPhoneValid } from '@/lib/utils'
 
 export default function OwnerDetails() {
   const { id } = useParams()
@@ -40,6 +42,7 @@ export default function OwnerDetails() {
     owner ? { ...owner } : null,
   )
   const [isEditing, setIsEditing] = useState(false)
+  const [phoneCountry, setPhoneCountry] = useState<'US' | 'BR' | 'ES'>('US')
 
   // Sync formData when owner changes in store (e.g. from document update)
   useEffect(() => {
@@ -50,6 +53,13 @@ export default function OwnerDetails() {
         }
         return { ...owner }
       })
+      if (
+        owner.country === 'BR' ||
+        owner.country === 'ES' ||
+        owner.country === 'US'
+      ) {
+        setPhoneCountry(owner.country)
+      }
     }
   }, [owner])
 
@@ -62,6 +72,16 @@ export default function OwnerDetails() {
 
   const handleSave = () => {
     if (!formData) return
+
+    if (formData.phone && !isPhoneValid(formData.phone, phoneCountry)) {
+      toast({
+        title: 'Erro de Validação',
+        description: `Número de telefone inválido para o país ${phoneCountry}.`,
+        variant: 'destructive',
+      })
+      return
+    }
+
     updateOwner(formData)
     setIsEditing(false)
     toast({
@@ -162,11 +182,16 @@ export default function OwnerDetails() {
               </div>
               <div className="grid gap-2">
                 <Label>Telefone</Label>
-                <Input
-                  value={formData.phone}
-                  onChange={(e) => handleChange('phone', e.target.value)}
-                  disabled={!isEditing}
-                />
+                {isEditing ? (
+                  <PhoneInput
+                    value={formData.phone}
+                    onChange={(e) => handleChange('phone', e.target.value)}
+                    country={phoneCountry}
+                    onCountryChange={setPhoneCountry}
+                  />
+                ) : (
+                  <Input value={formData.phone} disabled />
+                )}
               </div>
               <div className="grid gap-2">
                 <Label>Endereço Completo</Label>

@@ -293,19 +293,19 @@ export function ShortTermBookings() {
     <div className="space-y-4">
       <div className="flex items-center gap-4">
         <div className="relative flex-1 md:max-w-sm">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-500" />
           <Input
             placeholder={t('common.search')}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="pl-8"
+            className="pl-8 text-black"
           />
         </div>
         <div className="w-[200px]">
           <Select value={sourceFilter} onValueChange={setSourceFilter}>
-            <SelectTrigger>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Filter className="h-4 w-4" />
+            <SelectTrigger className="text-black border-slate-300">
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-slate-500" />
                 <SelectValue placeholder="Source" />
               </div>
             </SelectTrigger>
@@ -320,17 +320,29 @@ export function ShortTermBookings() {
         </div>
       </div>
 
-      <div className="rounded-md border bg-background">
+      <div className="rounded-md border bg-white shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>{t('properties.title')}</TableHead>
-              <TableHead>{t('short_term.guest')}</TableHead>
-              <TableHead>{t('common.date')}</TableHead>
-              <TableHead>{t('short_term.platform')}</TableHead>
-              <TableHead>{t('common.status')}</TableHead>
-              <TableHead>{t('short_term.total')}</TableHead>
-              <TableHead className="text-right">
+            <TableRow className="bg-slate-50 border-b-2 border-slate-200">
+              <TableHead className="font-bold text-black">
+                {t('properties.title')}
+              </TableHead>
+              <TableHead className="font-bold text-black">
+                {t('short_term.guest')}
+              </TableHead>
+              <TableHead className="font-bold text-black">
+                {t('common.date')}
+              </TableHead>
+              <TableHead className="font-bold text-black">
+                {t('short_term.platform')}
+              </TableHead>
+              <TableHead className="font-bold text-black">
+                {t('common.status')}
+              </TableHead>
+              <TableHead className="font-bold text-black">
+                {t('short_term.total')}
+              </TableHead>
+              <TableHead className="text-right font-bold text-black">
                 {t('common.actions')}
               </TableHead>
             </TableRow>
@@ -340,7 +352,7 @@ export function ShortTermBookings() {
               <TableRow>
                 <TableCell
                   colSpan={7}
-                  className="text-center py-8 text-muted-foreground"
+                  className="text-center py-8 text-slate-500"
                 >
                   {t('common.empty')}
                 </TableCell>
@@ -356,19 +368,22 @@ export function ShortTermBookings() {
                 )
 
                 return (
-                  <TableRow key={booking.id}>
-                    <TableCell className="font-medium">
+                  <TableRow key={booking.id} className="hover:bg-slate-50">
+                    <TableCell className="font-medium text-black">
                       <DataMask>{prop?.name}</DataMask>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-black">
                       <DataMask>{booking.guestName}</DataMask>
                     </TableCell>
-                    <TableCell className="text-xs">
+                    <TableCell className="text-xs text-slate-700">
                       {format(parseISO(booking.checkIn), 'MMM dd')} -{' '}
                       {format(parseISO(booking.checkOut), 'MMM dd')}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">
+                      <Badge
+                        variant="outline"
+                        className="text-black border-slate-300"
+                      >
                         <DataMask>{booking.platform}</DataMask>
                       </Badge>
                     </TableCell>
@@ -380,11 +395,17 @@ export function ShortTermBookings() {
                         {booking.status.replace('_', ' ')}
                       </Badge>
                     </TableCell>
-                    <TableCell>${booking.totalAmount.toFixed(2)}</TableCell>
+                    <TableCell className="text-black font-medium">
+                      ${booking.totalAmount.toFixed(2)}
+                    </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-black"
+                          >
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -482,7 +503,7 @@ export function ShortTermBookings() {
               <Textarea
                 value={emailContent}
                 onChange={(e) => setEmailContent(e.target.value)}
-                className="h-48 font-mono mt-1.5"
+                className="h-48 font-mono mt-1.5 text-black"
                 placeholder="Write your message here..."
               />
             </div>
@@ -497,14 +518,14 @@ export function ShortTermBookings() {
                 <Label htmlFor="append-details">
                   Append Reservation Details automatically
                 </Label>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-slate-600">
                   Includes Check-in/out dates and Access Codes at the bottom of
                   the email.
                 </p>
               </div>
             </div>
 
-            <div className="flex justify-between items-center text-xs text-muted-foreground">
+            <div className="flex justify-between items-center text-xs text-slate-500">
               <span className="flex items-center gap-1">
                 <Info className="h-3 w-3" /> Sending to:{' '}
                 {selectedBooking?.guestEmail}

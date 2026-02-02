@@ -115,7 +115,7 @@ export default function Tenants() {
     if (!isPhoneValid(newTenant.phone, newTenant.country as any)) {
       toast({
         title: t('common.error'),
-        description: `Invalid phone number for ${newTenant.country}.`,
+        description: `Invalid phone number for ${newTenant.country}. Exact digit count required.`,
         variant: 'destructive',
       })
       return
@@ -359,17 +359,11 @@ export default function Tenants() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="table-text">{t('common.name')}</TableHead>
-                <TableHead className="table-text">
-                  {t('tenants.property')}
-                </TableHead>
-                <TableHead className="table-text">
-                  {t('common.contracts')}
-                </TableHead>
-                <TableHead className="table-text">
-                  {t('common.status')}
-                </TableHead>
-                <TableHead className="text-right table-text">
+                <TableHead>{t('common.name')}</TableHead>
+                <TableHead>{t('tenants.property')}</TableHead>
+                <TableHead>{t('common.contracts')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-right">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>
@@ -379,17 +373,17 @@ export default function Tenants() {
                 const prop = properties.find((p) => p.id === tenant.propertyId)
                 return (
                   <TableRow key={tenant.id}>
-                    <TableCell className="font-medium table-text">
+                    <TableCell className="font-medium">
                       <div className="flex flex-col">
                         <span>
                           <DataMask>{tenant.name}</DataMask>
                         </span>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-slate-500">
                           <DataMask>{tenant.email}</DataMask>
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="table-text">
+                    <TableCell>
                       {prop ? (
                         <Link
                           to={`/properties/${prop.id}`}
@@ -399,12 +393,12 @@ export default function Tenants() {
                           <DataMask>{prop.name}</DataMask>
                         </Link>
                       ) : (
-                        <span className="text-muted-foreground">-</span>
+                        <span className="text-slate-400">-</span>
                       )}
                     </TableCell>
-                    <TableCell className="table-text">
+                    <TableCell>
                       <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="h-3 w-3 text-muted-foreground" />
+                        <Calendar className="h-3 w-3 text-slate-500" />
                         <DataMask>
                           {tenant.leaseStart
                             ? format(new Date(tenant.leaseStart), 'dd/MM/yyyy')
@@ -416,10 +410,10 @@ export default function Tenants() {
                         </DataMask>
                       </div>
                     </TableCell>
-                    <TableCell className="table-text">
+                    <TableCell>
                       <Badge variant="outline">{tenant.status}</Badge>
                     </TableCell>
-                    <TableCell className="text-right table-text">
+                    <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button
                           variant="ghost"

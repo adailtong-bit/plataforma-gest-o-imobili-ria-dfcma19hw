@@ -59,8 +59,8 @@ export default function Tasks() {
         </div>
         <div className="flex flex-wrap gap-2 items-center">
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-[150px] h-9">
-              <Filter className="w-3 h-3 mr-2 text-muted-foreground" />
+            <SelectTrigger className="w-[150px] h-9 text-black">
+              <Filter className="w-3 h-3 mr-2 text-slate-500" />
               <SelectValue placeholder={t('common.type')} />
             </SelectTrigger>
             <SelectContent>
@@ -76,7 +76,7 @@ export default function Tasks() {
           <Button
             variant="outline"
             size="sm"
-            className="gap-2 h-9"
+            className="gap-2 h-9 text-black"
             onClick={() => setInvoiceDialogOpen(true)}
           >
             <FileText className="h-4 w-4" /> Generate Invoice
@@ -100,12 +100,17 @@ export default function Tasks() {
 
         <TabsContent value="board" className="flex-1 min-h-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
-            <div className="bg-muted/50 p-4 rounded-lg flex flex-col gap-4 border border-border/50">
-              <div className="flex items-center justify-between pb-2 border-b">
-                <h3 className="font-semibold text-sm uppercase text-muted-foreground">
+            <div className="bg-slate-50 p-4 rounded-lg flex flex-col gap-4 border border-slate-200">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                <h3 className="font-bold text-sm uppercase text-slate-700">
                   {t('common.pending')}
                 </h3>
-                <Badge variant="secondary">{pendingTasks.length}</Badge>
+                <Badge
+                  variant="secondary"
+                  className="bg-white border text-black font-bold border-slate-200"
+                >
+                  {pendingTasks.length}
+                </Badge>
               </div>
               <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-280px)] pr-1 custom-scrollbar">
                 {pendingTasks.map((task) => (
@@ -122,12 +127,12 @@ export default function Tasks() {
               </div>
             </div>
 
-            <div className="bg-blue-50/50 p-4 rounded-lg flex flex-col gap-4 border border-blue-100">
+            <div className="bg-blue-50 p-4 rounded-lg flex flex-col gap-4 border border-blue-100">
               <div className="flex items-center justify-between pb-2 border-b border-blue-200">
-                <h3 className="font-semibold text-sm uppercase text-blue-700">
+                <h3 className="font-bold text-sm uppercase text-blue-800">
                   {t('tasks.in_progress')}
                 </h3>
-                <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">
+                <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 font-bold border-blue-200">
                   {inProgressTasks.length}
                 </Badge>
               </div>
@@ -147,12 +152,12 @@ export default function Tasks() {
               </div>
             </div>
 
-            <div className="bg-orange-50/50 p-4 rounded-lg flex flex-col gap-4 border border-orange-100">
+            <div className="bg-orange-50 p-4 rounded-lg flex flex-col gap-4 border border-orange-100">
               <div className="flex items-center justify-between pb-2 border-b border-orange-200">
-                <h3 className="font-semibold text-sm uppercase text-orange-700">
+                <h3 className="font-bold text-sm uppercase text-orange-800">
                   {t('tasks.approval')}
                 </h3>
-                <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-200">
+                <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 font-bold border-orange-200">
                   {approvalTasks.length}
                 </Badge>
               </div>
@@ -171,12 +176,12 @@ export default function Tasks() {
               </div>
             </div>
 
-            <div className="bg-green-50/50 p-4 rounded-lg flex flex-col gap-4 border border-green-100">
+            <div className="bg-green-50 p-4 rounded-lg flex flex-col gap-4 border border-green-100">
               <div className="flex items-center justify-between pb-2 border-b border-green-200">
-                <h3 className="font-semibold text-sm uppercase text-green-700">
+                <h3 className="font-bold text-sm uppercase text-green-800">
                   {t('common.completed')}
                 </h3>
-                <Badge className="bg-green-100 text-green-700 hover:bg-green-200">
+                <Badge className="bg-green-100 text-green-800 hover:bg-green-200 font-bold border-green-200">
                   {completedTasks.length}
                 </Badge>
               </div>
@@ -199,7 +204,7 @@ export default function Tasks() {
 
         <TabsContent value="list">
           <Card>
-            <CardContent className="p-6 text-center text-muted-foreground">
+            <CardContent className="p-6 text-center text-slate-500">
               <p>Modo lista otimizado disponível em breve.</p>
             </CardContent>
           </Card>

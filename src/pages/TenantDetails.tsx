@@ -64,6 +64,7 @@ import {
 } from '@/components/ui/dialog'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
 import { PhoneInput } from '@/components/ui/phone-input'
+import { isPhoneValid } from '@/lib/utils'
 
 export default function TenantDetails() {
   const { id } = useParams()
@@ -80,6 +81,10 @@ export default function TenantDetails() {
 
   const [formData, setFormData] = useState<Tenant | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+
+  // Explicit country state management for editing validation
+  // Initialize with tenant's current country or default US
+  const [phoneCountry, setPhoneCountry] = useState<'US' | 'BR' | 'ES'>('US')
 
   // Inspection Modal State
   const [inspectionModalOpen, setInspectionModalOpen] = useState(false)
@@ -106,6 +111,15 @@ export default function TenantDetails() {
   useEffect(() => {
     if (tenant) {
       setFormData({ ...tenant })
+      // Initialize phone country if available, or detect from existing phone number?
+      // For now, rely on `tenant.country` if it matches our types
+      if (
+        tenant.country === 'BR' ||
+        tenant.country === 'ES' ||
+        tenant.country === 'US'
+      ) {
+        setPhoneCountry(tenant.country)
+      }
     }
   }, [tenant])
 
@@ -117,6 +131,18 @@ export default function TenantDetails() {
     )
 
   const handleSave = () => {
+    if (!formData) return
+
+    // Strict Phone Validation check before saving
+    if (formData.phone && !isPhoneValid(formData.phone, phoneCountry)) {
+      toast({
+        title: t('common.error'),
+        description: `Invalid phone format for ${phoneCountry}.`,
+        variant: 'destructive',
+      })
+      return
+    }
+
     updateTenant(formData)
     setIsEditing(false)
     toast({ title: 'Perfil atualizado com sucesso' })
@@ -226,12 +252,12 @@ export default function TenantDetails() {
     <div className="flex flex-col gap-6 pb-10">
       {/* Header */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-md border w-fit">
-          <Link to="/tenants" className="hover:text-foreground">
+        <div className="flex items-center gap-2 text-sm text-slate-600 bg-muted/30 p-2 rounded-md border w-fit">
+          <Link to="/tenants" className="hover:text-black">
             Inquilinos
           </Link>
           <span>/</span>
-          <span className="font-medium text-foreground">{formData.name}</span>
+          <span className="font-medium text-black">{formData.name}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -245,9 +271,9 @@ export default function TenantDetails() {
               <h1 className="text-3xl font-bold tracking-tight text-navy">
                 {formData.name}
               </h1>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-slate-600">
                 <Mail className="h-3 w-3" /> {formData.email}
-                <span className="text-muted-foreground/30">•</span>
+                <span className="text-slate-400">•</span>
                 <Badge
                   variant={
                     formData.status === 'active' ? 'default' : 'secondary'
@@ -382,11 +408,18 @@ export default function TenantDetails() {
                     </div>
                     <div className="grid gap-2">
                       <Label>Telefone</Label>
-                      <PhoneInput
-                        value={formData.phone || ''}
-                        onChange={(e) => handleChange('phone', e.target.value)}
-                        defaultCountry={(formData.country as any) || 'US'}
-                      />
+                      {isEditing ? (
+                        <PhoneInput
+                          value={formData.phone || ''}
+                          onChange={(e) =>
+                            handleChange('phone', e.target.value)
+                          }
+                          country={phoneCountry}
+                          onCountryChange={setPhoneCountry}
+                        />
+                      ) : (
+                        <Input value={formData.phone || ''} disabled />
+                      )}
                     </div>
                     <div className="grid gap-2">
                       <Label>Nacionalidade</Label>
@@ -466,10 +499,10 @@ export default function TenantDetails() {
                         <div className="flex-1 text-sm font-medium">
                           {ref.name}
                         </div>
-                        <div className="flex-1 text-sm text-muted-foreground">
+                        <div className="flex-1 text-sm text-slate-600">
                           {ref.phone}
                         </div>
-                        <div className="flex-1 text-sm text-muted-foreground">
+                        <div className="flex-1 text-sm text-slate-600">
                           {ref.email}
                         </div>
                         {isEditing && (
@@ -655,15 +688,11 @@ export default function TenantDetails() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="table-text">Type</TableHead>
-                        <TableHead className="table-text">Date</TableHead>
-                        <TableHead className="table-text">By</TableHead>
-                        <TableHead className="table-text">
-                          Items Checked
-                        </TableHead>
-                        <TableHead className="text-right table-text">
-                          Action
-                        </TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>By</TableHead>
+                        <TableHead>Items Checked</TableHead>
+                        <TableHead className="text-right">Action</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -672,7 +701,7 @@ export default function TenantDetails() {
                         <TableRow>
                           <TableCell
                             colSpan={5}
-                            className="text-center py-6 text-muted-foreground"
+                            className="text-center py-6 text-slate-500"
                           >
                             No inspections performed.
                           </TableCell>
@@ -680,18 +709,14 @@ export default function TenantDetails() {
                       ) : (
                         formData.inspections.map((insp) => (
                           <TableRow key={insp.id}>
-                            <TableCell className="capitalize font-medium table-text">
+                            <TableCell className="capitalize font-medium">
                               {insp.type.replace('_', ' ')}
                             </TableCell>
-                            <TableCell className="table-text">
+                            <TableCell>
                               {format(new Date(insp.date), 'PP')}
                             </TableCell>
-                            <TableCell className="table-text">
-                              {insp.performedBy}
-                            </TableCell>
-                            <TableCell className="table-text">
-                              {insp.items.length}
-                            </TableCell>
+                            <TableCell>{insp.performedBy}</TableCell>
+                            <TableCell>{insp.items.length}</TableCell>
                             <TableCell className="text-right">
                               <Button
                                 variant="ghost"
@@ -740,7 +765,7 @@ export default function TenantDetails() {
                       >
                         {property.name}
                       </Link>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-slate-600">
                         {property.address}
                       </p>
                       {property.status === 'reserved' && (
@@ -752,13 +777,13 @@ export default function TenantDetails() {
                     <Separator />
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Aluguel:</span>
+                        <span className="text-slate-600">Aluguel:</span>
                         <span className="font-medium">
                           ${formData.rentValue}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Início:</span>
+                        <span className="text-slate-600">Início:</span>
                         <span>
                           {formData.leaseStart
                             ? new Date(formData.leaseStart).toLocaleDateString()
@@ -766,7 +791,7 @@ export default function TenantDetails() {
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Fim:</span>
+                        <span className="text-slate-600">Fim:</span>
                         <span className="font-semibold text-orange-600">
                           {formData.leaseEnd
                             ? new Date(formData.leaseEnd).toLocaleDateString()
@@ -858,14 +883,12 @@ export default function TenantDetails() {
                     <div className="absolute -left-[31px] top-1 h-4 w-4 rounded-full bg-blue-500 ring-4 ring-background" />
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                       <p className="font-semibold">{log.action}</p>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-slate-500">
                         {new Date(log.date).toLocaleDateString()}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {log.note}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1 italic">
+                    <p className="text-sm text-slate-600 mt-1">{log.note}</p>
+                    <p className="text-xs text-slate-500 mt-1 italic">
                       Por: {log.user}
                     </p>
                   </div>

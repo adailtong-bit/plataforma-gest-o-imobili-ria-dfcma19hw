@@ -73,22 +73,37 @@
     @apply bg-background text-foreground;
   }
 
-  /* Global UI Visibility Enhancement - Force black text for tables and lists as requested */
-  /* Expanded selector to ensure headers and cells are covered */
+  /* Global UI Visibility Enhancement - High Contrast for Tables and Lists */
+  /* Force all table text to be black or very dark slate for high contrast */
   table,
-  .table-text,
-  .list-text,
   [role='row'],
   th,
-  td {
+  td,
+  .table-text,
+  .list-text {
     @apply text-black dark:text-white !important;
+  }
+
+  /* Table Headers - Bold and Black */
+  th {
+    @apply font-bold text-black dark:text-white bg-slate-50 dark:bg-slate-900 border-b-2 border-slate-200 dark:border-slate-700 !important;
+  }
+
+  /* Table Cells - Ensure Background Contrast */
+  tr {
+    @apply bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors;
+  }
+
+  /* Override muted foregrounds inside tables to ensure legibility */
+  table .text-muted-foreground {
+    @apply text-slate-600 dark:text-slate-400 !important;
   }
 
   /* Ensure inputs have readable text */
   input,
   textarea,
   select {
-    @apply text-foreground;
+    @apply text-foreground font-medium;
   }
 }
 

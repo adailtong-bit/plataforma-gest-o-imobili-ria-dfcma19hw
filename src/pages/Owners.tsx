@@ -123,7 +123,7 @@ export default function Owners() {
     ) {
       toast({
         title: t('common.error'),
-        description: `Invalid phone format for ${newOwner.country}`,
+        description: `Invalid phone format for ${newOwner.country}. Exact digit count required.`,
         variant: 'destructive',
       })
       return
@@ -215,45 +215,20 @@ export default function Owners() {
                     placeholder="email@exemplo.com"
                   />
                 </div>
-                {/* 
-                  Using a Select here for country allows user to pick.
-                  However, PhoneInput also has a dropdown.
-                  Let's use PhoneInput's country management or sync them.
-                  Since PhoneInput now supports controlled country, we can rely on it, 
-                  but we need to ensure this separate Select syncs or is removed/integrated.
-                  The design has a separate Country Select. Let's keep it and pass to PhoneInput.
-                */}
                 <div className="grid gap-2">
-                  <Label>{t('common.country')}</Label>
-                  <Select
-                    value={newOwner.country}
-                    onValueChange={(v) =>
-                      setNewOwner({ ...newOwner, country: v })
+                  <Label>{t('common.phone')}</Label>
+                  {/* Controlled Country Phone Input */}
+                  <PhoneInput
+                    value={newOwner.phone}
+                    onChange={(e) =>
+                      setNewOwner({ ...newOwner, phone: e.target.value })
                     }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="US">United States</SelectItem>
-                      <SelectItem value="BR">Brazil</SelectItem>
-                      <SelectItem value="ES">Spain</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    country={newOwner.country as any}
+                    onCountryChange={(c) =>
+                      setNewOwner({ ...newOwner, country: c })
+                    }
+                  />
                 </div>
-              </div>
-              <div className="grid gap-2">
-                <Label>{t('common.phone')}</Label>
-                <PhoneInput
-                  value={newOwner.phone}
-                  onChange={(e) =>
-                    setNewOwner({ ...newOwner, phone: e.target.value })
-                  }
-                  country={newOwner.country as any}
-                  onCountryChange={(c) =>
-                    setNewOwner({ ...newOwner, country: c })
-                  }
-                />
               </div>
               <div className="grid gap-2">
                 <Label>Address Search</Label>
@@ -324,17 +299,11 @@ export default function Owners() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="table-text">{t('common.name')}</TableHead>
-                <TableHead className="table-text">
-                  {t('owners.contact_details')}
-                </TableHead>
-                <TableHead className="table-text">
-                  {t('owners.properties_count')}
-                </TableHead>
-                <TableHead className="table-text">
-                  {t('common.status')}
-                </TableHead>
-                <TableHead className="text-right table-text">
+                <TableHead>{t('common.name')}</TableHead>
+                <TableHead>{t('owners.contact_details')}</TableHead>
+                <TableHead>{t('owners.properties_count')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-right">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>
@@ -349,7 +318,7 @@ export default function Owners() {
               ) : (
                 filteredOwners.map((owner) => (
                   <TableRow key={owner.id}>
-                    <TableCell className="font-medium table-text">
+                    <TableCell className="font-medium">
                       <Link
                         to={`/owners/${owner.id}`}
                         className="hover:underline text-trust-blue"
@@ -357,18 +326,18 @@ export default function Owners() {
                         <DataMask>{owner.name}</DataMask>
                       </Link>
                     </TableCell>
-                    <TableCell className="table-text">
+                    <TableCell>
                       <div className="flex flex-col text-sm">
                         <span>
                           <DataMask>{owner.email}</DataMask>
                         </span>
-                        <span className="text-muted-foreground text-xs flex items-center gap-1">
+                        <span className="text-slate-600 text-xs flex items-center gap-1">
                           <Phone className="h-3 w-3" />{' '}
                           <DataMask>{owner.phone}</DataMask>
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="table-text">
+                    <TableCell>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Badge
@@ -408,7 +377,7 @@ export default function Owners() {
                         </PopoverContent>
                       </Popover>
                     </TableCell>
-                    <TableCell className="table-text">
+                    <TableCell>
                       <Badge
                         variant={
                           owner.status === 'active' ? 'default' : 'secondary'
@@ -417,7 +386,7 @@ export default function Owners() {
                         {t(`common.${owner.status}`)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right table-text">
+                    <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button
                           variant="ghost"

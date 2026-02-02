@@ -119,7 +119,7 @@ export default function Condominiums() {
     ) {
       toast({
         title: t('common.error'),
-        description: `Please enter a valid phone number for ${managerCountry}.`,
+        description: `Por favor, insira um número de telefone válido para ${managerCountry}.`,
         variant: 'destructive',
       })
       return
@@ -313,20 +313,12 @@ export default function Condominiums() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="table-text">{t('common.name')}</TableHead>
-                <TableHead className="table-text">
-                  {t('common.address')}
-                </TableHead>
-                <TableHead className="table-text">
-                  {t('tasks.location')}
-                </TableHead>
-                <TableHead className="table-text">
-                  {t('condominiums.manager')}
-                </TableHead>
-                <TableHead className="table-text">
-                  {t('condominiums.contact')}
-                </TableHead>
-                <TableHead className="text-right table-text">
+                <TableHead>{t('common.name')}</TableHead>
+                <TableHead>{t('common.address')}</TableHead>
+                <TableHead>{t('tasks.location')}</TableHead>
+                <TableHead>{t('condominiums.manager')}</TableHead>
+                <TableHead>{t('condominiums.contact')}</TableHead>
+                <TableHead className="text-right">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>
@@ -341,15 +333,15 @@ export default function Condominiums() {
               ) : (
                 filteredCondos.map((condo) => (
                   <TableRow key={condo.id}>
-                    <TableCell className="font-medium flex items-center gap-2 table-text">
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
+                    <TableCell className="font-medium flex items-center gap-2">
+                      <Building2 className="h-4 w-4 text-slate-600" />
                       <DataMask>{condo.name}</DataMask>
                     </TableCell>
-                    <TableCell className="table-text">
+                    <TableCell>
                       <DataMask>{condo.address}</DataMask>
                     </TableCell>
-                    <TableCell className="table-text">
-                      <div className="flex flex-col text-xs text-muted-foreground">
+                    <TableCell>
+                      <div className="flex flex-col text-xs text-slate-600">
                         <DataMask>
                           <span>
                             {condo.city || '-'}, {condo.state} {condo.zipCode}
@@ -357,20 +349,20 @@ export default function Condominiums() {
                         </DataMask>
                       </div>
                     </TableCell>
-                    <TableCell className="table-text">
+                    <TableCell>
                       <DataMask>{condo.managerName || '-'}</DataMask>
                     </TableCell>
-                    <TableCell className="table-text">
+                    <TableCell>
                       <div className="flex flex-col text-xs">
                         <span>
                           <DataMask>{condo.managerEmail}</DataMask>
                         </span>
-                        <span className="text-muted-foreground">
+                        <span className="text-slate-600">
                           <DataMask>{condo.managerPhone}</DataMask>
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right table-text">
+                    <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon">

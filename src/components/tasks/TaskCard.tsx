@@ -88,13 +88,13 @@ export function TaskCard({
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'critical':
-        return 'text-red-600 bg-red-100 border-red-200'
+        return 'text-red-700 bg-red-100 border-red-300 font-bold'
       case 'high':
-        return 'text-orange-600 bg-orange-100 border-orange-200'
+        return 'text-orange-700 bg-orange-100 border-orange-300 font-bold'
       case 'medium':
-        return 'text-blue-600 bg-blue-100 border-blue-200'
+        return 'text-blue-700 bg-blue-100 border-blue-300 font-bold'
       default:
-        return 'text-gray-600 bg-gray-100 border-gray-200'
+        return 'text-slate-700 bg-slate-100 border-slate-300 font-bold'
     }
   }
 
@@ -252,7 +252,7 @@ export function TaskCard({
         </DialogContent>
       </Dialog>
 
-      <Card className="hover:shadow-md transition-shadow group flex flex-col h-full relative">
+      <Card className="hover:shadow-md transition-shadow group flex flex-col h-full relative border-slate-200">
         <CardHeader className="p-4 pb-2 space-y-2">
           <div className="flex justify-between items-start">
             <Badge
@@ -268,17 +268,26 @@ export function TaskCard({
                 </Badge>
               )}
               {task.type === 'cleaning' && (
-                <Badge variant="secondary" className="text-[10px] h-5">
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] h-5 text-black border border-slate-300"
+                >
                   {t('partners.cleaning')}
                 </Badge>
               )}
               {task.type === 'maintenance' && (
-                <Badge variant="secondary" className="text-[10px] h-5">
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] h-5 text-black border border-slate-300"
+                >
                   Reparo
                 </Badge>
               )}
               {task.type === 'inspection' && (
-                <Badge variant="secondary" className="text-[10px] h-5">
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] h-5 text-black border border-slate-300"
+                >
                   Inspeção
                 </Badge>
               )}
@@ -290,7 +299,7 @@ export function TaskCard({
             </div>
           </div>
           <div className="flex justify-between items-start gap-2">
-            <CardTitle className="text-sm font-semibold leading-tight line-clamp-2">
+            <CardTitle className="text-sm font-bold leading-tight line-clamp-2 text-black">
               <DataMask>{task.title}</DataMask>
             </CardTitle>
             {canEdit &&
@@ -300,19 +309,19 @@ export function TaskCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 -mr-2 -mt-1 text-muted-foreground hover:text-foreground"
+                  className="h-6 w-6 -mr-2 -mt-1 text-slate-500 hover:text-black"
                   onClick={() => setEditOpen(true)}
                 >
                   <Pencil className="h-3 w-3" />
                 </Button>
               )}
           </div>
-          <div className="text-xs text-muted-foreground space-y-0.5">
-            <div className="font-medium truncate">
+          <div className="text-xs text-slate-600 space-y-0.5">
+            <div className="font-semibold truncate text-slate-800">
               <DataMask>{task.propertyName}</DataMask>
             </div>
             {(task.propertyAddress || task.propertyCommunity) && (
-              <div className="flex items-start gap-1 text-[10px] opacity-80">
+              <div className="flex items-start gap-1 text-[10px] opacity-90">
                 <MapPin className="h-3 w-3 shrink-0 mt-0.5" />
                 <span className="line-clamp-2">
                   <DataMask>
@@ -327,7 +336,7 @@ export function TaskCard({
           </div>
         </CardHeader>
         <CardContent className="p-4 pt-2 flex-grow">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
+          <div className="flex items-center gap-2 text-xs text-slate-600 mb-3 font-medium">
             <Clock className="h-3 w-3" />
             <span>{format(new Date(task.date), 'dd/MM/yyyy')}</span>
           </div>
@@ -335,8 +344,8 @@ export function TaskCard({
           <div className="flex flex-col gap-1 mb-3">
             {showBillable && (
               <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Preço Total:</span>
-                <span className="font-bold text-gray-900">
+                <span className="text-slate-500">Preço Total:</span>
+                <span className="font-bold text-black">
                   <DataMask>
                     ${(task.billableAmount || task.price || 0).toFixed(2)}
                   </DataMask>
@@ -345,16 +354,16 @@ export function TaskCard({
             )}
             {showPartnerPrice && task.price && (
               <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Custo (Partner):</span>
-                <span className="font-semibold text-green-700">
+                <span className="text-slate-500">Custo (Partner):</span>
+                <span className="font-bold text-green-700">
                   <DataMask>${task.price.toFixed(2)}</DataMask>
                 </span>
               </div>
             )}
             {showTeamPayout && task.teamMemberPayout && (
               <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Payout (Equipe):</span>
-                <span className="font-semibold text-blue-700">
+                <span className="text-slate-500">Payout (Equipe):</span>
+                <span className="font-bold text-blue-700">
                   <DataMask>${task.teamMemberPayout.toFixed(2)}</DataMask>
                 </span>
               </div>
@@ -362,12 +371,15 @@ export function TaskCard({
           </div>
 
           <div className="flex items-center justify-between mt-auto">
-            <div className="text-xs font-medium bg-secondary px-2 py-1 rounded-full truncate max-w-[120px]">
+            <div className="text-xs font-bold bg-slate-100 text-slate-800 px-2 py-1 rounded-full truncate max-w-[120px] border border-slate-200">
               <DataMask>{task.assignee}</DataMask>
             </div>
             {((task.images && task.images.length > 0) ||
               (task.evidence && task.evidence.length > 0)) && (
-              <Badge variant="outline" className="text-[10px] h-5 gap-1">
+              <Badge
+                variant="outline"
+                className="text-[10px] h-5 gap-1 border-slate-300 text-slate-700"
+              >
                 <Eye className="h-2 w-2" />
                 {(task.images?.length || 0) + (task.evidence?.length || 0)}
               </Badge>
@@ -376,25 +388,30 @@ export function TaskCard({
 
           {/* Supplier Communication - Last Notified */}
           {task.lastNotified && isAdminOrPM && (
-            <div className="mt-2 text-[10px] text-muted-foreground text-right italic">
+            <div className="mt-2 text-[10px] text-slate-500 text-right italic">
               Notified: {format(new Date(task.lastNotified), 'dd/MM HH:mm')}
             </div>
           )}
 
           {(assignedEmployeeName || canDelegate) && (
-            <div className="mt-3 pt-3 border-t">
+            <div className="mt-3 pt-3 border-t border-slate-100">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Equipe:</span>
+                <span className="text-xs text-slate-500 font-medium">
+                  Equipe:
+                </span>
                 {assignedEmployeeName ? (
                   <div className="flex items-center gap-1">
-                    <Badge variant="outline" className="text-[10px]">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] border-slate-300 text-slate-800 font-bold"
+                    >
                       <DataMask>{assignedEmployeeName}</DataMask>
                     </Badge>
                     {canDelegate && (
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground"
+                        className="h-5 w-5 p-0 text-slate-500 hover:text-black"
                         onClick={() => setAssignOpen(true)}
                         title="Alterar Atribuição"
                       >
@@ -408,7 +425,7 @@ export function TaskCard({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 text-[10px] px-2"
+                        className="h-6 text-[10px] px-2 text-blue-600 font-medium"
                       >
                         <User className="h-3 w-3 mr-1" /> Atribuir
                       </Button>
@@ -446,7 +463,7 @@ export function TaskCard({
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full h-8 text-xs border-blue-200 text-blue-700 hover:bg-blue-50"
+                className="w-full h-8 text-xs border-blue-200 text-blue-700 hover:bg-blue-50 font-bold"
                 onClick={() => notifySupplier(task.id)}
                 title="Notify Supplier"
               >
@@ -458,7 +475,7 @@ export function TaskCard({
           {task.status === 'pending_approval' && isAdminOrPM && (
             <Button
               size="sm"
-              className="w-full h-9 text-xs bg-orange-600 hover:bg-orange-700"
+              className="w-full h-9 text-xs bg-orange-600 hover:bg-orange-700 text-white font-bold"
               onClick={handleApprove}
             >
               <ThumbsUp className="h-3 w-3 mr-2" /> Aprovar Orçamento
@@ -468,7 +485,7 @@ export function TaskCard({
           {task.status === 'pending' && (
             <Button
               size="sm"
-              className="w-full h-9 text-xs bg-trust-blue hover:bg-trust-blue/90"
+              className="w-full h-9 text-xs bg-trust-blue hover:bg-trust-blue/90 text-white font-bold"
               onClick={() => setCheckInOpen(true)}
             >
               <Play className="h-3 w-3 mr-2 fill-current" />{' '}
@@ -480,7 +497,11 @@ export function TaskCard({
               {onUpload && (
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button size="sm" variant="outline" className="text-xs h-9">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs h-9 font-bold"
+                    >
                       <Upload className="h-3 w-3 mr-1" /> {t('tasks.photos')}
                     </Button>
                   </DialogTrigger>
@@ -508,7 +529,7 @@ export function TaskCard({
               )}
               <Button
                 size="sm"
-                className="text-xs h-9 bg-green-600 hover:bg-green-700"
+                className="text-xs h-9 bg-green-600 hover:bg-green-700 text-white font-bold"
                 onClick={() => setCheckOutOpen(true)}
               >
                 <Square className="h-3 w-3 mr-1 fill-current" />{' '}
@@ -521,7 +542,7 @@ export function TaskCard({
               <Button
                 variant="secondary"
                 size="sm"
-                className="flex-1 h-9 text-xs cursor-default"
+                className="flex-1 h-9 text-xs cursor-default bg-green-100 text-green-800 border-green-200 font-bold hover:bg-green-100"
               >
                 <CheckCircle2 className="h-3 w-3 mr-2 text-green-600" />
                 {t('common.completed')}
@@ -538,7 +559,7 @@ export function TaskCard({
                 </Button>
               )}
               {task.rating && (
-                <div className="flex items-center gap-1 px-2 border rounded-md bg-yellow-50 text-yellow-700">
+                <div className="flex items-center gap-1 px-2 border rounded-md bg-yellow-50 text-yellow-700 border-yellow-200">
                   <Star className="h-3 w-3 fill-yellow-500" />
                   <span className="text-xs font-bold">{task.rating}</span>
                 </div>
@@ -548,7 +569,7 @@ export function TaskCard({
           <Button
             variant="ghost"
             size="sm"
-            className="w-full h-8 text-xs text-muted-foreground"
+            className="w-full h-8 text-xs text-slate-500 hover:text-black font-medium"
             onClick={() => setDetailsOpen(true)}
           >
             {t('tasks.details_evidence')}

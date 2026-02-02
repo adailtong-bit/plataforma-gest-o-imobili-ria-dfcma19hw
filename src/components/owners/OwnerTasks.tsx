@@ -113,7 +113,7 @@ export function OwnerTasks({ ownerId, properties }: OwnerTasksProps) {
       </CardHeader>
       <CardContent>
         {sortedTasks.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+          <div className="text-center py-8 text-slate-500 border-2 border-dashed rounded-lg">
             Nenhuma tarefa registrada para as propriedades deste proprietário no
             período selecionado.
           </div>

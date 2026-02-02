@@ -47,9 +47,10 @@ export const isPhoneValid = (value: string, country: 'US' | 'BR' | 'ES') => {
   if (!value) return false
   const digits = value.replace(/\D/g, '')
   if (country === 'US') return digits.length === 10
-  if (country === 'BR') return digits.length === 11 || digits.length === 10
+  if (country === 'BR') return digits.length === 10 || digits.length === 11
   if (country === 'ES') return digits.length === 9
-  return digits.length > 8
+  // Fallback for strictness if country unknown or not matched
+  return digits.length >= 8
 }
 
 // Document mask enforcement based on Acceptance Criteria

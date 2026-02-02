@@ -124,7 +124,7 @@ export function OwnerStatement({
             value={selectedPropertyId}
             onValueChange={setSelectedPropertyId}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] text-black">
               <SelectValue placeholder="Propriedade" />
             </SelectTrigger>
             <SelectContent>
@@ -138,7 +138,7 @@ export function OwnerStatement({
           </Select>
 
           <Select value={period} onValueChange={setPeriod}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] text-black">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -160,19 +160,19 @@ export function OwnerStatement({
       <CardContent className="space-y-6">
         <div className="grid grid-cols-3 gap-4 text-center">
           <div className="p-4 bg-green-50 rounded-lg border border-green-100">
-            <p className="text-sm text-muted-foreground">Receita Bruta</p>
+            <p className="text-sm text-slate-600 font-medium">Receita Bruta</p>
             <p className="text-2xl font-bold text-green-700">
               ${totalIncome.toFixed(2)}
             </p>
           </div>
           <div className="p-4 bg-red-50 rounded-lg border border-red-100">
-            <p className="text-sm text-muted-foreground">Despesas</p>
+            <p className="text-sm text-slate-600 font-medium">Despesas</p>
             <p className="text-2xl font-bold text-red-700">
               ${totalExpenses.toFixed(2)}
             </p>
           </div>
           <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-            <p className="text-sm text-muted-foreground">Líquido (Net)</p>
+            <p className="text-sm text-slate-600 font-medium">Líquido (Net)</p>
             <p className="text-2xl font-bold text-blue-700">
               ${netIncome.toFixed(2)}
             </p>
@@ -181,19 +181,26 @@ export function OwnerStatement({
 
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Data</TableHead>
-              <TableHead>Propriedade</TableHead>
-              <TableHead>Descrição</TableHead>
-              <TableHead>Categoria</TableHead>
-              <TableHead>Pagamento</TableHead>
-              <TableHead className="text-right">Valor</TableHead>
+            <TableRow className="bg-slate-50 border-b-2 border-slate-200">
+              <TableHead className="font-bold text-black">Data</TableHead>
+              <TableHead className="font-bold text-black">
+                Propriedade
+              </TableHead>
+              <TableHead className="font-bold text-black">Descrição</TableHead>
+              <TableHead className="font-bold text-black">Categoria</TableHead>
+              <TableHead className="font-bold text-black">Pagamento</TableHead>
+              <TableHead className="text-right font-bold text-black">
+                Valor
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredEntries.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
+                <TableCell
+                  colSpan={6}
+                  className="text-center py-8 text-slate-500"
+                >
                   Nenhum lançamento no período.
                 </TableCell>
               </TableRow>
@@ -205,11 +212,11 @@ export function OwnerStatement({
                 )
 
                 return (
-                  <TableRow key={entry.id}>
-                    <TableCell>
+                  <TableRow key={entry.id} className="hover:bg-slate-50">
+                    <TableCell className="text-black">
                       {format(new Date(entry.date), 'dd/MM/yyyy')}
                     </TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium text-black">
                       {prop ? (
                         <Link
                           to={`/properties/${prop.id}`}
@@ -222,12 +229,12 @@ export function OwnerStatement({
                         'N/A'
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-black">
                       <div className="flex flex-col">
                         <span>{entry.description}</span>
                         {associatedTask && (
                           <div
-                            className="flex items-center gap-1 text-xs text-blue-600 cursor-pointer hover:text-blue-800 mt-0.5 w-fit"
+                            className="flex items-center gap-1 text-xs text-blue-600 cursor-pointer hover:text-blue-800 mt-0.5 w-fit font-medium"
                             onClick={() => setViewingTask(associatedTask)}
                           >
                             <ClipboardList className="h-3 w-3" />
@@ -237,25 +244,32 @@ export function OwnerStatement({
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="capitalize">{entry.category}</span>
+                      <span className="capitalize text-black">
+                        {entry.category}
+                      </span>
                     </TableCell>
                     <TableCell>
                       {entry.status === 'cleared' ? (
                         <Badge className="bg-green-600">Pago</Badge>
                       ) : (
-                        <Badge variant="outline">Pendente</Badge>
+                        <Badge
+                          variant="outline"
+                          className="text-black border-slate-300"
+                        >
+                          Pendente
+                        </Badge>
                       )}
                       {entry.paymentDate && (
-                        <span className="text-xs text-muted-foreground ml-2">
+                        <span className="text-xs text-slate-600 ml-2 font-medium">
                           {format(new Date(entry.paymentDate), 'dd/MM')}
                         </span>
                       )}
                     </TableCell>
                     <TableCell
-                      className={`text-right font-medium ${
+                      className={`text-right font-bold ${
                         entry.type === 'income'
-                          ? 'text-green-600'
-                          : 'text-red-600'
+                          ? 'text-green-700'
+                          : 'text-red-700'
                       }`}
                     >
                       {entry.type === 'income' ? '+' : '-'}$

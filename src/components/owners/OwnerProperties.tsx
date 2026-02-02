@@ -22,7 +22,7 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
       </CardHeader>
       <CardContent>
         {ownerProperties.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+          <div className="text-center py-8 text-slate-500 border-2 border-dashed rounded-lg">
             Nenhuma propriedade associada a este proprietário.
           </div>
         ) : (
@@ -30,7 +30,7 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
             {ownerProperties.map((property) => (
               <Card
                 key={property.id}
-                className="overflow-hidden border hover:shadow-md transition-shadow group"
+                className="overflow-hidden border hover:shadow-md transition-shadow group bg-white border-slate-200"
               >
                 <div className="h-40 bg-muted relative">
                   {property.image ? (
@@ -44,26 +44,26 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
                       <Building2 className="h-10 w-10" />
                     </div>
                   )}
-                  <Badge className="absolute top-2 right-2 bg-white/90 text-black hover:bg-white">
+                  <Badge className="absolute top-2 right-2 bg-white/90 text-black hover:bg-white border-slate-200 shadow-sm">
                     {property.status}
                   </Badge>
                 </div>
                 <CardContent className="p-4">
                   <h3
-                    className="font-semibold text-lg truncate"
+                    className="font-bold text-lg truncate text-black"
                     title={property.name}
                   >
                     {property.name}
                   </h3>
-                  <div className="flex items-start gap-2 text-sm text-muted-foreground mt-2 min-h-[40px]">
+                  <div className="flex items-start gap-2 text-sm text-slate-600 mt-2 min-h-[40px]">
                     <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
                     <span className="line-clamp-2">{property.address}</span>
                   </div>
-                  <div className="mt-4 pt-4 border-t">
+                  <div className="mt-4 pt-4 border-t border-slate-100">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full gap-2 hover:bg-slate-50"
+                      className="w-full gap-2 hover:bg-slate-50 text-slate-700"
                       asChild
                     >
                       <Link to={`/properties/${property.id}`}>
