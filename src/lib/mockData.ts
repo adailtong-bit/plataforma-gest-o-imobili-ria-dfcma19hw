@@ -498,6 +498,7 @@ export const mockAdPricing: AdPricing = {
     home_bottom: 1.0,
     partner_page: 1.2,
     tenant_page: 1.1,
+    pm_login: 2.0,
   },
 }
 export const bookings: Booking[] = [
@@ -542,7 +543,7 @@ export const serviceCategories: ServiceCategory[] = [
   { id: 'cat_9', name: 'telhadista', color: '#8b5cf6' },
   { id: 'cat_10', name: 'limpeza piscina', color: '#06b6d4' },
   { id: 'cat_11', name: 'técnico ar condicionado', color: '#ef4444' },
-  { id: 'cat_12', name: 'técnico de manutenção piscina', color: '#14b8a6' },
+  { id: 'cat_12', name: 'técnico de manut piscina', color: '#14b8a6' },
 ]
 
 export const visits: Visit[] = []
@@ -564,3 +565,4 @@ for (let i = 0; i < 15; i++) {
     agentId: 'partner_1',
   })
 }
+

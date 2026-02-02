@@ -40,7 +40,13 @@ import { PhoneInput } from '@/components/ui/phone-input'
 import { Label } from '@/components/ui/label'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
 import { DataMask } from '@/components/DataMask'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export default function Tenants() {
   const { tenants, addTenant } = useTenantStore()
@@ -81,7 +87,8 @@ export default function Tenants() {
     setNewTenant((prev) => ({
       ...prev,
       address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
-      country: addr.country === 'USA' ? 'US' : addr.country === 'Brazil' ? 'BR' : 'US',
+      country:
+        addr.country === 'USA' ? 'US' : addr.country === 'Brazil' ? 'BR' : 'US',
     }))
   }
 
@@ -104,7 +111,7 @@ export default function Tenants() {
       return
     }
 
-    // Basic validation based on selected country context from address or default US
+    // Strict Phone Length Validation
     if (!isPhoneValid(newTenant.phone, newTenant.country as any)) {
       toast({
         title: t('common.error'),
@@ -114,9 +121,9 @@ export default function Tenants() {
       return
     }
 
-    // Link Property Logic
+    // Link Property Logic - Auto Reserve
     if (newTenant.propertyId) {
-      const prop = properties.find(p => p.id === newTenant.propertyId)
+      const prop = properties.find((p) => p.id === newTenant.propertyId)
       if (prop) {
         updateProperty({ ...prop, status: 'reserved' })
       }
@@ -274,13 +281,14 @@ export default function Tenants() {
                   </div>
                   <div className="grid gap-2">
                     <Label>{t('common.phone')}</Label>
+                    {/* Enlarged Phone Input */}
                     <PhoneInput
                       value={newTenant.phone}
                       onChange={(e) =>
                         setNewTenant({ ...newTenant, phone: e.target.value })
                       }
                       defaultCountry={newTenant.country as any}
-                      className="w-full"
+                      className="w-full h-12 text-lg" // Increased height and font size
                     />
                   </div>
                 </div>
@@ -349,9 +357,15 @@ export default function Tenants() {
             <TableHeader>
               <TableRow>
                 <TableHead className="table-text">{t('common.name')}</TableHead>
-                <TableHead className="table-text">{t('tenants.property')}</TableHead>
-                <TableHead className="table-text">{t('common.contracts')}</TableHead>
-                <TableHead className="table-text">{t('common.status')}</TableHead>
+                <TableHead className="table-text">
+                  {t('tenants.property')}
+                </TableHead>
+                <TableHead className="table-text">
+                  {t('common.contracts')}
+                </TableHead>
+                <TableHead className="table-text">
+                  {t('common.status')}
+                </TableHead>
                 <TableHead className="text-right table-text">
                   {t('common.actions')}
                 </TableHead>
@@ -362,7 +376,7 @@ export default function Tenants() {
                 const prop = properties.find((p) => p.id === tenant.propertyId)
                 return (
                   <TableRow key={tenant.id}>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium table-text">
                       <div className="flex flex-col">
                         <span>
                           <DataMask>{tenant.name}</DataMask>
@@ -372,7 +386,7 @@ export default function Tenants() {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="table-text">
                       {prop ? (
                         <Link
                           to={`/properties/${prop.id}`}
@@ -385,7 +399,7 @@ export default function Tenants() {
                         <span className="text-muted-foreground">-</span>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="table-text">
                       <div className="flex items-center gap-2 text-sm">
                         <Calendar className="h-3 w-3 text-muted-foreground" />
                         <DataMask>
@@ -443,3 +457,4 @@ export default function Tenants() {
     </div>
   )
 }
+

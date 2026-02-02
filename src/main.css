@@ -73,9 +73,9 @@
     @apply bg-background text-foreground;
   }
   
-  /* Global UI Visibility Enhancement */
-  table, .table-text {
-    @apply text-gray-900 dark:text-gray-100;
+  /* Global UI Visibility Enhancement - Force black text for tables and lists as requested */
+  table, .table-text, .list-text, [role="row"] {
+    @apply text-black dark:text-white !important;
   }
   
   /* Ensure inputs have readable text */
@@ -116,3 +116,4 @@
     border-radius: 20px;
   }
 }
+

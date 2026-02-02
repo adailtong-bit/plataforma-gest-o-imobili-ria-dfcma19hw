@@ -75,7 +75,7 @@ export default function CondominiumDetails() {
 
   useEffect(() => {
     if (condo) {
-      // Sync manager to contacts if missing
+      // Sync manager to contacts if missing (User Story Requirement)
       const hasManagerContact = condo.contacts?.some(
         (c) => c.role === 'Manager' && c.name === condo.managerName,
       )
@@ -643,3 +643,4 @@ export default function CondominiumDetails() {
     </div>
   )
 }
+

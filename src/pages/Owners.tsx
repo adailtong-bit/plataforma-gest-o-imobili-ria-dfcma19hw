@@ -49,7 +49,13 @@ import {
 import useLanguageStore from '@/stores/useLanguageStore'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { DataMask } from '@/components/DataMask'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
 import { isPhoneValid, isValidEmail } from '@/lib/utils'
 
@@ -86,7 +92,8 @@ export default function Owners() {
       city: addr.city,
       state: addr.state,
       zipCode: addr.zipCode,
-      country: addr.country === 'USA' ? 'US' : addr.country === 'Brazil' ? 'BR' : 'US',
+      country:
+        addr.country === 'USA' ? 'US' : addr.country === 'Brazil' ? 'BR' : 'US',
     }))
   }
 
@@ -109,7 +116,10 @@ export default function Owners() {
       return
     }
 
-    if (newOwner.phone && !isPhoneValid(newOwner.phone, newOwner.country as any)) {
+    if (
+      newOwner.phone &&
+      !isPhoneValid(newOwner.phone, newOwner.country as any)
+    ) {
       toast({
         title: t('common.error'),
         description: `Invalid phone format for ${newOwner.country}`,
@@ -137,7 +147,16 @@ export default function Owners() {
       description: t('owners.success_desc'),
     })
     setOpen(false)
-    setNewOwner({ name: '', email: '', phone: '', country: 'US', address: '', city: '', state: '', zipCode: '' })
+    setNewOwner({
+      name: '',
+      email: '',
+      phone: '',
+      country: 'US',
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+    })
   }
 
   const getPropertyCount = (ownerId: string) => {
@@ -197,7 +216,12 @@ export default function Owners() {
                 </div>
                 <div className="grid gap-2">
                   <Label>{t('common.country')}</Label>
-                  <Select value={newOwner.country} onValueChange={(v) => setNewOwner({ ...newOwner, country: v })}>
+                  <Select
+                    value={newOwner.country}
+                    onValueChange={(v) =>
+                      setNewOwner({ ...newOwner, country: v })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -227,7 +251,9 @@ export default function Owners() {
                 <Label>Full Address</Label>
                 <Input
                   value={newOwner.address}
-                  onChange={(e) => setNewOwner({ ...newOwner, address: e.target.value })}
+                  onChange={(e) =>
+                    setNewOwner({ ...newOwner, address: e.target.value })
+                  }
                 />
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -235,21 +261,27 @@ export default function Owners() {
                   <Label>City</Label>
                   <Input
                     value={newOwner.city}
-                    onChange={(e) => setNewOwner({ ...newOwner, city: e.target.value })}
+                    onChange={(e) =>
+                      setNewOwner({ ...newOwner, city: e.target.value })
+                    }
                   />
                 </div>
                 <div className="grid gap-2">
                   <Label>State</Label>
                   <Input
                     value={newOwner.state}
-                    onChange={(e) => setNewOwner({ ...newOwner, state: e.target.value })}
+                    onChange={(e) =>
+                      setNewOwner({ ...newOwner, state: e.target.value })
+                    }
                   />
                 </div>
                 <div className="grid gap-2">
                   <Label>Zip</Label>
                   <Input
                     value={newOwner.zipCode}
-                    onChange={(e) => setNewOwner({ ...newOwner, zipCode: e.target.value })}
+                    onChange={(e) =>
+                      setNewOwner({ ...newOwner, zipCode: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -281,9 +313,15 @@ export default function Owners() {
             <TableHeader>
               <TableRow>
                 <TableHead className="table-text">{t('common.name')}</TableHead>
-                <TableHead className="table-text">{t('owners.contact_details')}</TableHead>
-                <TableHead className="table-text">{t('owners.properties_count')}</TableHead>
-                <TableHead className="table-text">{t('common.status')}</TableHead>
+                <TableHead className="table-text">
+                  {t('owners.contact_details')}
+                </TableHead>
+                <TableHead className="table-text">
+                  {t('owners.properties_count')}
+                </TableHead>
+                <TableHead className="table-text">
+                  {t('common.status')}
+                </TableHead>
                 <TableHead className="text-right table-text">
                   {t('common.actions')}
                 </TableHead>
@@ -299,7 +337,7 @@ export default function Owners() {
               ) : (
                 filteredOwners.map((owner) => (
                   <TableRow key={owner.id}>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium table-text">
                       <Link
                         to={`/owners/${owner.id}`}
                         className="hover:underline text-trust-blue"
@@ -307,7 +345,7 @@ export default function Owners() {
                         <DataMask>{owner.name}</DataMask>
                       </Link>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="table-text">
                       <div className="flex flex-col text-sm">
                         <span>
                           <DataMask>{owner.email}</DataMask>
@@ -318,7 +356,7 @@ export default function Owners() {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="table-text">
                       <Popover>
                         <PopoverTrigger asChild>
                           <Badge
@@ -367,7 +405,7 @@ export default function Owners() {
                         {t(`common.${owner.status}`)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right table-text">
                       <div className="flex justify-end gap-2">
                         <Button
                           variant="ghost"
@@ -426,3 +464,4 @@ export default function Owners() {
     </div>
   )
 }
+

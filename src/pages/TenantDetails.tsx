@@ -385,7 +385,7 @@ export default function TenantDetails() {
                       <PhoneInput
                         value={formData.phone || ''}
                         onChange={(e) => handleChange('phone', e.target.value)}
-                        defaultCountry={formData.country as any || 'US'}
+                        defaultCountry={(formData.country as any) || 'US'}
                       />
                     </div>
                     <div className="grid gap-2">
@@ -658,8 +658,12 @@ export default function TenantDetails() {
                         <TableHead className="table-text">Type</TableHead>
                         <TableHead className="table-text">Date</TableHead>
                         <TableHead className="table-text">By</TableHead>
-                        <TableHead className="table-text">Items Checked</TableHead>
-                        <TableHead className="text-right table-text">Action</TableHead>
+                        <TableHead className="table-text">
+                          Items Checked
+                        </TableHead>
+                        <TableHead className="text-right table-text">
+                          Action
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -676,14 +680,18 @@ export default function TenantDetails() {
                       ) : (
                         formData.inspections.map((insp) => (
                           <TableRow key={insp.id}>
-                            <TableCell className="capitalize font-medium">
+                            <TableCell className="capitalize font-medium table-text">
                               {insp.type.replace('_', ' ')}
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="table-text">
                               {format(new Date(insp.date), 'PP')}
                             </TableCell>
-                            <TableCell>{insp.performedBy}</TableCell>
-                            <TableCell>{insp.items.length}</TableCell>
+                            <TableCell className="table-text">
+                              {insp.performedBy}
+                            </TableCell>
+                            <TableCell className="table-text">
+                              {insp.items.length}
+                            </TableCell>
                             <TableCell className="text-right">
                               <Button
                                 variant="ghost"
@@ -906,3 +914,4 @@ export default function TenantDetails() {
     </div>
   )
 }
+

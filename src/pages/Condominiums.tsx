@@ -109,10 +109,11 @@ export default function Condominiums() {
       return
     }
 
+    // Phone Validation US Standard (since context implies heavy US usage, but can adapt)
     if (formData.managerPhone && !isPhoneValid(formData.managerPhone, 'US')) {
       toast({
         title: t('common.error'),
-        description: 'Please enter a valid USA phone number.',
+        description: 'Please enter a valid USA phone number (10 digits).',
         variant: 'destructive',
       })
       return
@@ -201,7 +202,7 @@ export default function Condominiums() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  placeholder="Ex: Sunny Isles HOA"
+                  placeholder="Ex: Sunset Heights HOA"
                 />
               </div>
               <div className="grid gap-2">
@@ -331,14 +332,14 @@ export default function Condominiums() {
               ) : (
                 filteredCondos.map((condo) => (
                   <TableRow key={condo.id}>
-                    <TableCell className="font-medium flex items-center gap-2">
+                    <TableCell className="font-medium flex items-center gap-2 table-text">
                       <Building2 className="h-4 w-4 text-muted-foreground" />
                       <DataMask>{condo.name}</DataMask>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="table-text">
                       <DataMask>{condo.address}</DataMask>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="table-text">
                       <div className="flex flex-col text-xs text-muted-foreground">
                         <DataMask>
                           <span>
@@ -347,10 +348,10 @@ export default function Condominiums() {
                         </DataMask>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="table-text">
                       <DataMask>{condo.managerName || '-'}</DataMask>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="table-text">
                       <div className="flex flex-col text-xs">
                         <span>
                           <DataMask>{condo.managerEmail}</DataMask>
@@ -360,7 +361,7 @@ export default function Condominiums() {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right table-text">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon">
@@ -420,3 +421,4 @@ export default function Condominiums() {
     </div>
   )
 }
+

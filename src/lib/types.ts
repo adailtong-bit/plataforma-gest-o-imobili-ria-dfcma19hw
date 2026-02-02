@@ -512,6 +512,7 @@ export interface Owner {
   city?: string
   state?: string
   description?: string // Free-text owner info
+  ownerInfo?: string // Extended owner info (500 chars)
   secondContact?: {
     name: string
     phone: string
@@ -830,6 +831,7 @@ export interface AdPricing {
     home_bottom: number
     partner_page: number
     tenant_page: number
+    pm_login?: number
   }
 }
 
@@ -860,3 +862,4 @@ export interface Visit {
   notes?: string
   agentId?: string
 }
+
