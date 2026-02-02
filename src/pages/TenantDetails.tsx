@@ -83,7 +83,6 @@ export default function TenantDetails() {
   const [isEditing, setIsEditing] = useState(false)
 
   // Explicit country state management for editing validation
-  // Initialize with tenant's current country or default US
   const [phoneCountry, setPhoneCountry] = useState<'US' | 'BR' | 'ES'>('US')
 
   // Inspection Modal State
@@ -111,8 +110,6 @@ export default function TenantDetails() {
   useEffect(() => {
     if (tenant) {
       setFormData({ ...tenant })
-      // Initialize phone country if available, or detect from existing phone number?
-      // For now, rely on `tenant.country` if it matches our types
       if (
         tenant.country === 'BR' ||
         tenant.country === 'ES' ||
@@ -125,7 +122,7 @@ export default function TenantDetails() {
 
   if (!formData || !tenant)
     return (
-      <div className="p-8 text-center text-slate-950 font-medium">
+      <div className="p-8 text-center text-black font-medium">
         Tenant Not Found
       </div>
     )
@@ -133,7 +130,6 @@ export default function TenantDetails() {
   const handleSave = () => {
     if (!formData) return
 
-    // Strict Phone Validation check before saving
     if (formData.phone && !isPhoneValid(formData.phone, phoneCountry)) {
       toast({
         title: t('common.error'),
@@ -201,9 +197,7 @@ export default function TenantDetails() {
 
     const selectedProp = properties.find((p) => p.id === selectedPropertyId)
     if (selectedProp) {
-      // Update property status to reserved (User Story Req: Reserved Status logic)
       updateProperty({ ...selectedProp, status: 'reserved' })
-      // Link tenant
       const updatedTenant = { ...formData, propertyId: selectedPropertyId }
       setFormData(updatedTenant)
       updateTenant(updatedTenant)
@@ -252,7 +246,7 @@ export default function TenantDetails() {
     <div className="flex flex-col gap-6 pb-10">
       {/* Header */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2 text-sm text-slate-950 font-medium bg-white p-2 rounded-md border w-fit shadow-sm">
+        <div className="flex items-center gap-2 text-sm text-black font-medium bg-white p-2 rounded-md border w-fit shadow-sm">
           <Link to="/tenants" className="hover:text-black hover:underline">
             Inquilinos
           </Link>
@@ -272,10 +266,10 @@ export default function TenantDetails() {
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-slate-950">
+              <h1 className="text-3xl font-bold tracking-tight text-black">
                 {formData.name}
               </h1>
-              <div className="flex items-center gap-2 text-sm text-slate-950 font-medium mt-1">
+              <div className="flex items-center gap-2 text-sm text-black font-medium mt-1">
                 <Mail className="h-3 w-3" /> {formData.email}
                 <span className="text-slate-400">•</span>
                 <Badge
@@ -333,7 +327,6 @@ export default function TenantDetails() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6 animate-fade-in">
-          {/* Tenant Status Alerts */}
           {formData.status === 'active' && !hasCheckIn && (
             <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 flex justify-between items-center rounded-r-md">
               <div className="flex items-center gap-3">
@@ -383,11 +376,10 @@ export default function TenantDetails() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Left Column: Personal Info & Contract Config */}
             <div className="md:col-span-2 space-y-6">
               <Card className="bg-white">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-slate-950">
+                  <CardTitle className="flex items-center gap-2 text-black">
                     <User className="h-5 w-5 text-trust-blue" />
                     Informações Pessoais
                   </CardTitle>
@@ -395,7 +387,7 @@ export default function TenantDetails() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label className="text-slate-900 font-bold">
+                      <Label className="text-black font-bold">
                         Nome Completo
                       </Label>
                       <Input
@@ -406,7 +398,7 @@ export default function TenantDetails() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label className="text-slate-900 font-bold">Email</Label>
+                      <Label className="text-black font-bold">Email</Label>
                       <Input
                         value={formData.email}
                         onChange={(e) => handleChange('email', e.target.value)}
@@ -415,9 +407,7 @@ export default function TenantDetails() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label className="text-slate-900 font-bold">
-                        Telefone
-                      </Label>
+                      <Label className="text-black font-bold">Telefone</Label>
                       {isEditing ? (
                         <PhoneInput
                           value={formData.phone || ''}
@@ -426,6 +416,7 @@ export default function TenantDetails() {
                           }
                           country={phoneCountry}
                           onCountryChange={setPhoneCountry}
+                          className="text-black"
                         />
                       ) : (
                         <Input
@@ -436,7 +427,7 @@ export default function TenantDetails() {
                       )}
                     </div>
                     <div className="grid gap-2">
-                      <Label className="text-slate-900 font-bold">
+                      <Label className="text-black font-bold">
                         Nacionalidade
                       </Label>
                       <Input
@@ -449,16 +440,17 @@ export default function TenantDetails() {
                       />
                     </div>
                     <div className="grid gap-2 col-span-2">
-                      <Label className="text-slate-900 font-bold">
+                      <Label className="text-black font-bold">
                         Buscar Endereço
                       </Label>
                       <AddressInput
                         onAddressSelect={handleAddressSelect}
                         disabled={!isEditing}
+                        className="text-black"
                       />
                     </div>
                     <div className="grid gap-2 col-span-2">
-                      <Label className="text-slate-900 font-bold">
+                      <Label className="text-black font-bold">
                         Endereço Completo
                       </Label>
                       <Input
@@ -473,14 +465,10 @@ export default function TenantDetails() {
                   </div>
 
                   <Separator />
-                  <h3 className="font-bold text-sm text-slate-950">
-                    Documentação
-                  </h3>
+                  <h3 className="font-bold text-sm text-black">Documentação</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="grid gap-2">
-                      <Label className="text-slate-900 font-bold">
-                        ID / RG
-                      </Label>
+                      <Label className="text-black font-bold">ID / RG</Label>
                       <Input
                         value={formData.idNumber || ''}
                         onChange={(e) =>
@@ -492,9 +480,7 @@ export default function TenantDetails() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label className="text-slate-900 font-bold">
-                        Passport
-                      </Label>
+                      <Label className="text-black font-bold">Passport</Label>
                       <Input
                         value={formData.passport || ''}
                         onChange={(e) =>
@@ -506,7 +492,7 @@ export default function TenantDetails() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label className="text-slate-900 font-bold">
+                      <Label className="text-black font-bold">
                         SSN (Social Security)
                       </Label>
                       <Input
@@ -522,7 +508,7 @@ export default function TenantDetails() {
                   </div>
 
                   <Separator />
-                  <h3 className="font-bold text-sm text-slate-950">
+                  <h3 className="font-bold text-sm text-black">
                     Referral Contacts
                   </h3>
                   <div className="space-y-2">
@@ -531,13 +517,13 @@ export default function TenantDetails() {
                         key={idx}
                         className="flex gap-2 items-center bg-slate-50 border border-slate-200 p-2 rounded"
                       >
-                        <div className="flex-1 text-sm font-bold text-slate-950">
+                        <div className="flex-1 text-sm font-bold text-black">
                           {ref.name}
                         </div>
-                        <div className="flex-1 text-sm text-slate-950 font-medium">
+                        <div className="flex-1 text-sm text-black font-medium">
                           {ref.phone}
                         </div>
-                        <div className="flex-1 text-sm text-slate-950 font-medium">
+                        <div className="flex-1 text-sm text-black font-medium">
                           {ref.email}
                         </div>
                         {isEditing && (
@@ -605,17 +591,17 @@ export default function TenantDetails() {
               {/* Automatic Adjustment Section */}
               <Card className="bg-white">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base text-slate-950">
+                  <CardTitle className="flex items-center gap-2 text-base text-black">
                     <TrendingUp className="h-5 w-5 text-green-600" />
                     Automatic Contract Adjustment
                   </CardTitle>
-                  <CardDescription className="text-slate-600">
+                  <CardDescription className="text-black">
                     Configure automatic rent increases for contract renewal.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="grid gap-2">
-                    <Label className="text-slate-900 font-bold">
+                    <Label className="text-black font-bold">
                       Adjustment Type
                     </Label>
                     <Select
@@ -645,7 +631,7 @@ export default function TenantDetails() {
                     </Select>
                   </div>
                   <div className="grid gap-2">
-                    <Label className="text-slate-900 font-bold">Value</Label>
+                    <Label className="text-black font-bold">Value</Label>
                     <Input
                       type="number"
                       value={formData.rentAdjustmentConfig?.value || 0}
@@ -663,9 +649,7 @@ export default function TenantDetails() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label className="text-slate-900 font-bold">
-                      Frequency
-                    </Label>
+                    <Label className="text-black font-bold">Frequency</Label>
                     <Select
                       value={
                         formData.rentAdjustmentConfig?.frequency || 'yearly'
@@ -696,11 +680,11 @@ export default function TenantDetails() {
               <Card className="bg-white">
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div className="flex flex-col space-y-1.5">
-                    <CardTitle className="flex items-center gap-2 text-base text-slate-950">
+                    <CardTitle className="flex items-center gap-2 text-base text-black">
                       <CheckSquare className="h-5 w-5 text-blue-600" />
                       Inventory Inspections
                     </CardTitle>
-                    <CardDescription className="text-slate-600">
+                    <CardDescription className="text-black">
                       Record of check-in and check-out property states.
                     </CardDescription>
                   </div>
@@ -751,7 +735,7 @@ export default function TenantDetails() {
                         <TableRow>
                           <TableCell
                             colSpan={5}
-                            className="text-center py-6 text-slate-500"
+                            className="text-center py-6 text-black"
                           >
                             No inspections performed.
                           </TableCell>
@@ -762,23 +746,23 @@ export default function TenantDetails() {
                             key={insp.id}
                             className="bg-white hover:bg-slate-50"
                           >
-                            <TableCell className="capitalize font-bold text-slate-950">
+                            <TableCell className="capitalize font-bold text-black">
                               {insp.type.replace('_', ' ')}
                             </TableCell>
-                            <TableCell className="text-slate-950 font-medium">
+                            <TableCell className="text-black font-medium">
                               {format(new Date(insp.date), 'PP')}
                             </TableCell>
-                            <TableCell className="text-slate-950 font-medium">
+                            <TableCell className="text-black font-medium">
                               {insp.performedBy}
                             </TableCell>
-                            <TableCell className="text-slate-950 font-medium">
+                            <TableCell className="text-black font-medium">
                               {insp.items.length}
                             </TableCell>
                             <TableCell className="text-right">
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="gap-2 text-slate-950"
+                                className="gap-2 text-black"
                                 onClick={() => viewReport(insp)}
                               >
                                 <FileText className="h-3 w-3" /> View Report
@@ -799,7 +783,7 @@ export default function TenantDetails() {
                 <Card className="bg-white border-slate-200">
                   <CardHeader className="pb-3">
                     <div className="flex justify-between items-center">
-                      <CardTitle className="text-lg flex items-center gap-2 text-slate-950">
+                      <CardTitle className="text-lg flex items-center gap-2 text-black">
                         <Home className="h-5 w-5 text-slate-500" /> Propriedade
                       </CardTitle>
                       {isEditing && (
@@ -822,7 +806,7 @@ export default function TenantDetails() {
                       >
                         {property.name}
                       </Link>
-                      <p className="text-sm text-slate-950 font-medium">
+                      <p className="text-sm text-black font-medium">
                         {property.address}
                       </p>
                       {property.status === 'reserved' && (
@@ -834,25 +818,21 @@ export default function TenantDetails() {
                     <Separator />
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-900 font-bold">
-                          Aluguel:
-                        </span>
-                        <span className="font-bold text-slate-950">
+                        <span className="text-black font-bold">Aluguel:</span>
+                        <span className="font-bold text-black">
                           ${formData.rentValue}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-900 font-bold">
-                          Início:
-                        </span>
-                        <span className="font-medium text-slate-950">
+                        <span className="text-black font-bold">Início:</span>
+                        <span className="font-medium text-black">
                           {formData.leaseStart
                             ? new Date(formData.leaseStart).toLocaleDateString()
                             : '-'}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-900 font-bold">Fim:</span>
+                        <span className="text-black font-bold">Fim:</span>
                         <span className="font-bold text-orange-600">
                           {formData.leaseEnd
                             ? new Date(formData.leaseEnd).toLocaleDateString()
@@ -866,7 +846,7 @@ export default function TenantDetails() {
                 <Card className="bg-white border-dashed">
                   <CardContent className="flex flex-col items-center justify-center py-10 text-center gap-4">
                     <Home className="h-10 w-10 text-muted-foreground/50 mb-2" />
-                    <p className="text-slate-950 font-medium">
+                    <p className="text-black font-medium">
                       Nenhuma propriedade vinculada.
                     </p>
                     {isEditing && (
@@ -877,7 +857,7 @@ export default function TenantDetails() {
                         <DialogTrigger asChild>
                           <Button
                             variant="outline"
-                            className="gap-2 text-slate-950"
+                            className="gap-2 text-black"
                           >
                             <LinkIcon className="h-4 w-4" /> Link Property
                           </Button>
@@ -899,7 +879,11 @@ export default function TenantDetails() {
                               </SelectTrigger>
                               <SelectContent>
                                 {availableProperties.map((p) => (
-                                  <SelectItem key={p.id} value={p.id}>
+                                  <SelectItem
+                                    key={p.id}
+                                    value={p.id}
+                                    className="text-black"
+                                  >
                                     {p.name} ({p.status})
                                   </SelectItem>
                                 ))}
@@ -936,7 +920,7 @@ export default function TenantDetails() {
         <TabsContent value="history" className="animate-fade-in">
           <Card className="bg-white">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-slate-950">
+              <CardTitle className="flex items-center gap-2 text-black">
                 <History className="h-5 w-5" /> Histórico
               </CardTitle>
             </CardHeader>
@@ -946,22 +930,22 @@ export default function TenantDetails() {
                   <div key={index} className="ml-6 relative">
                     <div className="absolute -left-[31px] top-1 h-4 w-4 rounded-full bg-blue-500 ring-4 ring-background" />
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                      <p className="font-bold text-slate-950">{log.action}</p>
-                      <span className="text-xs text-slate-600 font-medium">
+                      <p className="font-bold text-black">{log.action}</p>
+                      <span className="text-xs text-black font-medium">
                         {new Date(log.date).toLocaleDateString()}
                       </span>
                     </div>
-                    <p className="text-sm text-slate-950 font-medium mt-1">
+                    <p className="text-sm text-black font-medium mt-1">
                       {log.note}
                     </p>
-                    <p className="text-xs text-slate-500 mt-1 italic">
+                    <p className="text-xs text-black mt-1 italic">
                       Por: {log.user}
                     </p>
                   </div>
                 ))}
                 <div className="ml-6 relative">
                   <div className="absolute -left-[31px] top-1 h-4 w-4 rounded-full bg-slate-300 ring-4 ring-background" />
-                  <p className="font-bold text-slate-500">Cadastro Criado</p>
+                  <p className="font-bold text-black">Cadastro Criado</p>
                 </div>
               </div>
             </CardContent>

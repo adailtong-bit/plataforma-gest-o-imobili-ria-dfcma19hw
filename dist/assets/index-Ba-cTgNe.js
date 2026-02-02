@@ -57240,34 +57240,10 @@ var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => 
 	})
 }));
 Progress.displayName = Root$5.displayName;
-var useAuthStore = () => {
-	const context = (0, import_react.useContext)(AppContext);
-	if (!context) throw new Error("useAuthStore must be used within AppProvider");
-	return {
-		currentUser: context.currentUser,
-		setCurrentUser: context.setCurrentUser,
-		allUsers: context.allUsers,
-		isAuthenticated: context.isAuthenticated,
-		login: context.login,
-		logout: context.logout
-	};
-};
-var useAuthStore_default = useAuthStore;
-function DataMask({ children, className, width, showAuth }) {
-	const { isAuthenticated } = useAuthStore_default();
-	if (showAuth || isAuthenticated) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-		className: cn("text-black opacity-100 bg-transparent", className),
-		children
-	});
-	const style = width ? { width } : {};
+function DataMask({ children, className }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-		className: cn("inline-block bg-slate-200 text-transparent rounded select-none animate-pulse align-middle h-[1em] min-w-[3ch]", className),
-		style,
-		"aria-hidden": "true",
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-			className: "invisible",
-			children
-		})
+		className: cn("text-black opacity-100 bg-transparent inline-block align-middle", className),
+		children
 	});
 }
 function Index() {
@@ -57697,6 +57673,19 @@ var Input = import_react.forwardRef(({ className, type, ...props }, ref) => {
 	});
 });
 Input.displayName = "Input";
+var useAuthStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("useAuthStore must be used within AppProvider");
+	return {
+		currentUser: context.currentUser,
+		setCurrentUser: context.setCurrentUser,
+		allUsers: context.allUsers,
+		isAuthenticated: context.isAuthenticated,
+		login: context.login,
+		logout: context.logout
+	};
+};
+var useAuthStore_default = useAuthStore;
 var logo_estilizado_default = "/assets/logo-estilizado-C6i8Yrt2.jpg";
 function Login() {
 	const { t: t$1 } = useLanguageStore_default();
@@ -80326,7 +80315,8 @@ function Tenants() {
 											onChange: (e) => setNewTenant({
 												...newTenant,
 												name: e.target.value
-											})
+											}),
+											className: "text-black"
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
@@ -80336,8 +80326,12 @@ function Tenants() {
 												...newTenant,
 												propertyId: v
 											}),
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Property" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: availableProperties.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+												className: "text-black",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Property" })
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: availableProperties.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 												value: p$1.id,
+												className: "text-black",
 												children: p$1.name
 											}, p$1.id)) })]
 										})]
@@ -80353,7 +80347,8 @@ function Tenants() {
 											onChange: (e) => setNewTenant({
 												...newTenant,
 												email: e.target.value
-											})
+											}),
+											className: "text-black"
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
@@ -80368,7 +80363,7 @@ function Tenants() {
 												...newTenant,
 												country: c$1
 											}),
-											className: "w-full h-12 text-lg"
+											className: "w-full h-12 text-lg text-black"
 										})]
 									})]
 								}),
@@ -80383,7 +80378,8 @@ function Tenants() {
 											onChange: (e) => setNewTenant({
 												...newTenant,
 												address: e.target.value
-											})
+											}),
+											className: "text-black"
 										})
 									]
 								}),
@@ -80397,7 +80393,8 @@ function Tenants() {
 											onChange: (e) => setNewTenant({
 												...newTenant,
 												passport: e.target.value
-											})
+											}),
+											className: "text-black"
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
@@ -80407,7 +80404,8 @@ function Tenants() {
 											onChange: (e) => setNewTenant({
 												...newTenant,
 												socialSecurity: e.target.value
-											})
+											}),
+											className: "text-black"
 										})]
 									})]
 								}),
@@ -80857,7 +80855,7 @@ function TenantDetails() {
 		}
 	}, [tenant]);
 	if (!formData || !tenant) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "p-8 text-center text-slate-950 font-medium",
+		className: "p-8 text-center text-black font-medium",
 		children: "Tenant Not Found"
 	});
 	const handleSave = () => {
@@ -80997,7 +80995,7 @@ function TenantDetails() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col gap-4",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2 text-sm text-slate-950 font-medium bg-white p-2 rounded-md border w-fit shadow-sm",
+					className: "flex items-center gap-2 text-sm text-black font-medium bg-white p-2 rounded-md border w-fit shadow-sm",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 							to: "/tenants",
@@ -81026,10 +81024,10 @@ function TenantDetails() {
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-4 w-4" })
 							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-							className: "text-3xl font-bold tracking-tight text-slate-950",
+							className: "text-3xl font-bold tracking-tight text-black",
 							children: formData.name
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center gap-2 text-sm text-slate-950 font-medium mt-1",
+							className: "flex items-center gap-2 text-sm text-black font-medium mt-1",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, { className: "h-3 w-3" }),
 								" ",
@@ -81140,7 +81138,7 @@ function TenantDetails() {
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 											className: "bg-white",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-												className: "flex items-center gap-2 text-slate-950",
+												className: "flex items-center gap-2 text-black",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-5 w-5 text-trust-blue" }), "Informações Pessoais"]
 											}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 												className: "space-y-4",
@@ -81151,7 +81149,7 @@ function TenantDetails() {
 															/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 																className: "grid gap-2",
 																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-																	className: "text-slate-900 font-bold",
+																	className: "text-black font-bold",
 																	children: "Nome Completo"
 																}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 																	value: formData.name,
@@ -81163,7 +81161,7 @@ function TenantDetails() {
 															/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 																className: "grid gap-2",
 																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-																	className: "text-slate-900 font-bold",
+																	className: "text-black font-bold",
 																	children: "Email"
 																}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 																	value: formData.email,
@@ -81175,13 +81173,14 @@ function TenantDetails() {
 															/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 																className: "grid gap-2",
 																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-																	className: "text-slate-900 font-bold",
+																	className: "text-black font-bold",
 																	children: "Telefone"
 																}), isEditing ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
 																	value: formData.phone || "",
 																	onChange: (e) => handleChange("phone", e.target.value),
 																	country: phoneCountry,
-																	onCountryChange: setPhoneCountry
+																	onCountryChange: setPhoneCountry,
+																	className: "text-black"
 																}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 																	value: formData.phone || "",
 																	disabled: true,
@@ -81191,7 +81190,7 @@ function TenantDetails() {
 															/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 																className: "grid gap-2",
 																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-																	className: "text-slate-900 font-bold",
+																	className: "text-black font-bold",
 																	children: "Nacionalidade"
 																}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 																	value: formData.country || "",
@@ -81203,17 +81202,18 @@ function TenantDetails() {
 															/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 																className: "grid gap-2 col-span-2",
 																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-																	className: "text-slate-900 font-bold",
+																	className: "text-black font-bold",
 																	children: "Buscar Endereço"
 																}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddressInput, {
 																	onAddressSelect: handleAddressSelect,
-																	disabled: !isEditing
+																	disabled: !isEditing,
+																	className: "text-black"
 																})]
 															}),
 															/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 																className: "grid gap-2 col-span-2",
 																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-																	className: "text-slate-900 font-bold",
+																	className: "text-black font-bold",
 																	children: "Endereço Completo"
 																}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 																	value: formData.address || "",
@@ -81226,7 +81226,7 @@ function TenantDetails() {
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-														className: "font-bold text-sm text-slate-950",
+														className: "font-bold text-sm text-black",
 														children: "Documentação"
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -81235,7 +81235,7 @@ function TenantDetails() {
 															/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 																className: "grid gap-2",
 																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-																	className: "text-slate-900 font-bold",
+																	className: "text-black font-bold",
 																	children: "ID / RG"
 																}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 																	value: formData.idNumber || "",
@@ -81248,7 +81248,7 @@ function TenantDetails() {
 															/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 																className: "grid gap-2",
 																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-																	className: "text-slate-900 font-bold",
+																	className: "text-black font-bold",
 																	children: "Passport"
 																}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 																	value: formData.passport || "",
@@ -81261,7 +81261,7 @@ function TenantDetails() {
 															/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 																className: "grid gap-2",
 																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-																	className: "text-slate-900 font-bold",
+																	className: "text-black font-bold",
 																	children: "SSN (Social Security)"
 																}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 																	value: formData.socialSecurity || "",
@@ -81275,7 +81275,7 @@ function TenantDetails() {
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-														className: "font-bold text-sm text-slate-950",
+														className: "font-bold text-sm text-black",
 														children: "Referral Contacts"
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -81284,15 +81284,15 @@ function TenantDetails() {
 															className: "flex gap-2 items-center bg-slate-50 border border-slate-200 p-2 rounded",
 															children: [
 																/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-																	className: "flex-1 text-sm font-bold text-slate-950",
+																	className: "flex-1 text-sm font-bold text-black",
 																	children: ref.name
 																}),
 																/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-																	className: "flex-1 text-sm text-slate-950 font-medium",
+																	className: "flex-1 text-sm text-black font-medium",
 																	children: ref.phone
 																}),
 																/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-																	className: "flex-1 text-sm text-slate-950 font-medium",
+																	className: "flex-1 text-sm text-black font-medium",
 																	children: ref.email
 																}),
 																isEditing && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -81350,10 +81350,10 @@ function TenantDetails() {
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 											className: "bg-white",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-												className: "flex items-center gap-2 text-base text-slate-950",
+												className: "flex items-center gap-2 text-base text-black",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrendingUp, { className: "h-5 w-5 text-green-600" }), "Automatic Contract Adjustment"]
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
-												className: "text-slate-600",
+												className: "text-black",
 												children: "Configure automatic rent increases for contract renewal."
 											})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 												className: "grid grid-cols-1 md:grid-cols-3 gap-4",
@@ -81361,7 +81361,7 @@ function TenantDetails() {
 													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 														className: "grid gap-2",
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-															className: "text-slate-900 font-bold",
+															className: "text-black font-bold",
 															children: "Adjustment Type"
 														}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 															value: formData.rentAdjustmentConfig?.type || "percentage",
@@ -81388,7 +81388,7 @@ function TenantDetails() {
 													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 														className: "grid gap-2",
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-															className: "text-slate-900 font-bold",
+															className: "text-black font-bold",
 															children: "Value"
 														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 															type: "number",
@@ -81407,7 +81407,7 @@ function TenantDetails() {
 													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 														className: "grid gap-2",
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-															className: "text-slate-900 font-bold",
+															className: "text-black font-bold",
 															children: "Frequency"
 														}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 															value: formData.rentAdjustmentConfig?.frequency || "yearly",
@@ -81438,10 +81438,10 @@ function TenantDetails() {
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 													className: "flex flex-col space-y-1.5",
 													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-														className: "flex items-center gap-2 text-base text-slate-950",
+														className: "flex items-center gap-2 text-base text-black",
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquareCheckBig, { className: "h-5 w-5 text-blue-600" }), "Inventory Inspections"]
 													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
-														className: "text-slate-600",
+														className: "text-black",
 														children: "Record of check-in and check-out property states."
 													})]
 												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -81480,25 +81480,25 @@ function TenantDetails() {
 												})
 											] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: !formData.inspections || formData.inspections.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 												colSpan: 5,
-												className: "text-center py-6 text-slate-500",
+												className: "text-center py-6 text-black",
 												children: "No inspections performed."
 											}) }) : formData.inspections.map((insp) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
 												className: "bg-white hover:bg-slate-50",
 												children: [
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-														className: "capitalize font-bold text-slate-950",
+														className: "capitalize font-bold text-black",
 														children: insp.type.replace("_", " ")
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-														className: "text-slate-950 font-medium",
+														className: "text-black font-medium",
 														children: format(new Date(insp.date), "PP")
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-														className: "text-slate-950 font-medium",
+														className: "text-black font-medium",
 														children: insp.performedBy
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-														className: "text-slate-950 font-medium",
+														className: "text-black font-medium",
 														children: insp.items.length
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -81506,7 +81506,7 @@ function TenantDetails() {
 														children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 															variant: "ghost",
 															size: "sm",
-															className: "gap-2 text-slate-950",
+															className: "gap-2 text-black",
 															onClick: () => viewReport(insp),
 															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-3 w-3" }), " View Report"]
 														})
@@ -81524,7 +81524,7 @@ function TenantDetails() {
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "flex justify-between items-center",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-													className: "text-lg flex items-center gap-2 text-slate-950",
+													className: "text-lg flex items-center gap-2 text-black",
 													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-5 w-5 text-slate-500" }), " Propriedade"]
 												}), isEditing && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 													variant: "ghost",
@@ -81546,7 +81546,7 @@ function TenantDetails() {
 															children: property$2.name
 														}),
 														/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-															className: "text-sm text-slate-950 font-medium",
+															className: "text-sm text-black font-medium",
 															children: property$2.address
 														}),
 														property$2.status === "reserved" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
@@ -81562,27 +81562,27 @@ function TenantDetails() {
 														/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 															className: "flex justify-between text-sm",
 															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-																className: "text-slate-900 font-bold",
+																className: "text-black font-bold",
 																children: "Aluguel:"
 															}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-																className: "font-bold text-slate-950",
+																className: "font-bold text-black",
 																children: ["$", formData.rentValue]
 															})]
 														}),
 														/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 															className: "flex justify-between text-sm",
 															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-																className: "text-slate-900 font-bold",
+																className: "text-black font-bold",
 																children: "Início:"
 															}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-																className: "font-medium text-slate-950",
+																className: "font-medium text-black",
 																children: formData.leaseStart ? new Date(formData.leaseStart).toLocaleDateString() : "-"
 															})]
 														}),
 														/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 															className: "flex justify-between text-sm",
 															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-																className: "text-slate-900 font-bold",
+																className: "text-black font-bold",
 																children: "Fim:"
 															}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 																className: "font-bold text-orange-600",
@@ -81600,7 +81600,7 @@ function TenantDetails() {
 											children: [
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-10 w-10 text-muted-foreground/50 mb-2" }),
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-													className: "text-slate-950 font-medium",
+													className: "text-black font-medium",
 													children: "Nenhuma propriedade vinculada."
 												}),
 												isEditing && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
@@ -81610,7 +81610,7 @@ function TenantDetails() {
 														asChild: true,
 														children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 															variant: "outline",
-															className: "gap-2 text-slate-950",
+															className: "gap-2 text-black",
 															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, { className: "h-4 w-4" }), " Link Property"]
 														})
 													}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Link to Property" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -81628,6 +81628,7 @@ function TenantDetails() {
 																	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select..." })
 																}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: availableProperties.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
 																	value: p$1.id,
+																	className: "text-black",
 																	children: [
 																		p$1.name,
 																		" (",
@@ -81669,7 +81670,7 @@ function TenantDetails() {
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 							className: "bg-white",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-								className: "flex items-center gap-2 text-slate-950",
+								className: "flex items-center gap-2 text-black",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(History, { className: "h-5 w-5" }), " Histórico"]
 							}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "relative border-l border-muted ml-3 space-y-6 pb-2",
@@ -81680,26 +81681,26 @@ function TenantDetails() {
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-												className: "font-bold text-slate-950",
+												className: "font-bold text-black",
 												children: log$1.action
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-xs text-slate-600 font-medium",
+												className: "text-xs text-black font-medium",
 												children: new Date(log$1.date).toLocaleDateString()
 											})]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "text-sm text-slate-950 font-medium mt-1",
+											className: "text-sm text-black font-medium mt-1",
 											children: log$1.note
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-											className: "text-xs text-slate-500 mt-1 italic",
+											className: "text-xs text-black mt-1 italic",
 											children: ["Por: ", log$1.user]
 										})
 									]
 								}, index$1)), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "ml-6 relative",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "absolute -left-[31px] top-1 h-4 w-4 rounded-full bg-slate-300 ring-4 ring-background" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-										className: "font-bold text-slate-500",
+										className: "font-bold text-black",
 										children: "Cadastro Criado"
 									})]
 								})]
@@ -84786,7 +84787,8 @@ function Condominiums() {
 									...formData,
 									name: e.target.value
 								}),
-								placeholder: "Ex: Sunset Heights HOA"
+								placeholder: "Ex: Sunset Heights HOA",
+								className: "text-black"
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -84800,7 +84802,8 @@ function Condominiums() {
 								onChange: (e) => setFormData({
 									...formData,
 									address: e.target.value
-								})
+								}),
+								className: "text-black"
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -84813,7 +84816,8 @@ function Condominiums() {
 										onChange: (e) => setFormData({
 											...formData,
 											city: e.target.value
-										})
+										}),
+										className: "text-black"
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -84823,7 +84827,8 @@ function Condominiums() {
 										onChange: (e) => setFormData({
 											...formData,
 											state: e.target.value
-										})
+										}),
+										className: "text-black"
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -84833,7 +84838,8 @@ function Condominiums() {
 										onChange: (e) => setFormData({
 											...formData,
 											zipCode: e.target.value
-										})
+										}),
+										className: "text-black"
 									})]
 								})
 							]
@@ -84845,7 +84851,8 @@ function Condominiums() {
 								onChange: (e) => setFormData({
 									...formData,
 									managerName: e.target.value
-								})
+								}),
+								className: "text-black"
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -84860,7 +84867,8 @@ function Condominiums() {
 									}),
 									country: managerCountry,
 									onCountryChange: setManagerCountry,
-									defaultCountry: "US"
+									defaultCountry: "US",
+									className: "text-black"
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
@@ -84869,7 +84877,8 @@ function Condominiums() {
 									onChange: (e) => setFormData({
 										...formData,
 										managerEmail: e.target.value
-									})
+									}),
+									className: "text-black"
 								})]
 							})]
 						}),
@@ -84930,7 +84939,7 @@ function Condominiums() {
 				]
 			}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredCondos.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				colSpan: 6,
-				className: "text-center py-8 text-slate-500",
+				className: "text-center py-8 text-black",
 				children: t$1("condominiums.no_condos")
 			}) }) : filteredCondos.map((condo) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
 				className: "bg-white hover:bg-slate-50 transition-colors",
@@ -93337,4 +93346,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BWTUln25.js.map
+//# sourceMappingURL=index-Ba-cTgNe.js.map

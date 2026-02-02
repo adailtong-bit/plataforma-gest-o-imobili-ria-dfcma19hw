@@ -573,28 +573,56 @@ video {
 }
 
   /* Global UI Visibility Enhancement - High Contrast for Tables and Lists */
-  /* Force all table text to be absolute black (#000000) on white (#FFFFFF) */
+  /* Force all table text and inputs to be absolute black (#000000) on white (#FFFFFF) */
   table,
   [role='row'],
   th,
   td,
   .table-text,
-  .list-text {
+  .list-text,
+  input,
+  textarea,
+  select {
   --tw-bg-opacity: 1 !important;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
   --tw-text-opacity: 1 !important;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+  opacity: 1 !important;
 }
   table:is(.dark *),
   [role='row']:is(.dark *),
   th:is(.dark *),
   td:is(.dark *),
   .table-text:is(.dark *),
-  .list-text:is(.dark *) {
+  .list-text:is(.dark *),
+  input:is(.dark *),
+  textarea:is(.dark *),
+  select:is(.dark *) {
   --tw-bg-opacity: 1 !important;
   background-color: rgb(2 6 23 / var(--tw-bg-opacity, 1)) !important;
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+
+  /* Explicitly remove shadows and ensure border visibility */
+  input,
+  textarea,
+  select {
+  --tw-border-opacity: 1 !important;
+  border-color: rgb(203 213 225 / var(--tw-border-opacity, 1)) !important;
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-shadow-colored: 0 0 #0000 !important;
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+}
+  input::-moz-placeholder, textarea::-moz-placeholder, select::-moz-placeholder {
+  --tw-text-opacity: 1 !important;
+  color: rgb(148 163 184 / var(--tw-text-opacity, 1)) !important;
+}
+  input::placeholder,
+  textarea::placeholder,
+  select::placeholder {
+  --tw-text-opacity: 1 !important;
+  color: rgb(148 163 184 / var(--tw-text-opacity, 1)) !important;
 }
 
   /* Table Headers - Bold and Black */
@@ -643,12 +671,13 @@ video {
   background-color: rgb(15 23 42 / var(--tw-bg-opacity, 1));
 }
 
-  /* Override muted foregrounds inside tables to ensure legibility */
+  /* Override muted foregrounds inside tables and data lists to ensure legibility */
   table .text-muted-foreground,
   table .text-slate-500,
   table .text-slate-600,
   table .text-slate-700,
-  table .text-slate-950 {
+  table .text-slate-950,
+  .data-list .text-muted-foreground {
   --tw-text-opacity: 1 !important;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
@@ -656,22 +685,10 @@ video {
   table .text-slate-500:is(.dark *),
   table .text-slate-600:is(.dark *),
   table .text-slate-700:is(.dark *),
-  table .text-slate-950:is(.dark *) {
+  table .text-slate-950:is(.dark *),
+  .data-list .text-muted-foreground:is(.dark *) {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
-}
-
-  /* Ensure inputs have readable text in pure black on white */
-  input,
-  textarea,
-  select {
-  --tw-border-opacity: 1 !important;
-  border-color: rgb(203 213 225 / var(--tw-border-opacity, 1)) !important;
-  --tw-bg-opacity: 1 !important;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
-  font-weight: 500 !important;
-  --tw-text-opacity: 1 !important;
-  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
 
   /* Ensure card content is high contrast */
@@ -1164,9 +1181,6 @@ video {
 .h-\[--cell-size\] {
   height: var(--cell-size);
 }
-.h-\[1em\] {
-  height: 1em;
-}
 .h-\[1px\] {
   height: 1px;
 }
@@ -1438,9 +1452,6 @@ video {
 }
 .min-w-\[12rem\] {
   min-width: 12rem;
-}
-.min-w-\[3ch\] {
-  min-width: 3ch;
 }
 .min-w-\[8rem\] {
   min-width: 8rem;
@@ -3428,27 +3439,49 @@ video {
 .\[--cell-size\:2rem\] {
   --cell-size: 2rem;
 }
-table .placeholder\:text-muted-foreground::-moz-placeholder {
+table .placeholder\:text-muted-foreground::-moz-placeholder, .data-list .placeholder\:text-muted-foreground::-moz-placeholder {
   --tw-text-opacity: 1 !important;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
-table .placeholder\:text-muted-foreground::placeholder {
+table .placeholder\:text-muted-foreground::placeholder,
+  .data-list .placeholder\:text-muted-foreground::placeholder {
   --tw-text-opacity: 1 !important;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
-table .placeholder\:text-muted-foreground:is(.dark *)::-moz-placeholder {
+table .placeholder\:text-muted-foreground:is(.dark *)::-moz-placeholder, .data-list .placeholder\:text-muted-foreground:is(.dark *)::-moz-placeholder {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
-table .placeholder\:text-muted-foreground:is(.dark *)::placeholder {
+table .placeholder\:text-muted-foreground:is(.dark *)::placeholder,
+  .data-list .placeholder\:text-muted-foreground:is(.dark *)::placeholder {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
-table .hover\:text-muted-foreground:hover {
+table .placeholder\:text-muted-foreground::-moz-placeholder, .data-list .placeholder\:text-muted-foreground::-moz-placeholder {
   --tw-text-opacity: 1 !important;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
-table .hover\:text-muted-foreground:hover:is(.dark *) {
+table .placeholder\:text-muted-foreground::placeholder,
+  .data-list .placeholder\:text-muted-foreground::placeholder {
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+}
+table .placeholder\:text-muted-foreground:is(.dark *)::-moz-placeholder, .data-list .placeholder\:text-muted-foreground:is(.dark *)::-moz-placeholder {
+  --tw-text-opacity: 1 !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+table .placeholder\:text-muted-foreground:is(.dark *)::placeholder,
+  .data-list .placeholder\:text-muted-foreground:is(.dark *)::placeholder {
+  --tw-text-opacity: 1 !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+table .hover\:text-muted-foreground:hover,
+  .data-list .hover\:text-muted-foreground:hover {
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+}
+table .hover\:text-muted-foreground:hover:is(.dark *),
+  .data-list .hover\:text-muted-foreground:hover:is(.dark *) {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
@@ -3462,35 +3495,73 @@ table .hover\:text-muted-foreground:hover:is(.dark *) {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
-table .group.toast .group-\[\.toast\]\:text-muted-foreground {
+table .hover\:text-muted-foreground:hover,
+  .data-list .hover\:text-muted-foreground:hover {
   --tw-text-opacity: 1 !important;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
-table .group.toast .group-\[\.toast\]\:text-muted-foreground:is(.dark *) {
+table .hover\:text-muted-foreground:hover:is(.dark *),
+  .data-list .hover\:text-muted-foreground:hover:is(.dark *) {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
-table .aria-selected\:text-muted-foreground[aria-selected="true"] {
+table .group.toast .group-\[\.toast\]\:text-muted-foreground,
+  .data-list .group.toast .group-\[\.toast\]\:text-muted-foreground {
   --tw-text-opacity: 1 !important;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
-table .aria-selected\:text-muted-foreground[aria-selected="true"]:is(.dark *) {
+table .group.toast .group-\[\.toast\]\:text-muted-foreground:is(.dark *),
+  .data-list .group.toast .group-\[\.toast\]\:text-muted-foreground:is(.dark *) {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
-table .data-\[placeholder\]\:text-muted-foreground[data-placeholder] {
+table .group.toast .group-\[\.toast\]\:text-muted-foreground,
+  .data-list .group.toast .group-\[\.toast\]\:text-muted-foreground {
   --tw-text-opacity: 1 !important;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
-table .data-\[placeholder\]\:text-muted-foreground[data-placeholder]:is(.dark *) {
+table .group.toast .group-\[\.toast\]\:text-muted-foreground:is(.dark *),
+  .data-list .group.toast .group-\[\.toast\]\:text-muted-foreground:is(.dark *) {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
-table .data-\[state\=open\]\:text-muted-foreground[data-state="open"] {
+table .aria-selected\:text-muted-foreground[aria-selected="true"],
+  .data-list .aria-selected\:text-muted-foreground[aria-selected="true"] {
   --tw-text-opacity: 1 !important;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
-table .data-\[state\=open\]\:text-muted-foreground[data-state="open"]:is(.dark *) {
+table .aria-selected\:text-muted-foreground[aria-selected="true"]:is(.dark *),
+  .data-list .aria-selected\:text-muted-foreground[aria-selected="true"]:is(.dark *) {
+  --tw-text-opacity: 1 !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+table .aria-selected\:text-muted-foreground[aria-selected="true"],
+  .data-list .aria-selected\:text-muted-foreground[aria-selected="true"] {
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+}
+table .aria-selected\:text-muted-foreground[aria-selected="true"]:is(.dark *),
+  .data-list .aria-selected\:text-muted-foreground[aria-selected="true"]:is(.dark *) {
+  --tw-text-opacity: 1 !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+table .data-\[placeholder\]\:text-muted-foreground[data-placeholder],
+  .data-list .data-\[placeholder\]\:text-muted-foreground[data-placeholder] {
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+}
+table .data-\[placeholder\]\:text-muted-foreground[data-placeholder]:is(.dark *),
+  .data-list .data-\[placeholder\]\:text-muted-foreground[data-placeholder]:is(.dark *) {
+  --tw-text-opacity: 1 !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+table .data-\[state\=open\]\:text-muted-foreground[data-state="open"],
+  .data-list .data-\[state\=open\]\:text-muted-foreground[data-state="open"] {
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+}
+table .data-\[state\=open\]\:text-muted-foreground[data-state="open"]:is(.dark *),
+  .data-list .data-\[state\=open\]\:text-muted-foreground[data-state="open"]:is(.dark *) {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
@@ -3504,19 +3575,63 @@ table .data-\[state\=open\]\:text-muted-foreground[data-state="open"]:is(.dark *
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
-table .\[\&\>svg\]\:text-muted-foreground>svg {
+table .data-\[placeholder\]\:text-muted-foreground[data-placeholder],
+  .data-list .data-\[placeholder\]\:text-muted-foreground[data-placeholder] {
   --tw-text-opacity: 1 !important;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
-table .\[\&\>svg\]\:text-muted-foreground>svg:is(.dark *) {
+table .data-\[placeholder\]\:text-muted-foreground[data-placeholder]:is(.dark *),
+  .data-list .data-\[placeholder\]\:text-muted-foreground[data-placeholder]:is(.dark *) {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
-table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading] {
+table .data-\[state\=open\]\:text-muted-foreground[data-state="open"],
+  .data-list .data-\[state\=open\]\:text-muted-foreground[data-state="open"] {
   --tw-text-opacity: 1 !important;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
 }
-table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]:is(.dark *) {
+table .data-\[state\=open\]\:text-muted-foreground[data-state="open"]:is(.dark *),
+  .data-list .data-\[state\=open\]\:text-muted-foreground[data-state="open"]:is(.dark *) {
+  --tw-text-opacity: 1 !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+table .\[\&\>svg\]\:text-muted-foreground>svg,
+  .data-list .\[\&\>svg\]\:text-muted-foreground>svg {
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+}
+table .\[\&\>svg\]\:text-muted-foreground>svg:is(.dark *),
+  .data-list .\[\&\>svg\]\:text-muted-foreground>svg:is(.dark *) {
+  --tw-text-opacity: 1 !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+table .\[\&\>svg\]\:text-muted-foreground>svg,
+  .data-list .\[\&\>svg\]\:text-muted-foreground>svg {
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+}
+table .\[\&\>svg\]\:text-muted-foreground>svg:is(.dark *),
+  .data-list .\[\&\>svg\]\:text-muted-foreground>svg:is(.dark *) {
+  --tw-text-opacity: 1 !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading],
+  .data-list .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading] {
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+}
+table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]:is(.dark *),
+  .data-list .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]:is(.dark *) {
+  --tw-text-opacity: 1 !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading],
+  .data-list .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading] {
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important;
+}
+table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]:is(.dark *),
+  .data-list .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]:is(.dark *) {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }

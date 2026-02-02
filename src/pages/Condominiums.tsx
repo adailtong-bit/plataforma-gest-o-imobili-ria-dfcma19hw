@@ -210,6 +210,7 @@ export default function Condominiums() {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   placeholder="Ex: Sunset Heights HOA"
+                  className="text-black"
                 />
               </div>
               <div className="grid gap-2">
@@ -223,6 +224,7 @@ export default function Condominiums() {
                   onChange={(e) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
+                  className="text-black"
                 />
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -233,6 +235,7 @@ export default function Condominiums() {
                     onChange={(e) =>
                       setFormData({ ...formData, city: e.target.value })
                     }
+                    className="text-black"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -242,6 +245,7 @@ export default function Condominiums() {
                     onChange={(e) =>
                       setFormData({ ...formData, state: e.target.value })
                     }
+                    className="text-black"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -251,6 +255,7 @@ export default function Condominiums() {
                     onChange={(e) =>
                       setFormData({ ...formData, zipCode: e.target.value })
                     }
+                    className="text-black"
                   />
                 </div>
               </div>
@@ -261,6 +266,7 @@ export default function Condominiums() {
                   onChange={(e) =>
                     setFormData({ ...formData, managerName: e.target.value })
                   }
+                  className="text-black"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -274,6 +280,7 @@ export default function Condominiums() {
                     country={managerCountry}
                     onCountryChange={setManagerCountry}
                     defaultCountry="US"
+                    className="text-black"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -283,6 +290,7 @@ export default function Condominiums() {
                     onChange={(e) =>
                       setFormData({ ...formData, managerEmail: e.target.value })
                     }
+                    className="text-black"
                   />
                 </div>
               </div>
@@ -340,7 +348,7 @@ export default function Condominiums() {
                 <TableRow>
                   <TableCell
                     colSpan={6}
-                    className="text-center py-8 text-slate-500"
+                    className="text-center py-8 text-black"
                   >
                     {t('condominiums.no_condos')}
                   </TableCell>

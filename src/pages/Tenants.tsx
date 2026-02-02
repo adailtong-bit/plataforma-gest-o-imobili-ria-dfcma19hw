@@ -243,6 +243,7 @@ export default function Tenants() {
                       onChange={(e) =>
                         setNewTenant({ ...newTenant, name: e.target.value })
                       }
+                      className="text-black"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -253,12 +254,16 @@ export default function Tenants() {
                         setNewTenant({ ...newTenant, propertyId: v })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-black">
                         <SelectValue placeholder="Select Property" />
                       </SelectTrigger>
                       <SelectContent>
                         {availableProperties.map((p) => (
-                          <SelectItem key={p.id} value={p.id}>
+                          <SelectItem
+                            key={p.id}
+                            value={p.id}
+                            className="text-black"
+                          >
                             {p.name}
                           </SelectItem>
                         ))}
@@ -275,6 +280,7 @@ export default function Tenants() {
                       onChange={(e) =>
                         setNewTenant({ ...newTenant, email: e.target.value })
                       }
+                      className="text-black"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -288,7 +294,7 @@ export default function Tenants() {
                       onCountryChange={(c) =>
                         setNewTenant({ ...newTenant, country: c })
                       }
-                      className="w-full h-12 text-lg"
+                      className="w-full h-12 text-lg text-black"
                     />
                   </div>
                 </div>
@@ -301,6 +307,7 @@ export default function Tenants() {
                     onChange={(e) =>
                       setNewTenant({ ...newTenant, address: e.target.value })
                     }
+                    className="text-black"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -312,6 +319,7 @@ export default function Tenants() {
                       onChange={(e) =>
                         setNewTenant({ ...newTenant, passport: e.target.value })
                       }
+                      className="text-black"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -325,6 +333,7 @@ export default function Tenants() {
                           socialSecurity: e.target.value,
                         })
                       }
+                      className="text-black"
                     />
                   </div>
                 </div>
