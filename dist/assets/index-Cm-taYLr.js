@@ -53357,7 +53357,6 @@ const translations = {
 			active_listings: "Listagens Ativas",
 			sold: "Vendido",
 			sale_pending: "Venda Pendente",
-			partners: "Parceiros",
 			category: "Categoria",
 			quantity: "Quantidade",
 			condition: "Condição",
@@ -53368,6 +53367,37 @@ const translations = {
 			provider: "Fornecedor",
 			account_number: "Número da Conta",
 			recurring: "Recorrente"
+		},
+		sidebar: {
+			main_menu: "Menu Principal",
+			system: "Sistema",
+			tenant_portal: "Portal do Inquilino",
+			owner_portal: "Portal do Proprietário",
+			partner_portal: "Portal do Parceiro",
+			migration_hub: "Central de Migração",
+			publicity_admin: "Admin de Publicidade",
+			users: "Usuários"
+		},
+		dashboard: {
+			total_properties: "Total de Propriedades",
+			in_portfolio: "No portfólio",
+			revenue_vs_expenses: "Receita vs Despesas",
+			revenue_overview: "Visão geral financeira.",
+			quick_calendar: "Calendário Rápido",
+			todays_activity: "Atividades agendadas para hoje.",
+			pending_approvals: "Aprovações Pendentes",
+			pending_desc: "Itens que requerem atenção.",
+			review: "Revisar",
+			approve: "Aprovar",
+			expense_distribution: "Distribuição de Despesas",
+			expense_desc: "Despesas por categoria.",
+			customize: "Personalizar",
+			customize_view: "Personalizar Visualização",
+			customize_desc: "Selecione os widgets que deseja ver no painel.",
+			kpi_indicators: "Indicadores KPI",
+			revenue_chart: "Gráfico de Receita",
+			unread: "Não lidas",
+			from_last_month: "vs mês anterior"
 		},
 		properties: {
 			title: "Propriedades",
@@ -53479,6 +53509,30 @@ const translations = {
 			projected_expenses: "Despesas Projetadas",
 			net_flow: "Fluxo Líquido",
 			income_vs_expenses: "Receitas vs. Despesas Projetadas"
+		},
+		market: {
+			title: "Análise de Mercado",
+			subtitle: "Insights e tendências do mercado imobiliário em tempo real.",
+			export_pdf: "Exportar PDF",
+			comparison_params: "Parâmetros de Comparação",
+			comparison_desc: "Configure os filtros para análise comparativa.",
+			base_property: "Propriedade Base",
+			select: "Selecione",
+			general: "Geral (Sem vínculo)",
+			region: "Região",
+			bedrooms: "Quartos",
+			bathrooms: "Banheiros",
+			analyze: "Analisar",
+			avg_sale_price: "Preço Médio de Venda",
+			price_sqft: "Preço por m²",
+			avg_daily_rate: "Diária Média (ADR)",
+			monthly_rent: "Aluguel Mensal Médio",
+			avg_occupancy: "Ocupação Média",
+			historical_trends: "Tendências Históricas",
+			trends_desc: "Evolução de preços e ocupação ao longo do tempo.",
+			data_connected: "{source} Conectado",
+			sample_based: "Baseado em uma amostra de {count} propriedades.",
+			high_demand: "Alta Demanda"
 		},
 		reports: {
 			maintenance_analytics: "Análise de Manutenção",
@@ -53832,6 +53886,37 @@ const translations = {
 			account_number: "Account Number",
 			recurring: "Recurring"
 		},
+		sidebar: {
+			main_menu: "Main Menu",
+			system: "System",
+			tenant_portal: "Tenant Portal",
+			owner_portal: "Owner Portal",
+			partner_portal: "Partner Portal",
+			migration_hub: "Migration Hub",
+			publicity_admin: "Publicity Admin",
+			users: "Users"
+		},
+		dashboard: {
+			total_properties: "Total Properties",
+			in_portfolio: "In portfolio",
+			revenue_vs_expenses: "Revenue vs Expenses",
+			revenue_overview: "Financial overview for the month.",
+			quick_calendar: "Quick Calendar",
+			todays_activity: "Activities scheduled for today.",
+			pending_approvals: "Pending Approvals",
+			pending_desc: "Items requiring attention.",
+			review: "Review",
+			approve: "Approve",
+			expense_distribution: "Expense Distribution",
+			expense_desc: "Expenses by category.",
+			customize: "Customize",
+			customize_view: "Customize View",
+			customize_desc: "Select widgets to display on dashboard.",
+			kpi_indicators: "KPI Indicators",
+			revenue_chart: "Revenue Chart",
+			unread: "Unread",
+			from_last_month: "vs last month"
+		},
 		properties: {
 			title: "Properties",
 			subtitle: "Manage your real estate portfolio.",
@@ -53942,6 +54027,30 @@ const translations = {
 			projected_expenses: "Projected Expenses",
 			net_flow: "Net Flow",
 			income_vs_expenses: "Projected Income vs. Expenses"
+		},
+		market: {
+			title: "Market Analysis",
+			subtitle: "Real-time real estate market insights and trends.",
+			export_pdf: "Export PDF",
+			comparison_params: "Comparison Parameters",
+			comparison_desc: "Configure filters for comparative analysis.",
+			base_property: "Base Property",
+			select: "Select",
+			general: "General (No link)",
+			region: "Region",
+			bedrooms: "Bedrooms",
+			bathrooms: "Bathrooms",
+			analyze: "Analyze",
+			avg_sale_price: "Avg Sale Price",
+			price_sqft: "Price per SqFt",
+			avg_daily_rate: "Avg Daily Rate (ADR)",
+			monthly_rent: "Avg Monthly Rent",
+			avg_occupancy: "Avg Occupancy",
+			historical_trends: "Historical Trends",
+			trends_desc: "Price and occupancy evolution over time.",
+			data_connected: "{source} Data Connected",
+			sample_based: "Based on a sample of {count} properties.",
+			high_demand: "High Demand"
 		},
 		reports: {
 			maintenance_analytics: "Maintenance Analytics",
@@ -54295,6 +54404,37 @@ const translations = {
 			account_number: "Número de Cuenta",
 			recurring: "Recurrente"
 		},
+		sidebar: {
+			main_menu: "Menú Principal",
+			system: "Sistema",
+			tenant_portal: "Portal del Inquilino",
+			owner_portal: "Portal del Propietario",
+			partner_portal: "Portal del Socio",
+			migration_hub: "Centro de Migración",
+			publicity_admin: "Admin de Publicidad",
+			users: "Usuarios"
+		},
+		dashboard: {
+			total_properties: "Total Propiedades",
+			in_portfolio: "En portafolio",
+			revenue_vs_expenses: "Ingresos vs Gastos",
+			revenue_overview: "Resumen financiero del mes.",
+			quick_calendar: "Calendario Rápido",
+			todays_activity: "Actividades programadas para hoy.",
+			pending_approvals: "Aprobaciones Pendientes",
+			pending_desc: "Ítems que requieren atención.",
+			review: "Revisar",
+			approve: "Aprobar",
+			expense_distribution: "Distribución de Gastos",
+			expense_desc: "Gastos por categoría.",
+			customize: "Personalizar",
+			customize_view: "Personalizar Vista",
+			customize_desc: "Seleccione widgets para mostrar en el panel.",
+			kpi_indicators: "Indicadores KPI",
+			revenue_chart: "Gráfico de Ingresos",
+			unread: "No leídos",
+			from_last_month: "vs mes anterior"
+		},
 		properties: {
 			title: "Propiedades",
 			subtitle: "Gestione su cartera inmobiliaria.",
@@ -54405,6 +54545,30 @@ const translations = {
 			projected_expenses: "Gastos Proyectados",
 			net_flow: "Flujo Neto",
 			income_vs_expenses: "Ingresos vs Gastos Proyectados"
+		},
+		market: {
+			title: "Análisis de Mercado",
+			subtitle: "Perspectivas y tendencias del mercado inmobiliario en tiempo real.",
+			export_pdf: "Exportar PDF",
+			comparison_params: "Parámetros de Comparación",
+			comparison_desc: "Configure filtros para análisis comparativo.",
+			base_property: "Propiedad Base",
+			select: "Seleccione",
+			general: "General (Sin enlace)",
+			region: "Región",
+			bedrooms: "Dormitorios",
+			bathrooms: "Baños",
+			analyze: "Analizar",
+			avg_sale_price: "Precio Promedio Venta",
+			price_sqft: "Precio por m²",
+			avg_daily_rate: "Tarifa Diaria Promedio",
+			monthly_rent: "Alquiler Mensual Promedio",
+			avg_occupancy: "Ocupación Promedio",
+			historical_trends: "Tendencias Históricas",
+			trends_desc: "Evolución de precios y ocupación a lo largo del tiempo.",
+			data_connected: "{source} Conectado",
+			sample_based: "Basado en una muestra de {count} propiedades.",
+			high_demand: "Alta Demanda"
 		},
 		reports: {
 			maintenance_analytics: "Análisis de Mantenimiento",
@@ -55368,16 +55532,6 @@ var usePropertyStore = () => {
 	};
 };
 var usePropertyStore_default = usePropertyStore;
-var useNotificationStore = () => {
-	const context = (0, import_react.useContext)(AppContext);
-	if (!context) throw new Error("useNotificationStore must be used within AppProvider");
-	return {
-		notifications: context.notifications,
-		addNotification: context.addNotification,
-		markNotificationAsRead: context.markNotificationAsRead
-	};
-};
-var useNotificationStore_default = useNotificationStore;
 var useVisitStore = () => {
 	const context = (0, import_react.useContext)(AppContext);
 	if (!context) throw new Error("useVisitStore must be used within AppProvider");
@@ -57020,7 +57174,6 @@ function DashboardContent() {
 	const { tasks: tasks$1 } = useTaskStore_default();
 	const { ledgerEntries: ledgerEntries$1, financials: financials$1 } = useFinancialStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
-	const { notifications: notifications$1 } = useNotificationStore_default();
 	const { visits: visits$1 } = useVisitStore_default();
 	const { t: t$1, language } = useLanguageStore_default();
 	const selectedPropertyId = (0, import_react.useContext)(AppContext)?.selectedPropertyId || "all";
@@ -57161,14 +57314,14 @@ function DashboardContent() {
 							className: "flex flex-row items-center justify-between space-y-0 pb-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
 								className: "text-sm font-bold text-black",
-								children: "Total Properties"
+								children: t$1("dashboard.total_properties")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-black",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: totalProperties })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-xs text-black font-bold",
-							children: "In portfolio"
+							children: t$1("dashboard.in_portfolio")
 						})] })]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
@@ -61536,6 +61689,16 @@ var PopoverContent = import_react.forwardRef(({ className, align = "center", sid
 	...props
 }) }));
 PopoverContent.displayName = Content2$1.displayName;
+var useNotificationStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("useNotificationStore must be used within AppProvider");
+	return {
+		notifications: context.notifications,
+		addNotification: context.addNotification,
+		markNotificationAsRead: context.markNotificationAsRead
+	};
+};
+var useNotificationStore_default = useNotificationStore;
 function useStateMachine(initialState, machine) {
 	return import_react.useReducer((state, event) => {
 		return machine[state][event] ?? state;
@@ -87984,7 +88147,7 @@ function MarketAnalysis() {
 							src: "https://img.usecurling.com/i?q=airbnb&color=red",
 							className: "w-4 h-4 mr-2",
 							alt: "Airbnb"
-						}), "Airbnb Data Connected"]
+						}), t$1("market.data_connected", { source: "Airbnb" })]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
 						variant: "outline",
@@ -87993,7 +88156,7 @@ function MarketAnalysis() {
 							src: "https://img.usecurling.com/i?q=zillow&color=blue",
 							className: "w-4 h-4 mr-2",
 							alt: "Zillow"
-						}), "Zillow Data Connected"]
+						}), t$1("market.data_connected", { source: "Zillow" })]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
 						variant: "outline",
@@ -88002,7 +88165,7 @@ function MarketAnalysis() {
 							src: "https://img.usecurling.com/i?q=house&color=black",
 							className: "w-4 h-4 mr-2",
 							alt: "Realtor"
-						}), "Realtor Data Connected"]
+						}), t$1("market.data_connected", { source: "Realtor" })]
 					})
 				]
 			}),
@@ -88019,16 +88182,14 @@ function MarketAnalysis() {
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: data.region })
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, {
 								className: "flex items-center gap-1 mt-1",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Info, { className: "h-3 w-3" }),
-									" Based on a sample of",
-									" ",
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: sampleSize }),
-									" comparable properties."
-								]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Info, { className: "h-3 w-3" }), t$1("market.sample_based", { count: sampleSize.toString() })]
 							})] }), data.trend === "up" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
 								className: "bg-green-100 text-green-800 hover:bg-green-100",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrendingUp, { className: "h-3 w-3 mr-1" }), " High Demand"]
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrendingUp, { className: "h-3 w-3 mr-1" }),
+									" ",
+									t$1("market.high_demand")
+								]
 							})]
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
@@ -93182,4 +93343,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-ZTtSHVp6.js.map
+//# sourceMappingURL=index-Cm-taYLr.js.map

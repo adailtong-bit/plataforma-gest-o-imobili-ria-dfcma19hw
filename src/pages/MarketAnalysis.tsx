@@ -192,7 +192,7 @@ export default function MarketAnalysis() {
             className="w-4 h-4 mr-2"
             alt="Airbnb"
           />
-          Airbnb Data Connected
+          {t('market.data_connected', { source: 'Airbnb' })}
         </Badge>
         <Badge variant="outline" className="px-3 py-1 bg-white border-blue-200">
           <img
@@ -200,7 +200,7 @@ export default function MarketAnalysis() {
             className="w-4 h-4 mr-2"
             alt="Zillow"
           />
-          Zillow Data Connected
+          {t('market.data_connected', { source: 'Zillow' })}
         </Badge>
         <Badge variant="outline" className="px-3 py-1 bg-white border-blue-200">
           <img
@@ -208,7 +208,7 @@ export default function MarketAnalysis() {
             className="w-4 h-4 mr-2"
             alt="Realtor"
           />
-          Realtor Data Connected
+          {t('market.data_connected', { source: 'Realtor' })}
         </Badge>
       </div>
 
@@ -222,13 +222,16 @@ export default function MarketAnalysis() {
                     <DataMask>{data.region}</DataMask>
                   </CardTitle>
                   <CardDescription className="flex items-center gap-1 mt-1">
-                    <Info className="h-3 w-3" /> Based on a sample of{' '}
-                    <DataMask>{sampleSize}</DataMask> comparable properties.
+                    <Info className="h-3 w-3" />
+                    {t('market.sample_based', {
+                      count: sampleSize.toString(),
+                    })}
                   </CardDescription>
                 </div>
                 {data.trend === 'up' && (
                   <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                    <TrendingUp className="h-3 w-3 mr-1" /> High Demand
+                    <TrendingUp className="h-3 w-3 mr-1" />{' '}
+                    {t('market.high_demand')}
                   </Badge>
                 )}
               </div>

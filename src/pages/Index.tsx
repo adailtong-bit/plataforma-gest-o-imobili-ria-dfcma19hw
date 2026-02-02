@@ -55,7 +55,6 @@ import { formatCurrency } from '@/lib/utils'
 import { DataMask } from '@/components/DataMask'
 
 export default function Index() {
-  // Removed check for isAuthenticated to allow masked view
   return <DashboardContent />
 }
 
@@ -64,7 +63,6 @@ function DashboardContent() {
   const { tasks } = useTaskStore()
   const { ledgerEntries, financials } = useFinancialStore()
   const { properties } = usePropertyStore()
-  const { notifications } = useNotificationStore()
   const { visits } = useVisitStore()
   const { t, language } = useLanguageStore()
   const context = useContext(AppContext)
@@ -227,7 +225,7 @@ function DashboardContent() {
           <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-bold text-black">
-                Total Properties
+                {t('dashboard.total_properties')}
               </CardTitle>
               <Building className="h-4 w-4 text-black" />
             </CardHeader>
@@ -235,7 +233,9 @@ function DashboardContent() {
               <div className="text-2xl font-bold text-black">
                 <DataMask>{totalProperties}</DataMask>
               </div>
-              <p className="text-xs text-black font-bold">In portfolio</p>
+              <p className="text-xs text-black font-bold">
+                {t('dashboard.in_portfolio')}
+              </p>
             </CardContent>
           </Card>
           <Card className="border-slate-200 shadow-sm bg-white">
