@@ -24571,6 +24571,14 @@ const applyPhoneMask = (value, country) => {
 	}
 	return value;
 };
+const isPhoneValid = (value, country) => {
+	if (!value) return false;
+	const digits = value.replace(/\D/g, "");
+	if (country === "US") return digits.length === 10;
+	if (country === "BR") return digits.length === 11 || digits.length === 10;
+	if (country === "ES") return digits.length === 9;
+	return digits.length > 8;
+};
 const exportToCSV = (filename, headers, rows) => {
 	const csvContent = [headers.join(","), ...rows.map((row) => row.map((cell) => {
 		if (cell === null || cell === void 0) return "";
@@ -53094,7 +53102,14 @@ const mockAdvertisers = [];
 const mockAdPricing = {
 	weekly: 50,
 	biWeekly: 90,
-	monthly: 150
+	monthly: 150,
+	placementModifiers: {
+		home_top: 1.5,
+		home_bottom: 1,
+		partner_page: 1.2,
+		tenant_page: 1.1,
+		pm_login: 2
+	}
 };
 const bookings = [{
 	id: "bk_1",
@@ -53135,6 +53150,51 @@ const serviceCategories = [
 		id: "cat_3",
 		name: "Cleaning",
 		color: "#22c55e"
+	},
+	{
+		id: "cat_4",
+		name: "Eletricista",
+		color: "#f59e0b"
+	},
+	{
+		id: "cat_5",
+		name: "limpeza",
+		color: "#10b981"
+	},
+	{
+		id: "cat_6",
+		name: "encanador",
+		color: "#3b82f6"
+	},
+	{
+		id: "cat_7",
+		name: "manutenção",
+		color: "#6366f1"
+	},
+	{
+		id: "cat_8",
+		name: "pintura",
+		color: "#ec4899"
+	},
+	{
+		id: "cat_9",
+		name: "telhadista",
+		color: "#8b5cf6"
+	},
+	{
+		id: "cat_10",
+		name: "limpeza piscina",
+		color: "#06b6d4"
+	},
+	{
+		id: "cat_11",
+		name: "técnico ar condicionado",
+		color: "#ef4444"
+	},
+	{
+		id: "cat_12",
+		name: "técnico de manut piscina",
+		color: "#14b8a6"
 	}
 ];
 const visits = [];
@@ -58851,14 +58911,17 @@ var COUNTRIES = {
 		mask: "999 99 99 99"
 	}
 };
-function PhoneInput({ className, value, onChange, defaultCountry = "US", ...props }) {
-	const [country, setCountry] = import_react.useState(defaultCountry);
+function PhoneInput({ className, value, onChange, defaultCountry = "US", country: controlledCountry, onCountryChange, ...props }) {
+	const [internalCountry, setInternalCountry] = import_react.useState(defaultCountry);
+	const currentCountry = controlledCountry || internalCountry;
 	const handleCountryChange = (val) => {
-		setCountry(val);
+		const newCountry = val;
+		if (onCountryChange) onCountryChange(newCountry);
+		else setInternalCountry(newCountry);
 	};
 	const handlePhoneChange = (e) => {
 		const rawValue = e.target.value;
-		const maskedValue = applyPhoneMask(rawValue, country);
+		const maskedValue = applyPhoneMask(rawValue, currentCountry);
 		onChange({
 			...e,
 			target: {
@@ -58870,14 +58933,14 @@ function PhoneInput({ className, value, onChange, defaultCountry = "US", ...prop
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: cn("flex gap-2", className),
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-			value: country,
+			value: currentCountry,
 			onValueChange: handleCountryChange,
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
 				className: "w-[100px]",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectValue, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 					className: "mr-2",
-					children: COUNTRIES[country].flag
-				}), COUNTRIES[country].code] })
+					children: COUNTRIES[currentCountry].flag
+				}), COUNTRIES[currentCountry].code] })
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: Object.entries(COUNTRIES).map(([key, data]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
 				value: key,
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -58889,8 +58952,8 @@ function PhoneInput({ className, value, onChange, defaultCountry = "US", ...prop
 			...props,
 			value,
 			onChange: handlePhoneChange,
-			placeholder: COUNTRIES[country].mask,
-			maxLength: country === "US" ? 14 : country === "BR" ? 15 : 13,
+			placeholder: COUNTRIES[currentCountry].mask,
+			maxLength: currentCountry === "US" ? 14 : currentCountry === "BR" ? 15 : 13,
 			className: "flex-1"
 		})]
 	});
@@ -59997,7 +60060,7 @@ function AppSidebar() {
 	const showMigration = currentUser.role === "platform_owner" || currentUser.role === "software_tenant";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Sidebar, {
 		collapsible: "icon",
-		className: "bg-slate-50 dark:bg-slate-900 border-r z-50 fixed left-0 top-0 h-screen shadow-md",
+		className: "bg-background border-r z-50 fixed left-0 top-0 h-screen shadow-md",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarHeader, {
 				className: "h-16 flex items-center px-4 border-b bg-inherit",
@@ -77061,12 +77124,21 @@ function TaskInvoiceDialog({ open, onOpenChange }) {
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
 						className: "flex-1 border rounded-md h-[300px]",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { className: "w-[50px]" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Date" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Task" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Property" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { className: "w-[50px] table-text" }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-								className: "text-right",
+								className: "table-text",
+								children: "Date"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "table-text",
+								children: "Task"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "table-text",
+								children: "Property"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "text-right table-text",
 								children: "Value"
 							})
 						] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: invoiceableTasks.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -77078,14 +77150,20 @@ function TaskInvoiceDialog({ open, onOpenChange }) {
 								checked: selectedTasks.includes(task.id),
 								onCheckedChange: (c$1) => handleSelectTask(task.id, c$1)
 							}) }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatDate(task.date, language) }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-								className: "font-medium",
+								className: "table-text",
+								children: formatDate(task.date, language)
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "font-medium table-text",
 								children: task.title
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: task.propertyName }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-								className: "text-right font-semibold",
+								className: "table-text",
+								children: task.propertyName
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "text-right font-semibold table-text",
 								children: isTeamMember ? formatCurrency(task.teamMemberPayout || 0, language) : formatCurrency(task.price || 0, language)
 							})
 						] }, task.id)) })] })
@@ -77980,13 +78058,28 @@ function Financial() {
 						className: "font-medium mb-4",
 						children: t$1("financial.statements")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Arquivo" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Data Upload" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Itens" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Valor Total" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
+							className: "table-text",
+							children: "Arquivo"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "table-text",
+							children: "Data Upload"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "table-text",
+							children: "Status"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "table-text",
+							children: "Itens"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "table-text",
+							children: "Valor Total"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right table-text",
 							children: "Ação"
 						})
 					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: bankStatements.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -77995,26 +78088,38 @@ function Financial() {
 						children: t$1("financial.no_statements")
 					}) }) : bankStatements.map((stmt) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-							className: "font-medium flex items-center gap-2",
+							className: "font-medium flex items-center gap-2 table-text",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4 text-blue-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: stmt.fileName })]
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatDate(stmt.uploadDate, language) }) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: stmt.status === "reconciled" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
-							className: "bg-green-100 text-green-800 hover:bg-green-100 border-green-200",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "w-3 h-3 mr-1" }),
-								" ",
-								t$1("financial.reconciled")
-							]
-						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
-							variant: "secondary",
-							className: "bg-yellow-100 text-yellow-800",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { className: "w-3 h-3 mr-1" }), t$1("financial.pending_reconciliation")]
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: stmt.itemsCount }) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(stmt.totalAmount, language) }) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right",
+							className: "table-text",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatDate(stmt.uploadDate, language) })
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "table-text",
+							children: stmt.status === "reconciled" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+								className: "bg-green-100 text-green-800 hover:bg-green-100 border-green-200",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "w-3 h-3 mr-1" }),
+									" ",
+									t$1("financial.reconciled")
+								]
+							}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+								variant: "secondary",
+								className: "bg-yellow-100 text-yellow-800",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { className: "w-3 h-3 mr-1" }), t$1("financial.pending_reconciliation")]
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "table-text",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: stmt.itemsCount })
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "table-text",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(stmt.totalAmount, language) })
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right table-text",
 							children: stmt.status === "pending" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								size: "sm",
 								variant: "outline",
@@ -78496,14 +78601,32 @@ function Invoices() {
 					})]
 				})
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("invoices.invoice_id") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.description") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.date") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Flow" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("invoices.amount") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-					className: "text-right",
+					className: "table-text",
+					children: t$1("invoices.invoice_id")
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "table-text",
+					children: t$1("common.description")
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "table-text",
+					children: t$1("common.date")
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "table-text",
+					children: "Flow"
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "table-text",
+					children: t$1("invoices.amount")
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "table-text",
+					children: t$1("common.status")
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "text-right table-text",
 					children: t$1("common.actions")
 				})
 			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredInvoices.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -78515,35 +78638,47 @@ function Invoices() {
 				const toName = resolveUserName(inv.toId);
 				return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-						className: "font-medium flex items-center gap-2",
+						className: "font-medium flex items-center gap-2 table-text",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: inv.id })]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-						className: "max-w-[200px] truncate",
+						className: "max-w-[200px] truncate table-text",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: inv.description })
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatDate(inv.date, language) }) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-2 text-xs text-muted-foreground",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "font-medium text-foreground",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: fromName })
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "h-3 w-3" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "font-medium text-foreground",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: toName })
-							})
-						]
-					}) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-1 font-bold",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-3 w-3 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(inv.amount, language) })]
-					}) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: getStatusBadge(inv.status) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-						className: "text-right",
+						className: "table-text",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatDate(inv.date, language) })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: "table-text",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center gap-2 text-xs text-muted-foreground",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "font-medium text-foreground",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: fromName })
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "h-3 w-3" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "font-medium text-foreground",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: toName })
+								})
+							]
+						})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: "table-text",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center gap-1 font-bold",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-3 w-3 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(inv.amount, language) })]
+						})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: "table-text",
+						children: getStatusBadge(inv.status)
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: "text-right table-text",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex justify-end gap-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -79877,7 +80012,7 @@ function AddressInput({ onAddressSelect, defaultValue = "", className, disabled 
 }
 function Tenants() {
 	const { tenants: tenants$1, addTenant } = useTenantStore_default();
-	const { properties: properties$1 } = usePropertyStore_default();
+	const { properties: properties$1, updateProperty } = usePropertyStore_default();
 	const { owners: owners$1 } = useOwnerStore_default();
 	const navigate = useNavigate();
 	const { toast: toast$2 } = useToast();
@@ -79889,6 +80024,7 @@ function Tenants() {
 		email: "",
 		phone: "",
 		address: "",
+		country: "US",
 		rentValue: "",
 		propertyId: "",
 		leaseStart: "",
@@ -79898,10 +80034,12 @@ function Tenants() {
 		socialSecurity: ""
 	});
 	const filteredTenants = tenants$1.filter((t$2) => t$2.name.toLowerCase().includes(filter.toLowerCase()) || t$2.email.toLowerCase().includes(filter.toLowerCase()));
+	const availableProperties = properties$1.filter((p$1) => p$1.status === "available" || p$1.status === "interested");
 	const handleAddressSelect = (addr) => {
 		setNewTenant((prev) => ({
 			...prev,
-			address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`
+			address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
+			country: addr.country === "USA" ? "US" : addr.country === "Brazil" ? "BR" : "US"
 		}));
 	};
 	const handleAddTenant = () => {
@@ -79921,13 +80059,20 @@ function Tenants() {
 			});
 			return;
 		}
-		if (!newTenant.phone || newTenant.phone.length < 10) {
+		if (!isPhoneValid(newTenant.phone, newTenant.country)) {
 			toast$2({
 				title: t$1("common.error"),
-				description: "Phone number is invalid or too short.",
+				description: `Invalid phone number for ${newTenant.country}.`,
 				variant: "destructive"
 			});
 			return;
+		}
+		if (newTenant.propertyId) {
+			const prop = properties$1.find((p$1) => p$1.id === newTenant.propertyId);
+			if (prop) updateProperty({
+				...prop,
+				status: "reserved"
+			});
 		}
 		addTenant({
 			id: `t-${Date.now()}`,
@@ -79944,6 +80089,7 @@ function Tenants() {
 			email: "",
 			phone: "",
 			address: "",
+			country: "US",
 			rentValue: "",
 			propertyId: "",
 			leaseStart: "",
@@ -80053,13 +80199,16 @@ function Tenants() {
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "ID / RG" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											placeholder: "ID Number",
-											value: newTenant.idNumber,
-											onChange: (e) => setNewTenant({
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Link Property (Available Only)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											value: newTenant.propertyId,
+											onValueChange: (v) => setNewTenant({
 												...newTenant,
-												idNumber: e.target.value
-											})
+												propertyId: v
+											}),
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Property" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: availableProperties.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: p$1.id,
+												children: p$1.name
+											}, p$1.id)) })]
 										})]
 									})]
 								}),
@@ -80082,7 +80231,13 @@ function Tenants() {
 											onChange: (e) => setNewTenant({
 												...newTenant,
 												phone: e.target.value
-											})
+											}),
+											country: newTenant.country,
+											onCountryChange: (c$1) => setNewTenant({
+												...newTenant,
+												country: c$1
+											}),
+											className: "w-full h-12 text-lg"
 										})]
 									})]
 								}),
@@ -80150,19 +80305,31 @@ function Tenants() {
 				})]
 			})
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("tenants.property") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.contracts") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-				className: "text-right",
+				className: "table-text",
+				children: t$1("common.name")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "table-text",
+				children: t$1("tenants.property")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "table-text",
+				children: t$1("common.contracts")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "table-text",
+				children: t$1("common.status")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "text-right table-text",
 				children: t$1("common.actions")
 			})
 		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredTenants.map((tenant) => {
 			const prop = properties$1.find((p$1) => p$1.id === tenant.propertyId);
 			return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					className: "font-medium",
+					className: "font-medium table-text",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex flex-col",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.name }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -80171,30 +80338,39 @@ function Tenants() {
 						})]
 					})
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: prop ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-					to: `/properties/${prop.id}`,
-					className: "flex items-center gap-2 hover:text-blue-600 hover:underline",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: prop.name })]
-				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-					className: "text-muted-foreground",
-					children: "-"
-				}) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2 text-sm",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-3 w-3 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [
-						tenant.leaseStart ? format(new Date(tenant.leaseStart), "dd/MM/yyyy") : "N/A",
-						" ",
-						"-",
-						" ",
-						tenant.leaseEnd ? format(new Date(tenant.leaseEnd), "dd/MM/yyyy") : "N/A"
-					] })]
-				}) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-					variant: "outline",
-					children: tenant.status
-				}) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					className: "text-right",
+					className: "table-text",
+					children: prop ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+						to: `/properties/${prop.id}`,
+						className: "flex items-center gap-2 hover:text-blue-600 hover:underline",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: prop.name })]
+					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "text-muted-foreground",
+						children: "-"
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "table-text",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-2 text-sm",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-3 w-3 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [
+							tenant.leaseStart ? format(new Date(tenant.leaseStart), "dd/MM/yyyy") : "N/A",
+							" ",
+							"-",
+							" ",
+							tenant.leaseEnd ? format(new Date(tenant.leaseEnd), "dd/MM/yyyy") : "N/A"
+						] })]
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "table-text",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+						variant: "outline",
+						children: tenant.status
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "text-right table-text",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex justify-end gap-2",
 						children: [
@@ -80555,7 +80731,8 @@ function TenantDetails() {
 	const handleAddressSelect = (addr) => {
 		setFormData((prev) => ({
 			...prev,
-			address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`
+			address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
+			country: addr.country
 		}));
 	};
 	const handleDocsUpdate = (docs) => {
@@ -80835,7 +81012,7 @@ function TenantDetails() {
 															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
 																value: formData.phone || "",
 																onChange: (e) => handleChange("phone", e.target.value),
-																disabled: !isEditing
+																defaultCountry: formData.country || "US"
 															})]
 														}),
 														/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -81057,12 +81234,24 @@ function TenantDetails() {
 												})]
 											})]
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Type" }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Date" }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "By" }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Items Checked" }),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-												className: "text-right",
+												className: "table-text",
+												children: "Type"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+												className: "table-text",
+												children: "Date"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+												className: "table-text",
+												children: "By"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+												className: "table-text",
+												children: "Items Checked"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+												className: "text-right table-text",
 												children: "Action"
 											})
 										] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: !formData.inspections || formData.inspections.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -81071,12 +81260,21 @@ function TenantDetails() {
 											children: "No inspections performed."
 										}) }) : formData.inspections.map((insp) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-												className: "capitalize font-medium",
+												className: "capitalize font-medium table-text",
 												children: insp.type.replace("_", " ")
 											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(insp.date), "PP") }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: insp.performedBy }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: insp.items.length }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+												className: "table-text",
+												children: format(new Date(insp.date), "PP")
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+												className: "table-text",
+												children: insp.performedBy
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+												className: "table-text",
+												children: insp.items.length
+											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 												className: "text-right",
 												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
@@ -81300,11 +81498,23 @@ function Owners() {
 	const [newOwner, setNewOwner] = (0, import_react.useState)({
 		name: "",
 		email: "",
-		phone: ""
+		phone: "",
+		country: "US",
+		address: "",
+		city: "",
+		state: "",
+		zipCode: ""
 	});
 	const filteredOwners = owners$1.filter((o$1) => o$1.name.toLowerCase().includes(filter.toLowerCase()) || o$1.email.toLowerCase().includes(filter.toLowerCase()));
-	const validateEmail = (email$1) => {
-		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email$1);
+	const handleAddressSelect = (addr) => {
+		setNewOwner((prev) => ({
+			...prev,
+			address: addr.street,
+			city: addr.city,
+			state: addr.state,
+			zipCode: addr.zipCode,
+			country: addr.country === "USA" ? "US" : addr.country === "Brazil" ? "BR" : "US"
+		}));
 	};
 	const handleAddOwner = () => {
 		if (!newOwner.name || !newOwner.email) {
@@ -81315,10 +81525,18 @@ function Owners() {
 			});
 			return;
 		}
-		if (!validateEmail(newOwner.email)) {
+		if (!isValidEmail(newOwner.email)) {
 			toast$2({
 				title: t$1("common.error"),
 				description: "Email inválido",
+				variant: "destructive"
+			});
+			return;
+		}
+		if (newOwner.phone && !isPhoneValid(newOwner.phone, newOwner.country)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: `Invalid phone format for ${newOwner.country}`,
 				variant: "destructive"
 			});
 			return;
@@ -81328,6 +81546,11 @@ function Owners() {
 			name: newOwner.name,
 			email: newOwner.email,
 			phone: newOwner.phone,
+			country: newOwner.country,
+			address: newOwner.address,
+			city: newOwner.city,
+			state: newOwner.state,
+			zipCode: newOwner.zipCode,
 			status: "active",
 			role: "property_owner"
 		});
@@ -81339,7 +81562,12 @@ function Owners() {
 		setNewOwner({
 			name: "",
 			email: "",
-			phone: ""
+			phone: "",
+			country: "US",
+			address: "",
+			city: "",
+			state: "",
+			zipCode: ""
 		});
 	};
 	const getPropertyCount = (ownerId) => {
@@ -81377,48 +81605,131 @@ function Owners() {
 							t$1("owners.new_owner")
 						]
 					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("owners.register_title") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-4 py-4",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: newOwner.name,
-								onChange: (e) => setNewOwner({
-									...newOwner,
-									name: e.target.value
-								}),
-								placeholder: "Ex: John Doe"
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: newOwner.email,
-								onChange: (e) => setNewOwner({
-									...newOwner,
-									email: e.target.value
-								}),
-								placeholder: "email@exemplo.com"
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
-								value: newOwner.phone,
-								onChange: (e) => setNewOwner({
-									...newOwner,
-									phone: e.target.value
-								})
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							onClick: handleAddOwner,
-							className: "w-full",
-							children: t$1("common.save")
-						})
-					]
-				})] })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "max-w-xl overflow-y-auto max-h-[90vh]",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("owners.register_title") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-4 py-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: newOwner.name,
+									onChange: (e) => setNewOwner({
+										...newOwner,
+										name: e.target.value
+									}),
+									placeholder: "Ex: John Doe"
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-2 gap-4",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: newOwner.email,
+										onChange: (e) => setNewOwner({
+											...newOwner,
+											email: e.target.value
+										}),
+										placeholder: "email@exemplo.com"
+									})]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: newOwner.country,
+										onValueChange: (v) => setNewOwner({
+											...newOwner,
+											country: v
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "US",
+												children: "United States"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "BR",
+												children: "Brazil"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "ES",
+												children: "Spain"
+											})
+										] })]
+									})]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+									value: newOwner.phone,
+									onChange: (e) => setNewOwner({
+										...newOwner,
+										phone: e.target.value
+									}),
+									country: newOwner.country,
+									onCountryChange: (c$1) => setNewOwner({
+										...newOwner,
+										country: c$1
+									})
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Address Search" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddressInput, { onAddressSelect: handleAddressSelect })]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Full Address" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: newOwner.address,
+									onChange: (e) => setNewOwner({
+										...newOwner,
+										address: e.target.value
+									})
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-3 gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "City" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: newOwner.city,
+											onChange: (e) => setNewOwner({
+												...newOwner,
+												city: e.target.value
+											})
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "State" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: newOwner.state,
+											onChange: (e) => setNewOwner({
+												...newOwner,
+												state: e.target.value
+											})
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Zip" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: newOwner.zipCode,
+											onChange: (e) => setNewOwner({
+												...newOwner,
+												zipCode: e.target.value
+											})
+										})]
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								onClick: handleAddOwner,
+								className: "w-full bg-trust-blue",
+								children: t$1("common.save")
+							})
+						]
+					})]
+				})]
 			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
 			className: "pb-3",
@@ -81435,12 +81746,24 @@ function Owners() {
 				})]
 			})
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("owners.contact_details") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("owners.properties_count") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-				className: "text-right",
+				className: "table-text",
+				children: t$1("common.name")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "table-text",
+				children: t$1("owners.contact_details")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "table-text",
+				children: t$1("owners.properties_count")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "table-text",
+				children: t$1("common.status")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "text-right table-text",
 				children: t$1("common.actions")
 			})
 		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredOwners.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -81449,60 +81772,69 @@ function Owners() {
 			children: t$1("common.empty")
 		}) }) : filteredOwners.map((owner) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-				className: "font-medium",
+				className: "font-medium table-text",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 					to: `/owners/${owner.id}`,
 					className: "hover:underline text-trust-blue",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })
 				})
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-col text-sm",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.email }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-					className: "text-muted-foreground text-xs flex items-center gap-1",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Phone, { className: "h-3 w-3" }),
-						" ",
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.phone })
-					]
-				})]
-			}) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
-				asChild: true,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
-					variant: "secondary",
-					className: "gap-1 cursor-pointer hover:bg-secondary/80",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-3 w-3" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: getPropertyCount(owner.id) }),
-						" ",
-						t$1("owners.properties_count")
-					]
-				})
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PopoverContent, {
-				className: "w-64 p-0",
-				align: "start",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "p-2 font-medium border-b text-xs text-muted-foreground",
-					children: ["Propriedades de ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex flex-col max-h-60 overflow-y-auto",
-					children: [properties$1.filter((p$1) => p$1.ownerId === owner.id).map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-						to: `/properties/${p$1.id}`,
-						className: "px-3 py-2 text-sm hover:bg-muted transition-colors truncate block border-b last:border-0",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: p$1.name })
-					}, p$1.id)), properties$1.filter((p$1) => p$1.ownerId === owner.id).length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "p-3 text-sm text-center text-muted-foreground",
-						children: t$1("common.empty")
-					})]
-				})]
-			})] }) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-				variant: owner.status === "active" ? "default" : "secondary",
-				children: t$1(`common.${owner.status}`)
-			}) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-				className: "text-right",
+				className: "table-text",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex flex-col text-sm",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.email }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+						className: "text-muted-foreground text-xs flex items-center gap-1",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Phone, { className: "h-3 w-3" }),
+							" ",
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.phone })
+						]
+					})]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "table-text",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+						variant: "secondary",
+						className: "gap-1 cursor-pointer hover:bg-secondary/80",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-3 w-3" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: getPropertyCount(owner.id) }),
+							" ",
+							t$1("owners.properties_count")
+						]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PopoverContent, {
+					className: "w-64 p-0",
+					align: "start",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "p-2 font-medium border-b text-xs text-muted-foreground",
+						children: ["Propriedades de ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex flex-col max-h-60 overflow-y-auto",
+						children: [properties$1.filter((p$1) => p$1.ownerId === owner.id).map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+							to: `/properties/${p$1.id}`,
+							className: "px-3 py-2 text-sm hover:bg-muted transition-colors truncate block border-b last:border-0",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: p$1.name })
+						}, p$1.id)), properties$1.filter((p$1) => p$1.ownerId === owner.id).length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "p-3 text-sm text-center text-muted-foreground",
+							children: t$1("common.empty")
+						})]
+					})]
+				})] })
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "table-text",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+					variant: owner.status === "active" ? "default" : "secondary",
+					children: t$1(`common.${owner.status}`)
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-right table-text",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex justify-end gap-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -83976,6 +84308,7 @@ function Condominiums() {
 	const navigate = useNavigate();
 	const [filter, setFilter] = (0, import_react.useState)("");
 	const [open, setOpen] = (0, import_react.useState)(false);
+	const [managerCountry, setManagerCountry] = (0, import_react.useState)("US");
 	const [formData, setFormData] = (0, import_react.useState)({
 		name: "",
 		address: "",
@@ -84013,10 +84346,25 @@ function Condominiums() {
 			});
 			return;
 		}
+		if (formData.managerPhone && !isPhoneValid(formData.managerPhone, managerCountry)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: `Please enter a valid phone number for ${managerCountry}.`,
+				variant: "destructive"
+			});
+			return;
+		}
 		addCondominium({
 			id: `condo-${Date.now()}`,
 			...formData,
-			description: ""
+			description: "",
+			contacts: formData.managerName ? [{
+				id: `contact-${Date.now()}`,
+				name: formData.managerName,
+				role: "Manager",
+				phone: formData.managerPhone,
+				email: formData.managerEmail
+			}] : []
 		});
 		toast$2({ title: "Condomínio adicionado com sucesso" });
 		setOpen(false);
@@ -84045,6 +84393,7 @@ function Condominiums() {
 			managerPhone: "",
 			managerEmail: ""
 		});
+		setManagerCountry("US");
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
@@ -84083,7 +84432,7 @@ function Condominiums() {
 									...formData,
 									name: e.target.value
 								}),
-								placeholder: "Ex: Sunny Isles HOA"
+								placeholder: "Ex: Sunset Heights HOA"
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -84154,7 +84503,10 @@ function Condominiums() {
 									onChange: (e) => setFormData({
 										...formData,
 										managerPhone: e.target.value
-									})
+									}),
+									country: managerCountry,
+									onCountryChange: setManagerCountry,
+									defaultCountry: "US"
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
@@ -84190,13 +84542,28 @@ function Condominiums() {
 				})]
 			})
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.address") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("tasks.location") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("condominiums.manager") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("condominiums.contact") }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-				className: "text-right",
+				className: "table-text",
+				children: t$1("common.name")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "table-text",
+				children: t$1("common.address")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "table-text",
+				children: t$1("tasks.location")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "table-text",
+				children: t$1("condominiums.manager")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "table-text",
+				children: t$1("condominiums.contact")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "text-right table-text",
 				children: t$1("common.actions")
 			})
 		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredCondos.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -84205,30 +84572,42 @@ function Condominiums() {
 			children: t$1("condominiums.no_condos")
 		}) }) : filteredCondos.map((condo) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-				className: "font-medium flex items-center gap-2",
+				className: "font-medium flex items-center gap-2 table-text",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.name })]
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.address }) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "flex flex-col text-xs text-muted-foreground",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
-					condo.city || "-",
-					", ",
-					condo.state,
-					" ",
-					condo.zipCode
-				] }) })
-			}) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerName || "-" }) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-col text-xs",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerEmail }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-					className: "text-muted-foreground",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerPhone })
-				})]
-			}) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-				className: "text-right",
+				className: "table-text",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.address })
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "table-text",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "flex flex-col text-xs text-muted-foreground",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+						condo.city || "-",
+						", ",
+						condo.state,
+						" ",
+						condo.zipCode
+					] }) })
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "table-text",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerName || "-" })
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "table-text",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex flex-col text-xs",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerEmail }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "text-muted-foreground",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerPhone })
+					})]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-right table-text",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
 					asChild: true,
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -84274,6 +84653,8 @@ function CondominiumDetails() {
 	const condo = condominiums$1.find((c$1) => c$1.id === id);
 	const [formData, setFormData] = (0, import_react.useState)(null);
 	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
+	const [managerCountry, setManagerCountry] = (0, import_react.useState)("US");
+	const [newContactCountry, setNewContactCountry] = (0, import_react.useState)("US");
 	const [newContact, setNewContact] = (0, import_react.useState)({
 		role: "",
 		name: "",
@@ -84285,11 +84666,33 @@ function CondominiumDetails() {
 		validFrom: ""
 	});
 	(0, import_react.useEffect)(() => {
-		if (condo) setFormData(JSON.parse(JSON.stringify(condo)));
+		if (condo) {
+			const hasManagerContact = condo.contacts?.some((c$1) => c$1.role === "Manager" && c$1.name === condo.managerName);
+			let contacts = [...condo.contacts || []];
+			if (!hasManagerContact && condo.managerName) contacts.push({
+				id: `contact-mgr-${Date.now()}`,
+				name: condo.managerName,
+				role: "Manager",
+				phone: condo.managerPhone || "",
+				email: condo.managerEmail || ""
+			});
+			setFormData({
+				...condo,
+				contacts
+			});
+		}
 	}, [condo]);
 	if (!condo || !formData) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: "Not Found" });
 	const handleSave = () => {
 		if (!formData.name?.trim()) return;
+		if (formData.managerPhone && !isPhoneValid(formData.managerPhone, managerCountry)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: `Invalid phone for ${managerCountry}.`,
+				variant: "destructive"
+			});
+			return;
+		}
 		updateCondominium(formData);
 		setIsEditing(false);
 		toast$2({
@@ -84338,6 +84741,14 @@ function CondominiumDetails() {
 			});
 			return;
 		}
+		if (newContact.phone && !isPhoneValid(newContact.phone, newContactCountry)) {
+			toast$2({
+				title: "Erro",
+				description: `Invalid phone for ${newContactCountry}.`,
+				variant: "destructive"
+			});
+			return;
+		}
 		const contact = {
 			id: `cc-${Date.now()}`,
 			name: newContact.name,
@@ -84356,6 +84767,7 @@ function CondominiumDetails() {
 			phone: "",
 			email: ""
 		});
+		setNewContactCountry("US");
 	};
 	const removeContact = (id$1) => {
 		const contacts = (formData.contacts || []).filter((c$1) => c$1.id !== id$1);
@@ -84508,6 +84920,26 @@ function CondominiumDetails() {
 								})]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("condominiums.manager") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: formData.managerName || "",
+									onChange: (e) => handleChange("managerName", e.target.value),
+									disabled: !isEditing
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.phone") }), isEditing ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+									value: formData.managerPhone || "",
+									onChange: (e) => handleChange("managerPhone", e.target.value),
+									country: managerCountry,
+									onCountryChange: setManagerCountry
+								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formData.managerPhone })
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2 md:col-span-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
 									value: formData.description || "",
@@ -84583,86 +85015,118 @@ function CondominiumDetails() {
 						className: "flex items-center gap-2",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-5 w-5" }), " Contatos Importantes"]
 					}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [isEditing && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex gap-2 mb-6 items-end border p-4 rounded-md bg-muted/20",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2 w-1/4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Função" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: newContact.role,
-									onValueChange: (v) => setNewContact({
-										...newContact,
-										role: v
-									}),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "Manager",
-											children: "Manager/Síndico"
+						className: "flex flex-col gap-2 mb-6 border p-4 rounded-md bg-muted/20",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+							className: "font-semibold text-sm",
+							children: "Novo Contato"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex gap-2 items-end flex-wrap",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2 w-full md:w-1/5",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Função" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: newContact.role,
+										onValueChange: (v) => setNewContact({
+											...newContact,
+											role: v
 										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "Service Desk",
-											children: "Service Desk"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "Maintenance",
-											children: "Manutenção"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "Security",
-											children: "Segurança"
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "Manager",
+												children: "Manager/Síndico"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "Service Desk",
+												children: "Service Desk"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "Maintenance",
+												children: "Manutenção"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "Security",
+												children: "Segurança"
+											})
+										] })]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2 w-full md:w-1/5",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nome" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: newContact.name,
+										onChange: (e) => setNewContact({
+											...newContact,
+											name: e.target.value
 										})
-									] })]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2 w-1/4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nome" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: newContact.name,
-									onChange: (e) => setNewContact({
-										...newContact,
-										name: e.target.value
-									})
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2 w-1/4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: newContact.phone,
-									onChange: (e) => setNewContact({
-										...newContact,
-										phone: e.target.value
-									})
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2 w-1/4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: newContact.email,
-									onChange: (e) => setNewContact({
-										...newContact,
-										email: e.target.value
-									})
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								onClick: addContact,
-								className: "bg-trust-blue",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" })
-							})
-						]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2 w-full md:w-1/4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+										value: newContact.phone || "",
+										onChange: (e) => setNewContact({
+											...newContact,
+											phone: e.target.value
+										}),
+										country: newContactCountry,
+										onCountryChange: setNewContactCountry
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2 w-full md:w-1/4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: newContact.email,
+										onChange: (e) => setNewContact({
+											...newContact,
+											email: e.target.value
+										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: addContact,
+									className: "bg-trust-blue",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" })
+								})
+							]
+						})]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Função" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Nome" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Telefone" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Email" }),
-						isEditing && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Ação" })
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "table-text",
+							children: "Função"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "table-text",
+							children: "Nome"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "table-text",
+							children: "Telefone"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "table-text",
+							children: "Email"
+						}),
+						isEditing && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "table-text",
+							children: "Ação"
+						})
 					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: formData.contacts?.map((c$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "font-medium",
+							className: "font-medium table-text",
 							children: c$1.role
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: c$1.name }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: c$1.phone }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: c$1.email }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "table-text",
+							children: c$1.name
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "table-text",
+							children: c$1.phone
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "table-text",
+							children: c$1.email
+						}),
 						isEditing && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "ghost",
 							size: "icon",
@@ -84760,16 +85224,34 @@ function CondominiumDetails() {
 										]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Valor" }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "De" }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Até" })
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+											className: "table-text",
+											children: "Valor"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+											className: "table-text",
+											children: "De"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+											className: "table-text",
+											children: "Até"
+										})
 									] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [formData.feeHistory?.map((fh) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: ["$", fh.amount] }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: fh.validFrom }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: fh.validTo || "Atual" })
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+											className: "table-text",
+											children: ["$", fh.amount]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+											className: "table-text",
+											children: fh.validFrom
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+											className: "table-text",
+											children: fh.validTo || "Atual"
+										})
 									] }, fh.id)), (!formData.feeHistory || formData.feeHistory.length === 0) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 										colSpan: 3,
-										className: "text-center text-muted-foreground",
+										className: "text-center text-muted-foreground table-text",
 										children: "Sem histórico."
 									}) })] })] })
 								]
@@ -92299,4 +92781,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-B1LrVdWK.js.map
+//# sourceMappingURL=index-CNNDwp-g.js.map

@@ -45,8 +45,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { isValidEmail } from '@/lib/utils'
+import { isValidEmail, isPhoneValid } from '@/lib/utils'
 import { DataMask } from '@/components/DataMask'
+import { PhoneInput } from '@/components/ui/phone-input'
 
 export default function CondominiumDetails() {
   const { id } = useParams()
@@ -58,6 +59,12 @@ export default function CondominiumDetails() {
   const condo = condominiums.find((c) => c.id === id)
   const [formData, setFormData] = useState<Condominium | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+
+  // Explicit country state for validation
+  const [managerCountry, setManagerCountry] = useState<'US' | 'BR' | 'ES'>('US')
+  const [newContactCountry, setNewContactCountry] = useState<
+    'US' | 'BR' | 'ES'
+  >('US')
 
   // Contacts State
   const [newContact, setNewContact] = useState<Partial<CondoContact>>({
@@ -99,6 +106,20 @@ export default function CondominiumDetails() {
 
   const handleSave = () => {
     if (!formData.name?.trim()) return
+
+    // Validate manager phone if present
+    if (
+      formData.managerPhone &&
+      !isPhoneValid(formData.managerPhone, managerCountry)
+    ) {
+      toast({
+        title: t('common.error'),
+        description: `Invalid phone for ${managerCountry}.`,
+        variant: 'destructive',
+      })
+      return
+    }
+
     updateCondominium(formData)
     setIsEditing(false)
     toast({
@@ -151,6 +172,18 @@ export default function CondominiumDetails() {
       return
     }
 
+    if (
+      newContact.phone &&
+      !isPhoneValid(newContact.phone, newContactCountry)
+    ) {
+      toast({
+        title: 'Erro',
+        description: `Invalid phone for ${newContactCountry}.`,
+        variant: 'destructive',
+      })
+      return
+    }
+
     const contact: CondoContact = {
       id: `cc-${Date.now()}`,
       name: newContact.name!,
@@ -161,6 +194,7 @@ export default function CondominiumDetails() {
     const contacts = [...(formData.contacts || []), contact]
     setFormData({ ...formData, contacts })
     setNewContact({ role: '', name: '', phone: '', email: '' })
+    setNewContactCountry('US')
   }
 
   const removeContact = (id: string) => {
@@ -305,11 +339,13 @@ export default function CondominiumDetails() {
                 <Label>{t('common.phone')}</Label>
                 {/* Data masking for manager phone in overview */}
                 {isEditing ? (
-                  <Input
+                  <PhoneInput
                     value={formData.managerPhone || ''}
                     onChange={(e) =>
                       handleChange('managerPhone', e.target.value)
                     }
+                    country={managerCountry}
+                    onCountryChange={setManagerCountry}
                   />
                 ) : (
                   <div className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
@@ -425,58 +461,73 @@ export default function CondominiumDetails() {
             </CardHeader>
             <CardContent>
               {isEditing && (
-                <div className="flex gap-2 mb-6 items-end border p-4 rounded-md bg-muted/20">
-                  <div className="grid gap-2 w-1/4">
-                    <Label>Função</Label>
-                    <Select
-                      value={newContact.role}
-                      onValueChange={(v) =>
-                        setNewContact({ ...newContact, role: v })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Manager">Manager/Síndico</SelectItem>
-                        <SelectItem value="Service Desk">
-                          Service Desk
-                        </SelectItem>
-                        <SelectItem value="Maintenance">Manutenção</SelectItem>
-                        <SelectItem value="Security">Segurança</SelectItem>
-                      </SelectContent>
-                    </Select>
+                <div className="flex flex-col gap-2 mb-6 border p-4 rounded-md bg-muted/20">
+                  <h4 className="font-semibold text-sm">Novo Contato</h4>
+                  <div className="flex gap-2 items-end flex-wrap">
+                    <div className="grid gap-2 w-full md:w-1/5">
+                      <Label>Função</Label>
+                      <Select
+                        value={newContact.role}
+                        onValueChange={(v) =>
+                          setNewContact({ ...newContact, role: v })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Manager">
+                            Manager/Síndico
+                          </SelectItem>
+                          <SelectItem value="Service Desk">
+                            Service Desk
+                          </SelectItem>
+                          <SelectItem value="Maintenance">
+                            Manutenção
+                          </SelectItem>
+                          <SelectItem value="Security">Segurança</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-2 w-full md:w-1/5">
+                      <Label>Nome</Label>
+                      <Input
+                        value={newContact.name}
+                        onChange={(e) =>
+                          setNewContact({ ...newContact, name: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2 w-full md:w-1/4">
+                      <Label>Telefone</Label>
+                      <PhoneInput
+                        value={newContact.phone || ''}
+                        onChange={(e) =>
+                          setNewContact({
+                            ...newContact,
+                            phone: e.target.value,
+                          })
+                        }
+                        country={newContactCountry}
+                        onCountryChange={setNewContactCountry}
+                      />
+                    </div>
+                    <div className="grid gap-2 w-full md:w-1/4">
+                      <Label>Email</Label>
+                      <Input
+                        value={newContact.email}
+                        onChange={(e) =>
+                          setNewContact({
+                            ...newContact,
+                            email: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <Button onClick={addContact} className="bg-trust-blue">
+                      <Plus className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <div className="grid gap-2 w-1/4">
-                    <Label>Nome</Label>
-                    <Input
-                      value={newContact.name}
-                      onChange={(e) =>
-                        setNewContact({ ...newContact, name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2 w-1/4">
-                    <Label>Telefone</Label>
-                    <Input
-                      value={newContact.phone}
-                      onChange={(e) =>
-                        setNewContact({ ...newContact, phone: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2 w-1/4">
-                    <Label>Email</Label>
-                    <Input
-                      value={newContact.email}
-                      onChange={(e) =>
-                        setNewContact({ ...newContact, email: e.target.value })
-                      }
-                    />
-                  </div>
-                  <Button onClick={addContact} className="bg-trust-blue">
-                    <Plus className="h-4 w-4" />
-                  </Button>
                 </div>
               )}
 
@@ -495,10 +546,12 @@ export default function CondominiumDetails() {
                 <TableBody>
                   {formData.contacts?.map((c) => (
                     <TableRow key={c.id}>
-                      <TableCell className="font-medium">{c.role}</TableCell>
-                      <TableCell>{c.name}</TableCell>
-                      <TableCell>{c.phone}</TableCell>
-                      <TableCell>{c.email}</TableCell>
+                      <TableCell className="font-medium table-text">
+                        {c.role}
+                      </TableCell>
+                      <TableCell className="table-text">{c.name}</TableCell>
+                      <TableCell className="table-text">{c.phone}</TableCell>
+                      <TableCell className="table-text">{c.email}</TableCell>
                       {isEditing && (
                         <TableCell>
                           <Button
@@ -617,9 +670,15 @@ export default function CondominiumDetails() {
                   <TableBody>
                     {formData.feeHistory?.map((fh) => (
                       <TableRow key={fh.id}>
-                        <TableCell>${fh.amount}</TableCell>
-                        <TableCell>{fh.validFrom}</TableCell>
-                        <TableCell>{fh.validTo || 'Atual'}</TableCell>
+                        <TableCell className="table-text">
+                          ${fh.amount}
+                        </TableCell>
+                        <TableCell className="table-text">
+                          {fh.validFrom}
+                        </TableCell>
+                        <TableCell className="table-text">
+                          {fh.validTo || 'Atual'}
+                        </TableCell>
                       </TableRow>
                     ))}
                     {(!formData.feeHistory ||
@@ -627,7 +686,7 @@ export default function CondominiumDetails() {
                       <TableRow>
                         <TableCell
                           colSpan={3}
-                          className="text-center text-muted-foreground"
+                          className="text-center text-muted-foreground table-text"
                         >
                           Sem histórico.
                         </TableCell>
@@ -643,4 +702,3 @@ export default function CondominiumDetails() {
     </div>
   )
 }
-

@@ -16,6 +16,8 @@ interface PhoneInputProps extends Omit<
   value: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   defaultCountry?: 'US' | 'BR' | 'ES'
+  country?: 'US' | 'BR' | 'ES'
+  onCountryChange?: (country: 'US' | 'BR' | 'ES') => void
 }
 
 const COUNTRIES = {
@@ -29,19 +31,29 @@ export function PhoneInput({
   value,
   onChange,
   defaultCountry = 'US',
+  country: controlledCountry,
+  onCountryChange,
   ...props
 }: PhoneInputProps) {
-  const [country, setCountry] =
+  // Use controlled country if provided, otherwise internal state
+  const [internalCountry, setInternalCountry] =
     React.useState<keyof typeof COUNTRIES>(defaultCountry)
 
+  const currentCountry = controlledCountry || internalCountry
+
   const handleCountryChange = (val: string) => {
-    setCountry(val as keyof typeof COUNTRIES)
+    const newCountry = val as keyof typeof COUNTRIES
+    if (onCountryChange) {
+      onCountryChange(newCountry)
+    } else {
+      setInternalCountry(newCountry)
+    }
   }
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value
     // Apply mask based on country
-    const maskedValue = applyPhoneMask(rawValue, country)
+    const maskedValue = applyPhoneMask(rawValue, currentCountry)
 
     // Create a synthetic event to pass back
     const syntheticEvent = {
@@ -57,11 +69,11 @@ export function PhoneInput({
 
   return (
     <div className={cn('flex gap-2', className)}>
-      <Select value={country} onValueChange={handleCountryChange}>
+      <Select value={currentCountry} onValueChange={handleCountryChange}>
         <SelectTrigger className="w-[100px]">
           <SelectValue>
-            <span className="mr-2">{COUNTRIES[country].flag}</span>
-            {COUNTRIES[country].code}
+            <span className="mr-2">{COUNTRIES[currentCountry].flag}</span>
+            {COUNTRIES[currentCountry].code}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -77,8 +89,10 @@ export function PhoneInput({
         {...props}
         value={value}
         onChange={handlePhoneChange}
-        placeholder={COUNTRIES[country].mask}
-        maxLength={country === 'US' ? 14 : country === 'BR' ? 15 : 13}
+        placeholder={COUNTRIES[currentCountry].mask}
+        maxLength={
+          currentCountry === 'US' ? 14 : currentCountry === 'BR' ? 15 : 13
+        }
         className="flex-1"
       />
     </div>

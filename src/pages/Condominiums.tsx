@@ -61,6 +61,9 @@ export default function Condominiums() {
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
 
+  // Explicit country state for validation
+  const [managerCountry, setManagerCountry] = useState<'US' | 'BR' | 'ES'>('US')
+
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -109,11 +112,14 @@ export default function Condominiums() {
       return
     }
 
-    // Phone Validation US Standard (since context implies heavy US usage, but can adapt)
-    if (formData.managerPhone && !isPhoneValid(formData.managerPhone, 'US')) {
+    // Strict Phone Validation based on selected country
+    if (
+      formData.managerPhone &&
+      !isPhoneValid(formData.managerPhone, managerCountry)
+    ) {
       toast({
         title: t('common.error'),
-        description: 'Please enter a valid USA phone number (10 digits).',
+        description: `Please enter a valid phone number for ${managerCountry}.`,
         variant: 'destructive',
       })
       return
@@ -167,6 +173,7 @@ export default function Condominiums() {
       managerPhone: '',
       managerEmail: '',
     })
+    setManagerCountry('US')
   }
 
   return (
@@ -264,6 +271,8 @@ export default function Condominiums() {
                     onChange={(e) =>
                       setFormData({ ...formData, managerPhone: e.target.value })
                     }
+                    country={managerCountry}
+                    onCountryChange={setManagerCountry}
                     defaultCountry="US"
                   />
                 </div>
@@ -421,4 +430,3 @@ export default function Condominiums() {
     </div>
   )
 }
-

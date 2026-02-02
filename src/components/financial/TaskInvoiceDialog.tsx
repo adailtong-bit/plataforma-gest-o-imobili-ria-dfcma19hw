@@ -178,11 +178,11 @@ export function TaskInvoiceDialog({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[50px]"></TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Task</TableHead>
-                  <TableHead>Property</TableHead>
-                  <TableHead className="text-right">Value</TableHead>
+                  <TableHead className="w-[50px] table-text"></TableHead>
+                  <TableHead className="table-text">Date</TableHead>
+                  <TableHead className="table-text">Task</TableHead>
+                  <TableHead className="table-text">Property</TableHead>
+                  <TableHead className="text-right table-text">Value</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -203,12 +203,16 @@ export function TaskInvoiceDialog({
                           }
                         />
                       </TableCell>
-                      <TableCell>{formatDate(task.date, language)}</TableCell>
-                      <TableCell className="font-medium">
+                      <TableCell className="table-text">
+                        {formatDate(task.date, language)}
+                      </TableCell>
+                      <TableCell className="font-medium table-text">
                         {task.title}
                       </TableCell>
-                      <TableCell>{task.propertyName}</TableCell>
-                      <TableCell className="text-right font-semibold">
+                      <TableCell className="table-text">
+                        {task.propertyName}
+                      </TableCell>
+                      <TableCell className="text-right font-semibold table-text">
                         {isTeamMember
                           ? formatCurrency(task.teamMemberPayout || 0, language)
                           : formatCurrency(task.price || 0, language)}

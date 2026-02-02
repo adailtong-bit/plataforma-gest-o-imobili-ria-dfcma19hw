@@ -159,13 +159,21 @@ export default function Invoices() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('invoices.invoice_id')}</TableHead>
-                <TableHead>{t('common.description')}</TableHead>
-                <TableHead>{t('common.date')}</TableHead>
-                <TableHead>Flow</TableHead>
-                <TableHead>{t('invoices.amount')}</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
-                <TableHead className="text-right">
+                <TableHead className="table-text">
+                  {t('invoices.invoice_id')}
+                </TableHead>
+                <TableHead className="table-text">
+                  {t('common.description')}
+                </TableHead>
+                <TableHead className="table-text">{t('common.date')}</TableHead>
+                <TableHead className="table-text">Flow</TableHead>
+                <TableHead className="table-text">
+                  {t('invoices.amount')}
+                </TableHead>
+                <TableHead className="table-text">
+                  {t('common.status')}
+                </TableHead>
+                <TableHead className="text-right table-text">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>
@@ -184,17 +192,17 @@ export default function Invoices() {
 
                   return (
                     <TableRow key={inv.id}>
-                      <TableCell className="font-medium flex items-center gap-2">
+                      <TableCell className="font-medium flex items-center gap-2 table-text">
                         <FileText className="h-4 w-4 text-muted-foreground" />
                         <DataMask>{inv.id}</DataMask>
                       </TableCell>
-                      <TableCell className="max-w-[200px] truncate">
+                      <TableCell className="max-w-[200px] truncate table-text">
                         <DataMask>{inv.description}</DataMask>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="table-text">
                         <DataMask>{formatDate(inv.date, language)}</DataMask>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="table-text">
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span className="font-medium text-foreground">
                             <DataMask>{fromName}</DataMask>
@@ -205,7 +213,7 @@ export default function Invoices() {
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="table-text">
                         <div className="flex items-center gap-1 font-bold">
                           <DollarSign className="h-3 w-3 text-muted-foreground" />
                           <DataMask>
@@ -213,8 +221,10 @@ export default function Invoices() {
                           </DataMask>
                         </div>
                       </TableCell>
-                      <TableCell>{getStatusBadge(inv.status)}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="table-text">
+                        {getStatusBadge(inv.status)}
+                      </TableCell>
+                      <TableCell className="text-right table-text">
                         <div className="flex justify-end gap-2">
                           <Button
                             size="sm"

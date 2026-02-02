@@ -63,7 +63,7 @@ export default function Tenants() {
     email: '',
     phone: '',
     address: '',
-    country: 'US',
+    country: 'US', // Start with US as default
     rentValue: '',
     propertyId: '',
     leaseStart: '',
@@ -111,7 +111,7 @@ export default function Tenants() {
       return
     }
 
-    // Strict Phone Length Validation
+    // Strict Phone Length Validation based on selected country
     if (!isPhoneValid(newTenant.phone, newTenant.country as any)) {
       toast({
         title: t('common.error'),
@@ -281,14 +281,17 @@ export default function Tenants() {
                   </div>
                   <div className="grid gap-2">
                     <Label>{t('common.phone')}</Label>
-                    {/* Enlarged Phone Input */}
+                    {/* Controlled Phone Input to track country */}
                     <PhoneInput
                       value={newTenant.phone}
                       onChange={(e) =>
                         setNewTenant({ ...newTenant, phone: e.target.value })
                       }
-                      defaultCountry={newTenant.country as any}
-                      className="w-full h-12 text-lg" // Increased height and font size
+                      country={newTenant.country as any}
+                      onCountryChange={(c) =>
+                        setNewTenant({ ...newTenant, country: c })
+                      }
+                      className="w-full h-12 text-lg"
                     />
                   </div>
                 </div>
@@ -413,10 +416,10 @@ export default function Tenants() {
                         </DataMask>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="table-text">
                       <Badge variant="outline">{tenant.status}</Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right table-text">
                       <div className="flex justify-end gap-2">
                         <Button
                           variant="ghost"
@@ -457,4 +460,3 @@ export default function Tenants() {
     </div>
   )
 }
-

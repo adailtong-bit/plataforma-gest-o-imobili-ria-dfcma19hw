@@ -72,14 +72,22 @@
   body {
     @apply bg-background text-foreground;
   }
-  
+
   /* Global UI Visibility Enhancement - Force black text for tables and lists as requested */
-  table, .table-text, .list-text, [role="row"] {
+  /* Expanded selector to ensure headers and cells are covered */
+  table,
+  .table-text,
+  .list-text,
+  [role='row'],
+  th,
+  td {
     @apply text-black dark:text-white !important;
   }
-  
+
   /* Ensure inputs have readable text */
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     @apply text-foreground;
   }
 }
@@ -103,7 +111,7 @@
   .text-brand {
     @apply text-[#0052cc];
   }
-  
+
   /* Custom scrollbar for better visibility */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
@@ -116,4 +124,3 @@
     border-radius: 20px;
   }
 }
-

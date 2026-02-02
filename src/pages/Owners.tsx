@@ -116,6 +116,7 @@ export default function Owners() {
       return
     }
 
+    // Strict Phone Validation
     if (
       newOwner.phone &&
       !isPhoneValid(newOwner.phone, newOwner.country as any)
@@ -214,6 +215,14 @@ export default function Owners() {
                     placeholder="email@exemplo.com"
                   />
                 </div>
+                {/* 
+                  Using a Select here for country allows user to pick.
+                  However, PhoneInput also has a dropdown.
+                  Let's use PhoneInput's country management or sync them.
+                  Since PhoneInput now supports controlled country, we can rely on it, 
+                  but we need to ensure this separate Select syncs or is removed/integrated.
+                  The design has a separate Country Select. Let's keep it and pass to PhoneInput.
+                */}
                 <div className="grid gap-2">
                   <Label>{t('common.country')}</Label>
                   <Select
@@ -240,7 +249,10 @@ export default function Owners() {
                   onChange={(e) =>
                     setNewOwner({ ...newOwner, phone: e.target.value })
                   }
-                  defaultCountry={newOwner.country as any}
+                  country={newOwner.country as any}
+                  onCountryChange={(c) =>
+                    setNewOwner({ ...newOwner, country: c })
+                  }
                 />
               </div>
               <div className="grid gap-2">
@@ -396,7 +408,7 @@ export default function Owners() {
                         </PopoverContent>
                       </Popover>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="table-text">
                       <Badge
                         variant={
                           owner.status === 'active' ? 'default' : 'secondary'
@@ -464,4 +476,3 @@ export default function Owners() {
     </div>
   )
 }
-

@@ -843,7 +843,13 @@ export interface Advertisement {
   linkUrl: string
   active: boolean
   createdAt: string
-  placement?: 'home_top' | 'home_bottom' | 'partner_page' | 'tenant_page' | 'footer' | 'sidebar'
+  placement?:
+    | 'home_top'
+    | 'home_bottom'
+    | 'partner_page'
+    | 'tenant_page'
+    | 'footer'
+    | 'sidebar'
   advertiserId?: string
   validity?: 'weekly' | 'bi-weekly' | 'monthly'
   renewable?: boolean
@@ -862,4 +868,3 @@ export interface Visit {
   notes?: string
   agentId?: string
 }
-

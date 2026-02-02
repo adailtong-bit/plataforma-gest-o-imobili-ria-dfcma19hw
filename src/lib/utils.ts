@@ -44,6 +44,7 @@ export const applyPhoneMask = (value: string, country: 'US' | 'BR' | 'ES') => {
 
 // Validation length check for phones - Strict Validation
 export const isPhoneValid = (value: string, country: 'US' | 'BR' | 'ES') => {
+  if (!value) return false
   const digits = value.replace(/\D/g, '')
   if (country === 'US') return digits.length === 10
   if (country === 'BR') return digits.length === 11 || digits.length === 10
@@ -170,4 +171,3 @@ export const formatDate = (
   // Default EN
   return format(d, 'MM/dd/yyyy', { locale: enUS })
 }
-
