@@ -130,6 +130,7 @@ export default function TenantDetails() {
     setFormData((prev: any) => ({
       ...prev,
       address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
+      country: addr.country,
     }))
   }
 
@@ -384,7 +385,7 @@ export default function TenantDetails() {
                       <PhoneInput
                         value={formData.phone || ''}
                         onChange={(e) => handleChange('phone', e.target.value)}
-                        disabled={!isEditing}
+                        defaultCountry={formData.country as any || 'US'}
                       />
                     </div>
                     <div className="grid gap-2">
@@ -654,11 +655,11 @@ export default function TenantDetails() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>By</TableHead>
-                        <TableHead>Items Checked</TableHead>
-                        <TableHead className="text-right">Action</TableHead>
+                        <TableHead className="table-text">Type</TableHead>
+                        <TableHead className="table-text">Date</TableHead>
+                        <TableHead className="table-text">By</TableHead>
+                        <TableHead className="table-text">Items Checked</TableHead>
+                        <TableHead className="text-right table-text">Action</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>

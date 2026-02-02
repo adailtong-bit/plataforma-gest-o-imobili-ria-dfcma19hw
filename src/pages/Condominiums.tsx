@@ -49,7 +49,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
-import { isValidEmail } from '@/lib/utils'
+import { isValidEmail, isPhoneValid } from '@/lib/utils'
 import { DataMask } from '@/components/DataMask'
 
 export default function Condominiums() {
@@ -109,10 +109,30 @@ export default function Condominiums() {
       return
     }
 
+    if (formData.managerPhone && !isPhoneValid(formData.managerPhone, 'US')) {
+      toast({
+        title: t('common.error'),
+        description: 'Please enter a valid USA phone number.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     addCondominium({
       id: `condo-${Date.now()}`,
       ...formData,
       description: '',
+      contacts: formData.managerName
+        ? [
+            {
+              id: `contact-${Date.now()}`,
+              name: formData.managerName,
+              role: 'Manager',
+              phone: formData.managerPhone,
+              email: formData.managerEmail,
+            },
+          ]
+        : [],
     })
     toast({ title: 'Condomínio adicionado com sucesso' })
     setOpen(false)
@@ -243,6 +263,7 @@ export default function Condominiums() {
                     onChange={(e) =>
                       setFormData({ ...formData, managerPhone: e.target.value })
                     }
+                    defaultCountry="US"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -282,12 +303,20 @@ export default function Condominiums() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('common.name')}</TableHead>
-                <TableHead>{t('common.address')}</TableHead>
-                <TableHead>{t('tasks.location')}</TableHead>
-                <TableHead>{t('condominiums.manager')}</TableHead>
-                <TableHead>{t('condominiums.contact')}</TableHead>
-                <TableHead className="text-right">
+                <TableHead className="table-text">{t('common.name')}</TableHead>
+                <TableHead className="table-text">
+                  {t('common.address')}
+                </TableHead>
+                <TableHead className="table-text">
+                  {t('tasks.location')}
+                </TableHead>
+                <TableHead className="table-text">
+                  {t('condominiums.manager')}
+                </TableHead>
+                <TableHead className="table-text">
+                  {t('condominiums.contact')}
+                </TableHead>
+                <TableHead className="text-right table-text">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>

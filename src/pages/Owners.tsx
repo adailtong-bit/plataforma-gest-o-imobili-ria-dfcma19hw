@@ -49,6 +49,9 @@ import {
 import useLanguageStore from '@/stores/useLanguageStore'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { DataMask } from '@/components/DataMask'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { AddressInput, AddressData } from '@/components/ui/address-input'
+import { isPhoneValid, isValidEmail } from '@/lib/utils'
 
 export default function Owners() {
   const { owners, addOwner } = useOwnerStore()
@@ -63,6 +66,11 @@ export default function Owners() {
     name: '',
     email: '',
     phone: '',
+    country: 'US',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
   })
 
   const filteredOwners = owners.filter(
@@ -71,8 +79,15 @@ export default function Owners() {
       o.email.toLowerCase().includes(filter.toLowerCase()),
   )
 
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  const handleAddressSelect = (addr: AddressData) => {
+    setNewOwner((prev) => ({
+      ...prev,
+      address: addr.street,
+      city: addr.city,
+      state: addr.state,
+      zipCode: addr.zipCode,
+      country: addr.country === 'USA' ? 'US' : addr.country === 'Brazil' ? 'BR' : 'US',
+    }))
   }
 
   const handleAddOwner = () => {
@@ -85,10 +100,19 @@ export default function Owners() {
       return
     }
 
-    if (!validateEmail(newOwner.email)) {
+    if (!isValidEmail(newOwner.email)) {
       toast({
         title: t('common.error'),
         description: 'Email inválido',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (newOwner.phone && !isPhoneValid(newOwner.phone, newOwner.country as any)) {
+      toast({
+        title: t('common.error'),
+        description: `Invalid phone format for ${newOwner.country}`,
         variant: 'destructive',
       })
       return
@@ -99,6 +123,11 @@ export default function Owners() {
       name: newOwner.name,
       email: newOwner.email,
       phone: newOwner.phone,
+      country: newOwner.country,
+      address: newOwner.address,
+      city: newOwner.city,
+      state: newOwner.state,
+      zipCode: newOwner.zipCode,
       status: 'active',
       role: 'property_owner',
     })
@@ -108,7 +137,7 @@ export default function Owners() {
       description: t('owners.success_desc'),
     })
     setOpen(false)
-    setNewOwner({ name: '', email: '', phone: '' })
+    setNewOwner({ name: '', email: '', phone: '', country: 'US', address: '', city: '', state: '', zipCode: '' })
   }
 
   const getPropertyCount = (ownerId: string) => {
@@ -140,7 +169,7 @@ export default function Owners() {
               <Plus className="h-4 w-4" /> {t('owners.new_owner')}
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-xl overflow-y-auto max-h-[90vh]">
             <DialogHeader>
               <DialogTitle>{t('owners.register_title')}</DialogTitle>
             </DialogHeader>
@@ -155,15 +184,30 @@ export default function Owners() {
                   placeholder="Ex: John Doe"
                 />
               </div>
-              <div className="grid gap-2">
-                <Label>{t('common.email')}</Label>
-                <Input
-                  value={newOwner.email}
-                  onChange={(e) =>
-                    setNewOwner({ ...newOwner, email: e.target.value })
-                  }
-                  placeholder="email@exemplo.com"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label>{t('common.email')}</Label>
+                  <Input
+                    value={newOwner.email}
+                    onChange={(e) =>
+                      setNewOwner({ ...newOwner, email: e.target.value })
+                    }
+                    placeholder="email@exemplo.com"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>{t('common.country')}</Label>
+                  <Select value={newOwner.country} onValueChange={(v) => setNewOwner({ ...newOwner, country: v })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="US">United States</SelectItem>
+                      <SelectItem value="BR">Brazil</SelectItem>
+                      <SelectItem value="ES">Spain</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label>{t('common.phone')}</Label>
@@ -172,9 +216,44 @@ export default function Owners() {
                   onChange={(e) =>
                     setNewOwner({ ...newOwner, phone: e.target.value })
                   }
+                  defaultCountry={newOwner.country as any}
                 />
               </div>
-              <Button onClick={handleAddOwner} className="w-full">
+              <div className="grid gap-2">
+                <Label>Address Search</Label>
+                <AddressInput onAddressSelect={handleAddressSelect} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Full Address</Label>
+                <Input
+                  value={newOwner.address}
+                  onChange={(e) => setNewOwner({ ...newOwner, address: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="grid gap-2">
+                  <Label>City</Label>
+                  <Input
+                    value={newOwner.city}
+                    onChange={(e) => setNewOwner({ ...newOwner, city: e.target.value })}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>State</Label>
+                  <Input
+                    value={newOwner.state}
+                    onChange={(e) => setNewOwner({ ...newOwner, state: e.target.value })}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Zip</Label>
+                  <Input
+                    value={newOwner.zipCode}
+                    onChange={(e) => setNewOwner({ ...newOwner, zipCode: e.target.value })}
+                  />
+                </div>
+              </div>
+              <Button onClick={handleAddOwner} className="w-full bg-trust-blue">
                 {t('common.save')}
               </Button>
             </div>
@@ -201,11 +280,11 @@ export default function Owners() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('common.name')}</TableHead>
-                <TableHead>{t('owners.contact_details')}</TableHead>
-                <TableHead>{t('owners.properties_count')}</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
-                <TableHead className="text-right">
+                <TableHead className="table-text">{t('common.name')}</TableHead>
+                <TableHead className="table-text">{t('owners.contact_details')}</TableHead>
+                <TableHead className="table-text">{t('owners.properties_count')}</TableHead>
+                <TableHead className="table-text">{t('common.status')}</TableHead>
+                <TableHead className="text-right table-text">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>

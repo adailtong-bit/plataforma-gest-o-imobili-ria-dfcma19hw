@@ -46,6 +46,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { isValidEmail } from '@/lib/utils'
+import { DataMask } from '@/components/DataMask'
 
 export default function CondominiumDetails() {
   const { id } = useParams()
@@ -74,7 +75,23 @@ export default function CondominiumDetails() {
 
   useEffect(() => {
     if (condo) {
-      setFormData(JSON.parse(JSON.stringify(condo)))
+      // Sync manager to contacts if missing
+      const hasManagerContact = condo.contacts?.some(
+        (c) => c.role === 'Manager' && c.name === condo.managerName,
+      )
+      let contacts = [...(condo.contacts || [])]
+
+      if (!hasManagerContact && condo.managerName) {
+        contacts.push({
+          id: `contact-mgr-${Date.now()}`,
+          name: condo.managerName,
+          role: 'Manager',
+          phone: condo.managerPhone || '',
+          email: condo.managerEmail || '',
+        })
+      }
+
+      setFormData({ ...condo, contacts })
     }
   }, [condo])
 
@@ -276,6 +293,30 @@ export default function CondominiumDetails() {
                   disabled={!isEditing}
                 />
               </div>
+              <div className="grid gap-2">
+                <Label>{t('condominiums.manager')}</Label>
+                <Input
+                  value={formData.managerName || ''}
+                  onChange={(e) => handleChange('managerName', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>{t('common.phone')}</Label>
+                {/* Data masking for manager phone in overview */}
+                {isEditing ? (
+                  <Input
+                    value={formData.managerPhone || ''}
+                    onChange={(e) =>
+                      handleChange('managerPhone', e.target.value)
+                    }
+                  />
+                ) : (
+                  <div className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    <DataMask>{formData.managerPhone}</DataMask>
+                  </div>
+                )}
+              </div>
               <div className="grid gap-2 md:col-span-2">
                 <Label>{t('common.description')}</Label>
                 <Textarea
@@ -442,11 +483,13 @@ export default function CondominiumDetails() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Função</TableHead>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Telefone</TableHead>
-                    <TableHead>Email</TableHead>
-                    {isEditing && <TableHead>Ação</TableHead>}
+                    <TableHead className="table-text">Função</TableHead>
+                    <TableHead className="table-text">Nome</TableHead>
+                    <TableHead className="table-text">Telefone</TableHead>
+                    <TableHead className="table-text">Email</TableHead>
+                    {isEditing && (
+                      <TableHead className="table-text">Ação</TableHead>
+                    )}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -566,9 +609,9 @@ export default function CondominiumDetails() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Valor</TableHead>
-                      <TableHead>De</TableHead>
-                      <TableHead>Até</TableHead>
+                      <TableHead className="table-text">Valor</TableHead>
+                      <TableHead className="table-text">De</TableHead>
+                      <TableHead className="table-text">Até</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

@@ -462,6 +462,8 @@ export interface Booking {
   guestPhone?: string
   checkIn: string
   checkOut: string
+  earlyCheckIn?: string // HH:mm
+  lateCheckOut?: string // HH:mm
   status: 'confirmed' | 'checked_in' | 'checked_out' | 'cancelled'
   totalAmount: number
   paid: boolean
@@ -509,6 +511,7 @@ export interface Owner {
   zipCode?: string
   city?: string
   state?: string
+  description?: string // Free-text owner info
   secondContact?: {
     name: string
     phone: string
@@ -798,12 +801,23 @@ export interface ChatMessage {
   read?: boolean
 }
 
+export interface ContactInfo {
+  name: string
+  email: string
+  phone: string
+}
+
 export interface Advertiser {
   id: string
   name: string
   email: string
   phone: string
   address: string
+  zipCode?: string
+  city?: string
+  state?: string
+  country?: string
+  contacts?: ContactInfo[]
   createdAt: string
 }
 
@@ -811,6 +825,12 @@ export interface AdPricing {
   weekly: number
   biWeekly: number
   monthly: number
+  placementModifiers?: {
+    home_top: number
+    home_bottom: number
+    partner_page: number
+    tenant_page: number
+  }
 }
 
 export interface Advertisement {
@@ -821,7 +841,7 @@ export interface Advertisement {
   linkUrl: string
   active: boolean
   createdAt: string
-  placement?: 'footer' | 'sidebar'
+  placement?: 'home_top' | 'home_bottom' | 'partner_page' | 'tenant_page' | 'footer' | 'sidebar'
   advertiserId?: string
   validity?: 'weekly' | 'bi-weekly' | 'monthly'
   renewable?: boolean

@@ -35,15 +35,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { isValidEmail } from '@/lib/utils'
+import { isValidEmail, isPhoneValid } from '@/lib/utils'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { Label } from '@/components/ui/label'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
 import { DataMask } from '@/components/DataMask'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export default function Tenants() {
   const { tenants, addTenant } = useTenantStore()
-  const { properties } = usePropertyStore()
+  const { properties, updateProperty } = usePropertyStore()
   const { owners } = useOwnerStore()
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -56,6 +57,7 @@ export default function Tenants() {
     email: '',
     phone: '',
     address: '',
+    country: 'US',
     rentValue: '',
     propertyId: '',
     leaseStart: '',
@@ -71,10 +73,15 @@ export default function Tenants() {
       t.email.toLowerCase().includes(filter.toLowerCase()),
   )
 
+  const availableProperties = properties.filter(
+    (p) => p.status === 'available' || p.status === 'interested',
+  )
+
   const handleAddressSelect = (addr: AddressData) => {
     setNewTenant((prev) => ({
       ...prev,
       address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
+      country: addr.country === 'USA' ? 'US' : addr.country === 'Brazil' ? 'BR' : 'US',
     }))
   }
 
@@ -97,13 +104,22 @@ export default function Tenants() {
       return
     }
 
-    if (!newTenant.phone || newTenant.phone.length < 10) {
+    // Basic validation based on selected country context from address or default US
+    if (!isPhoneValid(newTenant.phone, newTenant.country as any)) {
       toast({
         title: t('common.error'),
-        description: 'Phone number is invalid or too short.',
+        description: `Invalid phone number for ${newTenant.country}.`,
         variant: 'destructive',
       })
       return
+    }
+
+    // Link Property Logic
+    if (newTenant.propertyId) {
+      const prop = properties.find(p => p.id === newTenant.propertyId)
+      if (prop) {
+        updateProperty({ ...prop, status: 'reserved' })
+      }
     }
 
     addTenant({
@@ -121,6 +137,7 @@ export default function Tenants() {
       email: '',
       phone: '',
       address: '',
+      country: 'US',
       rentValue: '',
       propertyId: '',
       leaseStart: '',
@@ -224,14 +241,24 @@ export default function Tenants() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>ID / RG</Label>
-                    <Input
-                      placeholder="ID Number"
-                      value={newTenant.idNumber}
-                      onChange={(e) =>
-                        setNewTenant({ ...newTenant, idNumber: e.target.value })
+                    <Label>Link Property (Available Only)</Label>
+                    <Select
+                      value={newTenant.propertyId}
+                      onValueChange={(v) =>
+                        setNewTenant({ ...newTenant, propertyId: v })
                       }
-                    />
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Property" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableProperties.map((p) => (
+                          <SelectItem key={p.id} value={p.id}>
+                            {p.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -252,6 +279,8 @@ export default function Tenants() {
                       onChange={(e) =>
                         setNewTenant({ ...newTenant, phone: e.target.value })
                       }
+                      defaultCountry={newTenant.country as any}
+                      className="w-full"
                     />
                   </div>
                 </div>
@@ -319,11 +348,11 @@ export default function Tenants() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('common.name')}</TableHead>
-                <TableHead>{t('tenants.property')}</TableHead>
-                <TableHead>{t('common.contracts')}</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
-                <TableHead className="text-right">
+                <TableHead className="table-text">{t('common.name')}</TableHead>
+                <TableHead className="table-text">{t('tenants.property')}</TableHead>
+                <TableHead className="table-text">{t('common.contracts')}</TableHead>
+                <TableHead className="table-text">{t('common.status')}</TableHead>
+                <TableHead className="text-right table-text">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>

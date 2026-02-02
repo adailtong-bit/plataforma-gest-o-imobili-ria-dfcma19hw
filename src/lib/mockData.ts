@@ -493,6 +493,12 @@ export const mockAdPricing: AdPricing = {
   weekly: 50,
   biWeekly: 90,
   monthly: 150,
+  placementModifiers: {
+    home_top: 1.5,
+    home_bottom: 1.0,
+    partner_page: 1.2,
+    tenant_page: 1.1,
+  },
 }
 export const bookings: Booking[] = [
   {
@@ -528,6 +534,15 @@ export const serviceCategories: ServiceCategory[] = [
   { id: 'cat_1', name: 'Plumbing', color: '#3b82f6' },
   { id: 'cat_2', name: 'Electrical', color: '#eab308' },
   { id: 'cat_3', name: 'Cleaning', color: '#22c55e' },
+  { id: 'cat_4', name: 'Eletricista', color: '#f59e0b' },
+  { id: 'cat_5', name: 'limpeza', color: '#10b981' },
+  { id: 'cat_6', name: 'encanador', color: '#3b82f6' },
+  { id: 'cat_7', name: 'manutenção', color: '#6366f1' },
+  { id: 'cat_8', name: 'pintura', color: '#ec4899' },
+  { id: 'cat_9', name: 'telhadista', color: '#8b5cf6' },
+  { id: 'cat_10', name: 'limpeza piscina', color: '#06b6d4' },
+  { id: 'cat_11', name: 'técnico ar condicionado', color: '#ef4444' },
+  { id: 'cat_12', name: 'técnico de manutenção piscina', color: '#14b8a6' },
 ]
 
 export const visits: Visit[] = []

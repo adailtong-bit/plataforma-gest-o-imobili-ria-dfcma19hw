@@ -42,6 +42,15 @@ export const applyPhoneMask = (value: string, country: 'US' | 'BR' | 'ES') => {
   return value
 }
 
+// Validation length check for phones
+export const isPhoneValid = (value: string, country: 'US' | 'BR' | 'ES') => {
+  const digits = value.replace(/\D/g, '')
+  if (country === 'US') return digits.length === 10
+  if (country === 'BR') return digits.length === 11 || digits.length === 10
+  if (country === 'ES') return digits.length === 9
+  return digits.length > 8
+}
+
 // Document mask enforcement based on Acceptance Criteria
 export const applyDocumentMask = (
   value: string,
