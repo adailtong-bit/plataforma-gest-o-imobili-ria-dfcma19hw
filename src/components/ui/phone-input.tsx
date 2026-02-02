@@ -70,15 +70,19 @@ export function PhoneInput({
   return (
     <div className={cn('flex gap-2', className)}>
       <Select value={currentCountry} onValueChange={handleCountryChange}>
-        <SelectTrigger className="w-[100px]">
+        <SelectTrigger className="w-[100px] bg-white text-black">
           <SelectValue>
             <span className="mr-2">{COUNTRIES[currentCountry].flag}</span>
             {COUNTRIES[currentCountry].code}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-white">
           {Object.entries(COUNTRIES).map(([key, data]) => (
-            <SelectItem key={key} value={key}>
+            <SelectItem
+              key={key}
+              value={key}
+              className="text-black hover:bg-slate-100"
+            >
               <span className="mr-2">{data.flag}</span>
               {data.code}
             </SelectItem>
@@ -93,7 +97,7 @@ export function PhoneInput({
         maxLength={
           currentCountry === 'US' ? 14 : currentCountry === 'BR' ? 15 : 13
         }
-        className="flex-1"
+        className={cn('flex-1 bg-white text-black', className)}
       />
     </div>
   )

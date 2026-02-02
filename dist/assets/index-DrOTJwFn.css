@@ -3094,9 +3094,6 @@ video {
 .opacity-90 {
   opacity: 0.9;
 }
-.mix-blend-normal {
-  mix-blend-mode: normal;
-}
 .mix-blend-overlay {
   mix-blend-mode: overlay;
 }
@@ -3592,8 +3589,9 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 .file\:font-medium::file-selector-button {
   font-weight: 500;
 }
-.file\:text-foreground::file-selector-button {
-  color: hsl(var(--foreground));
+.file\:text-black::file-selector-button {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
 }
 .placeholder\:text-muted-foreground::-moz-placeholder {
   color: hsl(var(--muted-foreground));
@@ -3985,6 +3983,10 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 .focus\:bg-accent:focus {
   background-color: hsl(var(--accent));
 }
+.focus\:bg-slate-100:focus {
+  --tw-bg-opacity: 1;
+  background-color: rgb(241 245 249 / var(--tw-bg-opacity, 1));
+}
 .focus\:text-accent-foreground:focus {
   color: hsl(var(--accent-foreground));
 }
@@ -4279,6 +4281,10 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 }
 .data-\[selected\=\'true\'\]\:bg-accent[data-selected='true'] {
   background-color: hsl(var(--accent));
+}
+.data-\[selected\=\'true\'\]\:bg-slate-100[data-selected='true'] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(241 245 249 / var(--tw-bg-opacity, 1));
 }
 .data-\[state\=active\]\:bg-background[data-state="active"] {
   background-color: hsl(var(--background));

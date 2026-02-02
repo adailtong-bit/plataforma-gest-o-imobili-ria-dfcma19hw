@@ -131,7 +131,10 @@ export function AddressInput({
               setOpen(true)
             }}
             disabled={disabled}
-            className={cn('pr-8 transition-shadow focus:ring-2', className)}
+            className={cn(
+              'pr-8 transition-shadow focus:ring-2 bg-white text-black',
+              className,
+            )}
             placeholder="Search address (e.g. 123 Main St)"
             role="combobox"
             aria-expanded={open}
@@ -139,32 +142,36 @@ export function AddressInput({
           <MapPin className="absolute right-2.5 top-2.5 h-4 w-4 text-muted-foreground opacity-50 group-focus-within:opacity-100 transition-opacity" />
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0" align="start">
+      <PopoverContent className="w-[300px] p-0 bg-white" align="start">
         <Command>
           <CommandInput
             placeholder="Type address..."
-            className="h-9"
+            className="h-9 bg-white text-black"
             onValueChange={handleSearch}
           />
           <CommandList>
             {loading ? (
-              <div className="py-6 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+              <div className="py-6 text-center text-sm text-black flex items-center justify-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" /> Searching...
               </div>
             ) : (
               <>
-                <CommandEmpty>No address found.</CommandEmpty>
-                <CommandGroup heading="Suggestions">
+                <CommandEmpty className="text-black">
+                  No address found.
+                </CommandEmpty>
+                <CommandGroup heading="Suggestions" className="text-black">
                   {suggestions.map((addr) => (
                     <CommandItem
                       key={addr.label}
                       value={addr.label}
                       onSelect={() => handleSelect(addr)}
-                      className="cursor-pointer"
+                      className="cursor-pointer hover:bg-slate-100 text-black"
                     >
                       <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
                       <div className="flex flex-col">
-                        <span>{addr.label}</span>
+                        <span className="font-medium text-black">
+                          {addr.label}
+                        </span>
                         {addr.data.community && (
                           <span className="text-[10px] text-muted-foreground">
                             {addr.data.community}
@@ -172,7 +179,7 @@ export function AddressInput({
                         )}
                       </div>
                       {value === addr.label && (
-                        <Check className="ml-auto h-4 w-4 opacity-100" />
+                        <Check className="ml-auto h-4 w-4 opacity-100 text-black" />
                       )}
                     </CommandItem>
                   ))}
