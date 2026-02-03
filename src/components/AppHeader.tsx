@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Bell,
   Search,
@@ -8,7 +8,6 @@ import {
   Building,
   User,
   CheckSquare,
-  Building2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -24,13 +23,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import useAuthStore from '@/stores/useAuthStore'
@@ -55,7 +47,6 @@ import useOwnerStore from '@/stores/useOwnerStore'
 import useTaskStore from '@/stores/useTaskStore'
 import { ThemeCustomizer } from '@/components/ThemeCustomizer'
 import logo from '@/assets/logo-estilizado.jpg'
-import { AppContext } from '@/stores/AppContext'
 import { DataMask } from '@/components/DataMask'
 
 export function AppHeader() {
@@ -69,11 +60,6 @@ export function AppHeader() {
   const { tenants } = useTenantStore()
   const { owners } = useOwnerStore()
   const { tasks } = useTaskStore()
-
-  // Property Context for Multi-Property Management
-  const context = useContext(AppContext)
-  const selectedPropertyId = context?.selectedPropertyId || 'all'
-  const setSelectedPropertyId = context?.setSelectedPropertyId
 
   const [openSearch, setOpenSearch] = useState(false)
 
@@ -116,7 +102,6 @@ export function AppHeader() {
 
   const handleNotificationClick = (id: string) => {
     markNotificationAsRead(id)
-    // Optional: navigate to specific detail if notification payload supported it
   }
 
   const handleLogout = () => {
@@ -125,53 +110,32 @@ export function AppHeader() {
   }
 
   return (
-    <header className="flex h-16 items-center gap-4 border-b bg-white px-6 sticky top-0 z-50 shadow-sm w-full">
-      <SidebarTrigger className="-ml-2 text-black">
-        <Menu className="h-5 w-5" />
-      </SidebarTrigger>
+    <header className="flex h-16 items-center gap-4 border-b bg-white px-6 sticky top-0 z-50 shadow-sm w-full justify-between">
+      <div className="flex items-center gap-4">
+        <SidebarTrigger className="-ml-2 text-black">
+          <Menu className="h-5 w-5" />
+        </SidebarTrigger>
 
-      <Link
-        to="/"
-        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-      >
-        <img
-          src={logo}
-          alt="COREPM Logo"
-          className="h-8 w-8 rounded-md shrink-0 object-contain"
-        />
-        <h2 className="text-lg font-bold md:text-xl text-black font-display tracking-tight hidden sm:block">
-          COREPM
-        </h2>
-      </Link>
-
-      {/* Property Selector for Multi-Property Management */}
-      {setSelectedPropertyId && (
-        <div className="flex items-center gap-2 ml-4">
-          <Building2 className="w-4 h-4 text-black hidden md:block" />
-          <Select
-            value={selectedPropertyId}
-            onValueChange={setSelectedPropertyId}
-          >
-            <SelectTrigger className="w-[180px] md:w-[240px] border-none shadow-none focus:ring-0 bg-transparent hover:bg-slate-100 transition-colors h-9 text-black font-medium">
-              <SelectValue placeholder="Select Property" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('common.all')}</SelectItem>
-              {properties.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
+        <Link
+          to="/"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        >
+          <img
+            src={logo}
+            alt="COREPM Logo"
+            className="h-8 w-8 rounded-md shrink-0 object-contain"
+          />
+          <h2 className="text-lg font-bold md:text-xl text-black font-display tracking-tight hidden sm:block">
+            COREPM
+          </h2>
+        </Link>
+      </div>
 
       {/* Global Search Button */}
-      <div className="relative ml-auto flex-1 md:grow-0">
+      <div className="relative hidden md:flex flex-1 max-w-md mx-4">
         <Button
           variant="outline"
-          className="relative w-full justify-start text-sm text-black border-slate-300 font-medium sm:pr-12 md:w-64 lg:w-80"
+          className="relative w-full justify-start text-sm text-black border-slate-300 font-medium"
           onClick={() => setOpenSearch(true)}
         >
           <Search className="mr-2 h-4 w-4" />
@@ -237,6 +201,16 @@ export function AppHeader() {
       </CommandDialog>
 
       <div className="flex items-center gap-2">
+        {/* Search icon for mobile */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden text-black"
+          onClick={() => setOpenSearch(true)}
+        >
+          <Search className="h-5 w-5" />
+        </Button>
+
         <ThemeCustomizer />
 
         <DropdownMenu>

@@ -540,6 +540,11 @@ export default function PartnerDetails() {
             canEdit={true}
             title={t('common.documents')}
             description="Contratos, certificações e outros arquivos."
+            entityContext={{
+              id: formData.id,
+              name: formData.name,
+              type: 'partner',
+            }}
           />
         </TabsContent>
 

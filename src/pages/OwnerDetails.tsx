@@ -352,6 +352,11 @@ export default function OwnerDetails() {
             canEdit={true}
             title="Documentos Pessoais"
             description="IDs, Passaportes, Procurações e outros documentos do proprietário."
+            entityContext={{
+              id: formData.id,
+              name: formData.name,
+              type: 'owner',
+            }}
           />
         </TabsContent>
       </Tabs>

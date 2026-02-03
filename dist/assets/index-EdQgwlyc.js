@@ -62540,9 +62540,6 @@ function AppHeader() {
 	const { tenants: tenants$1 } = useTenantStore_default();
 	const { owners: owners$1 } = useOwnerStore_default();
 	const { tasks: tasks$1 } = useTaskStore_default();
-	const context = (0, import_react.useContext)(AppContext);
-	const selectedPropertyId = context?.selectedPropertyId || "all";
-	const setSelectedPropertyId = context?.setSelectedPropertyId;
 	const [openSearch, setOpenSearch] = (0, import_react.useState)(false);
 	const demoUsers = allUsers.filter((u$1) => u$1.isDemo);
 	const otherDemoUsers = allUsers.filter((u$1) => u$1.id !== currentUser?.id && !u$1.isDemo).slice(0, 4);
@@ -62582,46 +62579,31 @@ function AppHeader() {
 		navigate("/");
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
-		className: "flex h-16 items-center gap-4 border-b bg-white px-6 sticky top-0 z-50 shadow-sm w-full",
+		className: "flex h-16 items-center gap-4 border-b bg-white px-6 sticky top-0 z-50 shadow-sm w-full justify-between",
 		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarTrigger, {
-				className: "-ml-2 text-black",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Menu, { className: "h-5 w-5" })
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-				to: "/",
-				className: "flex items-center gap-2 hover:opacity-80 transition-opacity",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-					src: logo_estilizado_default,
-					alt: "COREPM Logo",
-					className: "h-8 w-8 rounded-md shrink-0 object-contain"
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
-					className: "text-lg font-bold md:text-xl text-black font-display tracking-tight hidden sm:block",
-					children: "COREPM"
-				})]
-			}),
-			setSelectedPropertyId && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-2 ml-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "w-4 h-4 text-black hidden md:block" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-					value: selectedPropertyId,
-					onValueChange: setSelectedPropertyId,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-						className: "w-[180px] md:w-[240px] border-none shadow-none focus:ring-0 bg-transparent hover:bg-slate-100 transition-colors h-9 text-black font-medium",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Property" })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-						value: "all",
-						children: t$1("common.all")
-					}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-						value: p$1.id,
-						children: p$1.name
-					}, p$1.id))] })]
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarTrigger, {
+					className: "-ml-2 text-black",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Menu, { className: "h-5 w-5" })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+					to: "/",
+					className: "flex items-center gap-2 hover:opacity-80 transition-opacity",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+						src: logo_estilizado_default,
+						alt: "COREPM Logo",
+						className: "h-8 w-8 rounded-md shrink-0 object-contain"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+						className: "text-lg font-bold md:text-xl text-black font-display tracking-tight hidden sm:block",
+						children: "COREPM"
+					})]
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "relative ml-auto flex-1 md:grow-0",
+				className: "relative hidden md:flex flex-1 max-w-md mx-4",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 					variant: "outline",
-					className: "relative w-full justify-start text-sm text-black border-slate-300 font-medium sm:pr-12 md:w-64 lg:w-80",
+					className: "relative w-full justify-start text-sm text-black border-slate-300 font-medium",
 					onClick: () => setOpenSearch(true),
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "mr-2 h-4 w-4" }),
@@ -62678,6 +62660,13 @@ function AppHeader() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex items-center gap-2",
 				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "ghost",
+						size: "icon",
+						className: "md:hidden text-black",
+						onClick: () => setOpenSearch(true),
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "h-5 w-5" })
+					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThemeCustomizer, {}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
 						asChild: true,
@@ -66597,7 +66586,7 @@ function PropertyContent({ data, onChange, onNestedChange, canEdit }) {
 		}) })] })]
 	});
 }
-function DocumentVault({ documents, onUpdate, canEdit, title, description }) {
+function DocumentVault({ documents, onUpdate, canEdit, title, description, entityContext }) {
 	const { t: t$1, language } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const docInputRef = (0, import_react.useRef)(null);
@@ -66605,10 +66594,12 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description }) {
 	const [uploadDialogOpen, setUploadDialogOpen] = (0, import_react.useState)(false);
 	const [selectedFile, setSelectedFile] = (0, import_react.useState)(null);
 	const [selectedCategory, setSelectedCategory] = (0, import_react.useState)("Other");
+	const [linkedEntity, setLinkedEntity] = (0, import_react.useState)(entityContext?.id || "");
 	const handleFileSelect = (e) => {
 		const file = e.target.files?.[0];
 		if (file) {
 			setSelectedFile(file);
+			if (entityContext) setLinkedEntity(entityContext.id);
 			setUploadDialogOpen(true);
 		}
 	};
@@ -66623,7 +66614,10 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description }) {
 				date: (/* @__PURE__ */ new Date()).toISOString(),
 				type: selectedFile.type,
 				size: `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`,
-				category: selectedCategory
+				category: selectedCategory,
+				linkedEntityId: linkedEntity || void 0,
+				linkedEntityName: linkedEntity === entityContext?.id ? entityContext.name : void 0,
+				linkedEntityType: linkedEntity === entityContext?.id ? entityContext.type : void 0
 			};
 			onUpdate([...documents || [], newDoc]);
 			setIsUploading(false);
@@ -66663,53 +66657,72 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description }) {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("common.upload") }) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid gap-4 py-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.details") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "p-2 border rounded bg-muted text-sm flex items-center gap-2 text-black",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(File$1, { className: "h-4 w-4 text-blue-500" }), selectedFile?.name]
-					})]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.category") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-						value: selectedCategory,
-						onValueChange: (v) => setSelectedCategory(v),
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "Contract",
-								children: t$1("common.contracts")
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-								value: "ID",
-								children: ["ID / ", t$1("common.tax_id")]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "Passport",
-								children: "Passport"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "SSN",
-								children: "SSN / Tax ID"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "Insurance",
-								children: "Insurance"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "Deed",
-								children: "Deed"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "Inspection",
-								children: "Inspection"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "Other",
-								children: t$1("common.none")
-							})
-						] })]
-					})]
-				})]
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.details") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "p-2 border rounded bg-muted text-sm flex items-center gap-2 text-black",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(File$1, { className: "h-4 w-4 text-blue-500" }), selectedFile?.name]
+						})]
+					}),
+					entityContext && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Link Document to Specific Person" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: linkedEntity,
+							onValueChange: setLinkedEntity,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Person..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+								value: entityContext.id,
+								children: [
+									entityContext.name,
+									" (",
+									t$1(`roles.${entityContext.type}`),
+									")"
+								]
+							}) })]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.category") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: selectedCategory,
+							onValueChange: (v) => setSelectedCategory(v),
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Contract",
+									children: t$1("common.contracts")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+									value: "ID",
+									children: ["ID / ", t$1("common.tax_id")]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Passport",
+									children: "Passport"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "SSN",
+									children: "SSN / Tax ID"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Insurance",
+									children: "Insurance"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Deed",
+									children: "Deed"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Inspection",
+									children: "Inspection"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Other",
+									children: t$1("common.none")
+								})
+							] })]
+						})]
+					})
+				]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 				variant: "outline",
@@ -66735,14 +66748,22 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description }) {
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-5 w-5 text-blue-600" })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "font-medium text-sm text-black",
-						children: doc.name
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-						variant: "secondary",
-						className: "text-xs",
-						children: doc.category
-					})]
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "font-medium text-sm text-black",
+							children: doc.name
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+							variant: "secondary",
+							className: "text-xs",
+							children: doc.category
+						}),
+						doc.linkedEntityName && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+							variant: "outline",
+							className: "text-xs",
+							children: ["Linked to: ", doc.linkedEntityName]
+						})
+					]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 					className: "text-xs text-muted-foreground text-black",
 					children: [
@@ -81554,7 +81575,12 @@ function TenantDetails() {
 							onUpdate: handleDocsUpdate,
 							canEdit: true,
 							title: "Documentos do Inquilino",
-							description: "Contratos, Identificações e Comprovantes."
+							description: "Contratos, Identificações e Comprovantes.",
+							entityContext: {
+								id: formData.id,
+								name: formData.name,
+								type: "tenant"
+							}
 						})
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
@@ -82798,7 +82824,12 @@ function OwnerDetails() {
 						onUpdate: handleDocsUpdate,
 						canEdit: true,
 						title: "Documentos Pessoais",
-						description: "IDs, Passaportes, Procurações e outros documentos do proprietário."
+						description: "IDs, Passaportes, Procurações e outros documentos do proprietário.",
+						entityContext: {
+							id: formData.id,
+							name: formData.name,
+							type: "owner"
+						}
 					})
 				})
 			]
@@ -84624,7 +84655,12 @@ function PartnerDetails() {
 						onUpdate: handleDocsUpdate,
 						canEdit: true,
 						title: t$1("common.documents"),
-						description: "Contratos, certificações e outros arquivos."
+						description: "Contratos, certificações e outros arquivos.",
+						entityContext: {
+							id: formData.id,
+							name: formData.name,
+							type: "partner"
+						}
 					})
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
@@ -94022,4 +94058,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-6Aw0ZuNb.js.map
+//# sourceMappingURL=index-EdQgwlyc.js.map

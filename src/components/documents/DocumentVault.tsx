@@ -46,6 +46,11 @@ interface DocumentVaultProps {
   canEdit: boolean
   title?: string
   description?: string
+  entityContext?: {
+    id: string
+    name: string
+    type: 'tenant' | 'owner' | 'partner'
+  }
 }
 
 export function DocumentVault({
@@ -54,6 +59,7 @@ export function DocumentVault({
   canEdit,
   title,
   description,
+  entityContext,
 }: DocumentVaultProps) {
   const { t, language } = useLanguageStore()
   const { toast } = useToast()
@@ -63,11 +69,17 @@ export function DocumentVault({
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [selectedCategory, setSelectedCategory] =
     useState<DocumentCategory>('Other')
+  const [linkedEntity, setLinkedEntity] = useState<string>(
+    entityContext?.id || '',
+  )
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       setSelectedFile(file)
+      if (entityContext) {
+        setLinkedEntity(entityContext.id)
+      }
       setUploadDialogOpen(true)
     }
   }
@@ -85,6 +97,11 @@ export function DocumentVault({
         type: selectedFile.type,
         size: `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`,
         category: selectedCategory,
+        linkedEntityId: linkedEntity || undefined,
+        linkedEntityName:
+          linkedEntity === entityContext?.id ? entityContext.name : undefined,
+        linkedEntityType:
+          linkedEntity === entityContext?.id ? entityContext.type : undefined,
       }
       onUpdate([...(documents || []), newDoc])
       setIsUploading(false)
@@ -150,6 +167,24 @@ export function DocumentVault({
                   {selectedFile?.name}
                 </div>
               </div>
+
+              {entityContext && (
+                <div className="grid gap-2">
+                  <Label>Link Document to Specific Person</Label>
+                  <Select value={linkedEntity} onValueChange={setLinkedEntity}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Person..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={entityContext.id}>
+                        {entityContext.name} ({t(`roles.${entityContext.type}`)}
+                        )
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <div className="grid gap-2">
                 <Label>{t('common.category')}</Label>
                 <Select
@@ -215,6 +250,11 @@ export function DocumentVault({
                       <Badge variant="secondary" className="text-xs">
                         {doc.category}
                       </Badge>
+                      {doc.linkedEntityName && (
+                        <Badge variant="outline" className="text-xs">
+                          Linked to: {doc.linkedEntityName}
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-xs text-muted-foreground text-black">
                       {formatDate(doc.date, language)} •{' '}

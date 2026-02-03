@@ -401,6 +401,9 @@ export interface GenericDocument {
   size?: string
   type?: string
   category: DocumentCategory
+  linkedEntityId?: string
+  linkedEntityName?: string
+  linkedEntityType?: 'tenant' | 'owner' | 'partner'
 }
 
 export type NegotiationStatus =
@@ -874,4 +877,3 @@ export interface Visit {
   registeredBy?: string // User ID who created
   reason?: string // Purpose of visit
 }
-

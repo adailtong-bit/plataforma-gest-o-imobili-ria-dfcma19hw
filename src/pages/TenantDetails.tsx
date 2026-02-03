@@ -953,6 +953,11 @@ export default function TenantDetails() {
             canEdit={true}
             title="Documentos do Inquilino"
             description="Contratos, Identificações e Comprovantes."
+            entityContext={{
+              id: formData.id,
+              name: formData.name,
+              type: 'tenant',
+            }}
           />
         </TabsContent>
 
