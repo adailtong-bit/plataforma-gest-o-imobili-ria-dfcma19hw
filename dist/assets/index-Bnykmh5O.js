@@ -53152,7 +53152,33 @@ const partners = [{
 	status: "active",
 	role: "partner",
 	avatar: "https://img.usecurling.com/i?q=wrench&color=blue",
-	serviceRates: []
+	serviceRates: [],
+	employees: [
+		{
+			id: "emp_1",
+			name: "José Silva",
+			email: "jose.silva@example.com",
+			phone: "(11) 98888-7777",
+			role: "Maintenance",
+			status: "active"
+		},
+		{
+			id: "emp_2",
+			name: "Maria Oliveira",
+			email: "maria.o@test.com",
+			phone: "(21) 97777-6666",
+			role: "Cleaning",
+			status: "active"
+		},
+		{
+			id: "emp_3",
+			name: "Carlos Santos",
+			email: "carlos.santos@provider.com",
+			phone: "(31) 96666-5555",
+			role: "Inspection",
+			status: "active"
+		}
+	]
 }, {
 	id: "partner_2",
 	name: "Sparkle Cleaning",
@@ -82918,6 +82944,22 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 	const fileInputRef = (0, import_react.useRef)(null);
 	const handleSave = () => {
 		if (!formData.name || !formData.role) return;
+		if (!formData.email || !isValidEmail(formData.email)) {
+			toast$2({
+				title: "Erro de Validação",
+				description: "Por favor, insira um email válido (ex: user@domain.com).",
+				variant: "destructive"
+			});
+			return;
+		}
+		if (!formData.phone || formData.phone.length < 15) {
+			toast$2({
+				title: "Erro de Validação",
+				description: "Telefone inválido. Formato obrigatório: (99) 99999-9999.",
+				variant: "destructive"
+			});
+			return;
+		}
 		const employees = partner.employees ? [...partner.employees] : [];
 		if (editingId) {
 			const index$1 = employees.findIndex((e) => e.id === editingId);
@@ -83099,13 +83141,22 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: formData.phone,
-									onChange: (e) => setFormData({
-										...formData,
-										phone: e.target.value
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+										value: formData.phone || "",
+										onChange: (e) => setFormData({
+											...formData,
+											phone: e.target.value
+										}),
+										defaultCountry: "BR",
+										country: "BR"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-xs text-muted-foreground",
+										children: "Formato: (99) 99999-9999"
 									})
-								})]
+								]
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -93404,4 +93455,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-KwCQ6sS6.js.map
+//# sourceMappingURL=index-Bnykmh5O.js.map

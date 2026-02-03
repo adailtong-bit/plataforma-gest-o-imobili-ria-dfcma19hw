@@ -486,6 +486,32 @@ export const partners: Partner[] = [
     role: 'partner',
     avatar: 'https://img.usecurling.com/i?q=wrench&color=blue',
     serviceRates: [],
+    employees: [
+      {
+        id: 'emp_1',
+        name: 'José Silva',
+        email: 'jose.silva@example.com',
+        phone: '(11) 98888-7777',
+        role: 'Maintenance',
+        status: 'active',
+      },
+      {
+        id: 'emp_2',
+        name: 'Maria Oliveira',
+        email: 'maria.o@test.com',
+        phone: '(21) 97777-6666',
+        role: 'Cleaning',
+        status: 'active',
+      },
+      {
+        id: 'emp_3',
+        name: 'Carlos Santos',
+        email: 'carlos.santos@provider.com',
+        phone: '(31) 96666-5555',
+        role: 'Inspection',
+        status: 'active',
+      },
+    ],
   },
   {
     id: 'partner_2',
