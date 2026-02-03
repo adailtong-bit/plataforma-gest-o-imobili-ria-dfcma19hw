@@ -114,7 +114,7 @@ export default function Tenants() {
     if (!isPhoneValid(newTenant.phone, newTenant.country as any)) {
       toast({
         title: t('common.error'),
-        description: `Invalid phone number for ${newTenant.country}. Exact digit count required.`,
+        description: `Número de telefone inválido para o país selecionado (${newTenant.country}). Certifique-se de que está completo.`,
         variant: 'destructive',
       })
       return

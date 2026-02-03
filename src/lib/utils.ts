@@ -17,21 +17,24 @@ export const applyPhoneMask = (value: string, country: 'US' | 'BR' | 'ES') => {
   const digits = value.replace(/\D/g, '')
 
   if (country === 'US') {
-    // (XXX) XXX-XXXX
+    // (XXX) XXX-XXXX - 10 digits
     if (digits.length <= 3) return digits
     if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`
     return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`
   }
 
   if (country === 'BR') {
-    // (XX) XXXXX-XXXX
+    // (XX) XXXXX-XXXX - 11 digits (Mobile) or (XX) XXXX-XXXX - 10 digits (Landline)
     if (digits.length <= 2) return digits
-    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
+    if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
+    if (digits.length <= 10) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`
+    }
     return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`
   }
 
   if (country === 'ES') {
-    // XXX XX XX XX
+    // XXX XX XX XX - 9 digits
     if (digits.length <= 3) return digits
     if (digits.length <= 5) return `${digits.slice(0, 3)} ${digits.slice(3)}`
     if (digits.length <= 7)

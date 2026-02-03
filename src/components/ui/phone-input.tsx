@@ -21,9 +21,9 @@ interface PhoneInputProps extends Omit<
 }
 
 const COUNTRIES = {
-  US: { code: '+1', flag: '🇺🇸', mask: '(999) 999-9999' },
-  BR: { code: '+55', flag: '🇧🇷', mask: '(99) 99999-9999' },
-  ES: { code: '+34', flag: '🇪🇸', mask: '999 99 99 99' },
+  US: { code: '+1', flag: '🇺🇸', mask: '(999) 999-9999', maxLength: 14 },
+  BR: { code: '+55', flag: '🇧🇷', mask: '(99) 99999-9999', maxLength: 15 },
+  ES: { code: '+34', flag: '🇪🇸', mask: '999 99 99 99', maxLength: 13 },
 }
 
 export function PhoneInput({
@@ -54,6 +54,11 @@ export function PhoneInput({
     const rawValue = e.target.value
     // Apply mask based on country
     const maskedValue = applyPhoneMask(rawValue, currentCountry)
+
+    // Strict length check: prevent typing more than valid length
+    if (maskedValue.length > COUNTRIES[currentCountry].maxLength) {
+      return
+    }
 
     // Create a synthetic event to pass back
     const syntheticEvent = {
@@ -94,9 +99,7 @@ export function PhoneInput({
         value={value}
         onChange={handlePhoneChange}
         placeholder={COUNTRIES[currentCountry].mask}
-        maxLength={
-          currentCountry === 'US' ? 14 : currentCountry === 'BR' ? 15 : 13
-        }
+        maxLength={COUNTRIES[currentCountry].maxLength}
         className={cn('flex-1 bg-white text-black', className)}
       />
     </div>

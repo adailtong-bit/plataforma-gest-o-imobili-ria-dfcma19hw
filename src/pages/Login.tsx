@@ -52,10 +52,7 @@ export default function Login() {
         demoEmail = 'admin@corepm.com'
         break
       case 'manager':
-        demoEmail = 'manager1@corepm.com'
-        break
-      case 'partner':
-        demoEmail = 'partner0_1@service.com'
+        demoEmail = 'pm@corepm.com'
         break
       case 'owner':
         demoEmail = 'owner@demo.com'
@@ -76,6 +73,12 @@ export default function Login() {
           description: `Logged in as ${role}`,
         })
         navigate('/')
+      } else {
+        toast({
+          title: 'Login Error',
+          description: `Could not login as ${role}. Email: ${demoEmail}`,
+          variant: 'destructive',
+        })
       }
     }, 500)
   }
@@ -120,17 +123,17 @@ export default function Login() {
                 variant="outline"
                 size="sm"
                 className="bg-white text-xs h-8"
-                onClick={() => handleDemoLogin('partner')}
+                onClick={() => handleDemoLogin('owner')}
               >
-                Partner
+                Owner
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 className="bg-white text-xs h-8"
-                onClick={() => handleDemoLogin('owner')}
+                onClick={() => handleDemoLogin('tenant')}
               >
-                Owner
+                Tenant
               </Button>
             </div>
           </div>

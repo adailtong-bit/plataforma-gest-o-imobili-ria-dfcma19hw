@@ -49,13 +49,6 @@ import {
 import useLanguageStore from '@/stores/useLanguageStore'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { DataMask } from '@/components/DataMask'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
 import { isPhoneValid, isValidEmail } from '@/lib/utils'
 
@@ -122,7 +115,7 @@ export default function Owners() {
     ) {
       toast({
         title: t('common.error'),
-        description: `Invalid phone format for ${newOwner.country}. Exact digit count required.`,
+        description: `Número de telefone inválido para o país selecionado (${newOwner.country}). Certifique-se de que está completo.`,
         variant: 'destructive',
       })
       return

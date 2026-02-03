@@ -24560,7 +24560,8 @@ const applyPhoneMask = (value, country) => {
 	}
 	if (country === "BR") {
 		if (digits.length <= 2) return digits;
-		if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+		if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+		if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
 		return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
 	}
 	if (country === "ES") {
@@ -52706,79 +52707,402 @@ function Badge$1({ className, variant, ...props }) {
 }
 var randomInt = (min$5, max$5) => Math.floor(Math.random() * (max$5 - min$5 + 1)) + min$5;
 var randomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
-const systemUsers = [{
-	id: "user_admin",
-	name: "Admin User",
-	email: "admin@corepm.com",
-	role: "platform_owner",
-	avatar: "https://img.usecurling.com/ppl/thumbnail?gender=male&seed=1",
-	status: "active",
-	isFirstLogin: false,
-	permissions: [{
-		resource: "dashboard",
-		actions: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		]
-	}]
-}, {
-	id: "user_pm",
-	name: "Property Manager",
-	email: "pm@corepm.com",
-	role: "software_tenant",
-	avatar: "https://img.usecurling.com/ppl/thumbnail?gender=female&seed=2",
-	status: "active",
-	isFirstLogin: false
-}];
+var generateId = (prefix$2) => `${prefix$2}_${Math.random().toString(36).substr(2, 9)}`;
+var firstNames = [
+	"James",
+	"Mary",
+	"Robert",
+	"Patricia",
+	"John",
+	"Jennifer",
+	"Michael",
+	"Linda",
+	"David",
+	"Elizabeth",
+	"William",
+	"Barbara",
+	"Richard",
+	"Susan",
+	"Joseph",
+	"Jessica",
+	"Thomas",
+	"Sarah",
+	"Charles",
+	"Karen",
+	"Christopher",
+	"Nancy",
+	"Daniel",
+	"Lisa",
+	"Matthew",
+	"Betty",
+	"Anthony",
+	"Margaret",
+	"Mark",
+	"Sandra",
+	"Donald",
+	"Ashley"
+];
+var lastNames = [
+	"Smith",
+	"Johnson",
+	"Williams",
+	"Brown",
+	"Jones",
+	"Garcia",
+	"Miller",
+	"Davis",
+	"Rodriguez",
+	"Martinez",
+	"Hernandez",
+	"Lopez",
+	"Gonzalez",
+	"Wilson",
+	"Anderson",
+	"Thomas",
+	"Taylor",
+	"Moore",
+	"Jackson",
+	"Martin",
+	"Lee",
+	"Perez",
+	"Thompson",
+	"White",
+	"Harris",
+	"Sanchez",
+	"Clark",
+	"Ramirez",
+	"Lewis",
+	"Robinson",
+	"Walker"
+];
+var streets = [
+	"Main St",
+	"Oak St",
+	"Pine St",
+	"Maple St",
+	"Cedar St",
+	"Elm St",
+	"Washington Ave",
+	"Lake View Dr",
+	"Hillside Ave",
+	"Park Dr",
+	"Sunset Blvd",
+	"Ocean Dr",
+	"Palm Tree Way",
+	"Broadway",
+	"Highland Ave",
+	"Forest Ln",
+	"River Rd",
+	"Meadow Ln",
+	"Valley View",
+	"Summit Dr"
+];
+var cities = [
+	"Orlando",
+	"Miami",
+	"Tampa",
+	"Jacksonville",
+	"Tallahassee",
+	"Fort Lauderdale",
+	"West Palm Beach",
+	"Naples",
+	"Sarasota",
+	"Clearwater",
+	"Kissimmee",
+	"Boca Raton"
+];
+var communities = [
+	"Sunset Heights",
+	"Ocean View",
+	"Palm Springs",
+	"Golden Lakes",
+	"Silver Creek",
+	"Crystal Cove",
+	"Emerald Bay",
+	"Royal Palm",
+	"Coral Reef",
+	"Harbor Point",
+	"Paradise Valley",
+	"Hidden Gem",
+	"Blue Lagoon",
+	"Sunny Isles",
+	"Grandview"
+];
+var serviceTypes = [
+	"Cleaning",
+	"Maintenance",
+	"Inspection",
+	"Plumbing",
+	"Electrical",
+	"Painting",
+	"AC Repair",
+	"Pool Service",
+	"Landscaping",
+	"Pest Control"
+];
+var generateCondos = (count$3) => {
+	return Array.from({ length: count$3 }).map((_$1, i$2) => ({
+		id: generateId("condo"),
+		name: i$2 < communities.length ? communities[i$2] : `${randomItem(communities)} ${i$2}`,
+		address: `${randomInt(100, 9999)} ${randomItem(streets)}`,
+		city: randomItem(cities),
+		state: "FL",
+		zipCode: `${randomInt(32e3, 34999)}`,
+		hoaFee: randomInt(200, 800),
+		hoaFrequency: "monthly",
+		managerName: `${randomItem(firstNames)} ${randomItem(lastNames)}`,
+		managerPhone: `+1 (${randomInt(200, 999)}) ${randomInt(100, 999)}-${randomInt(1e3, 9999)}`,
+		managerEmail: `manager${i$2}@condo.com`
+	}));
+};
+var generateOwners = (count$3) => {
+	return Array.from({ length: count$3 }).map((_$1, i$2) => ({
+		id: generateId("owner"),
+		name: `${randomItem(firstNames)} ${randomItem(lastNames)}`,
+		email: `owner${i$2}@example.com`,
+		phone: `+1 (${randomInt(200, 999)}) ${randomInt(100, 999)}-${randomInt(1e3, 9999)}`,
+		country: "US",
+		status: "active",
+		role: "property_owner",
+		avatar: `https://img.usecurling.com/ppl/thumbnail?gender=${i$2 % 2 === 0 ? "male" : "female"}&seed=${i$2}`,
+		accountNumber: `${randomInt(1e7, 99999999)}`,
+		address: `${randomInt(100, 9999)} ${randomItem(streets)}`,
+		city: randomItem(cities),
+		state: "FL",
+		zipCode: `${randomInt(32e3, 34999)}`,
+		documents: [],
+		properties: []
+	}));
+};
+var generateProperties = (count$3, owners$1, condos) => {
+	return Array.from({ length: count$3 }).map((_$1, i$2) => {
+		const owner = randomItem(owners$1);
+		const condo = randomItem(condos);
+		return {
+			id: generateId("prop"),
+			name: `${randomItem([
+				"Luxury",
+				"Cozy",
+				"Modern",
+				"Spacious",
+				"Charming"
+			])} ${randomItem([
+				"Villa",
+				"Apt",
+				"Condo",
+				"House",
+				"Loft"
+			])} ${i$2 + 1}`,
+			address: `${randomInt(100, 9999)} ${randomItem(streets)}`,
+			city: condo.city,
+			state: condo.state,
+			zipCode: condo.zipCode,
+			type: randomItem([
+				"House",
+				"Apartment",
+				"Condo"
+			]),
+			profileType: randomItem(["long_term", "short_term"]),
+			community: condo.name,
+			condominiumId: condo.id,
+			status: randomItem([
+				"rented",
+				"available",
+				"rented",
+				"maintenance"
+			]),
+			bedrooms: randomInt(1, 6),
+			bathrooms: randomInt(1, 4),
+			guests: randomInt(2, 12),
+			image: `https://img.usecurling.com/p/400/300?q=house%20interior&seed=${i$2}`,
+			ownerId: owner.id,
+			listingPrice: randomInt(2e5, 9e5),
+			hoaValue: condo.hoaFee
+		};
+	});
+};
+var generateTenants = (count$3, properties$1) => {
+	const rentedProps = properties$1.filter((p$1) => p$1.status === "rented");
+	return Array.from({ length: Math.min(count$3, rentedProps.length) }).map((_$1, i$2) => {
+		const prop = rentedProps[i$2];
+		return {
+			id: generateId("tenant"),
+			name: `${randomItem(firstNames)} ${randomItem(lastNames)}`,
+			email: `tenant${i$2}@example.com`,
+			phone: `+1 (${randomInt(200, 999)}) ${randomInt(100, 999)}-${randomInt(1e3, 9999)}`,
+			status: "active",
+			role: "tenant",
+			rentValue: randomInt(1500, 5e3),
+			leaseStart: subMonths(/* @__PURE__ */ new Date(), randomInt(1, 12)).toISOString(),
+			leaseEnd: addMonths(/* @__PURE__ */ new Date(), randomInt(1, 12)).toISOString(),
+			avatar: `https://img.usecurling.com/ppl/thumbnail?gender=${i$2 % 2 === 0 ? "male" : "female"}&seed=${i$2 + 100}`,
+			propertyId: prop.id,
+			documents: []
+		};
+	});
+};
+var generateTasks = (count$3, properties$1) => {
+	return Array.from({ length: count$3 }).map((_$1, i$2) => {
+		const prop = randomItem(properties$1);
+		const status = randomItem([
+			"pending",
+			"in_progress",
+			"completed",
+			"pending_approval"
+		]);
+		const type = randomItem([
+			"cleaning",
+			"maintenance",
+			"inspection"
+		]);
+		return {
+			id: generateId("task"),
+			title: `${type} - ${prop.name}`,
+			propertyId: prop.id,
+			propertyName: prop.name,
+			propertyAddress: prop.address,
+			propertyCommunity: prop.community,
+			status,
+			type,
+			assignee: "Service Partner",
+			assigneeId: "partner_1",
+			date: status === "completed" ? subDays(/* @__PURE__ */ new Date(), randomInt(1, 30)).toISOString() : addDays(/* @__PURE__ */ new Date(), randomInt(1, 14)).toISOString(),
+			completedDate: status === "completed" ? subDays(/* @__PURE__ */ new Date(), randomInt(0, 5)).toISOString() : void 0,
+			priority: randomItem([
+				"low",
+				"medium",
+				"high",
+				"critical"
+			]),
+			description: `Regular ${type} task for ${prop.name}.`,
+			price: randomInt(100, 500),
+			billableAmount: randomInt(150, 600)
+		};
+	});
+};
+var generateFinancials = (count$3, properties$1, owners$1) => {
+	return Array.from({ length: count$3 }).map((_$1, i$2) => {
+		const prop = randomItem(properties$1);
+		const isIncome = Math.random() > .4;
+		return {
+			id: generateId("ledger"),
+			propertyId: prop.id,
+			date: subDays(/* @__PURE__ */ new Date(), randomInt(0, 90)).toISOString(),
+			type: isIncome ? "income" : "expense",
+			category: isIncome ? "Rent" : randomItem([
+				"Maintenance",
+				"Cleaning",
+				"HOA",
+				"Utilities",
+				"Taxes"
+			]),
+			amount: isIncome ? randomInt(1500, 4e3) : randomInt(50, 800),
+			description: isIncome ? `Rent Payment` : `Service Payment`,
+			status: randomItem(["cleared", "pending"])
+		};
+	});
+};
+var generateServiceRates = (count$3) => {
+	return Array.from({ length: count$3 }).map((_$1, i$2) => {
+		const basePrice = randomInt(50, 300);
+		return {
+			id: generateId("rate"),
+			serviceName: `${randomItem(serviceTypes)} ${randomItem([
+				"Basic",
+				"Premium",
+				"Deep",
+				"Regular"
+			])}`,
+			servicePrice: basePrice * 1.5,
+			partnerPayment: basePrice,
+			pmValue: basePrice * .5,
+			productPrice: randomInt(0, 50),
+			validFrom: subMonths(/* @__PURE__ */ new Date(), 6).toISOString(),
+			type: "generic",
+			lastUpdated: subDays(/* @__PURE__ */ new Date(), randomInt(0, 60)).toISOString()
+		};
+	});
+};
+var generatedCondos = generateCondos(50);
+var generatedOwners = generateOwners(50);
+var generatedProperties = generateProperties(50, generatedOwners, generatedCondos);
+var generatedTenants = generateTenants(50, generatedProperties);
+var generatedTasksList = generateTasks(50, generatedProperties);
+var generatedFinancialsList = generateFinancials(50, generatedProperties, generatedOwners);
+var generatedServiceRates = generateServiceRates(50);
+const systemUsers = [
+	{
+		id: "user_admin",
+		name: "Admin User",
+		email: "admin@corepm.com",
+		role: "platform_owner",
+		avatar: "https://img.usecurling.com/ppl/thumbnail?gender=male&seed=1",
+		status: "active",
+		isFirstLogin: false,
+		permissions: [{
+			resource: "dashboard",
+			actions: [
+				"view",
+				"create",
+				"edit",
+				"delete"
+			]
+		}]
+	},
+	{
+		id: "user_pm",
+		name: "Property Manager",
+		email: "pm@corepm.com",
+		role: "software_tenant",
+		avatar: "https://img.usecurling.com/ppl/thumbnail?gender=female&seed=2",
+		status: "active",
+		isFirstLogin: false
+	},
+	{
+		id: "user_owner_demo",
+		name: "Demo Owner",
+		email: "owner@demo.com",
+		role: "property_owner",
+		avatar: "https://img.usecurling.com/ppl/thumbnail?gender=male&seed=99",
+		status: "active",
+		isFirstLogin: false
+	},
+	{
+		id: "user_tenant_demo",
+		name: "Demo Tenant",
+		email: "tenant@demo.com",
+		role: "tenant",
+		avatar: "https://img.usecurling.com/ppl/thumbnail?gender=female&seed=100",
+		status: "active",
+		isFirstLogin: false
+	}
+];
 const owners = [{
-	id: "owner_1",
-	name: "Robert Smith",
-	email: "robert@example.com",
-	phone: "+1 555-0101",
+	id: "user_owner_demo",
+	name: "Demo Owner",
+	email: "owner@demo.com",
+	phone: "+1 (555) 000-0001",
+	country: "US",
 	status: "active",
 	role: "property_owner",
-	avatar: "https://img.usecurling.com/ppl/thumbnail?gender=male&seed=3",
-	accountNumber: "123456789",
-	documents: []
-}, {
-	id: "owner_2",
-	name: "Sarah Johnson",
-	email: "sarah@example.com",
-	phone: "+1 555-0102",
-	status: "active",
-	role: "property_owner",
-	avatar: "https://img.usecurling.com/ppl/thumbnail?gender=female&seed=4",
-	documents: []
-}];
+	avatar: "https://img.usecurling.com/ppl/thumbnail?gender=male&seed=99",
+	documents: [],
+	properties: []
+}, ...generatedOwners];
 const tenants = [{
-	id: "tenant_1",
-	name: "Michael Brown",
-	email: "michael@example.com",
-	phone: "+1 555-0201",
+	id: "user_tenant_demo",
+	name: "Demo Tenant",
+	email: "tenant@demo.com",
+	phone: "+1 (555) 000-0002",
 	status: "active",
 	role: "tenant",
-	rentValue: 2500,
-	leaseStart: subMonths(/* @__PURE__ */ new Date(), 6).toISOString(),
-	leaseEnd: addMonths(/* @__PURE__ */ new Date(), 6).toISOString(),
-	avatar: "https://img.usecurling.com/ppl/thumbnail?gender=male&seed=5",
-	propertyId: "prop_1",
+	rentValue: 2e3,
+	leaseStart: (/* @__PURE__ */ new Date()).toISOString(),
+	leaseEnd: addMonths(/* @__PURE__ */ new Date(), 12).toISOString(),
+	avatar: "https://img.usecurling.com/ppl/thumbnail?gender=female&seed=100",
+	propertyId: generatedProperties[0].id,
 	documents: []
-}, {
-	id: "tenant_2",
-	name: "Emily Davis",
-	email: "emily@example.com",
-	phone: "+1 555-0202",
-	status: "active",
-	role: "tenant",
-	rentValue: 1800,
-	leaseStart: subMonths(/* @__PURE__ */ new Date(), 2).toISOString(),
-	leaseEnd: addMonths(/* @__PURE__ */ new Date(), 10).toISOString(),
-	avatar: "https://img.usecurling.com/ppl/thumbnail?gender=female&seed=6",
-	propertyId: "prop_2",
-	documents: []
-}];
+}, ...generatedTenants];
 const partners = [{
 	id: "partner_1",
 	name: "Quick Fix Maintenance",
@@ -52800,138 +53124,9 @@ const partners = [{
 	avatar: "https://img.usecurling.com/i?q=broom&color=green",
 	serviceRates: []
 }];
-const condominiums = [{
-	id: "condo_1",
-	name: "Sunset Heights",
-	address: "123 Sunset Blvd",
-	city: "Orlando",
-	state: "FL",
-	zipCode: "32801",
-	hoaFee: 350,
-	hoaFrequency: "monthly"
-}, {
-	id: "condo_2",
-	name: "Ocean View",
-	address: "456 Ocean Dr",
-	city: "Miami",
-	state: "FL",
-	zipCode: "33101",
-	hoaFee: 500,
-	hoaFrequency: "monthly"
-}];
-const properties = [
-	{
-		id: "prop_1",
-		name: "Sunny Villa",
-		address: "101 Palm Tree Way",
-		city: "Orlando",
-		state: "FL",
-		zipCode: "32801",
-		type: "House",
-		profileType: "long_term",
-		community: "Sunset Heights",
-		condominiumId: "condo_1",
-		status: "rented",
-		bedrooms: 4,
-		bathrooms: 3,
-		guests: 8,
-		image: "https://img.usecurling.com/p/400/300?q=modern%20house",
-		ownerId: "owner_1",
-		listingPrice: 45e4,
-		hoaValue: 350
-	},
-	{
-		id: "prop_2",
-		name: "Downtown Apt",
-		address: "202 Main St",
-		city: "Orlando",
-		state: "FL",
-		zipCode: "32801",
-		type: "Apartment",
-		profileType: "long_term",
-		community: "Downtown",
-		status: "rented",
-		bedrooms: 2,
-		bathrooms: 2,
-		guests: 4,
-		image: "https://img.usecurling.com/p/400/300?q=apartment%20building",
-		ownerId: "owner_2",
-		listingPrice: 28e4,
-		hoaValue: 0
-	},
-	{
-		id: "prop_3",
-		name: "Beach Condo",
-		address: "303 Ocean Blvd",
-		city: "Miami",
-		state: "FL",
-		zipCode: "33101",
-		type: "Condo",
-		profileType: "short_term",
-		community: "Ocean View",
-		condominiumId: "condo_2",
-		status: "available",
-		bedrooms: 3,
-		bathrooms: 2,
-		guests: 6,
-		image: "https://img.usecurling.com/p/400/300?q=beach%20condo",
-		ownerId: "owner_1",
-		listingPrice: 55e4,
-		hoaValue: 500
-	}
-];
-const tasks = [{
-	id: "task_1",
-	title: "AC Repair",
-	propertyId: "prop_1",
-	propertyName: "Sunny Villa",
-	status: "pending",
-	type: "maintenance",
-	assignee: "Quick Fix Maintenance",
-	assigneeId: "partner_1",
-	date: (/* @__PURE__ */ new Date()).toISOString(),
-	priority: "high",
-	description: "AC is not cooling properly."
-}, {
-	id: "task_2",
-	title: "Move-out Cleaning",
-	propertyId: "prop_2",
-	propertyName: "Downtown Apt",
-	status: "completed",
-	type: "cleaning",
-	assignee: "Sparkle Cleaning",
-	assigneeId: "partner_2",
-	date: subDays(/* @__PURE__ */ new Date(), 2).toISOString(),
-	completedDate: subDays(/* @__PURE__ */ new Date(), 2).toISOString(),
-	priority: "medium",
-	price: 150
-}];
-const invoices = [{
-	id: "inv_1",
-	description: "Monthly Management Fee",
-	amount: 250,
-	status: "paid",
-	date: subDays(/* @__PURE__ */ new Date(), 10).toISOString(),
-	propertyId: "prop_1"
-}, {
-	id: "inv_2",
-	description: "AC Repair Reimbursement",
-	amount: 180,
-	status: "pending",
-	date: (/* @__PURE__ */ new Date()).toISOString(),
-	propertyId: "prop_1"
-}];
-const payments = [{
-	id: "pay_1",
-	tenantId: "tenant_1",
-	tenantName: "Michael Brown",
-	propertyId: "prop_1",
-	amount: 2500,
-	date: subDays(/* @__PURE__ */ new Date(), 15).toISOString(),
-	dueDate: subDays(/* @__PURE__ */ new Date(), 15).toISOString(),
-	status: "paid",
-	type: "rent"
-}];
+const condominiums = generatedCondos;
+const properties = generatedProperties;
+const tasks = generatedTasksList;
 const financials = {
 	revenue: [
 		"Jan",
@@ -52971,28 +53166,10 @@ const financials = {
 			fill: "hsl(var(--chart-5))"
 		}
 	],
-	invoices,
-	payments
+	invoices: [],
+	payments: []
 };
-const ledgerEntries = [{
-	id: "ledger_1",
-	propertyId: "prop_1",
-	date: subDays(/* @__PURE__ */ new Date(), 15).toISOString(),
-	type: "income",
-	category: "Rent",
-	amount: 2500,
-	description: "Rent Payment - Oct",
-	status: "cleared"
-}, {
-	id: "ledger_2",
-	propertyId: "prop_1",
-	date: subDays(/* @__PURE__ */ new Date(), 5).toISOString(),
-	type: "expense",
-	category: "HOA",
-	amount: 350,
-	description: "Monthly HOA",
-	status: "cleared"
-}];
+const ledgerEntries = generatedFinancialsList;
 const mockBankStatements = [];
 const defaultFinancialSettings = {
 	companyName: "COREPM Demo",
@@ -53024,13 +53201,13 @@ const defaultPaymentIntegrations = [
 ];
 const messages = [{
 	id: "msg_1",
-	contact: "Robert Smith",
-	contactId: "owner_1",
+	contact: "Demo Owner",
+	contactId: "user_owner_demo",
 	ownerId: "user_pm",
 	lastMessage: "When is the next inspection?",
 	time: subDays(/* @__PURE__ */ new Date(), 1).toISOString(),
 	unread: 1,
-	avatar: "https://img.usecurling.com/ppl/thumbnail?gender=male&seed=3",
+	avatar: "https://img.usecurling.com/ppl/thumbnail?gender=male&seed=99",
 	history: []
 }];
 const notifications = [{
@@ -53113,8 +53290,8 @@ const mockAdPricing = {
 };
 const bookings = [{
 	id: "bk_1",
-	propertyId: "prop_3",
-	propertyName: "Beach Condo",
+	propertyId: generatedProperties[0].id,
+	propertyName: generatedProperties[0].name,
 	guestName: "John Visitor",
 	guestEmail: "john@visitor.com",
 	checkIn: addDays(/* @__PURE__ */ new Date(), 5).toISOString(),
@@ -53134,7 +53311,7 @@ const auditLogs = [{
 	entity: "User",
 	details: "Logged in successfully"
 }];
-const genericServiceRates = [];
+const genericServiceRates = generatedServiceRates;
 const serviceCategories = [
 	{
 		id: "cat_1",
@@ -56716,10 +56893,7 @@ function Login() {
 				demoEmail = "admin@corepm.com";
 				break;
 			case "manager":
-				demoEmail = "manager1@corepm.com";
-				break;
-			case "partner":
-				demoEmail = "partner0_1@service.com";
+				demoEmail = "pm@corepm.com";
 				break;
 			case "owner":
 				demoEmail = "owner@demo.com";
@@ -56738,7 +56912,11 @@ function Login() {
 					description: `Logged in as ${role}`
 				});
 				navigate("/");
-			}
+			} else toast$2({
+				title: "Login Error",
+				description: `Could not login as ${role}. Email: ${demoEmail}`,
+				variant: "destructive"
+			});
 		}, 500);
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -56790,15 +56968,15 @@ function Login() {
 								variant: "outline",
 								size: "sm",
 								className: "bg-white text-xs h-8",
-								onClick: () => handleDemoLogin("partner"),
-								children: "Partner"
+								onClick: () => handleDemoLogin("owner"),
+								children: "Owner"
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								variant: "outline",
 								size: "sm",
 								className: "bg-white text-xs h-8",
-								onClick: () => handleDemoLogin("owner"),
-								children: "Owner"
+								onClick: () => handleDemoLogin("tenant"),
+								children: "Tenant"
 							})
 						]
 					})]
@@ -57935,17 +58113,20 @@ var COUNTRIES = {
 	US: {
 		code: "+1",
 		flag: "🇺🇸",
-		mask: "(999) 999-9999"
+		mask: "(999) 999-9999",
+		maxLength: 14
 	},
 	BR: {
 		code: "+55",
 		flag: "🇧🇷",
-		mask: "(99) 99999-9999"
+		mask: "(99) 99999-9999",
+		maxLength: 15
 	},
 	ES: {
 		code: "+34",
 		flag: "🇪🇸",
-		mask: "999 99 99 99"
+		mask: "999 99 99 99",
+		maxLength: 13
 	}
 };
 function PhoneInput({ className, value, onChange, defaultCountry = "US", country: controlledCountry, onCountryChange, ...props }) {
@@ -57959,6 +58140,7 @@ function PhoneInput({ className, value, onChange, defaultCountry = "US", country
 	const handlePhoneChange = (e) => {
 		const rawValue = e.target.value;
 		const maskedValue = applyPhoneMask(rawValue, currentCountry);
+		if (maskedValue.length > COUNTRIES[currentCountry].maxLength) return;
 		onChange({
 			...e,
 			target: {
@@ -57994,7 +58176,7 @@ function PhoneInput({ className, value, onChange, defaultCountry = "US", country
 			value,
 			onChange: handlePhoneChange,
 			placeholder: COUNTRIES[currentCountry].mask,
-			maxLength: currentCountry === "US" ? 14 : currentCountry === "BR" ? 15 : 13,
+			maxLength: COUNTRIES[currentCountry].maxLength,
 			className: cn("flex-1 bg-white text-black", className)
 		})]
 	});
@@ -79331,7 +79513,7 @@ function Tenants() {
 		if (!isPhoneValid(newTenant.phone, newTenant.country)) {
 			toast$2({
 				title: t$1("common.error"),
-				description: `Invalid phone number for ${newTenant.country}. Exact digit count required.`,
+				description: `Número de telefone inválido para o país selecionado (${newTenant.country}). Certifique-se de que está completo.`,
 				variant: "destructive"
 			});
 			return;
@@ -80929,7 +81111,7 @@ function Owners() {
 		if (newOwner.phone && !isPhoneValid(newOwner.phone, newOwner.country)) {
 			toast$2({
 				title: t$1("common.error"),
-				description: `Invalid phone format for ${newOwner.country}. Exact digit count required.`,
+				description: `Número de telefone inválido para o país selecionado (${newOwner.country}). Certifique-se de que está completo.`,
 				variant: "destructive"
 			});
 			return;
@@ -92492,4 +92674,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Ck-IjoP5.js.map
+//# sourceMappingURL=index-Cs4pRhU6.js.map

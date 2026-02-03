@@ -52,9 +52,350 @@ const randomInt = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min
 const randomItem = <T>(arr: T[]): T =>
   arr[Math.floor(Math.random() * arr.length)]
+const generateId = (prefix: string) =>
+  `${prefix}_${Math.random().toString(36).substr(2, 9)}`
+
+// --- SEED DATA GENERATORS ---
+
+const firstNames = [
+  'James',
+  'Mary',
+  'Robert',
+  'Patricia',
+  'John',
+  'Jennifer',
+  'Michael',
+  'Linda',
+  'David',
+  'Elizabeth',
+  'William',
+  'Barbara',
+  'Richard',
+  'Susan',
+  'Joseph',
+  'Jessica',
+  'Thomas',
+  'Sarah',
+  'Charles',
+  'Karen',
+  'Christopher',
+  'Nancy',
+  'Daniel',
+  'Lisa',
+  'Matthew',
+  'Betty',
+  'Anthony',
+  'Margaret',
+  'Mark',
+  'Sandra',
+  'Donald',
+  'Ashley',
+]
+
+const lastNames = [
+  'Smith',
+  'Johnson',
+  'Williams',
+  'Brown',
+  'Jones',
+  'Garcia',
+  'Miller',
+  'Davis',
+  'Rodriguez',
+  'Martinez',
+  'Hernandez',
+  'Lopez',
+  'Gonzalez',
+  'Wilson',
+  'Anderson',
+  'Thomas',
+  'Taylor',
+  'Moore',
+  'Jackson',
+  'Martin',
+  'Lee',
+  'Perez',
+  'Thompson',
+  'White',
+  'Harris',
+  'Sanchez',
+  'Clark',
+  'Ramirez',
+  'Lewis',
+  'Robinson',
+  'Walker',
+]
+
+const streets = [
+  'Main St',
+  'Oak St',
+  'Pine St',
+  'Maple St',
+  'Cedar St',
+  'Elm St',
+  'Washington Ave',
+  'Lake View Dr',
+  'Hillside Ave',
+  'Park Dr',
+  'Sunset Blvd',
+  'Ocean Dr',
+  'Palm Tree Way',
+  'Broadway',
+  'Highland Ave',
+  'Forest Ln',
+  'River Rd',
+  'Meadow Ln',
+  'Valley View',
+  'Summit Dr',
+]
+
+const cities = [
+  'Orlando',
+  'Miami',
+  'Tampa',
+  'Jacksonville',
+  'Tallahassee',
+  'Fort Lauderdale',
+  'West Palm Beach',
+  'Naples',
+  'Sarasota',
+  'Clearwater',
+  'Kissimmee',
+  'Boca Raton',
+]
+
+const communities = [
+  'Sunset Heights',
+  'Ocean View',
+  'Palm Springs',
+  'Golden Lakes',
+  'Silver Creek',
+  'Crystal Cove',
+  'Emerald Bay',
+  'Royal Palm',
+  'Coral Reef',
+  'Harbor Point',
+  'Paradise Valley',
+  'Hidden Gem',
+  'Blue Lagoon',
+  'Sunny Isles',
+  'Grandview',
+]
+
+const serviceTypes = [
+  'Cleaning',
+  'Maintenance',
+  'Inspection',
+  'Plumbing',
+  'Electrical',
+  'Painting',
+  'AC Repair',
+  'Pool Service',
+  'Landscaping',
+  'Pest Control',
+]
+
+// Generators
+
+const generateCondos = (count: number): Condominium[] => {
+  return Array.from({ length: count }).map((_, i) => ({
+    id: generateId('condo'),
+    name:
+      i < communities.length
+        ? communities[i]
+        : `${randomItem(communities)} ${i}`,
+    address: `${randomInt(100, 9999)} ${randomItem(streets)}`,
+    city: randomItem(cities),
+    state: 'FL',
+    zipCode: `${randomInt(32000, 34999)}`,
+    hoaFee: randomInt(200, 800),
+    hoaFrequency: 'monthly',
+    managerName: `${randomItem(firstNames)} ${randomItem(lastNames)}`,
+    managerPhone: `+1 (${randomInt(200, 999)}) ${randomInt(100, 999)}-${randomInt(1000, 9999)}`,
+    managerEmail: `manager${i}@condo.com`,
+  }))
+}
+
+const generateOwners = (count: number): Owner[] => {
+  return Array.from({ length: count }).map((_, i) => ({
+    id: generateId('owner'),
+    name: `${randomItem(firstNames)} ${randomItem(lastNames)}`,
+    email: `owner${i}@example.com`,
+    phone: `+1 (${randomInt(200, 999)}) ${randomInt(100, 999)}-${randomInt(1000, 9999)}`,
+    country: 'US',
+    status: 'active',
+    role: 'property_owner',
+    avatar: `https://img.usecurling.com/ppl/thumbnail?gender=${i % 2 === 0 ? 'male' : 'female'}&seed=${i}`,
+    accountNumber: `${randomInt(10000000, 99999999)}`,
+    address: `${randomInt(100, 9999)} ${randomItem(streets)}`,
+    city: randomItem(cities),
+    state: 'FL',
+    zipCode: `${randomInt(32000, 34999)}`,
+    documents: [],
+    properties: [],
+  }))
+}
+
+const generateProperties = (
+  count: number,
+  owners: Owner[],
+  condos: Condominium[],
+): Property[] => {
+  return Array.from({ length: count }).map((_, i) => {
+    const owner = randomItem(owners)
+    const condo = randomItem(condos)
+    return {
+      id: generateId('prop'),
+      name: `${randomItem(['Luxury', 'Cozy', 'Modern', 'Spacious', 'Charming'])} ${randomItem(['Villa', 'Apt', 'Condo', 'House', 'Loft'])} ${i + 1}`,
+      address: `${randomInt(100, 9999)} ${randomItem(streets)}`,
+      city: condo.city,
+      state: condo.state,
+      zipCode: condo.zipCode,
+      type: randomItem(['House', 'Apartment', 'Condo']),
+      profileType: randomItem(['long_term', 'short_term']),
+      community: condo.name,
+      condominiumId: condo.id,
+      status: randomItem(['rented', 'available', 'rented', 'maintenance']), // Weight rented higher
+      bedrooms: randomInt(1, 6),
+      bathrooms: randomInt(1, 4),
+      guests: randomInt(2, 12),
+      image: `https://img.usecurling.com/p/400/300?q=house%20interior&seed=${i}`,
+      ownerId: owner.id,
+      listingPrice: randomInt(200000, 900000),
+      hoaValue: condo.hoaFee,
+    }
+  })
+}
+
+const generateTenants = (count: number, properties: Property[]): Tenant[] => {
+  const rentedProps = properties.filter((p) => p.status === 'rented')
+  // Ensure we don't try to generate more tenants than rented properties available for linking unique logic if strict,
+  // but for mock data we can reuse or just pick available. Ideally 1-to-1 for rented.
+
+  return Array.from({ length: Math.min(count, rentedProps.length) }).map(
+    (_, i) => {
+      const prop = rentedProps[i]
+      return {
+        id: generateId('tenant'),
+        name: `${randomItem(firstNames)} ${randomItem(lastNames)}`,
+        email: `tenant${i}@example.com`,
+        phone: `+1 (${randomInt(200, 999)}) ${randomInt(100, 999)}-${randomInt(1000, 9999)}`,
+        status: 'active',
+        role: 'tenant',
+        rentValue: randomInt(1500, 5000),
+        leaseStart: subMonths(new Date(), randomInt(1, 12)).toISOString(),
+        leaseEnd: addMonths(new Date(), randomInt(1, 12)).toISOString(),
+        avatar: `https://img.usecurling.com/ppl/thumbnail?gender=${i % 2 === 0 ? 'male' : 'female'}&seed=${i + 100}`,
+        propertyId: prop.id,
+        documents: [],
+      }
+    },
+  )
+}
+
+const generateTasks = (count: number, properties: Property[]): Task[] => {
+  return Array.from({ length: count }).map((_, i) => {
+    const prop = randomItem(properties)
+    const status = randomItem([
+      'pending',
+      'in_progress',
+      'completed',
+      'pending_approval',
+    ]) as Task['status']
+    const type = randomItem([
+      'cleaning',
+      'maintenance',
+      'inspection',
+    ]) as Task['type']
+
+    return {
+      id: generateId('task'),
+      title: `${type} - ${prop.name}`,
+      propertyId: prop.id,
+      propertyName: prop.name,
+      propertyAddress: prop.address,
+      propertyCommunity: prop.community,
+      status: status,
+      type: type,
+      assignee: 'Service Partner',
+      assigneeId: 'partner_1', // Simplified
+      date:
+        status === 'completed'
+          ? subDays(new Date(), randomInt(1, 30)).toISOString()
+          : addDays(new Date(), randomInt(1, 14)).toISOString(),
+      completedDate:
+        status === 'completed'
+          ? subDays(new Date(), randomInt(0, 5)).toISOString()
+          : undefined,
+      priority: randomItem(['low', 'medium', 'high', 'critical']),
+      description: `Regular ${type} task for ${prop.name}.`,
+      price: randomInt(100, 500),
+      billableAmount: randomInt(150, 600),
+    }
+  })
+}
+
+const generateFinancials = (
+  count: number,
+  properties: Property[],
+  owners: Owner[],
+): LedgerEntry[] => {
+  return Array.from({ length: count }).map((_, i) => {
+    const prop = randomItem(properties)
+    const isIncome = Math.random() > 0.4
+    return {
+      id: generateId('ledger'),
+      propertyId: prop.id,
+      date: subDays(new Date(), randomInt(0, 90)).toISOString(),
+      type: isIncome ? 'income' : 'expense',
+      category: isIncome
+        ? 'Rent'
+        : randomItem(['Maintenance', 'Cleaning', 'HOA', 'Utilities', 'Taxes']),
+      amount: isIncome ? randomInt(1500, 4000) : randomInt(50, 800),
+      description: isIncome ? `Rent Payment` : `Service Payment`,
+      status: randomItem(['cleared', 'pending']),
+    }
+  })
+}
+
+const generateServiceRates = (count: number): ServiceRate[] => {
+  return Array.from({ length: count }).map((_, i) => {
+    const basePrice = randomInt(50, 300)
+    return {
+      id: generateId('rate'),
+      serviceName: `${randomItem(serviceTypes)} ${randomItem(['Basic', 'Premium', 'Deep', 'Regular'])}`,
+      servicePrice: basePrice * 1.5,
+      partnerPayment: basePrice,
+      pmValue: basePrice * 0.5,
+      productPrice: randomInt(0, 50),
+      validFrom: subMonths(new Date(), 6).toISOString(),
+      type: 'generic',
+      lastUpdated: subDays(new Date(), randomInt(0, 60)).toISOString(),
+    }
+  })
+}
+
+// --- INSTANTIATE DATA ---
+
+const generatedCondos = generateCondos(50)
+const generatedOwners = generateOwners(50)
+const generatedProperties = generateProperties(
+  50,
+  generatedOwners,
+  generatedCondos,
+) // 50 Props
+const generatedTenants = generateTenants(50, generatedProperties)
+const generatedTasksList = generateTasks(50, generatedProperties)
+const generatedFinancialsList = generateFinancials(
+  50,
+  generatedProperties,
+  generatedOwners,
+)
+const generatedServiceRates = generateServiceRates(50)
 
 // --- 1. USERS & ENTITIES ---
 
+// Explicit Demo Users for Testing
 export const systemUsers: User[] = [
   {
     id: 'user_admin',
@@ -65,10 +406,7 @@ export const systemUsers: User[] = [
     status: 'active',
     isFirstLogin: false,
     permissions: [
-      {
-        resource: 'dashboard',
-        actions: ['view', 'create', 'edit', 'delete'],
-      },
+      { resource: 'dashboard', actions: ['view', 'create', 'edit', 'delete'] },
     ],
   },
   {
@@ -80,62 +418,62 @@ export const systemUsers: User[] = [
     status: 'active',
     isFirstLogin: false,
   },
-]
-
-export const owners: Owner[] = [
+  // Owner Login
   {
-    id: 'owner_1',
-    name: 'Robert Smith',
-    email: 'robert@example.com',
-    phone: '+1 555-0101',
-    status: 'active',
+    id: 'user_owner_demo',
+    name: 'Demo Owner',
+    email: 'owner@demo.com',
     role: 'property_owner',
-    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=3',
-    accountNumber: '123456789',
-    documents: [],
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=99',
+    status: 'active',
+    isFirstLogin: false,
   },
+  // Tenant Login
   {
-    id: 'owner_2',
-    name: 'Sarah Johnson',
-    email: 'sarah@example.com',
-    phone: '+1 555-0102',
+    id: 'user_tenant_demo',
+    name: 'Demo Tenant',
+    email: 'tenant@demo.com',
+    role: 'tenant',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=100',
     status: 'active',
-    role: 'property_owner',
-    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=4',
-    documents: [],
+    isFirstLogin: false,
   },
 ]
 
-export const tenants: Tenant[] = [
-  {
-    id: 'tenant_1',
-    name: 'Michael Brown',
-    email: 'michael@example.com',
-    phone: '+1 555-0201',
-    status: 'active',
-    role: 'tenant',
-    rentValue: 2500,
-    leaseStart: subMonths(new Date(), 6).toISOString(),
-    leaseEnd: addMonths(new Date(), 6).toISOString(),
-    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=5',
-    propertyId: 'prop_1',
-    documents: [],
-  },
-  {
-    id: 'tenant_2',
-    name: 'Emily Davis',
-    email: 'emily@example.com',
-    phone: '+1 555-0202',
-    status: 'active',
-    role: 'tenant',
-    rentValue: 1800,
-    leaseStart: subMonths(new Date(), 2).toISOString(),
-    leaseEnd: addMonths(new Date(), 10).toISOString(),
-    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=6',
-    propertyId: 'prop_2',
-    documents: [],
-  },
-]
+// Add the demo owner to the owners list to ensure linking works
+const demoOwner: Owner = {
+  id: 'user_owner_demo',
+  name: 'Demo Owner',
+  email: 'owner@demo.com',
+  phone: '+1 (555) 000-0001',
+  country: 'US',
+  status: 'active',
+  role: 'property_owner',
+  avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=99',
+  documents: [],
+  properties: [],
+}
+
+export const owners: Owner[] = [demoOwner, ...generatedOwners]
+
+// Add demo tenant
+const demoTenant: Tenant = {
+  id: 'user_tenant_demo',
+  name: 'Demo Tenant',
+  email: 'tenant@demo.com',
+  phone: '+1 (555) 000-0002',
+  status: 'active',
+  role: 'tenant',
+  rentValue: 2000,
+  leaseStart: new Date().toISOString(),
+  leaseEnd: addMonths(new Date(), 12).toISOString(),
+  avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female&seed=100',
+  // Link to first property
+  propertyId: generatedProperties[0].id,
+  documents: [],
+}
+
+export const tenants: Tenant[] = [demoTenant, ...generatedTenants]
 
 export const partners: Partner[] = [
   {
@@ -164,157 +502,17 @@ export const partners: Partner[] = [
 
 // --- 2. PROPERTIES & CONDOS ---
 
-export const condominiums: Condominium[] = [
-  {
-    id: 'condo_1',
-    name: 'Sunset Heights',
-    address: '123 Sunset Blvd',
-    city: 'Orlando',
-    state: 'FL',
-    zipCode: '32801',
-    hoaFee: 350,
-    hoaFrequency: 'monthly',
-  },
-  {
-    id: 'condo_2',
-    name: 'Ocean View',
-    address: '456 Ocean Dr',
-    city: 'Miami',
-    state: 'FL',
-    zipCode: '33101',
-    hoaFee: 500,
-    hoaFrequency: 'monthly',
-  },
-]
-
-export const properties: Property[] = [
-  {
-    id: 'prop_1',
-    name: 'Sunny Villa',
-    address: '101 Palm Tree Way',
-    city: 'Orlando',
-    state: 'FL',
-    zipCode: '32801',
-    type: 'House',
-    profileType: 'long_term',
-    community: 'Sunset Heights',
-    condominiumId: 'condo_1',
-    status: 'rented',
-    bedrooms: 4,
-    bathrooms: 3,
-    guests: 8,
-    image: 'https://img.usecurling.com/p/400/300?q=modern%20house',
-    ownerId: 'owner_1',
-    listingPrice: 450000,
-    hoaValue: 350,
-  },
-  {
-    id: 'prop_2',
-    name: 'Downtown Apt',
-    address: '202 Main St',
-    city: 'Orlando',
-    state: 'FL',
-    zipCode: '32801',
-    type: 'Apartment',
-    profileType: 'long_term',
-    community: 'Downtown',
-    status: 'rented',
-    bedrooms: 2,
-    bathrooms: 2,
-    guests: 4,
-    image: 'https://img.usecurling.com/p/400/300?q=apartment%20building',
-    ownerId: 'owner_2',
-    listingPrice: 280000,
-    hoaValue: 0,
-  },
-  {
-    id: 'prop_3',
-    name: 'Beach Condo',
-    address: '303 Ocean Blvd',
-    city: 'Miami',
-    state: 'FL',
-    zipCode: '33101',
-    type: 'Condo',
-    profileType: 'short_term',
-    community: 'Ocean View',
-    condominiumId: 'condo_2',
-    status: 'available',
-    bedrooms: 3,
-    bathrooms: 2,
-    guests: 6,
-    image: 'https://img.usecurling.com/p/400/300?q=beach%20condo',
-    ownerId: 'owner_1',
-    listingPrice: 550000,
-    hoaValue: 500,
-  },
-]
+export const condominiums: Condominium[] = generatedCondos
+export const properties: Property[] = generatedProperties
 
 // --- 3. TASKS ---
 
-export const tasks: Task[] = [
-  {
-    id: 'task_1',
-    title: 'AC Repair',
-    propertyId: 'prop_1',
-    propertyName: 'Sunny Villa',
-    status: 'pending',
-    type: 'maintenance',
-    assignee: 'Quick Fix Maintenance',
-    assigneeId: 'partner_1',
-    date: new Date().toISOString(),
-    priority: 'high',
-    description: 'AC is not cooling properly.',
-  },
-  {
-    id: 'task_2',
-    title: 'Move-out Cleaning',
-    propertyId: 'prop_2',
-    propertyName: 'Downtown Apt',
-    status: 'completed',
-    type: 'cleaning',
-    assignee: 'Sparkle Cleaning',
-    assigneeId: 'partner_2',
-    date: subDays(new Date(), 2).toISOString(),
-    completedDate: subDays(new Date(), 2).toISOString(),
-    priority: 'medium',
-    price: 150,
-  },
-]
+export const tasks: Task[] = generatedTasksList
 
 // --- 4. FINANCIALS ---
 
-export const invoices: Invoice[] = [
-  {
-    id: 'inv_1',
-    description: 'Monthly Management Fee',
-    amount: 250,
-    status: 'paid',
-    date: subDays(new Date(), 10).toISOString(),
-    propertyId: 'prop_1',
-  },
-  {
-    id: 'inv_2',
-    description: 'AC Repair Reimbursement',
-    amount: 180,
-    status: 'pending',
-    date: new Date().toISOString(),
-    propertyId: 'prop_1',
-  },
-]
-
-export const payments: Payment[] = [
-  {
-    id: 'pay_1',
-    tenantId: 'tenant_1',
-    tenantName: 'Michael Brown',
-    propertyId: 'prop_1',
-    amount: 2500,
-    date: subDays(new Date(), 15).toISOString(),
-    dueDate: subDays(new Date(), 15).toISOString(),
-    status: 'paid',
-    type: 'rent',
-  },
-]
+export const invoices: Invoice[] = []
+export const payments: Payment[] = []
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
 export const revenue = months.map((month) => ({
@@ -337,28 +535,7 @@ export const financials: Financials = {
   payments,
 }
 
-export const ledgerEntries: LedgerEntry[] = [
-  {
-    id: 'ledger_1',
-    propertyId: 'prop_1',
-    date: subDays(new Date(), 15).toISOString(),
-    type: 'income',
-    category: 'Rent',
-    amount: 2500,
-    description: 'Rent Payment - Oct',
-    status: 'cleared',
-  },
-  {
-    id: 'ledger_2',
-    propertyId: 'prop_1',
-    date: subDays(new Date(), 5).toISOString(),
-    type: 'expense',
-    category: 'HOA',
-    amount: 350,
-    description: 'Monthly HOA',
-    status: 'cleared',
-  },
-]
+export const ledgerEntries: LedgerEntry[] = generatedFinancialsList
 
 export const mockBankStatements: BankStatement[] = []
 export const defaultFinancialSettings: FinancialSettings = {
@@ -387,13 +564,13 @@ export const defaultPaymentIntegrations: PaymentIntegration[] = [
 export const messages: Message[] = [
   {
     id: 'msg_1',
-    contact: 'Robert Smith',
-    contactId: 'owner_1',
+    contact: 'Demo Owner',
+    contactId: 'user_owner_demo',
     ownerId: 'user_pm',
     lastMessage: 'When is the next inspection?',
     time: subDays(new Date(), 1).toISOString(),
     unread: 1,
-    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=3',
+    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=99',
     history: [],
   },
 ]
@@ -504,8 +681,8 @@ export const mockAdPricing: AdPricing = {
 export const bookings: Booking[] = [
   {
     id: 'bk_1',
-    propertyId: 'prop_3',
-    propertyName: 'Beach Condo',
+    propertyId: generatedProperties[0].id,
+    propertyName: generatedProperties[0].name,
     guestName: 'John Visitor',
     guestEmail: 'john@visitor.com',
     checkIn: addDays(new Date(), 5).toISOString(),
@@ -530,7 +707,8 @@ export const auditLogs: AuditLog[] = [
   },
 ]
 
-export const genericServiceRates: ServiceRate[] = []
+export const genericServiceRates: ServiceRate[] = generatedServiceRates
+
 export const serviceCategories: ServiceCategory[] = [
   { id: 'cat_1', name: 'Plumbing', color: '#3b82f6' },
   { id: 'cat_2', name: 'Electrical', color: '#eab308' },
