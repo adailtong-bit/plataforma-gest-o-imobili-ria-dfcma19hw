@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
+import { ptBR, es, enUS } from 'date-fns/locale'
 
 type CalendarEvent =
   | { type: 'task'; data: Task; date: Date }
@@ -72,6 +73,8 @@ export default function CalendarPage() {
   const navigate = useNavigate()
 
   const [filterPartner, setFilterPartner] = useState<string>('all')
+
+  const dateLocale = language === 'pt' ? ptBR : language === 'es' ? es : enUS
 
   const taskEvents: CalendarEvent[] = tasks
     .filter((t) => {
@@ -223,6 +226,7 @@ export default function CalendarPage() {
               mode="single"
               selected={date}
               onSelect={setDate}
+              locale={dateLocale}
               className="rounded-md border shadow-sm w-full h-full text-slate-900"
               classNames={{
                 month: 'space-y-4 w-full h-full flex flex-col',
@@ -437,3 +441,4 @@ export default function CalendarPage() {
     </div>
   )
 }
+

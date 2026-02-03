@@ -54,7 +54,7 @@ export default function Register() {
     if (!formData.name || isGenericOrPlaceholder(formData.name)) {
       toast({
         title: t('common.error'),
-        description: 'Please enter a valid name.',
+        description: t('common.name_required'),
         variant: 'destructive',
       })
       return
@@ -63,7 +63,7 @@ export default function Register() {
     if (!isValidEmail(formData.email)) {
       toast({
         title: t('common.error'),
-        description: 'Invalid email format.',
+        description: t('common.email_invalid'),
         variant: 'destructive',
       })
       return
@@ -126,9 +126,7 @@ export default function Register() {
           <CardTitle className="text-2xl font-bold">
             {t('auth.register_title')}
           </CardTitle>
-          <CardDescription>
-            Complete your profile to get started with COREPM
-          </CardDescription>
+          <CardDescription>{t('auth.register_desc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleRegister} className="space-y-6">
@@ -163,7 +161,7 @@ export default function Register() {
                   <Label htmlFor="name">{t('common.full_name')}</Label>
                   <Input
                     id="name"
-                    placeholder="John Doe"
+                    placeholder={t('auth.name_placeholder')}
                     required
                     value={formData.name}
                     onChange={handleChange}
@@ -187,7 +185,7 @@ export default function Register() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="m@example.com"
+                    placeholder={t('auth.email_placeholder')}
                     required
                     value={formData.email}
                     onChange={handleChange}
@@ -210,7 +208,7 @@ export default function Register() {
                   </Label>
                   <Input
                     id="companyName"
-                    placeholder="My Realty LLC"
+                    placeholder={t('auth.company_placeholder')}
                     required
                     value={formData.companyName}
                     onChange={handleChange}
@@ -220,7 +218,7 @@ export default function Register() {
                   <Label htmlFor="taxId">{t('common.tax_id')}</Label>
                   <Input
                     id="taxId"
-                    placeholder="EIN / CNPJ"
+                    placeholder={t('auth.tax_id_placeholder')}
                     value={formData.taxId}
                     onChange={handleChange}
                   />
@@ -229,7 +227,7 @@ export default function Register() {
                   <Label htmlFor="address">{t('common.address')}</Label>
                   <Input
                     id="address"
-                    placeholder="123 Business Rd, City, State"
+                    placeholder={t('auth.address_placeholder')}
                     value={formData.address}
                     onChange={handleChange}
                   />
@@ -288,3 +286,4 @@ export default function Register() {
     </div>
   )
 }
+

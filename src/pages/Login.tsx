@@ -69,13 +69,13 @@ export default function Login() {
       const success = login(demoEmail)
       if (success) {
         toast({
-          title: 'Demo Login',
+          title: t('auth.demo_login'),
           description: `Logged in as ${role}`,
         })
         navigate('/')
       } else {
         toast({
-          title: 'Login Error',
+          title: t('common.error'),
           description: `Could not login as ${role}. Email: ${demoEmail}`,
           variant: 'destructive',
         })
@@ -93,9 +93,7 @@ export default function Login() {
           <CardTitle className="text-2xl font-bold">
             {t('auth.login_title')}
           </CardTitle>
-          <CardDescription>
-            Enter your email to access your account
-          </CardDescription>
+          <CardDescription>{t('auth.login_desc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
@@ -144,7 +142,7 @@ export default function Login() {
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder={t('auth.email_placeholder')}
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -154,7 +152,7 @@ export default function Login() {
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">{t('common.password')}</Label>
                 <Link to="#" className="text-sm text-blue-600 hover:underline">
-                  Forgot password?
+                  {t('auth.forgot_password')}
                 </Link>
               </div>
               <Input
@@ -182,3 +180,4 @@ export default function Login() {
     </div>
   )
 }
+

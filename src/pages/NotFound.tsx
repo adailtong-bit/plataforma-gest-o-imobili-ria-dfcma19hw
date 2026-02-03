@@ -1,9 +1,11 @@
 /* 404 Page - Displays when a user attempts to access a non-existent route - translate to the language of the user */
 import { useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 const NotFound = () => {
   const location = useLocation()
+  const { t } = useLanguageStore()
 
   useEffect(() => {
     console.error(
@@ -15,10 +17,10 @@ const NotFound = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
+        <h1 className="text-4xl font-bold mb-4">{t('common.error_404_title')}</h1>
+        <p className="text-xl text-gray-600 mb-4">{t('common.error_404_desc')}</p>
         <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
+          {t('common.return_home')}
         </a>
       </div>
     </div>
@@ -26,3 +28,4 @@ const NotFound = () => {
 }
 
 export default NotFound
+
