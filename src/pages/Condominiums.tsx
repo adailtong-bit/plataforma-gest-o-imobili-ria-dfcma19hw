@@ -56,7 +56,12 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
-import { isValidEmail, isPhoneValid, applyZipCodeMask } from '@/lib/utils'
+import {
+  isValidEmail,
+  isPhoneValid,
+  applyZipCodeMask,
+  isGenericOrPlaceholder,
+} from '@/lib/utils'
 import { DataMask } from '@/components/DataMask'
 
 export default function Condominiums() {
@@ -129,6 +134,18 @@ export default function Condominiums() {
       return
     }
 
+    if (
+      isGenericOrPlaceholder(formData.name) ||
+      isGenericOrPlaceholder(formData.address)
+    ) {
+      toast({
+        title: t('common.error'),
+        description: 'Por favor, insira dados válidos para Nome e Endereço.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     if (formData.managerEmail && !isValidEmail(formData.managerEmail)) {
       toast({
         title: t('common.error'),
@@ -145,6 +162,15 @@ export default function Condominiums() {
       toast({
         title: t('common.error'),
         description: `Por favor, insira um número de telefone válido para ${selectedCountry}.`,
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (isGenericOrPlaceholder(formData.zipCode)) {
+      toast({
+        title: t('common.error'),
+        description: 'CEP inválido.',
         variant: 'destructive',
       })
       return
@@ -228,6 +254,7 @@ export default function Condominiums() {
               <DialogTitle>{t('condominiums.add_title')}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
+              {/* Country Priority */}
               <div className="grid gap-2">
                 <Label>{t('common.country')}</Label>
                 <Select

@@ -24585,6 +24585,26 @@ function cn(...inputs) {
 const isValidEmail = (email$1) => {
 	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email$1);
 };
+const isGenericOrPlaceholder = (value) => {
+	if (!value) return false;
+	const lower = value.toString().toLowerCase().trim();
+	if (lower.length > 2 && /^(\w)\1+$/.test(lower)) return true;
+	if (lower.length > 4 && "01234567890123456789".includes(lower)) return true;
+	if ([
+		"test",
+		"teste",
+		"xyz",
+		"abc",
+		"n/a",
+		"na",
+		"none",
+		"null",
+		"undefined",
+		"string",
+		"text"
+	].includes(lower)) return true;
+	return false;
+};
 const applyPhoneMask = (value, country) => {
 	const digits = value.replace(/\D/g, "");
 	if (country === "US") {
@@ -58354,6 +58374,22 @@ function Register() {
 	});
 	const handleRegister = (e) => {
 		e.preventDefault();
+		if (!formData.name || isGenericOrPlaceholder(formData.name)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: "Please enter a valid name.",
+				variant: "destructive"
+			});
+			return;
+		}
+		if (!isValidEmail(formData.email)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: "Invalid email format.",
+				variant: "destructive"
+			});
+			return;
+		}
 		if (formData.password !== formData.confirmPassword) {
 			toast$2({
 				title: t$1("common.error"),
@@ -63479,6 +63515,14 @@ function Properties() {
 			});
 			return;
 		}
+		if (isGenericOrPlaceholder(newProp.name)) {
+			toast$2({
+				title: t$1("properties.validation_error"),
+				description: "Invalid Name.",
+				variant: "destructive"
+			});
+			return;
+		}
 		if (!newProp.address?.trim()) {
 			toast$2({
 				title: t$1("properties.validation_error"),
@@ -63491,6 +63535,14 @@ function Properties() {
 			toast$2({
 				title: t$1("properties.validation_error"),
 				description: t$1("properties.zip_required"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (isGenericOrPlaceholder(newProp.zipCode)) {
+			toast$2({
+				title: t$1("properties.validation_error"),
+				description: "Invalid Zip Code.",
 				variant: "destructive"
 			});
 			return;
@@ -64516,6 +64568,7 @@ function PropertyOverview({ data, onChange, canEdit }) {
 }
 function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$1 }) {
 	const { t: t$1 } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
 	const selectedCountry = data.country || "US";
 	const fullAddress = [
 		data.address,
@@ -64534,6 +64587,7 @@ function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$
 	const handleZipChange = (e) => {
 		onChange("zipCode", applyZipCodeMask(e.target.value, selectedCountry));
 	};
+	const isZipInvalid = !data.zipCode || isGenericOrPlaceholder(data.zipCode);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("properties.location.address") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
@@ -64593,7 +64647,7 @@ function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$
 							onChange: handleZipChange,
 							disabled: !canEdit,
 							required: true,
-							className: !data.zipCode ? "border-red-300" : "",
+							className: isZipInvalid ? "border-red-300" : "",
 							placeholder: selectedCountry === "BR" ? "00000-000" : "00000"
 						})]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -80611,6 +80665,14 @@ function TenantDetails() {
 	});
 	const handleSave = () => {
 		if (!formData) return;
+		if (isGenericOrPlaceholder(formData.name)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: "Invalid name.",
+				variant: "destructive"
+			});
+			return;
+		}
 		if (formData.phone && !isPhoneValid(formData.phone, phoneCountry)) {
 			toast$2({
 				title: t$1("common.error"),
@@ -83255,7 +83317,22 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 	const [scheduleValue, setScheduleValue] = (0, import_react.useState)("");
 	const fileInputRef = (0, import_react.useRef)(null);
 	const handleSave = () => {
-		if (!formData.name || !formData.role) return;
+		if (!formData.name || !formData.role) {
+			toast$2({
+				title: "Erro de Validação",
+				description: "Nome e Cargo são obrigatórios.",
+				variant: "destructive"
+			});
+			return;
+		}
+		if (isGenericOrPlaceholder(formData.name) || isGenericOrPlaceholder(formData.role)) {
+			toast$2({
+				title: "Erro de Validação",
+				description: "Por favor, insira um nome e cargo válidos (não use valores genéricos).",
+				variant: "destructive"
+			});
+			return;
+		}
 		if (!formData.email || !isValidEmail(formData.email)) {
 			toast$2({
 				title: "Erro de Validação",
@@ -83268,6 +83345,14 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 			toast$2({
 				title: "Erro de Validação",
 				description: `Telefone inválido para ${formData.country}.`,
+				variant: "destructive"
+			});
+			return;
+		}
+		if (formData.zipCode && isGenericOrPlaceholder(formData.zipCode) || formData.city && isGenericOrPlaceholder(formData.city) || formData.state && isGenericOrPlaceholder(formData.state)) {
+			toast$2({
+				title: "Erro de Validação",
+				description: "Verifique os campos de endereço.",
 				variant: "destructive"
 			});
 			return;
@@ -83426,7 +83511,7 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "País" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "País (Prioridade na seleção)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 								value: formData.country,
 								onValueChange: (val) => setFormData({
 									...formData,
@@ -84700,6 +84785,14 @@ function Condominiums() {
 			});
 			return;
 		}
+		if (isGenericOrPlaceholder(formData.name) || isGenericOrPlaceholder(formData.address)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: "Por favor, insira dados válidos para Nome e Endereço.",
+				variant: "destructive"
+			});
+			return;
+		}
 		if (formData.managerEmail && !isValidEmail(formData.managerEmail)) {
 			toast$2({
 				title: t$1("common.error"),
@@ -84712,6 +84805,14 @@ function Condominiums() {
 			toast$2({
 				title: t$1("common.error"),
 				description: `Por favor, insira um número de telefone válido para ${selectedCountry}.`,
+				variant: "destructive"
+			});
+			return;
+		}
+		if (isGenericOrPlaceholder(formData.zipCode)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: "CEP inválido.",
 				variant: "destructive"
 			});
 			return;
@@ -85097,10 +85198,26 @@ function CondominiumDetails() {
 	if (!condo || !formData) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: "Not Found" });
 	const handleSave = () => {
 		if (!formData.name?.trim()) return;
+		if (isGenericOrPlaceholder(formData.name)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: "Invalid name.",
+				variant: "destructive"
+			});
+			return;
+		}
 		if (formData.managerPhone && !isPhoneValid(formData.managerPhone, selectedCountry)) {
 			toast$2({
 				title: t$1("common.error"),
 				description: `Invalid phone for ${selectedCountry}.`,
+				variant: "destructive"
+			});
+			return;
+		}
+		if (formData.zipCode && isGenericOrPlaceholder(formData.zipCode)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: "Invalid Zip Code.",
 				variant: "destructive"
 			});
 			return;
@@ -92849,6 +92966,22 @@ function ShortTerm() {
 			});
 			return;
 		}
+		if (isGenericOrPlaceholder(newBooking.guestName)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: "Please enter a valid guest name.",
+				variant: "destructive"
+			});
+			return;
+		}
+		if (newBooking.guestEmail && !isValidEmail(newBooking.guestEmail)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: "Invalid email format.",
+				variant: "destructive"
+			});
+			return;
+		}
 		addBooking({
 			id: `bk-${Date.now()}`,
 			propertyId: newBooking.propertyId,
@@ -93908,4 +94041,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-z7djdOht.js.map
+//# sourceMappingURL=index-C35EtqYk.js.map

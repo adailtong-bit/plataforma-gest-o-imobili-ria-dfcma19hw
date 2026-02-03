@@ -36,6 +36,7 @@ import { Booking } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import { CurrencyInput } from '@/components/ui/currency-input'
 import { DataMask } from '@/components/DataMask'
+import { isGenericOrPlaceholder, isValidEmail } from '@/lib/utils'
 
 export default function ShortTerm() {
   const { t, language } = useLanguageStore()
@@ -67,6 +68,24 @@ export default function ShortTerm() {
       toast({
         title: t('common.error'),
         description: t('common.required'),
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (isGenericOrPlaceholder(newBooking.guestName)) {
+      toast({
+        title: t('common.error'),
+        description: 'Please enter a valid guest name.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (newBooking.guestEmail && !isValidEmail(newBooking.guestEmail)) {
+      toast({
+        title: t('common.error'),
+        description: 'Invalid email format.',
         variant: 'destructive',
       })
       return

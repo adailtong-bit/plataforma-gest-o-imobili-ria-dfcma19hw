@@ -64,7 +64,11 @@ import {
 } from '@/components/ui/dialog'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
 import { PhoneInput } from '@/components/ui/phone-input'
-import { isPhoneValid, applyZipCodeMask } from '@/lib/utils'
+import {
+  isPhoneValid,
+  applyZipCodeMask,
+  isGenericOrPlaceholder,
+} from '@/lib/utils'
 
 export default function TenantDetails() {
   const { id } = useParams()
@@ -129,6 +133,15 @@ export default function TenantDetails() {
 
   const handleSave = () => {
     if (!formData) return
+
+    if (isGenericOrPlaceholder(formData.name)) {
+      toast({
+        title: t('common.error'),
+        description: 'Invalid name.',
+        variant: 'destructive',
+      })
+      return
+    }
 
     if (formData.phone && !isPhoneValid(formData.phone, phoneCountry)) {
       toast({

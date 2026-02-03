@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { isPhoneValid } from '@/lib/utils'
+import { isPhoneValid, isValidEmail, isGenericOrPlaceholder } from '@/lib/utils'
 
 export default function Register() {
   const { t } = useLanguageStore()
@@ -50,6 +50,24 @@ export default function Register() {
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!formData.name || isGenericOrPlaceholder(formData.name)) {
+      toast({
+        title: t('common.error'),
+        description: 'Please enter a valid name.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (!isValidEmail(formData.email)) {
+      toast({
+        title: t('common.error'),
+        description: 'Invalid email format.',
+        variant: 'destructive',
+      })
+      return
+    }
 
     if (formData.password !== formData.confirmPassword) {
       toast({

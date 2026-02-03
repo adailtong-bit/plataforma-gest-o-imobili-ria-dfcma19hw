@@ -12,6 +12,38 @@ export const isValidEmail = (email: string) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+// Check for generic or placeholder values to enforce data integrity
+export const isGenericOrPlaceholder = (
+  value: string | undefined | null,
+): boolean => {
+  if (!value) return false // Empty is not "generic placeholder", it's empty. Required checks handle emptiness.
+  const lower = value.toString().toLowerCase().trim()
+
+  // Check for repeated characters (e.g. "aaaaa", "11111", "xxxxx") - length > 2
+  if (lower.length > 2 && /^(\w)\1+$/.test(lower)) return true
+
+  // Check for sequential numbers (e.g. "123456") - length > 4
+  if (lower.length > 4 && '01234567890123456789'.includes(lower)) return true
+
+  // Check for common placeholders
+  const placeholders = [
+    'test',
+    'teste',
+    'xyz',
+    'abc',
+    'n/a',
+    'na',
+    'none',
+    'null',
+    'undefined',
+    'string',
+    'text',
+  ]
+  if (placeholders.includes(lower)) return true
+
+  return false
+}
+
 // Phone mask enforcement
 export const applyPhoneMask = (value: string, country: 'US' | 'BR' | 'ES') => {
   const digits = value.replace(/\D/g, '')

@@ -47,7 +47,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { DataMask } from '@/components/DataMask'
-import { applyZipCodeMask } from '@/lib/utils'
+import { applyZipCodeMask, isGenericOrPlaceholder } from '@/lib/utils'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
 
 export default function Properties() {
@@ -173,6 +173,15 @@ export default function Properties() {
       })
       return
     }
+    if (isGenericOrPlaceholder(newProp.name)) {
+      toast({
+        title: t('properties.validation_error'),
+        description: 'Invalid Name.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     if (!newProp.address?.trim()) {
       toast({
         title: t('properties.validation_error'),
@@ -190,6 +199,15 @@ export default function Properties() {
       })
       return
     }
+    if (isGenericOrPlaceholder(newProp.zipCode)) {
+      toast({
+        title: t('properties.validation_error'),
+        description: 'Invalid Zip Code.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     if (!newProp.city?.trim() || !newProp.state?.trim()) {
       toast({
         title: t('properties.validation_error'),
@@ -379,7 +397,7 @@ export default function Properties() {
                   </RadioGroup>
                 </div>
 
-                {/* Country Selection */}
+                {/* Country Selection Priority */}
                 <div className="grid gap-2">
                   <Label className="text-black font-bold">
                     {t('common.country')}

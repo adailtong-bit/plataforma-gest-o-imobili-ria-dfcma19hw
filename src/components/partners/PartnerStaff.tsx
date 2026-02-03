@@ -25,7 +25,12 @@ import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { PhoneInput } from '@/components/ui/phone-input'
-import { isValidEmail, applyZipCodeMask, isPhoneValid } from '@/lib/utils'
+import {
+  isValidEmail,
+  applyZipCodeMask,
+  isPhoneValid,
+  isGenericOrPlaceholder,
+} from '@/lib/utils'
 import {
   Select,
   SelectContent,
@@ -73,7 +78,27 @@ export function PartnerStaff({
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSave = () => {
-    if (!formData.name || !formData.role) return
+    if (!formData.name || !formData.role) {
+      toast({
+        title: 'Erro de Validação',
+        description: 'Nome e Cargo são obrigatórios.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (
+      isGenericOrPlaceholder(formData.name) ||
+      isGenericOrPlaceholder(formData.role)
+    ) {
+      toast({
+        title: 'Erro de Validação',
+        description:
+          'Por favor, insira um nome e cargo válidos (não use valores genéricos).',
+        variant: 'destructive',
+      })
+      return
+    }
 
     // Strict Validations
     if (!formData.email || !isValidEmail(formData.email)) {
@@ -93,6 +118,19 @@ export function PartnerStaff({
       toast({
         title: 'Erro de Validação',
         description: `Telefone inválido para ${formData.country}.`,
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (
+      (formData.zipCode && isGenericOrPlaceholder(formData.zipCode)) ||
+      (formData.city && isGenericOrPlaceholder(formData.city)) ||
+      (formData.state && isGenericOrPlaceholder(formData.state))
+    ) {
+      toast({
+        title: 'Erro de Validação',
+        description: 'Verifique os campos de endereço.',
         variant: 'destructive',
       })
       return
@@ -260,7 +298,7 @@ export function PartnerStaff({
               <div className="grid gap-4 py-4">
                 {/* Country First */}
                 <div className="grid gap-2">
-                  <Label>País</Label>
+                  <Label>País (Prioridade na seleção)</Label>
                   <Select
                     value={formData.country}
                     onValueChange={(val) =>

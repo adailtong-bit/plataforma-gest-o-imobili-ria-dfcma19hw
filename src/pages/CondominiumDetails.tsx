@@ -45,7 +45,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { isValidEmail, isPhoneValid, applyZipCodeMask } from '@/lib/utils'
+import {
+  isValidEmail,
+  isPhoneValid,
+  applyZipCodeMask,
+  isGenericOrPlaceholder,
+} from '@/lib/utils'
 import { DataMask } from '@/components/DataMask'
 import { PhoneInput } from '@/components/ui/phone-input'
 
@@ -113,6 +118,15 @@ export default function CondominiumDetails() {
   const handleSave = () => {
     if (!formData.name?.trim()) return
 
+    if (isGenericOrPlaceholder(formData.name)) {
+      toast({
+        title: t('common.error'),
+        description: 'Invalid name.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     // Validate manager phone if present
     if (
       formData.managerPhone &&
@@ -121,6 +135,15 @@ export default function CondominiumDetails() {
       toast({
         title: t('common.error'),
         description: `Invalid phone for ${selectedCountry}.`,
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (formData.zipCode && isGenericOrPlaceholder(formData.zipCode)) {
+      toast({
+        title: t('common.error'),
+        description: 'Invalid Zip Code.',
         variant: 'destructive',
       })
       return
@@ -303,6 +326,7 @@ export default function CondominiumDetails() {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Country Field First */}
               <div className="grid gap-2">
                 <Label className="text-slate-900 font-bold">
                   {t('common.country')}

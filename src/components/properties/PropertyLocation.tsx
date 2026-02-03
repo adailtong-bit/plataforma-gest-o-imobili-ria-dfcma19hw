@@ -11,7 +11,8 @@ import {
 } from '@/components/ui/select'
 import { MapPin } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { applyZipCodeMask } from '@/lib/utils'
+import { applyZipCodeMask, isGenericOrPlaceholder } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 
 interface PropertyLocationProps {
   data: Property
@@ -27,6 +28,7 @@ export function PropertyLocation({
   condominiums,
 }: PropertyLocationProps) {
   const { t } = useLanguageStore()
+  const { toast } = useToast()
 
   // Ensure selected country defaults to US if not set
   const selectedCountry = data.country || 'US'
@@ -56,6 +58,11 @@ export function PropertyLocation({
     const val = applyZipCodeMask(e.target.value, selectedCountry)
     onChange('zipCode', val)
   }
+
+  // Effect to check generic values during edit might be annoying, usually better on save/blur.
+  // But here we can just show styling issues.
+
+  const isZipInvalid = !data.zipCode || isGenericOrPlaceholder(data.zipCode)
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -105,7 +112,7 @@ export function PropertyLocation({
                 onChange={handleZipChange}
                 disabled={!canEdit}
                 required
-                className={!data.zipCode ? 'border-red-300' : ''}
+                className={isZipInvalid ? 'border-red-300' : ''}
                 placeholder={selectedCountry === 'BR' ? '00000-000' : '00000'}
               />
             </div>
