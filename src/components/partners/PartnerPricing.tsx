@@ -16,6 +16,8 @@ import { Partner, ServiceRate } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { CurrencyInput } from '@/components/ui/currency-input'
+import { applyDateMask } from '@/lib/utils'
 
 interface PartnerPricingProps {
   partner: Partner
@@ -28,21 +30,52 @@ export function PartnerPricing({
   onUpdate,
   canEdit,
 }: PartnerPricingProps) {
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const { toast } = useToast()
+
+  // Use a string for date input to allow masking behavior
+  const [dateInput, setDateInput] = useState(format(new Date(), 'dd/MM/yyyy'))
+
   const [newRate, setNewRate] = useState<Partial<ServiceRate>>({
     serviceName: '',
     price: 0,
-    validFrom: format(new Date(), 'yyyy-MM-dd'),
+    validFrom: new Date().toISOString(), // Internal ISO store
   })
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = applyDateMask(e.target.value)
+    setDateInput(val)
+
+    // Attempt to parse date for internal storage (naive parsing for DD/MM/YYYY)
+    if (val.length === 10) {
+      const [day, month, year] = val.split('/')
+      const isoDate = `${year}-${month}-${day}`
+      // Check if valid date
+      const d = new Date(isoDate)
+      if (!isNaN(d.getTime())) {
+        setNewRate({ ...newRate, validFrom: isoDate })
+      }
+    }
+  }
 
   const handleAddRate = () => {
     if (newRate.serviceName && newRate.price) {
+      // Validate date
+      const [day, month, year] = dateInput.split('/')
+      if (!day || !month || !year || dateInput.length !== 10) {
+        toast({
+          title: 'Erro',
+          description: 'Data inválida. Use DD/MM/YYYY',
+          variant: 'destructive',
+        })
+        return
+      }
+
       const rate: ServiceRate = {
         id: `rate-${Date.now()}`,
         serviceName: newRate.serviceName,
         price: Number(newRate.price),
-        validFrom: newRate.validFrom!,
+        validFrom: newRate.validFrom!, // This should be ISO from the handler
         type: 'specific',
       }
       onUpdate({
@@ -52,8 +85,10 @@ export function PartnerPricing({
       setNewRate({
         serviceName: '',
         price: 0,
-        validFrom: format(new Date(), 'yyyy-MM-dd'),
+        validFrom: new Date().toISOString(),
       })
+      setDateInput(format(new Date(), 'dd/MM/yyyy'))
+
       toast({
         title: 'Sucesso',
         description: 'Serviço adicionado à tabela de preços.',
@@ -90,22 +125,29 @@ export function PartnerPricing({
             </div>
             <div className="grid gap-2 w-full md:w-32">
               <Label>{t('partners.rate_price')}</Label>
-              <Input
-                type="number"
+              <CurrencyInput
                 value={newRate.price}
-                onChange={(e) =>
-                  setNewRate({ ...newRate, price: Number(e.target.value) })
+                onChange={(val) => setNewRate({ ...newRate, price: val })}
+                currency={
+                  language === 'pt' ? 'BRL' : language === 'es' ? 'EUR' : 'USD'
+                }
+                locale={
+                  language === 'pt'
+                    ? 'pt-BR'
+                    : language === 'es'
+                      ? 'es-ES'
+                      : 'en-US'
                 }
               />
             </div>
             <div className="grid gap-2 w-full md:w-40">
               <Label>{t('partners.rate_valid_from')}</Label>
               <Input
-                type="date"
-                value={newRate.validFrom}
-                onChange={(e) =>
-                  setNewRate({ ...newRate, validFrom: e.target.value })
-                }
+                type="text"
+                value={dateInput}
+                onChange={handleDateChange}
+                placeholder="DD/MM/YYYY"
+                maxLength={10}
               />
             </div>
             <Button
@@ -142,7 +184,15 @@ export function PartnerPricing({
                   <TableCell className="font-medium">
                     {rate.serviceName}
                   </TableCell>
-                  <TableCell>${rate.price.toFixed(2)}</TableCell>
+                  <TableCell>
+                    {new Intl.NumberFormat(
+                      language === 'pt' ? 'pt-BR' : 'en-US',
+                      {
+                        style: 'currency',
+                        currency: language === 'pt' ? 'BRL' : 'USD',
+                      },
+                    ).format(rate.price)}
+                  </TableCell>
                   <TableCell>
                     {format(new Date(rate.validFrom), 'dd/MM/yyyy')}
                   </TableCell>

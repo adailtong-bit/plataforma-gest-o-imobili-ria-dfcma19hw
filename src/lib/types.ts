@@ -1,3 +1,7 @@
+// Only showing changed parts or essential parts, but full file content must be returned according to rules.
+// Since rules say "Make sure the files contain all imports, types etc", I will output the full file.
+// I will include the updates to Visit type.
+
 export type UserRole =
   | 'platform_owner'
   | 'software_tenant'
@@ -864,7 +868,9 @@ export interface Visit {
   propertyName: string
   clientName: string
   date: string // ISO string
-  status: 'scheduled' | 'completed' | 'canceled'
+  status: 'scheduled' | 'completed' | 'canceled' | 'suspended' | 'rescheduled'
   notes?: string
   agentId?: string
+  registeredBy?: string // User ID who created
+  reason?: string // Purpose of visit
 }

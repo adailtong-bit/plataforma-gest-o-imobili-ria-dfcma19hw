@@ -70,7 +70,7 @@ import { hasPermission } from '@/lib/permissions'
 import { User, Resource, Action, UserRole, Permission } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { isValidEmail } from '@/lib/utils'
+import { isValidEmail, isPhoneValid } from '@/lib/utils'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { Switch } from '@/components/ui/switch'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -129,6 +129,7 @@ export default function Users() {
     taxId: '',
     address: '',
     parentPartnerId: '',
+    country: 'US',
   }
 
   const [formData, setFormData] = useState(initialFormState)
@@ -223,6 +224,21 @@ export default function Users() {
       toast({
         title: t('common.error'),
         description: 'Invalid email.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    // Strict phone validation if employee
+    if (
+      (formData.role === 'partner_employee' ||
+        formData.role === 'internal_user') &&
+      !isPhoneValid(formData.phone || '', formData.country as any)
+    ) {
+      toast({
+        title: t('common.error'),
+        description:
+          'Telefone inválido para funcionário. O formato deve estar completo.',
         variant: 'destructive',
       })
       return
@@ -391,6 +407,7 @@ export default function Users() {
       confirmPassword: '',
       mirrorAdmin: !!user.mirrorAdmin,
       parentPartnerId: user.parentId, // For display purposes if editing a partner employee
+      country: user.country || 'US',
     })
     setIsEditing(true)
     setOpen(true)
@@ -549,6 +566,10 @@ export default function Users() {
                         value={formData.phone || ''}
                         onChange={(e) =>
                           setFormData({ ...formData, phone: e.target.value })
+                        }
+                        country={formData.country as any}
+                        onCountryChange={(c) =>
+                          setFormData({ ...formData, country: c })
                         }
                       />
                     </div>

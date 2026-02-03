@@ -7,7 +7,7 @@ import { TaskCard } from '@/components/tasks/TaskCard'
 import { CreateTaskDialog } from '@/components/tasks/CreateTaskDialog'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Button } from '@/components/ui/button'
-import { FileText, Filter } from 'lucide-react'
+import { FileText, Filter, LayoutGrid, List as ListIcon } from 'lucide-react'
 import { TaskInvoiceDialog } from '@/components/financial/TaskInvoiceDialog'
 import {
   Select,
@@ -17,6 +17,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DataMask } from '@/components/DataMask'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { format } from 'date-fns'
 
 export default function Tasks() {
   const { tasks, updateTaskStatus, addTaskImage, addTaskEvidence } =
@@ -24,13 +33,15 @@ export default function Tasks() {
   const { t } = useLanguageStore()
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
   const [filterType, setFilterType] = useState<string>('all')
+  const [filterStatus, setFilterStatus] = useState<string>('all') // New status filter
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
-      if (filterType === 'all') return true
-      return t.type === filterType
+      const typeMatch = filterType === 'all' || t.type === filterType
+      const statusMatch = filterStatus === 'all' || t.status === filterStatus
+      return typeMatch && statusMatch
     })
-  }, [tasks, filterType])
+  }, [tasks, filterType, filterStatus])
 
   const pendingTasks = useMemo(
     () => filteredTasks.filter((t) => t.status === 'pending'),
@@ -49,6 +60,34 @@ export default function Tasks() {
     [filteredTasks],
   )
 
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'critical':
+        return 'text-red-700 bg-red-100 border-red-300 font-bold'
+      case 'high':
+        return 'text-orange-700 bg-orange-100 border-orange-300 font-bold'
+      case 'medium':
+        return 'text-blue-700 bg-blue-100 border-blue-300 font-bold'
+      default:
+        return 'text-slate-700 bg-slate-100 border-slate-300 font-bold'
+    }
+  }
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return t('common.pending')
+      case 'in_progress':
+        return t('tasks.in_progress')
+      case 'completed':
+        return t('common.completed')
+      case 'pending_approval':
+        return t('tasks.approval')
+      default:
+        return status
+    }
+  }
+
   return (
     <div className="flex flex-col gap-6 h-full">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -59,6 +98,24 @@ export default function Tasks() {
           <p className="text-black font-medium">{t('tasks.subtitle')}</p>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="w-[150px] h-9 text-black border-slate-300 font-medium bg-white">
+              <Filter className="w-3 h-3 mr-2 text-black" />
+              <SelectValue placeholder={t('common.status')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('common.all')}</SelectItem>
+              <SelectItem value="pending">{t('common.pending')}</SelectItem>
+              <SelectItem value="in_progress">
+                {t('tasks.in_progress')}
+              </SelectItem>
+              <SelectItem value="completed">{t('common.completed')}</SelectItem>
+              <SelectItem value="pending_approval">
+                {t('tasks.approval')}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-[150px] h-9 text-black border-slate-300 font-medium bg-white">
               <Filter className="w-3 h-3 mr-2 text-black" />
@@ -97,15 +154,15 @@ export default function Tasks() {
           <TabsList className="bg-slate-100 border border-slate-200">
             <TabsTrigger
               value="board"
-              className="data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600"
+              className="data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600 gap-2"
             >
-              {t('tasks.board')}
+              <LayoutGrid className="h-4 w-4" /> {t('tasks.board')}
             </TabsTrigger>
             <TabsTrigger
               value="list"
-              className="data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600"
+              className="data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600 gap-2"
             >
-              {t('tasks.list')}
+              <ListIcon className="h-4 w-4" /> {t('tasks.list')}
             </TabsTrigger>
           </TabsList>
         </div>
@@ -218,10 +275,60 @@ export default function Tasks() {
           </div>
         </TabsContent>
 
-        <TabsContent value="list">
-          <Card className="bg-white border-slate-200">
-            <CardContent className="p-6 text-center text-black font-medium">
-              <p>Modo lista otimizado disponível em breve.</p>
+        <TabsContent value="list" className="flex-1 min-h-0">
+          <Card className="bg-white border-slate-200 h-full overflow-hidden flex flex-col">
+            <CardContent className="p-0 flex-1 overflow-auto">
+              <Table>
+                <TableHeader className="bg-slate-50 sticky top-0 z-10">
+                  <TableRow>
+                    <TableHead>{t('tasks.task_title')}</TableHead>
+                    <TableHead>{t('properties.title')}</TableHead>
+                    <TableHead>{t('tasks.assignee')}</TableHead>
+                    <TableHead>{t('tasks.scheduled_date')}</TableHead>
+                    <TableHead>{t('common.priority')}</TableHead>
+                    <TableHead>{t('common.status')}</TableHead>
+                    <TableHead>{t('tasks.service_type')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredTasks.map((task) => (
+                    <TableRow key={task.id} className="hover:bg-slate-50">
+                      <TableCell className="font-medium text-black">
+                        {task.title}
+                      </TableCell>
+                      <TableCell>{task.propertyName}</TableCell>
+                      <TableCell>{task.assignee}</TableCell>
+                      <TableCell>
+                        {format(new Date(task.date), 'dd/MM/yyyy')}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={getPriorityColor(task.priority)}
+                        >
+                          {task.priority.toUpperCase()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">
+                          {getStatusLabel(task.status)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="capitalize">{task.type}</TableCell>
+                    </TableRow>
+                  ))}
+                  {filteredTasks.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={7}
+                        className="text-center py-8 text-muted-foreground"
+                      >
+                        {t('common.empty')}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </TabsContent>

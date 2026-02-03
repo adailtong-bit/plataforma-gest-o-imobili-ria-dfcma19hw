@@ -30,13 +30,41 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
-import { CalendarIcon, Plus, Trash2, CheckCircle } from 'lucide-react'
+import {
+  CalendarIcon,
+  Plus,
+  Trash2,
+  CheckCircle,
+  Edit,
+  Ban,
+  Clock,
+  Play,
+} from 'lucide-react'
 import { format } from 'date-fns'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useVisitStore from '@/stores/useVisitStore'
 import usePropertyStore from '@/stores/usePropertyStore'
+import useAuthStore from '@/stores/useAuthStore'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import { Visit } from '@/lib/types'
@@ -45,6 +73,7 @@ export default function Visits() {
   const { t } = useLanguageStore()
   const { visits, addVisit, updateVisit, deleteVisit } = useVisitStore()
   const { properties } = usePropertyStore()
+  const { currentUser, allUsers } = useAuthStore()
   const { toast } = useToast()
 
   const [date, setDate] = useState<Date | undefined>(new Date())
@@ -52,6 +81,18 @@ export default function Visits() {
   const [clientName, setClientName] = useState('')
   const [propertyId, setPropertyId] = useState('')
   const [notes, setNotes] = useState('')
+  const [reason, setReason] = useState('')
+
+  // Edit State
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [editingVisit, setEditingVisit] = useState<Visit | null>(null)
+
+  // Status Confirmation State
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [pendingStatusChange, setPendingStatusChange] = useState<{
+    visit: Visit
+    status: Visit['status']
+  } | null>(null)
 
   const handleSchedule = () => {
     if (!clientName || !propertyId || !date) {
@@ -76,6 +117,8 @@ export default function Visits() {
       date: dateTime.toISOString(),
       status: 'scheduled',
       notes,
+      registeredBy: currentUser.id,
+      reason,
     }
 
     addVisit(newVisit)
@@ -88,17 +131,25 @@ export default function Visits() {
     setClientName('')
     setPropertyId('')
     setNotes('')
+    setReason('')
   }
 
-  const handleStatusChange = (
-    visit: Visit,
-    status: 'completed' | 'canceled',
-  ) => {
-    updateVisit({ ...visit, status })
-    toast({
-      title: 'Status Updated',
-      description: `Visit marked as ${status}.`,
-    })
+  const initiateStatusChange = (visit: Visit, status: Visit['status']) => {
+    setPendingStatusChange({ visit, status })
+    setConfirmOpen(true)
+  }
+
+  const confirmStatusChange = () => {
+    if (pendingStatusChange) {
+      const { visit, status } = pendingStatusChange
+      updateVisit({ ...visit, status })
+      toast({
+        title: 'Status Updated',
+        description: `Visit marked as ${status}.`,
+      })
+      setConfirmOpen(false)
+      setPendingStatusChange(null)
+    }
   }
 
   const handleDelete = (id: string) => {
@@ -106,6 +157,31 @@ export default function Visits() {
       deleteVisit(id)
       toast({ title: 'Visit Deleted' })
     }
+  }
+
+  const openEdit = (visit: Visit) => {
+    setEditingVisit(visit)
+    setIsEditOpen(true)
+  }
+
+  const handleUpdateVisit = () => {
+    if (!editingVisit) return
+
+    // Check if date changed to trigger 'rescheduled' status
+    const originalVisit = visits.find((v) => v.id === editingVisit.id)
+    let newStatus = editingVisit.status
+
+    if (originalVisit && originalVisit.date !== editingVisit.date) {
+      newStatus = 'rescheduled'
+    }
+
+    updateVisit({
+      ...editingVisit,
+      status: newStatus,
+    })
+    setIsEditOpen(false)
+    setEditingVisit(null)
+    toast({ title: 'Visit Updated' })
   }
 
   const getStatusBadge = (status: string) => {
@@ -127,9 +203,33 @@ export default function Visits() {
         )
       case 'canceled':
         return <Badge variant="destructive">{t('common.canceled')}</Badge>
+      case 'suspended':
+        return (
+          <Badge
+            variant="outline"
+            className="bg-yellow-100 text-yellow-800 border-yellow-200"
+          >
+            Suspended
+          </Badge>
+        )
+      case 'rescheduled':
+        return (
+          <Badge
+            variant="outline"
+            className="bg-purple-100 text-purple-800 border-purple-200"
+          >
+            Rescheduled
+          </Badge>
+        )
       default:
         return <Badge variant="secondary">{status}</Badge>
     }
+  }
+
+  const getUserName = (id?: string) => {
+    if (!id) return 'System'
+    const user = allUsers.find((u) => u.id === id)
+    return user ? user.name : 'Unknown'
   }
 
   // Sort visits by date (newest first)
@@ -218,6 +318,15 @@ export default function Visits() {
             </div>
 
             <div className="space-y-2">
+              <Label>Reason for Visit</Label>
+              <Input
+                placeholder="Showing, Inspection, etc."
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label>{t('common.description')} / Notes</Label>
               <Textarea
                 placeholder="Client preferences, access codes, etc."
@@ -284,43 +393,58 @@ export default function Visits() {
                       <TableCell>{getStatusBadge(visit.status)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          {visit.status === 'scheduled' && (
-                            <>
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
-                                onClick={() =>
-                                  handleStatusChange(visit, 'completed')
-                                }
-                                title="Mark as Completed"
-                              >
-                                <CheckCircle className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                onClick={() =>
-                                  handleStatusChange(visit, 'canceled')
-                                }
-                                title="Cancel Visit"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </>
-                          )}
-                          {visit.status !== 'scheduled' && (
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                              onClick={() => handleDelete(visit.id)}
-                              title="Delete Record"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => openEdit(visit)}
+                            title="Edit Details"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
+                            onClick={() =>
+                              initiateStatusChange(visit, 'completed')
+                            }
+                            title="Complete"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
+                            onClick={() =>
+                              initiateStatusChange(visit, 'suspended')
+                            }
+                            title="Suspend"
+                          >
+                            <Clock className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                            onClick={() =>
+                              initiateStatusChange(visit, 'canceled')
+                            }
+                            title="Cancel"
+                          >
+                            <Ban className="h-4 w-4" />
+                          </Button>
+
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                            onClick={() => handleDelete(visit.id)}
+                            title="Delete Record"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -331,6 +455,109 @@ export default function Visits() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Visit Details</DialogTitle>
+          </DialogHeader>
+          {editingVisit && (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Registered By</Label>
+                  <Input
+                    value={getUserName(editingVisit.registeredBy)}
+                    disabled
+                  />
+                </div>
+                <div>
+                  <Label>Current Status</Label>
+                  <div className="mt-2">
+                    {getStatusBadge(editingVisit.status)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-2">
+                <Label>Client Name</Label>
+                <Input
+                  value={editingVisit.clientName}
+                  onChange={(e) =>
+                    setEditingVisit({
+                      ...editingVisit,
+                      clientName: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label>Date & Time</Label>
+                <Input
+                  type="datetime-local"
+                  value={format(
+                    new Date(editingVisit.date),
+                    "yyyy-MM-dd'T'HH:mm",
+                  )}
+                  onChange={(e) =>
+                    setEditingVisit({
+                      ...editingVisit,
+                      date: new Date(e.target.value).toISOString(),
+                    })
+                  }
+                />
+                <p className="text-xs text-muted-foreground">
+                  Changing date will automatically set status to 'Rescheduled'.
+                </p>
+              </div>
+
+              <div className="grid gap-2">
+                <Label>Reason for Visit</Label>
+                <Input
+                  value={editingVisit.reason || ''}
+                  onChange={(e) =>
+                    setEditingVisit({ ...editingVisit, reason: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label>Notes</Label>
+                <Textarea
+                  value={editingVisit.notes || ''}
+                  onChange={(e) =>
+                    setEditingVisit({ ...editingVisit, notes: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button onClick={handleUpdateVisit}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Status Change</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to change the status to{' '}
+              <strong>{pendingStatusChange?.status}</strong>?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmStatusChange}>
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

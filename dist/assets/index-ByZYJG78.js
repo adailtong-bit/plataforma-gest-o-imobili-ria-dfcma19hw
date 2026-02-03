@@ -19658,6 +19658,40 @@ var LayoutDashboard = createLucideIcon("layout-dashboard", [
 		key: "ldoo1y"
 	}]
 ]);
+var LayoutGrid = createLucideIcon("layout-grid", [
+	["rect", {
+		width: "7",
+		height: "7",
+		x: "3",
+		y: "3",
+		rx: "1",
+		key: "1g98yp"
+	}],
+	["rect", {
+		width: "7",
+		height: "7",
+		x: "14",
+		y: "3",
+		rx: "1",
+		key: "6d4xhi"
+	}],
+	["rect", {
+		width: "7",
+		height: "7",
+		x: "14",
+		y: "14",
+		rx: "1",
+		key: "nxv5o0"
+	}],
+	["rect", {
+		width: "7",
+		height: "7",
+		x: "3",
+		y: "14",
+		rx: "1",
+		key: "1bb6yr"
+	}]
+]);
 var LayoutTemplate = createLucideIcon("layout-template", [
 	["rect", {
 		width: "18",
@@ -24571,6 +24605,12 @@ const applyPhoneMask = (value, country) => {
 		return `${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 7)} ${digits.slice(7, 9)}`;
 	}
 	return value;
+};
+const applyDateMask = (value) => {
+	const digits = value.replace(/\D/g, "");
+	if (digits.length <= 2) return digits;
+	if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+	return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
 };
 const isPhoneValid = (value, country) => {
 	if (!value) return false;
@@ -53547,6 +53587,78 @@ const translations = {
 			partners: "Parceiros",
 			delete_linked_error: "Não é possível excluir pois existem registros vinculados."
 		},
+		short_term: {
+			title: "Aluguel de Temporada",
+			subtitle: "Gerencie suas reservas e locações de curto prazo.",
+			new_booking: "Nova Reserva",
+			platform: "Plataforma",
+			guest: "Hóspede",
+			check_in: "Check-in",
+			check_out: "Check-out",
+			total: "Total"
+		},
+		partners: {
+			title: "Parceiros",
+			subtitle: "Gerencie os parceiros e prestadores de serviço.",
+			new_partner: "Novo Parceiro",
+			register_title: "Cadastrar Parceiro",
+			search_placeholder: "Pesquisar parceiros...",
+			contact_name: "Nome do Contato",
+			company_name: "Nome da Empresa",
+			category: "Categoria",
+			agent: "Agente",
+			cleaning: "Limpeza",
+			maintenance: "Manutenção",
+			bank_info: "Dados Bancários",
+			bank_name: "Banco",
+			routing: "Agência",
+			account: "Conta",
+			no_partners: "Nenhum parceiro encontrado.",
+			service_rates: "Taxas de Serviço",
+			rate_name: "Nome da Taxa",
+			rate_price: "Preço da Taxa",
+			rate_valid_from: "Válido desde"
+		},
+		automation: {
+			auto_generate_invoice: "Gerar fatura automaticamente",
+			quickbooks_export: "Exportar para QuickBooks",
+			quickbooks_desc: "Baixe transações compatíveis com QB.",
+			export_csv: "Exportar CSV",
+			export_excel: "Exportar Excel",
+			export_success_title: "Exportação Iniciada",
+			export_success_desc: "O arquivo está sendo gerado."
+		},
+		tasks: {
+			title: "Tarefas",
+			subtitle: "Acompanhamento de atividades e fluxos.",
+			new_task: "Nova Tarefa",
+			create_title: "Criar Nova Tarefa",
+			create_desc: "Preencha os detalhes para agendar um serviço.",
+			task_title: "Título da Tarefa",
+			service_type: "Tipo de Serviço",
+			assignee: "Responsável",
+			scheduled_date: "Data Agendada",
+			location: "Localização",
+			activity_log: "Registro de Atividade",
+			arrival: "Chegada",
+			photos: "Fotos",
+			photos_ref: "Fotos de Referência",
+			evidence_upload: "Upload de Evidência",
+			evidence_photo: "Foto da Evidência",
+			send: "Enviar",
+			start_checkin: "Iniciar (Check-in)",
+			finish: "Finalizar",
+			details_evidence: "Detalhes & Evidências",
+			in_progress: "Em Progresso",
+			approval: "Aprovação",
+			board: "Quadro",
+			list: "Lista",
+			success_created: "Tarefa Criada",
+			b2b_label: "Back to Back (B2B)",
+			detailed_desc: "Descrição Detalhada",
+			desc_placeholder: "Instruções específicas...",
+			create_btn: "Criar Tarefa"
+		},
 		sidebar: {
 			main_menu: "Menu Principal",
 			system: "Sistema",
@@ -53621,37 +53733,6 @@ const translations = {
 			subtitle: "Visualize seus compromissos e prazos.",
 			integrated_view: "Vista Integrada",
 			no_activities: "Nenhuma atividade para este dia."
-		},
-		tasks: {
-			title: "Tarefas",
-			subtitle: "Acompanhamento de atividades e fluxos.",
-			new_task: "Nova Tarefa",
-			create_title: "Criar Nova Tarefa",
-			create_desc: "Preencha os detalhes para agendar um serviço.",
-			task_title: "Título da Tarefa",
-			service_type: "Tipo de Serviço",
-			assignee: "Responsável",
-			scheduled_date: "Data Agendada",
-			location: "Localização",
-			activity_log: "Registro de Atividade",
-			arrival: "Chegada",
-			photos: "Fotos",
-			photos_ref: "Fotos de Referência",
-			evidence_upload: "Upload de Evidência",
-			evidence_photo: "Foto da Evidência",
-			send: "Enviar",
-			start_checkin: "Iniciar (Check-in)",
-			finish: "Finalizar",
-			details_evidence: "Detalhes & Evidências",
-			in_progress: "Em Progresso",
-			approval: "Aprovação",
-			board: "Quadro",
-			list: "Lista",
-			success_created: "Tarefa Criada",
-			b2b_label: "Back to Back (B2B)",
-			detailed_desc: "Descrição Detalhada",
-			desc_placeholder: "Instruções específicas...",
-			create_btn: "Criar Tarefa"
 		},
 		financial: {
 			title: "Financeiro",
@@ -53863,26 +53944,6 @@ const translations = {
 			copy_link: "Link copiado!",
 			ical_url: "URL do iCal"
 		},
-		partners: {
-			cleaning: "Limpeza",
-			maintenance: "Manutenção",
-			title: "Parceiros",
-			subtitle: "Gerencie seus prestadores de serviço.",
-			new_partner: "Novo Parceiro",
-			register_title: "Cadastrar Parceiro",
-			search_placeholder: "Buscar parceiros...",
-			contact_name: "Nome de Contato",
-			company_name: "Nome da Empresa",
-			category: "Categoria",
-			agent: "Agente",
-			bank_info: "Dados Bancários",
-			bank_name: "Nome do Banco",
-			routing: "Agência / Routing",
-			account: "Conta",
-			no_partners: "Nenhum parceiro encontrado.",
-			financial_report: "Relatório Financeiro",
-			payment_history: "Histórico de Pagamentos"
-		},
 		status: {
 			rented: "Alugado",
 			available: "Disponível",
@@ -54013,14 +54074,6 @@ const translations = {
 			expert: "Expert",
 			target: "Meta",
 			health_score: "Score de Saúde"
-		},
-		automation: {
-			export_success_title: "Exportação Iniciada",
-			export_success_desc: "O arquivo está sendo gerado.",
-			quickbooks_export: "Exportar para QuickBooks",
-			quickbooks_desc: "Baixe transações compatíveis com QB.",
-			export_csv: "Exportar CSV",
-			export_excel: "Exportar Excel"
 		}
 	},
 	en: {},
@@ -76590,16 +76643,39 @@ function Tasks() {
 	const { t: t$1 } = useLanguageStore_default();
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = (0, import_react.useState)(false);
 	const [filterType, setFilterType] = (0, import_react.useState)("all");
+	const [filterStatus, setFilterStatus] = (0, import_react.useState)("all");
 	const filteredTasks = (0, import_react.useMemo)(() => {
 		return tasks$1.filter((t$2) => {
-			if (filterType === "all") return true;
-			return t$2.type === filterType;
+			const typeMatch = filterType === "all" || t$2.type === filterType;
+			const statusMatch = filterStatus === "all" || t$2.status === filterStatus;
+			return typeMatch && statusMatch;
 		});
-	}, [tasks$1, filterType]);
+	}, [
+		tasks$1,
+		filterType,
+		filterStatus
+	]);
 	const pendingTasks = (0, import_react.useMemo)(() => filteredTasks.filter((t$2) => t$2.status === "pending"), [filteredTasks]);
 	const inProgressTasks = (0, import_react.useMemo)(() => filteredTasks.filter((t$2) => t$2.status === "in_progress"), [filteredTasks]);
 	const approvalTasks = (0, import_react.useMemo)(() => filteredTasks.filter((t$2) => t$2.status === "pending_approval"), [filteredTasks]);
 	const completedTasks = (0, import_react.useMemo)(() => filteredTasks.filter((t$2) => t$2.status === "completed"), [filteredTasks]);
+	const getPriorityColor = (priority) => {
+		switch (priority) {
+			case "critical": return "text-red-700 bg-red-100 border-red-300 font-bold";
+			case "high": return "text-orange-700 bg-orange-100 border-orange-300 font-bold";
+			case "medium": return "text-blue-700 bg-blue-100 border-blue-300 font-bold";
+			default: return "text-slate-700 bg-slate-100 border-slate-300 font-bold";
+		}
+	};
+	const getStatusLabel = (status) => {
+		switch (status) {
+			case "pending": return t$1("common.pending");
+			case "in_progress": return t$1("tasks.in_progress");
+			case "completed": return t$1("common.completed");
+			case "pending_approval": return t$1("tasks.approval");
+			default: return status;
+		}
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 h-full",
 		children: [
@@ -76614,6 +76690,35 @@ function Tasks() {
 				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex flex-wrap gap-2 items-center",
 					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: filterStatus,
+							onValueChange: setFilterStatus,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectTrigger, {
+								className: "w-[150px] h-9 text-black border-slate-300 font-medium bg-white",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Funnel, { className: "w-3 h-3 mr-2 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("common.status") })]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "all",
+									children: t$1("common.all")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "pending",
+									children: t$1("common.pending")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "in_progress",
+									children: t$1("tasks.in_progress")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "completed",
+									children: t$1("common.completed")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "pending_approval",
+									children: t$1("tasks.approval")
+								})
+							] })]
+						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 							value: filterType,
 							onValueChange: setFilterType,
@@ -76666,14 +76771,22 @@ function Tasks() {
 						className: "flex justify-between items-center",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
 							className: "bg-slate-100 border border-slate-200",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 								value: "board",
-								className: "data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600",
-								children: t$1("tasks.board")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+								className: "data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600 gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutGrid, { className: "h-4 w-4" }),
+									" ",
+									t$1("tasks.board")
+								]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 								value: "list",
-								className: "data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600",
-								children: t$1("tasks.list")
+								className: "data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600 gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(List, { className: "h-4 w-4" }),
+									" ",
+									t$1("tasks.list")
+								]
 							})]
 						})
 					}),
@@ -76774,11 +76887,51 @@ function Tasks() {
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 						value: "list",
+						className: "flex-1 min-h-0",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-							className: "bg-white border-slate-200",
+							className: "bg-white border-slate-200 h-full overflow-hidden flex flex-col",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-								className: "p-6 text-center text-black font-medium",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Modo lista otimizado disponível em breve." })
+								className: "p-0 flex-1 overflow-auto",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+									className: "bg-slate-50 sticky top-0 z-10",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("tasks.task_title") }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("properties.title") }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("tasks.assignee") }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("tasks.scheduled_date") }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.priority") }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("tasks.service_type") })
+									] })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [filteredTasks.map((task) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+									className: "hover:bg-slate-50",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+											className: "font-medium text-black",
+											children: task.title
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: task.propertyName }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: task.assignee }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(task.date), "dd/MM/yyyy") }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+											variant: "outline",
+											className: getPriorityColor(task.priority),
+											children: task.priority.toUpperCase()
+										}) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+											variant: "secondary",
+											children: getStatusLabel(task.status)
+										}) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+											className: "capitalize",
+											children: task.type
+										})
+									]
+								}, task.id)), filteredTasks.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									colSpan: 7,
+									className: "text-center py-8 text-muted-foreground",
+									children: t$1("common.empty")
+								}) })] })] })
 							})
 						})
 					})
@@ -83282,15 +83435,38 @@ function PartnerTasks({ partnerId, canEdit }) {
 	}) })] });
 }
 function PartnerPricing({ partner, onUpdate, canEdit }) {
-	const { t: t$1 } = useLanguageStore_default();
+	const { t: t$1, language } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
+	const [dateInput, setDateInput] = (0, import_react.useState)(format(/* @__PURE__ */ new Date(), "dd/MM/yyyy"));
 	const [newRate, setNewRate] = (0, import_react.useState)({
 		serviceName: "",
 		price: 0,
-		validFrom: format(/* @__PURE__ */ new Date(), "yyyy-MM-dd")
+		validFrom: (/* @__PURE__ */ new Date()).toISOString()
 	});
+	const handleDateChange = (e) => {
+		const val = applyDateMask(e.target.value);
+		setDateInput(val);
+		if (val.length === 10) {
+			const [day, month, year] = val.split("/");
+			const isoDate = `${year}-${month}-${day}`;
+			const d = new Date(isoDate);
+			if (!isNaN(d.getTime())) setNewRate({
+				...newRate,
+				validFrom: isoDate
+			});
+		}
+	};
 	const handleAddRate = () => {
 		if (newRate.serviceName && newRate.price) {
+			const [day, month, year] = dateInput.split("/");
+			if (!day || !month || !year || dateInput.length !== 10) {
+				toast$2({
+					title: "Erro",
+					description: "Data inválida. Use DD/MM/YYYY",
+					variant: "destructive"
+				});
+				return;
+			}
 			const rate = {
 				id: `rate-${Date.now()}`,
 				serviceName: newRate.serviceName,
@@ -83305,8 +83481,9 @@ function PartnerPricing({ partner, onUpdate, canEdit }) {
 			setNewRate({
 				serviceName: "",
 				price: 0,
-				validFrom: format(/* @__PURE__ */ new Date(), "yyyy-MM-dd")
+				validFrom: (/* @__PURE__ */ new Date()).toISOString()
 			});
+			setDateInput(format(/* @__PURE__ */ new Date(), "dd/MM/yyyy"));
 			toast$2({
 				title: "Sucesso",
 				description: "Serviço adicionado à tabela de preços."
@@ -83338,24 +83515,24 @@ function PartnerPricing({ partner, onUpdate, canEdit }) {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid gap-2 w-full md:w-32",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.rate_price") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					type: "number",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.rate_price") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
 					value: newRate.price,
-					onChange: (e) => setNewRate({
+					onChange: (val) => setNewRate({
 						...newRate,
-						price: Number(e.target.value)
-					})
+						price: val
+					}),
+					currency: language === "pt" ? "BRL" : language === "es" ? "EUR" : "USD",
+					locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US"
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid gap-2 w-full md:w-40",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.rate_valid_from") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					type: "date",
-					value: newRate.validFrom,
-					onChange: (e) => setNewRate({
-						...newRate,
-						validFrom: e.target.value
-					})
+					type: "text",
+					value: dateInput,
+					onChange: handleDateChange,
+					placeholder: "DD/MM/YYYY",
+					maxLength: 10
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
@@ -83385,7 +83562,10 @@ function PartnerPricing({ partner, onUpdate, canEdit }) {
 			className: "font-medium",
 			children: rate.serviceName
 		}),
-		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: ["$", rate.price.toFixed(2)] }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: new Intl.NumberFormat(language === "pt" ? "pt-BR" : "en-US", {
+			style: "currency",
+			currency: language === "pt" ? "BRL" : "USD"
+		}).format(rate.price) }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(rate.validFrom), "dd/MM/yyyy") }),
 		canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 			className: "text-right",
@@ -85137,7 +85317,8 @@ function Users() {
 		companyName: "",
 		taxId: "",
 		address: "",
-		parentPartnerId: ""
+		parentPartnerId: "",
+		country: "US"
 	};
 	const [formData, setFormData] = (0, import_react.useState)(initialFormState);
 	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
@@ -85242,6 +85423,14 @@ function Users() {
 			toast$2({
 				title: t$1("common.error"),
 				description: "Invalid email.",
+				variant: "destructive"
+			});
+			return;
+		}
+		if ((formData.role === "partner_employee" || formData.role === "internal_user") && !isPhoneValid(formData.phone || "", formData.country)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: "Telefone inválido para funcionário. O formato deve estar completo.",
 				variant: "destructive"
 			});
 			return;
@@ -85386,7 +85575,8 @@ function Users() {
 			password: "",
 			confirmPassword: "",
 			mirrorAdmin: !!user.mirrorAdmin,
-			parentPartnerId: user.parentId
+			parentPartnerId: user.parentId,
+			country: user.country || "US"
 		});
 		setIsEditing(true);
 		setOpen(true);
@@ -85552,6 +85742,11 @@ function Users() {
 														onChange: (e) => setFormData({
 															...formData,
 															phone: e.target.value
+														}),
+														country: formData.country,
+														onCountryChange: (c$1) => setFormData({
+															...formData,
+															country: c$1
 														})
 													})]
 												}),
@@ -92280,12 +92475,18 @@ function Visits() {
 	const { t: t$1 } = useLanguageStore_default();
 	const { visits: visits$1, addVisit, updateVisit, deleteVisit } = useVisitStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
+	const { currentUser, allUsers } = useAuthStore_default();
 	const { toast: toast$2 } = useToast();
 	const [date$4, setDate$1] = (0, import_react.useState)(/* @__PURE__ */ new Date());
 	const [time$3, setTime] = (0, import_react.useState)("10:00");
 	const [clientName, setClientName] = (0, import_react.useState)("");
 	const [propertyId, setPropertyId] = (0, import_react.useState)("");
 	const [notes, setNotes] = (0, import_react.useState)("");
+	const [reason, setReason] = (0, import_react.useState)("");
+	const [isEditOpen, setIsEditOpen] = (0, import_react.useState)(false);
+	const [editingVisit, setEditingVisit] = (0, import_react.useState)(null);
+	const [confirmOpen, setConfirmOpen] = (0, import_react.useState)(false);
+	const [pendingStatusChange, setPendingStatusChange] = (0, import_react.useState)(null);
 	const handleSchedule = () => {
 		if (!clientName || !propertyId || !date$4) {
 			toast$2({
@@ -92306,7 +92507,9 @@ function Visits() {
 			clientName,
 			date: dateTime.toISOString(),
 			status: "scheduled",
-			notes
+			notes,
+			registeredBy: currentUser.id,
+			reason
 		});
 		toast$2({
 			title: "Visit Scheduled",
@@ -92315,22 +92518,52 @@ function Visits() {
 		setClientName("");
 		setPropertyId("");
 		setNotes("");
+		setReason("");
 	};
-	const handleStatusChange = (visit, status) => {
-		updateVisit({
-			...visit,
+	const initiateStatusChange = (visit, status) => {
+		setPendingStatusChange({
+			visit,
 			status
 		});
-		toast$2({
-			title: "Status Updated",
-			description: `Visit marked as ${status}.`
-		});
+		setConfirmOpen(true);
+	};
+	const confirmStatusChange = () => {
+		if (pendingStatusChange) {
+			const { visit, status } = pendingStatusChange;
+			updateVisit({
+				...visit,
+				status
+			});
+			toast$2({
+				title: "Status Updated",
+				description: `Visit marked as ${status}.`
+			});
+			setConfirmOpen(false);
+			setPendingStatusChange(null);
+		}
 	};
 	const handleDelete = (id) => {
 		if (confirm("Are you sure you want to delete this visit?")) {
 			deleteVisit(id);
 			toast$2({ title: "Visit Deleted" });
 		}
+	};
+	const openEdit = (visit) => {
+		setEditingVisit(visit);
+		setIsEditOpen(true);
+	};
+	const handleUpdateVisit = () => {
+		if (!editingVisit) return;
+		const originalVisit = visits$1.find((v) => v.id === editingVisit.id);
+		let newStatus = editingVisit.status;
+		if (originalVisit && originalVisit.date !== editingVisit.date) newStatus = "rescheduled";
+		updateVisit({
+			...editingVisit,
+			status: newStatus
+		});
+		setIsEditOpen(false);
+		setEditingVisit(null);
+		toast$2({ title: "Visit Updated" });
 	};
 	const getStatusBadge = (status) => {
 		switch (status) {
@@ -92347,162 +92580,297 @@ function Visits() {
 				variant: "destructive",
 				children: t$1("common.canceled")
 			});
+			case "suspended": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+				variant: "outline",
+				className: "bg-yellow-100 text-yellow-800 border-yellow-200",
+				children: "Suspended"
+			});
+			case "rescheduled": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+				variant: "outline",
+				className: "bg-purple-100 text-purple-800 border-purple-200",
+				children: "Rescheduled"
+			});
 			default: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 				variant: "secondary",
 				children: status
 			});
 		}
 	};
+	const getUserName = (id) => {
+		if (!id) return "System";
+		const user = allUsers.find((u$1) => u$1.id === id);
+		return user ? user.name : "Unknown";
+	};
 	const sortedVisits = [...visits$1].sort((a$2, b$1) => new Date(b$1.date).getTime() - new Date(a$2.date).getTime());
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex flex-col gap-2",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-navy",
-				children: t$1("common.visit_scheduling")
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-muted-foreground",
-				children: "Manage property visits and client appointments."
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "lg:col-span-1",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("common.schedule_visit") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Enter visit details below." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-					className: "space-y-4",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.client_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								placeholder: "John Doe",
-								value: clientName,
-								onChange: (e) => setClientName(e.target.value)
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.property") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-								value: propertyId,
-								onValueChange: setPropertyId,
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: p$1.id,
-									children: p$1.name
-								}, p$1.id)) })]
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid grid-cols-2 gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.visit_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
-									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-										variant: "outline",
-										className: cn("w-full justify-start text-left font-normal", !date$4 && "text-muted-foreground"),
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "mr-2 h-4 w-4" }), date$4 ? format(date$4, "PPP") : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Pick a date" })]
-									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContent, {
-									className: "w-auto p-0",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, {
-										mode: "single",
-										selected: date$4,
-										onSelect: setDate$1,
-										initialFocus: true
-									})
-								})] })]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Time" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									type: "time",
-									value: time$3,
-									onChange: (e) => setTime(e.target.value)
-								})]
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t$1("common.description"), " / Notes"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
-								placeholder: "Client preferences, access codes, etc.",
-								value: notes,
-								onChange: (e) => setNotes(e.target.value)
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-							className: "w-full bg-trust-blue",
-							onClick: handleSchedule,
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "mr-2 h-4 w-4" }),
-								" ",
-								t$1("common.schedule_visit")
-							]
-						})
-					]
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex flex-col gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold tracking-tight text-navy",
+					children: t$1("common.visit_scheduling")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-muted-foreground",
+					children: "Manage property visits and client appointments."
 				})]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "lg:col-span-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("common.visits_list") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Upcoming and past visits." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.date") }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.property") }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.client_name") }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-						className: "text-right",
-						children: t$1("common.actions")
-					})
-				] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: sortedVisits.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 5,
-					className: "text-center py-8 text-muted-foreground",
-					children: "No visits scheduled."
-				}) }) : sortedVisits.map((visit) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex flex-col",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "font-medium",
-							children: format(new Date(visit.date), "PPP")
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-xs text-muted-foreground",
-							children: format(new Date(visit.date), "p")
-						})]
-					}) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-						className: "max-w-[150px] truncate",
-						title: visit.propertyName,
-						children: visit.propertyName
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: visit.clientName }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: getStatusBadge(visit.status) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-						className: "text-right",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex justify-end gap-2",
-							children: [visit.status === "scheduled" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								size: "icon",
-								variant: "ghost",
-								className: "h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50",
-								onClick: () => handleStatusChange(visit, "completed"),
-								title: "Mark as Completed",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheckBig, { className: "h-4 w-4" })
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								size: "icon",
-								variant: "ghost",
-								className: "h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50",
-								onClick: () => handleStatusChange(visit, "canceled"),
-								title: "Cancel Visit",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-							})] }), visit.status !== "scheduled" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								size: "icon",
-								variant: "ghost",
-								className: "h-8 w-8 text-muted-foreground hover:text-foreground",
-								onClick: () => handleDelete(visit.id),
-								title: "Delete Record",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-							})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+					className: "lg:col-span-1",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("common.schedule_visit") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Enter visit details below." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+						className: "space-y-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.client_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									placeholder: "John Doe",
+									value: clientName,
+									onChange: (e) => setClientName(e.target.value)
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.property") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: propertyId,
+									onValueChange: setPropertyId,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: p$1.id,
+										children: p$1.name
+									}, p$1.id)) })]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-2 gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.visit_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "outline",
+											className: cn("w-full justify-start text-left font-normal", !date$4 && "text-muted-foreground"),
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "mr-2 h-4 w-4" }), date$4 ? format(date$4, "PPP") : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Pick a date" })]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContent, {
+										className: "w-auto p-0",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, {
+											mode: "single",
+											selected: date$4,
+											onSelect: setDate$1,
+											initialFocus: true
+										})
+									})] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Time" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										type: "time",
+										value: time$3,
+										onChange: (e) => setTime(e.target.value)
+									})]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Reason for Visit" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									placeholder: "Showing, Inspection, etc.",
+									value: reason,
+									onChange: (e) => setReason(e.target.value)
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t$1("common.description"), " / Notes"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+									placeholder: "Client preferences, access codes, etc.",
+									value: notes,
+									onChange: (e) => setNotes(e.target.value)
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								className: "w-full bg-trust-blue",
+								onClick: handleSchedule,
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "mr-2 h-4 w-4" }),
+									" ",
+									t$1("common.schedule_visit")
+								]
+							})
+						]
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+					className: "lg:col-span-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("common.visits_list") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Upcoming and past visits." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.date") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.property") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.client_name") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: t$1("common.actions")
 						})
-					})
-				] }, visit.id)) })] }) })]
-			})]
-		})]
+					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: sortedVisits.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						colSpan: 5,
+						className: "text-center py-8 text-muted-foreground",
+						children: "No visits scheduled."
+					}) }) : sortedVisits.map((visit) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-col",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-medium",
+								children: format(new Date(visit.date), "PPP")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "text-xs text-muted-foreground",
+								children: format(new Date(visit.date), "p")
+							})]
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "max-w-[150px] truncate",
+							title: visit.propertyName,
+							children: visit.propertyName
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: visit.clientName }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: getStatusBadge(visit.status) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										size: "icon",
+										variant: "ghost",
+										onClick: () => openEdit(visit),
+										title: "Edit Details",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										size: "icon",
+										variant: "ghost",
+										className: "h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50",
+										onClick: () => initiateStatusChange(visit, "completed"),
+										title: "Complete",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheckBig, { className: "h-4 w-4" })
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										size: "icon",
+										variant: "ghost",
+										className: "h-8 w-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50",
+										onClick: () => initiateStatusChange(visit, "suspended"),
+										title: "Suspend",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "h-4 w-4" })
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										size: "icon",
+										variant: "ghost",
+										className: "h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50",
+										onClick: () => initiateStatusChange(visit, "canceled"),
+										title: "Cancel",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ban, { className: "h-4 w-4" })
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										size: "icon",
+										variant: "ghost",
+										className: "h-8 w-8 text-muted-foreground hover:text-foreground",
+										onClick: () => handleDelete(visit.id),
+										title: "Delete Record",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+									})
+								]
+							})
+						})
+					] }, visit.id)) })] }) })]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: isEditOpen,
+				onOpenChange: setIsEditOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "max-w-lg",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Edit Visit Details" }) }),
+						editingVisit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-4 py-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-2 gap-4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Registered By" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: getUserName(editingVisit.registeredBy),
+										disabled: true
+									})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Current Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "mt-2",
+										children: getStatusBadge(editingVisit.status)
+									})] })]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Client Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: editingVisit.clientName,
+										onChange: (e) => setEditingVisit({
+											...editingVisit,
+											clientName: e.target.value
+										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Date & Time" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "datetime-local",
+											value: format(new Date(editingVisit.date), "yyyy-MM-dd'T'HH:mm"),
+											onChange: (e) => setEditingVisit({
+												...editingVisit,
+												date: new Date(e.target.value).toISOString()
+											})
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "text-xs text-muted-foreground",
+											children: "Changing date will automatically set status to 'Rescheduled'."
+										})
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Reason for Visit" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: editingVisit.reason || "",
+										onChange: (e) => setEditingVisit({
+											...editingVisit,
+											reason: e.target.value
+										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Notes" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+										value: editingVisit.notes || "",
+										onChange: (e) => setEditingVisit({
+											...editingVisit,
+											notes: e.target.value
+										})
+									})]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							onClick: handleUpdateVisit,
+							children: "Save Changes"
+						}) })
+					]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialog, {
+				open: confirmOpen,
+				onOpenChange: setConfirmOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Confirm Status Change" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogDescription, { children: [
+					"Are you sure you want to change the status to",
+					" ",
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: pendingStatusChange?.status }),
+					"?"
+				] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+					onClick: confirmStatusChange,
+					children: "Confirm"
+				})] })] })
+			})
+		]
 	});
 }
 var App = () => {
@@ -92674,4 +93042,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Cs4pRhU6.js.map
+//# sourceMappingURL=index-ByZYJG78.js.map
