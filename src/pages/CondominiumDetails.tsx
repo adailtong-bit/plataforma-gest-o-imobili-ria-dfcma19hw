@@ -23,13 +23,13 @@ import {
   Save,
   Lock,
   DollarSign,
-  FileText,
   Trash2,
   Edit,
   X,
   Plus,
   QrCode,
   Users,
+  MapPin,
 } from 'lucide-react'
 import useCondominiumStore from '@/stores/useCondominiumStore'
 import { useToast } from '@/hooks/use-toast'
@@ -53,6 +53,7 @@ import {
 } from '@/lib/utils'
 import { DataMask } from '@/components/DataMask'
 import { PhoneInput } from '@/components/ui/phone-input'
+import { LocationMap } from '@/components/ui/location-map'
 
 export default function CondominiumDetails() {
   const { id } = useParams()
@@ -309,6 +310,9 @@ export default function CondominiumDetails() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
+          <TabsTrigger value="location">
+            <MapPin className="h-4 w-4 mr-2" /> Location Map
+          </TabsTrigger>
           <TabsTrigger value="access">
             {t('condominiums.access_credentials')}
           </TabsTrigger>
@@ -451,6 +455,16 @@ export default function CondominiumDetails() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="location">
+          <LocationMap
+            address={formData.address}
+            city={formData.city}
+            state={formData.state}
+            zipCode={formData.zipCode}
+            country={selectedCountry}
+          />
         </TabsContent>
 
         <TabsContent value="access">

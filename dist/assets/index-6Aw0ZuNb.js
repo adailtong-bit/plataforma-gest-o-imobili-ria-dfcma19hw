@@ -54213,6 +54213,51 @@ const AppProvider = ({ children }) => {
 	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(false);
 	const [currentUser, setCurrentUserObj] = (0, import_react.useState)(systemUsers[0]);
 	const { toast: toast$2 } = useToast();
+	(0, import_react.useEffect)(() => {
+		const checkAutomatedAlerts = () => {
+			const today = /* @__PURE__ */ new Date();
+			tenants$1.forEach((tenant) => {
+				if (!tenant.leaseEnd) return;
+				const daysLeft = differenceInDays(parseISO(tenant.leaseEnd), today);
+				if (daysLeft <= 30 && daysLeft > 0) {
+					const notifLink = `/tenants/${tenant.id}`;
+					if (!notifications$1.some((n$1) => n$1.link === notifLink && n$1.category === "contract")) {
+						const newNotif = {
+							id: `alert-lease-${tenant.id}-${Date.now()}`,
+							title: "Contract Expiration Warning",
+							message: `Lease for ${tenant.name} expires in ${daysLeft} days.`,
+							type: "warning",
+							category: "contract",
+							link: notifLink,
+							timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+							read: false
+						};
+						setNotifications((prev) => [newNotif, ...prev]);
+					}
+				}
+			});
+			tasks$1.forEach((task) => {
+				if (task.status === "completed" || task.status === "approved" || !task.date) return;
+				const daysLeft = differenceInDays(parseISO(task.date), today);
+				if (daysLeft <= 7 && daysLeft > 0 && (task.type === "maintenance" || task.type === "cleaning")) {
+					if (!notifications$1.some((n$1) => n$1.category === "maintenance" && n$1.message.includes(task.title))) {
+						const newNotif = {
+							id: `alert-task-${task.id}-${Date.now()}`,
+							title: "Upcoming Maintenance",
+							message: `Task "${task.title}" is scheduled in ${daysLeft} days.`,
+							type: "info",
+							category: "maintenance",
+							link: `/tasks`,
+							timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+							read: false
+						};
+						setNotifications((prev) => [newNotif, ...prev]);
+					}
+				}
+			});
+		};
+		checkAutomatedAlerts();
+	}, []);
 	const setLanguage = (lang) => {
 		setLanguageState(lang);
 		localStorage.setItem("app_language", lang);
@@ -59147,7 +59192,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$80({ inst: {
+			cachedValue = useState$79({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -59184,7 +59229,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$65 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$80 = React$65.useState, useEffect$23 = React$65.useEffect, useLayoutEffect$2 = React$65.useLayoutEffect, useDebugValue = React$65.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$65 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$79 = React$65.useState, useEffect$23 = React$65.useEffect, useLayoutEffect$2 = React$65.useLayoutEffect, useDebugValue = React$65.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$65.useSyncExternalStore ? React$65.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -64566,20 +64611,41 @@ function PropertyOverview({ data, onChange, canEdit }) {
 		})]
 	});
 }
-function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$1 }) {
+function LocationMap({ address, city, state, zipCode, country, className }) {
 	const { t: t$1 } = useLanguageStore_default();
-	const { toast: toast$2 } = useToast();
-	const selectedCountry = data.country || "US";
 	const fullAddress = [
-		data.address,
-		data.additionalInfo,
-		data.neighborhood,
-		data.city,
-		data.state,
-		data.zipCode,
-		data.country
+		address,
+		city,
+		state,
+		zipCode,
+		country
 	].filter(Boolean).join(", ");
 	const encodedAddress = encodeURIComponent(fullAddress);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+		className,
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("properties.location.map_title") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "w-full aspect-video bg-muted rounded-lg flex flex-col items-center justify-center relative overflow-hidden border",
+			children: address && city ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("iframe", {
+				title: "Location Map",
+				width: "100%",
+				height: "100%",
+				frameBorder: "0",
+				style: { border: 0 },
+				src: `https://www.google.com/maps?q=${encodedAddress}&output=embed`,
+				allowFullScreen: true
+			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex flex-col items-center justify-center text-center p-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-10 w-10 text-muted-foreground mb-2" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-sm text-muted-foreground",
+					children: t$1("properties.location.map_hint")
+				})]
+			})
+		}) })]
+	});
+}
+function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$1 }) {
+	const { t: t$1 } = useLanguageStore_default();
+	const selectedCountry = data.country || "US";
 	const handleCountryChange = (val) => {
 		onChange("country", val);
 		onChange("zipCode", "");
@@ -64712,24 +64778,13 @@ function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$
 					})]
 				})
 			]
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("properties.location.map_title") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "w-full aspect-square bg-muted rounded-lg flex flex-col items-center justify-center relative overflow-hidden border",
-			children: data.address && data.city ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("iframe", {
-				title: "Property Location",
-				width: "100%",
-				height: "100%",
-				frameBorder: "0",
-				style: { border: 0 },
-				src: `https://www.google.com/maps?q=${encodedAddress}&output=embed`,
-				allowFullScreen: true
-			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-col items-center justify-center text-center p-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-10 w-10 text-muted-foreground mb-2" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "text-sm text-muted-foreground",
-					children: t$1("properties.location.map_hint")
-				})]
-			})
-		}) })] })]
+		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LocationMap, {
+			address: data.address,
+			city: data.city,
+			state: data.state,
+			zipCode: data.zipCode,
+			country: selectedCountry
+		})]
 	});
 }
 var Table = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -84105,118 +84160,6 @@ function PartnerPricing({ partner, onUpdate, canEdit }) {
 		})
 	] }, rate.id)) })] })] })] });
 }
-function PartnerDocuments({ partner, onUpdate, canEdit }) {
-	const { t: t$1 } = useLanguageStore_default();
-	const { toast: toast$2 } = useToast();
-	const docInputRef = (0, import_react.useRef)(null);
-	const [isUploading, setIsUploading] = (0, import_react.useState)(false);
-	const handleDocUpload = (e) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			setIsUploading(true);
-			setTimeout(() => {
-				const newDoc = {
-					id: `doc-${Date.now()}`,
-					name: file.name,
-					url: URL.createObjectURL(file),
-					date: (/* @__PURE__ */ new Date()).toISOString(),
-					type: file.type,
-					size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
-				};
-				const currentDocs = partner.documents || [];
-				onUpdate({
-					...partner,
-					documents: [...currentDocs, newDoc]
-				});
-				setIsUploading(false);
-				if (docInputRef.current) docInputRef.current.value = "";
-				toast$2({
-					title: "Sucesso",
-					description: "Documento anexado ao parceiro."
-				});
-			}, 1e3);
-		}
-	};
-	const handleRemoveDoc = (docId) => {
-		const newDocs = (partner.documents || []).filter((d) => d.id !== docId);
-		onUpdate({
-			...partner,
-			documents: newDocs
-		});
-		toast$2({
-			title: "Removido",
-			description: "Documento excluído."
-		});
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-		className: "flex flex-row items-center justify-between",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Repositório de Documentos" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Contratos, certificações e outros arquivos." })] }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-			type: "file",
-			ref: docInputRef,
-			className: "hidden",
-			accept: ".pdf,.doc,.docx,.txt,.jpg,.png",
-			onChange: handleDocUpload
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-			onClick: () => docInputRef.current?.click(),
-			disabled: isUploading,
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "mr-2 h-4 w-4" }), isUploading ? "Enviando..." : "Adicionar Documento"]
-		})] })]
-	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "space-y-4",
-		children: !partner.documents || partner.documents.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg",
-			children: "Nenhum documento anexado."
-		}) : partner.documents.map((doc) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "bg-blue-100 p-2 rounded-full",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-5 w-5 text-blue-600" })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "font-medium text-sm",
-					children: doc.name
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-					className: "text-xs text-muted-foreground",
-					children: [
-						new Date(doc.date).toLocaleDateString(),
-						" •",
-						" ",
-						doc.size || "Unknown size"
-					]
-				})] })]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-					href: doc.url,
-					download: doc.name,
-					target: "_blank",
-					rel: "noopener noreferrer",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						size: "icon",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" })
-					})
-				}), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						size: "icon",
-						className: "text-red-500 hover:text-red-700",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Documento" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogDescription, { children: [
-					"Tem certeza que deseja excluir o documento \"",
-					doc.name,
-					"\"?"
-				] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-					onClick: () => handleRemoveDoc(doc.id),
-					children: "Excluir"
-				})] })] })] })]
-			})]
-		}, doc.id))
-	}) })] });
-}
 function PartnerDetails() {
 	const { id } = useParams();
 	const navigate = useNavigate();
@@ -84280,6 +84223,14 @@ function PartnerDetails() {
 		});
 	};
 	const handleUpdate = (updatedPartner) => {
+		setFormData(updatedPartner);
+		updatePartner(updatedPartner);
+	};
+	const handleDocsUpdate = (docs) => {
+		const updatedPartner = {
+			...formData,
+			documents: docs
+		};
 		setFormData(updatedPartner);
 		updatePartner(updatedPartner);
 	};
@@ -84406,6 +84357,10 @@ function PartnerDetails() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "overview",
 							children: t$1("properties.overview")
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+							value: "location",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4 mr-2" }), " Location"]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "documents",
@@ -84653,11 +84608,23 @@ function PartnerDetails() {
 					})
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "location",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LocationMap, {
+						address: formData.address || "",
+						city: formData.city,
+						state: formData.state,
+						zipCode: formData.zipCode,
+						country: phoneCountry
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "documents",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PartnerDocuments, {
-						partner: formData,
-						onUpdate: handleUpdate,
-						canEdit: true
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DocumentVault, {
+						documents: formData.documents || [],
+						onUpdate: handleDocsUpdate,
+						canEdit: true,
+						title: t$1("common.documents"),
+						description: "Contratos, certificações e outros arquivos."
 					})
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
@@ -85394,6 +85361,10 @@ function CondominiumDetails() {
 						value: "overview",
 						children: t$1("properties.overview")
 					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+						value: "location",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4 mr-2" }), " Location Map"]
+					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 						value: "access",
 						children: t$1("condominiums.access_credentials")
@@ -85561,6 +85532,16 @@ function CondominiumDetails() {
 								})
 							]
 						})]
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "location",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LocationMap, {
+						address: formData.address,
+						city: formData.city,
+						state: formData.state,
+						zipCode: formData.zipCode,
+						country: selectedCountry
 					})
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
@@ -94041,4 +94022,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-C35EtqYk.js.map
+//# sourceMappingURL=index-6Aw0ZuNb.js.map

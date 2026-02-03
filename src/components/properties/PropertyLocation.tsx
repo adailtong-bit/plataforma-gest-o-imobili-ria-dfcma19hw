@@ -9,10 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { MapPin } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { applyZipCodeMask, isGenericOrPlaceholder } from '@/lib/utils'
-import { useToast } from '@/hooks/use-toast'
+import { LocationMap } from '@/components/ui/location-map'
 
 interface PropertyLocationProps {
   data: Property
@@ -28,25 +27,9 @@ export function PropertyLocation({
   condominiums,
 }: PropertyLocationProps) {
   const { t } = useLanguageStore()
-  const { toast } = useToast()
 
   // Ensure selected country defaults to US if not set
   const selectedCountry = data.country || 'US'
-
-  // Construct a full address string for the map query to be more precise
-  const fullAddress = [
-    data.address,
-    data.additionalInfo,
-    data.neighborhood,
-    data.city,
-    data.state,
-    data.zipCode,
-    data.country,
-  ]
-    .filter(Boolean)
-    .join(', ')
-
-  const encodedAddress = encodeURIComponent(fullAddress)
 
   const handleCountryChange = (val: string) => {
     onChange('country', val)
@@ -58,9 +41,6 @@ export function PropertyLocation({
     const val = applyZipCodeMask(e.target.value, selectedCountry)
     onChange('zipCode', val)
   }
-
-  // Effect to check generic values during edit might be annoying, usually better on save/blur.
-  // But here we can just show styling issues.
 
   const isZipInvalid = !data.zipCode || isGenericOrPlaceholder(data.zipCode)
 
@@ -187,33 +167,13 @@ export function PropertyLocation({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('properties.location.map_title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="w-full aspect-square bg-muted rounded-lg flex flex-col items-center justify-center relative overflow-hidden border">
-            {data.address && data.city ? (
-              <iframe
-                title="Property Location"
-                width="100%"
-                height="100%"
-                frameBorder="0"
-                style={{ border: 0 }}
-                src={`https://www.google.com/maps?q=${encodedAddress}&output=embed`}
-                allowFullScreen
-              ></iframe>
-            ) : (
-              <div className="flex flex-col items-center justify-center text-center p-4">
-                <MapPin className="h-10 w-10 text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  {t('properties.location.map_hint')}
-                </p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <LocationMap
+        address={data.address}
+        city={data.city}
+        state={data.state}
+        zipCode={data.zipCode}
+        country={selectedCountry}
+      />
     </div>
   )
 }

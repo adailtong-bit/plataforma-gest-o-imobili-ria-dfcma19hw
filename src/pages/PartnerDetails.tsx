@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   ArrowLeft,
   Save,
-  Trash2,
   Users,
   Building,
   DollarSign,
@@ -15,13 +14,14 @@ import {
   Mail,
   Star,
   Ban,
+  MapPin,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import usePartnerStore from '@/stores/usePartnerStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useTaskStore from '@/stores/useTaskStore'
-import { Partner } from '@/lib/types'
+import { Partner, GenericDocument } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -39,7 +39,7 @@ import { PartnerStaff } from '@/components/partners/PartnerStaff'
 import { PartnerProperties } from '@/components/partners/PartnerProperties'
 import { PartnerTasks } from '@/components/partners/PartnerTasks'
 import { PartnerPricing } from '@/components/partners/PartnerPricing'
-import { PartnerDocuments } from '@/components/partners/PartnerDocuments'
+import { DocumentVault } from '@/components/documents/DocumentVault'
 import { isValidEmail, applyZipCodeMask, isPhoneValid } from '@/lib/utils'
 import {
   AlertDialog,
@@ -60,6 +60,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { PhoneInput } from '@/components/ui/phone-input'
+import { LocationMap } from '@/components/ui/location-map'
 
 export default function PartnerDetails() {
   const { id } = useParams()
@@ -146,6 +147,12 @@ export default function PartnerDetails() {
   }
 
   const handleUpdate = (updatedPartner: Partner) => {
+    setFormData(updatedPartner)
+    updatePartner(updatedPartner)
+  }
+
+  const handleDocsUpdate = (docs: GenericDocument[]) => {
+    const updatedPartner = { ...formData!, documents: docs }
     setFormData(updatedPartner)
     updatePartner(updatedPartner)
   }
@@ -289,6 +296,9 @@ export default function PartnerDetails() {
       <Tabs defaultValue="overview">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
+          <TabsTrigger value="location">
+            <MapPin className="h-4 w-4 mr-2" /> Location
+          </TabsTrigger>
           <TabsTrigger value="documents">
             <FileText className="h-4 w-4 mr-2" /> {t('common.documents')}
           </TabsTrigger>
@@ -513,11 +523,23 @@ export default function PartnerDetails() {
           </div>
         </TabsContent>
 
+        <TabsContent value="location">
+          <LocationMap
+            address={formData.address || ''}
+            city={formData.city}
+            state={formData.state}
+            zipCode={formData.zipCode}
+            country={phoneCountry}
+          />
+        </TabsContent>
+
         <TabsContent value="documents">
-          <PartnerDocuments
-            partner={formData}
-            onUpdate={handleUpdate}
+          <DocumentVault
+            documents={formData.documents || []}
+            onUpdate={handleDocsUpdate}
             canEdit={true}
+            title={t('common.documents')}
+            description="Contratos, certificações e outros arquivos."
           />
         </TabsContent>
 

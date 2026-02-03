@@ -72,6 +72,7 @@ import {
 } from '@/lib/mockData'
 import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
+import { differenceInDays, parseISO } from 'date-fns'
 
 interface AppContextType {
   properties: Property[]
@@ -278,6 +279,83 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   >(systemUsers[0])
 
   const { toast } = useToast()
+
+  // Automated Notifications Check
+  useEffect(() => {
+    const checkAutomatedAlerts = () => {
+      const today = new Date()
+
+      // 1. Contract Expirations (30 days before)
+      tenants.forEach((tenant) => {
+        if (!tenant.leaseEnd) return
+        const endDate = parseISO(tenant.leaseEnd)
+        const daysLeft = differenceInDays(endDate, today)
+
+        // Check if roughly 30 days or less but not expired
+        if (daysLeft <= 30 && daysLeft > 0) {
+          const notifLink = `/tenants/${tenant.id}`
+          const exists = notifications.some(
+            (n) => n.link === notifLink && n.category === 'contract',
+          )
+
+          if (!exists) {
+            const newNotif: Notification = {
+              id: `alert-lease-${tenant.id}-${Date.now()}`,
+              title: 'Contract Expiration Warning',
+              message: `Lease for ${tenant.name} expires in ${daysLeft} days.`,
+              type: 'warning',
+              category: 'contract',
+              link: notifLink,
+              timestamp: new Date().toISOString(),
+              read: false,
+            }
+            setNotifications((prev) => [newNotif, ...prev])
+          }
+        }
+      })
+
+      // 2. Maintenance Tasks (7 days before)
+      tasks.forEach((task) => {
+        if (
+          task.status === 'completed' ||
+          task.status === 'approved' ||
+          !task.date
+        )
+          return
+        const taskDate = parseISO(task.date)
+        const daysLeft = differenceInDays(taskDate, today)
+
+        if (
+          daysLeft <= 7 &&
+          daysLeft > 0 &&
+          (task.type === 'maintenance' || task.type === 'cleaning')
+        ) {
+          const exists = notifications.some(
+            (n) =>
+              n.category === 'maintenance' && n.message.includes(task.title),
+          )
+
+          if (!exists) {
+            const newNotif: Notification = {
+              id: `alert-task-${task.id}-${Date.now()}`,
+              title: 'Upcoming Maintenance',
+              message: `Task "${task.title}" is scheduled in ${daysLeft} days.`,
+              type: 'info',
+              category: 'maintenance',
+              link: `/tasks`,
+              timestamp: new Date().toISOString(),
+              read: false,
+            }
+            setNotifications((prev) => [newNotif, ...prev])
+          }
+        }
+      })
+    }
+
+    checkAutomatedAlerts()
+    // Intentionally empty dependency array to run only on mount/initial load to avoid loops
+    // In a real app, this would be a backend job or a more sophisticated poller
+  }, [])
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
