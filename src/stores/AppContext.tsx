@@ -40,6 +40,7 @@ import {
   ChatAttachment,
   ServiceCategory,
   Visit,
+  Workflow,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -67,12 +68,12 @@ import {
   messageTemplates as initialTemplates,
   serviceCategories as initialServiceCategories,
   visits as initialVisits,
+  workflows as initialWorkflows,
 } from '@/lib/mockData'
 import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
 
 interface AppContextType {
-  // ... existing props
   properties: Property[]
   condominiums: Condominium[]
   tasks: Task[]
@@ -85,6 +86,7 @@ interface AppContextType {
   calendarBlocks: CalendarBlock[]
   messageTemplates: MessageTemplate[]
   automationRules: AutomationRule[]
+  workflows: Workflow[]
   currentUser: User | Owner | Partner | Tenant
   allUsers: (User | Owner | Partner | Tenant)[]
   users: User[]
@@ -183,12 +185,14 @@ interface AppContextType {
   addVisit: (visit: Visit) => void
   updateVisit: (visit: Visit) => void
   deleteVisit: (id: string) => void
+  addWorkflow: (workflow: Workflow) => void
+  updateWorkflow: (workflow: Workflow) => void
+  deleteWorkflow: (id: string) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  // ... existing states
   const [properties, setProperties] = useState<Property[]>(initialProperties)
   const [condominiums, setCondominiums] =
     useState<Condominium[]>(initialCondominiums)
@@ -196,7 +200,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [financials, setFinancials] = useState<Financials>(initialFinancials)
   const [visits, setVisits] = useState<Visit[]>(initialVisits)
 
-  // ... other states (tenants, owners, etc.)
   const [tenants, setTenants] = useState<Tenant[]>(() => {
     const saved = localStorage.getItem('app_tenants')
     return saved ? JSON.parse(saved) : initialTenants
@@ -224,6 +227,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [automationRules, setAutomationRules] = useState<AutomationRule[]>(
     initialAutomationRules,
   )
+  const [workflows, setWorkflows] = useState<Workflow[]>(initialWorkflows)
+
   const [allMessages, setAllMessages] = useState<Message[]>(initialMessages)
   const [users, setUsers] = useState<User[]>(systemUsers)
   const [paymentIntegrations, setPaymentIntegrations] = useState<
@@ -344,10 +349,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setAuditLogs((prev) => [newLog, ...prev])
   }
 
-  // ... rest of existing functions (addNotification, addTask, updateTask, etc.)
   const addNotification = useCallback(
     (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
-      // Check user preferences before adding
       if (
         'notificationPreferences' in currentUser &&
         currentUser.notificationPreferences
@@ -999,6 +1002,46 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setVisits((prev) => prev.filter((v) => v.id !== id))
   }
 
+  // Workflows Actions
+  const addWorkflow = (workflow: Workflow) => {
+    setWorkflows((prev) => [...prev, workflow])
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'create',
+      entity: 'Workflow',
+      entityId: workflow.id,
+      details: `Created workflow: ${workflow.name}`,
+    })
+  }
+
+  const updateWorkflow = (workflow: Workflow) => {
+    setWorkflows((prev) =>
+      prev.map((w) => (w.id === workflow.id ? workflow : w)),
+    )
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'update',
+      entity: 'Workflow',
+      entityId: workflow.id,
+      details: `Updated workflow: ${workflow.name}`,
+    })
+  }
+
+  const deleteWorkflow = (id: string) => {
+    const wf = workflows.find((w) => w.id === id)
+    setWorkflows((prev) => prev.filter((w) => w.id !== id))
+    addAuditLog({
+      userId: currentUser.id,
+      userName: currentUser.name,
+      action: 'delete',
+      entity: 'Workflow',
+      entityId: id,
+      details: `Deleted workflow: ${wf?.name || id}`,
+    })
+  }
+
   const visibleMessages = useMemo(
     () => allMessages.filter((m) => m.ownerId === currentUser.id),
     [allMessages, currentUser.id],
@@ -1007,7 +1050,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AppContext.Provider
       value={{
-        // ... existing values
         properties,
         condominiums,
         tasks,
@@ -1020,6 +1062,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         calendarBlocks,
         messageTemplates,
         automationRules,
+        workflows,
         currentUser,
         allUsers,
         users,
@@ -1112,6 +1155,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addVisit,
         updateVisit,
         deleteVisit,
+        addWorkflow,
+        updateWorkflow,
+        deleteWorkflow,
       }}
     >
       {children}

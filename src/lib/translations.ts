@@ -159,6 +159,30 @@ export const translations = {
       partners: 'Parceiros',
       delete_linked_error:
         'Não é possível excluir pois existem registros vinculados.',
+      phone_invalid:
+        'Telefone inválido para funcionário. Formato obrigatório: (99) 99999-9999',
+      email_invalid: 'Email inválido. Verifique o formato.',
+      validation_error_title: 'Erro de Validação',
+      validation_error_desc: 'Por favor verifique os campos destacados.',
+    },
+    workflows: {
+      title: 'Motor de Workflow',
+      subtitle: 'Automatize processos e sequências de tarefas.',
+      new_workflow: 'Novo Workflow',
+      edit_workflow: 'Editar Workflow',
+      config_workflow: 'Configurar Workflow',
+      trigger: 'Gatilho',
+      steps: 'Passos',
+      step_name: 'Nome do Passo',
+      step_role: 'Função Responsável',
+      step_type: 'Tipo de Ação',
+      step_desc: 'Descrição do Passo',
+      add_step: 'Adicionar Passo',
+      delete_step: 'Remover Passo',
+      active_status: 'Status Ativo',
+      run_manual: 'Executar Manualmente',
+      run_success: 'Workflow Iniciado',
+      run_desc: 'O workflow {name} foi disparado manualmente.',
     },
     short_term: {
       title: 'Aluguel de Temporada',
@@ -232,7 +256,6 @@ export const translations = {
       desc_placeholder: 'Instruções específicas...',
       create_btn: 'Criar Tarefa',
     },
-    // Keep other keys as fallback to prevent breaks if used elsewhere
     sidebar: {
       main_menu: 'Menu Principal',
       system: 'Sistema',
@@ -657,6 +680,6 @@ export const translations = {
       health_score: 'Score de Saúde',
     },
   },
-  en: {} as any, // Placeholder for existing english
-  es: {} as any, // Placeholder for existing spanish
+  en: {} as any, // Placeholder
+  es: {} as any, // Placeholder
 }

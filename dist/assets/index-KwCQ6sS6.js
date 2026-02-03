@@ -53585,7 +53585,30 @@ const translations = {
 			account_number: "Número da Conta",
 			recurring: "Recorrente",
 			partners: "Parceiros",
-			delete_linked_error: "Não é possível excluir pois existem registros vinculados."
+			delete_linked_error: "Não é possível excluir pois existem registros vinculados.",
+			phone_invalid: "Telefone inválido para funcionário. Formato obrigatório: (99) 99999-9999",
+			email_invalid: "Email inválido. Verifique o formato.",
+			validation_error_title: "Erro de Validação",
+			validation_error_desc: "Por favor verifique os campos destacados."
+		},
+		workflows: {
+			title: "Motor de Workflow",
+			subtitle: "Automatize processos e sequências de tarefas.",
+			new_workflow: "Novo Workflow",
+			edit_workflow: "Editar Workflow",
+			config_workflow: "Configurar Workflow",
+			trigger: "Gatilho",
+			steps: "Passos",
+			step_name: "Nome do Passo",
+			step_role: "Função Responsável",
+			step_type: "Tipo de Ação",
+			step_desc: "Descrição do Passo",
+			add_step: "Adicionar Passo",
+			delete_step: "Remover Passo",
+			active_status: "Status Ativo",
+			run_manual: "Executar Manualmente",
+			run_success: "Workflow Iniciado",
+			run_desc: "O workflow {name} foi disparado manualmente."
 		},
 		short_term: {
 			title: "Aluguel de Temporada",
@@ -54105,6 +54128,7 @@ const AppProvider = ({ children }) => {
 	const [calendarBlocks$1, setCalendarBlocks] = (0, import_react.useState)(calendarBlocks);
 	const [messageTemplates$1, setMessageTemplates] = (0, import_react.useState)(messageTemplates);
 	const [automationRules$1, setAutomationRules] = (0, import_react.useState)(automationRules);
+	const [workflows$1, setWorkflows] = (0, import_react.useState)(workflows);
 	const [allMessages, setAllMessages] = (0, import_react.useState)(messages);
 	const [users, setUsers] = (0, import_react.useState)(systemUsers);
 	const [paymentIntegrations, setPaymentIntegrations] = (0, import_react.useState)(defaultPaymentIntegrations);
@@ -54678,6 +54702,40 @@ const AppProvider = ({ children }) => {
 	const deleteVisit = (id) => {
 		setVisits((prev) => prev.filter((v) => v.id !== id));
 	};
+	const addWorkflow = (workflow) => {
+		setWorkflows((prev) => [...prev, workflow]);
+		addAuditLog({
+			userId: currentUser.id,
+			userName: currentUser.name,
+			action: "create",
+			entity: "Workflow",
+			entityId: workflow.id,
+			details: `Created workflow: ${workflow.name}`
+		});
+	};
+	const updateWorkflow = (workflow) => {
+		setWorkflows((prev) => prev.map((w) => w.id === workflow.id ? workflow : w));
+		addAuditLog({
+			userId: currentUser.id,
+			userName: currentUser.name,
+			action: "update",
+			entity: "Workflow",
+			entityId: workflow.id,
+			details: `Updated workflow: ${workflow.name}`
+		});
+	};
+	const deleteWorkflow = (id) => {
+		const wf = workflows$1.find((w) => w.id === id);
+		setWorkflows((prev) => prev.filter((w) => w.id !== id));
+		addAuditLog({
+			userId: currentUser.id,
+			userName: currentUser.name,
+			action: "delete",
+			entity: "Workflow",
+			entityId: id,
+			details: `Deleted workflow: ${wf?.name || id}`
+		});
+	};
 	const visibleMessages = (0, import_react.useMemo)(() => allMessages.filter((m$1) => m$1.ownerId === currentUser.id), [allMessages, currentUser.id]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppContext.Provider, {
 		value: {
@@ -54693,6 +54751,7 @@ const AppProvider = ({ children }) => {
 			calendarBlocks: calendarBlocks$1,
 			messageTemplates: messageTemplates$1,
 			automationRules: automationRules$1,
+			workflows: workflows$1,
 			currentUser,
 			allUsers,
 			users,
@@ -54784,7 +54843,10 @@ const AppProvider = ({ children }) => {
 			updateAdPricing,
 			addVisit,
 			updateVisit,
-			deleteVisit
+			deleteVisit,
+			addWorkflow,
+			updateWorkflow,
+			deleteWorkflow
 		},
 		children
 	});
@@ -85414,7 +85476,7 @@ function Users() {
 		if (!formData.name?.trim()) {
 			toast$2({
 				title: t$1("common.error"),
-				description: "Name is required.",
+				description: t$1("common.name_required"),
 				variant: "destructive"
 			});
 			return;
@@ -85422,18 +85484,20 @@ function Users() {
 		if (!formData.email?.trim() || !isValidEmail(formData.email)) {
 			toast$2({
 				title: t$1("common.error"),
-				description: "Invalid email.",
+				description: t$1("common.email_invalid"),
 				variant: "destructive"
 			});
 			return;
 		}
-		if ((formData.role === "partner_employee" || formData.role === "internal_user") && !isPhoneValid(formData.phone || "", formData.country)) {
-			toast$2({
-				title: t$1("common.error"),
-				description: "Telefone inválido para funcionário. O formato deve estar completo.",
-				variant: "destructive"
-			});
-			return;
+		if (formData.role === "partner_employee") {
+			if ((formData.phone?.replace(/\D/g, "") || "").length !== 11) {
+				toast$2({
+					title: t$1("common.validation_error_title"),
+					description: t$1("common.phone_invalid"),
+					variant: "destructive"
+				});
+				return;
+			}
 		}
 		if (users.find((u$1) => u$1.email.toLowerCase() === formData.email?.toLowerCase() && u$1.id !== formData.id)) {
 			toast$2({
@@ -85691,7 +85755,7 @@ function Users() {
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 							className: "max-w-4xl max-h-[90vh] overflow-y-auto",
 							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogTitle, { children: [isEditing ? t$1("common.edit") : t$1("common.new"), " User"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "Fill in user details and define access permissions." })] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogTitle, { children: [isEditing ? t$1("common.edit") : t$1("common.new"), " User"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: t$1("users.subtitle") })] }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-6 py-4",
 									children: [
@@ -85853,7 +85917,7 @@ function Users() {
 														...formData,
 														address: e.target.value
 													}),
-													placeholder: "Full Address"
+													placeholder: t$1("common.address_placeholder")
 												})]
 											})]
 										}),
@@ -87897,81 +87961,379 @@ function MarketAnalysis() {
 		]
 	});
 }
+var useWorkflowStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("useWorkflowStore must be used within AppProvider");
+	return {
+		workflows: context.workflows,
+		addWorkflow: context.addWorkflow,
+		updateWorkflow: context.updateWorkflow,
+		deleteWorkflow: context.deleteWorkflow
+	};
+};
+var useWorkflowStore_default = useWorkflowStore;
+var initialWorkflowState = {
+	name: "",
+	description: "",
+	trigger: "manual",
+	active: true,
+	steps: []
+};
+var initialStepState = {
+	id: "",
+	name: "",
+	role: "platform_owner",
+	actionType: "task"
+};
 function Workflows() {
+	const { workflows: workflows$1, addWorkflow, updateWorkflow, deleteWorkflow } = useWorkflowStore_default();
+	const { t: t$1 } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
-	const [activeWorkflows] = (0, import_react.useState)(workflows);
-	const handleRun = (id) => {
+	const [open, setOpen] = (0, import_react.useState)(false);
+	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
+	const [currentWorkflow, setCurrentWorkflow] = (0, import_react.useState)(initialWorkflowState);
+	const [newStep, setNewStep] = (0, import_react.useState)(initialStepState);
+	const handleRun = (id, name) => {
 		toast$2({
-			title: "Workflow Iniciado",
-			description: `O workflow ${id} foi disparado manualmente.`
+			title: t$1("workflows.run_success"),
+			description: t$1("workflows.run_desc", { name })
 		});
+	};
+	const handleOpenChange = (val) => {
+		setOpen(val);
+		if (!val) {
+			setCurrentWorkflow(initialWorkflowState);
+			setIsEditing(false);
+		}
+	};
+	const handleSave = () => {
+		if (!currentWorkflow.name) {
+			toast$2({
+				title: t$1("common.error"),
+				description: t$1("common.name_required"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (isEditing && currentWorkflow.id) {
+			updateWorkflow(currentWorkflow);
+			toast$2({
+				title: t$1("common.save"),
+				description: "Workflow updated."
+			});
+		} else {
+			addWorkflow({
+				...currentWorkflow,
+				id: `wf_${Date.now()}`
+			});
+			toast$2({
+				title: t$1("common.save"),
+				description: "Workflow created."
+			});
+		}
+		handleOpenChange(false);
+	};
+	const handleEdit = (wf) => {
+		setCurrentWorkflow(wf);
+		setIsEditing(true);
+		setOpen(true);
+	};
+	const handleDelete = (id) => {
+		deleteWorkflow(id);
+		toast$2({
+			title: t$1("common.delete"),
+			description: "Workflow deleted."
+		});
+	};
+	const addStep = () => {
+		if (!newStep.name) return;
+		const step = {
+			...newStep,
+			id: `step_${Date.now()}`
+		};
+		setCurrentWorkflow((prev) => ({
+			...prev,
+			steps: [...prev.steps, step]
+		}));
+		setNewStep(initialStepState);
+	};
+	const removeStep = (stepId) => {
+		setCurrentWorkflow((prev) => ({
+			...prev,
+			steps: prev.steps.filter((s$3) => s$3.id !== stepId)
+		}));
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex justify-between items-center",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-col gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-					className: "text-3xl font-bold tracking-tight text-navy",
-					children: "Motor de Workflow"
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "text-muted-foreground",
-					children: "Automatize processos e sequências de tarefas."
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex justify-between items-center",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex flex-col gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+						className: "text-3xl font-bold tracking-tight text-navy",
+						children: t$1("workflows.title")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-muted-foreground",
+						children: t$1("workflows.subtitle")
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					className: "bg-trust-blue gap-2",
+					onClick: () => {
+						setCurrentWorkflow(initialWorkflowState);
+						setIsEditing(false);
+						setOpen(true);
+					},
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+						" ",
+						t$1("workflows.new_workflow")
+					]
 				})]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-				className: "bg-trust-blue gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Novo Workflow"]
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Workflows Ativos" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Processos automatizados configurados no sistema." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Nome" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Gatilho" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Passos" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-				className: "text-right",
-				children: "Ações"
-			})
-		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: activeWorkflows.map((wf) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-				className: "font-medium",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex flex-col",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: wf.name }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "text-xs text-muted-foreground",
-						children: wf.description
-					})]
-				})
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-				variant: "outline",
-				children: wf.trigger
-			}) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.steps.length }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-				variant: wf.active ? "default" : "secondary",
-				className: wf.active ? "bg-green-600" : "",
-				children: wf.active ? "Ativo" : "Inativo"
-			}) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-				className: "text-right",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex justify-end gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						size: "icon",
-						onClick: () => handleRun(wf.id),
-						title: "Executar Manualmente",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { className: "h-4 w-4 text-blue-600" })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						size: "icon",
-						title: "Configurar",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings$1, { className: "h-4 w-4" })
-					})]
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("workflows.title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [workflows$1.length, " workflows configurados."] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("workflows.trigger") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("workflows.steps") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "text-right",
+					children: t$1("common.actions")
+				})
+			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: workflows$1.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				colSpan: 5,
+				className: "text-center py-8 text-muted-foreground",
+				children: "No workflows found."
+			}) }) : workflows$1.map((wf) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "font-medium",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex flex-col",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: wf.name }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-xs text-muted-foreground",
+							children: wf.description
+						})]
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+					variant: "outline",
+					children: wf.trigger
+				}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.steps.length }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+					variant: wf.active ? "default" : "secondary",
+					className: wf.active ? "bg-green-600" : "",
+					children: wf.active ? t$1("users.status_active") : t$1("users.status_blocked")
+				}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "text-right",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex justify-end gap-2",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								onClick: () => handleRun(wf.id, wf.name),
+								title: t$1("workflows.run_manual"),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { className: "h-4 w-4 text-blue-600" })
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								onClick: () => handleEdit(wf),
+								title: t$1("workflows.config_workflow"),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings$1, { className: "h-4 w-4" })
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								className: "text-red-500 hover:text-red-600",
+								onClick: () => handleDelete(wf.id),
+								title: t$1("common.delete"),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+							})
+						]
+					})
+				})
+			] }, wf.id)) })] }) })] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open,
+				onOpenChange: handleOpenChange,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "max-w-3xl max-h-[90vh] overflow-y-auto",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: isEditing ? t$1("workflows.edit_workflow") : t$1("workflows.new_workflow") }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-6 py-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-2 gap-4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: currentWorkflow.name,
+											onChange: (e) => setCurrentWorkflow({
+												...currentWorkflow,
+												name: e.target.value
+											})
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("workflows.trigger") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											value: currentWorkflow.trigger,
+											onValueChange: (val) => setCurrentWorkflow({
+												...currentWorkflow,
+												trigger: val
+											}),
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "manual",
+													children: "Manual"
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "lease_start",
+													children: "Lease Start"
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "lease_end",
+													children: "Lease End"
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "maintenance_request",
+													children: "Maintenance Request"
+												})
+											] })]
+										})]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: currentWorkflow.description,
+										onChange: (e) => setCurrentWorkflow({
+											...currentWorkflow,
+											description: e.target.value
+										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+										id: "wf-active",
+										checked: currentWorkflow.active,
+										onCheckedChange: (checked) => setCurrentWorkflow({
+											...currentWorkflow,
+											active: checked
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+										htmlFor: "wf-active",
+										children: t$1("workflows.active_status")
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "border rounded-md p-4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+										className: "font-semibold mb-2",
+										children: t$1("workflows.steps")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-4",
+										children: [currentWorkflow.steps.map((step, index$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center justify-between bg-muted/20 p-2 rounded border",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-center gap-4",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "font-mono text-sm bg-slate-200 px-2 py-1 rounded",
+													children: index$1 + 1
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "font-medium",
+													children: step.name
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+													className: "text-xs text-muted-foreground",
+													children: [
+														step.role,
+														" - ",
+														step.actionType
+													]
+												})] })]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+												variant: "ghost",
+												size: "sm",
+												onClick: () => removeStep(step.id),
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 text-red-500" })
+											})]
+										}, step.id || index$1)), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid grid-cols-3 gap-2 items-end border-t pt-4",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-1",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+														className: "text-xs",
+														children: t$1("workflows.step_name")
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: newStep.name,
+														onChange: (e) => setNewStep({
+															...newStep,
+															name: e.target.value
+														}),
+														placeholder: "Step Name"
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-1",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+														className: "text-xs",
+														children: t$1("workflows.step_role")
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+														value: newStep.role,
+														onValueChange: (val) => setNewStep({
+															...newStep,
+															role: val
+														}),
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "platform_owner",
+																children: "Admin"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "software_tenant",
+																children: "Manager"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "partner",
+																children: "Partner"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "internal_user",
+																children: "Staff"
+															})
+														] })]
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+													variant: "outline",
+													onClick: addStep,
+													className: "w-full",
+													children: [
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "mr-2 h-3 w-3" }),
+														" ",
+														t$1("workflows.add_step")
+													]
+												})
+											]
+										})]
+									})]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							onClick: handleSave,
+							className: "bg-trust-blue",
+							children: t$1("common.save")
+						}) })
+					]
 				})
 			})
-		] }, wf.id)) })] }) })] })]
+		]
 	});
 }
 function CloseNegotiationDialog({ open, onOpenChange, onConfirm, currentValue }) {
@@ -93042,4 +93404,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-ByZYJG78.js.map
+//# sourceMappingURL=index-KwCQ6sS6.js.map

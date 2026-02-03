@@ -70,7 +70,7 @@ import { hasPermission } from '@/lib/permissions'
 import { User, Resource, Action, UserRole, Permission } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { isValidEmail, isPhoneValid } from '@/lib/utils'
+import { isValidEmail } from '@/lib/utils'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { Switch } from '@/components/ui/switch'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -215,7 +215,7 @@ export default function Users() {
     if (!formData.name?.trim()) {
       toast({
         title: t('common.error'),
-        description: 'Name is required.',
+        description: t('common.name_required'),
         variant: 'destructive',
       })
       return
@@ -223,25 +223,25 @@ export default function Users() {
     if (!formData.email?.trim() || !isValidEmail(formData.email)) {
       toast({
         title: t('common.error'),
-        description: 'Invalid email.',
+        description: t('common.email_invalid'),
         variant: 'destructive',
       })
       return
     }
 
-    // Strict phone validation if employee
-    if (
-      (formData.role === 'partner_employee' ||
-        formData.role === 'internal_user') &&
-      !isPhoneValid(formData.phone || '', formData.country as any)
-    ) {
-      toast({
-        title: t('common.error'),
-        description:
-          'Telefone inválido para funcionário. O formato deve estar completo.',
-        variant: 'destructive',
-      })
-      return
+    // Strict validation for Partner Employee (Team Member)
+    // Must contain exactly 11 digits (mobile) or follow Strict BR standard if country is BR
+    // AC specifies: (99) 99999-9999 for Team Registration
+    if (formData.role === 'partner_employee') {
+      const digits = formData.phone?.replace(/\D/g, '') || ''
+      if (digits.length !== 11) {
+        toast({
+          title: t('common.validation_error_title'),
+          description: t('common.phone_invalid'),
+          variant: 'destructive',
+        })
+        return
+      }
     }
 
     const duplicate = users.find(
@@ -525,9 +525,7 @@ export default function Users() {
                   <DialogTitle>
                     {isEditing ? t('common.edit') : t('common.new')} User
                   </DialogTitle>
-                  <DialogDescription>
-                    Fill in user details and define access permissions.
-                  </DialogDescription>
+                  <DialogDescription>{t('users.subtitle')}</DialogDescription>
                 </DialogHeader>
 
                 <div className="grid gap-6 py-4">
@@ -690,7 +688,7 @@ export default function Users() {
                               address: e.target.value,
                             })
                           }
-                          placeholder="Full Address"
+                          placeholder={t('common.address_placeholder')}
                         />
                       </div>
                     </div>
