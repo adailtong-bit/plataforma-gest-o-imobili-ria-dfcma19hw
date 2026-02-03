@@ -155,7 +155,7 @@ export const translations = {
       end_date: 'Data Fim',
       provider: 'Fornecedor',
       account_number: 'Número da Conta',
-      recurring: 'Recorrente',
+      recurring: 'Recurrente',
       partners: 'Parceiros',
       delete_linked_error:
         'Não é possível excluir pois existem registros vinculados.',
@@ -1761,8 +1761,7 @@ export const translations = {
       generic: 'Genérico',
       review_needed: 'Revisión Necesaria',
       config_saved: 'Configuración Guardada',
-      config_saved_desc:
-        'Parámetros de revisión de precios actualizados.',
+      config_saved_desc: 'Parámetros de revisión de precios actualizados.',
       stale_alert:
         '{count} servicios no se han actualizado en más de {days} días.',
       review_period_config: 'Configuración de Período de Revisión',
@@ -1813,8 +1812,7 @@ export const translations = {
       subtitle: 'Gestione su cartera inmobiliaria.',
       new_property: 'Nueva Propiedad',
       add_title: 'Agregar Propiedad',
-      add_description:
-        'Complete el formulario para crear una nueva propiedad.',
+      add_description: 'Complete el formulario para crear una nueva propiedad.',
       rental_type: 'Tipo de Alquiler',
       profile_short: 'Vacacional (Short Term)',
       profile_long: 'Anual (Long Term)',
@@ -1902,8 +1900,7 @@ export const translations = {
     },
     analytics: {
       benchmark_title: 'Comparativa de Rendimiento',
-      benchmark_desc:
-        'Analice el rendimiento de su cartera frente al mercado.',
+      benchmark_desc: 'Analice el rendimiento de su cartera frente al mercado.',
       house_model: 'Modelo de Casa',
       internal_perf: 'Rendimiento Interno',
       market_avg: 'Promedio Mercado',
@@ -1924,7 +1921,8 @@ export const translations = {
     },
     market: {
       title: 'Análisis de Mercado',
-      subtitle: 'Insights y tendencias del mercado inmobiliario en tiempo real.',
+      subtitle:
+        'Insights y tendencias del mercado inmobiliario en tiempo real.',
       export_pdf: 'Exportar PDF',
       comparison_params: 'Parámetros de Comparación',
       comparison_desc: 'Configure filtros para análisis comparativo.',
@@ -2118,8 +2116,7 @@ export const translations = {
       days_before: 'Días Antes',
       billing_payment: 'Facturación y Pagos',
       billing_gateways_title: 'Pasarelas de Pago',
-      billing_gateways_desc:
-        'Configure métodos de pago y recepción.',
+      billing_gateways_desc: 'Configure métodos de pago y recepción.',
       payment_gateways: 'Pasarelas de Pago',
       system_alerts: 'Alertas del Sistema',
       system_alerts_desc: 'Configuración global de notificaciones.',
@@ -2157,4 +2154,3 @@ export const translations = {
     },
   },
 }
-

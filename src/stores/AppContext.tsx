@@ -362,25 +362,49 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('app_language', lang)
   }
 
-  const t = (key: string, params?: Record<string, string>) => {
-    const keys = key.split('.')
-    let current: any = translations[language]
+  // Improved translation logic to support nested keys with fallback
+  const t = useCallback(
+    (key: string, params?: Record<string, string>) => {
+      // Helper to resolve nested key
+      const resolveKey = (dict: any, k: string) => {
+        const parts = k.split('.')
+        let current = dict
+        for (const part of parts) {
+          if (current === undefined || current === null) return undefined
+          current = current[part]
+        }
+        return typeof current === 'string' ? current : undefined
+      }
 
-    for (const k of keys) {
-      if (current[k] === undefined) return key
-      current = current[k]
-    }
+      // 1. Try current language
+      let text = resolveKey(translations[language], key)
 
-    if (typeof current === 'string' && params) {
-      let text = current
-      Object.entries(params).forEach(([pkey, pval]) => {
-        text = text.replace(`{${pkey}}`, pval)
-      })
-      return text
-    }
+      // 2. Fallback to English if missing and current isn't English
+      if (!text && language !== 'en') {
+        text = resolveKey(translations['en'], key)
+      }
 
-    return current as string
-  }
+      // 3. Fallback to human readable key (remove dots, capitalize)
+      if (!text) {
+        const parts = key.split('.')
+        const lastPart = parts[parts.length - 1]
+        // Convert snake_case or camelCase to Title Case if needed, or just return cleaned key
+        text = lastPart
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, (c) => c.toUpperCase())
+      }
+
+      // 4. Interpolate params
+      if (text && params) {
+        Object.entries(params).forEach(([pkey, pval]) => {
+          text = text!.replace(`{${pkey}}`, pval)
+        })
+      }
+
+      return text || key
+    },
+    [language],
+  )
 
   const allUsers = useMemo(() => {
     const combined = [...users, ...owners, ...partners, ...tenants]

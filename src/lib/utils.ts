@@ -16,16 +16,12 @@ export const isValidEmail = (email: string) => {
 export const isGenericOrPlaceholder = (
   value: string | undefined | null,
 ): boolean => {
-  if (!value) return false // Empty is not "generic placeholder", it's empty. Required checks handle emptiness.
+  if (!value) return false
   const lower = value.toString().toLowerCase().trim()
 
-  // Check for repeated characters (e.g. "aaaaa", "11111", "xxxxx") - length > 2
   if (lower.length > 2 && /^(\w)\1+$/.test(lower)) return true
-
-  // Check for sequential numbers (e.g. "123456") - length > 4
   if (lower.length > 4 && '01234567890123456789'.includes(lower)) return true
 
-  // Check for common placeholders
   const placeholders = [
     'test',
     'teste',
@@ -44,19 +40,16 @@ export const isGenericOrPlaceholder = (
   return false
 }
 
-// Phone mask enforcement
 export const applyPhoneMask = (value: string, country: 'US' | 'BR' | 'ES') => {
   const digits = value.replace(/\D/g, '')
 
   if (country === 'US') {
-    // (XXX) XXX-XXXX - 10 digits
     if (digits.length <= 3) return digits
     if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`
     return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`
   }
 
   if (country === 'BR') {
-    // (XX) XXXXX-XXXX - 11 digits (Mobile) or (XX) XXXX-XXXX - 10 digits (Landline)
     if (digits.length <= 2) return digits
     if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
     if (digits.length <= 10) {
@@ -66,7 +59,6 @@ export const applyPhoneMask = (value: string, country: 'US' | 'BR' | 'ES') => {
   }
 
   if (country === 'ES') {
-    // XXX XX XX XX - 9 digits
     if (digits.length <= 3) return digits
     if (digits.length <= 5) return `${digits.slice(0, 3)} ${digits.slice(3)}`
     if (digits.length <= 7)
@@ -77,7 +69,6 @@ export const applyPhoneMask = (value: string, country: 'US' | 'BR' | 'ES') => {
   return value
 }
 
-// Date mask enforcement (DD/MM/YYYY)
 export const applyDateMask = (value: string) => {
   const digits = value.replace(/\D/g, '')
   if (digits.length <= 2) return digits
@@ -85,18 +76,15 @@ export const applyDateMask = (value: string) => {
   return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`
 }
 
-// Validation length check for phones - Strict Validation
 export const isPhoneValid = (value: string, country: 'US' | 'BR' | 'ES') => {
   if (!value) return false
   const digits = value.replace(/\D/g, '')
   if (country === 'US') return digits.length === 10
   if (country === 'BR') return digits.length === 10 || digits.length === 11
   if (country === 'ES') return digits.length === 9
-  // Fallback for strictness if country unknown or not matched
   return digits.length >= 8
 }
 
-// Document mask enforcement based on Acceptance Criteria
 export const applyDocumentMask = (
   value: string,
   country: 'US' | 'BR' | 'ES',
@@ -104,14 +92,12 @@ export const applyDocumentMask = (
   const digits = value.replace(/\D/g, '')
 
   if (country === 'US') {
-    // SSN: ###-##-####
     if (digits.length <= 3) return digits
     if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`
     return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5, 9)}`
   }
 
   if (country === 'BR') {
-    // CPF: ###.###.###-##
     if (digits.length <= 3) return digits
     if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`
     if (digits.length <= 9)
@@ -120,9 +106,6 @@ export const applyDocumentMask = (
   }
 
   if (country === 'ES') {
-    // DNI: ########-#
-    // Typically 8 digits + Letter, but masking for numeric part often shown as 12345678-A or similar
-    // Requirement says: ########-#
     if (digits.length <= 8) return digits
     return `${digits.slice(0, 8)}-${digits.slice(8, 9)}`
   }
@@ -134,23 +117,18 @@ export const applyZipCodeMask = (value: string, country: string) => {
   const digits = value.replace(/\D/g, '')
 
   if (country === 'US') {
-    // 5 digits
     return digits.slice(0, 5)
   }
   if (country === 'BR' || country === 'Brazil') {
-    // XXXXX-XXX
     if (digits.length <= 5) return digits
     return `${digits.slice(0, 5)}-${digits.slice(5, 8)}`
   }
   if (country === 'ES' || country === 'Spain') {
-    // 5 digits
     return digits.slice(0, 5)
   }
-  // Default fallback
   return value
 }
 
-// Export data to CSV
 export const exportToCSV = (
   filename: string,
   headers: string[],
@@ -163,7 +141,6 @@ export const exportToCSV = (
         .map((cell) => {
           if (cell === null || cell === undefined) return ''
           const stringCell = String(cell)
-          // Escape quotes and wrap in quotes if contains comma or quotes
           if (
             stringCell.includes(',') ||
             stringCell.includes('"') ||
@@ -199,16 +176,15 @@ export const formatCurrency = (
   let locale = 'en-US'
   let currencyCode = currency
 
-  // Override currency code for display based on User Story requirements
   if (language === 'pt') {
     locale = 'pt-BR'
-    currencyCode = 'BRL' // R$ 1.234,56
+    currencyCode = 'BRL'
   } else if (language === 'es') {
     locale = 'es-ES'
-    currencyCode = 'EUR' // € 1.234,56
+    currencyCode = 'EUR'
   } else {
     locale = 'en-US'
-    currencyCode = 'USD' // $1,234.56
+    currencyCode = 'USD'
   }
 
   return new Intl.NumberFormat(locale, {
@@ -232,6 +208,5 @@ export const formatDate = (
     return format(d, 'dd/MM/yyyy', { locale: es })
   }
 
-  // Default EN
   return format(d, 'MM/dd/yyyy', { locale: enUS })
 }

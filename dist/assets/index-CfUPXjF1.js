@@ -22661,7 +22661,7 @@ function buildMatchPatternFn(args) {
 		};
 	};
 }
-const enUS$1 = {
+const enUS = {
 	code: "en-US",
 	formatDistance: formatDistance$2,
 	formatLong: formatLong$2,
@@ -23378,7 +23378,7 @@ var doubleQuoteRegExp = /''/g;
 var unescapedLatinCharacterRegExp = /[a-zA-Z]/;
 function format(date$4, formatStr, options$1) {
 	const defaultOptions$2 = getDefaultOptions();
-	const locale$2 = options$1?.locale ?? defaultOptions$2.locale ?? enUS$1;
+	const locale$2 = options$1?.locale ?? defaultOptions$2.locale ?? enUS;
 	const firstWeekContainsDate = options$1?.firstWeekContainsDate ?? options$1?.locale?.options?.firstWeekContainsDate ?? defaultOptions$2.firstWeekContainsDate ?? defaultOptions$2.locale?.options?.firstWeekContainsDate ?? 1;
 	const weekStartsOn = options$1?.weekStartsOn ?? options$1?.locale?.options?.weekStartsOn ?? defaultOptions$2.weekStartsOn ?? defaultOptions$2.locale?.options?.weekStartsOn ?? 0;
 	const originalDate = toDate(date$4, options$1?.in);
@@ -24691,7 +24691,7 @@ const formatDate = (date$4, language = "en") => {
 	if (isNaN(d.getTime())) return "";
 	if (language === "pt") return format(d, "dd/MM/yyyy", { locale: ptBR });
 	if (language === "es") return format(d, "dd/MM/yyyy", { locale: es });
-	return format(d, "MM/dd/yyyy", { locale: enUS$1 });
+	return format(d, "MM/dd/yyyy", { locale: enUS });
 };
 var ToastProvider = Provider$1;
 var ToastViewport = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Viewport$2, {
@@ -28238,14 +28238,14 @@ function endOfBroadcastWeek(date$4, dateLib) {
 	const numberOfWeeks = getBroadcastWeeksInMonth(date$4, dateLib);
 	return dateLib.addDays(startDate, numberOfWeeks * 7 - 1);
 }
-const enUS = {
-	...enUS$1,
+const enUS$1 = {
+	...enUS,
 	labels: {
 		labelDayButton: (date$4, modifiers, options$1, dateLib) => {
 			let formatDate$1;
 			if (dateLib && typeof dateLib.format === "function") formatDate$1 = dateLib.format.bind(dateLib);
 			else formatDate$1 = (d, pattern) => format(d, pattern, {
-				locale: enUS$1,
+				locale: enUS,
 				...options$1
 			});
 			let label = formatDate$1(date$4, "PPPP");
@@ -28262,7 +28262,7 @@ const enUS = {
 			let formatDate$1;
 			if (dateLib && typeof dateLib.format === "function") formatDate$1 = dateLib.format.bind(dateLib);
 			else formatDate$1 = (d, pattern) => format(d, pattern, {
-				locale: enUS$1,
+				locale: enUS,
 				...options$1
 			});
 			return formatDate$1(date$4, "LLLL yyyy");
@@ -28271,7 +28271,7 @@ const enUS = {
 			let formatDate$1;
 			if (dateLib && typeof dateLib.format === "function") formatDate$1 = dateLib.format.bind(dateLib);
 			else formatDate$1 = (d, pattern) => format(d, pattern, {
-				locale: enUS$1,
+				locale: enUS,
 				...options$1
 			});
 			let label = formatDate$1(date$4, "PPPP");
@@ -28284,7 +28284,7 @@ const enUS = {
 			let formatDate$1;
 			if (dateLib && typeof dateLib.format === "function") formatDate$1 = dateLib.format.bind(dateLib);
 			else formatDate$1 = (d, pattern) => format(d, pattern, {
-				locale: enUS$1,
+				locale: enUS,
 				...options$1
 			});
 			return formatDate$1(date$4, "cccc");
@@ -28416,7 +28416,7 @@ var DateLib = class DateLib {
 			return this.overrides?.startOfYear ? this.overrides.startOfYear(date$4) : startOfYear(date$4);
 		};
 		this.options = {
-			locale: enUS,
+			locale: enUS$1,
 			...options$1
 		};
 		this.overrides = overrides;
@@ -29812,7 +29812,7 @@ function DayPicker(initialProps) {
 	}
 	const { components, formatters: formatters$1, labels, dateLib, locale: locale$2, classNames } = (0, import_react.useMemo)(() => {
 		const locale$3 = {
-			...enUS,
+			...enUS$1,
 			...props.locale
 		};
 		const weekStartsOn = props.broadcastCalendar ? 1 : props.weekStartsOn;
@@ -53652,13 +53652,19 @@ const translations = {
 			end_date: "Data Fim",
 			provider: "Fornecedor",
 			account_number: "Número da Conta",
-			recurring: "Recorrente",
+			recurring: "Recurrente",
 			partners: "Parceiros",
 			delete_linked_error: "Não é possível excluir pois existem registros vinculados.",
 			phone_invalid: "Telefone inválido para funcionário. Formato obrigatório: (99) 99999-9999",
 			email_invalid: "Email inválido. Verifique o formato.",
 			validation_error_title: "Erro de Validação",
-			validation_error_desc: "Por favor verifique os campos destacados."
+			validation_error_desc: "Por favor verifique os campos destacados.",
+			error_404_title: "404",
+			error_404_desc: "Ops! Página não encontrada.",
+			return_home: "Voltar para o Início",
+			name_required: "Nome é obrigatório",
+			email_required: "Email é obrigatório",
+			address_placeholder: "Endereço completo"
 		},
 		workflows: {
 			title: "Motor de Workflow",
@@ -53709,7 +53715,9 @@ const translations = {
 			service_rates: "Taxas de Serviço",
 			rate_name: "Nome da Taxa",
 			rate_price: "Preço da Taxa",
-			rate_valid_from: "Válido desde"
+			rate_valid_from: "Válido desde",
+			payment_history: "Histórico de Pagamentos",
+			financial_report: "Relatório Financeiro"
 		},
 		automation: {
 			auto_generate_invoice: "Gerar fatura automaticamente",
@@ -53863,6 +53871,7 @@ const translations = {
 			subtitle: "Gerencie seu portfólio imobiliário.",
 			new_property: "Nova Propriedade",
 			add_title: "Adicionar Propriedade",
+			add_description: "Preencha o formulário para criar uma nova propriedade.",
 			rental_type: "Tipo de Aluguel",
 			profile_short: "Temporada (Short Term)",
 			profile_long: "Anual (Long Term)",
@@ -54002,7 +54011,8 @@ const translations = {
 			cost_breakdown: "Detalhamento de Custos por Categoria",
 			distribution_expenses: "Distribuição de despesas.",
 			monthly_expenditure: "Despesa Mensal",
-			spending_trends: "Tendências de gastos com manutenção."
+			spending_trends: "Tendências de gastos com manutenção.",
+			reports: "Relatórios"
 		},
 		inventory: {
 			manage_items: "Gerencie itens e condições.",
@@ -54106,7 +54116,29 @@ const translations = {
 			no_invoices: "Nenhuma fatura encontrada.",
 			send_to_payer: "Enviar p/ Pagador",
 			sent_success: "Fatura Enviada",
-			view: "Visualizar"
+			view: "Visualizar",
+			pay_now: "Pagar Agora",
+			download: "Baixar",
+			print: "Imprimir"
+		},
+		invoice_viewer: {
+			title: "Visualizar Fatura",
+			invoice_no: "FATURA Nº",
+			date: "Data",
+			due_date: "Vencimento",
+			bill_to: "Cobrar de",
+			description: "Descrição",
+			quantity: "Qtd",
+			rate: "Preço",
+			amount: "Total",
+			subtotal: "Subtotal",
+			total: "Total",
+			notes: "Notas",
+			terms: "Termos e Condições",
+			thank_you: "Obrigado pela preferência!",
+			close: "Fechar",
+			download: "Baixar",
+			print: "Imprimir"
 		},
 		auth: {
 			login_title: "Login",
@@ -54114,7 +54146,15 @@ const translations = {
 			demo_login: "Login Demo",
 			no_account: "Não tem conta?",
 			already_have_account: "Já tem conta?",
-			company_details: "Detalhes da Empresa"
+			company_details: "Detalhes da Empresa",
+			login_desc: "Entre com seu email para acessar sua conta",
+			email_placeholder: "m@exemplo.com",
+			forgot_password: "Esqueceu a senha?",
+			register_desc: "Complete seu perfil para começar com COREPM",
+			name_placeholder: "João Silva",
+			company_placeholder: "Minha Imobiliária Ltda",
+			tax_id_placeholder: "CPF / CNPJ",
+			address_placeholder: "Rua Comercial 123, Cidade, Estado"
 		},
 		settings: {
 			title: "Configurações",
@@ -54168,8 +54208,1424 @@ const translations = {
 			health_score: "Score de Saúde"
 		}
 	},
-	en: {},
-	es: {}
+	en: {
+		common: {
+			dashboard: "Dashboard",
+			properties: "Properties",
+			tenants: "Tenants",
+			owners: "Owners",
+			partners: "Partners",
+			calendar: "Calendar",
+			tasks: "Tasks",
+			financial: "Financial",
+			invoices: "Invoices",
+			messages: "Messages",
+			settings: "Settings",
+			service_pricing: "Service Pricing",
+			service_desc: "Manage services, rates, and partner pricing.",
+			search: "Search...",
+			filter: "Filter",
+			status: "Status",
+			actions: "Actions",
+			save: "Save",
+			cancel: "Cancel",
+			edit: "Edit",
+			delete: "Delete",
+			new: "New",
+			back: "Back",
+			view: "View",
+			details: "Details",
+			name: "Name",
+			email: "Email",
+			phone: "Phone",
+			address: "Address",
+			type: "Type",
+			role: "Role",
+			logout: "Logout",
+			profile: "Profile",
+			notifications: "Notifications",
+			team: "Team",
+			automation: "Automation",
+			all: "All",
+			pending: "Pending",
+			approved: "Approved",
+			completed: "Completed",
+			paid: "Paid",
+			overdue: "Overdue",
+			active: "Active",
+			inactive: "Inactive",
+			occupied: "Occupied",
+			vacant: "Vacant",
+			maintenance: "Maintenance",
+			confirm: "Confirm",
+			upload: "Upload",
+			description: "Description",
+			date: "Date",
+			due_date: "Due Date",
+			value: "Value",
+			priority: "Priority",
+			yes: "Yes",
+			no: "No",
+			none: "None",
+			error: "Error",
+			condominiums: "Condominiums",
+			continue: "Continue",
+			password: "Password",
+			confirm_password: "Confirm Password",
+			add_title: "Add",
+			documents: "Documents",
+			contact_via_whatsapp: "WhatsApp",
+			contact_via_email: "Email",
+			tax_id: "SSN/EIN / Tax ID",
+			system_activity: "System Activity",
+			approve: "Approve",
+			block: "Block",
+			pending_approval: "Pending Approval",
+			pending_activation: "Pending Activation",
+			blocked: "Blocked",
+			country: "Country",
+			select_country: "Select Country",
+			export_data: "Export Data",
+			export_success: "Data exported successfully.",
+			renewals: "Contract Renewals",
+			short_term: "Short Term Rental",
+			market_analysis: "Market Analysis",
+			user_analysis: "User Analysis",
+			workflows: "Workflows",
+			audit_logs: "Audit Logs",
+			portal: "Portal",
+			publicity: "Publicity",
+			login: "Login",
+			register: "Register",
+			welcome: "Welcome",
+			full_name: "Full Name",
+			property: "Property",
+			reports: "Reports",
+			delete_title: "Are you sure?",
+			delete_desc: "This action cannot be undone.",
+			start_now: "Start Now",
+			download: "Download",
+			print: "Print",
+			close: "Close",
+			delete_active_tenant_error: "Cannot delete property with active tenant.",
+			confirm_delete: "Confirm Deletion",
+			operations: "Operations",
+			contracts: "Contracts",
+			total: "Total",
+			done: "Done",
+			taxes: "Taxes",
+			utilities: "Utilities",
+			cleaning: "Cleaning",
+			advanced_analytics: "Advanced Analytics",
+			automation_rules: "Automation Rules",
+			inventory: "Inventory",
+			history: "History",
+			activity_log: "Activity Log",
+			created_at: "Created at",
+			updated_at: "Updated at",
+			select: "Select",
+			required: "Required",
+			success: "Success",
+			removed: "Removed",
+			copied: "Copied",
+			empty: "Empty",
+			relationships: "Relationships",
+			relationship_owner: "Owner",
+			relationship_tenant: "Tenant",
+			no_owner: "No Owner",
+			add_owner: "Add Owner",
+			no_active_tenant: "No Active Tenant",
+			export: "Export",
+			frequency: "Frequency",
+			visits: "Visits",
+			schedule_visit: "Schedule Visit",
+			client_name: "Client Name",
+			visit_date: "Visit Date",
+			visit_status: "Visit Status",
+			scheduled: "Scheduled",
+			canceled: "Canceled",
+			real_estate_dashboard: "Real Estate Dashboard",
+			visit_scheduling: "Visit Scheduling",
+			visits_list: "Visits List",
+			pending_visits: "Pending Visits",
+			total_revenue: "Total Revenue",
+			active_listings: "Active Listings",
+			sold: "Sold",
+			sale_pending: "Sale Pending",
+			category: "Category",
+			quantity: "Quantity",
+			condition: "Condition",
+			analytics: "Analytics",
+			schedule_maintenance: "Schedule Maintenance",
+			start_date: "Start Date",
+			end_date: "End Date",
+			provider: "Provider",
+			account_number: "Account Number",
+			recurring: "Recurring",
+			partners: "Partners",
+			delete_linked_error: "Cannot delete because there are linked records.",
+			phone_invalid: "Invalid phone for employee. Format required: (999) 999-9999",
+			email_invalid: "Invalid email. Check format.",
+			validation_error_title: "Validation Error",
+			validation_error_desc: "Please check highlighted fields.",
+			error_404_title: "404",
+			error_404_desc: "Oops! Page not found.",
+			return_home: "Return to Home",
+			name_required: "Name is required",
+			email_required: "Email is required",
+			address_placeholder: "Full address"
+		},
+		workflows: {
+			title: "Workflow Engine",
+			subtitle: "Automate processes and task sequences.",
+			new_workflow: "New Workflow",
+			edit_workflow: "Edit Workflow",
+			config_workflow: "Configure Workflow",
+			trigger: "Trigger",
+			steps: "Steps",
+			step_name: "Step Name",
+			step_role: "Responsible Role",
+			step_type: "Action Type",
+			step_desc: "Step Description",
+			add_step: "Add Step",
+			delete_step: "Remove Step",
+			active_status: "Active Status",
+			run_manual: "Run Manually",
+			run_success: "Workflow Started",
+			run_desc: "Workflow {name} triggered manually."
+		},
+		short_term: {
+			title: "Short Term Rental",
+			subtitle: "Manage bookings and short-term leases.",
+			new_booking: "New Booking",
+			platform: "Platform",
+			guest: "Guest",
+			check_in: "Check-in",
+			check_out: "Check-out",
+			total: "Total"
+		},
+		partners: {
+			title: "Partners",
+			subtitle: "Manage partners and service providers.",
+			new_partner: "New Partner",
+			register_title: "Register Partner",
+			search_placeholder: "Search partners...",
+			contact_name: "Contact Name",
+			company_name: "Company Name",
+			category: "Category",
+			agent: "Agent",
+			cleaning: "Cleaning",
+			maintenance: "Maintenance",
+			bank_info: "Banking Info",
+			bank_name: "Bank",
+			routing: "Routing",
+			account: "Account",
+			no_partners: "No partners found.",
+			service_rates: "Service Rates",
+			rate_name: "Rate Name",
+			rate_price: "Rate Price",
+			rate_valid_from: "Valid From",
+			payment_history: "Payment History",
+			financial_report: "Financial Report"
+		},
+		automation: {
+			auto_generate_invoice: "Auto generate invoice",
+			quickbooks_export: "Export to QuickBooks",
+			quickbooks_desc: "Download QB compatible transactions.",
+			export_csv: "Export CSV",
+			export_excel: "Export Excel",
+			export_success_title: "Export Started",
+			export_success_desc: "File is being generated."
+		},
+		tasks: {
+			title: "Tasks",
+			subtitle: "Activity tracking and workflows.",
+			new_task: "New Task",
+			create_title: "Create New Task",
+			create_desc: "Fill details to schedule service.",
+			task_title: "Task Title",
+			service_type: "Service Type",
+			assignee: "Assignee",
+			scheduled_date: "Scheduled Date",
+			location: "Location",
+			activity_log: "Activity Log",
+			arrival: "Arrival",
+			photos: "Photos",
+			photos_ref: "Reference Photos",
+			evidence_upload: "Upload Evidence",
+			evidence_photo: "Evidence Photo",
+			send: "Send",
+			start_checkin: "Start (Check-in)",
+			finish: "Finish",
+			details_evidence: "Details & Evidence",
+			in_progress: "In Progress",
+			approval: "Approval",
+			board: "Board",
+			list: "List",
+			success_created: "Task Created",
+			b2b_label: "Back to Back (B2B)",
+			detailed_desc: "Detailed Description",
+			desc_placeholder: "Specific instructions...",
+			create_btn: "Create Task"
+		},
+		sidebar: {
+			main_menu: "Main Menu",
+			system: "System",
+			tenant_portal: "Tenant Portal",
+			owner_portal: "Owner Portal",
+			partner_portal: "Partner Portal",
+			migration_hub: "Migration Hub",
+			publicity_admin: "Publicity Admin",
+			users: "Users"
+		},
+		condominiums: {
+			title: "Condominiums",
+			subtitle: "Manage your condominium information.",
+			new_condo: "New Condo",
+			add_title: "Add Condominium",
+			manager: "Manager",
+			contact: "Contact",
+			no_condos: "No condominiums registered.",
+			access_credentials: "Access Credentials",
+			financial_hoa: "HOA Financials"
+		},
+		tenants: {
+			title: "Tenants",
+			subtitle: "Manage lease contracts and tenant profiles.",
+			new_tenant: "New Tenant",
+			register_title: "Register Tenant",
+			list_title: "Tenant List",
+			search_placeholder: "Search tenants...",
+			property: "Property",
+			send_message: "Send Message"
+		},
+		owners: {
+			title: "Owners",
+			subtitle: "Manage owners and their contacts.",
+			new_owner: "New Owner",
+			register_title: "Register Owner",
+			base_title: "Owner Base",
+			search_placeholder: "Search owners...",
+			contact_details: "Contact Details",
+			properties_count: "Properties",
+			success_desc: "Owner registered successfully.",
+			renew_contract: "Renew Management Contract",
+			workflow_started: "Workflow Started",
+			workflow_desc: "{action} process for {name} started."
+		},
+		service_pricing: {
+			title: "Price Catalog",
+			subtitle: "Management of services and rates.",
+			manage_categories: "Manage Categories",
+			add_service: "Add Service",
+			edit_service: "Edit Service",
+			service_name: "Service Name",
+			category: "Category",
+			partner_vendor: "Partner / Vendor",
+			service_price: "Service Price",
+			product_price: "Product Price",
+			partner_payment: "Partner Payment",
+			pm_value: "PM Value",
+			valid_from: "Valid From",
+			valid_to: "Valid To",
+			generic: "Generic",
+			review_needed: "Review Needed",
+			config_saved: "Config Saved",
+			config_saved_desc: "Price review parameters updated.",
+			stale_alert: "{count} services not updated for more than {days} days.",
+			review_period_config: "Review Period Configuration",
+			review_period_desc: "Define after how many days a price should be flagged for review.",
+			threshold_days: "Threshold Days"
+		},
+		calendar: {
+			title: "Calendar",
+			subtitle: "View your appointments and deadlines.",
+			integrated_view: "Integrated View",
+			no_activities: "No activities for this day."
+		},
+		financial: {
+			title: "Financial",
+			subtitle: "Financial control and reconciliation.",
+			reconciliation: "Reconciliation",
+			upload_statement: "Upload Statement",
+			upload_desc: "Upload bank statements (OFX/PDF) for reconciliation.",
+			statements: "Statements",
+			no_statements: "No statements uploaded.",
+			reconciled: "Reconciled",
+			pending_reconciliation: "Pending"
+		},
+		dashboard: {
+			total_properties: "Total Properties",
+			in_portfolio: "In portfolio",
+			revenue_vs_expenses: "Revenue vs Expenses",
+			revenue_overview: "Financial overview.",
+			quick_calendar: "Quick Calendar",
+			todays_activity: "Today's activities.",
+			pending_approvals: "Pending Approvals",
+			pending_desc: "Items requiring attention.",
+			review: "Review",
+			approve: "Approve",
+			expense_distribution: "Expense Distribution",
+			expense_desc: "Expenses by category.",
+			customize: "Customize",
+			customize_view: "Customize View",
+			customize_desc: "Select widgets to display.",
+			kpi_indicators: "KPI Indicators",
+			revenue_chart: "Revenue Chart",
+			unread: "Unread",
+			from_last_month: "vs last month"
+		},
+		properties: {
+			title: "Properties",
+			subtitle: "Manage your real estate portfolio.",
+			new_property: "New Property",
+			add_title: "Add Property",
+			add_description: "Fill in the form to create a new property.",
+			rental_type: "Rental Type",
+			profile_short: "Short Term",
+			profile_long: "Long Term",
+			search_placeholder: "Search properties...",
+			address_placeholder: "Full address",
+			zip_code: "Zip Code",
+			zip_required: "Zip Code is required",
+			name_required: "Name is required",
+			address_required: "Address is required",
+			city_state_required: "City and State are required",
+			profile_required: "Profile type is required",
+			validation_error: "Validation Error",
+			property_added: "Property Added",
+			delete_success: "Property deleted successfully",
+			error_delete: "Error deleting property",
+			info_label: "Complement",
+			city_placeholder: "City",
+			state_placeholder: "State",
+			property_value: "Property Value",
+			hoa_fee: "HOA Fee",
+			hoa_auto_hint: "Auto-filled if condo selected",
+			cover_image: "Cover Image",
+			no_image_selected: "No image selected",
+			view_details: "View Details",
+			all_profiles: "All Profiles",
+			profile_filter: "Profile Filter",
+			no_image: "No Image",
+			tabs: {
+				overview: "Overview",
+				maintenance: "Maintenance",
+				contracts: "Contracts",
+				inventory: "Inventory",
+				features: "Features",
+				location: "Location",
+				sync: "Sync",
+				financial: "Financial",
+				marketing: "Marketing",
+				content: "Content",
+				documents: "Documents",
+				logs: "History",
+				analytics: "Analytics",
+				reports: "Reports"
+			},
+			hoa_freq: "HOA Frequency",
+			monthly: "Monthly",
+			quarterly: "Quarterly",
+			annually: "Annually",
+			overview: "Overview",
+			marketing: "Marketing",
+			financial: "Financial Info",
+			house: "House",
+			condo: "Condo",
+			townhouse: "Townhouse",
+			public_desc: "Public Description",
+			publish_portals: "Publish to Portals",
+			upload_image: "Upload Image",
+			features: {
+				bedrooms: "Bedrooms",
+				bathrooms: "Bathrooms",
+				guests: "Guests",
+				wifi_connectivity: "Wi-Fi Connectivity",
+				ssid: "Network (SSID)",
+				password: "Password",
+				access_codes: "Access Codes",
+				unit_code: "Unit Code",
+				building_code: "Building Code",
+				pool_code: "Pool Code",
+				staff_code: "Service Code",
+				condo_read_only: "Condo Access (Read Only)",
+				condo_hint: "Synced from {condo}"
+			},
+			location: {
+				address: "Address",
+				neighborhood: "Neighborhood",
+				community: "Community",
+				linked_condo: "Linked Condo",
+				map_title: "Property Map",
+				map_hint: "Address not found to display map."
+			},
+			content: {
+				house_rules: "House Rules",
+				auto_translate: "Auto Translate",
+				copy_from: "Copy from"
+			}
+		},
+		analytics: {
+			benchmark_title: "Performance Benchmark",
+			benchmark_desc: "Analyze portfolio performance against market.",
+			house_model: "House Model",
+			internal_perf: "Internal Perf.",
+			market_avg: "Market Avg.",
+			occupancy: "Occupancy",
+			profitability_title: "Profitability Analysis",
+			profitability_desc: "Net profit comparison.",
+			profit_internal: "Internal Profit",
+			profit_market: "Market Profit",
+			noi: "NOI (Net Operating Income)",
+			roi: "ROI (Return on Investment)",
+			cap_rate: "Cap Rate",
+			revenue_sqm: "Revenue per sqm",
+			cash_flow_projection: "Cash Flow Projection",
+			projected_income: "Projected Income",
+			projected_expenses: "Projected Expenses",
+			net_flow: "Net Flow",
+			income_vs_expenses: "Income vs. Projected Expenses"
+		},
+		market: {
+			title: "Market Analysis",
+			subtitle: "Real-time real estate market insights and trends.",
+			export_pdf: "Export PDF",
+			comparison_params: "Comparison Parameters",
+			comparison_desc: "Configure filters for comparative analysis.",
+			base_property: "Base Property",
+			select: "Select",
+			general: "General (Unlinked)",
+			region: "Region",
+			bedrooms: "Bedrooms",
+			bathrooms: "Bathrooms",
+			analyze: "Analyze",
+			avg_sale_price: "Avg Sale Price",
+			price_sqft: "Price per SqFt",
+			avg_daily_rate: "Avg Daily Rate (ADR)",
+			monthly_rent: "Avg Monthly Rent",
+			avg_occupancy: "Avg Occupancy",
+			historical_trends: "Historical Trends",
+			trends_desc: "Evolution of prices and occupancy over time.",
+			data_connected: "{source} Connected",
+			sample_based: "Based on a sample of {count} properties.",
+			high_demand: "High Demand"
+		},
+		reports: {
+			maintenance_analytics: "Maintenance Analytics",
+			total_spend: "Total Spend",
+			total_tasks: "Total Tasks",
+			avg_resolution: "Avg Resolution Time",
+			avg_cost_task: "Avg Cost / Task",
+			cost_breakdown: "Cost Breakdown by Category",
+			distribution_expenses: "Expense distribution.",
+			monthly_expenditure: "Monthly Expenditure",
+			spending_trends: "Maintenance spending trends.",
+			reports: "Reports"
+		},
+		inventory: {
+			manage_items: "Manage items and conditions.",
+			import: "Import",
+			delete_all: "Delete All"
+		},
+		marketing_tab: {
+			portal_sync: "Portal Sync",
+			manage_listings: "Manage automated listings on major real estate portals.",
+			leads: "Leads",
+			inquiries_desc: "Inquiries captured from external portals.",
+			publish_btn: "Publish",
+			publish_success: "Publication started.",
+			contact_info: "Contact",
+			source: "Source",
+			inquiry_date: "Inquiry Date",
+			status: "Status"
+		},
+		sync: {
+			title: "Sync",
+			subtitle: "Manage iCal connections.",
+			platform: "Platform",
+			status: "Status",
+			last_sync: "Last Sync",
+			no_links: "No links configured.",
+			add_link: "Add Link",
+			sync_now: "Sync Now",
+			sync_success: "Sync Completed",
+			sync_desc: "Calendar updated successfully.",
+			export_calendar: "Export Calendar",
+			copy_link: "Link copied!",
+			ical_url: "iCal URL"
+		},
+		status: {
+			rented: "Rented",
+			available: "Available",
+			interested: "Interested",
+			in_registration: "In Registration",
+			suspended: "Suspended",
+			released: "Released",
+			occupied: "Occupied",
+			vacant: "Vacant",
+			maintenance: "Maintenance",
+			marketing: "Marketing Status",
+			reserved: "Reserved",
+			sold: "Sold",
+			sale_pending: "Sale Pending"
+		},
+		header: {
+			demo_profiles: "Demo Profiles",
+			other_users: "Other Users"
+		},
+		roles: {
+			platform_owner: "Platform Owner",
+			software_tenant: "Landlord (Manager)",
+			internal_user: "Internal Staff",
+			property_owner: "Owner",
+			partner: "Partner",
+			partner_employee: "Partner Employee",
+			tenant: "Tenant"
+		},
+		renewals: {
+			title: "Renewals",
+			subtitle: "Manage contract renewals.",
+			search_placeholder: "Search by tenant or property...",
+			negotiation_started: "Negotiation Started",
+			close_negotiation: "Close Negotiation",
+			new_value: "New Value",
+			new_start_date: "New Start Date",
+			new_end_date: "New End Date",
+			contract_upload: "Contract Upload",
+			current_value: "Current Value"
+		},
+		messages: {
+			title: "Messages",
+			subtitle: "Unified communication center.",
+			new_message: "New Message",
+			select_user: "Select User",
+			group_team: "Team",
+			group_tenants: "Tenants",
+			group_owners: "Owners",
+			group_partners: "Partners",
+			no_contacts: "No contacts found.",
+			search_contact: "Search contact...",
+			no_conv: "No conversation found.",
+			type_message: "Type your message...",
+			online: "Online",
+			new_chat_prompt: "Start a new conversation",
+			select_prompt: "Select a contact from the list or start a new chat to collaborate.",
+			start_chat_desc: "Start Chat"
+		},
+		invoices: {
+			title: "Invoices",
+			subtitle: "Manage invoices and payments.",
+			create_new: "Create New",
+			invoice_id: "Invoice ID",
+			amount: "Amount",
+			status_paid: "Paid",
+			status_pending: "Pending",
+			status_approved: "Approved",
+			no_invoices: "No invoices found.",
+			send_to_payer: "Send to Payer",
+			sent_success: "Invoice Sent",
+			view: "View",
+			pay_now: "Pay Now",
+			download: "Download",
+			print: "Print"
+		},
+		invoice_viewer: {
+			title: "View Invoice",
+			invoice_no: "INVOICE NO.",
+			date: "Date",
+			due_date: "Due Date",
+			bill_to: "Bill To",
+			description: "Description",
+			quantity: "Qty",
+			rate: "Rate",
+			amount: "Amount",
+			subtotal: "Subtotal",
+			total: "Total",
+			notes: "Notes",
+			terms: "Terms & Conditions",
+			thank_you: "Thank you for your business!",
+			close: "Close",
+			download: "Download",
+			print: "Print"
+		},
+		auth: {
+			login_title: "Login",
+			register_title: "Register",
+			demo_login: "Demo Login",
+			no_account: "Don't have an account?",
+			already_have_account: "Already have an account?",
+			company_details: "Company Details",
+			login_desc: "Enter your email to access your account",
+			email_placeholder: "m@example.com",
+			forgot_password: "Forgot password?",
+			register_desc: "Complete your profile to get started with COREPM",
+			name_placeholder: "John Doe",
+			company_placeholder: "My Realty LLC",
+			tax_id_placeholder: "SSN / EIN",
+			address_placeholder: "123 Business Rd, City, State"
+		},
+		settings: {
+			title: "Settings",
+			subtitle: "Manage platform settings.",
+			integrations: "Integrations",
+			personal_info: "Personal Info",
+			update_info: "Update your profile information.",
+			change_photo: "Change Photo",
+			full_name: "Full Name",
+			company_legal_name: "Legal Name",
+			save_changes: "Save Changes",
+			automation_title: "Automation",
+			automation_desc: "Configure automation rules.",
+			rent_reminder: "Rent Reminder",
+			days_before: "Days Before",
+			billing_payment: "Billing & Payment",
+			billing_gateways_title: "Billing & Payment Gateways",
+			billing_gateways_desc: "Configure payment methods and receiving settings.",
+			payment_gateways: "Payment Gateways",
+			system_alerts: "System Alerts",
+			system_alerts_desc: "Global notification settings.",
+			system_alerts_help: "These settings control system alert generation. For personal preferences, go to Profile tab."
+		},
+		users: {
+			title: "Users",
+			subtitle: "Manage users and permissions.",
+			invite: "Invite",
+			share_access: "Share Access",
+			share_desc: "Copy link below to invite new users.",
+			link_copied: "Link Copied",
+			copy_success: "Invite link copied to clipboard.",
+			status_active: "Active",
+			status_pending: "Pending",
+			status_blocked: "Blocked",
+			role_label: "Role",
+			permissions: "Permissions",
+			mirror_admin: "Mirror Admin",
+			registered: "Registered Users",
+			registered_desc: "users on platform.",
+			approve_success: "User approved successfully.",
+			block_title: "Block User",
+			block_confirm: "Are you sure you want to block this user?",
+			block_success: "User blocked."
+		},
+		gamification: {
+			portfolio_health: "Portfolio Health",
+			desc: "Score based on occupancy, revenue, and maintenance.",
+			level: "Level",
+			expert: "Expert",
+			target: "Target",
+			health_score: "Health Score"
+		}
+	},
+	es: {
+		common: {
+			dashboard: "Panel",
+			properties: "Propiedades",
+			tenants: "Inquilinos",
+			owners: "Propietarios",
+			partners: "Socios",
+			calendar: "Calendario",
+			tasks: "Tareas",
+			financial: "Financiero",
+			invoices: "Facturas",
+			messages: "Mensajes",
+			settings: "Configuración",
+			service_pricing: "Catálogo de Precios",
+			service_desc: "Gestione servicios, tarifas y precios de socios.",
+			search: "Buscar...",
+			filter: "Filtrar",
+			status: "Estado",
+			actions: "Acciones",
+			save: "Guardar",
+			cancel: "Cancelar",
+			edit: "Editar",
+			delete: "Eliminar",
+			new: "Nuevo",
+			back: "Volver",
+			view: "Ver",
+			details: "Detalles",
+			name: "Nombre",
+			email: "Correo",
+			phone: "Teléfono",
+			address: "Dirección",
+			type: "Tipo",
+			role: "Rol",
+			logout: "Cerrar Sesión",
+			profile: "Perfil",
+			notifications: "Notificaciones",
+			team: "Equipo",
+			automation: "Automatización",
+			all: "Todos",
+			pending: "Pendiente",
+			approved: "Aprobado",
+			completed: "Completado",
+			paid: "Pagado",
+			overdue: "Vencido",
+			active: "Activo",
+			inactive: "Inactivo",
+			occupied: "Ocupado",
+			vacant: "Vacante",
+			maintenance: "Mantenimiento",
+			confirm: "Confirmar",
+			upload: "Subir",
+			description: "Descripción",
+			date: "Fecha",
+			due_date: "Vencimiento",
+			value: "Valor",
+			priority: "Prioridad",
+			yes: "Sí",
+			no: "No",
+			none: "Ninguno",
+			error: "Error",
+			condominiums: "Condominios",
+			continue: "Continuar",
+			password: "Contraseña",
+			confirm_password: "Confirmar Contraseña",
+			add_title: "Agregar",
+			documents: "Documentos",
+			contact_via_whatsapp: "WhatsApp",
+			contact_via_email: "Correo",
+			tax_id: "DNI/CIF / Tax ID",
+			system_activity: "Actividad del Sistema",
+			approve: "Aprobar",
+			block: "Bloquear",
+			pending_approval: "Pendiente de Aprobación",
+			pending_activation: "Pendiente de Activación",
+			blocked: "Bloqueado",
+			country: "País",
+			select_country: "Seleccione País",
+			export_data: "Exportar Datos",
+			export_success: "Datos exportados con éxito.",
+			renewals: "Renovación de Contratos",
+			short_term: "Alquiler Vacacional",
+			market_analysis: "Análisis de Mercado",
+			user_analysis: "Análisis de Usuario",
+			workflows: "Flujos de Trabajo",
+			audit_logs: "Registros de Auditoría",
+			portal: "Portal",
+			publicity: "Publicidad",
+			login: "Ingresar",
+			register: "Registrarse",
+			welcome: "Bienvenido",
+			full_name: "Nombre Completo",
+			property: "Propiedad",
+			reports: "Informes",
+			delete_title: "¿Está seguro?",
+			delete_desc: "Esta acción no se puede deshacer.",
+			start_now: "Empezar Ahora",
+			download: "Descargar",
+			print: "Imprimir",
+			close: "Cerrar",
+			delete_active_tenant_error: "No se puede eliminar propiedad con inquilino activo.",
+			confirm_delete: "Confirmar Eliminación",
+			operations: "Operaciones",
+			contracts: "Contratos",
+			total: "Total",
+			done: "Hecho",
+			taxes: "Impuestos",
+			utilities: "Servicios",
+			cleaning: "Limpieza",
+			advanced_analytics: "Análisis Avanzado",
+			automation_rules: "Reglas de Automatización",
+			inventory: "Inventario",
+			history: "Historial",
+			activity_log: "Registro de Actividad",
+			created_at: "Creado en",
+			updated_at: "Actualizado en",
+			select: "Seleccione",
+			required: "Obligatorio",
+			success: "Éxito",
+			removed: "Eliminado",
+			copied: "Copiado",
+			empty: "Vacío",
+			relationships: "Relaciones",
+			relationship_owner: "Propietario",
+			relationship_tenant: "Inquilino",
+			no_owner: "Sin Propietario",
+			add_owner: "Agregar Propietario",
+			no_active_tenant: "Sin Inquilino Activo",
+			export: "Exportar",
+			frequency: "Frecuencia",
+			visits: "Visitas",
+			schedule_visit: "Agendar Visita",
+			client_name: "Nombre del Cliente",
+			visit_date: "Fecha de Visita",
+			visit_status: "Estado de Visita",
+			scheduled: "Agendada",
+			canceled: "Cancelada",
+			real_estate_dashboard: "Panel Inmobiliario",
+			visit_scheduling: "Agendamiento de Visitas",
+			visits_list: "Lista de Visitas",
+			pending_visits: "Visitas Pendientes",
+			total_revenue: "Ingresos Totales",
+			active_listings: "Listados Activos",
+			sold: "Vendido",
+			sale_pending: "Venta Pendiente",
+			category: "Categoría",
+			quantity: "Cantidad",
+			condition: "Condición",
+			analytics: "Análisis",
+			schedule_maintenance: "Agendar Mantenimiento",
+			start_date: "Fecha Inicio",
+			end_date: "Fecha Fin",
+			provider: "Proveedor",
+			account_number: "Número de Cuenta",
+			recurring: "Recurrente",
+			partners: "Socios",
+			delete_linked_error: "No se puede eliminar porque existen registros vinculados.",
+			phone_invalid: "Teléfono inválido para empleado. Formato requerido: (99) 99999-9999",
+			email_invalid: "Correo inválido. Verifique el formato.",
+			validation_error_title: "Error de Validación",
+			validation_error_desc: "Por favor verifique los campos resaltados.",
+			error_404_title: "404",
+			error_404_desc: "¡Vaya! Página no encontrada.",
+			return_home: "Volver al Inicio",
+			name_required: "El nombre es obligatorio",
+			email_required: "El correo es obligatorio",
+			address_placeholder: "Dirección completa"
+		},
+		workflows: {
+			title: "Motor de Workflow",
+			subtitle: "Automatice procesos y secuencias de tareas.",
+			new_workflow: "Nuevo Workflow",
+			edit_workflow: "Editar Workflow",
+			config_workflow: "Configurar Workflow",
+			trigger: "Disparador",
+			steps: "Pasos",
+			step_name: "Nombre del Paso",
+			step_role: "Rol Responsable",
+			step_type: "Tipo de Acción",
+			step_desc: "Descripción del Paso",
+			add_step: "Agregar Paso",
+			delete_step: "Eliminar Paso",
+			active_status: "Estado Activo",
+			run_manual: "Ejecutar Manualmente",
+			run_success: "Workflow Iniciado",
+			run_desc: "El workflow {name} se ha disparado manualmente."
+		},
+		short_term: {
+			title: "Alquiler Vacacional",
+			subtitle: "Gestione sus reservas y alquileres a corto plazo.",
+			new_booking: "Nueva Reserva",
+			platform: "Plataforma",
+			guest: "Huésped",
+			check_in: "Check-in",
+			check_out: "Check-out",
+			total: "Total"
+		},
+		partners: {
+			title: "Socios",
+			subtitle: "Gestione socios y proveedores de servicios.",
+			new_partner: "Nuevo Socio",
+			register_title: "Registrar Socio",
+			search_placeholder: "Buscar socios...",
+			contact_name: "Nombre de Contacto",
+			company_name: "Nombre de Empresa",
+			category: "Categoría",
+			agent: "Agente",
+			cleaning: "Limpieza",
+			maintenance: "Mantenimiento",
+			bank_info: "Datos Bancarios",
+			bank_name: "Banco",
+			routing: "Agencia/Routing",
+			account: "Cuenta",
+			no_partners: "No se encontraron socios.",
+			service_rates: "Tarifas de Servicio",
+			rate_name: "Nombre de Tarifa",
+			rate_price: "Precio",
+			rate_valid_from: "Válido Desde",
+			payment_history: "Historial de Pagos",
+			financial_report: "Informe Financiero"
+		},
+		automation: {
+			auto_generate_invoice: "Generar factura automáticamente",
+			quickbooks_export: "Exportar a QuickBooks",
+			quickbooks_desc: "Descargue transacciones compatibles con QB.",
+			export_csv: "Exportar CSV",
+			export_excel: "Exportar Excel",
+			export_success_title: "Exportación Iniciada",
+			export_success_desc: "El archivo se está generando."
+		},
+		tasks: {
+			title: "Tareas",
+			subtitle: "Seguimiento de actividades y flujos.",
+			new_task: "Nueva Tarea",
+			create_title: "Crear Nueva Tarea",
+			create_desc: "Complete los detalles para programar un servicio.",
+			task_title: "Título de la Tarea",
+			service_type: "Tipo de Servicio",
+			assignee: "Asignado a",
+			scheduled_date: "Fecha Programada",
+			location: "Ubicación",
+			activity_log: "Registro de Actividad",
+			arrival: "Llegada",
+			photos: "Fotos",
+			photos_ref: "Fotos de Referencia",
+			evidence_upload: "Subir Evidencia",
+			evidence_photo: "Foto de Evidencia",
+			send: "Enviar",
+			start_checkin: "Iniciar (Check-in)",
+			finish: "Finalizar",
+			details_evidence: "Detalles y Evidencia",
+			in_progress: "En Progreso",
+			approval: "Aprobación",
+			board: "Tablero",
+			list: "Lista",
+			success_created: "Tarea Creada",
+			b2b_label: "Back to Back (B2B)",
+			detailed_desc: "Descripción Detallada",
+			desc_placeholder: "Instrucciones específicas...",
+			create_btn: "Crear Tarea"
+		},
+		sidebar: {
+			main_menu: "Menú Principal",
+			system: "Sistema",
+			tenant_portal: "Portal del Inquilino",
+			owner_portal: "Portal del Propietario",
+			partner_portal: "Portal del Socio",
+			migration_hub: "Centro de Migración",
+			publicity_admin: "Admin de Publicidad",
+			users: "Usuarios"
+		},
+		condominiums: {
+			title: "Condominios",
+			subtitle: "Gestione la información de sus condominios.",
+			new_condo: "Nuevo Condominio",
+			add_title: "Agregar Condominio",
+			manager: "Administrador",
+			contact: "Contacto",
+			no_condos: "No hay condominios registrados.",
+			access_credentials: "Credenciales de Acceso",
+			financial_hoa: "Finanzas HOA"
+		},
+		tenants: {
+			title: "Inquilinos",
+			subtitle: "Gestione contratos de alquiler y perfiles de inquilinos.",
+			new_tenant: "Nuevo Inquilino",
+			register_title: "Registrar Inquilino",
+			list_title: "Lista de Inquilinos",
+			search_placeholder: "Buscar inquilinos...",
+			property: "Propiedad",
+			send_message: "Enviar Mensaje"
+		},
+		owners: {
+			title: "Propietarios",
+			subtitle: "Gestione los propietarios y sus contactos.",
+			new_owner: "Nuevo Propietario",
+			register_title: "Registrar Propietario",
+			base_title: "Base de Propietarios",
+			search_placeholder: "Buscar propietarios...",
+			contact_details: "Detalles de Contacto",
+			properties_count: "Propiedades",
+			success_desc: "Propietario registrado con éxito.",
+			renew_contract: "Renovar Contrato de Gestión",
+			workflow_started: "Workflow Iniciado",
+			workflow_desc: "El proceso de {action} para {name} ha comenzado."
+		},
+		service_pricing: {
+			title: "Catálogo de Precios",
+			subtitle: "Gestión de servicios y valores.",
+			manage_categories: "Gestionar Categorías",
+			add_service: "Agregar Servicio",
+			edit_service: "Editar Servicio",
+			service_name: "Nombre del Servicio",
+			category: "Categoría",
+			partner_vendor: "Socio / Proveedor",
+			service_price: "Precio del Servicio",
+			product_price: "Precio del Producto",
+			partner_payment: "Pago al Socio",
+			pm_value: "Valor PM",
+			valid_from: "Válido Desde",
+			valid_to: "Válido Hasta",
+			generic: "Genérico",
+			review_needed: "Revisión Necesaria",
+			config_saved: "Configuración Guardada",
+			config_saved_desc: "Parámetros de revisión de precios actualizados.",
+			stale_alert: "{count} servicios no se han actualizado en más de {days} días.",
+			review_period_config: "Configuración de Período de Revisión",
+			review_period_desc: "Defina después de cuántos días un precio debe marcarse para revisión.",
+			threshold_days: "Días Límite"
+		},
+		calendar: {
+			title: "Calendario",
+			subtitle: "Visualice sus citas y plazos.",
+			integrated_view: "Vista Integrada",
+			no_activities: "No hay actividades para este día."
+		},
+		financial: {
+			title: "Financiero",
+			subtitle: "Control financiero y conciliación.",
+			reconciliation: "Conciliación",
+			upload_statement: "Subir Extracto",
+			upload_desc: "Suba extractos bancarios (OFX/PDF) para conciliación.",
+			statements: "Extractos",
+			no_statements: "Ningún extracto subido.",
+			reconciled: "Conciliado",
+			pending_reconciliation: "Pendiente"
+		},
+		dashboard: {
+			total_properties: "Total Propiedades",
+			in_portfolio: "En cartera",
+			revenue_vs_expenses: "Ingresos vs Gastos",
+			revenue_overview: "Visión general financiera.",
+			quick_calendar: "Calendario Rápido",
+			todays_activity: "Actividades de hoy.",
+			pending_approvals: "Aprobaciones Pendientes",
+			pending_desc: "Elementos que requieren atención.",
+			review: "Revisar",
+			approve: "Aprobar",
+			expense_distribution: "Distribución de Gastos",
+			expense_desc: "Gastos por categoría.",
+			customize: "Personalizar",
+			customize_view: "Personalizar Vista",
+			customize_desc: "Seleccione los widgets a mostrar.",
+			kpi_indicators: "Indicadores KPI",
+			revenue_chart: "Gráfico de Ingresos",
+			unread: "No leídos",
+			from_last_month: "vs mes anterior"
+		},
+		properties: {
+			title: "Propiedades",
+			subtitle: "Gestione su cartera inmobiliaria.",
+			new_property: "Nueva Propiedad",
+			add_title: "Agregar Propiedad",
+			add_description: "Complete el formulario para crear una nueva propiedad.",
+			rental_type: "Tipo de Alquiler",
+			profile_short: "Vacacional (Short Term)",
+			profile_long: "Anual (Long Term)",
+			search_placeholder: "Buscar propiedades...",
+			address_placeholder: "Dirección completa",
+			zip_code: "Código Postal",
+			zip_required: "Código Postal es obligatorio",
+			name_required: "El nombre es obligatorio",
+			address_required: "La dirección es obligatoria",
+			city_state_required: "Ciudad y Estado son obligatorios",
+			profile_required: "El tipo de perfil es obligatorio",
+			validation_error: "Error de Validación",
+			property_added: "Propiedad Agregada",
+			delete_success: "Propiedad eliminada con éxito",
+			error_delete: "Error al eliminar propiedad",
+			info_label: "Complemento",
+			city_placeholder: "Ciudad",
+			state_placeholder: "Estado",
+			property_value: "Valor de la Propiedad",
+			hoa_fee: "Cuota de HOA",
+			hoa_auto_hint: "Autocompletado si se selecciona condominio",
+			cover_image: "Imagen de Portada",
+			no_image_selected: "Ninguna imagen seleccionada",
+			view_details: "Ver Detalles",
+			all_profiles: "Todos los Perfiles",
+			profile_filter: "Filtro de Perfil",
+			no_image: "Sin Imagen",
+			tabs: {
+				overview: "Visión General",
+				maintenance: "Mantenimiento",
+				contracts: "Contratos",
+				inventory: "Inventario",
+				features: "Características",
+				location: "Ubicación",
+				sync: "Sincronización",
+				financial: "Financiero",
+				marketing: "Marketing",
+				content: "Contenido",
+				documents: "Documentos",
+				logs: "Historial",
+				analytics: "Analítica",
+				reports: "Informes"
+			},
+			hoa_freq: "Frecuencia HOA",
+			monthly: "Mensual",
+			quarterly: "Trimestral",
+			annually: "Anual",
+			overview: "Visión General",
+			marketing: "Marketing",
+			financial: "Info Financiera",
+			house: "Casa",
+			condo: "Apartamento",
+			townhouse: "Adosado",
+			public_desc: "Descripción Pública",
+			publish_portals: "Publicar en Portales",
+			upload_image: "Subir Imagen",
+			features: {
+				bedrooms: "Habitaciones",
+				bathrooms: "Baños",
+				guests: "Huéspedes",
+				wifi_connectivity: "Conectividad Wi-Fi",
+				ssid: "Red (SSID)",
+				password: "Contraseña",
+				access_codes: "Códigos de Acceso",
+				unit_code: "Código Unidad",
+				building_code: "Código Edificio",
+				pool_code: "Código Piscina",
+				staff_code: "Código Servicio",
+				condo_read_only: "Acceso Condominio (Lectura)",
+				condo_hint: "Sincronizado de {condo}"
+			},
+			location: {
+				address: "Dirección",
+				neighborhood: "Barrio",
+				community: "Comunidad/Condominio",
+				linked_condo: "Condominio Vinculado",
+				map_title: "Mapa de la Propiedad",
+				map_hint: "Dirección no encontrada para mostrar mapa."
+			},
+			content: {
+				house_rules: "Reglas de la Casa",
+				auto_translate: "Traducción Automática",
+				copy_from: "Copiar de"
+			}
+		},
+		analytics: {
+			benchmark_title: "Comparativa de Rendimiento",
+			benchmark_desc: "Analice el rendimiento de su cartera frente al mercado.",
+			house_model: "Modelo de Casa",
+			internal_perf: "Rendimiento Interno",
+			market_avg: "Promedio Mercado",
+			occupancy: "Ocupación",
+			profitability_title: "Análisis de Rentabilidad",
+			profitability_desc: "Comparación de beneficio neto.",
+			profit_internal: "Beneficio Interno",
+			profit_market: "Beneficio Mercado",
+			noi: "NOI (Ingreso Operativo Neto)",
+			roi: "ROI (Retorno sobre Inversión)",
+			cap_rate: "Tasa de Capitalización",
+			revenue_sqm: "Ingresos por m²",
+			cash_flow_projection: "Proyección de Flujo de Caja",
+			projected_income: "Ingresos Proyectados",
+			projected_expenses: "Gastos Proyectados",
+			net_flow: "Flujo Neto",
+			income_vs_expenses: "Ingresos vs. Gastos Proyectados"
+		},
+		market: {
+			title: "Análisis de Mercado",
+			subtitle: "Insights y tendencias del mercado inmobiliario en tiempo real.",
+			export_pdf: "Exportar PDF",
+			comparison_params: "Parámetros de Comparación",
+			comparison_desc: "Configure filtros para análisis comparativo.",
+			base_property: "Propiedad Base",
+			select: "Seleccione",
+			general: "General (Sin vínculo)",
+			region: "Región",
+			bedrooms: "Habitaciones",
+			bathrooms: "Baños",
+			analyze: "Analizar",
+			avg_sale_price: "Precio Medio Venta",
+			price_sqft: "Precio por m²",
+			avg_daily_rate: "Tarifa Diaria Media (ADR)",
+			monthly_rent: "Alquiler Mensual Medio",
+			avg_occupancy: "Ocupación Media",
+			historical_trends: "Tendencias Históricas",
+			trends_desc: "Evolución de precios y ocupación en el tiempo.",
+			data_connected: "{source} Conectado",
+			sample_based: "Basado en una muestra de {count} propiedades.",
+			high_demand: "Alta Demanda"
+		},
+		reports: {
+			maintenance_analytics: "Análisis de Mantenimiento",
+			total_spend: "Gasto Total",
+			total_tasks: "Total Tareas",
+			avg_resolution: "Tiempo Medio Resolución",
+			avg_cost_task: "Costo Medio / Tarea",
+			cost_breakdown: "Desglose de Costos por Categoría",
+			distribution_expenses: "Distribución de gastos.",
+			monthly_expenditure: "Gasto Mensual",
+			spending_trends: "Tendencias de gasto en mantenimiento.",
+			reports: "Informes"
+		},
+		inventory: {
+			manage_items: "Gestione artículos y condiciones.",
+			import: "Importar",
+			delete_all: "Eliminar Todo"
+		},
+		marketing_tab: {
+			portal_sync: "Sincronización con Portales",
+			manage_listings: "Gestione listados automatizados en portales inmobiliarios.",
+			leads: "Leads",
+			inquiries_desc: "Consultas capturadas de portales externos.",
+			publish_btn: "Publicar",
+			publish_success: "Publicación iniciada.",
+			contact_info: "Contacto",
+			source: "Origen",
+			inquiry_date: "Fecha Consulta",
+			status: "Estado"
+		},
+		sync: {
+			title: "Sincronización",
+			subtitle: "Gestione conexiones iCal.",
+			platform: "Plataforma",
+			status: "Estado",
+			last_sync: "Última Sinc.",
+			no_links: "Ningún enlace configurado.",
+			add_link: "Agregar Enlace",
+			sync_now: "Sincronizar Ahora",
+			sync_success: "Sincronización Completada",
+			sync_desc: "Calendario actualizado con éxito.",
+			export_calendar: "Exportar Calendario",
+			copy_link: "¡Enlace copiado!",
+			ical_url: "URL iCal"
+		},
+		status: {
+			rented: "Alquilado",
+			available: "Disponible",
+			interested: "Interesado",
+			in_registration: "En Registro",
+			suspended: "Suspendido",
+			released: "Liberado",
+			occupied: "Ocupado",
+			vacant: "Vacante",
+			maintenance: "Mantenimiento",
+			marketing: "Estado Marketing",
+			reserved: "Reservado",
+			sold: "Vendido",
+			sale_pending: "Venta Pendiente"
+		},
+		header: {
+			demo_profiles: "Perfiles Demo",
+			other_users: "Otros Usuarios"
+		},
+		roles: {
+			platform_owner: "Dueño de Plataforma",
+			software_tenant: "Gestor (Landlord)",
+			internal_user: "Personal Interno",
+			property_owner: "Propietario",
+			partner: "Socio",
+			partner_employee: "Empleado Socio",
+			tenant: "Inquilino"
+		},
+		renewals: {
+			title: "Renovaciones",
+			subtitle: "Gestione renovaciones de contrato.",
+			search_placeholder: "Buscar por inquilino o propiedad...",
+			negotiation_started: "Negociación Iniciada",
+			close_negotiation: "Cerrar Negociación",
+			new_value: "Nuevo Valor",
+			new_start_date: "Nueva Fecha Inicio",
+			new_end_date: "Nueva Fecha Fin",
+			contract_upload: "Subir Contrato",
+			current_value: "Valor Actual"
+		},
+		messages: {
+			title: "Mensajes",
+			subtitle: "Centro de comunicación unificado.",
+			new_message: "Nuevo Mensaje",
+			select_user: "Seleccionar Usuario",
+			group_team: "Equipo",
+			group_tenants: "Inquilinos",
+			group_owners: "Propietarios",
+			group_partners: "Socios",
+			no_contacts: "No se encontraron contactos.",
+			search_contact: "Buscar contacto...",
+			no_conv: "No se encontraron conversaciones.",
+			type_message: "Escriba su mensaje...",
+			online: "En línea",
+			new_chat_prompt: "Iniciar una nueva conversación",
+			select_prompt: "Seleccione un contacto de la lista o inicie un chat para colaborar.",
+			start_chat_desc: "Iniciar Chat"
+		},
+		invoices: {
+			title: "Facturas",
+			subtitle: "Gestione facturas y pagos.",
+			create_new: "Crear Nueva",
+			invoice_id: "ID Factura",
+			amount: "Monto",
+			status_paid: "Pagado",
+			status_pending: "Pendiente",
+			status_approved: "Aprobado",
+			no_invoices: "No se encontraron facturas.",
+			send_to_payer: "Enviar al Pagador",
+			sent_success: "Factura Enviada",
+			view: "Ver",
+			pay_now: "Pagar Ahora",
+			download: "Descargar",
+			print: "Imprimir"
+		},
+		invoice_viewer: {
+			title: "Ver Factura",
+			invoice_no: "FACTURA Nº",
+			date: "Fecha",
+			due_date: "Vencimiento",
+			bill_to: "Cobrar a",
+			description: "Descripción",
+			quantity: "Cant",
+			rate: "Precio",
+			amount: "Total",
+			subtotal: "Subtotal",
+			total: "Total",
+			notes: "Notas",
+			terms: "Términos y Condiciones",
+			thank_you: "¡Gracias por su preferencia!",
+			close: "Cerrar",
+			download: "Descargar",
+			print: "Imprimir"
+		},
+		auth: {
+			login_title: "Ingresar",
+			register_title: "Registrarse",
+			demo_login: "Login Demo",
+			no_account: "¿No tiene cuenta?",
+			already_have_account: "¿Ya tiene cuenta?",
+			company_details: "Detalles de Empresa",
+			login_desc: "Ingrese su correo para acceder",
+			email_placeholder: "m@ejemplo.com",
+			forgot_password: "¿Olvidó contraseña?",
+			register_desc: "Complete su perfil para comenzar con COREPM",
+			name_placeholder: "Juan Pérez",
+			company_placeholder: "Mi Inmobiliaria SL",
+			tax_id_placeholder: "DNI / NIF",
+			address_placeholder: "Calle Principal 123, Ciudad"
+		},
+		settings: {
+			title: "Configuración",
+			subtitle: "Gestione la configuración de la plataforma.",
+			integrations: "Integraciones",
+			personal_info: "Información Personal",
+			update_info: "Actualice su información de perfil.",
+			change_photo: "Cambiar Foto",
+			full_name: "Nombre Completo",
+			company_legal_name: "Razón Social",
+			save_changes: "Guardar Cambios",
+			automation_title: "Automatización",
+			automation_desc: "Configure reglas de automatización.",
+			rent_reminder: "Recordatorio Alquiler",
+			days_before: "Días Antes",
+			billing_payment: "Facturación y Pagos",
+			billing_gateways_title: "Pasarelas de Pago",
+			billing_gateways_desc: "Configure métodos de pago y recepción.",
+			payment_gateways: "Pasarelas de Pago",
+			system_alerts: "Alertas del Sistema",
+			system_alerts_desc: "Configuración global de notificaciones.",
+			system_alerts_help: "Estos ajustes controlan la generación de alertas. Para preferencias personales, vaya a Perfil."
+		},
+		users: {
+			title: "Usuarios",
+			subtitle: "Gestione usuarios y permisos.",
+			invite: "Invitar",
+			share_access: "Compartir Acceso",
+			share_desc: "Copie el enlace para invitar usuarios.",
+			link_copied: "Enlace Copiado",
+			copy_success: "Enlace de invitación copiado al portapapeles.",
+			status_active: "Activo",
+			status_pending: "Pendiente",
+			status_blocked: "Bloqueado",
+			role_label: "Rol",
+			permissions: "Permisos",
+			mirror_admin: "Espejo Admin",
+			registered: "Usuarios Registrados",
+			registered_desc: "usuarios en plataforma.",
+			approve_success: "Usuario aprobado con éxito.",
+			block_title: "Bloquear Usuario",
+			block_confirm: "¿Está seguro de bloquear este usuario?",
+			block_success: "Usuario bloqueado."
+		},
+		gamification: {
+			portfolio_health: "Salud del Portafolio",
+			desc: "Puntuación basada en ocupación, ingresos y mantenimiento.",
+			level: "Nivel",
+			expert: "Experto",
+			target: "Meta",
+			health_score: "Puntuación de Salud"
+		}
+	}
 };
 const AppContext = (0, import_react.createContext)(void 0);
 const AppProvider = ({ children }) => {
@@ -54275,22 +55731,27 @@ const AppProvider = ({ children }) => {
 		setLanguageState(lang);
 		localStorage.setItem("app_language", lang);
 	};
-	const t$1 = (key, params) => {
-		const keys$6 = key.split(".");
-		let current = translations[language];
-		for (const k$3 of keys$6) {
-			if (current[k$3] === void 0) return key;
-			current = current[k$3];
+	const t$1 = (0, import_react.useCallback)((key, params) => {
+		const resolveKey = (dict, k$3) => {
+			const parts = k$3.split(".");
+			let current = dict;
+			for (const part of parts) {
+				if (current === void 0 || current === null) return void 0;
+				current = current[part];
+			}
+			return typeof current === "string" ? current : void 0;
+		};
+		let text = resolveKey(translations[language], key);
+		if (!text && language !== "en") text = resolveKey(translations["en"], key);
+		if (!text) {
+			const parts = key.split(".");
+			text = parts[parts.length - 1].replace(/_/g, " ").replace(/\b\w/g, (c$1) => c$1.toUpperCase());
 		}
-		if (typeof current === "string" && params) {
-			let text = current;
-			Object.entries(params).forEach(([pkey, pval]) => {
-				text = text.replace(`{${pkey}}`, pval);
-			});
-			return text;
-		}
-		return current;
-	};
+		if (text && params) Object.entries(params).forEach(([pkey, pval]) => {
+			text = text.replace(`{${pkey}}`, pval);
+		});
+		return text || key;
+	}, [language]);
 	const allUsers = (0, import_react.useMemo)(() => {
 		const combined = [
 			...users,
@@ -57137,12 +58598,12 @@ function Login() {
 		setTimeout(() => {
 			if (login(demoEmail)) {
 				toast$2({
-					title: "Demo Login",
+					title: t$1("auth.demo_login"),
 					description: `Logged in as ${role}`
 				});
 				navigate("/");
 			} else toast$2({
-				title: "Login Error",
+				title: t$1("common.error"),
 				description: `Could not login as ${role}. Email: ${demoEmail}`,
 				variant: "destructive"
 			});
@@ -57168,7 +58629,7 @@ function Login() {
 							className: "text-2xl font-bold",
 							children: t$1("auth.login_title")
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Enter your email to access your account" })
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("auth.login_desc") })
 					]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -57221,7 +58682,7 @@ function Login() {
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 								id: "email",
 								type: "email",
-								placeholder: "m@example.com",
+								placeholder: t$1("auth.email_placeholder"),
 								required: true,
 								value: email$1,
 								onChange: (e) => setEmail(e.target.value)
@@ -57237,7 +58698,7 @@ function Login() {
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 									to: "#",
 									className: "text-sm text-blue-600 hover:underline",
-									children: "Forgot password?"
+									children: t$1("auth.forgot_password")
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 								id: "password",
@@ -58435,7 +59896,7 @@ function Register() {
 		if (!formData.name || isGenericOrPlaceholder(formData.name)) {
 			toast$2({
 				title: t$1("common.error"),
-				description: "Please enter a valid name.",
+				description: t$1("common.name_required"),
 				variant: "destructive"
 			});
 			return;
@@ -58443,7 +59904,7 @@ function Register() {
 		if (!isValidEmail(formData.email)) {
 			toast$2({
 				title: t$1("common.error"),
-				description: "Invalid email format.",
+				description: t$1("common.email_invalid"),
 				variant: "destructive"
 			});
 			return;
@@ -58509,7 +59970,7 @@ function Register() {
 							className: "text-2xl font-bold",
 							children: t$1("auth.register_title")
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Complete your profile to get started with COREPM" })
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("auth.register_desc") })
 					]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("form", {
@@ -58557,7 +60018,7 @@ function Register() {
 												children: t$1("common.full_name")
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												id: "name",
-												placeholder: "John Doe",
+												placeholder: t$1("auth.name_placeholder"),
 												required: true,
 												value: formData.name,
 												onChange: handleChange
@@ -58589,7 +60050,7 @@ function Register() {
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												id: "email",
 												type: "email",
-												placeholder: "m@example.com",
+												placeholder: t$1("auth.email_placeholder"),
 												required: true,
 												value: formData.email,
 												onChange: handleChange
@@ -58615,7 +60076,7 @@ function Register() {
 											children: t$1("settings.company_legal_name")
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											id: "companyName",
-											placeholder: "My Realty LLC",
+											placeholder: t$1("auth.company_placeholder"),
 											required: true,
 											value: formData.companyName,
 											onChange: handleChange
@@ -58628,7 +60089,7 @@ function Register() {
 											children: t$1("common.tax_id")
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											id: "taxId",
-											placeholder: "EIN / CNPJ",
+											placeholder: t$1("auth.tax_id_placeholder"),
 											value: formData.taxId,
 											onChange: handleChange
 										})]
@@ -58640,7 +60101,7 @@ function Register() {
 											children: t$1("common.address")
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											id: "address",
-											placeholder: "123 Business Rd, City, State",
+											placeholder: t$1("auth.address_placeholder"),
 											value: formData.address,
 											onChange: handleChange
 										})]
@@ -58705,6 +60166,7 @@ function Register() {
 }
 var NotFound = () => {
 	const location = useLocation();
+	const { t: t$1 } = useLanguageStore_default();
 	(0, import_react.useEffect)(() => {
 		console.error("404 Error: User attempted to access non-existent route:", location.pathname);
 	}, [location.pathname]);
@@ -58715,16 +60177,16 @@ var NotFound = () => {
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 					className: "text-4xl font-bold mb-4",
-					children: "404"
+					children: t$1("common.error_404_title")
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-xl text-gray-600 mb-4",
-					children: "Oops! Page not found"
+					children: t$1("common.error_404_desc")
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
 					href: "/",
 					className: "text-blue-500 hover:text-blue-700 underline",
-					children: "Return to Home"
+					children: t$1("common.return_home")
 				})
 			]
 		})
@@ -76673,6 +78135,7 @@ function CalendarPage() {
 	const [sheetOpen, setSheetOpen] = (0, import_react.useState)(false);
 	const navigate = useNavigate();
 	const [filterPartner, setFilterPartner] = (0, import_react.useState)("all");
+	const dateLocale = language === "pt" ? ptBR : language === "es" ? es : enUS;
 	const taskEvents = tasks$1.filter((t$2) => {
 		if (selectedPropertyId !== "all" && t$2.propertyId !== selectedPropertyId) return false;
 		if (filterPartner !== "all" && t$2.assigneeId !== filterPartner) return false;
@@ -76817,6 +78280,7 @@ function CalendarPage() {
 							mode: "single",
 							selected: date$4,
 							onSelect: setDate$1,
+							locale: dateLocale,
 							className: "rounded-md border shadow-sm w-full h-full text-slate-900",
 							classNames: {
 								month: "space-y-4 w-full h-full flex flex-col",
@@ -94091,4 +95555,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-iXGHBI7M.js.map
+//# sourceMappingURL=index-CfUPXjF1.js.map
