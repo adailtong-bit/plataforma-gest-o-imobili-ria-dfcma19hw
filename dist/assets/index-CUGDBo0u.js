@@ -63718,7 +63718,7 @@ function Properties() {
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 						className: "max-h-[90vh] overflow-y-auto sm:max-w-[600px]",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("properties.add_title") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("properties.add_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VisuallyHidden, { children: t$1("properties.add_description", "Fill in the form to create a new property.") }) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-4 py-4",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -94058,4 +94058,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-EdQgwlyc.js.map
+//# sourceMappingURL=index-CUGDBo0u.js.map

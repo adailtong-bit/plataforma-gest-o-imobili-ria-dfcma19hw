@@ -27,6 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
@@ -49,6 +50,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { DataMask } from '@/components/DataMask'
 import { applyZipCodeMask, isGenericOrPlaceholder } from '@/lib/utils'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
+import { VisuallyHidden } from '@/components/ui/visually-hidden'
 
 export default function Properties() {
   const { properties, addProperty, deleteProperty } = usePropertyStore()
@@ -347,6 +349,14 @@ export default function Properties() {
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>{t('properties.add_title')}</DialogTitle>
+                <DialogDescription>
+                  <VisuallyHidden>
+                    {t(
+                      'properties.add_description',
+                      'Fill in the form to create a new property.',
+                    )}
+                  </VisuallyHidden>
+                </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 {/* Manual Rental Type Selection */}
