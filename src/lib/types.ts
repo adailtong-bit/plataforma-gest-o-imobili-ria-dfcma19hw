@@ -1,6 +1,5 @@
 // Only showing changed parts or essential parts, but full file content must be returned according to rules.
 // Since rules say "Make sure the files contain all imports, types etc", I will output the full file.
-// I will include the updates to Visit type.
 
 export type UserRole =
   | 'platform_owner'
@@ -161,6 +160,7 @@ export interface Condominium {
   zipCode?: string
   city?: string
   state?: string
+  country?: string // Added country support
   managerName?: string
   managerPhone?: string
   managerEmail?: string
@@ -874,3 +874,4 @@ export interface Visit {
   registeredBy?: string // User ID who created
   reason?: string // Purpose of visit
 }
+

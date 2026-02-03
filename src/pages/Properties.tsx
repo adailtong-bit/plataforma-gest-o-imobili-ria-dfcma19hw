@@ -47,6 +47,8 @@ import {
 } from '@/components/ui/alert-dialog'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { DataMask } from '@/components/DataMask'
+import { applyZipCodeMask } from '@/lib/utils'
+import { AddressInput, AddressData } from '@/components/ui/address-input'
 
 export default function Properties() {
   const { properties, addProperty, deleteProperty } = usePropertyStore()
@@ -61,6 +63,9 @@ export default function Properties() {
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
 
+  // State for property being created country
+  const [selectedCountry, setSelectedCountry] = useState('US')
+
   // Initial state without default profileType to force user selection
   const [newProp, setNewProp] = useState<Partial<Property>>({
     name: '',
@@ -70,7 +75,7 @@ export default function Properties() {
     zipCode: '',
     additionalInfo: '',
     neighborhood: '',
-    country: 'USA',
+    country: 'US', // Initial default
     type: 'House',
     profileType: undefined, // Must be selected manually
     bedrooms: 3,
@@ -131,6 +136,33 @@ export default function Properties() {
     }
   }
 
+  const handleAddressSelect = (addr: AddressData) => {
+    const mappedCountry =
+      addr.country === 'Brazil'
+        ? 'BR'
+        : addr.country === 'Spain'
+          ? 'ES'
+          : addr.country === 'USA'
+            ? 'US'
+            : selectedCountry
+
+    setSelectedCountry(mappedCountry)
+
+    setNewProp((prev) => ({
+      ...prev,
+      address: addr.street,
+      city: addr.city,
+      state: addr.state,
+      zipCode: applyZipCodeMask(addr.zipCode, mappedCountry),
+      country: mappedCountry,
+    }))
+  }
+
+  const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = applyZipCodeMask(e.target.value, selectedCountry)
+    setNewProp({ ...newProp, zipCode: val })
+  }
+
   const handleAddProperty = () => {
     // Strict Validation
     if (!newProp.name?.trim()) {
@@ -187,7 +219,7 @@ export default function Properties() {
       state: newProp.state || '',
       zipCode: newProp.zipCode || '',
       additionalInfo: newProp.additionalInfo || '',
-      country: newProp.country || '',
+      country: selectedCountry,
       neighborhood: newProp.neighborhood || '',
       type: newProp.type || 'House',
       profileType: newProp.profileType,
@@ -228,7 +260,7 @@ export default function Properties() {
       zipCode: '',
       additionalInfo: '',
       neighborhood: '',
-      country: 'USA',
+      country: 'US',
       type: 'House',
       profileType: undefined,
       bedrooms: 3,
@@ -238,6 +270,7 @@ export default function Properties() {
       listingPrice: 0,
       hoaValue: 0,
     })
+    setSelectedCountry('US')
   }
 
   const handleDelete = (id: string) => {
@@ -267,7 +300,27 @@ export default function Properties() {
         </div>
 
         {hasPermission(currentUser as User, 'properties', 'create') && (
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog
+            open={open}
+            onOpenChange={(v) => {
+              setOpen(v)
+              if (!v) {
+                // Reset state on close
+                setNewProp({
+                  name: '',
+                  country: 'US',
+                  type: 'House',
+                  profileType: undefined,
+                  bedrooms: 3,
+                  bathrooms: 2,
+                  guests: 6,
+                  listingPrice: 0,
+                  hoaValue: 0,
+                })
+                setSelectedCountry('US')
+              }
+            }}
+          >
             <DialogTrigger asChild>
               <Button className="bg-trust-blue hover:bg-blue-700 gap-2">
                 <Plus className="h-4 w-4" /> {t('properties.new_property')}
@@ -326,6 +379,29 @@ export default function Properties() {
                   </RadioGroup>
                 </div>
 
+                {/* Country Selection */}
+                <div className="grid gap-2">
+                  <Label className="text-black font-bold">
+                    {t('common.country')}
+                  </Label>
+                  <Select
+                    value={selectedCountry}
+                    onValueChange={(val) => {
+                      setSelectedCountry(val)
+                      setNewProp((prev) => ({ ...prev, zipCode: '' }))
+                    }}
+                  >
+                    <SelectTrigger className="text-black">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="US">United States (USA)</SelectItem>
+                      <SelectItem value="BR">Brazil (Brasil)</SelectItem>
+                      <SelectItem value="ES">Spain (España)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="grid gap-2">
                   <Label className="text-black font-bold">
                     {t('common.name')} <span className="text-red-500">*</span>
@@ -338,6 +414,11 @@ export default function Properties() {
                     placeholder={t('properties.search_placeholder')}
                     className="text-black"
                   />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label className="text-black font-bold">Search Address</Label>
+                  <AddressInput onAddressSelect={handleAddressSelect} />
                 </div>
 
                 <div className="grid gap-2">
@@ -363,10 +444,10 @@ export default function Properties() {
                     </Label>
                     <Input
                       value={newProp.zipCode}
-                      onChange={(e) =>
-                        setNewProp({ ...newProp, zipCode: e.target.value })
+                      onChange={handleZipCodeChange}
+                      placeholder={
+                        selectedCountry === 'BR' ? '00000-000' : '00000'
                       }
-                      placeholder="00000"
                       className="text-black"
                     />
                   </div>

@@ -50,7 +50,14 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { DataMask } from '@/components/DataMask'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
-import { isPhoneValid, isValidEmail } from '@/lib/utils'
+import { isPhoneValid, isValidEmail, applyZipCodeMask } from '@/lib/utils'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export default function Owners() {
   const { owners, addOwner } = useOwnerStore()
@@ -79,15 +86,29 @@ export default function Owners() {
   )
 
   const handleAddressSelect = (addr: AddressData) => {
+    // Detect country based on address
+    const mappedCountry =
+      addr.country === 'Brazil'
+        ? 'BR'
+        : addr.country === 'Spain'
+          ? 'ES'
+          : addr.country === 'USA'
+            ? 'US'
+            : newOwner.country
+
     setNewOwner((prev) => ({
       ...prev,
       address: addr.street,
       city: addr.city,
       state: addr.state,
-      zipCode: addr.zipCode,
-      country:
-        addr.country === 'USA' ? 'US' : addr.country === 'Brazil' ? 'BR' : 'US',
+      zipCode: applyZipCodeMask(addr.zipCode, mappedCountry),
+      country: mappedCountry,
     }))
+  }
+
+  const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = applyZipCodeMask(e.target.value, newOwner.country)
+    setNewOwner((prev) => ({ ...prev, zipCode: val }))
   }
 
   const handleAddOwner = () => {
@@ -188,6 +209,27 @@ export default function Owners() {
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label className="text-black font-bold">
+                  {t('common.country')}
+                </Label>
+                <Select
+                  value={newOwner.country}
+                  onValueChange={(val) =>
+                    setNewOwner({ ...newOwner, country: val, zipCode: '' })
+                  }
+                >
+                  <SelectTrigger className="text-black">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="US">United States (USA)</SelectItem>
+                    <SelectItem value="BR">Brazil (Brasil)</SelectItem>
+                    <SelectItem value="ES">Spain (España)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-2">
+                <Label className="text-black font-bold">
                   {t('common.name')}
                 </Label>
                 <Input
@@ -268,8 +310,9 @@ export default function Owners() {
                   <Label className="text-black font-bold">Zip</Label>
                   <Input
                     value={newOwner.zipCode}
-                    onChange={(e) =>
-                      setNewOwner({ ...newOwner, zipCode: e.target.value })
+                    onChange={handleZipCodeChange}
+                    placeholder={
+                      newOwner.country === 'BR' ? '00000-000' : '00000'
                     }
                     className="text-black"
                   />

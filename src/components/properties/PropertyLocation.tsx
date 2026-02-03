@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select'
 import { MapPin } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { applyZipCodeMask } from '@/lib/utils'
 
 interface PropertyLocationProps {
   data: Property
@@ -27,6 +28,9 @@ export function PropertyLocation({
 }: PropertyLocationProps) {
   const { t } = useLanguageStore()
 
+  // Ensure selected country defaults to US if not set
+  const selectedCountry = data.country || 'US'
+
   // Construct a full address string for the map query to be more precise
   const fullAddress = [
     data.address,
@@ -42,6 +46,17 @@ export function PropertyLocation({
 
   const encodedAddress = encodeURIComponent(fullAddress)
 
+  const handleCountryChange = (val: string) => {
+    onChange('country', val)
+    // Re-validate zip code if country changes by clearing it or re-masking
+    onChange('zipCode', '')
+  }
+
+  const handleZipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = applyZipCodeMask(e.target.value, selectedCountry)
+    onChange('zipCode', val)
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
@@ -49,6 +64,24 @@ export function PropertyLocation({
           <CardTitle>{t('properties.location.address')}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
+          <div className="grid gap-2">
+            <Label>{t('common.country')}</Label>
+            <Select
+              value={selectedCountry}
+              onValueChange={handleCountryChange}
+              disabled={!canEdit}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="US">United States (USA)</SelectItem>
+                <SelectItem value="BR">Brazil (Brasil)</SelectItem>
+                <SelectItem value="ES">Spain (España)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="grid gap-2">
             <Label>
               {t('properties.location.address')}{' '}
@@ -69,11 +102,11 @@ export function PropertyLocation({
               </Label>
               <Input
                 value={data.zipCode || ''}
-                onChange={(e) => onChange('zipCode', e.target.value)}
+                onChange={handleZipChange}
                 disabled={!canEdit}
                 required
                 className={!data.zipCode ? 'border-red-300' : ''}
-                placeholder="00000-000"
+                placeholder={selectedCountry === 'BR' ? '00000-000' : '00000'}
               />
             </div>
             <div className="grid gap-2">
@@ -121,14 +154,6 @@ export function PropertyLocation({
                 disabled={!canEdit}
               />
             </div>
-          </div>
-          <div className="grid gap-2">
-            <Label>{t('common.country')}</Label>
-            <Input
-              value={data.country || ''}
-              onChange={(e) => onChange('country', e.target.value)}
-              disabled={!canEdit}
-            />
           </div>
           <div className="grid gap-2">
             <Label>{t('properties.location.linked_condo')}</Label>

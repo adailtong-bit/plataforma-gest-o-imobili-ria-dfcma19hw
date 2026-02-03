@@ -40,7 +40,7 @@ import { PartnerProperties } from '@/components/partners/PartnerProperties'
 import { PartnerTasks } from '@/components/partners/PartnerTasks'
 import { PartnerPricing } from '@/components/partners/PartnerPricing'
 import { PartnerDocuments } from '@/components/partners/PartnerDocuments'
-import { isValidEmail } from '@/lib/utils'
+import { isValidEmail, applyZipCodeMask, isPhoneValid } from '@/lib/utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -52,6 +52,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { PhoneInput } from '@/components/ui/phone-input'
 
 export default function PartnerDetails() {
   const { id } = useParams()
@@ -67,6 +75,20 @@ export default function PartnerDetails() {
   const [formData, setFormData] = useState<Partner | null>(() =>
     partner ? JSON.parse(JSON.stringify(partner)) : null,
   )
+  const [phoneCountry, setPhoneCountry] = useState<'US' | 'BR' | 'ES'>('US')
+
+  // Check and set initial country
+  useState(() => {
+    if (partner?.country) {
+      setPhoneCountry(
+        partner.country === 'US' ||
+          partner.country === 'BR' ||
+          partner.country === 'ES'
+          ? partner.country
+          : 'US',
+      )
+    }
+  })
 
   if (!partner || !formData) {
     return (
@@ -107,7 +129,16 @@ export default function PartnerDetails() {
       return
     }
 
-    updatePartner(formData)
+    if (formData.phone && !isPhoneValid(formData.phone, phoneCountry)) {
+      toast({
+        title: 'Erro de Validação',
+        description: `Telefone inválido para ${phoneCountry}.`,
+        variant: 'destructive',
+      })
+      return
+    }
+
+    updatePartner({ ...formData, country: phoneCountry })
     toast({
       title: t('common.save'),
       description: 'Dados do parceiro atualizados.',
@@ -159,6 +190,16 @@ export default function PartnerDetails() {
     if (formData.email) {
       window.location.href = `mailto:${formData.email}`
     }
+  }
+
+  const handleCountryChange = (val: string) => {
+    setPhoneCountry(val as any)
+    setFormData((prev) => (prev ? { ...prev, zipCode: '' } : null))
+  }
+
+  const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = applyZipCodeMask(e.target.value, phoneCountry)
+    setFormData((prev) => (prev ? { ...prev, zipCode: val } : null))
   }
 
   const partnerEntries = ledgerEntries.filter((e) => e.beneficiaryId === id)
@@ -275,6 +316,22 @@ export default function PartnerDetails() {
                 <CardTitle>Detalhes do Parceiro</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="grid gap-2">
+                  <Label>País</Label>
+                  <Select
+                    value={phoneCountry}
+                    onValueChange={handleCountryChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="US">United States (USA)</SelectItem>
+                      <SelectItem value="BR">Brazil (Brasil)</SelectItem>
+                      <SelectItem value="ES">Spain (España)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label>{t('common.name')}</Label>
@@ -308,11 +365,13 @@ export default function PartnerDetails() {
                   </div>
                   <div className="grid gap-2">
                     <Label>{t('common.phone')}</Label>
-                    <Input
+                    <PhoneInput
                       value={formData.phone}
                       onChange={(e) =>
                         setFormData({ ...formData, phone: e.target.value })
                       }
+                      country={phoneCountry}
+                      onCountryChange={setPhoneCountry}
                     />
                   </div>
                   <div className="grid gap-2 col-span-2">
@@ -346,17 +405,9 @@ export default function PartnerDetails() {
                     <Label>CEP / Zip</Label>
                     <Input
                       value={formData.zipCode || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, zipCode: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>País</Label>
-                    <Input
-                      value={formData.country || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, country: e.target.value })
+                      onChange={handleZipCodeChange}
+                      placeholder={
+                        phoneCountry === 'BR' ? '00000-000' : '00000'
                       }
                     />
                   </div>

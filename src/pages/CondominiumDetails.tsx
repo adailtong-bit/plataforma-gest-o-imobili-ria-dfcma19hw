@@ -45,7 +45,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { isValidEmail, isPhoneValid } from '@/lib/utils'
+import { isValidEmail, isPhoneValid, applyZipCodeMask } from '@/lib/utils'
 import { DataMask } from '@/components/DataMask'
 import { PhoneInput } from '@/components/ui/phone-input'
 
@@ -60,8 +60,10 @@ export default function CondominiumDetails() {
   const [formData, setFormData] = useState<Condominium | null>(null)
   const [isEditing, setIsEditing] = useState(false)
 
-  // Explicit country state for validation
-  const [managerCountry, setManagerCountry] = useState<'US' | 'BR' | 'ES'>('US')
+  // Explicit country state for validation logic
+  const [selectedCountry, setSelectedCountry] = useState<'US' | 'BR' | 'ES'>(
+    'US',
+  )
   const [newContactCountry, setNewContactCountry] = useState<
     'US' | 'BR' | 'ES'
   >('US')
@@ -99,6 +101,10 @@ export default function CondominiumDetails() {
       }
 
       setFormData({ ...condo, contacts })
+      if (condo.country) {
+        // Safe cast as we assume valid data or default fallback
+        setSelectedCountry(condo.country as any)
+      }
     }
   }, [condo])
 
@@ -110,17 +116,17 @@ export default function CondominiumDetails() {
     // Validate manager phone if present
     if (
       formData.managerPhone &&
-      !isPhoneValid(formData.managerPhone, managerCountry)
+      !isPhoneValid(formData.managerPhone, selectedCountry)
     ) {
       toast({
         title: t('common.error'),
-        description: `Invalid phone for ${managerCountry}.`,
+        description: `Invalid phone for ${selectedCountry}.`,
         variant: 'destructive',
       })
       return
     }
 
-    updateCondominium(formData)
+    updateCondominium({ ...formData, country: selectedCountry })
     setIsEditing(false)
     toast({
       title: t('common.save'),
@@ -133,13 +139,29 @@ export default function CondominiumDetails() {
   }
 
   const handleAddressSelect = (addr: AddressData) => {
+    const mappedCountry =
+      addr.country === 'Brazil'
+        ? 'BR'
+        : addr.country === 'Spain'
+          ? 'ES'
+          : addr.country === 'USA'
+            ? 'US'
+            : selectedCountry
+
+    setSelectedCountry(mappedCountry)
+
     setFormData((prev: any) => ({
       ...prev,
       address: addr.street,
       city: addr.city,
       state: addr.state,
-      zipCode: addr.zipCode,
+      zipCode: applyZipCodeMask(addr.zipCode, mappedCountry),
     }))
+  }
+
+  const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = applyZipCodeMask(e.target.value, selectedCountry)
+    setFormData((prev: any) => ({ ...prev, zipCode: val }))
   }
 
   const handleNestedChange = (
@@ -283,6 +305,26 @@ export default function CondominiumDetails() {
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label className="text-slate-900 font-bold">
+                  {t('common.country')}
+                </Label>
+                <Select
+                  value={selectedCountry}
+                  onValueChange={(val: any) => setSelectedCountry(val)}
+                  disabled={!isEditing}
+                >
+                  <SelectTrigger className="text-black font-medium">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="US">United States (USA)</SelectItem>
+                    <SelectItem value="BR">Brazil (Brasil)</SelectItem>
+                    <SelectItem value="ES">Spain (España)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-2">
+                <Label className="text-slate-900 font-bold">
                   {t('common.name')}
                 </Label>
                 <Input
@@ -333,9 +375,10 @@ export default function CondominiumDetails() {
                 <Label className="text-slate-900 font-bold">CEP / ZIP</Label>
                 <Input
                   value={formData.zipCode || ''}
-                  onChange={(e) => handleChange('zipCode', e.target.value)}
+                  onChange={handleZipCodeChange}
                   disabled={!isEditing}
                   className="text-black font-medium"
+                  placeholder={selectedCountry === 'BR' ? '00000-000' : '00000'}
                 />
               </div>
               <div className="grid gap-2">
@@ -360,8 +403,8 @@ export default function CondominiumDetails() {
                     onChange={(e) =>
                       handleChange('managerPhone', e.target.value)
                     }
-                    country={managerCountry}
-                    onCountryChange={setManagerCountry}
+                    country={selectedCountry}
+                    onCountryChange={setSelectedCountry}
                   />
                 ) : (
                   <div className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">

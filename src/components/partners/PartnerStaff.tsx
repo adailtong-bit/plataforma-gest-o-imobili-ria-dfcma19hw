@@ -25,7 +25,14 @@ import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { PhoneInput } from '@/components/ui/phone-input'
-import { isValidEmail } from '@/lib/utils'
+import { isValidEmail, applyZipCodeMask, isPhoneValid } from '@/lib/utils'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface PartnerStaffProps {
   partner: Partner
@@ -51,7 +58,7 @@ export function PartnerStaff({
     city: '',
     state: '',
     zipCode: '',
-    country: '',
+    country: 'US', // default
     documents: [],
   })
 
@@ -78,11 +85,14 @@ export function PartnerStaff({
       return
     }
 
-    // Phone mask enforcement: (99) 99999-9999 is 15 characters
-    if (!formData.phone || formData.phone.length < 15) {
+    // Phone mask enforcement depending on country
+    if (
+      formData.phone &&
+      !isPhoneValid(formData.phone, formData.country as any)
+    ) {
       toast({
         title: 'Erro de Validação',
-        description: 'Telefone inválido. Formato obrigatório: (99) 99999-9999.',
+        description: `Telefone inválido para ${formData.country}.`,
         variant: 'destructive',
       })
       return
@@ -134,7 +144,7 @@ export function PartnerStaff({
       city: '',
       state: '',
       zipCode: '',
-      country: '',
+      country: 'US',
       documents: [],
     })
   }
@@ -219,6 +229,11 @@ export function PartnerStaff({
     }
   }
 
+  const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = applyZipCodeMask(e.target.value, formData.country || 'US')
+    setFormData((prev) => ({ ...prev, zipCode: val }))
+  }
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -243,6 +258,26 @@ export function PartnerStaff({
                 </DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
+                {/* Country First */}
+                <div className="grid gap-2">
+                  <Label>País</Label>
+                  <Select
+                    value={formData.country}
+                    onValueChange={(val) =>
+                      setFormData({ ...formData, country: val, zipCode: '' })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="US">United States (USA)</SelectItem>
+                      <SelectItem value="BR">Brazil (Brasil)</SelectItem>
+                      <SelectItem value="ES">Spain (España)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label>Nome</Label>
@@ -281,12 +316,11 @@ export function PartnerStaff({
                       onChange={(e) =>
                         setFormData({ ...formData, phone: e.target.value })
                       }
-                      defaultCountry="BR"
-                      country="BR"
+                      country={formData.country as any}
+                      onCountryChange={(c) =>
+                        setFormData({ ...formData, country: c })
+                      }
                     />
-                    <span className="text-xs text-muted-foreground">
-                      Formato: (99) 99999-9999
-                    </span>
                   </div>
                 </div>
 
@@ -299,7 +333,7 @@ export function PartnerStaff({
                     }
                   />
                 </div>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <div className="grid gap-2">
                     <Label>Cidade</Label>
                     <Input
@@ -322,17 +356,9 @@ export function PartnerStaff({
                     <Label>CEP</Label>
                     <Input
                       value={formData.zipCode}
-                      onChange={(e) =>
-                        setFormData({ ...formData, zipCode: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>País</Label>
-                    <Input
-                      value={formData.country}
-                      onChange={(e) =>
-                        setFormData({ ...formData, country: e.target.value })
+                      onChange={handleZipCodeChange}
+                      placeholder={
+                        formData.country === 'BR' ? '00000-000' : '00000'
                       }
                     />
                   </div>

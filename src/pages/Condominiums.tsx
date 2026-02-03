@@ -25,6 +25,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   Building2,
   Plus,
   Search,
@@ -49,7 +56,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
-import { isValidEmail, isPhoneValid } from '@/lib/utils'
+import { isValidEmail, isPhoneValid, applyZipCodeMask } from '@/lib/utils'
 import { DataMask } from '@/components/DataMask'
 
 export default function Condominiums() {
@@ -61,7 +68,10 @@ export default function Condominiums() {
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
 
-  const [managerCountry, setManagerCountry] = useState<'US' | 'BR' | 'ES'>('US')
+  // Combined country for both address and manager phone validation logic
+  const [selectedCountry, setSelectedCountry] = useState<'US' | 'BR' | 'ES'>(
+    'US',
+  )
 
   const [formData, setFormData] = useState({
     name: '',
@@ -83,13 +93,30 @@ export default function Condominiums() {
   )
 
   const handleAddressSelect = (addr: AddressData) => {
+    // If address input returns a country, try to map it, otherwise keep selected
+    const mappedCountry =
+      addr.country === 'Brazil'
+        ? 'BR'
+        : addr.country === 'Spain'
+          ? 'ES'
+          : addr.country === 'USA'
+            ? 'US'
+            : selectedCountry
+
+    setSelectedCountry(mappedCountry)
+
     setFormData((prev) => ({
       ...prev,
       address: addr.street,
       city: addr.city,
       state: addr.state,
-      zipCode: addr.zipCode,
+      zipCode: applyZipCodeMask(addr.zipCode, mappedCountry),
     }))
+  }
+
+  const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = applyZipCodeMask(e.target.value, selectedCountry)
+    setFormData({ ...formData, zipCode: val })
   }
 
   const handleSave = () => {
@@ -113,11 +140,11 @@ export default function Condominiums() {
 
     if (
       formData.managerPhone &&
-      !isPhoneValid(formData.managerPhone, managerCountry)
+      !isPhoneValid(formData.managerPhone, selectedCountry)
     ) {
       toast({
         title: t('common.error'),
-        description: `Por favor, insira um número de telefone válido para ${managerCountry}.`,
+        description: `Por favor, insira um número de telefone válido para ${selectedCountry}.`,
         variant: 'destructive',
       })
       return
@@ -126,6 +153,7 @@ export default function Condominiums() {
     addCondominium({
       id: `condo-${Date.now()}`,
       ...formData,
+      country: selectedCountry,
       description: '',
       contacts: formData.managerName
         ? [
@@ -171,7 +199,7 @@ export default function Condominiums() {
       managerPhone: '',
       managerEmail: '',
     })
-    setManagerCountry('US')
+    setSelectedCountry('US')
   }
 
   return (
@@ -200,6 +228,27 @@ export default function Condominiums() {
               <DialogTitle>{t('condominiums.add_title')}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label>{t('common.country')}</Label>
+                <Select
+                  value={selectedCountry}
+                  onValueChange={(val: any) => {
+                    setSelectedCountry(val)
+                    // Clear zip on country change to force re-entry/validation visually
+                    setFormData((prev) => ({ ...prev, zipCode: '' }))
+                  }}
+                >
+                  <SelectTrigger className="text-black">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="US">United States (USA)</SelectItem>
+                    <SelectItem value="BR">Brazil (Brasil)</SelectItem>
+                    <SelectItem value="ES">Spain (España)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="grid gap-2">
                 <Label>{t('common.name')}</Label>
                 <Input
@@ -250,10 +299,11 @@ export default function Condominiums() {
                   <Label>CEP / ZIP</Label>
                   <Input
                     value={formData.zipCode}
-                    onChange={(e) =>
-                      setFormData({ ...formData, zipCode: e.target.value })
-                    }
+                    onChange={handleZipCodeChange}
                     className="text-black"
+                    placeholder={
+                      selectedCountry === 'BR' ? '00000-000' : '00000'
+                    }
                   />
                 </div>
               </div>
@@ -275,9 +325,8 @@ export default function Condominiums() {
                     onChange={(e) =>
                       setFormData({ ...formData, managerPhone: e.target.value })
                     }
-                    country={managerCountry}
-                    onCountryChange={setManagerCountry}
-                    defaultCountry="US"
+                    country={selectedCountry}
+                    onCountryChange={setSelectedCountry}
                     className="text-black"
                   />
                 </div>
@@ -371,6 +420,11 @@ export default function Condominiums() {
                             {condo.city || '-'}, {condo.state} {condo.zipCode}
                           </span>
                         </DataMask>
+                        {condo.country && (
+                          <span className="text-[10px] text-gray-500">
+                            {condo.country}
+                          </span>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="text-black">

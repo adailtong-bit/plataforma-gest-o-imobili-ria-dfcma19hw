@@ -64,7 +64,7 @@ import {
 } from '@/components/ui/dialog'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
 import { PhoneInput } from '@/components/ui/phone-input'
-import { isPhoneValid } from '@/lib/utils'
+import { isPhoneValid, applyZipCodeMask } from '@/lib/utils'
 
 export default function TenantDetails() {
   const { id } = useParams()
@@ -149,10 +149,24 @@ export default function TenantDetails() {
   }
 
   const handleAddressSelect = (addr: AddressData) => {
+    const mappedCountry =
+      addr.country === 'Brazil'
+        ? 'BR'
+        : addr.country === 'Spain'
+          ? 'ES'
+          : addr.country === 'USA'
+            ? 'US'
+            : phoneCountry
+
+    setPhoneCountry(mappedCountry)
+
     setFormData((prev: any) => ({
       ...prev,
-      address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
-      country: addr.country,
+      address: addr.street,
+      city: addr.city,
+      state: addr.state,
+      zipCode: applyZipCodeMask(addr.zipCode, mappedCountry),
+      country: mappedCountry,
     }))
   }
 
@@ -388,6 +402,31 @@ export default function TenantDetails() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <Label className="text-black font-bold">
+                        {t('common.country')}
+                      </Label>
+                      <Select
+                        value={phoneCountry}
+                        onValueChange={(val: any) => {
+                          setPhoneCountry(val)
+                          handleChange('country', val)
+                          handleChange('zipCode', '') // Clear zip on country change
+                        }}
+                        disabled={!isEditing}
+                      >
+                        <SelectTrigger className="text-black font-medium">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="US">
+                            United States (USA)
+                          </SelectItem>
+                          <SelectItem value="BR">Brazil (Brasil)</SelectItem>
+                          <SelectItem value="ES">Spain (España)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label className="text-black font-bold">
                         Nome Completo
                       </Label>
                       <Input
@@ -425,19 +464,6 @@ export default function TenantDetails() {
                           className="text-black font-medium"
                         />
                       )}
-                    </div>
-                    <div className="grid gap-2">
-                      <Label className="text-black font-bold">
-                        Nacionalidade
-                      </Label>
-                      <Input
-                        value={formData.country || ''}
-                        onChange={(e) =>
-                          handleChange('country', e.target.value)
-                        }
-                        disabled={!isEditing}
-                        className="text-black font-medium"
-                      />
                     </div>
                     <div className="grid gap-2 col-span-2">
                       <Label className="text-black font-bold">

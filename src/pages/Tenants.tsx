@@ -84,11 +84,20 @@ export default function Tenants() {
   )
 
   const handleAddressSelect = (addr: AddressData) => {
+    // If user picks address from autocomplete, update country context if possible
+    const mappedCountry =
+      addr.country === 'Brazil'
+        ? 'BR'
+        : addr.country === 'Spain'
+          ? 'ES'
+          : addr.country === 'USA'
+            ? 'US'
+            : newTenant.country
+
     setNewTenant((prev) => ({
       ...prev,
       address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
-      country:
-        addr.country === 'USA' ? 'US' : addr.country === 'Brazil' ? 'BR' : 'US',
+      country: mappedCountry,
     }))
   }
 
@@ -111,7 +120,10 @@ export default function Tenants() {
       return
     }
 
-    if (!isPhoneValid(newTenant.phone, newTenant.country as any)) {
+    if (
+      newTenant.phone &&
+      !isPhoneValid(newTenant.phone, newTenant.country as any)
+    ) {
       toast({
         title: t('common.error'),
         description: `Número de telefone inválido para o país selecionado (${newTenant.country}). Certifique-se de que está completo.`,
@@ -237,6 +249,25 @@ export default function Tenants() {
                 <DialogTitle>{t('tenants.register_title')}</DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label>{t('common.country')}</Label>
+                  <Select
+                    value={newTenant.country}
+                    onValueChange={(v) =>
+                      setNewTenant({ ...newTenant, country: v })
+                    }
+                  >
+                    <SelectTrigger className="text-black">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="US">United States (USA)</SelectItem>
+                      <SelectItem value="BR">Brazil (Brasil)</SelectItem>
+                      <SelectItem value="ES">Spain (España)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label>{t('common.name')}</Label>

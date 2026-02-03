@@ -41,7 +41,7 @@ import { Partner } from '@/lib/types'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { AddressInput, AddressData } from '@/components/ui/address-input'
-import { isValidEmail } from '@/lib/utils'
+import { isValidEmail, isPhoneValid, applyZipCodeMask } from '@/lib/utils'
 import { DataMask } from '@/components/DataMask'
 
 export default function Partners() {
@@ -62,7 +62,7 @@ export default function Partners() {
     zipCode: '',
     city: '',
     state: '',
-    country: '',
+    country: 'US', // default
     paymentInfo: {
       bankName: '',
       routingNumber: '',
@@ -72,8 +72,6 @@ export default function Partners() {
     },
   })
 
-  // Filter inactive partners by default in the main list, or show them visually distinct
-  // For now, showing all but allowing filter
   const filteredPartners = partners.filter(
     (p) =>
       (p.name.toLowerCase().includes(filter.toLowerCase()) ||
@@ -82,14 +80,28 @@ export default function Partners() {
   )
 
   const handleAddressSelect = (addr: AddressData) => {
+    const mappedCountry =
+      addr.country === 'Brazil'
+        ? 'BR'
+        : addr.country === 'Spain'
+          ? 'ES'
+          : addr.country === 'USA'
+            ? 'US'
+            : newPartner.country
+
     setNewPartner((prev) => ({
       ...prev,
       address: addr.street,
       city: addr.city,
       state: addr.state,
-      zipCode: addr.zipCode,
-      country: addr.country,
+      zipCode: applyZipCodeMask(addr.zipCode, mappedCountry),
+      country: mappedCountry,
     }))
+  }
+
+  const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = applyZipCodeMask(e.target.value, newPartner.country)
+    setNewPartner((prev) => ({ ...prev, zipCode: val }))
   }
 
   const handleAddPartner = () => {
@@ -106,6 +118,18 @@ export default function Partners() {
       toast({
         title: 'Erro',
         description: 'Email inválido',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (
+      newPartner.phone &&
+      !isPhoneValid(newPartner.phone, newPartner.country as any)
+    ) {
+      toast({
+        title: 'Erro',
+        description: `Telefone inválido para ${newPartner.country}.`,
         variant: 'destructive',
       })
       return
@@ -142,6 +166,7 @@ export default function Partners() {
       email: '',
       phone: '',
       address: '',
+      country: 'US',
       paymentInfo: {
         bankName: '',
         routingNumber: '',
@@ -241,6 +266,27 @@ export default function Partners() {
               <DialogTitle>{t('partners.register_title')}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label className="text-black font-bold">
+                  {t('common.country')}
+                </Label>
+                <Select
+                  value={newPartner.country}
+                  onValueChange={(val) =>
+                    setNewPartner({ ...newPartner, country: val, zipCode: '' })
+                  }
+                >
+                  <SelectTrigger className="text-black">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="US">United States (USA)</SelectItem>
+                    <SelectItem value="BR">Brazil (Brasil)</SelectItem>
+                    <SelectItem value="ES">Spain (España)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label className="text-black font-bold">
@@ -322,6 +368,10 @@ export default function Partners() {
                     onChange={(e) =>
                       setNewPartner({ ...newPartner, phone: e.target.value })
                     }
+                    country={newPartner.country as any}
+                    onCountryChange={(c) =>
+                      setNewPartner({ ...newPartner, country: c })
+                    }
                   />
                 </div>
               </div>
@@ -370,10 +420,11 @@ export default function Partners() {
                   <Label className="text-black font-bold">CEP / ZIP</Label>
                   <Input
                     value={newPartner.zipCode}
-                    onChange={(e) =>
-                      setNewPartner({ ...newPartner, zipCode: e.target.value })
-                    }
+                    onChange={handleZipCodeChange}
                     className="text-black"
+                    placeholder={
+                      newPartner.country === 'BR' ? '00000-000' : '00000'
+                    }
                   />
                 </div>
               </div>

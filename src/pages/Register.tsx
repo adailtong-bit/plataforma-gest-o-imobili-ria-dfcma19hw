@@ -17,6 +17,14 @@ import { useToast } from '@/hooks/use-toast'
 import logo from '@/assets/logo-estilizado.jpg'
 import { Separator } from '@/components/ui/separator'
 import { PhoneInput } from '@/components/ui/phone-input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { isPhoneValid } from '@/lib/utils'
 
 export default function Register() {
   const { t } = useLanguageStore()
@@ -28,6 +36,7 @@ export default function Register() {
     name: '',
     email: '',
     phone: '',
+    country: 'US', // default
     password: '',
     confirmPassword: '',
     companyName: '',
@@ -51,6 +60,18 @@ export default function Register() {
       return
     }
 
+    if (
+      formData.phone &&
+      !isPhoneValid(formData.phone, formData.country as any)
+    ) {
+      toast({
+        title: t('common.error'),
+        description: `Invalid phone format for ${formData.country}.`,
+        variant: 'destructive',
+      })
+      return
+    }
+
     // Simulate registration
     addUser({
       id: `user-${Date.now()}`,
@@ -60,6 +81,7 @@ export default function Register() {
       status: 'active', // Or pending based on rules
       isFirstLogin: true,
       phone: formData.phone,
+      country: formData.country,
       companyName: formData.companyName,
       taxId: formData.taxId,
       address: formData.address,
@@ -97,6 +119,27 @@ export default function Register() {
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                 {t('settings.personal_info')}
               </h3>
+
+              {/* Country first */}
+              <div className="grid gap-2">
+                <Label>{t('common.country')}</Label>
+                <Select
+                  value={formData.country}
+                  onValueChange={(val) =>
+                    setFormData({ ...formData, country: val })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="US">United States (USA)</SelectItem>
+                    <SelectItem value="BR">Brazil (Brasil)</SelectItem>
+                    <SelectItem value="ES">Spain (España)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">{t('common.full_name')}</Label>
@@ -115,9 +158,13 @@ export default function Register() {
                     onChange={(e) =>
                       setFormData({ ...formData, phone: e.target.value })
                     }
+                    country={formData.country as any}
+                    onCountryChange={(c) =>
+                      setFormData({ ...formData, country: c })
+                    }
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="email">{t('common.email')}</Label>
                   <Input
                     id="email"

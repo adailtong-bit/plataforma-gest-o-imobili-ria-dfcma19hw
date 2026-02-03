@@ -24620,6 +24620,16 @@ const isPhoneValid = (value, country) => {
 	if (country === "ES") return digits.length === 9;
 	return digits.length >= 8;
 };
+const applyZipCodeMask = (value, country) => {
+	const digits = value.replace(/\D/g, "");
+	if (country === "US") return digits.slice(0, 5);
+	if (country === "BR" || country === "Brazil") {
+		if (digits.length <= 5) return digits;
+		return `${digits.slice(0, 5)}-${digits.slice(5, 8)}`;
+	}
+	if (country === "ES" || country === "Spain") return digits.slice(0, 5);
+	return value;
+};
 const exportToCSV = (filename, headers, rows) => {
 	const csvContent = [headers.join(","), ...rows.map((row) => row.map((cell) => {
 		if (cell === null || cell === void 0) return "";
@@ -58331,6 +58341,7 @@ function Register() {
 		name: "",
 		email: "",
 		phone: "",
+		country: "US",
 		password: "",
 		confirmPassword: "",
 		companyName: "",
@@ -58351,6 +58362,14 @@ function Register() {
 			});
 			return;
 		}
+		if (formData.phone && !isPhoneValid(formData.phone, formData.country)) {
+			toast$2({
+				title: t$1("common.error"),
+				description: `Invalid phone format for ${formData.country}.`,
+				variant: "destructive"
+			});
+			return;
+		}
 		addUser({
 			id: `user-${Date.now()}`,
 			name: formData.name,
@@ -58359,6 +58378,7 @@ function Register() {
 			status: "active",
 			isFirstLogin: true,
 			phone: formData.phone,
+			country: formData.country,
 			companyName: formData.companyName,
 			taxId: formData.taxId,
 			address: formData.address
@@ -58404,54 +58424,86 @@ function Register() {
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "space-y-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-								className: "text-sm font-semibold text-muted-foreground uppercase tracking-wider",
-								children: t$1("settings.personal_info")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid grid-cols-1 md:grid-cols-2 gap-4",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-											htmlFor: "name",
-											children: t$1("common.full_name")
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											id: "name",
-											placeholder: "John Doe",
-											required: true,
-											value: formData.name,
-											onChange: handleChange
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-											htmlFor: "phone",
-											children: t$1("common.phone")
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
-											value: formData.phone,
-											onChange: (e) => setFormData({
-												...formData,
-												phone: e.target.value
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+									className: "text-sm font-semibold text-muted-foreground uppercase tracking-wider",
+									children: t$1("settings.personal_info")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: formData.country,
+										onValueChange: (val) => setFormData({
+											...formData,
+											country: val
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "US",
+												children: "United States (USA)"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "BR",
+												children: "Brazil (Brasil)"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "ES",
+												children: "Spain (España)"
 											})
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-											htmlFor: "email",
-											children: t$1("common.email")
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											id: "email",
-											type: "email",
-											placeholder: "m@example.com",
-											required: true,
-											value: formData.email,
-											onChange: handleChange
-										})]
-									})
-								]
-							})]
+										] })]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-1 md:grid-cols-2 gap-4",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												htmlFor: "name",
+												children: t$1("common.full_name")
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												id: "name",
+												placeholder: "John Doe",
+												required: true,
+												value: formData.name,
+												onChange: handleChange
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												htmlFor: "phone",
+												children: t$1("common.phone")
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+												value: formData.phone,
+												onChange: (e) => setFormData({
+													...formData,
+													phone: e.target.value
+												}),
+												country: formData.country,
+												onCountryChange: (c$1) => setFormData({
+													...formData,
+													country: c$1
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2 md:col-span-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												htmlFor: "email",
+												children: t$1("common.email")
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												id: "email",
+												type: "email",
+												placeholder: "m@example.com",
+												required: true,
+												value: formData.email,
+												onChange: handleChange
+											})]
+										})
+									]
+								})
+							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -63214,6 +63266,136 @@ var RadioGroupItem = import_react.forwardRef(({ className, ...props }, ref) => {
 	});
 });
 RadioGroupItem.displayName = Item2.displayName;
+var MOCK_ADDRESSES = [
+	{
+		label: "123 Palm Street, Orlando, FL",
+		data: {
+			street: "123 Palm Street",
+			city: "Orlando",
+			state: "FL",
+			zipCode: "32801",
+			country: "USA",
+			community: "Sunny Isles",
+			neighborhood: "Downtown"
+		}
+	},
+	{
+		label: "450 Brickell Ave, Miami, FL",
+		data: {
+			street: "450 Brickell Ave",
+			city: "Miami",
+			state: "FL",
+			zipCode: "33131",
+			country: "USA",
+			community: "Brickell Heights",
+			neighborhood: "Brickell"
+		}
+	},
+	{
+		label: "800 Ocean Drive, Miami Beach, FL",
+		data: {
+			street: "800 Ocean Drive",
+			city: "Miami Beach",
+			state: "FL",
+			zipCode: "33139",
+			country: "USA",
+			community: "Art Deco District",
+			neighborhood: "South Beach"
+		}
+	},
+	{
+		label: "Av. Paulista 1000, São Paulo, SP",
+		data: {
+			street: "Av. Paulista 1000",
+			city: "São Paulo",
+			state: "SP",
+			zipCode: "01310-100",
+			country: "Brazil",
+			community: "Bela Vista",
+			neighborhood: "Bela Vista"
+		}
+	}
+];
+function AddressInput({ onAddressSelect, defaultValue = "", className, disabled }) {
+	const [open, setOpen] = import_react.useState(false);
+	const [value, setValue] = import_react.useState(defaultValue);
+	const [loading, setLoading] = import_react.useState(false);
+	const [suggestions, setSuggestions] = import_react.useState(MOCK_ADDRESSES);
+	const handleSelect = (addr) => {
+		setValue(addr.label);
+		onAddressSelect(addr.data);
+		setOpen(false);
+	};
+	const handleSearch = (term) => {
+		setLoading(true);
+		setTimeout(() => {
+			setSuggestions(MOCK_ADDRESSES.filter((addr) => addr.label.toLowerCase().includes(term.toLowerCase())));
+			setLoading(false);
+		}, 500);
+	};
+	import_react.useEffect(() => {
+		if (defaultValue) setValue(defaultValue);
+	}, [defaultValue]);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, {
+		open,
+		onOpenChange: setOpen,
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
+			asChild: true,
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "relative w-full group",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					value,
+					onChange: (e) => {
+						setValue(e.target.value);
+						handleSearch(e.target.value);
+						setOpen(true);
+					},
+					disabled,
+					className: cn("pr-8 transition-shadow focus:ring-2 bg-white text-black", className),
+					placeholder: "Search address (e.g. 123 Main St)",
+					role: "combobox",
+					"aria-expanded": open
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "absolute right-2.5 top-2.5 h-4 w-4 text-muted-foreground opacity-50 group-focus-within:opacity-100 transition-opacity" })]
+			})
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContent, {
+			className: "w-[300px] p-0 bg-white",
+			align: "start",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Command, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandInput, {
+				placeholder: "Type address...",
+				className: "h-9 bg-white text-black",
+				onValueChange: handleSearch
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandList, { children: loading ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "py-6 text-center text-sm text-black flex items-center justify-center gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "h-4 w-4 animate-spin" }), " Searching..."]
+			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandEmpty, {
+				className: "text-black",
+				children: "No address found."
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
+				heading: "Suggestions",
+				className: "text-black",
+				children: suggestions.map((addr) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
+					value: addr.label,
+					onSelect: () => handleSelect(addr),
+					className: "cursor-pointer hover:bg-slate-100 text-black",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "mr-2 h-4 w-4 text-muted-foreground" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-col",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-medium text-black",
+								children: addr.label
+							}), addr.data.community && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "text-[10px] text-muted-foreground",
+								children: addr.data.community
+							})]
+						}),
+						value === addr.label && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "ml-auto h-4 w-4 opacity-100 text-black" })
+					]
+				}, addr.label))
+			})] }) })] })
+		})]
+	});
+}
 function Properties() {
 	const { properties: properties$1, addProperty, deleteProperty } = usePropertyStore_default();
 	const { condominiums: condominiums$1 } = useCondominiumStore_default();
@@ -63224,6 +63406,7 @@ function Properties() {
 	const [profileFilter, setProfileFilter] = (0, import_react.useState)("all");
 	const { toast: toast$2 } = useToast();
 	const [open, setOpen] = (0, import_react.useState)(false);
+	const [selectedCountry, setSelectedCountry] = (0, import_react.useState)("US");
 	const [newProp, setNewProp] = (0, import_react.useState)({
 		name: "",
 		address: "",
@@ -63232,7 +63415,7 @@ function Properties() {
 		zipCode: "",
 		additionalInfo: "",
 		neighborhood: "",
-		country: "USA",
+		country: "US",
 		type: "House",
 		profileType: void 0,
 		bedrooms: 3,
@@ -63267,6 +63450,25 @@ function Properties() {
 			case "reserved": return "bg-yellow-100 text-yellow-800 border-yellow-300 font-bold";
 			default: return "bg-gray-100 text-gray-800 border-gray-300";
 		}
+	};
+	const handleAddressSelect = (addr) => {
+		const mappedCountry = addr.country === "Brazil" ? "BR" : addr.country === "Spain" ? "ES" : addr.country === "USA" ? "US" : selectedCountry;
+		setSelectedCountry(mappedCountry);
+		setNewProp((prev) => ({
+			...prev,
+			address: addr.street,
+			city: addr.city,
+			state: addr.state,
+			zipCode: applyZipCodeMask(addr.zipCode, mappedCountry),
+			country: mappedCountry
+		}));
+	};
+	const handleZipCodeChange = (e) => {
+		const val = applyZipCodeMask(e.target.value, selectedCountry);
+		setNewProp({
+			...newProp,
+			zipCode: val
+		});
 	};
 	const handleAddProperty = () => {
 		if (!newProp.name?.trim()) {
@@ -63318,7 +63520,7 @@ function Properties() {
 			state: newProp.state || "",
 			zipCode: newProp.zipCode || "",
 			additionalInfo: newProp.additionalInfo || "",
-			country: newProp.country || "",
+			country: selectedCountry,
 			neighborhood: newProp.neighborhood || "",
 			type: newProp.type || "House",
 			profileType: newProp.profileType,
@@ -63364,7 +63566,7 @@ function Properties() {
 			zipCode: "",
 			additionalInfo: "",
 			neighborhood: "",
-			country: "USA",
+			country: "US",
 			type: "House",
 			profileType: void 0,
 			bedrooms: 3,
@@ -63374,6 +63576,7 @@ function Properties() {
 			listingPrice: 0,
 			hoaValue: 0
 		});
+		setSelectedCountry("US");
 	};
 	const handleDelete = (id) => {
 		try {
@@ -63400,7 +63603,23 @@ function Properties() {
 					children: t$1("properties.subtitle")
 				})] }), hasPermission(currentUser, "properties", "create") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 					open,
-					onOpenChange: setOpen,
+					onOpenChange: (v) => {
+						setOpen(v);
+						if (!v) {
+							setNewProp({
+								name: "",
+								country: "US",
+								type: "House",
+								profileType: void 0,
+								bedrooms: 3,
+								bathrooms: 2,
+								guests: 6,
+								listingPrice: 0,
+								hoaValue: 0
+							});
+							setSelectedCountry("US");
+						}
+					},
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
 						asChild: true,
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
@@ -63462,6 +63681,39 @@ function Properties() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+										className: "text-black font-bold",
+										children: t$1("common.country")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: selectedCountry,
+										onValueChange: (val) => {
+											setSelectedCountry(val);
+											setNewProp((prev) => ({
+												...prev,
+												zipCode: ""
+											}));
+										},
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+											className: "text-black",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "US",
+												children: "United States (USA)"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "BR",
+												children: "Brazil (Brasil)"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "ES",
+												children: "Spain (España)"
+											})
+										] })]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
 										className: "text-black font-bold",
 										children: [
@@ -63481,6 +63733,13 @@ function Properties() {
 										placeholder: t$1("properties.search_placeholder"),
 										className: "text-black"
 									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+										className: "text-black font-bold",
+										children: "Search Address"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddressInput, { onAddressSelect: handleAddressSelect })]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
@@ -63520,11 +63779,8 @@ function Properties() {
 											]
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											value: newProp.zipCode,
-											onChange: (e) => setNewProp({
-												...newProp,
-												zipCode: e.target.value
-											}),
-											placeholder: "00000",
+											onChange: handleZipCodeChange,
+											placeholder: selectedCountry === "BR" ? "00000-000" : "00000",
 											className: "text-black"
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -64260,6 +64516,7 @@ function PropertyOverview({ data, onChange, canEdit }) {
 }
 function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$1 }) {
 	const { t: t$1 } = useLanguageStore_default();
+	const selectedCountry = data.country || "US";
 	const fullAddress = [
 		data.address,
 		data.additionalInfo,
@@ -64270,11 +64527,40 @@ function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$
 		data.country
 	].filter(Boolean).join(", ");
 	const encodedAddress = encodeURIComponent(fullAddress);
+	const handleCountryChange = (val) => {
+		onChange("country", val);
+		onChange("zipCode", "");
+	};
+	const handleZipChange = (e) => {
+		onChange("zipCode", applyZipCodeMask(e.target.value, selectedCountry));
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("properties.location.address") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 			className: "grid gap-4",
 			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: selectedCountry,
+						onValueChange: handleCountryChange,
+						disabled: !canEdit,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "US",
+								children: "United States (USA)"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "BR",
+								children: "Brazil (Brasil)"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "ES",
+								children: "Spain (España)"
+							})
+						] })]
+					})]
+				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "grid gap-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
@@ -64304,11 +64590,11 @@ function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$
 							})
 						] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 							value: data.zipCode || "",
-							onChange: (e) => onChange("zipCode", e.target.value),
+							onChange: handleZipChange,
 							disabled: !canEdit,
 							required: true,
 							className: !data.zipCode ? "border-red-300" : "",
-							placeholder: "00000-000"
+							placeholder: selectedCountry === "BR" ? "00000-000" : "00000"
 						})]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-2",
@@ -64354,14 +64640,6 @@ function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$
 							onChange: (e) => onChange("state", e.target.value),
 							disabled: !canEdit
 						})]
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-						value: data.country || "",
-						onChange: (e) => onChange("country", e.target.value),
-						disabled: !canEdit
 					})]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -79572,136 +79850,6 @@ function Settings() {
 		})]
 	});
 }
-var MOCK_ADDRESSES = [
-	{
-		label: "123 Palm Street, Orlando, FL",
-		data: {
-			street: "123 Palm Street",
-			city: "Orlando",
-			state: "FL",
-			zipCode: "32801",
-			country: "USA",
-			community: "Sunny Isles",
-			neighborhood: "Downtown"
-		}
-	},
-	{
-		label: "450 Brickell Ave, Miami, FL",
-		data: {
-			street: "450 Brickell Ave",
-			city: "Miami",
-			state: "FL",
-			zipCode: "33131",
-			country: "USA",
-			community: "Brickell Heights",
-			neighborhood: "Brickell"
-		}
-	},
-	{
-		label: "800 Ocean Drive, Miami Beach, FL",
-		data: {
-			street: "800 Ocean Drive",
-			city: "Miami Beach",
-			state: "FL",
-			zipCode: "33139",
-			country: "USA",
-			community: "Art Deco District",
-			neighborhood: "South Beach"
-		}
-	},
-	{
-		label: "Av. Paulista 1000, São Paulo, SP",
-		data: {
-			street: "Av. Paulista 1000",
-			city: "São Paulo",
-			state: "SP",
-			zipCode: "01310-100",
-			country: "Brazil",
-			community: "Bela Vista",
-			neighborhood: "Bela Vista"
-		}
-	}
-];
-function AddressInput({ onAddressSelect, defaultValue = "", className, disabled }) {
-	const [open, setOpen] = import_react.useState(false);
-	const [value, setValue] = import_react.useState(defaultValue);
-	const [loading, setLoading] = import_react.useState(false);
-	const [suggestions, setSuggestions] = import_react.useState(MOCK_ADDRESSES);
-	const handleSelect = (addr) => {
-		setValue(addr.label);
-		onAddressSelect(addr.data);
-		setOpen(false);
-	};
-	const handleSearch = (term) => {
-		setLoading(true);
-		setTimeout(() => {
-			setSuggestions(MOCK_ADDRESSES.filter((addr) => addr.label.toLowerCase().includes(term.toLowerCase())));
-			setLoading(false);
-		}, 500);
-	};
-	import_react.useEffect(() => {
-		if (defaultValue) setValue(defaultValue);
-	}, [defaultValue]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, {
-		open,
-		onOpenChange: setOpen,
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
-			asChild: true,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "relative w-full group",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					value,
-					onChange: (e) => {
-						setValue(e.target.value);
-						handleSearch(e.target.value);
-						setOpen(true);
-					},
-					disabled,
-					className: cn("pr-8 transition-shadow focus:ring-2 bg-white text-black", className),
-					placeholder: "Search address (e.g. 123 Main St)",
-					role: "combobox",
-					"aria-expanded": open
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "absolute right-2.5 top-2.5 h-4 w-4 text-muted-foreground opacity-50 group-focus-within:opacity-100 transition-opacity" })]
-			})
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContent, {
-			className: "w-[300px] p-0 bg-white",
-			align: "start",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Command, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandInput, {
-				placeholder: "Type address...",
-				className: "h-9 bg-white text-black",
-				onValueChange: handleSearch
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandList, { children: loading ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "py-6 text-center text-sm text-black flex items-center justify-center gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "h-4 w-4 animate-spin" }), " Searching..."]
-			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandEmpty, {
-				className: "text-black",
-				children: "No address found."
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
-				heading: "Suggestions",
-				className: "text-black",
-				children: suggestions.map((addr) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
-					value: addr.label,
-					onSelect: () => handleSelect(addr),
-					className: "cursor-pointer hover:bg-slate-100 text-black",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "mr-2 h-4 w-4 text-muted-foreground" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex flex-col",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "font-medium text-black",
-								children: addr.label
-							}), addr.data.community && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-[10px] text-muted-foreground",
-								children: addr.data.community
-							})]
-						}),
-						value === addr.label && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "ml-auto h-4 w-4 opacity-100 text-black" })
-					]
-				}, addr.label))
-			})] }) })] })
-		})]
-	});
-}
 function Tenants() {
 	const { tenants: tenants$1, addTenant } = useTenantStore_default();
 	const { properties: properties$1, updateProperty } = usePropertyStore_default();
@@ -79728,10 +79876,11 @@ function Tenants() {
 	const filteredTenants = tenants$1.filter((t$2) => t$2.name.toLowerCase().includes(filter.toLowerCase()) || t$2.email.toLowerCase().includes(filter.toLowerCase()));
 	const availableProperties = properties$1.filter((p$1) => p$1.status === "available" || p$1.status === "interested");
 	const handleAddressSelect = (addr) => {
+		const mappedCountry = addr.country === "Brazil" ? "BR" : addr.country === "Spain" ? "ES" : addr.country === "USA" ? "US" : newTenant.country;
 		setNewTenant((prev) => ({
 			...prev,
 			address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
-			country: addr.country === "USA" ? "US" : addr.country === "Brazil" ? "BR" : "US"
+			country: mappedCountry
 		}));
 	};
 	const handleAddTenant = () => {
@@ -79751,7 +79900,7 @@ function Tenants() {
 			});
 			return;
 		}
-		if (!isPhoneValid(newTenant.phone, newTenant.country)) {
+		if (newTenant.phone && !isPhoneValid(newTenant.phone, newTenant.country)) {
 			toast$2({
 				title: t$1("common.error"),
 				description: `Número de telefone inválido para o país selecionado (${newTenant.country}). Certifique-se de que está completo.`,
@@ -79880,6 +80029,33 @@ function Tenants() {
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("tenants.register_title") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-4 py-4",
 							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: newTenant.country,
+										onValueChange: (v) => setNewTenant({
+											...newTenant,
+											country: v
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+											className: "text-black",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "US",
+												children: "United States (USA)"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "BR",
+												children: "Brazil (Brasil)"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "ES",
+												children: "Spain (España)"
+											})
+										] })]
+									})]
+								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid grid-cols-2 gap-4",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -80454,10 +80630,15 @@ function TenantDetails() {
 		}));
 	};
 	const handleAddressSelect = (addr) => {
+		const mappedCountry = addr.country === "Brazil" ? "BR" : addr.country === "Spain" ? "ES" : addr.country === "USA" ? "US" : phoneCountry;
+		setPhoneCountry(mappedCountry);
 		setFormData((prev) => ({
 			...prev,
-			address: `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`,
-			country: addr.country
+			address: addr.street,
+			city: addr.city,
+			state: addr.state,
+			zipCode: applyZipCodeMask(addr.zipCode, mappedCountry),
+			country: mappedCountry
 		}));
 	};
 	const handleDocsUpdate = (docs) => {
@@ -80725,6 +80906,38 @@ function TenantDetails() {
 																className: "grid gap-2",
 																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 																	className: "text-black font-bold",
+																	children: t$1("common.country")
+																}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+																	value: phoneCountry,
+																	onValueChange: (val) => {
+																		setPhoneCountry(val);
+																		handleChange("country", val);
+																		handleChange("zipCode", "");
+																	},
+																	disabled: !isEditing,
+																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+																		className: "text-black font-medium",
+																		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+																	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+																		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																			value: "US",
+																			children: "United States (USA)"
+																		}),
+																		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																			value: "BR",
+																			children: "Brazil (Brasil)"
+																		}),
+																		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																			value: "ES",
+																			children: "Spain (España)"
+																		})
+																	] })]
+																})]
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																className: "grid gap-2",
+																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+																	className: "text-black font-bold",
 																	children: "Nome Completo"
 																}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 																	value: formData.name,
@@ -80759,18 +80972,6 @@ function TenantDetails() {
 																}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 																	value: formData.phone || "",
 																	disabled: true,
-																	className: "text-black font-medium"
-																})]
-															}),
-															/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-																className: "grid gap-2",
-																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-																	className: "text-black font-bold",
-																	children: "Nacionalidade"
-																}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-																	value: formData.country || "",
-																	onChange: (e) => handleChange("country", e.target.value),
-																	disabled: !isEditing,
 																	className: "text-black font-medium"
 																})]
 															}),
@@ -81323,13 +81524,21 @@ function Owners() {
 	});
 	const filteredOwners = owners$1.filter((o$1) => o$1.name.toLowerCase().includes(filter.toLowerCase()) || o$1.email.toLowerCase().includes(filter.toLowerCase()));
 	const handleAddressSelect = (addr) => {
+		const mappedCountry = addr.country === "Brazil" ? "BR" : addr.country === "Spain" ? "ES" : addr.country === "USA" ? "US" : newOwner.country;
 		setNewOwner((prev) => ({
 			...prev,
 			address: addr.street,
 			city: addr.city,
 			state: addr.state,
-			zipCode: addr.zipCode,
-			country: addr.country === "USA" ? "US" : addr.country === "Brazil" ? "BR" : "US"
+			zipCode: applyZipCodeMask(addr.zipCode, mappedCountry),
+			country: mappedCountry
+		}));
+	};
+	const handleZipCodeChange = (e) => {
+		const val = applyZipCodeMask(e.target.value, newOwner.country);
+		setNewOwner((prev) => ({
+			...prev,
+			zipCode: val
 		}));
 	};
 	const handleAddOwner = () => {
@@ -81426,6 +81635,37 @@ function Owners() {
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("owners.register_title") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-4 py-4",
 						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									className: "text-black font-bold",
+									children: t$1("common.country")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: newOwner.country,
+									onValueChange: (val) => setNewOwner({
+										...newOwner,
+										country: val,
+										zipCode: ""
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+										className: "text-black",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "US",
+											children: "United States (USA)"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "BR",
+											children: "Brazil (Brasil)"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "ES",
+											children: "Spain (España)"
+										})
+									] })]
+								})]
+							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
@@ -81535,10 +81775,8 @@ function Owners() {
 											children: "Zip"
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											value: newOwner.zipCode,
-											onChange: (e) => setNewOwner({
-												...newOwner,
-												zipCode: e.target.value
-											}),
+											onChange: handleZipCodeChange,
+											placeholder: newOwner.country === "BR" ? "00000-000" : "00000",
 											className: "text-black"
 										})]
 									})
@@ -82175,6 +82413,14 @@ function OwnerDetails() {
 			[field]: value
 		}));
 	};
+	const handleCountryChange = (val) => {
+		setPhoneCountry(val);
+		handleChange("country", val);
+		handleChange("zipCode", "");
+	};
+	const handleZipCodeChange = (e) => {
+		handleChange("zipCode", applyZipCodeMask(e.target.value, phoneCountry));
+	};
 	const handleDocsUpdate = (docs) => {
 		const updatedOwner = {
 			...formData,
@@ -82261,6 +82507,28 @@ function OwnerDetails() {
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "País" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: phoneCountry,
+									onValueChange: handleCountryChange,
+									disabled: !isEditing,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "US",
+											children: "United States (USA)"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "BR",
+											children: "Brazil (Brasil)"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "ES",
+											children: "Spain (España)"
+										})
+									] })]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nome" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									value: formData.name,
 									onChange: (e) => handleChange("name", e.target.value),
@@ -82316,16 +82584,9 @@ function OwnerDetails() {
 								className: "grid gap-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CEP / Zip" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									value: formData.zipCode || "",
-									onChange: (e) => handleChange("zipCode", e.target.value),
-									disabled: !isEditing
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "País" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: formData.country || "",
-									onChange: (e) => handleChange("country", e.target.value),
-									disabled: !isEditing
+									onChange: handleZipCodeChange,
+									disabled: !isEditing,
+									placeholder: phoneCountry === "BR" ? "00000-000" : "00000"
 								})]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -82444,7 +82705,7 @@ function Partners() {
 		zipCode: "",
 		city: "",
 		state: "",
-		country: "",
+		country: "US",
 		paymentInfo: {
 			bankName: "",
 			routingNumber: "",
@@ -82455,13 +82716,21 @@ function Partners() {
 	});
 	const filteredPartners = partners$1.filter((p$1) => (p$1.name.toLowerCase().includes(filter.toLowerCase()) || p$1.companyName?.toLowerCase().includes(filter.toLowerCase())) && p$1.status === "active");
 	const handleAddressSelect = (addr) => {
+		const mappedCountry = addr.country === "Brazil" ? "BR" : addr.country === "Spain" ? "ES" : addr.country === "USA" ? "US" : newPartner.country;
 		setNewPartner((prev) => ({
 			...prev,
 			address: addr.street,
 			city: addr.city,
 			state: addr.state,
-			zipCode: addr.zipCode,
-			country: addr.country
+			zipCode: applyZipCodeMask(addr.zipCode, mappedCountry),
+			country: mappedCountry
+		}));
+	};
+	const handleZipCodeChange = (e) => {
+		const val = applyZipCodeMask(e.target.value, newPartner.country);
+		setNewPartner((prev) => ({
+			...prev,
+			zipCode: val
 		}));
 	};
 	const handleAddPartner = () => {
@@ -82477,6 +82746,14 @@ function Partners() {
 			toast$2({
 				title: "Erro",
 				description: "Email inválido",
+				variant: "destructive"
+			});
+			return;
+		}
+		if (newPartner.phone && !isPhoneValid(newPartner.phone, newPartner.country)) {
+			toast$2({
+				title: "Erro",
+				description: `Telefone inválido para ${newPartner.country}.`,
 				variant: "destructive"
 			});
 			return;
@@ -82511,6 +82788,7 @@ function Partners() {
 			email: "",
 			phone: "",
 			address: "",
+			country: "US",
 			paymentInfo: {
 				bankName: "",
 				routingNumber: "",
@@ -82611,6 +82889,37 @@ function Partners() {
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("partners.register_title") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-4 py-4",
 							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+										className: "text-black font-bold",
+										children: t$1("common.country")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: newPartner.country,
+										onValueChange: (val) => setNewPartner({
+											...newPartner,
+											country: val,
+											zipCode: ""
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+											className: "text-black",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "US",
+												children: "United States (USA)"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "BR",
+												children: "Brazil (Brasil)"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "ES",
+												children: "Spain (España)"
+											})
+										] })]
+									})]
+								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid grid-cols-2 gap-4",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -82713,6 +83022,11 @@ function Partners() {
 											onChange: (e) => setNewPartner({
 												...newPartner,
 												phone: e.target.value
+											}),
+											country: newPartner.country,
+											onCountryChange: (c$1) => setNewPartner({
+												...newPartner,
+												country: c$1
 											})
 										})]
 									})]
@@ -82777,11 +83091,9 @@ function Partners() {
 												children: "CEP / ZIP"
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												value: newPartner.zipCode,
-												onChange: (e) => setNewPartner({
-													...newPartner,
-													zipCode: e.target.value
-												}),
-												className: "text-black"
+												onChange: handleZipCodeChange,
+												className: "text-black",
+												placeholder: newPartner.country === "BR" ? "00000-000" : "00000"
 											})]
 										})
 									]
@@ -82933,7 +83245,7 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 		city: "",
 		state: "",
 		zipCode: "",
-		country: "",
+		country: "US",
 		documents: []
 	});
 	const [schedulerOpen, setSchedulerOpen] = (0, import_react.useState)(false);
@@ -82952,10 +83264,10 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 			});
 			return;
 		}
-		if (!formData.phone || formData.phone.length < 15) {
+		if (formData.phone && !isPhoneValid(formData.phone, formData.country)) {
 			toast$2({
 				title: "Erro de Validação",
-				description: "Telefone inválido. Formato obrigatório: (99) 99999-9999.",
+				description: `Telefone inválido para ${formData.country}.`,
 				variant: "destructive"
 			});
 			return;
@@ -83009,7 +83321,7 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 			city: "",
 			state: "",
 			zipCode: "",
-			country: "",
+			country: "US",
 			documents: []
 		});
 	};
@@ -83085,6 +83397,13 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 			setSchedulerOpen(false);
 		}
 	};
+	const handleZipCodeChange = (e) => {
+		const val = applyZipCodeMask(e.target.value, formData.country || "US");
+		setFormData((prev) => ({
+			...prev,
+			zipCode: val
+		}));
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 		className: "flex flex-row items-center justify-between",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Equipe Interna" }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
@@ -83105,6 +83424,31 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogTitle, { children: [editingId ? "Editar" : "Novo", " Funcionário"] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "grid gap-4 py-4",
 					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "País" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: formData.country,
+								onValueChange: (val) => setFormData({
+									...formData,
+									country: val,
+									zipCode: ""
+								}),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "US",
+										children: "United States (USA)"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "BR",
+										children: "Brazil (Brasil)"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "ES",
+										children: "Spain (España)"
+									})
+								] })]
+							})]
+						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid grid-cols-2 gap-4",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -83141,22 +83485,18 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone" }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
-										value: formData.phone || "",
-										onChange: (e) => setFormData({
-											...formData,
-											phone: e.target.value
-										}),
-										defaultCountry: "BR",
-										country: "BR"
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+									value: formData.phone || "",
+									onChange: (e) => setFormData({
+										...formData,
+										phone: e.target.value
 									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "text-xs text-muted-foreground",
-										children: "Formato: (99) 99999-9999"
+									country: formData.country,
+									onCountryChange: (c$1) => setFormData({
+										...formData,
+										country: c$1
 									})
-								]
+								})]
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -83170,7 +83510,7 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid grid-cols-4 gap-2",
+							className: "grid grid-cols-3 gap-2",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
@@ -83196,20 +83536,8 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 									className: "grid gap-2",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CEP" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: formData.zipCode,
-										onChange: (e) => setFormData({
-											...formData,
-											zipCode: e.target.value
-										})
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "País" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-										value: formData.country,
-										onChange: (e) => setFormData({
-											...formData,
-											country: e.target.value
-										})
+										onChange: handleZipCodeChange,
+										placeholder: formData.country === "BR" ? "00000-000" : "00000"
 									})]
 								})
 							]
@@ -83814,6 +84142,10 @@ function PartnerDetails() {
 	const { toast: toast$2 } = useToast();
 	const partner = partners$1.find((p$1) => p$1.id === id);
 	const [formData, setFormData] = (0, import_react.useState)(() => partner ? JSON.parse(JSON.stringify(partner)) : null);
+	const [phoneCountry, setPhoneCountry] = (0, import_react.useState)("US");
+	(0, import_react.useState)(() => {
+		if (partner?.country) setPhoneCountry(partner.country === "US" || partner.country === "BR" || partner.country === "ES" ? partner.country : "US");
+	});
 	if (!partner || !formData) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col items-center justify-center min-h-[50vh] gap-4",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
@@ -83845,7 +84177,18 @@ function PartnerDetails() {
 			});
 			return;
 		}
-		updatePartner(formData);
+		if (formData.phone && !isPhoneValid(formData.phone, phoneCountry)) {
+			toast$2({
+				title: "Erro de Validação",
+				description: `Telefone inválido para ${phoneCountry}.`,
+				variant: "destructive"
+			});
+			return;
+		}
+		updatePartner({
+			...formData,
+			country: phoneCountry
+		});
 		toast$2({
 			title: t$1("common.save"),
 			description: "Dados do parceiro atualizados."
@@ -83883,6 +84226,20 @@ function PartnerDetails() {
 	};
 	const handleEmail = () => {
 		if (formData.email) window.location.href = `mailto:${formData.email}`;
+	};
+	const handleCountryChange = (val) => {
+		setPhoneCountry(val);
+		setFormData((prev) => prev ? {
+			...prev,
+			zipCode: ""
+		} : null);
+	};
+	const handleZipCodeChange = (e) => {
+		const val = applyZipCodeMask(e.target.value, phoneCountry);
+		setFormData((prev) => prev ? {
+			...prev,
+			zipCode: val
+		} : null);
 	};
 	const partnerEntries = ledgerEntries$1.filter((e) => e.beneficiaryId === id);
 	const totalPaid = partnerEntries.filter((e) => e.status === "cleared").reduce((acc, curr) => acc + curr.amount, 0);
@@ -84015,176 +84372,190 @@ function PartnerDetails() {
 							className: "md:col-span-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Detalhes do Parceiro" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 								className: "space-y-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-2 gap-4",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: formData.name,
-												onChange: (e) => setFormData({
-													...formData,
-													name: e.target.value
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "País" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											value: phoneCountry,
+											onValueChange: handleCountryChange,
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "US",
+													children: "United States (USA)"
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "BR",
+													children: "Brazil (Brasil)"
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "ES",
+													children: "Spain (España)"
 												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.company_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: formData.companyName,
-												onChange: (e) => setFormData({
-													...formData,
-													companyName: e.target.value
-												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: formData.email,
-												onChange: (e) => setFormData({
-													...formData,
-													email: e.target.value
-												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: formData.phone,
-												onChange: (e) => setFormData({
-													...formData,
-													phone: e.target.value
-												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2 col-span-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.address") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: formData.address,
-												onChange: (e) => setFormData({
-													...formData,
-													address: e.target.value
-												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Cidade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: formData.city || "",
-												onChange: (e) => setFormData({
-													...formData,
-													city: e.target.value
-												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Estado" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: formData.state || "",
-												onChange: (e) => setFormData({
-													...formData,
-													state: e.target.value
-												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CEP / Zip" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: formData.zipCode || "",
-												onChange: (e) => setFormData({
-													...formData,
-													zipCode: e.target.value
-												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "País" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: formData.country || "",
-												onChange: (e) => setFormData({
-													...formData,
-													country: e.target.value
-												})
-											})]
-										})
-									]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "border-t pt-4 mt-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-										className: "font-semibold mb-3",
-										children: t$1("partners.bank_info")
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid grid-cols-3 gap-4",
+											] })]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.bank_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													value: formData.paymentInfo?.bankName,
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: formData.name,
 													onChange: (e) => setFormData({
 														...formData,
-														paymentInfo: {
-															...formData.paymentInfo,
-															bankName: e.target.value
-														}
+														name: e.target.value
 													})
 												})]
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Bank Number" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													value: formData.paymentInfo?.bankNumber,
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.company_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: formData.companyName,
 													onChange: (e) => setFormData({
 														...formData,
-														paymentInfo: {
-															...formData.paymentInfo,
-															bankNumber: e.target.value
-														}
+														companyName: e.target.value
 													})
 												})]
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.routing") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													value: formData.paymentInfo?.routingNumber,
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: formData.email,
 													onChange: (e) => setFormData({
 														...formData,
-														paymentInfo: {
-															...formData.paymentInfo,
-															routingNumber: e.target.value
-														}
+														email: e.target.value
 													})
 												})]
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.account") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													value: formData.paymentInfo?.accountNumber,
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+													value: formData.phone,
 													onChange: (e) => setFormData({
 														...formData,
-														paymentInfo: {
-															...formData.paymentInfo,
-															accountNumber: e.target.value
-														}
+														phone: e.target.value
+													}),
+													country: phoneCountry,
+													onCountryChange: setPhoneCountry
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2 col-span-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.address") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: formData.address,
+													onChange: (e) => setFormData({
+														...formData,
+														address: e.target.value
 													})
 												})]
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Zelle" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													value: formData.paymentInfo?.zelle,
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Cidade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: formData.city || "",
 													onChange: (e) => setFormData({
 														...formData,
-														paymentInfo: {
-															...formData.paymentInfo,
-															zelle: e.target.value
-														}
+														city: e.target.value
 													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Estado" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: formData.state || "",
+													onChange: (e) => setFormData({
+														...formData,
+														state: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CEP / Zip" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: formData.zipCode || "",
+													onChange: handleZipCodeChange,
+													placeholder: phoneCountry === "BR" ? "00000-000" : "00000"
 												})]
 											})
 										]
-									})]
-								})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "border-t pt-4 mt-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+											className: "font-semibold mb-3",
+											children: t$1("partners.bank_info")
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid grid-cols-3 gap-4",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.bank_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: formData.paymentInfo?.bankName,
+														onChange: (e) => setFormData({
+															...formData,
+															paymentInfo: {
+																...formData.paymentInfo,
+																bankName: e.target.value
+															}
+														})
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Bank Number" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: formData.paymentInfo?.bankNumber,
+														onChange: (e) => setFormData({
+															...formData,
+															paymentInfo: {
+																...formData.paymentInfo,
+																bankNumber: e.target.value
+															}
+														})
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.routing") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: formData.paymentInfo?.routingNumber,
+														onChange: (e) => setFormData({
+															...formData,
+															paymentInfo: {
+																...formData.paymentInfo,
+																routingNumber: e.target.value
+															}
+														})
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("partners.account") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: formData.paymentInfo?.accountNumber,
+														onChange: (e) => setFormData({
+															...formData,
+															paymentInfo: {
+																...formData.paymentInfo,
+																accountNumber: e.target.value
+															}
+														})
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Zelle" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: formData.paymentInfo?.zelle,
+														onChange: (e) => setFormData({
+															...formData,
+															paymentInfo: {
+																...formData.paymentInfo,
+																zelle: e.target.value
+															}
+														})
+													})]
+												})
+											]
+										})]
+									})
+								]
 							})]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Foto de Perfil" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
 							value: formData.avatar,
@@ -84290,7 +84661,7 @@ function Condominiums() {
 	const navigate = useNavigate();
 	const [filter, setFilter] = (0, import_react.useState)("");
 	const [open, setOpen] = (0, import_react.useState)(false);
-	const [managerCountry, setManagerCountry] = (0, import_react.useState)("US");
+	const [selectedCountry, setSelectedCountry] = (0, import_react.useState)("US");
 	const [formData, setFormData] = (0, import_react.useState)({
 		name: "",
 		address: "",
@@ -84303,13 +84674,22 @@ function Condominiums() {
 	});
 	const filteredCondos = condominiums$1.filter((c$1) => c$1.name.toLowerCase().includes(filter.toLowerCase()) || c$1.address.toLowerCase().includes(filter.toLowerCase()) || c$1.managerName?.toLowerCase().includes(filter.toLowerCase()) || c$1.managerEmail?.toLowerCase().includes(filter.toLowerCase()));
 	const handleAddressSelect = (addr) => {
+		const mappedCountry = addr.country === "Brazil" ? "BR" : addr.country === "Spain" ? "ES" : addr.country === "USA" ? "US" : selectedCountry;
+		setSelectedCountry(mappedCountry);
 		setFormData((prev) => ({
 			...prev,
 			address: addr.street,
 			city: addr.city,
 			state: addr.state,
-			zipCode: addr.zipCode
+			zipCode: applyZipCodeMask(addr.zipCode, mappedCountry)
 		}));
+	};
+	const handleZipCodeChange = (e) => {
+		const val = applyZipCodeMask(e.target.value, selectedCountry);
+		setFormData({
+			...formData,
+			zipCode: val
+		});
 	};
 	const handleSave = () => {
 		if (!formData.name?.trim() || !formData.address?.trim()) {
@@ -84328,10 +84708,10 @@ function Condominiums() {
 			});
 			return;
 		}
-		if (formData.managerPhone && !isPhoneValid(formData.managerPhone, managerCountry)) {
+		if (formData.managerPhone && !isPhoneValid(formData.managerPhone, selectedCountry)) {
 			toast$2({
 				title: t$1("common.error"),
-				description: `Por favor, insira um número de telefone válido para ${managerCountry}.`,
+				description: `Por favor, insira um número de telefone válido para ${selectedCountry}.`,
 				variant: "destructive"
 			});
 			return;
@@ -84339,6 +84719,7 @@ function Condominiums() {
 		addCondominium({
 			id: `condo-${Date.now()}`,
 			...formData,
+			country: selectedCountry,
 			description: "",
 			contacts: formData.managerName ? [{
 				id: `contact-${Date.now()}`,
@@ -84375,7 +84756,7 @@ function Condominiums() {
 			managerPhone: "",
 			managerEmail: ""
 		});
-		setManagerCountry("US");
+		setSelectedCountry("US");
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
@@ -84406,6 +84787,36 @@ function Condominiums() {
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("condominiums.add_title") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "grid gap-4 py-4",
 					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: selectedCountry,
+								onValueChange: (val) => {
+									setSelectedCountry(val);
+									setFormData((prev) => ({
+										...prev,
+										zipCode: ""
+									}));
+								},
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+									className: "text-black",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "US",
+										children: "United States (USA)"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "BR",
+										children: "Brazil (Brasil)"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "ES",
+										children: "Spain (España)"
+									})
+								] })]
+							})]
+						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
@@ -84462,11 +84873,9 @@ function Condominiums() {
 									className: "grid gap-2",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CEP / ZIP" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: formData.zipCode,
-										onChange: (e) => setFormData({
-											...formData,
-											zipCode: e.target.value
-										}),
-										className: "text-black"
+										onChange: handleZipCodeChange,
+										className: "text-black",
+										placeholder: selectedCountry === "BR" ? "00000-000" : "00000"
 									})]
 								})
 							]
@@ -84492,9 +84901,8 @@ function Condominiums() {
 										...formData,
 										managerPhone: e.target.value
 									}),
-									country: managerCountry,
-									onCountryChange: setManagerCountry,
-									defaultCountry: "US",
+									country: selectedCountry,
+									onCountryChange: setSelectedCountry,
 									className: "text-black"
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -84579,15 +84987,18 @@ function Condominiums() {
 						className: "text-black",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.address })
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex flex-col text-xs text-black font-medium",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
 							condo.city || "-",
 							", ",
 							condo.state,
 							" ",
 							condo.zipCode
-						] }) })
+						] }) }), condo.country && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-[10px] text-gray-500",
+							children: condo.country
+						})]
 					}) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 						className: "text-black",
@@ -84653,7 +85064,7 @@ function CondominiumDetails() {
 	const condo = condominiums$1.find((c$1) => c$1.id === id);
 	const [formData, setFormData] = (0, import_react.useState)(null);
 	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
-	const [managerCountry, setManagerCountry] = (0, import_react.useState)("US");
+	const [selectedCountry, setSelectedCountry] = (0, import_react.useState)("US");
 	const [newContactCountry, setNewContactCountry] = (0, import_react.useState)("US");
 	const [newContact, setNewContact] = (0, import_react.useState)({
 		role: "",
@@ -84680,20 +85091,24 @@ function CondominiumDetails() {
 				...condo,
 				contacts
 			});
+			if (condo.country) setSelectedCountry(condo.country);
 		}
 	}, [condo]);
 	if (!condo || !formData) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: "Not Found" });
 	const handleSave = () => {
 		if (!formData.name?.trim()) return;
-		if (formData.managerPhone && !isPhoneValid(formData.managerPhone, managerCountry)) {
+		if (formData.managerPhone && !isPhoneValid(formData.managerPhone, selectedCountry)) {
 			toast$2({
 				title: t$1("common.error"),
-				description: `Invalid phone for ${managerCountry}.`,
+				description: `Invalid phone for ${selectedCountry}.`,
 				variant: "destructive"
 			});
 			return;
 		}
-		updateCondominium(formData);
+		updateCondominium({
+			...formData,
+			country: selectedCountry
+		});
 		setIsEditing(false);
 		toast$2({
 			title: t$1("common.save"),
@@ -84707,12 +85122,21 @@ function CondominiumDetails() {
 		}));
 	};
 	const handleAddressSelect = (addr) => {
+		const mappedCountry = addr.country === "Brazil" ? "BR" : addr.country === "Spain" ? "ES" : addr.country === "USA" ? "US" : selectedCountry;
+		setSelectedCountry(mappedCountry);
 		setFormData((prev) => ({
 			...prev,
 			address: addr.street,
 			city: addr.city,
 			state: addr.state,
-			zipCode: addr.zipCode
+			zipCode: applyZipCodeMask(addr.zipCode, mappedCountry)
+		}));
+	};
+	const handleZipCodeChange = (e) => {
+		const val = applyZipCodeMask(e.target.value, selectedCountry);
+		setFormData((prev) => ({
+			...prev,
+			zipCode: val
 		}));
 	};
 	const handleNestedChange = (parent, field, value) => {
@@ -84880,6 +85304,34 @@ function CondominiumDetails() {
 									className: "grid gap-2",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 										className: "text-slate-900 font-bold",
+										children: t$1("common.country")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: selectedCountry,
+										onValueChange: (val) => setSelectedCountry(val),
+										disabled: !isEditing,
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+											className: "text-black font-medium",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "US",
+												children: "United States (USA)"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "BR",
+												children: "Brazil (Brasil)"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "ES",
+												children: "Spain (España)"
+											})
+										] })]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+										className: "text-slate-900 font-bold",
 										children: t$1("common.name")
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: formData.name,
@@ -84942,9 +85394,10 @@ function CondominiumDetails() {
 										children: "CEP / ZIP"
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: formData.zipCode || "",
-										onChange: (e) => handleChange("zipCode", e.target.value),
+										onChange: handleZipCodeChange,
 										disabled: !isEditing,
-										className: "text-black font-medium"
+										className: "text-black font-medium",
+										placeholder: selectedCountry === "BR" ? "00000-000" : "00000"
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -84967,8 +85420,8 @@ function CondominiumDetails() {
 									}), isEditing ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
 										value: formData.managerPhone || "",
 										onChange: (e) => handleChange("managerPhone", e.target.value),
-										country: managerCountry,
-										onCountryChange: setManagerCountry
+										country: selectedCountry,
+										onCountryChange: setSelectedCountry
 									}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 										className: "flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -93455,4 +93908,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Bnykmh5O.js.map
+//# sourceMappingURL=index-z7djdOht.js.map

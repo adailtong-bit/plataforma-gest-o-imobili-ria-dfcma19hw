@@ -25,7 +25,14 @@ import { OwnerStatement } from '@/components/financial/OwnerStatement'
 import { OwnerProperties } from '@/components/owners/OwnerProperties'
 import { OwnerTasks } from '@/components/owners/OwnerTasks'
 import { PhoneInput } from '@/components/ui/phone-input'
-import { isPhoneValid } from '@/lib/utils'
+import { isPhoneValid, applyZipCodeMask } from '@/lib/utils'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export default function OwnerDetails() {
   const { id } = useParams()
@@ -92,6 +99,17 @@ export default function OwnerDetails() {
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }))
+  }
+
+  const handleCountryChange = (val: string) => {
+    setPhoneCountry(val as any)
+    handleChange('country', val)
+    handleChange('zipCode', '') // Clear zip on country change
+  }
+
+  const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = applyZipCodeMask(e.target.value, phoneCountry)
+    handleChange('zipCode', val)
   }
 
   const handleDocsUpdate = (docs: GenericDocument[]) => {
@@ -165,6 +183,23 @@ export default function OwnerDetails() {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
+                <Label>País</Label>
+                <Select
+                  value={phoneCountry}
+                  onValueChange={handleCountryChange}
+                  disabled={!isEditing}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="US">United States (USA)</SelectItem>
+                    <SelectItem value="BR">Brazil (Brasil)</SelectItem>
+                    <SelectItem value="ES">Spain (España)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
                 <Label>Nome</Label>
                 <Input
                   value={formData.name}
@@ -222,16 +257,9 @@ export default function OwnerDetails() {
                 <Label>CEP / Zip</Label>
                 <Input
                   value={formData.zipCode || ''}
-                  onChange={(e) => handleChange('zipCode', e.target.value)}
+                  onChange={handleZipCodeChange}
                   disabled={!isEditing}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>País</Label>
-                <Input
-                  value={formData.country || ''}
-                  onChange={(e) => handleChange('country', e.target.value)}
-                  disabled={!isEditing}
+                  placeholder={phoneCountry === 'BR' ? '00000-000' : '00000'}
                 />
               </div>
               <div className="grid gap-2 md:col-span-2">

@@ -98,6 +98,26 @@ export const applyDocumentMask = (
   return value
 }
 
+export const applyZipCodeMask = (value: string, country: string) => {
+  const digits = value.replace(/\D/g, '')
+
+  if (country === 'US') {
+    // 5 digits
+    return digits.slice(0, 5)
+  }
+  if (country === 'BR' || country === 'Brazil') {
+    // XXXXX-XXX
+    if (digits.length <= 5) return digits
+    return `${digits.slice(0, 5)}-${digits.slice(5, 8)}`
+  }
+  if (country === 'ES' || country === 'Spain') {
+    // 5 digits
+    return digits.slice(0, 5)
+  }
+  // Default fallback
+  return value
+}
+
 // Export data to CSV
 export const exportToCSV = (
   filename: string,
