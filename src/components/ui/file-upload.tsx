@@ -74,6 +74,11 @@ export function FileUpload({
               src={preview}
               alt="Uploaded file"
               className="w-full h-full object-cover"
+              crossOrigin="anonymous"
+              onError={(e) => {
+                e.currentTarget.src = '/placeholder.svg'
+                e.currentTarget.onerror = null
+              }}
             />
           ) : (
             <div className="flex flex-col items-center gap-2 p-4 text-muted-foreground">

@@ -142,6 +142,11 @@ export function PropertyMedia({ data, onChange, canEdit }: PropertyMediaProps) {
                       src={img}
                       alt={`Gallery ${index}`}
                       className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      crossOrigin="anonymous"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder.svg'
+                        e.currentTarget.onerror = null
+                      }}
                     />
                     {data.image === img && (
                       <div className="absolute top-2 left-2 bg-trust-blue text-white text-[10px] px-2 py-0.5 rounded-full z-10 flex items-center gap-1">

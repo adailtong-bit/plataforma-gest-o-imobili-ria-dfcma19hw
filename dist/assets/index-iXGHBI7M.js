@@ -52945,9 +52945,22 @@ var generateOwners = (count$3) => {
 	}));
 };
 var generateProperties = (count$3, owners$1, condos) => {
+	const queries = [
+		"modern house",
+		"luxury apartment",
+		"villa",
+		"condo building",
+		"cottage",
+		"suburban home",
+		"living room",
+		"kitchen interior",
+		"house exterior",
+		"pool house"
+	];
 	return Array.from({ length: count$3 }).map((_$1, i$2) => {
 		const owner = randomItem(owners$1);
 		const condo = randomItem(condos);
+		const query = queries[i$2 % queries.length];
 		return {
 			id: generateId("prop"),
 			name: `${randomItem([
@@ -52984,7 +52997,7 @@ var generateProperties = (count$3, owners$1, condos) => {
 			bedrooms: randomInt(1, 6),
 			bathrooms: randomInt(1, 4),
 			guests: randomInt(2, 12),
-			image: `https://img.usecurling.com/p/400/300?q=house%20interior&seed=${i$2}`,
+			image: `https://img.usecurling.com/p/400/300?q=${encodeURIComponent(query)}`,
 			ownerId: owner.id,
 			listingPrice: randomInt(2e5, 9e5),
 			hoaValue: condo.hoaFee
@@ -63982,7 +63995,12 @@ function Properties() {
 										}),
 										newProp.image && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
 											src: newProp.image,
-											className: "h-20 w-auto object-cover rounded"
+											className: "h-20 w-auto object-cover rounded",
+											crossOrigin: "anonymous",
+											onError: (e) => {
+												e.currentTarget.src = "/placeholder.svg";
+												e.currentTarget.onerror = null;
+											}
 										})
 									]
 								}),
@@ -64070,7 +64088,12 @@ function Properties() {
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
 										src: property$2.image,
 										alt: property$2.name,
-										className: "w-full h-full object-cover transition-transform hover:scale-105 duration-500"
+										className: "w-full h-full object-cover transition-transform hover:scale-105 duration-500",
+										crossOrigin: "anonymous",
+										onError: (e) => {
+											e.currentTarget.src = "/placeholder.svg";
+											e.currentTarget.onerror = null;
+										}
 									})
 								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 									className: "flex items-center justify-center h-full text-black font-medium",
@@ -64367,7 +64390,12 @@ function FileUpload({ value, onChange, disabled, label = "Upload", accept = ".jp
 			children: [isImage$1 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
 				src: preview,
 				alt: "Uploaded file",
-				className: "w-full h-full object-cover"
+				className: "w-full h-full object-cover",
+				crossOrigin: "anonymous",
+				onError: (e) => {
+					e.currentTarget.src = "/placeholder.svg";
+					e.currentTarget.onerror = null;
+				}
 			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col items-center gap-2 p-4 text-muted-foreground",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-10 w-10 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -64582,7 +64610,12 @@ function PropertyOverview({ data, onChange, canEdit }) {
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
 								src: data.image,
 								alt: "Property",
-								className: "w-full h-full object-cover"
+								className: "w-full h-full object-cover",
+								crossOrigin: "anonymous",
+								onError: (e) => {
+									e.currentTarget.src = "/placeholder.svg";
+									e.currentTarget.onerror = null;
+								}
 							}), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 								className: "absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full text-xs hover:bg-red-600 transition-colors",
 								onClick: () => onChange("image", ""),
@@ -94058,4 +94091,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-CUGDBo0u.js.map
+//# sourceMappingURL=index-iXGHBI7M.js.map

@@ -241,9 +241,25 @@ const generateProperties = (
   owners: Owner[],
   condos: Condominium[],
 ): Property[] => {
+  // Use a stable set of queries instead of seed which is not supported for /p/ endpoint
+  const queries = [
+    'modern house',
+    'luxury apartment',
+    'villa',
+    'condo building',
+    'cottage',
+    'suburban home',
+    'living room',
+    'kitchen interior',
+    'house exterior',
+    'pool house',
+  ]
+
   return Array.from({ length: count }).map((_, i) => {
     const owner = randomItem(owners)
     const condo = randomItem(condos)
+    const query = queries[i % queries.length]
+
     return {
       id: generateId('prop'),
       name: `${randomItem(['Luxury', 'Cozy', 'Modern', 'Spacious', 'Charming'])} ${randomItem(['Villa', 'Apt', 'Condo', 'House', 'Loft'])} ${i + 1}`,
@@ -259,7 +275,8 @@ const generateProperties = (
       bedrooms: randomInt(1, 6),
       bathrooms: randomInt(1, 4),
       guests: randomInt(2, 12),
-      image: `https://img.usecurling.com/p/400/300?q=house%20interior&seed=${i}`,
+      // Corrected URL: Removed 'seed' param which is invalid for /p/ endpoint and causes 500/fetch errors
+      image: `https://img.usecurling.com/p/400/300?q=${encodeURIComponent(query)}`,
       ownerId: owner.id,
       listingPrice: randomInt(200000, 900000),
       hoaValue: condo.hoaFee,

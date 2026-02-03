@@ -162,6 +162,11 @@ export function PropertyOverview({
                   src={data.image}
                   alt="Property"
                   className="w-full h-full object-cover"
+                  crossOrigin="anonymous"
+                  onError={(e) => {
+                    e.currentTarget.src = '/placeholder.svg'
+                    e.currentTarget.onerror = null
+                  }}
                 />
                 {canEdit && (
                   <button

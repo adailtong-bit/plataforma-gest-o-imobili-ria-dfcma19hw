@@ -248,6 +248,7 @@ export default function Properties() {
         : newProp.community || 'Independent',
       condominiumId: newProp.condominiumId,
       status: 'available',
+      // Ensure default image does not use 'seed' param for /p/ endpoint to prevent errors
       image: newProp.image || 'https://img.usecurling.com/p/400/300?q=house',
       gallery: [],
       bedrooms: newProp.bedrooms || 0,
@@ -598,6 +599,11 @@ export default function Properties() {
                     <img
                       src={newProp.image}
                       className="h-20 w-auto object-cover rounded"
+                      crossOrigin="anonymous"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder.svg'
+                        e.currentTarget.onerror = null
+                      }}
                     />
                   )}
                 </div>
@@ -667,6 +673,11 @@ export default function Properties() {
                     src={property.image}
                     alt={property.name}
                     className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
+                    crossOrigin="anonymous"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg'
+                      e.currentTarget.onerror = null
+                    }}
                   />
                 </DataMask>
               ) : (
