@@ -2863,10 +2863,6 @@ video {
 .text-current {
   color: currentColor;
 }
-.text-cyan-600 {
-  --tw-text-opacity: 1;
-  color: rgb(8 145 178 / var(--tw-text-opacity, 1));
-}
 .text-destructive {
   color: hsl(var(--destructive));
 }

@@ -38,7 +38,6 @@ import {
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 
-// Define event types for consolidation
 type CalendarEvent =
   | { type: 'task'; data: Task; date: Date }
   | {
@@ -72,19 +71,12 @@ export default function CalendarPage() {
   const [sheetOpen, setSheetOpen] = useState(false)
   const navigate = useNavigate()
 
-  // Filters
   const [filterPartner, setFilterPartner] = useState<string>('all')
-  // We use local state for partner filter, but property filter comes from global context mostly
-  // However, users might want to filter inside calendar specifically too.
-  // For consistency with user story "selecting a property must filter all data", we respect global state.
 
-  // 1. Process Tasks
   const taskEvents: CalendarEvent[] = tasks
     .filter((t) => {
-      // Global Property Filter
       if (selectedPropertyId !== 'all' && t.propertyId !== selectedPropertyId)
         return false
-      // Local Partner Filter
       if (filterPartner !== 'all' && t.assigneeId !== filterPartner)
         return false
       return true
@@ -95,13 +87,12 @@ export default function CalendarPage() {
       date: new Date(t.date),
     }))
 
-  // 2. Process Contracts (Tenants Lease End) - filtered by property
   const contractEvents: CalendarEvent[] = tenants
     .filter((t) => t.leaseEnd && t.status === 'active')
     .filter((t) => {
       if (selectedPropertyId !== 'all' && t.propertyId !== selectedPropertyId)
         return false
-      if (filterPartner !== 'all') return false // Contracts not linked to partners directly in this view
+      if (filterPartner !== 'all') return false
       return true
     })
     .map((t) => ({
@@ -115,13 +106,12 @@ export default function CalendarPage() {
       date: parseISO(t.leaseEnd!),
     }))
 
-  // 3. Process Financials (Due Dates) - filtered by property
   const financialEvents: CalendarEvent[] = ledgerEntries
     .filter((e) => e.dueDate && e.status === 'pending')
     .filter((e) => {
       if (selectedPropertyId !== 'all' && e.propertyId !== selectedPropertyId)
         return false
-      if (filterPartner !== 'all') return false // Financials usually not direct partner link in this simple view unless extended
+      if (filterPartner !== 'all') return false
       return true
     })
     .map((e) => ({
@@ -136,16 +126,13 @@ export default function CalendarPage() {
       date: parseISO(e.dueDate!),
     }))
 
-  // Combine all events
   const allEvents = [...taskEvents, ...contractEvents, ...financialEvents]
 
-  // Events for selected day
   const dayEvents = useMemo(() => {
     if (!date) return []
     return allEvents.filter((e) => isSameDay(e.date, date))
   }, [date, allEvents])
 
-  // Modifiers for Calendar dates
   const modifiers = {
     task: taskEvents.map((e) => e.date),
     contract: contractEvents.map((e) => e.date),
@@ -201,7 +188,6 @@ export default function CalendarPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:h-full h-auto">
-        {/* Calendar View */}
         <Card className="lg:col-span-8 h-[500px] lg:h-full flex flex-col border-slate-200">
           <CardHeader>
             <div className="flex flex-wrap justify-between items-center gap-2">
@@ -260,7 +246,6 @@ export default function CalendarPage() {
           </CardContent>
         </Card>
 
-        {/* Daily Details */}
         <Card className="lg:col-span-4 h-[500px] lg:h-full flex flex-col border-slate-200">
           <CardHeader>
             <CardTitle className="text-slate-950">
@@ -340,7 +325,8 @@ export default function CalendarPage() {
                                   )
                                 }}
                               >
-                                <Building className="h-3 w-3" /> Property
+                                <Building className="h-3 w-3" />{' '}
+                                {t('common.property')}
                               </Button>
                             </div>
                           )}
@@ -367,7 +353,8 @@ export default function CalendarPage() {
                               Lease End
                             </p>
                             <p className="text-xs text-slate-800 font-medium">
-                              Tenant: {event.data.name}
+                              {t('common.relationship_tenant')}:{' '}
+                              {event.data.name}
                             </p>
                           </div>
                           {event.data.propertyId && (
@@ -382,7 +369,8 @@ export default function CalendarPage() {
                                   )
                                 }
                               >
-                                <Building className="h-3 w-3" /> Property
+                                <Building className="h-3 w-3" />{' '}
+                                {t('common.property')}
                               </Button>
                             </div>
                           )}
@@ -400,7 +388,7 @@ export default function CalendarPage() {
                               variant="outline"
                               className="text-[10px] uppercase bg-green-100 text-green-800 border-green-300 font-bold"
                             >
-                              Due Date
+                              {t('common.due_date')}
                             </Badge>
                             <DollarSign className="h-4 w-4 text-green-700" />
                           </div>
@@ -424,7 +412,8 @@ export default function CalendarPage() {
                                   )
                                 }
                               >
-                                <Building className="h-3 w-3" /> Property
+                                <Building className="h-3 w-3" />{' '}
+                                {t('common.property')}
                               </Button>
                             </div>
                           )}

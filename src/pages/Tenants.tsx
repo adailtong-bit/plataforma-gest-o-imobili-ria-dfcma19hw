@@ -216,9 +216,12 @@ export default function Tenants() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight text-black">
-          {t('tenants.title')}
-        </h1>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-black">
+            {t('tenants.title')}
+          </h1>
+          <p className="text-black font-medium">{t('tenants.subtitle')}</p>
+        </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleExportCSV}>
             <Download className="mr-2 h-4 w-4" /> {t('common.export')} CSV

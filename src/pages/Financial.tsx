@@ -38,7 +38,7 @@ export default function Financial() {
 
   if (!hasPermission(currentUser as User, 'financial', 'view')) {
     return (
-      <div className="p-8 text-center text-slate-600 font-medium">
+      <div className="p-8 text-center text-black font-medium">
         Acesso negado ao painel financeiro.
       </div>
     )
@@ -62,9 +62,8 @@ export default function Financial() {
       uploadBankStatement(newStatement)
       setIsUploading(false)
       toast({
-        title: 'Sucesso',
-        description:
-          'Extrato enviado para conciliação. Sistema tentando conciliar entradas...',
+        title: t('common.success'),
+        description: t('financial.upload_desc'),
       })
       if (fileInputRef.current) fileInputRef.current.value = ''
     }, 1500)
@@ -73,16 +72,24 @@ export default function Financial() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-950">
+        <h1 className="text-3xl font-bold tracking-tight text-black">
           {t('financial.title')}
         </h1>
-        <p className="text-slate-700 font-medium">{t('financial.subtitle')}</p>
+        <p className="text-black font-medium">{t('financial.subtitle')}</p>
       </div>
 
       <Tabs defaultValue="reports">
-        <TabsList>
-          <TabsTrigger value="reports">Relatórios & Analytics</TabsTrigger>
-          <TabsTrigger value="reconciliation">
+        <TabsList className="bg-slate-100 border border-slate-200">
+          <TabsTrigger
+            value="reports"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600"
+          >
+            {t('common.reports')} & Analytics
+          </TabsTrigger>
+          <TabsTrigger
+            value="reconciliation"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600"
+          >
             {t('financial.reconciliation')}
           </TabsTrigger>
         </TabsList>
@@ -92,13 +99,13 @@ export default function Financial() {
         </TabsContent>
 
         <TabsContent value="reconciliation">
-          <Card>
+          <Card className="bg-white border-slate-200">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-slate-950">
+                <CardTitle className="text-black">
                   {t('financial.upload_statement')}
                 </CardTitle>
-                <CardDescription className="text-slate-700">
+                <CardDescription className="text-black font-medium">
                   {t('financial.upload_desc')}
                 </CardDescription>
               </div>
@@ -113,39 +120,37 @@ export default function Financial() {
                 <Button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="bg-trust-blue"
+                  className="bg-trust-blue text-white font-bold"
                 >
                   <Upload className="mr-2 h-4 w-4" />
-                  {isUploading
-                    ? 'Enviando...'
-                    : t('financial.upload_statement')}
+                  {isUploading ? '...' : t('financial.upload_statement')}
                 </Button>
               </div>
             </CardHeader>
             <CardContent>
-              <h3 className="font-bold text-slate-950 mb-4">
+              <h3 className="font-bold text-black mb-4">
                 {t('financial.statements')}
               </h3>
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="font-bold text-slate-950">
+                  <TableRow className="border-b border-slate-200 bg-white hover:bg-white">
+                    <TableHead className="font-bold text-black">
                       Arquivo
                     </TableHead>
-                    <TableHead className="font-bold text-slate-950">
-                      Data Upload
+                    <TableHead className="font-bold text-black">
+                      {t('common.date')}
                     </TableHead>
-                    <TableHead className="font-bold text-slate-950">
-                      Status
+                    <TableHead className="font-bold text-black">
+                      {t('common.status')}
                     </TableHead>
-                    <TableHead className="font-bold text-slate-950">
+                    <TableHead className="font-bold text-black">
                       Itens
                     </TableHead>
-                    <TableHead className="font-bold text-slate-950">
-                      Valor Total
+                    <TableHead className="font-bold text-black">
+                      {t('common.total')}
                     </TableHead>
-                    <TableHead className="text-right font-bold text-slate-950">
-                      Ação
+                    <TableHead className="text-right font-bold text-black">
+                      {t('common.actions')}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -154,19 +159,22 @@ export default function Financial() {
                     <TableRow>
                       <TableCell
                         colSpan={6}
-                        className="text-center py-8 text-slate-600 font-medium"
+                        className="text-center py-8 text-black font-medium"
                       >
                         {t('financial.no_statements')}
                       </TableCell>
                     </TableRow>
                   ) : (
                     bankStatements.map((stmt) => (
-                      <TableRow key={stmt.id}>
-                        <TableCell className="font-bold text-slate-950 flex items-center gap-2">
+                      <TableRow
+                        key={stmt.id}
+                        className="bg-white hover:bg-slate-50 border-b border-slate-100"
+                      >
+                        <TableCell className="font-bold text-black flex items-center gap-2">
                           <FileText className="h-4 w-4 text-blue-700" />
                           <DataMask>{stmt.fileName}</DataMask>
                         </TableCell>
-                        <TableCell className="text-slate-900 font-medium">
+                        <TableCell className="text-black font-medium">
                           <DataMask>
                             {formatDate(stmt.uploadDate, language)}
                           </DataMask>
@@ -187,10 +195,10 @@ export default function Financial() {
                             </Badge>
                           )}
                         </TableCell>
-                        <TableCell className="text-slate-950 font-bold">
+                        <TableCell className="text-black font-bold">
                           <DataMask>{stmt.itemsCount}</DataMask>
                         </TableCell>
-                        <TableCell className="text-slate-950 font-bold">
+                        <TableCell className="text-black font-bold">
                           <DataMask>
                             {formatCurrency(stmt.totalAmount, language)}
                           </DataMask>
@@ -200,7 +208,7 @@ export default function Financial() {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="border-slate-300 text-slate-900 font-medium"
+                              className="border-slate-300 text-black font-medium hover:bg-slate-100"
                             >
                               Conciliar
                             </Button>

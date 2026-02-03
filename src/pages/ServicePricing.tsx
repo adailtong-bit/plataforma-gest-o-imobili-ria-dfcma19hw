@@ -10,15 +10,17 @@ export default function ServicePricing() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-navy">
-          {t('common.service_pricing')}
+          {t('service_pricing.title')}
         </h1>
-        <p className="text-muted-foreground">{t('common.service_desc')}</p>
+        <p className="text-muted-foreground">{t('service_pricing.subtitle')}</p>
       </div>
 
       <Tabs defaultValue="catalog" className="w-full">
         <TabsList className="mb-4">
-          <TabsTrigger value="catalog">Catalog</TabsTrigger>
-          <TabsTrigger value="analytics">Revenue Reports</TabsTrigger>
+          <TabsTrigger value="catalog">
+            {t('common.service_pricing')}
+          </TabsTrigger>
+          <TabsTrigger value="analytics">{t('reports.reports')}</TabsTrigger>
         </TabsList>
         <TabsContent value="catalog">
           <ServiceCatalog />

@@ -12,13 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useAuthStore from '@/stores/useAuthStore'
@@ -26,20 +19,19 @@ import { hasPermission } from '@/lib/permissions'
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 import { AuditLogList } from '@/components/audit/AuditLogList'
-import { User, FinancialSettings, AlertConfig } from '@/lib/types'
+import { User, FinancialSettings } from '@/lib/types'
 import useUserStore from '@/stores/useUserStore'
 import {
   Globe,
   CreditCard,
-  Building,
-  CheckCircle,
-  RefreshCw,
-  Mail,
   Bell,
   Wallet,
+  CheckCircle,
+  RefreshCw,
 } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/ui/badge'
+import { DataMask } from '@/components/DataMask'
 
 export default function Settings() {
   const { t } = useLanguageStore()
@@ -66,7 +58,6 @@ export default function Settings() {
       (currentUser as User).notificationPreferences?.contractUpdates ?? true,
   })
 
-  // Mock Channel States
   const [channelStatus, setChannelStatus] = useState({
     airbnb: { connected: true, lastSync: '2 minutes ago', status: 'Healthy' },
     booking: { connected: true, lastSync: '15 minutes ago', status: 'Healthy' },
@@ -93,7 +84,7 @@ export default function Settings() {
     })
     toast({
       title: t('common.save'),
-      description: 'Profile updated successfully.',
+      description: t('settings.update_info'),
     })
   }
 
@@ -141,87 +132,131 @@ export default function Settings() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-navy">
+        <h1 className="text-3xl font-bold tracking-tight text-black">
           {t('settings.title')}
         </h1>
-        <p className="text-muted-foreground">{t('settings.subtitle')}</p>
+        <p className="text-black font-medium">{t('settings.subtitle')}</p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4">
-        <TabsList className="w-full justify-start overflow-x-auto">
-          <TabsTrigger value="profile">{t('common.profile')}</TabsTrigger>
-          <TabsTrigger value="integrations">
+        <TabsList className="w-full justify-start overflow-x-auto bg-slate-100 border border-slate-200">
+          <TabsTrigger
+            value="profile"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600"
+          >
+            {t('common.profile')}
+          </TabsTrigger>
+          <TabsTrigger
+            value="integrations"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600"
+          >
             {t('settings.integrations')}
           </TabsTrigger>
-          <TabsTrigger value="billing">Billing & Payment</TabsTrigger>
-          <TabsTrigger value="notifications">
+          <TabsTrigger
+            value="billing"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600"
+          >
+            {t('settings.billing_payment')}
+          </TabsTrigger>
+          <TabsTrigger
+            value="notifications"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600"
+          >
             {t('common.notifications')}
           </TabsTrigger>
           {canViewAudit && (
-            <TabsTrigger value="audit">
+            <TabsTrigger
+              value="audit"
+              className="data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600"
+            >
               {t('common.system_activity')}
             </TabsTrigger>
           )}
         </TabsList>
 
         <TabsContent value="profile">
-          <Card>
+          <Card className="bg-white border-slate-200">
             <CardHeader>
-              <CardTitle>{t('settings.personal_info')}</CardTitle>
-              <CardDescription>{t('settings.update_info')}</CardDescription>
+              <CardTitle className="text-black">
+                {t('settings.personal_info')}
+              </CardTitle>
+              <CardDescription className="text-black font-medium">
+                {t('settings.update_info')}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center gap-6">
                 <Avatar className="h-24 w-24">
                   <AvatarImage src={currentUser.avatar} />
-                  <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="text-black font-bold bg-slate-200">
+                    {currentUser.name.charAt(0)}
+                  </AvatarFallback>
                 </Avatar>
-                <Button variant="outline">{t('settings.change_photo')}</Button>
+                <Button
+                  variant="outline"
+                  className="border-slate-300 text-black font-medium"
+                >
+                  {t('settings.change_photo')}
+                </Button>
               </div>
-              <Separator />
+              <Separator className="bg-slate-200" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">{t('settings.full_name')}</Label>
+                  <Label htmlFor="name" className="text-black font-bold">
+                    {t('settings.full_name')}
+                  </Label>
                   <Input
                     id="name"
                     value={profileData.name}
                     onChange={(e) =>
                       setProfileData({ ...profileData, name: e.target.value })
                     }
+                    className="text-black"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">{t('common.email')}</Label>
+                  <Label htmlFor="email" className="text-black font-bold">
+                    {t('common.email')}
+                  </Label>
                   <Input
                     id="email"
                     value={profileData.email}
                     onChange={(e) =>
                       setProfileData({ ...profileData, email: e.target.value })
                     }
+                    className="text-black"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">{t('common.phone')}</Label>
+                  <Label htmlFor="phone" className="text-black font-bold">
+                    {t('common.phone')}
+                  </Label>
                   <Input
                     id="phone"
                     value={profileData.phone}
                     onChange={(e) =>
                       setProfileData({ ...profileData, phone: e.target.value })
                     }
+                    className="text-black"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="taxId">{t('common.tax_id')}</Label>
+                  <Label htmlFor="taxId" className="text-black font-bold">
+                    {t('common.tax_id')}
+                  </Label>
                   <Input
                     id="taxId"
                     value={profileData.taxId}
                     onChange={(e) =>
                       setProfileData({ ...profileData, taxId: e.target.value })
                     }
+                    className="text-black"
                   />
                 </div>
                 <div className="col-span-1 md:col-span-2 space-y-2">
-                  <Label htmlFor="address">{t('common.address')}</Label>
+                  <Label htmlFor="address" className="text-black font-bold">
+                    {t('common.address')}
+                  </Label>
                   <Input
                     id="address"
                     value={profileData.address}
@@ -231,15 +266,16 @@ export default function Settings() {
                         address: e.target.value,
                       })
                     }
+                    className="text-black"
                   />
                 </div>
               </div>
 
-              <Separator />
+              <Separator className="bg-slate-200" />
 
               <div className="space-y-4">
-                <h3 className="font-medium flex items-center gap-2">
-                  <Bell className="h-4 w-4" /> Notification Preferences
+                <h3 className="font-medium flex items-center gap-2 text-black">
+                  <Bell className="h-4 w-4" /> {t('common.notifications')}
                 </h3>
                 <div className="grid gap-4 md:grid-cols-3">
                   <div className="flex items-center space-x-2">
@@ -253,7 +289,9 @@ export default function Settings() {
                         }))
                       }
                     />
-                    <Label htmlFor="notif-financial">Financial Alerts</Label>
+                    <Label htmlFor="notif-financial" className="text-black">
+                      Financial Alerts
+                    </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox
@@ -266,7 +304,9 @@ export default function Settings() {
                         }))
                       }
                     />
-                    <Label htmlFor="notif-maint">Maintenance</Label>
+                    <Label htmlFor="notif-maint" className="text-black">
+                      Maintenance
+                    </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox
@@ -279,13 +319,18 @@ export default function Settings() {
                         }))
                       }
                     />
-                    <Label htmlFor="notif-contract">Contract Updates</Label>
+                    <Label htmlFor="notif-contract" className="text-black">
+                      Contract Updates
+                    </Label>
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end">
-                <Button className="bg-trust-blue" onClick={handleProfileSave}>
+                <Button
+                  className="bg-trust-blue text-white font-bold"
+                  onClick={handleProfileSave}
+                >
                   {t('settings.save_changes')}
                 </Button>
               </div>
@@ -294,21 +339,23 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="integrations">
-          <Card>
+          <Card className="bg-white border-slate-200">
             <CardHeader>
-              <CardTitle>Channel Manager & Integrations</CardTitle>
-              <CardDescription>
-                Manage booking channels and external service connections.
+              <CardTitle className="text-black">
+                {t('settings.integrations')}
+              </CardTitle>
+              <CardDescription className="text-black font-medium">
+                {t('marketing_tab.portal_sync')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Channel Managers */}
               <div>
-                <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-medium mb-4 flex items-center gap-2 text-black">
                   <Globe className="h-5 w-5" /> Booking Channels
                 </h3>
                 <div className="grid gap-4">
-                  <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                  <div className="flex items-center justify-between p-4 border border-slate-200 rounded-lg bg-white">
                     <div className="flex items-center gap-4">
                       <div className="bg-rose-50 p-2 rounded">
                         <img
@@ -318,13 +365,13 @@ export default function Settings() {
                         />
                       </div>
                       <div>
-                        <p className="font-semibold">Airbnb</p>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <p className="font-bold text-black">Airbnb</p>
+                        <div className="flex items-center gap-2 text-xs text-black font-medium">
                           {channelStatus.airbnb.connected ? (
                             <>
                               <Badge
                                 variant="outline"
-                                className="bg-green-50 text-green-700 border-green-200 gap-1"
+                                className="bg-green-50 text-green-700 border-green-200 gap-1 font-bold"
                               >
                                 <CheckCircle className="w-3 h-3" /> Connected
                               </Badge>
@@ -334,7 +381,12 @@ export default function Settings() {
                               </span>
                             </>
                           ) : (
-                            <Badge variant="secondary">Disconnected</Badge>
+                            <Badge
+                              variant="secondary"
+                              className="font-bold text-black"
+                            >
+                              Disconnected
+                            </Badge>
                           )}
                         </div>
                       </div>
@@ -343,9 +395,10 @@ export default function Settings() {
                       <Button
                         variant="outline"
                         size="sm"
+                        className="border-slate-300 text-black font-bold"
                         disabled={!channelStatus.airbnb.connected}
                       >
-                        Configure
+                        Config
                       </Button>
                       <Switch
                         checked={channelStatus.airbnb.connected}
@@ -357,7 +410,10 @@ export default function Settings() {
               </div>
 
               <div className="flex justify-end pt-4">
-                <Button onClick={handleFinancialSave} className="bg-trust-blue">
+                <Button
+                  onClick={handleFinancialSave}
+                  className="bg-trust-blue text-white font-bold"
+                >
                   {t('settings.save_changes')}
                 </Button>
               </div>
@@ -366,26 +422,30 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="billing">
-          <Card>
+          <Card className="bg-white border-slate-200">
             <CardHeader>
-              <CardTitle>Billing & Payment Gateways</CardTitle>
-              <CardDescription>
-                Configure payment methods and payout settings.
+              <CardTitle className="text-black">
+                {t('settings.billing_gateways_title')}
+              </CardTitle>
+              <CardDescription className="text-black font-medium">
+                {t('settings.billing_gateways_desc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Payment Gateways Section */}
               <div className="space-y-4">
-                <h3 className="text-lg font-medium flex items-center gap-2">
-                  <Wallet className="h-5 w-5" /> Payment Gateways
+                <h3 className="text-lg font-medium flex items-center gap-2 text-black">
+                  <Wallet className="h-5 w-5" />{' '}
+                  {t('settings.payment_gateways')}
                 </h3>
 
                 {/* Stripe */}
-                <div className="border rounded-md p-4">
+                <div className="border border-slate-200 rounded-md p-4 bg-white">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <CreditCard className="h-6 w-6 text-purple-600" />
-                      <Label className="text-base font-semibold">Stripe</Label>
+                      <Label className="text-base font-bold text-black">
+                        Stripe
+                      </Label>
                     </div>
                     <Switch
                       checked={financialData.gateways?.stripe?.enabled}
@@ -397,7 +457,9 @@ export default function Settings() {
                   {financialData.gateways?.stripe?.enabled && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                       <div className="space-y-2">
-                        <Label>Public Key</Label>
+                        <Label className="text-black font-bold">
+                          Public Key
+                        </Label>
                         <Input
                           placeholder="pk_test_..."
                           value={financialData.gateways.stripe.publicKey || ''}
@@ -408,10 +470,13 @@ export default function Settings() {
                               e.target.value,
                             )
                           }
+                          className="text-black"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Secret Key</Label>
+                        <Label className="text-black font-bold">
+                          Secret Key
+                        </Label>
                         <Input
                           type="password"
                           placeholder="sk_test_..."
@@ -423,95 +488,7 @@ export default function Settings() {
                               e.target.value,
                             )
                           }
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* PayPal */}
-                <div className="border rounded-md p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <CreditCard className="h-6 w-6 text-blue-600" />
-                      <Label className="text-base font-semibold">PayPal</Label>
-                    </div>
-                    <Switch
-                      checked={financialData.gateways?.paypal?.enabled}
-                      onCheckedChange={(c) =>
-                        handleGatewayChange('paypal', 'enabled', c)
-                      }
-                    />
-                  </div>
-                  {financialData.gateways?.paypal?.enabled && (
-                    <div className="mt-2">
-                      <div className="space-y-2">
-                        <Label>Client ID</Label>
-                        <Input
-                          placeholder="Client ID"
-                          value={financialData.gateways.paypal.clientId || ''}
-                          onChange={(e) =>
-                            handleGatewayChange(
-                              'paypal',
-                              'clientId',
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Mercado Pago */}
-                <div className="border rounded-md p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <CreditCard className="h-6 w-6 text-cyan-600" />
-                      <Label className="text-base font-semibold">
-                        Mercado Pago
-                      </Label>
-                    </div>
-                    <Switch
-                      checked={financialData.gateways?.mercadoPago?.enabled}
-                      onCheckedChange={(c) =>
-                        handleGatewayChange('mercadoPago', 'enabled', c)
-                      }
-                    />
-                  </div>
-                  {financialData.gateways?.mercadoPago?.enabled && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                      <div className="space-y-2">
-                        <Label>Public Key</Label>
-                        <Input
-                          placeholder="TEST-..."
-                          value={
-                            financialData.gateways.mercadoPago.publicKey || ''
-                          }
-                          onChange={(e) =>
-                            handleGatewayChange(
-                              'mercadoPago',
-                              'publicKey',
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Access Token</Label>
-                        <Input
-                          type="password"
-                          placeholder="TEST-..."
-                          value={
-                            financialData.gateways.mercadoPago.accessToken || ''
-                          }
-                          onChange={(e) =>
-                            handleGatewayChange(
-                              'mercadoPago',
-                              'accessToken',
-                              e.target.value,
-                            )
-                          }
+                          className="text-black"
                         />
                       </div>
                     </div>
@@ -519,41 +496,53 @@ export default function Settings() {
                 </div>
               </div>
 
-              <Separator />
+              <Separator className="bg-slate-200" />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label>Bank Name</Label>
+                  <Label className="text-black font-bold">
+                    {t('partners.bank_name')}
+                  </Label>
                   <Input
                     value={financialData.bankName}
                     onChange={(e) =>
                       handleFinancialChange('bankName', e.target.value)
                     }
+                    className="text-black"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Routing Number</Label>
+                  <Label className="text-black font-bold">
+                    {t('partners.routing')}
+                  </Label>
                   <Input
                     value={financialData.routingNumber}
                     onChange={(e) =>
                       handleFinancialChange('routingNumber', e.target.value)
                     }
+                    className="text-black"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Account Number</Label>
+                  <Label className="text-black font-bold">
+                    {t('partners.account')}
+                  </Label>
                   <Input
                     value={financialData.accountNumber}
                     onChange={(e) =>
                       handleFinancialChange('accountNumber', e.target.value)
                     }
+                    className="text-black"
                   />
                 </div>
               </div>
 
               <div className="flex justify-end">
-                <Button onClick={handleFinancialSave} className="bg-trust-blue">
-                  Save Billing Config
+                <Button
+                  onClick={handleFinancialSave}
+                  className="bg-trust-blue text-white font-bold"
+                >
+                  {t('settings.save_changes')}
                 </Button>
               </div>
             </CardContent>
@@ -561,17 +550,19 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="notifications">
-          <Card>
+          <Card className="bg-white border-slate-200">
             <CardHeader>
-              <CardTitle>System Alerts</CardTitle>
-              <CardDescription>Global notification settings.</CardDescription>
+              <CardTitle className="text-black">
+                {t('settings.system_alerts')}
+              </CardTitle>
+              <CardDescription className="text-black font-medium">
+                {t('settings.system_alerts_desc')}
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                These settings control the generation of system alerts. For your
-                personal notification preferences, please go to the Profile tab.
+              <p className="text-sm text-black mb-4 font-medium">
+                {t('settings.system_alerts_help')}
               </p>
-              {/* Existing alert config logic */}
             </CardContent>
           </Card>
         </TabsContent>

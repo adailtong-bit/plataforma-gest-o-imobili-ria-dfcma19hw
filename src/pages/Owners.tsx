@@ -116,7 +116,6 @@ export default function Owners() {
       return
     }
 
-    // Strict Phone Validation
     if (
       newOwner.phone &&
       !isPhoneValid(newOwner.phone, newOwner.country as any)
@@ -225,7 +224,6 @@ export default function Owners() {
                   <Label className="text-black font-bold">
                     {t('common.phone')}
                   </Label>
-                  {/* Controlled Country Phone Input */}
                   <PhoneInput
                     value={newOwner.phone}
                     onChange={(e) =>

@@ -80,7 +80,6 @@ export function ServiceCatalog() {
   const [editMode, setEditMode] = useState(false)
   const [selectedPartnerId, setSelectedPartnerId] = useState<string>('generic')
 
-  // Config State
   const [reviewThreshold, setReviewThreshold] = useState(
     financialSettings.priceReviewThresholdDays || 180,
   )
@@ -112,14 +111,12 @@ export function ServiceCatalog() {
         field === 'servicePrice' ? numVal : Number(currentRate.servicePrice)
       const pp =
         field === 'partnerPayment' ? numVal : Number(currentRate.partnerPayment)
-      // Recalculate PM Value
       newRate.pmValue = sp - pp
     }
 
     setCurrentRate(newRate)
   }
 
-  // Flatten all service rates including generic
   const partnerRates = partners.flatMap((partner) =>
     (partner.serviceRates || []).map((rate) => ({
       ...rate,
@@ -410,7 +407,7 @@ export function ServiceCatalog() {
                           disabled={editMode}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select" />
+                            <SelectValue placeholder={t('common.select')} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="generic">
@@ -532,10 +529,6 @@ export function ServiceCatalog() {
                         />
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground text-center">
-                      PM Value is auto-calculated as (Service Price - Partner
-                      Payment), but can be adjusted.
-                    </p>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">

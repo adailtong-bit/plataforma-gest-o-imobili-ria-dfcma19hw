@@ -61,7 +61,6 @@ export default function Condominiums() {
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
 
-  // Explicit country state for validation
   const [managerCountry, setManagerCountry] = useState<'US' | 'BR' | 'ES'>('US')
 
   const [formData, setFormData] = useState({
@@ -112,7 +111,6 @@ export default function Condominiums() {
       return
     }
 
-    // Strict Phone Validation based on selected country
     if (
       formData.managerPhone &&
       !isPhoneValid(formData.managerPhone, managerCountry)
