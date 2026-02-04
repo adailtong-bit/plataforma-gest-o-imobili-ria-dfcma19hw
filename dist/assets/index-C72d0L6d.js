@@ -16319,6 +16319,30 @@ import_react.memo(DataRoutes);
 function DataRoutes({ routes, future, state, onError }) {
 	return useRoutesImpl(routes, void 0, state, onError, future);
 }
+function Navigate({ to, replace: replace2, state, relative }) {
+	invariant$1(useInRouterContext(), `<Navigate> may be used only in the context of a <Router> component.`);
+	let { static: isStatic } = import_react.useContext(NavigationContext);
+	warning(!isStatic, `<Navigate> must not be used on the initial render in a <StaticRouter>. This is a no-op, but you should modify your code so the <Navigate> is only ever rendered in response to some user interaction or state change.`);
+	let { matches } = import_react.useContext(RouteContext);
+	let { pathname: locationPathname } = useLocation();
+	let navigate = useNavigate();
+	let path$1 = resolveTo(to, getResolveToMatches(matches), locationPathname, relative === "path");
+	let jsonPath = JSON.stringify(path$1);
+	import_react.useEffect(() => {
+		navigate(JSON.parse(jsonPath), {
+			replace: replace2,
+			state,
+			relative
+		});
+	}, [
+		navigate,
+		jsonPath,
+		relative,
+		replace2,
+		state
+	]);
+	return null;
+}
 function Outlet(props) {
 	return useOutlet(props.context);
 }
@@ -53638,7 +53662,7 @@ const translations = {
 			real_estate_dashboard: "Painel Imobiliário",
 			visit_scheduling: "Agendamento de Visitas",
 			visits_list: "Lista de Visitas",
-			pending_visits: "Visitas Pendentes",
+			pending_visits: "Visitas Pendientes",
 			total_revenue: "Receita Total",
 			active_listings: "Listagens Ativas",
 			sold: "Vendido",
@@ -53664,7 +53688,8 @@ const translations = {
 			return_home: "Voltar para o Início",
 			name_required: "Nome é obrigatório",
 			email_required: "Email é obrigatório",
-			address_placeholder: "Endereço completo"
+			address_placeholder: "Endereço completo",
+			resource: "Recurso"
 		},
 		workflows: {
 			title: "Motor de Workflow",
@@ -54067,11 +54092,11 @@ const translations = {
 		},
 		roles: {
 			platform_owner: "Dono da Plataforma",
-			software_tenant: "Locador (Gestor)",
-			internal_user: "Staff Interno",
+			software_tenant: "Gerente de Imóveis",
+			internal_user: "Equipe PM",
 			property_owner: "Proprietário",
-			partner: "Parceiro",
-			partner_employee: "Funcionário Parceiro",
+			partner: "Parceiros",
+			partner_employee: "Equipe",
 			tenant: "Inquilino"
 		},
 		renewals: {
@@ -54373,7 +54398,8 @@ const translations = {
 			return_home: "Return to Home",
 			name_required: "Name is required",
 			email_required: "Email is required",
-			address_placeholder: "Full address"
+			address_placeholder: "Full address",
+			resource: "Resource"
 		},
 		workflows: {
 			title: "Workflow Engine",
@@ -55082,7 +55108,8 @@ const translations = {
 			return_home: "Volver al Inicio",
 			name_required: "El nombre es obligatorio",
 			email_required: "El correo es obligatorio",
-			address_placeholder: "Dirección completa"
+			address_placeholder: "Dirección completa",
+			resource: "Recurso"
 		},
 		workflows: {
 			title: "Motor de Workflow",
@@ -60845,53 +60872,296 @@ var useMessageStore = () => {
 	};
 };
 var useMessageStore_default = useMessageStore;
+const PERMISSIONS_MATRIX = {
+	platform_owner: {
+		dashboard: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		properties: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		condominiums: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		tenants: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		owners: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		partners: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		calendar: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		tasks: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		financial: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		messages: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		users: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		settings: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		audit_logs: ["view"],
+		market_analysis: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		workflows: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		renewals: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		publicity: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		short_term: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		migration: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		analytics: ["view"],
+		automation: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		reports: ["view"],
+		visits: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		portal: ["view"]
+	},
+	software_tenant: {
+		dashboard: ["view"],
+		properties: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		condominiums: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		tenants: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		owners: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		partners: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		calendar: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		tasks: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		financial: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		messages: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		users: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		settings: ["view", "edit"],
+		audit_logs: ["view"],
+		market_analysis: ["view"],
+		workflows: [
+			"view",
+			"create",
+			"edit"
+		],
+		renewals: [
+			"view",
+			"create",
+			"edit"
+		],
+		short_term: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		analytics: ["view"],
+		reports: ["view"],
+		visits: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		migration: ["view", "create"],
+		automation: ["view", "edit"]
+	},
+	internal_user: {
+		dashboard: ["view"],
+		properties: ["view", "edit"],
+		condominiums: ["view"],
+		tenants: ["view", "edit"],
+		owners: ["view"],
+		partners: ["view"],
+		calendar: [
+			"view",
+			"create",
+			"edit"
+		],
+		tasks: [
+			"view",
+			"create",
+			"edit"
+		],
+		messages: ["view", "create"],
+		short_term: [
+			"view",
+			"create",
+			"edit"
+		],
+		renewals: ["view", "edit"],
+		reports: ["view"],
+		visits: [
+			"view",
+			"create",
+			"edit"
+		]
+	},
+	partner: {
+		portal: ["view"],
+		tasks: ["view", "edit"],
+		messages: ["view", "create"],
+		financial: ["view"]
+	},
+	property_owner: {
+		portal: ["view"],
+		properties: ["view"],
+		financial: ["view"],
+		messages: ["view", "create"],
+		short_term: ["view"]
+	},
+	tenant: {
+		portal: ["view"],
+		messages: ["view", "create"],
+		financial: ["view"]
+	},
+	partner_employee: {
+		portal: ["view"],
+		tasks: ["view", "edit"],
+		messages: ["view", "create"]
+	}
+};
 const hasPermission = (user, resource, action) => {
-	if (user.role === "platform_owner") return true;
+	if (!user || !user.role) return false;
 	if (user.permissions && user.permissions.length > 0) {
-		const permission = user.permissions.find((p$1) => p$1.resource === resource);
-		if (permission) return permission.actions.includes(action);
-		if (user.role === "internal_user" && !user.mirrorAdmin) return false;
+		const override = user.permissions.find((p$1) => p$1.resource === resource);
+		if (override) return override.actions.includes(action);
 	}
-	if (user.role === "software_tenant") {
-		if (resource === "market_analysis" && action === "delete") return false;
-		return true;
-	}
-	if (user.role === "internal_user") {
-		if (user.mirrorAdmin) return true;
-		return false;
-	}
-	if (user.role === "property_owner") {
-		if (resource === "portal" && action === "view") return true;
-		if (resource === "messages" && action === "view") return true;
-		if (resource === "short_term" && action === "view") return true;
-		if (resource === "financial" && action === "view") return true;
-		return false;
-	}
-	if (user.role === "partner") {
-		if (resource === "portal" && action === "view") return true;
-		if (resource === "messages" && action === "view") return true;
-		if (resource === "tasks" && (action === "view" || action === "edit")) return true;
-		if (resource === "financial" && action === "view") return true;
-		return false;
-	}
-	if (user.role === "partner_employee") {
-		if (resource === "portal" && action === "view") return true;
-		if (resource === "tasks" && action === "view") return true;
-		if (resource === "tasks" && action === "edit") return true;
-		if (resource === "messages" && action === "view") return true;
-		return false;
-	}
-	if (user.role === "tenant") {
-		if (resource === "portal" && action === "view") return true;
-		if (resource === "messages" && action === "view") return true;
-		return false;
-	}
-	return false;
+	const rolePermissions = PERMISSIONS_MATRIX[user.role];
+	if (!rolePermissions) return false;
+	const resourcePermissions = rolePermissions[resource];
+	if (!resourcePermissions) return false;
+	return resourcePermissions.includes(action);
 };
 function AppSidebar() {
 	const pathname = useLocation().pathname;
 	const { t: t$1 } = useLanguageStore_default();
-	const { currentUser, isAuthenticated } = useAuthStore_default();
+	const { currentUser } = useAuthStore_default();
 	const { messages: messages$1 } = useMessageStore_default();
 	const { setOpenMobile, isMobile } = useSidebar();
 	const handleLinkClick = () => {
@@ -60981,7 +61251,7 @@ function AppSidebar() {
 			title: t$1("common.visits"),
 			url: "/visits",
 			icon: CalendarDays,
-			resource: "calendar"
+			resource: "visits"
 		},
 		{
 			title: t$1("common.tasks"),
@@ -61026,10 +61296,13 @@ function AppSidebar() {
 		if (url !== "/" && pathname.startsWith(url)) return true;
 		return false;
 	};
+	const showMigration = hasPermission(currentUser, "migration", "view");
+	const showPublicity = hasPermission(currentUser, "publicity", "view");
 	const showUsers = hasPermission(currentUser, "users", "view");
 	const showSettings = hasPermission(currentUser, "settings", "view");
-	const showPublicity = currentUser.role === "platform_owner" || hasPermission(currentUser, "publicity", "view");
-	const showMigration = currentUser.role === "platform_owner" || currentUser.role === "software_tenant";
+	const isTenant = currentUser.role === "tenant";
+	const isOwner = currentUser.role === "property_owner";
+	const isPartner = currentUser.role === "partner" || currentUser.role === "partner_employee";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Sidebar, {
 		collapsible: "icon",
 		className: "bg-white border-r z-50 fixed left-0 top-0 h-screen shadow-md",
@@ -61053,11 +61326,11 @@ function AppSidebar() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarContent, {
 				className: "bg-white",
 				children: [
-					(currentUser.role === "tenant" || currentUser.role === "property_owner" || currentUser.role === "partner" || currentUser.role === "partner_employee") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
+					(isTenant || isOwner || isPartner) && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
 						className: cn(isMobile && "text-black", "text-black font-bold"),
 						children: t$1("common.portal")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenu, { children: [
-						currentUser.role === "tenant" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+						isTenant && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 							asChild: true,
 							isActive: isActive("/portal/tenant"),
 							className: "text-black font-medium hover:bg-slate-100",
@@ -61067,7 +61340,7 @@ function AppSidebar() {
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutTemplate, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("sidebar.tenant_portal") })]
 							})
 						}) }),
-						currentUser.role === "property_owner" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+						isOwner && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 							asChild: true,
 							isActive: isActive("/portal/owner"),
 							className: "text-black font-medium hover:bg-slate-100",
@@ -61077,7 +61350,7 @@ function AppSidebar() {
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutTemplate, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("sidebar.owner_portal") })]
 							})
 						}) }),
-						(currentUser.role === "partner" || currentUser.role === "partner_employee") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+						isPartner && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 							asChild: true,
 							isActive: isActive("/portal/partner"),
 							className: "text-black font-medium hover:bg-slate-100",
@@ -87466,30 +87739,85 @@ function CondominiumDetails() {
 		})]
 	});
 }
-var RESOURCES = [
+var DISPLAY_RESOURCES = [
 	"dashboard",
 	"properties",
-	"short_term",
-	"renewals",
-	"market_analysis",
 	"condominiums",
 	"tenants",
 	"owners",
 	"partners",
 	"calendar",
 	"tasks",
-	"workflows",
 	"financial",
 	"messages",
 	"users",
-	"settings"
+	"settings",
+	"market_analysis",
+	"workflows",
+	"renewals",
+	"short_term",
+	"reports",
+	"visits",
+	"portal"
 ];
-var ACTIONS = [
-	"view",
-	"create",
-	"edit",
-	"delete"
+var ROLES = [
+	"platform_owner",
+	"software_tenant",
+	"internal_user",
+	"partner",
+	"property_owner",
+	"tenant",
+	"partner_employee"
 ];
+function PermissionsMatrix() {
+	const { t: t$1 } = useLanguageStore_default();
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "rounded-md border bg-white overflow-hidden",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+			className: "bg-slate-50 hover:bg-slate-50",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableHead, {
+				className: "w-[200px] font-bold text-black border-r",
+				children: [
+					t$1("common.resource"),
+					" / ",
+					t$1("common.role")
+				]
+			}), ROLES.map((role) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "text-center font-bold text-black min-w-[100px]",
+				children: t$1(`roles.${role}`)
+			}, role))]
+		}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: DISPLAY_RESOURCES.map((resource) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+			className: "hover:bg-slate-50",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "font-medium capitalize text-black border-r",
+				children: t$1(`common.${resource}`) !== `common.${resource}` ? t$1(`common.${resource}`) : resource.replace(/_/g, " ")
+			}), ROLES.map((role) => {
+				const perms = PERMISSIONS_MATRIX[role];
+				const resourcePerms = perms ? perms[resource] : void 0;
+				return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "text-center",
+					children: resourcePerms && resourcePerms.includes("view") ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex flex-col items-center justify-center gap-1",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+							variant: "outline",
+							className: "bg-green-50 text-green-700 border-green-200 justify-center w-8 h-8 p-0 rounded-full",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-[10px] text-muted-foreground",
+							children: resourcePerms?.includes("create") || resourcePerms?.includes("edit") ? "Full" : "View"
+						})]
+					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "flex justify-center",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "w-8 h-8 flex items-center justify-center",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 text-slate-300" })
+						})
+					})
+				}, `${role}-${resource}`);
+			})]
+		}, resource)) })] })
+	});
+}
 function Users() {
 	const { users, addUser, updateUser, deleteUser, approveUser, blockUser } = useUserStore_default();
 	const { currentUser } = useAuthStore_default();
@@ -87519,83 +87847,6 @@ function Users() {
 	};
 	const [formData, setFormData] = (0, import_react.useState)(initialFormState);
 	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
-	const getDefaultPermissions = (role) => {
-		switch (role) {
-			case "partner_employee": return [
-				{
-					resource: "tasks",
-					actions: ["view", "edit"]
-				},
-				{
-					resource: "portal",
-					actions: ["view"]
-				},
-				{
-					resource: "messages",
-					actions: ["view"]
-				}
-			];
-			case "partner": return [
-				{
-					resource: "tasks",
-					actions: ["view", "edit"]
-				},
-				{
-					resource: "financial",
-					actions: ["view"]
-				},
-				{
-					resource: "portal",
-					actions: ["view"]
-				},
-				{
-					resource: "messages",
-					actions: ["view"]
-				}
-			];
-			case "property_owner": return [
-				{
-					resource: "properties",
-					actions: ["view"]
-				},
-				{
-					resource: "financial",
-					actions: ["view"]
-				},
-				{
-					resource: "portal",
-					actions: ["view"]
-				}
-			];
-			default: return [];
-		}
-	};
-	(0, import_react.useEffect)(() => {
-		if (!isEditing && formData.role) {
-			const defaults = getDefaultPermissions(formData.role);
-			if (defaults.length > 0) setFormData((prev) => ({
-				...prev,
-				permissions: defaults
-			}));
-		}
-	}, [formData.role, isEditing]);
-	const canCreateRole = (role) => {
-		if (currentUser.role === "platform_owner") return [
-			"software_tenant",
-			"internal_user",
-			"partner",
-			"partner_employee"
-		].includes(role);
-		if (currentUser.role === "software_tenant") return [
-			"internal_user",
-			"partner",
-			"property_owner",
-			"partner_employee",
-			"tenant"
-		].includes(role);
-		if (currentUser.role === "partner") return role === "partner_employee";
-		return false;
-	};
 	const sortedUsers = [...users.filter((u$1) => {
 		if (u$1.isDemo) return true;
 		if (currentUser.role === "platform_owner") return true;
@@ -87625,14 +87876,7 @@ function Users() {
 			return;
 		}
 		if (formData.role === "partner_employee") {
-			if ((formData.phone?.replace(/\D/g, "") || "").length !== 11) {
-				toast$2({
-					title: t$1("common.validation_error_title"),
-					description: t$1("common.phone_invalid"),
-					variant: "destructive"
-				});
-				return;
-			}
+			if ((formData.phone?.replace(/\D/g, "") || "").length !== 11 && formData.country === "BR") {}
 		}
 		if (users.find((u$1) => u$1.email.toLowerCase() === formData.email?.toLowerCase() && u$1.id !== formData.id)) {
 			toast$2({
@@ -87658,18 +87902,12 @@ function Users() {
 			});
 			return;
 		}
-		const { password, confirmPassword, mirrorAdmin, parentPartnerId, ...userData } = formData;
-		let finalPermissions = userData.permissions;
-		if (mirrorAdmin) finalPermissions = RESOURCES.map((res) => ({
-			resource: res,
-			actions: [...ACTIONS]
-		}));
+		const { password, confirmPassword, parentPartnerId, ...userData } = formData;
 		let finalParentId = currentUser.id;
 		if (userData.role === "partner_employee" && parentPartnerId) finalParentId = parentPartnerId;
 		const finalUserData = {
 			...userData,
-			parentId: isEditing ? userData.parentId : finalParentId,
-			permissions: finalPermissions
+			parentId: isEditing ? userData.parentId : finalParentId
 		};
 		if (isEditing && formData.id) {
 			updateUser(finalUserData);
@@ -87723,57 +87961,11 @@ function Users() {
 		setBlockDialogOpen(false);
 		setUserToBlock(null);
 	};
-	const handlePermissionChange = (resource, action, checked) => {
-		setFormData((prev) => {
-			const perms = prev.permissions || [];
-			let resourcePerm = perms.find((p$1) => p$1.resource === resource);
-			if (!resourcePerm) {
-				resourcePerm = {
-					resource,
-					actions: []
-				};
-				perms.push(resourcePerm);
-			} else {
-				const index$1 = perms.indexOf(resourcePerm);
-				resourcePerm = {
-					...resourcePerm,
-					actions: [...resourcePerm.actions]
-				};
-				perms[index$1] = resourcePerm;
-			}
-			if (checked) {
-				if (!resourcePerm.actions.includes(action)) resourcePerm.actions.push(action);
-			} else resourcePerm.actions = resourcePerm.actions.filter((a$2) => a$2 !== action);
-			return {
-				...prev,
-				permissions: [...perms],
-				mirrorAdmin: false
-			};
-		});
-	};
-	const toggleMirrorAdmin = (checked) => {
-		if (checked) {
-			const allPerms = RESOURCES.map((res) => ({
-				resource: res,
-				actions: [...ACTIONS]
-			}));
-			setFormData((prev) => ({
-				...prev,
-				mirrorAdmin: true,
-				permissions: allPerms
-			}));
-		} else setFormData((prev) => ({
-			...prev,
-			mirrorAdmin: false,
-			permissions: []
-		}));
-	};
 	const openEdit = (user) => {
 		setFormData({
 			...user,
 			password: "",
 			confirmPassword: "",
-			mirrorAdmin: !!user.mirrorAdmin,
 			parentPartnerId: user.parentId,
 			country: user.country || "US"
 		});
@@ -87819,7 +88011,7 @@ function Users() {
 			default: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-4 w-4" });
 		}
 	};
-	if (!hasPermission(currentUser, "users", "view") && currentUser.role !== "partner") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+	if (!hasPermission(currentUser, "users", "view")) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "p-8 text-center",
 		children: "Access denied."
 	});
@@ -87867,7 +88059,7 @@ function Users() {
 								})]
 							})]
 						})] })]
-					}), (hasPermission(currentUser, "users", "create") || currentUser.role === "partner") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 						open,
 						onOpenChange: (val) => {
 							setOpen(val);
@@ -87888,7 +88080,7 @@ function Users() {
 								]
 							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-							className: "max-w-4xl max-h-[90vh] overflow-y-auto",
+							className: "max-w-3xl max-h-[90vh] overflow-y-auto",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogTitle, { children: [isEditing ? t$1("common.edit") : t$1("common.new"), " User"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: t$1("users.subtitle") })] }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -87966,47 +88158,33 @@ function Users() {
 														}),
 														disabled: isEditing,
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-															canCreateRole("software_tenant") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "platform_owner",
+																children: "Admin"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "software_tenant",
-																children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-																	className: "flex items-center gap-2",
-																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4" }), " Landlord (Manager)"]
-																})
+																children: t$1("roles.software_tenant")
 															}),
-															canCreateRole("internal_user") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "internal_user",
-																children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-																	className: "flex items-center gap-2",
-																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(UserCog, { className: "h-4 w-4" }), " Internal (Staff)"]
-																})
+																children: t$1("roles.internal_user")
 															}),
-															canCreateRole("property_owner") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-																value: "property_owner",
-																children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-																	className: "flex items-center gap-2",
-																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-4 w-4" }), " Owner"]
-																})
-															}),
-															canCreateRole("partner") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "partner",
-																children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-																	className: "flex items-center gap-2",
-																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "h-4 w-4" }), " Partner (Company)"]
-																})
+																children: t$1("roles.partner")
 															}),
-															canCreateRole("partner_employee") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-																value: "partner_employee",
-																children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-																	className: "flex items-center gap-2",
-																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-4 w-4" }), " Team (Technician)"]
-																})
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "property_owner",
+																children: t$1("roles.property_owner")
 															}),
-															canCreateRole("tenant") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "tenant",
-																children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-																	className: "flex items-center gap-2",
-																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-4 w-4" }), " Tenant"]
-																})
+																children: t$1("roles.tenant")
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "partner_employee",
+																children: t$1("roles.partner_employee")
 															})
 														] })]
 													})]
@@ -88030,30 +88208,6 @@ function Users() {
 														")"
 													]
 												}, p$1.id)) })]
-											})]
-										}),
-										(formData.role === "partner" || formData.role === "property_owner") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid grid-cols-2 gap-4 border-t pt-4",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.tax_id") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													value: formData.taxId || "",
-													onChange: (e) => setFormData({
-														...formData,
-														taxId: e.target.value
-													}),
-													placeholder: "Tax ID"
-												})]
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.address") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													value: formData.address || "",
-													onChange: (e) => setFormData({
-														...formData,
-														address: e.target.value
-													}),
-													placeholder: t$1("common.address_placeholder")
-												})]
 											})]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -88094,71 +88248,6 @@ function Users() {
 													})
 												})]
 											})]
-										}),
-										[
-											"internal_user",
-											"partner",
-											"partner_employee",
-											"software_tenant",
-											"property_owner",
-											"tenant"
-										].includes(formData.role || "") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "border rounded-md mt-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "p-4 bg-muted/20 border-b flex justify-between items-center",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
-													className: "font-medium flex items-center gap-2",
-													children: [
-														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shield, { className: "h-4 w-4" }),
-														" ",
-														t$1("users.permissions")
-													]
-												}), formData.role === "internal_user" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-													className: "flex items-center gap-2",
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
-														id: "mirror-admin",
-														checked: formData.mirrorAdmin,
-														onCheckedChange: toggleMirrorAdmin
-													}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
-														htmlFor: "mirror-admin",
-														className: "flex items-center gap-1 cursor-pointer",
-														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShieldCheck, { className: "h-4 w-4 text-trust-blue" }), t$1("users.mirror_admin")]
-													})]
-												})]
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
-												className: "h-[300px]",
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Module / Resource" }),
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-														className: "text-center w-[80px]",
-														children: t$1("common.view")
-													}),
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-														className: "text-center w-[80px]",
-														children: t$1("common.new")
-													}),
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-														className: "text-center w-[80px]",
-														children: t$1("common.edit")
-													}),
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-														className: "text-center w-[80px]",
-														children: t$1("common.delete")
-													})
-												] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: RESOURCES.map((res) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-													className: "capitalize font-medium",
-													children: t$1(`common.${res}`) !== `common.${res}` ? t$1(`common.${res}`) : res.replace("_", " ")
-												}), ACTIONS.map((action) => {
-													return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-														className: "text-center",
-														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
-															checked: formData.permissions?.find((p$1) => p$1.resource === res)?.actions.includes(action) || false,
-															onCheckedChange: (c$1) => handlePermissionChange(res, action, c$1),
-															disabled: formData.mirrorAdmin
-														})
-													}, action);
-												})] }, res)) })] })
-											})]
 										})
 									]
 								}),
@@ -88172,99 +88261,117 @@ function Users() {
 					})]
 				})]
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("users.registered") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [
-				sortedUsers.length,
-				" ",
-				t$1("users.registered_desc")
-			] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableHead, { children: [
-					t$1("common.name"),
-					" / ",
-					t$1("common.email")
-				] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("users.role_label") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-					className: "text-right",
-					children: t$1("common.actions")
-				})
-			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: sortedUsers.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-				colSpan: 4,
-				className: "text-center py-8 text-muted-foreground",
-				children: "No users found."
-			}) }) : sortedUsers.map((user) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
-				className: user.isDemo ? "bg-blue-50/50 hover:bg-blue-50/80" : "",
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+				defaultValue: "list",
+				className: "space-y-4",
 				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex flex-col",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "font-medium",
-								children: user.name
-							}), user.isDemo && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-								variant: "secondary",
-								className: "bg-blue-100 text-blue-700 hover:bg-blue-100 text-[10px] h-5 px-1.5",
-								children: "DEMO"
-							})]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-xs text-muted-foreground",
-							children: user.email
-						})]
-					}) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-2",
-						children: [getRoleIcon(user.role), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "capitalize",
-							children: t$1(`roles.${user.role}`)
-						})]
-					}) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: getStatusBadge(user.status) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-						className: "text-right",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex justify-end gap-2",
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: "list",
+						children: t$1("users.registered")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+						value: "matrix",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shield, { className: "h-4 w-4 mr-2" }), t$1("users.permissions")]
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+						value: "list",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("users.registered") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [
+							sortedUsers.length,
+							" ",
+							t$1("users.registered_desc")
+						] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableHead, { children: [
+								t$1("common.name"),
+								" / ",
+								t$1("common.email")
+							] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("users.role_label") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "text-right",
+								children: t$1("common.actions")
+							})
+						] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: sortedUsers.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							colSpan: 4,
+							className: "text-center py-8 text-muted-foreground",
+							children: "No users found."
+						}) }) : sortedUsers.map((user) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+							className: user.isDemo ? "bg-blue-50/50 hover:bg-blue-50/80" : "",
 							children: [
-								(user.status === "pending_approval" || user.status === "blocked") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-									variant: "outline",
-									size: "sm",
-									className: "text-green-600 border-green-200 hover:bg-green-50 h-8",
-									onClick: () => handleApprove(user.id),
-									title: user.status === "blocked" ? "Reactivate User" : t$1("common.approve"),
-									children: [user.status === "blocked" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LockOpen, { className: "h-3 w-3 mr-1" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-3 w-3 mr-1" }), user.status === "blocked" ? "Reactivate" : "Approve"]
-								}),
-								user.status === "active" && currentUser.id !== user.id && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									variant: "ghost",
-									size: "icon",
-									className: "text-orange-600 hover:text-orange-700 hover:bg-orange-50",
-									onClick: () => initiateBlock(user.id),
-									title: t$1("common.block"),
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ban, { className: "h-4 w-4" })
-								}),
-								(hasPermission(currentUser, "users", "edit") || currentUser.role === "partner") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									variant: "ghost",
-									size: "icon",
-									onClick: () => openEdit(user),
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
-								}),
-								(hasPermission(currentUser, "users", "delete") || currentUser.role === "partner") && currentUser.id !== user.id && !user.isDemo && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-										variant: "ghost",
-										size: "icon",
-										className: "text-red-500 hover:text-red-600 hover:bg-red-50",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex flex-col",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "font-medium",
+											children: user.name
+										}), user.isDemo && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+											variant: "secondary",
+											className: "bg-blue-100 text-blue-700 hover:bg-blue-100 text-[10px] h-5 px-1.5",
+											children: "DEMO"
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-xs text-muted-foreground",
+										children: user.email
+									})]
+								}) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-2",
+									children: [getRoleIcon(user.role), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "capitalize",
+										children: t$1(`roles.${user.role}`)
+									})]
+								}) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: getStatusBadge(user.status) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-right",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex justify-end gap-2",
+										children: [
+											(user.status === "pending_approval" || user.status === "blocked") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+												variant: "outline",
+												size: "sm",
+												className: "text-green-600 border-green-200 hover:bg-green-50 h-8",
+												onClick: () => handleApprove(user.id),
+												children: [user.status === "blocked" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LockOpen, { className: "h-3 w-3 mr-1" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-3 w-3 mr-1" }), user.status === "blocked" ? "Reactivate" : "Approve"]
+											}),
+											user.status === "active" && currentUser.id !== user.id && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+												variant: "ghost",
+												size: "icon",
+												className: "text-orange-600 hover:text-orange-700 hover:bg-orange-50",
+												onClick: () => initiateBlock(user.id),
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ban, { className: "h-4 w-4" })
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+												variant: "ghost",
+												size: "icon",
+												onClick: () => openEdit(user),
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
+											}),
+											currentUser.id !== user.id && !user.isDemo && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+												asChild: true,
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+													variant: "ghost",
+													size: "icon",
+													className: "text-red-500 hover:text-red-600 hover:bg-red-50",
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+												})
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t$1("common.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t$1("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t$1("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+												onClick: () => handleDelete(user.id),
+												className: "bg-red-600 hover:bg-red-700",
+												children: t$1("common.delete")
+											})] })] })] })
+										]
 									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t$1("common.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t$1("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t$1("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-									onClick: () => handleDelete(user.id),
-									className: "bg-red-600 hover:bg-red-700",
-									children: t$1("common.delete")
-								})] })] })] })
+								})
 							]
-						})
+						}, user.id)) })] }) })] })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+						value: "matrix",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Access Control Matrix" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Overview of permissions per role and resource." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PermissionsMatrix, {}) })] })
 					})
 				]
-			}, user.id)) })] }) })] }),
+			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialog, {
 				open: blockDialogOpen,
 				onOpenChange: setBlockDialogOpen,
@@ -95386,6 +95493,53 @@ function Visits() {
 		]
 	});
 }
+function RequirePermission({ children, resource, action = "view" }) {
+	const { currentUser, isAuthenticated } = useAuthStore_default();
+	const location = useLocation();
+	const { toast: toast$2 } = useToast();
+	const hasAccess = isAuthenticated && currentUser && hasPermission(currentUser, resource, action);
+	(0, import_react.useEffect)(() => {
+		if (isAuthenticated && !hasAccess) toast$2({
+			title: "Access Denied",
+			description: `You do not have permission to access ${resource}.`,
+			variant: "destructive"
+		});
+	}, [
+		hasAccess,
+		isAuthenticated,
+		resource,
+		toast$2
+	]);
+	if (!isAuthenticated) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
+		to: "/login",
+		state: { from: location },
+		replace: true
+	});
+	if (!hasAccess) {
+		if (currentUser.role === "tenant" || currentUser.role === "property_owner" || currentUser.role === "partner" || currentUser.role === "partner_employee") {
+			const portalPath = currentUser.role === "property_owner" ? "/portal/owner" : currentUser.role === "partner" || currentUser.role === "partner_employee" ? "/portal/partner" : "/portal/tenant";
+			if (location.pathname !== portalPath) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
+				to: portalPath,
+				replace: true
+			});
+		}
+		if (location.pathname !== "/") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
+			to: "/",
+			replace: true
+		});
+		return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "flex items-center justify-center min-h-screen",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "text-center",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-2xl font-bold text-red-600",
+					children: "Access Denied"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "You do not have permission to view this page." })]
+			})
+		});
+	}
+	return children;
+}
 var App = () => {
 	(0, import_react.useEffect)(() => {
 		document.title = "COREPM";
@@ -95415,131 +95569,227 @@ var App = () => {
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Index, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "dashboard",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Index, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/properties",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Properties, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "properties",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Properties, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/properties/:id",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyDetails, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "properties",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyDetails, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/short-term",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShortTerm, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "short_term",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShortTerm, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/condominiums",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Condominiums, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "condominiums",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Condominiums, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/condominiums/:id",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CondominiumDetails, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "condominiums",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CondominiumDetails, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/tenants",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tenants, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "tenants",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tenants, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/tenants/:id",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TenantDetails, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "tenants",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TenantDetails, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/owners",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Owners, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "owners",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Owners, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/owners/:id",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OwnerDetails, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "owners",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OwnerDetails, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/partners",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Partners, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "partners",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Partners, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/partners/:id",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PartnerDetails, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "partners",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PartnerDetails, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/calendar",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CalendarPage, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "calendar",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CalendarPage, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/tasks",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tasks, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "tasks",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tasks, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/financial",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Financial, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "financial",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Financial, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/invoices",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Invoices, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "financial",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Invoices, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/messages",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Messages, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "messages",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Messages, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/settings",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "settings",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/users",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "users",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/service-pricing",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ServicePricing, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "settings",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ServicePricing, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/market-analysis",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MarketAnalysis, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "market_analysis",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MarketAnalysis, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/reports",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Reports, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "reports",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Reports, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/workflows",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Workflows, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "workflows",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Workflows, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/renewals",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Renewals, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "renewals",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Renewals, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/visits",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Visits, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "visits",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Visits, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/admin/publicity",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PublicityAdmin, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "publicity",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PublicityAdmin, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/admin/migration",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MigrationHub, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "migration",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MigrationHub, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/admin/analytics",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Analytics, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "analytics",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Analytics, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/admin/automation",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Automation, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "automation",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Automation, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/portal/tenant",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TenantPortal, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "portal",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TenantPortal, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/portal/owner",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OwnerPortal, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "portal",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OwnerPortal, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/portal/partner",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PartnerPortal, {})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "portal",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PartnerPortal, {})
+								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "*",
@@ -95555,4 +95805,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-CfUPXjF1.js.map
+//# sourceMappingURL=index-C72d0L6d.js.map

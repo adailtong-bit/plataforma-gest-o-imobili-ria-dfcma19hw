@@ -41,6 +41,7 @@ import Visits from './pages/Visits'
 import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { useEffect } from 'react'
+import { RequirePermission } from '@/components/RequirePermission'
 
 const App = () => {
   useEffect(() => {
@@ -57,56 +58,273 @@ const App = () => {
             <Toaster />
             <Sonner />
             <Routes>
-              {/* Public Routes - No Layout */}
+              {/* Public Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
 
-              {/* Main Application Routes - Wrapped in DashboardLayout */}
-              {/* The Layout handles: */}
-              {/* 1. Sidebar/Header visibility based on authentication */}
-              {/* 2. Public Landing page display for unauthenticated users at root */}
+              {/* Protected Routes */}
               <Route element={<DashboardLayout />}>
-                <Route path="/" element={<Index />} />
-                <Route path="/properties" element={<Properties />} />
-                <Route path="/properties/:id" element={<PropertyDetails />} />
-                <Route path="/short-term" element={<ShortTerm />} />
-                <Route path="/condominiums" element={<Condominiums />} />
+                <Route
+                  path="/"
+                  element={
+                    <RequirePermission resource="dashboard">
+                      <Index />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/properties"
+                  element={
+                    <RequirePermission resource="properties">
+                      <Properties />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/properties/:id"
+                  element={
+                    <RequirePermission resource="properties">
+                      <PropertyDetails />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/short-term"
+                  element={
+                    <RequirePermission resource="short_term">
+                      <ShortTerm />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/condominiums"
+                  element={
+                    <RequirePermission resource="condominiums">
+                      <Condominiums />
+                    </RequirePermission>
+                  }
+                />
                 <Route
                   path="/condominiums/:id"
-                  element={<CondominiumDetails />}
+                  element={
+                    <RequirePermission resource="condominiums">
+                      <CondominiumDetails />
+                    </RequirePermission>
+                  }
                 />
-                <Route path="/tenants" element={<Tenants />} />
-                <Route path="/tenants/:id" element={<TenantDetails />} />
-                <Route path="/owners" element={<Owners />} />
-                <Route path="/owners/:id" element={<OwnerDetails />} />
-                <Route path="/partners" element={<Partners />} />
-                <Route path="/partners/:id" element={<PartnerDetails />} />
-                <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/tasks" element={<Tasks />} />
-                <Route path="/financial" element={<Financial />} />
-                <Route path="/invoices" element={<Invoices />} />
-                <Route path="/messages" element={<Messages />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/users" element={<Users />} />
-                <Route path="/service-pricing" element={<ServicePricing />} />
-                <Route path="/market-analysis" element={<MarketAnalysis />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/workflows" element={<Workflows />} />
-                <Route path="/renewals" element={<Renewals />} />
-                <Route path="/visits" element={<Visits />} />
+                <Route
+                  path="/tenants"
+                  element={
+                    <RequirePermission resource="tenants">
+                      <Tenants />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/tenants/:id"
+                  element={
+                    <RequirePermission resource="tenants">
+                      <TenantDetails />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/owners"
+                  element={
+                    <RequirePermission resource="owners">
+                      <Owners />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/owners/:id"
+                  element={
+                    <RequirePermission resource="owners">
+                      <OwnerDetails />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/partners"
+                  element={
+                    <RequirePermission resource="partners">
+                      <Partners />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/partners/:id"
+                  element={
+                    <RequirePermission resource="partners">
+                      <PartnerDetails />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/calendar"
+                  element={
+                    <RequirePermission resource="calendar">
+                      <CalendarPage />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/tasks"
+                  element={
+                    <RequirePermission resource="tasks">
+                      <Tasks />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/financial"
+                  element={
+                    <RequirePermission resource="financial">
+                      <Financial />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/invoices"
+                  element={
+                    <RequirePermission resource="financial">
+                      <Invoices />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/messages"
+                  element={
+                    <RequirePermission resource="messages">
+                      <Messages />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/settings"
+                  element={
+                    <RequirePermission resource="settings">
+                      <Settings />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/users"
+                  element={
+                    <RequirePermission resource="users">
+                      <Users />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/service-pricing"
+                  element={
+                    <RequirePermission resource="settings">
+                      <ServicePricing />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/market-analysis"
+                  element={
+                    <RequirePermission resource="market_analysis">
+                      <MarketAnalysis />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/reports"
+                  element={
+                    <RequirePermission resource="reports">
+                      <Reports />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/workflows"
+                  element={
+                    <RequirePermission resource="workflows">
+                      <Workflows />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/renewals"
+                  element={
+                    <RequirePermission resource="renewals">
+                      <Renewals />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/visits"
+                  element={
+                    <RequirePermission resource="visits">
+                      <Visits />
+                    </RequirePermission>
+                  }
+                />
 
                 {/* Admin */}
-                <Route path="/admin/publicity" element={<PublicityAdmin />} />
-                <Route path="/admin/migration" element={<MigrationHub />} />
-                <Route path="/admin/analytics" element={<Analytics />} />
-                <Route path="/admin/automation" element={<Automation />} />
+                <Route
+                  path="/admin/publicity"
+                  element={
+                    <RequirePermission resource="publicity">
+                      <PublicityAdmin />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/admin/migration"
+                  element={
+                    <RequirePermission resource="migration">
+                      <MigrationHub />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/admin/analytics"
+                  element={
+                    <RequirePermission resource="analytics">
+                      <Analytics />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/admin/automation"
+                  element={
+                    <RequirePermission resource="automation">
+                      <Automation />
+                    </RequirePermission>
+                  }
+                />
 
-                {/* Portals */}
-                <Route path="/portal/tenant" element={<TenantPortal />} />
-                <Route path="/portal/owner" element={<OwnerPortal />} />
-                <Route path="/portal/partner" element={<PartnerPortal />} />
+                {/* Portals - Also protected by RequirePermission internally or here */}
+                <Route
+                  path="/portal/tenant"
+                  element={
+                    <RequirePermission resource="portal">
+                      <TenantPortal />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/portal/owner"
+                  element={
+                    <RequirePermission resource="portal">
+                      <OwnerPortal />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/portal/partner"
+                  element={
+                    <RequirePermission resource="portal">
+                      <PartnerPortal />
+                    </RequirePermission>
+                  }
+                />
 
-                {/* 404 Inside Layout so authenticated users still see nav */}
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>

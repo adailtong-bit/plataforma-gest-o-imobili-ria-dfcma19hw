@@ -2,6 +2,7 @@ export type Language = 'pt' | 'en' | 'es'
 
 export const translations = {
   pt: {
+    // ... existing translations ...
     common: {
       dashboard: 'Painel',
       properties: 'Propriedades',
@@ -141,7 +142,7 @@ export const translations = {
       real_estate_dashboard: 'Painel Imobiliário',
       visit_scheduling: 'Agendamento de Visitas',
       visits_list: 'Lista de Visitas',
-      pending_visits: 'Visitas Pendentes',
+      pending_visits: 'Visitas Pendientes',
       total_revenue: 'Receita Total',
       active_listings: 'Listagens Ativas',
       sold: 'Vendido',
@@ -170,7 +171,9 @@ export const translations = {
       name_required: 'Nome é obrigatório',
       email_required: 'Email é obrigatório',
       address_placeholder: 'Endereço completo',
+      resource: 'Recurso',
     },
+    // ... existing nested objects ...
     workflows: {
       title: 'Motor de Workflow',
       subtitle: 'Automatize processos e sequências de tarefas.',
@@ -576,11 +579,11 @@ export const translations = {
     },
     roles: {
       platform_owner: 'Dono da Plataforma',
-      software_tenant: 'Locador (Gestor)',
-      internal_user: 'Staff Interno',
+      software_tenant: 'Gerente de Imóveis',
+      internal_user: 'Equipe PM',
       property_owner: 'Proprietário',
-      partner: 'Parceiro',
-      partner_employee: 'Funcionário Parceiro',
+      partner: 'Parceiros',
+      partner_employee: 'Equipe',
       tenant: 'Inquilino',
     },
     renewals: {
@@ -721,6 +724,7 @@ export const translations = {
     },
   },
   en: {
+    // ... existing translations ...
     common: {
       dashboard: 'Dashboard',
       properties: 'Properties',
@@ -887,7 +891,9 @@ export const translations = {
       name_required: 'Name is required',
       email_required: 'Email is required',
       address_placeholder: 'Full address',
+      resource: 'Resource',
     },
+    // ... existing nested objects ...
     workflows: {
       title: 'Workflow Engine',
       subtitle: 'Automate processes and task sequences.',
@@ -1436,6 +1442,7 @@ export const translations = {
     },
   },
   es: {
+    // ... existing translations ...
     common: {
       dashboard: 'Panel',
       properties: 'Propiedades',
@@ -1604,7 +1611,9 @@ export const translations = {
       name_required: 'El nombre es obligatorio',
       email_required: 'El correo es obligatorio',
       address_placeholder: 'Dirección completa',
+      resource: 'Recurso',
     },
+    // ... existing nested objects ...
     workflows: {
       title: 'Motor de Workflow',
       subtitle: 'Automatice procesos y secuencias de tareas.',

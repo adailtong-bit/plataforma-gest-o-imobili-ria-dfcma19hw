@@ -54,7 +54,7 @@ export function AppSidebar() {
   const location = useLocation()
   const pathname = location.pathname
   const { t } = useLanguageStore()
-  const { currentUser, isAuthenticated } = useAuthStore()
+  const { currentUser } = useAuthStore()
   const { messages } = useMessageStore()
   const { setOpenMobile, isMobile } = useSidebar()
 
@@ -140,7 +140,7 @@ export function AppSidebar() {
       title: t('common.service_pricing'),
       url: '/service-pricing',
       icon: Tags,
-      resource: 'settings',
+      resource: 'settings', // Part of Settings essentially
     },
     {
       title: t('common.calendar'),
@@ -152,7 +152,7 @@ export function AppSidebar() {
       title: t('common.visits'),
       url: '/visits',
       icon: CalendarDays,
-      resource: 'calendar',
+      resource: 'visits', // Visits Resource
     },
     {
       title: t('common.tasks'),
@@ -182,7 +182,7 @@ export function AppSidebar() {
       title: t('common.invoices'),
       url: '/invoices',
       icon: FileText,
-      resource: 'financial',
+      resource: 'financial', // Part of Financial
     },
     {
       title: t('common.messages'),
@@ -203,14 +203,17 @@ export function AppSidebar() {
     return false
   }
 
+  // System menu items checks
+  const showMigration = hasPermission(currentUser as User, 'migration', 'view')
+  const showPublicity = hasPermission(currentUser as User, 'publicity', 'view')
   const showUsers = hasPermission(currentUser as User, 'users', 'view')
   const showSettings = hasPermission(currentUser as User, 'settings', 'view')
-  const showPublicity =
-    currentUser.role === 'platform_owner' ||
-    hasPermission(currentUser as User, 'publicity', 'view')
-  const showMigration =
-    currentUser.role === 'platform_owner' ||
-    currentUser.role === 'software_tenant'
+
+  // Portals logic remains similar but leverages role check implicitly via hasPermission usually
+  const isTenant = currentUser.role === 'tenant'
+  const isOwner = currentUser.role === 'property_owner'
+  const isPartner =
+    currentUser.role === 'partner' || currentUser.role === 'partner_employee'
 
   return (
     <Sidebar
@@ -234,10 +237,8 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent className="bg-white">
-        {(currentUser.role === 'tenant' ||
-          currentUser.role === 'property_owner' ||
-          currentUser.role === 'partner' ||
-          currentUser.role === 'partner_employee') && (
+        {/* Portal Links - Shown based on Role directly as they are specialized views */}
+        {(isTenant || isOwner || isPartner) && (
           <SidebarGroup>
             <SidebarGroupLabel
               className={cn(isMobile && 'text-black', 'text-black font-bold')}
@@ -246,7 +247,7 @@ export function AppSidebar() {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {currentUser.role === 'tenant' && (
+                {isTenant && (
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild
@@ -260,7 +261,7 @@ export function AppSidebar() {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
-                {currentUser.role === 'property_owner' && (
+                {isOwner && (
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild
@@ -274,8 +275,7 @@ export function AppSidebar() {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
-                {(currentUser.role === 'partner' ||
-                  currentUser.role === 'partner_employee') && (
+                {isPartner && (
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild
