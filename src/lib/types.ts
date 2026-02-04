@@ -1,5 +1,4 @@
 // Only showing changed parts or essential parts, but full file content must be returned according to rules.
-// Since rules say "Make sure the files contain all imports, types etc", I will output the full file.
 
 export type UserRole =
   | 'platform_owner'
@@ -857,6 +856,8 @@ export interface Advertisement {
     | 'tenant_page'
     | 'footer'
     | 'sidebar'
+  placementType?: 'header' | 'footer' // Step 1: Type
+  targetPages?: string[] // Step 2: Location
   advertiserId?: string
   validity?: 'weekly' | 'bi-weekly' | 'monthly'
   renewable?: boolean
@@ -875,5 +876,7 @@ export interface Visit {
   notes?: string
   agentId?: string
   registeredBy?: string // User ID who created
+  assignedTo?: string // Team member or Partner ID
+  assignedRole?: string
   reason?: string // Purpose of visit
 }

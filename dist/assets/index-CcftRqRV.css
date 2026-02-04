@@ -828,9 +828,6 @@ video {
 .left-2\.5 {
   left: 0.625rem;
 }
-.left-3 {
-  left: 0.75rem;
-}
 .left-6 {
   left: 1.5rem;
 }
@@ -2658,9 +2655,6 @@ video {
 }
 .pl-8 {
   padding-left: 2rem;
-}
-.pl-9 {
-  padding-left: 2.25rem;
 }
 .pr-1 {
   padding-right: 0.25rem;

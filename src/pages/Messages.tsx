@@ -42,6 +42,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
 import { ChatAttachment } from '@/lib/types'
+import { canChat } from '@/lib/permissions'
 
 export default function Messages() {
   const {
@@ -162,12 +163,6 @@ export default function Messages() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputText(e.target.value)
-
-    // Simulate typing status for self (conceptually, though usually sent to server)
-    // Here we skip sending "I am typing" to store for self, but we might want to simulate
-    // it so we can test the UI? No, UI shows OTHER people typing.
-    // So we don't need to do anything here for local visual, only for remote.
-    // In a real app, socket.emit('typing', true).
   }
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -218,16 +213,33 @@ export default function Messages() {
     }
   }
 
-  // Users Grouping for New Chat
+  // Users Grouping for New Chat - Filtered by canChat
   const groupedUsers = useMemo(() => {
+    const filterFn = (u: typeof currentUser) => canChat(currentUser, u)
+
     return {
-      tenants: allUsers.filter((u) => u.role === 'tenant'),
-      owners: allUsers.filter((u) => u.role === 'property_owner'),
-      partners: allUsers.filter((u) => u.role === 'partner'),
-      team: allUsers.filter((u) => u.role === 'partner_employee'),
-      internal: allUsers.filter((u) => u.role === 'internal_user'),
+      tenants: allUsers
+        .filter((u) => u.role === 'tenant')
+        .filter(filterFn)
+        .filter((u) => u.id !== currentUser.id),
+      owners: allUsers
+        .filter((u) => u.role === 'property_owner')
+        .filter(filterFn)
+        .filter((u) => u.id !== currentUser.id),
+      partners: allUsers
+        .filter((u) => u.role === 'partner')
+        .filter(filterFn)
+        .filter((u) => u.id !== currentUser.id),
+      team: allUsers
+        .filter((u) => u.role === 'partner_employee')
+        .filter(filterFn)
+        .filter((u) => u.id !== currentUser.id),
+      internal: allUsers
+        .filter((u) => u.role === 'internal_user')
+        .filter(filterFn)
+        .filter((u) => u.id !== currentUser.id),
     }
-  }, [allUsers])
+  }, [allUsers, currentUser])
 
   const handleStartNewChat = (userId: string) => {
     const existing = messages.find((m) => m.contactId === userId)

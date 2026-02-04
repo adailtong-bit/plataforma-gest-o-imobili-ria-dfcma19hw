@@ -120,29 +120,53 @@ export const hasPermission = (
   return resourcePermissions.includes(action)
 }
 
-export const canChat = (
-  initiatorRole: UserRole,
-  targetRole: UserRole,
-): boolean => {
-  // Staff can chat with everyone
+export const canChat = (initiator: User, target: User): boolean => {
+  const initiatorRole = initiator.role
+  const targetRole = target.role
+
+  // Staff (Admin/PM/Internal) can chat with everyone
   if (
     ['platform_owner', 'software_tenant', 'internal_user'].includes(
       initiatorRole,
     )
-  )
+  ) {
+    // Exception: PM/Staff cannot chat with Partner's Team (unless direct staff)
+    // Direct staff are 'internal_user', external team are 'partner_employee'
+    if (targetRole === 'partner_employee') {
+      return false
+    }
     return true
+  }
 
-  // Everyone can chat with staff
+  // Everyone can chat with PM/Staff (Admin/PM/Internal)
   if (
     ['platform_owner', 'software_tenant', 'internal_user'].includes(targetRole)
-  )
+  ) {
     return true
+  }
 
-  // Partners can chat with Partner Employees (Teams)
-  if (initiatorRole === 'partner' && targetRole === 'partner_employee')
-    return true
-  if (initiatorRole === 'partner_employee' && targetRole === 'partner')
-    return true
+  // Partner -> Own Team
+  if (initiatorRole === 'partner' && targetRole === 'partner_employee') {
+    // Check if employee belongs to partner
+    return target.parentPartnerId === initiator.id
+  }
+
+  // Team -> Own Partner
+  if (initiatorRole === 'partner_employee' && targetRole === 'partner') {
+    // Check if employee belongs to partner
+    return initiator.parentPartnerId === target.id
+  }
+
+  // Owner -> Only PM (already covered above) or PM's Staff (already covered above)
+  // Owner cannot chat with Partner, Tenant, or other Owners
+  if (initiatorRole === 'property_owner') {
+    return false // If target was staff, it would have returned true above
+  }
+
+  // Tenant -> Only PM (already covered above)
+  if (initiatorRole === 'tenant') {
+    return false
+  }
 
   return false
 }

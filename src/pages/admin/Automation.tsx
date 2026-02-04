@@ -17,17 +17,39 @@ import {
   Bell,
   Download,
   Database,
+  Lock,
 } from 'lucide-react'
 import useAutomationStore from '@/stores/useAutomationStore'
 import { useToast } from '@/hooks/use-toast'
 import { AutomationRule } from '@/lib/types'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useAuthStore from '@/stores/useAuthStore'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export default function Automation() {
   const { automationRules, updateAutomationRule } = useAutomationStore()
   const { toast } = useToast()
   const { t } = useLanguageStore()
+  const { currentUser } = useAuthStore()
   const [isExporting, setIsExporting] = useState(false)
+  const [exportScopeOpen, setExportScopeOpen] = useState(false)
+  const [exportScope, setExportScope] = useState('general')
+
+  const isPM = ['platform_owner', 'software_tenant'].includes(currentUser.role)
 
   const handleToggle = (id: string, enabled: boolean) => {
     const rule = automationRules.find((r) => r.id === id)
@@ -48,11 +70,24 @@ export default function Automation() {
     }
   }
 
-  const handleQuickBooksExport = (format: 'csv' | 'excel') => {
+  const initiateExport = () => {
+    if (!isPM) {
+      toast({
+        title: 'Access Denied',
+        description: 'Only Property Managers can export to QuickBooks.',
+        variant: 'destructive',
+      })
+      return
+    }
+    setExportScopeOpen(true)
+  }
+
+  const handleQuickBooksExport = () => {
+    setExportScopeOpen(false)
     setIsExporting(true)
     toast({
       title: t('automation.export_success_title'),
-      description: t('automation.export_success_desc'),
+      description: `Exporting data scope: ${exportScope}`,
     })
 
     // Mock export generation
@@ -99,7 +134,7 @@ export default function Automation() {
       link.setAttribute('href', url)
       link.setAttribute(
         'download',
-        `quickbooks_export_${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'csv'}`,
+        `quickbooks_export_${exportScope}_${new Date().toISOString().split('T')[0]}.csv`,
       )
       document.body.appendChild(link)
       link.click()
@@ -128,7 +163,7 @@ export default function Automation() {
       </div>
 
       <div className="grid gap-6">
-        {/* QuickBooks Integration - New Feature */}
+        {/* QuickBooks Integration - Restricted to PM */}
         <Card className="bg-green-50/50 border-green-100">
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -136,7 +171,10 @@ export default function Automation() {
                 <Database className="h-5 w-5 text-green-700" />
               </div>
               <div>
-                <CardTitle>{t('automation.quickbooks_export')}</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  {t('automation.quickbooks_export')}
+                  {!isPM && <Lock className="h-4 w-4 text-muted-foreground" />}
+                </CardTitle>
                 <CardDescription>
                   {t('automation.quickbooks_desc')}
                 </CardDescription>
@@ -146,23 +184,19 @@ export default function Automation() {
           <CardContent>
             <div className="flex flex-wrap gap-4">
               <Button
-                onClick={() => handleQuickBooksExport('csv')}
-                disabled={isExporting}
+                onClick={initiateExport}
+                disabled={isExporting || !isPM}
                 className="bg-green-700 hover:bg-green-800"
               >
                 <Download className="mr-2 h-4 w-4" />
                 {isExporting ? 'Exporting...' : t('automation.export_csv')}
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleQuickBooksExport('excel')}
-                disabled={isExporting}
-                className="border-green-200 text-green-800 hover:bg-green-100"
-              >
-                <FileText className="mr-2 h-4 w-4" />
-                {isExporting ? 'Exporting...' : t('automation.export_excel')}
-              </Button>
             </div>
+            {!isPM && (
+              <p className="text-xs text-red-500 mt-2">
+                Restricted to Property Managers only.
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -306,6 +340,36 @@ export default function Automation() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={exportScopeOpen} onOpenChange={setExportScopeOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Select Export Scope</DialogTitle>
+            <DialogDescription>
+              Choose the data range for the QuickBooks export.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label>Data Scope</Label>
+            <Select value={exportScope} onValueChange={setExportScope}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="general">General Activities</SelectItem>
+                <SelectItem value="owner">By Owner</SelectItem>
+                <SelectItem value="partner">By Partner</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setExportScopeOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleQuickBooksExport}>Confirm Export</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

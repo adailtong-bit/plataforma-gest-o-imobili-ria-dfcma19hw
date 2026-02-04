@@ -112,9 +112,24 @@ export function TaskInvoiceDialog({
     if (selectedTasks.length === 0) return
 
     let invoiceType: Invoice['type'] = 'generic'
-    if (isTeamMember) invoiceType = 'team_to_partner'
-    else if (isPartner) invoiceType = 'partner_to_pm'
-    else if (isAdminOrPM) invoiceType = 'admin_to_pm'
+    let recipientId: string | undefined = undefined
+
+    // Workflow Rules:
+    // Team -> Partner
+    // Partner -> PM
+    if (isTeamMember) {
+      invoiceType = 'team_to_partner'
+      recipientId = currentUser.parentPartnerId // Auto-set recipient to Partner
+    } else if (isPartner) {
+      invoiceType = 'partner_to_pm'
+      // Recipient is the PM (Platform Owner or Software Tenant)
+      // Ideally we should find the PM associated, but usually this is the system admin or the one who invited.
+      // For simplicity in this logic, we assume it's the parent of the Partner or the Admin.
+      recipientId = currentUser.parentId
+    } else if (isAdminOrPM) {
+      invoiceType = 'admin_to_pm'
+      // PM creating invoice usually bills an Owner
+    }
 
     // Determine description based on tasks
     const firstTask = tasks.find((t) => t.id === selectedTasks[0])
@@ -130,6 +145,7 @@ export function TaskInvoiceDialog({
       status: 'pending',
       date: new Date().toISOString(),
       fromId: currentUser.id,
+      toId: recipientId, // Automatically set based on hierarchy
       propertyId: firstTask?.propertyId, // Associate with the first task's property
       type: invoiceType,
     }
@@ -153,6 +169,16 @@ export function TaskInvoiceDialog({
           <DialogDescription>
             Select completed tasks to include in this invoice. The generated
             invoice will follow US Standards.
+            {isTeamMember && (
+              <span className="block mt-1 font-semibold text-blue-600">
+                Note: This invoice will be submitted to your Partner (Employer).
+              </span>
+            )}
+            {isPartner && (
+              <span className="block mt-1 font-semibold text-blue-600">
+                Note: This invoice will be submitted to the Property Manager.
+              </span>
+            )}
           </DialogDescription>
         </DialogHeader>
 

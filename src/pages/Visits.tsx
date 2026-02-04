@@ -36,7 +36,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import {
   AlertDialog,
@@ -58,7 +57,7 @@ import {
   Edit,
   Ban,
   Clock,
-  Play,
+  User,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -82,6 +81,7 @@ export default function Visits() {
   const [propertyId, setPropertyId] = useState('')
   const [notes, setNotes] = useState('')
   const [reason, setReason] = useState('')
+  const [assignedTo, setAssignedTo] = useState('')
 
   // Edit State
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -93,6 +93,14 @@ export default function Visits() {
     visit: Visit
     status: Visit['status']
   } | null>(null)
+
+  // Filter assignable users (Partners, Employees, or Internal Users)
+  const assignableUsers = allUsers.filter(
+    (u) =>
+      u.role === 'partner' ||
+      u.role === 'partner_employee' ||
+      u.role === 'internal_user',
+  )
 
   const handleSchedule = () => {
     if (!clientName || !propertyId || !date) {
@@ -109,6 +117,8 @@ export default function Visits() {
     const [hours, minutes] = time.split(':')
     dateTime.setHours(parseInt(hours), parseInt(minutes))
 
+    const assignee = allUsers.find((u) => u.id === assignedTo)
+
     const newVisit: Visit = {
       id: `visit-${Date.now()}`,
       propertyId,
@@ -118,6 +128,8 @@ export default function Visits() {
       status: 'scheduled',
       notes,
       registeredBy: currentUser.id,
+      assignedTo: assignedTo || undefined,
+      assignedRole: assignee?.role,
       reason,
     }
 
@@ -132,9 +144,28 @@ export default function Visits() {
     setPropertyId('')
     setNotes('')
     setReason('')
+    setAssignedTo('')
   }
 
   const initiateStatusChange = (visit: Visit, status: Visit['status']) => {
+    // Only allow closure by assigned user or PM/Admin
+    if (status === 'completed') {
+      const isPM = ['platform_owner', 'software_tenant'].includes(
+        currentUser.role,
+      )
+      const isAssignee = visit.assignedTo === currentUser.id
+
+      if (!isPM && !isAssignee) {
+        toast({
+          title: 'Permission Denied',
+          description:
+            'Only the assigned team member or a Property Manager can close this visit.',
+          variant: 'destructive',
+        })
+        return
+      }
+    }
+
     setPendingStatusChange({ visit, status })
     setConfirmOpen(true)
   }
@@ -175,9 +206,12 @@ export default function Visits() {
       newStatus = 'rescheduled'
     }
 
+    const assignee = allUsers.find((u) => u.id === editingVisit.assignedTo)
+
     updateVisit({
       ...editingVisit,
       status: newStatus,
+      assignedRole: assignee?.role,
     })
     setIsEditOpen(false)
     setEditingVisit(null)
@@ -227,7 +261,7 @@ export default function Visits() {
   }
 
   const getUserName = (id?: string) => {
-    if (!id) return 'System'
+    if (!id) return 'Unassigned'
     const user = allUsers.find((u) => u.id === id)
     return user ? user.name : 'Unknown'
   }
@@ -275,6 +309,22 @@ export default function Visits() {
                   {properties.map((p) => (
                     <SelectItem key={p.id} value={p.id}>
                       {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Assign Team Member / Partner</Label>
+              <Select value={assignedTo} onValueChange={setAssignedTo}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Assignee" />
+                </SelectTrigger>
+                <SelectContent>
+                  {assignableUsers.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.name} ({t(`roles.${u.role}`)})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -354,6 +404,7 @@ export default function Visits() {
                   <TableHead>{t('common.date')}</TableHead>
                   <TableHead>{t('common.property')}</TableHead>
                   <TableHead>{t('common.client_name')}</TableHead>
+                  <TableHead>Assigned To</TableHead>
                   <TableHead>{t('common.status')}</TableHead>
                   <TableHead className="text-right">
                     {t('common.actions')}
@@ -364,7 +415,7 @@ export default function Visits() {
                 {sortedVisits.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={5}
+                      colSpan={6}
                       className="text-center py-8 text-muted-foreground"
                     >
                       No visits scheduled.
@@ -390,6 +441,12 @@ export default function Visits() {
                         {visit.propertyName}
                       </TableCell>
                       <TableCell>{visit.clientName}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <User className="h-3 w-3 text-muted-foreground" />
+                          <span>{getUserName(visit.assignedTo)}</span>
+                        </div>
+                      </TableCell>
                       <TableCell>{getStatusBadge(visit.status)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
@@ -402,28 +459,33 @@ export default function Visits() {
                             <Edit className="h-4 w-4" />
                           </Button>
 
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
-                            onClick={() =>
-                              initiateStatusChange(visit, 'completed')
-                            }
-                            title="Complete"
-                          >
-                            <CheckCircle className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
-                            onClick={() =>
-                              initiateStatusChange(visit, 'suspended')
-                            }
-                            title="Suspend"
-                          >
-                            <Clock className="h-4 w-4" />
-                          </Button>
+                          {visit.status !== 'completed' &&
+                            visit.status !== 'canceled' && (
+                              <>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  onClick={() =>
+                                    initiateStatusChange(visit, 'completed')
+                                  }
+                                  title="Complete (Assigned User Only)"
+                                >
+                                  <CheckCircle className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-8 w-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
+                                  onClick={() =>
+                                    initiateStatusChange(visit, 'suspended')
+                                  }
+                                  title="Suspend"
+                                >
+                                  <Clock className="h-4 w-4" />
+                                </Button>
+                              </>
+                            )}
                           <Button
                             size="icon"
                             variant="ghost"
@@ -491,6 +553,27 @@ export default function Visits() {
                     })
                   }
                 />
+              </div>
+
+              <div className="grid gap-2">
+                <Label>Assigned To</Label>
+                <Select
+                  value={editingVisit.assignedTo || ''}
+                  onValueChange={(val) =>
+                    setEditingVisit({ ...editingVisit, assignedTo: val })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Unassigned" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {assignableUsers.map((u) => (
+                      <SelectItem key={u.id} value={u.id}>
+                        {u.name} ({t(`roles.${u.role}`)})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="grid gap-2">

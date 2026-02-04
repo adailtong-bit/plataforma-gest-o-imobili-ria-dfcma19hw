@@ -102,8 +102,13 @@ export function InvoiceGenerator({
                 <td className="py-4">
                   <p className="font-medium">{ad.title}</p>
                   <p className="text-xs text-gray-500">
-                    Placement: {ad.placement || 'Footer'}
+                    Placement: {ad.placementType || 'Footer'}
                   </p>
+                  {ad.targetPages && ad.targetPages.length > 0 && (
+                    <p className="text-xs text-gray-400 mt-1">
+                      Locations: {ad.targetPages.join(', ')}
+                    </p>
+                  )}
                 </td>
                 <td className="text-right py-4 text-sm">
                   {ad.startDate

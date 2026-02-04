@@ -61175,6 +61175,28 @@ const hasPermission = (user, resource, action) => {
 	if (!resourcePermissions) return false;
 	return resourcePermissions.includes(action);
 };
+const canChat = (initiator, target) => {
+	const initiatorRole = initiator.role;
+	const targetRole = target.role;
+	if ([
+		"platform_owner",
+		"software_tenant",
+		"internal_user"
+	].includes(initiatorRole)) {
+		if (targetRole === "partner_employee") return false;
+		return true;
+	}
+	if ([
+		"platform_owner",
+		"software_tenant",
+		"internal_user"
+	].includes(targetRole)) return true;
+	if (initiatorRole === "partner" && targetRole === "partner_employee") return target.parentPartnerId === initiator.id;
+	if (initiatorRole === "partner_employee" && targetRole === "partner") return initiator.parentPartnerId === target.id;
+	if (initiatorRole === "property_owner") return false;
+	if (initiatorRole === "tenant") return false;
+	return false;
+};
 function AppSidebar() {
 	const pathname = useLocation().pathname;
 	const { t: t$1 } = useLanguageStore_default();
@@ -78797,9 +78819,14 @@ function TaskInvoiceDialog({ open, onOpenChange }) {
 	const handleGenerateInvoice = () => {
 		if (selectedTasks.length === 0) return;
 		let invoiceType = "generic";
-		if (isTeamMember) invoiceType = "team_to_partner";
-		else if (isPartner) invoiceType = "partner_to_pm";
-		else if (isAdminOrPM) invoiceType = "admin_to_pm";
+		let recipientId = void 0;
+		if (isTeamMember) {
+			invoiceType = "team_to_partner";
+			recipientId = currentUser.parentPartnerId;
+		} else if (isPartner) {
+			invoiceType = "partner_to_pm";
+			recipientId = currentUser.parentId;
+		} else if (isAdminOrPM) invoiceType = "admin_to_pm";
 		const firstTask = tasks$1.find((t$1) => t$1.id === selectedTasks[0]);
 		const description = selectedTasks.length === 1 ? `${firstTask?.title} at ${firstTask?.propertyName}` : `Service Invoice for ${selectedTasks.length} tasks`;
 		addInvoice({
@@ -78809,6 +78836,7 @@ function TaskInvoiceDialog({ open, onOpenChange }) {
 			status: "pending",
 			date: (/* @__PURE__ */ new Date()).toISOString(),
 			fromId: currentUser.id,
+			toId: recipientId,
 			propertyId: firstTask?.propertyId,
 			type: invoiceType
 		});
@@ -78825,7 +78853,17 @@ function TaskInvoiceDialog({ open, onOpenChange }) {
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 			className: "max-w-3xl max-h-[90vh] flex flex-col",
 			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Generate Invoice" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "Select completed tasks to include in this invoice. The generated invoice will follow US Standards." })] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Generate Invoice" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogDescription, { children: [
+					"Select completed tasks to include in this invoice. The generated invoice will follow US Standards.",
+					isTeamMember && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "block mt-1 font-semibold text-blue-600",
+						children: "Note: This invoice will be submitted to your Partner (Employer)."
+					}),
+					isPartner && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "block mt-1 font-semibold text-blue-600",
+						children: "Note: This invoice will be submitted to the Property Manager."
+					})
+				] })] }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex-1 overflow-hidden flex flex-col gap-4",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -80674,14 +80712,15 @@ function Messages() {
 		}
 	};
 	const groupedUsers = (0, import_react.useMemo)(() => {
+		const filterFn = (u$1) => canChat(currentUser, u$1);
 		return {
-			tenants: allUsers.filter((u$1) => u$1.role === "tenant"),
-			owners: allUsers.filter((u$1) => u$1.role === "property_owner"),
-			partners: allUsers.filter((u$1) => u$1.role === "partner"),
-			team: allUsers.filter((u$1) => u$1.role === "partner_employee"),
-			internal: allUsers.filter((u$1) => u$1.role === "internal_user")
+			tenants: allUsers.filter((u$1) => u$1.role === "tenant").filter(filterFn).filter((u$1) => u$1.id !== currentUser.id),
+			owners: allUsers.filter((u$1) => u$1.role === "property_owner").filter(filterFn).filter((u$1) => u$1.id !== currentUser.id),
+			partners: allUsers.filter((u$1) => u$1.role === "partner").filter(filterFn).filter((u$1) => u$1.id !== currentUser.id),
+			team: allUsers.filter((u$1) => u$1.role === "partner_employee").filter(filterFn).filter((u$1) => u$1.id !== currentUser.id),
+			internal: allUsers.filter((u$1) => u$1.role === "internal_user").filter(filterFn).filter((u$1) => u$1.id !== currentUser.id)
 		};
-	}, [allUsers]);
+	}, [allUsers, currentUser]);
 	const handleStartNewChat = (userId) => {
 		const existing = messages$1.find((m$1) => m$1.contactId === userId);
 		if (existing) {
@@ -81263,7 +81302,18 @@ function Settings() {
 			status: "Disconnected"
 		}
 	});
+	const isPlatformOwner = currentUser.role === "platform_owner";
+	const canManageSystem = ["platform_owner", "software_tenant"].includes(currentUser.role);
+	const canViewAudit = hasPermission(currentUser, "audit_logs", "view") || isPlatformOwner;
 	const handleFinancialSave = () => {
+		if (!canManageSystem) {
+			toast$2({
+				title: "Access Denied",
+				description: "You do not have permission to modify financial settings.",
+				variant: "destructive"
+			});
+			return;
+		}
 		updateFinancialSettings(financialData);
 		toast$2({
 			title: t$1("common.save"),
@@ -81304,6 +81354,7 @@ function Settings() {
 		}));
 	};
 	const toggleChannel = (channel) => {
+		if (!canManageSystem) return;
 		setChannelStatus((prev) => ({
 			...prev,
 			[channel]: {
@@ -81318,8 +81369,6 @@ function Settings() {
 			description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} integration ${!channelStatus[channel].connected ? "enabled" : "disabled"}.`
 		});
 	};
-	const isPlatformOwner = currentUser.role === "platform_owner";
-	const canViewAudit = hasPermission(currentUser, "audit_logs", "view") || isPlatformOwner;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -81343,16 +81392,15 @@ function Settings() {
 							className: "data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600",
 							children: t$1("common.profile")
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						canManageSystem && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "integrations",
 							className: "data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600",
 							children: t$1("settings.integrations")
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "billing",
 							className: "data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600",
 							children: t$1("settings.billing_payment")
-						}),
+						})] }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "notifications",
 							className: "data-[state=active]:bg-white data-[state=active]:text-black font-medium text-slate-600",
@@ -81478,67 +81526,6 @@ function Settings() {
 										})
 									]
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, { className: "bg-slate-200" }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "space-y-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
-										className: "font-medium flex items-center gap-2 text-black",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, { className: "h-4 w-4" }),
-											" ",
-											t$1("common.notifications")
-										]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-4 md:grid-cols-3",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "flex items-center space-x-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
-													id: "notif-financial",
-													checked: notificationPrefs.financials,
-													onCheckedChange: (c$1) => setNotificationPrefs((p$1) => ({
-														...p$1,
-														financials: c$1
-													}))
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-													htmlFor: "notif-financial",
-													className: "text-black",
-													children: "Financial Alerts"
-												})]
-											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "flex items-center space-x-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
-													id: "notif-maint",
-													checked: notificationPrefs.maintenance,
-													onCheckedChange: (c$1) => setNotificationPrefs((p$1) => ({
-														...p$1,
-														maintenance: c$1
-													}))
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-													htmlFor: "notif-maint",
-													className: "text-black",
-													children: "Maintenance"
-												})]
-											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "flex items-center space-x-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
-													id: "notif-contract",
-													checked: notificationPrefs.contractUpdates,
-													onCheckedChange: (c$1) => setNotificationPrefs((p$1) => ({
-														...p$1,
-														contractUpdates: c$1
-													}))
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-													htmlFor: "notif-contract",
-													className: "text-black",
-													children: "Contract Updates"
-												})]
-											})
-										]
-									})]
-								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 									className: "flex justify-end",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -81551,7 +81538,7 @@ function Settings() {
 						})]
 					})
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+				canManageSystem && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "integrations",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 						className: "bg-white border-slate-200",
@@ -81627,7 +81614,7 @@ function Settings() {
 						})]
 					})
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+				canManageSystem && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "billing",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 						className: "bg-white border-slate-200",
@@ -81753,10 +81740,69 @@ function Settings() {
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
 							className: "text-black font-medium",
 							children: t$1("settings.system_alerts_desc")
-						})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-sm text-black mb-4 font-medium",
-							children: t$1("settings.system_alerts_help")
-						}) })]
+						})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+							className: "space-y-6",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "space-y-4",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-4 md:grid-cols-3",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center space-x-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
+												id: "notif-financial",
+												checked: notificationPrefs.financials,
+												onCheckedChange: (c$1) => setNotificationPrefs((p$1) => ({
+													...p$1,
+													financials: c$1
+												}))
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												htmlFor: "notif-financial",
+												className: "text-black",
+												children: "Financial Alerts"
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center space-x-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
+												id: "notif-maint",
+												checked: notificationPrefs.maintenance,
+												onCheckedChange: (c$1) => setNotificationPrefs((p$1) => ({
+													...p$1,
+													maintenance: c$1
+												}))
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												htmlFor: "notif-maint",
+												className: "text-black",
+												children: "Maintenance"
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center space-x-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
+												id: "notif-contract",
+												checked: notificationPrefs.contractUpdates,
+												onCheckedChange: (c$1) => setNotificationPrefs((p$1) => ({
+													...p$1,
+													contractUpdates: c$1
+												}))
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												htmlFor: "notif-contract",
+												className: "text-black",
+												children: "Contract Updates"
+											})]
+										})
+									]
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "flex justify-end",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									className: "bg-trust-blue text-white font-bold",
+									onClick: handleProfileSave,
+									children: t$1("settings.save_changes")
+								})
+							})]
+						})]
 					})
 				}),
 				canViewAudit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
@@ -87845,7 +87891,6 @@ var ALL_RESOURCES = [
 	"calendar",
 	"tasks",
 	"financial",
-	"invoices",
 	"messages",
 	"users",
 	"settings",
@@ -87999,13 +88044,27 @@ function Users() {
 	};
 	const [formData, setFormData] = (0, import_react.useState)(initialFormState);
 	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
-	const sortedUsers = [...users.filter((u$1) => {
+	const filteredUsers = users.filter((u$1) => {
 		if (u$1.isDemo) return true;
 		if (currentUser.role === "platform_owner") return true;
 		if (currentUser.role === "software_tenant") return u$1.parentId === currentUser.id || u$1.role === "partner_employee";
-		if (currentUser.role === "partner") return u$1.parentId === currentUser.id;
+		if (currentUser.role === "partner") return u$1.role === "partner_employee" && u$1.parentPartnerId === currentUser.id;
 		return false;
-	})].sort((a$2, b$1) => {
+	});
+	const getAllowedRoles = () => {
+		if (currentUser.role === "platform_owner") return ["software_tenant"];
+		if (currentUser.role === "software_tenant") return [
+			"property_owner",
+			"partner",
+			"internal_user",
+			"tenant",
+			"partner_employee"
+		];
+		if (currentUser.role === "partner") return ["partner_employee"];
+		return [];
+	};
+	const allowedRoles = getAllowedRoles();
+	const sortedUsers = [...filteredUsers].sort((a$2, b$1) => {
 		if (a$2.isDemo && !b$1.isDemo) return -1;
 		if (!a$2.isDemo && b$1.isDemo) return 1;
 		return a$2.name.localeCompare(b$1.name);
@@ -88053,10 +88112,12 @@ function Users() {
 		}
 		const { password, confirmPassword, parentPartnerId, ...userData } = formData;
 		let finalParentId = currentUser.id;
-		if (userData.role === "partner_employee" && parentPartnerId) finalParentId = parentPartnerId;
+		let finalPartnerId = parentPartnerId;
+		if (currentUser.role === "partner") finalPartnerId = currentUser.id;
 		const finalUserData = {
 			...userData,
-			parentId: isEditing ? userData.parentId : finalParentId
+			parentId: isEditing ? userData.parentId : finalParentId,
+			parentPartnerId: finalPartnerId
 		};
 		if (isEditing && formData.id) {
 			updateUser(finalUserData);
@@ -88115,21 +88176,12 @@ function Users() {
 			...user,
 			password: "",
 			confirmPassword: "",
-			parentPartnerId: user.parentId,
+			parentPartnerId: user.parentPartnerId,
 			country: user.country || "US",
 			permissions: user.permissions || []
 		});
 		setIsEditing(true);
 		setOpen(true);
-	};
-	const copyInviteLink = () => {
-		const url = window.location.origin;
-		navigator.clipboard.writeText(url);
-		toast$2({
-			title: t$1("users.link_copied"),
-			description: t$1("users.copy_success")
-		});
-		setInviteOpen(false);
 	};
 	const handleRoleChange = (val) => {
 		setFormData({
@@ -88189,40 +88241,9 @@ function Users() {
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-muted-foreground",
 					children: t$1("users.subtitle")
-				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "flex gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-						open: inviteOpen,
-						onOpenChange: setInviteOpen,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-							asChild: true,
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-								variant: "outline",
-								className: "gap-2",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Share2, { className: "h-4 w-4" }),
-									" ",
-									t$1("users.invite")
-								]
-							})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("users.share_access") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "py-4 space-y-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "text-sm text-muted-foreground",
-								children: t$1("users.share_desc")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									readOnly: true,
-									value: `${window.location.origin}/signup`
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									size: "icon",
-									onClick: copyInviteLink,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Copy, { className: "h-4 w-4" })
-								})]
-							})]
-						})] })]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+					children: allowedRoles.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 						open,
 						onOpenChange: (val) => {
 							setOpen(val);
@@ -88318,31 +88339,27 @@ function Users() {
 														onValueChange: handleRoleChange,
 														disabled: isEditing && formData.isDemo,
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-																value: "platform_owner",
-																children: "Admin"
-															}),
-															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															allowedRoles.includes("software_tenant") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "software_tenant",
 																children: t$1("roles.software_tenant")
 															}),
-															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															allowedRoles.includes("internal_user") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "internal_user",
 																children: t$1("roles.internal_user")
 															}),
-															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															allowedRoles.includes("partner") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "partner",
 																children: t$1("roles.partner")
 															}),
-															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															allowedRoles.includes("property_owner") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "property_owner",
 																children: t$1("roles.property_owner")
 															}),
-															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															allowedRoles.includes("tenant") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "tenant",
 																children: t$1("roles.tenant")
 															}),
-															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															allowedRoles.includes("partner_employee") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "partner_employee",
 																children: t$1("roles.partner_employee")
 															})
@@ -88426,7 +88443,7 @@ function Users() {
 								}) })
 							]
 						})]
-					})]
+					})
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
@@ -92032,13 +92049,20 @@ function InvoiceGenerator({ open, onOpenChange, advertiser, ad }) {
 								children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("td", {
 										className: "py-4",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "font-medium",
-											children: ad.title
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-											className: "text-xs text-gray-500",
-											children: ["Placement: ", ad.placement || "Footer"]
-										})]
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												className: "font-medium",
+												children: ad.title
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+												className: "text-xs text-gray-500",
+												children: ["Placement: ", ad.placementType || "Footer"]
+											}),
+											ad.targetPages && ad.targetPages.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+												className: "text-xs text-gray-400 mt-1",
+												children: ["Locations: ", ad.targetPages.join(", ")]
+											})
+										]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("td", {
 										className: "text-right py-4 text-sm",
@@ -92111,6 +92135,7 @@ function AdsManager() {
 	const { advertisements: advertisements$1, addAdvertisement, updateAdvertisement, deleteAdvertisement, advertisers, adPricing } = usePublicityStore_default();
 	const { toast: toast$2 } = useToast();
 	const [open, setOpen] = (0, import_react.useState)(false);
+	const [step, setStep] = (0, import_react.useState)(1);
 	const [editingId, setEditingId] = (0, import_react.useState)(null);
 	const [invoiceOpen, setInvoiceOpen] = (0, import_react.useState)(false);
 	const [selectedAdForInvoice, setSelectedAdForInvoice] = (0, import_react.useState)(null);
@@ -92121,6 +92146,8 @@ function AdsManager() {
 		linkUrl: "",
 		active: true,
 		placement: "footer",
+		placementType: "footer",
+		targetPages: [],
 		advertiserId: "",
 		validity: "monthly",
 		renewable: false,
@@ -92189,6 +92216,7 @@ function AdsManager() {
 	const handleEdit = (ad) => {
 		setEditingId(ad.id);
 		setFormData(ad);
+		setStep(1);
 		setOpen(true);
 	};
 	const handleGenerateInvoice = (ad) => {
@@ -92197,6 +92225,7 @@ function AdsManager() {
 	};
 	const resetForm = () => {
 		setEditingId(null);
+		setStep(1);
 		setFormData({
 			title: "",
 			description: "",
@@ -92204,6 +92233,8 @@ function AdsManager() {
 			linkUrl: "",
 			active: true,
 			placement: "footer",
+			placementType: "footer",
+			targetPages: [],
 			advertiserId: "",
 			validity: "monthly",
 			renewable: false,
@@ -92213,6 +92244,17 @@ function AdsManager() {
 	};
 	const getAdvertiserName = (id) => {
 		return advertisers.find((a$2) => a$2.id === id)?.name || "Unknown";
+	};
+	const togglePageSelection = (page) => {
+		const pages = formData.targetPages || [];
+		if (pages.includes(page)) setFormData({
+			...formData,
+			targetPages: pages.filter((p$1) => p$1 !== page)
+		});
+		else setFormData({
+			...formData,
+			targetPages: [...pages, page]
+		});
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "space-y-4",
@@ -92237,10 +92279,32 @@ function AdsManager() {
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 						className: "max-w-lg max-h-[90vh] overflow-y-auto",
 						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingId ? "Edit Ad" : "Create Ad" }) }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogTitle, { children: [
+								editingId ? "Edit Ad" : "Create Ad",
+								" - Step ",
+								step,
+								" of 2"
+							] }) }),
+							step === 1 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-4 py-4",
 								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Placement Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											value: formData.placementType || "footer",
+											onValueChange: (v) => setFormData({
+												...formData,
+												placementType: v
+											}),
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "header",
+												children: "Header (Topo)"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "footer",
+												children: "Footer (Rodapé)"
+											})] })]
+										})]
+									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Advertiser" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
@@ -92266,10 +92330,46 @@ function AdsManager() {
 										})]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Link URL" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: formData.linkUrl || "",
+											onChange: (e) => setFormData({
+												...formData,
+												linkUrl: e.target.value
+											})
+										})]
+									})
+								]
+							}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-4 py-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Display Locations (Pages)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "grid grid-cols-2 gap-2 border p-3 rounded-md",
+											children: [
+												"Dashboard",
+												"Properties",
+												"Tenants",
+												"Owners"
+											].map((page) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-center space-x-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
+													id: page,
+													checked: (formData.targetPages || []).includes(page),
+													onCheckedChange: () => togglePageSelection(page)
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+													htmlFor: page,
+													children: page
+												})]
+											}, page))
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid grid-cols-2 gap-4",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Validity Period" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Validity" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 												value: formData.validity || "monthly",
 												onValueChange: updatePricingAndDates,
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
@@ -92300,54 +92400,6 @@ function AdsManager() {
 										})]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid grid-cols-2 gap-4",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Start Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												type: "date",
-												value: formData.startDate || "",
-												onChange: (e) => setFormData({
-													...formData,
-													startDate: e.target.value
-												})
-											})]
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "End Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												type: "date",
-												value: formData.endDate || "",
-												onChange: (e) => setFormData({
-													...formData,
-													endDate: e.target.value
-												})
-											})]
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex items-center space-x-2 border p-3 rounded-md",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
-											checked: formData.renewable || false,
-											onCheckedChange: (c$1) => setFormData({
-												...formData,
-												renewable: c$1
-											})
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Renewable (Auto-notify)" })]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Link URL" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "relative",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												className: "pl-9",
-												value: formData.linkUrl || "",
-												onChange: (e) => setFormData({
-													...formData,
-													linkUrl: e.target.value
-												})
-											})]
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Banner Image" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
 											value: formData.imageUrl || "",
@@ -92357,33 +92409,23 @@ function AdsManager() {
 											}),
 											label: "Upload Banner"
 										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Description" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
-											value: formData.description || "",
-											onChange: (e) => setFormData({
-												...formData,
-												description: e.target.value
-											})
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex items-center space-x-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
-											checked: formData.active ?? true,
-											onCheckedChange: (c$1) => setFormData({
-												...formData,
-												active: c$1
-											})
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Active" })]
 									})
 								]
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								onClick: handleSave,
-								children: "Save Ad"
-							}) })
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, {
+								className: "flex justify-between",
+								children: [step === 2 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									variant: "outline",
+									onClick: () => setStep(1),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "mr-2 h-4 w-4" }), " Back"]
+								}), step === 1 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									onClick: () => setStep(2),
+									children: ["Next ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "ml-2 h-4 w-4" })]
+								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: handleSave,
+									children: "Save Ad"
+								})]
+							})
 						]
 					})]
 				})]
@@ -92394,7 +92436,7 @@ function AdsManager() {
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Banner" }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Details" }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Advertiser" }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Validity" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Placement" }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Price" }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
@@ -92435,11 +92477,11 @@ function AdsManager() {
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex flex-col text-xs",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "capitalize",
-							children: ad.validity
+							className: "capitalize font-semibold",
+							children: ad.placementType
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "text-muted-foreground",
-							children: ad.endDate ? format(new Date(ad.endDate), "MMM dd") : "-"
+							children: (ad.targetPages || []).join(", ")
 						})]
 					}) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: ["$", ad.price?.toFixed(2)] }),
@@ -93359,7 +93401,11 @@ function Automation() {
 	const { automationRules: automationRules$1, updateAutomationRule } = useAutomationStore_default();
 	const { toast: toast$2 } = useToast();
 	const { t: t$1 } = useLanguageStore_default();
+	const { currentUser } = useAuthStore_default();
 	const [isExporting, setIsExporting] = (0, import_react.useState)(false);
+	const [exportScopeOpen, setExportScopeOpen] = (0, import_react.useState)(false);
+	const [exportScope, setExportScope] = (0, import_react.useState)("general");
+	const isPM = ["platform_owner", "software_tenant"].includes(currentUser.role);
 	const handleToggle = (id, enabled) => {
 		const rule = automationRules$1.find((r$2) => r$2.id === id);
 		if (rule) {
@@ -93383,11 +93429,23 @@ function Automation() {
 			toast$2({ title: "Configuration Saved" });
 		}
 	};
-	const handleQuickBooksExport = (format$2) => {
+	const initiateExport = () => {
+		if (!isPM) {
+			toast$2({
+				title: "Access Denied",
+				description: "Only Property Managers can export to QuickBooks.",
+				variant: "destructive"
+			});
+			return;
+		}
+		setExportScopeOpen(true);
+	};
+	const handleQuickBooksExport = () => {
+		setExportScopeOpen(false);
 		setIsExporting(true);
 		toast$2({
 			title: t$1("automation.export_success_title"),
-			description: t$1("automation.export_success_desc")
+			description: `Exporting data scope: ${exportScope}`
 		});
 		setTimeout(() => {
 			const csvContent = [
@@ -93426,7 +93484,7 @@ function Automation() {
 			const link = document.createElement("a");
 			const url = URL.createObjectURL(blob);
 			link.setAttribute("href", url);
-			link.setAttribute("download", `quickbooks_export_${(/* @__PURE__ */ new Date()).toISOString().split("T")[0]}.${format$2 === "excel" ? "xlsx" : "csv"}`);
+			link.setAttribute("download", `quickbooks_export_${exportScope}_${(/* @__PURE__ */ new Date()).toISOString().split("T")[0]}.csv`);
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);
@@ -93438,154 +93496,193 @@ function Automation() {
 	const rentReminderRule = automationRules$1.find((r$2) => r$2.type === "rent_reminder");
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex flex-col gap-2",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-navy",
-				children: t$1("settings.automation_title")
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-muted-foreground",
-				children: t$1("settings.automation_desc")
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "grid gap-6",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: "bg-green-50/50 border-green-100",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex flex-col gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold tracking-tight text-navy",
+					children: t$1("settings.automation_title")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-muted-foreground",
+					children: t$1("settings.automation_desc")
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid gap-6",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "bg-green-50/50 border-green-100",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "p-2 bg-green-100 rounded-full",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Database, { className: "h-5 w-5 text-green-700" })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+								className: "flex items-center gap-2",
+								children: [t$1("automation.quickbooks_export"), !isPM && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lock, { className: "h-4 w-4 text-muted-foreground" })]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("automation.quickbooks_desc") })] })]
+						}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "flex flex-wrap gap-4",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								onClick: initiateExport,
+								disabled: isExporting || !isPM,
+								className: "bg-green-700 hover:bg-green-800",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "mr-2 h-4 w-4" }), isExporting ? "Exporting..." : t$1("automation.export_csv")]
+							})
+						}), !isPM && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-xs text-red-500 mt-2",
+							children: "Restricted to Property Managers only."
+						})] })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex items-center gap-2",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "p-2 bg-green-100 rounded-full",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Database, { className: "h-5 w-5 text-green-700" })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("automation.quickbooks_export") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("automation.quickbooks_desc") })] })]
-					}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex flex-wrap gap-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-							onClick: () => handleQuickBooksExport("csv"),
-							disabled: isExporting,
-							className: "bg-green-700 hover:bg-green-800",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "mr-2 h-4 w-4" }), isExporting ? "Exporting..." : t$1("automation.export_csv")]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-							variant: "outline",
-							onClick: () => handleQuickBooksExport("excel"),
-							disabled: isExporting,
-							className: "border-green-200 text-green-800 hover:bg-green-100",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "mr-2 h-4 w-4" }), isExporting ? "Exporting..." : t$1("automation.export_excel")]
-						})]
-					}) })]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "p-2 bg-blue-100 rounded-full",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileCheck, { className: "h-5 w-5 text-blue-600" })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Task Auto-Approval" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Automatically approve maintenance tasks below a certain cost." })] })]
-				}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-					className: "grid gap-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center justify-between",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-							htmlFor: "auto-approve",
-							children: "Enable Auto-Approval"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
-							id: "auto-approve",
-							checked: autoApproveRule?.enabled || false,
-							onCheckedChange: (c$1) => handleToggle(autoApproveRule?.id || "", c$1)
-						})]
-					}), autoApproveRule?.enabled && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-4 p-4 bg-muted/30 rounded-lg",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Max Cost Threshold ($)" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								type: "number",
-								className: "w-32",
-								value: autoApproveRule.threshold || 0,
-								onChange: (e) => handleUpdateConfig(autoApproveRule.id, { threshold: Number(e.target.value) })
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-sm text-muted-foreground",
-								children: "Tasks below this amount will be approved instantly."
-							})
-						]
-					})]
-				})] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "p-2 bg-yellow-100 rounded-full",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Zap, { className: "h-5 w-5 text-yellow-600" })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Billing Automation" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Generate invoices automatically based on events." })] })]
-				}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-					className: "grid gap-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center justify-between",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-							htmlFor: "auto-invoice",
-							children: "Auto-Generate Invoices"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
-							id: "auto-invoice",
-							checked: autoInvoiceRule?.enabled || false,
-							onCheckedChange: (c$1) => handleToggle(autoInvoiceRule?.id || "", c$1)
-						})]
-					}), autoInvoiceRule?.enabled && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "p-4 bg-muted/30 rounded-lg",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "text-sm font-medium mb-2",
-								children: "Trigger Event:"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "flex gap-2",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									variant: "outline",
-									className: "bg-white border-blue-500 text-blue-700",
-									children: "Task Completion"
+							className: "p-2 bg-blue-100 rounded-full",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileCheck, { className: "h-5 w-5 text-blue-600" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Task Auto-Approval" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Automatically approve maintenance tasks below a certain cost." })] })]
+					}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+						className: "grid gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center justify-between",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								htmlFor: "auto-approve",
+								children: "Enable Auto-Approval"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+								id: "auto-approve",
+								checked: autoApproveRule?.enabled || false,
+								onCheckedChange: (c$1) => handleToggle(autoApproveRule?.id || "", c$1)
+							})]
+						}), autoApproveRule?.enabled && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center gap-4 p-4 bg-muted/30 rounded-lg",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Max Cost Threshold ($)" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "number",
+									className: "w-32",
+									value: autoApproveRule.threshold || 0,
+									onChange: (e) => handleUpdateConfig(autoApproveRule.id, { threshold: Number(e.target.value) })
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "text-sm text-muted-foreground",
+									children: "Tasks below this amount will be approved instantly."
 								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "text-xs text-muted-foreground mt-2",
-								children: "Invoices will be drafted when a task status changes to \"Completed\"."
-							})
-						]
-					})]
-				})] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "p-2 bg-purple-100 rounded-full",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, { className: "h-5 w-5 text-purple-600" })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("settings.rent_reminder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Send automated reminders to tenants." })] })]
-				}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-					className: "grid gap-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center justify-between",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-							htmlFor: "rent-reminder",
-							children: "Enable Reminders"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
-							id: "rent-reminder",
-							checked: rentReminderRule?.enabled || false,
-							onCheckedChange: (c$1) => handleToggle(rentReminderRule?.id || "", c$1)
+							]
 						})]
-					}), rentReminderRule?.enabled && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-4 p-4 bg-muted/30 rounded-lg",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("settings.days_before") }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								type: "number",
-								className: "w-20",
-								value: rentReminderRule.daysBefore || 3,
-								onChange: (e) => handleUpdateConfig(rentReminderRule.id, { daysBefore: Number(e.target.value) })
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-sm text-muted-foreground",
-								children: "Automatic email/SMS will be sent."
-							})
-						]
-					})]
-				})] })
-			]
-		})]
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "p-2 bg-yellow-100 rounded-full",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Zap, { className: "h-5 w-5 text-yellow-600" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Billing Automation" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Generate invoices automatically based on events." })] })]
+					}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+						className: "grid gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center justify-between",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								htmlFor: "auto-invoice",
+								children: "Auto-Generate Invoices"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+								id: "auto-invoice",
+								checked: autoInvoiceRule?.enabled || false,
+								onCheckedChange: (c$1) => handleToggle(autoInvoiceRule?.id || "", c$1)
+							})]
+						}), autoInvoiceRule?.enabled && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "p-4 bg-muted/30 rounded-lg",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-medium mb-2",
+									children: "Trigger Event:"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "flex gap-2",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: "outline",
+										className: "bg-white border-blue-500 text-blue-700",
+										children: "Task Completion"
+									})
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-xs text-muted-foreground mt-2",
+									children: "Invoices will be drafted when a task status changes to \"Completed\"."
+								})
+							]
+						})]
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "p-2 bg-purple-100 rounded-full",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, { className: "h-5 w-5 text-purple-600" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("settings.rent_reminder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Send automated reminders to tenants." })] })]
+					}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+						className: "grid gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center justify-between",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								htmlFor: "rent-reminder",
+								children: "Enable Reminders"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+								id: "rent-reminder",
+								checked: rentReminderRule?.enabled || false,
+								onCheckedChange: (c$1) => handleToggle(rentReminderRule?.id || "", c$1)
+							})]
+						}), rentReminderRule?.enabled && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center gap-4 p-4 bg-muted/30 rounded-lg",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("settings.days_before") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "number",
+									className: "w-20",
+									value: rentReminderRule.daysBefore || 3,
+									onChange: (e) => handleUpdateConfig(rentReminderRule.id, { daysBefore: Number(e.target.value) })
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "text-sm text-muted-foreground",
+									children: "Automatic email/SMS will be sent."
+								})
+							]
+						})]
+					})] })
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: exportScopeOpen,
+				onOpenChange: setExportScopeOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Select Export Scope" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "Choose the data range for the QuickBooks export." })] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "py-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Data Scope" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: exportScope,
+							onValueChange: setExportScope,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "general",
+									children: "General Activities"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "owner",
+									children: "By Owner"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "partner",
+									children: "By Partner"
+								})
+							] })]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "outline",
+						onClick: () => setExportScopeOpen(false),
+						children: "Cancel"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleQuickBooksExport,
+						children: "Confirm Export"
+					})] })
+				] })
+			})
+		]
 	});
 }
 function ShortTermReports() {
@@ -95271,10 +95368,12 @@ function Visits() {
 	const [propertyId, setPropertyId] = (0, import_react.useState)("");
 	const [notes, setNotes] = (0, import_react.useState)("");
 	const [reason, setReason] = (0, import_react.useState)("");
+	const [assignedTo, setAssignedTo] = (0, import_react.useState)("");
 	const [isEditOpen, setIsEditOpen] = (0, import_react.useState)(false);
 	const [editingVisit, setEditingVisit] = (0, import_react.useState)(null);
 	const [confirmOpen, setConfirmOpen] = (0, import_react.useState)(false);
 	const [pendingStatusChange, setPendingStatusChange] = (0, import_react.useState)(null);
+	const assignableUsers = allUsers.filter((u$1) => u$1.role === "partner" || u$1.role === "partner_employee" || u$1.role === "internal_user");
 	const handleSchedule = () => {
 		if (!clientName || !propertyId || !date$4) {
 			toast$2({
@@ -95288,6 +95387,7 @@ function Visits() {
 		const dateTime = new Date(date$4);
 		const [hours, minutes] = time$3.split(":");
 		dateTime.setHours(parseInt(hours), parseInt(minutes));
+		const assignee = allUsers.find((u$1) => u$1.id === assignedTo);
 		addVisit({
 			id: `visit-${Date.now()}`,
 			propertyId,
@@ -95297,6 +95397,8 @@ function Visits() {
 			status: "scheduled",
 			notes,
 			registeredBy: currentUser.id,
+			assignedTo: assignedTo || void 0,
+			assignedRole: assignee?.role,
 			reason
 		});
 		toast$2({
@@ -95307,8 +95409,21 @@ function Visits() {
 		setPropertyId("");
 		setNotes("");
 		setReason("");
+		setAssignedTo("");
 	};
 	const initiateStatusChange = (visit, status) => {
+		if (status === "completed") {
+			const isPM = ["platform_owner", "software_tenant"].includes(currentUser.role);
+			const isAssignee = visit.assignedTo === currentUser.id;
+			if (!isPM && !isAssignee) {
+				toast$2({
+					title: "Permission Denied",
+					description: "Only the assigned team member or a Property Manager can close this visit.",
+					variant: "destructive"
+				});
+				return;
+			}
+		}
 		setPendingStatusChange({
 			visit,
 			status
@@ -95345,9 +95460,11 @@ function Visits() {
 		const originalVisit = visits$1.find((v) => v.id === editingVisit.id);
 		let newStatus = editingVisit.status;
 		if (originalVisit && originalVisit.date !== editingVisit.date) newStatus = "rescheduled";
+		const assignee = allUsers.find((u$1) => u$1.id === editingVisit.assignedTo);
 		updateVisit({
 			...editingVisit,
-			status: newStatus
+			status: newStatus,
+			assignedRole: assignee?.role
 		});
 		setIsEditOpen(false);
 		setEditingVisit(null);
@@ -95385,7 +95502,7 @@ function Visits() {
 		}
 	};
 	const getUserName = (id) => {
-		if (!id) return "System";
+		if (!id) return "Unassigned";
 		const user = allUsers.find((u$1) => u$1.id === id);
 		return user ? user.name : "Unknown";
 	};
@@ -95427,6 +95544,22 @@ function Visits() {
 										value: p$1.id,
 										children: p$1.name
 									}, p$1.id)) })]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Assign Team Member / Partner" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: assignedTo,
+									onValueChange: setAssignedTo,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Assignee" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: assignableUsers.map((u$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+										value: u$1.id,
+										children: [
+											u$1.name,
+											" (",
+											t$1(`roles.${u$1.role}`),
+											")"
+										]
+									}, u$1.id)) })]
 								})]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -95491,13 +95624,14 @@ function Visits() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.date") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.property") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.client_name") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Assigned To" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
 							children: t$1("common.actions")
 						})
 					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: sortedVisits.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-						colSpan: 5,
+						colSpan: 6,
 						className: "text-center py-8 text-muted-foreground",
 						children: "No visits scheduled."
 					}) }) : sortedVisits.map((visit) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
@@ -95517,6 +95651,10 @@ function Visits() {
 							children: visit.propertyName
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: visit.clientName }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center gap-1",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: getUserName(visit.assignedTo) })]
+						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: getStatusBadge(visit.status) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
@@ -95530,22 +95668,21 @@ function Visits() {
 										title: "Edit Details",
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
 									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									visit.status !== "completed" && visit.status !== "canceled" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 										size: "icon",
 										variant: "ghost",
 										className: "h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50",
 										onClick: () => initiateStatusChange(visit, "completed"),
-										title: "Complete",
+										title: "Complete (Assigned User Only)",
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheckBig, { className: "h-4 w-4" })
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 										size: "icon",
 										variant: "ghost",
 										className: "h-8 w-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50",
 										onClick: () => initiateStatusChange(visit, "suspended"),
 										title: "Suspend",
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "h-4 w-4" })
-									}),
+									})] }),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 										size: "icon",
 										variant: "ghost",
@@ -95596,6 +95733,25 @@ function Visits() {
 											...editingVisit,
 											clientName: e.target.value
 										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Assigned To" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: editingVisit.assignedTo || "",
+										onValueChange: (val) => setEditingVisit({
+											...editingVisit,
+											assignedTo: val
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Unassigned" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: assignableUsers.map((u$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+											value: u$1.id,
+											children: [
+												u$1.name,
+												" (",
+												t$1(`roles.${u$1.role}`),
+												")"
+											]
+										}, u$1.id)) })]
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -95973,4 +96129,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-DiEGFEv-.js.map
+//# sourceMappingURL=index-Czd77Ako.js.map

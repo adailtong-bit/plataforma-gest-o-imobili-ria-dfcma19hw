@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Plus,
   Edit,
@@ -35,6 +36,8 @@ import {
   ExternalLink,
   Image as ImageIcon,
   FileText,
+  ArrowRight,
+  ArrowLeft,
 } from 'lucide-react'
 import usePublicityStore from '@/stores/usePublicityStore'
 import { Advertisement } from '@/lib/types'
@@ -54,6 +57,7 @@ export function AdsManager() {
   } = usePublicityStore()
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
+  const [step, setStep] = useState(1) // Wizard Step
   const [editingId, setEditingId] = useState<string | null>(null)
   const [invoiceOpen, setInvoiceOpen] = useState(false)
   const [selectedAdForInvoice, setSelectedAdForInvoice] =
@@ -66,6 +70,8 @@ export function AdsManager() {
     linkUrl: '',
     active: true,
     placement: 'footer',
+    placementType: 'footer',
+    targetPages: [],
     advertiserId: '',
     validity: 'monthly',
     renewable: false,
@@ -139,6 +145,7 @@ export function AdsManager() {
   const handleEdit = (ad: Advertisement) => {
     setEditingId(ad.id)
     setFormData(ad)
+    setStep(1)
     setOpen(true)
   }
 
@@ -149,6 +156,7 @@ export function AdsManager() {
 
   const resetForm = () => {
     setEditingId(null)
+    setStep(1)
     setFormData({
       title: '',
       description: '',
@@ -156,6 +164,8 @@ export function AdsManager() {
       linkUrl: '',
       active: true,
       placement: 'footer',
+      placementType: 'footer',
+      targetPages: [],
       advertiserId: '',
       validity: 'monthly',
       renewable: false,
@@ -166,6 +176,18 @@ export function AdsManager() {
 
   const getAdvertiserName = (id?: string) => {
     return advertisers.find((a) => a.id === id)?.name || 'Unknown'
+  }
+
+  const togglePageSelection = (page: string) => {
+    const pages = formData.targetPages || []
+    if (pages.includes(page)) {
+      setFormData({
+        ...formData,
+        targetPages: pages.filter((p) => p !== page),
+      })
+    } else {
+      setFormData({ ...formData, targetPages: [...pages, page] })
+    }
   }
 
   return (
@@ -186,111 +208,66 @@ export function AdsManager() {
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingId ? 'Edit Ad' : 'Create Ad'}</DialogTitle>
+              <DialogTitle>
+                {editingId ? 'Edit Ad' : 'Create Ad'} - Step {step} of 2
+              </DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label>Advertiser</Label>
-                <Select
-                  value={formData.advertiserId || ''}
-                  onValueChange={(v) =>
-                    setFormData({ ...formData, advertiserId: v })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Advertiser" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {advertisers.map((adv) => (
-                      <SelectItem key={adv.id} value={adv.id}>
-                        {adv.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
 
-              <div className="grid gap-2">
-                <Label>Title</Label>
-                <Input
-                  value={formData.title || ''}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+            {step === 1 ? (
+              // Step 1: Basic Info & Type
+              <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label>Validity Period</Label>
+                  <Label>Placement Type</Label>
                   <Select
-                    value={formData.validity || 'monthly'}
-                    onValueChange={updatePricingAndDates}
+                    value={formData.placementType || 'footer'}
+                    onValueChange={(v) =>
+                      setFormData({
+                        ...formData,
+                        placementType: v as 'header' | 'footer',
+                      })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="bi-weekly">Bi-Weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="header">Header (Topo)</SelectItem>
+                      <SelectItem value="footer">Footer (Rodapé)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label>Price ($)</Label>
-                  <Input
-                    type="number"
-                    value={formData.price ?? 0}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        price: parseFloat(e.target.value),
-                      })
+                  <Label>Advertiser</Label>
+                  <Select
+                    value={formData.advertiserId || ''}
+                    onValueChange={(v) =>
+                      setFormData({ ...formData, advertiserId: v })
                     }
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Start Date</Label>
-                  <Input
-                    type="date"
-                    value={formData.startDate || ''}
-                    onChange={(e) =>
-                      setFormData({ ...formData, startDate: e.target.value })
-                    }
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Advertiser" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {advertisers.map((adv) => (
+                        <SelectItem key={adv.id} value={adv.id}>
+                          {adv.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label>End Date</Label>
+                  <Label>Title</Label>
                   <Input
-                    type="date"
-                    value={formData.endDate || ''}
+                    value={formData.title || ''}
                     onChange={(e) =>
-                      setFormData({ ...formData, endDate: e.target.value })
+                      setFormData({ ...formData, title: e.target.value })
                     }
                   />
                 </div>
-              </div>
-
-              <div className="flex items-center space-x-2 border p-3 rounded-md">
-                <Switch
-                  checked={formData.renewable || false}
-                  onCheckedChange={(c) =>
-                    setFormData({ ...formData, renewable: c })
-                  }
-                />
-                <Label>Renewable (Auto-notify)</Label>
-              </div>
-
-              <div className="grid gap-2">
-                <Label>Link URL</Label>
-                <div className="relative">
-                  <ExternalLink className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <div className="grid gap-2">
+                  <Label>Link URL</Label>
                   <Input
-                    className="pl-9"
                     value={formData.linkUrl || ''}
                     onChange={(e) =>
                       setFormData({ ...formData, linkUrl: e.target.value })
@@ -298,40 +275,87 @@ export function AdsManager() {
                   />
                 </div>
               </div>
+            ) : (
+              // Step 2: Location (Pages) & Details
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label>Display Locations (Pages)</Label>
+                  <div className="grid grid-cols-2 gap-2 border p-3 rounded-md">
+                    {['Dashboard', 'Properties', 'Tenants', 'Owners'].map(
+                      (page) => (
+                        <div key={page} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={page}
+                            checked={(formData.targetPages || []).includes(
+                              page,
+                            )}
+                            onCheckedChange={() => togglePageSelection(page)}
+                          />
+                          <Label htmlFor={page}>{page}</Label>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </div>
 
-              <div className="grid gap-2">
-                <Label>Banner Image</Label>
-                <FileUpload
-                  value={formData.imageUrl || ''}
-                  onChange={(url) =>
-                    setFormData({ ...formData, imageUrl: url })
-                  }
-                  label="Upload Banner"
-                />
-              </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Validity</Label>
+                    <Select
+                      value={formData.validity || 'monthly'}
+                      onValueChange={updatePricingAndDates}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="bi-weekly">Bi-Weekly</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Price ($)</Label>
+                    <Input
+                      type="number"
+                      value={formData.price ?? 0}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          price: parseFloat(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                </div>
 
-              <div className="grid gap-2">
-                <Label>Description</Label>
-                <Textarea
-                  value={formData.description || ''}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                />
+                <div className="grid gap-2">
+                  <Label>Banner Image</Label>
+                  <FileUpload
+                    value={formData.imageUrl || ''}
+                    onChange={(url) =>
+                      setFormData({ ...formData, imageUrl: url })
+                    }
+                    label="Upload Banner"
+                  />
+                </div>
               </div>
+            )}
 
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={formData.active ?? true}
-                  onCheckedChange={(c) =>
-                    setFormData({ ...formData, active: c })
-                  }
-                />
-                <Label>Active</Label>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button onClick={handleSave}>Save Ad</Button>
+            <DialogFooter className="flex justify-between">
+              {step === 2 && (
+                <Button variant="outline" onClick={() => setStep(1)}>
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                </Button>
+              )}
+              {step === 1 ? (
+                <Button onClick={() => setStep(2)}>
+                  Next <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button onClick={handleSave}>Save Ad</Button>
+              )}
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -344,7 +368,7 @@ export function AdsManager() {
               <TableHead>Banner</TableHead>
               <TableHead>Details</TableHead>
               <TableHead>Advertiser</TableHead>
-              <TableHead>Validity</TableHead>
+              <TableHead>Placement</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -402,11 +426,11 @@ export function AdsManager() {
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col text-xs">
-                      <span className="capitalize">{ad.validity}</span>
+                      <span className="capitalize font-semibold">
+                        {ad.placementType}
+                      </span>
                       <span className="text-muted-foreground">
-                        {ad.endDate
-                          ? format(new Date(ad.endDate), 'MMM dd')
-                          : '-'}
+                        {(ad.targetPages || []).join(', ')}
                       </span>
                     </div>
                   </TableCell>

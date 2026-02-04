@@ -114,17 +114,48 @@ export default function Users() {
   const [formData, setFormData] = useState(initialFormState)
   const [isEditing, setIsEditing] = useState(false)
 
-  // Track manual permissions separate from form until save, or sync with form directly
-  // We sync directly with formData.permissions in this implementation
-
+  // Filter users based on hierarchy visibility rules
   const filteredUsers = users.filter((u) => {
     if (u.isDemo) return true
-    if (currentUser.role === 'platform_owner') return true
-    if (currentUser.role === 'software_tenant')
+
+    if (currentUser.role === 'platform_owner') return true // Admin sees all
+
+    if (currentUser.role === 'software_tenant') {
+      // PM sees all users they created or related to them
       return u.parentId === currentUser.id || u.role === 'partner_employee'
-    if (currentUser.role === 'partner') return u.parentId === currentUser.id
+    }
+
+    if (currentUser.role === 'partner') {
+      // Partner only sees their own team
+      return (
+        u.role === 'partner_employee' && u.parentPartnerId === currentUser.id
+      )
+    }
+
     return false
   })
+
+  // Define allowed roles for creation based on hierarchy rules
+  const getAllowedRoles = () => {
+    if (currentUser.role === 'platform_owner') {
+      return ['software_tenant']
+    }
+    if (currentUser.role === 'software_tenant') {
+      return [
+        'property_owner',
+        'partner',
+        'internal_user',
+        'tenant',
+        'partner_employee',
+      ]
+    }
+    if (currentUser.role === 'partner') {
+      return ['partner_employee']
+    }
+    return []
+  }
+
+  const allowedRoles = getAllowedRoles()
 
   const sortedUsers = [...filteredUsers].sort((a, b) => {
     if (a.isDemo && !b.isDemo) return -1
@@ -185,13 +216,17 @@ export default function Users() {
     const { password, confirmPassword, parentPartnerId, ...userData } = formData
 
     let finalParentId = currentUser.id
-    if (userData.role === 'partner_employee' && parentPartnerId) {
-      finalParentId = parentPartnerId
+    let finalPartnerId = parentPartnerId
+
+    // Partner creating employee automatically links to themselves
+    if (currentUser.role === 'partner') {
+      finalPartnerId = currentUser.id
     }
 
     const finalUserData = {
       ...userData,
       parentId: isEditing ? userData.parentId : finalParentId,
+      parentPartnerId: finalPartnerId,
     }
 
     if (isEditing && formData.id) {
@@ -248,7 +283,7 @@ export default function Users() {
       ...user,
       password: '',
       confirmPassword: '',
-      parentPartnerId: user.parentId,
+      parentPartnerId: user.parentPartnerId,
       country: user.country || 'US',
       permissions: user.permissions || [],
     })
@@ -267,12 +302,10 @@ export default function Users() {
   }
 
   const handleRoleChange = (val: UserRole) => {
-    // When role changes, we should typically reset manual permissions as they might conflict
-    // or we can keep them. Usually reseting is safer to avoid confusion.
     setFormData({
       ...formData,
       role: val,
-      permissions: [], // Reset custom permissions on role change
+      permissions: [],
     })
   }
 
@@ -333,211 +366,201 @@ export default function Users() {
         </div>
 
         <div className="flex gap-2">
-          <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <Share2 className="h-4 w-4" /> {t('users.invite')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t('users.share_access')}</DialogTitle>
-              </DialogHeader>
-              <div className="py-4 space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  {t('users.share_desc')}
-                </p>
-                <div className="flex gap-2">
-                  <Input readOnly value={`${window.location.origin}/signup`} />
-                  <Button size="icon" onClick={copyInviteLink}>
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          {allowedRoles.length > 0 && (
+            <Dialog
+              open={open}
+              onOpenChange={(val) => {
+                setOpen(val)
+                if (!val) {
+                  setFormData(initialFormState)
+                  setIsEditing(false)
+                }
+              }}
+            >
+              <DialogTrigger asChild>
+                <Button className="bg-trust-blue">
+                  <Plus className="mr-2 h-4 w-4" /> {t('common.new')} User
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>
+                    {isEditing ? t('common.edit') : t('common.new')} User
+                  </DialogTitle>
+                  <DialogDescription>{t('users.subtitle')}</DialogDescription>
+                </DialogHeader>
 
-          <Dialog
-            open={open}
-            onOpenChange={(val) => {
-              setOpen(val)
-              if (!val) {
-                setFormData(initialFormState)
-                setIsEditing(false)
-              }
-            }}
-          >
-            <DialogTrigger asChild>
-              <Button className="bg-trust-blue">
-                <Plus className="mr-2 h-4 w-4" /> {t('common.new')} User
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {isEditing ? t('common.edit') : t('common.new')} User
-                </DialogTitle>
-                <DialogDescription>{t('users.subtitle')}</DialogDescription>
-              </DialogHeader>
-
-              <div className="grid gap-6 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>
-                      {t('common.name')} <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      placeholder={t('common.full_name')}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>
-                      {t('common.email')}{' '}
-                      <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      type="email"
-                      placeholder="email@example.com"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>{t('common.phone')}</Label>
-                    <PhoneInput
-                      value={formData.phone || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
-                      country={formData.country as any}
-                      onCountryChange={(c) =>
-                        setFormData({ ...formData, country: c })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>
-                      {t('users.role_label')}{' '}
-                      <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                      value={formData.role}
-                      onValueChange={handleRoleChange}
-                      disabled={isEditing && formData.isDemo}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="platform_owner">Admin</SelectItem>
-                        <SelectItem value="software_tenant">
-                          {t('roles.software_tenant')}
-                        </SelectItem>
-                        <SelectItem value="internal_user">
-                          {t('roles.internal_user')}
-                        </SelectItem>
-                        <SelectItem value="partner">
-                          {t('roles.partner')}
-                        </SelectItem>
-                        <SelectItem value="property_owner">
-                          {t('roles.property_owner')}
-                        </SelectItem>
-                        <SelectItem value="tenant">
-                          {t('roles.tenant')}
-                        </SelectItem>
-                        <SelectItem value="partner_employee">
-                          {t('roles.partner_employee')}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Permission Selector Integration */}
-                <div className="col-span-2">
-                  <PermissionSelector
-                    role={formData.role as UserRole}
-                    currentPermissions={formData.permissions || []}
-                    onChange={handlePermissionChange}
-                  />
-                </div>
-
-                {formData.role === 'partner_employee' &&
-                  !isEditing &&
-                  (currentUser.role === 'software_tenant' ||
-                    currentUser.role === 'platform_owner') && (
+                <div className="grid gap-6 py-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label>Partner Company (Employer)</Label>
-                      <Select
-                        value={formData.parentPartnerId}
-                        onValueChange={(val) =>
-                          setFormData({ ...formData, parentPartnerId: val })
+                      <Label>
+                        {t('common.name')}{' '}
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
                         }
+                        placeholder={t('common.full_name')}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>
+                        {t('common.email')}{' '}
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                        type="email"
+                        placeholder="email@example.com"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>{t('common.phone')}</Label>
+                      <PhoneInput
+                        value={formData.phone || ''}
+                        onChange={(e) =>
+                          setFormData({ ...formData, phone: e.target.value })
+                        }
+                        country={formData.country as any}
+                        onCountryChange={(c) =>
+                          setFormData({ ...formData, country: c })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>
+                        {t('users.role_label')}{' '}
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <Select
+                        value={formData.role}
+                        onValueChange={handleRoleChange}
+                        disabled={isEditing && formData.isDemo}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select Partner" />
+                          <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {partners.map((p) => (
-                            <SelectItem key={p.id} value={p.id}>
-                              {p.name} ({p.companyName})
+                          {allowedRoles.includes('software_tenant') && (
+                            <SelectItem value="software_tenant">
+                              {t('roles.software_tenant')}
                             </SelectItem>
-                          ))}
+                          )}
+                          {allowedRoles.includes('internal_user') && (
+                            <SelectItem value="internal_user">
+                              {t('roles.internal_user')}
+                            </SelectItem>
+                          )}
+                          {allowedRoles.includes('partner') && (
+                            <SelectItem value="partner">
+                              {t('roles.partner')}
+                            </SelectItem>
+                          )}
+                          {allowedRoles.includes('property_owner') && (
+                            <SelectItem value="property_owner">
+                              {t('roles.property_owner')}
+                            </SelectItem>
+                          )}
+                          {allowedRoles.includes('tenant') && (
+                            <SelectItem value="tenant">
+                              {t('roles.tenant')}
+                            </SelectItem>
+                          )}
+                          {allowedRoles.includes('partner_employee') && (
+                            <SelectItem value="partner_employee">
+                              {t('roles.partner_employee')}
+                            </SelectItem>
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
-                  )}
+                  </div>
 
-                <div className="grid grid-cols-2 gap-4 border-t pt-4">
-                  <div className="grid gap-2">
-                    <Label>
-                      {t('common.password')}{' '}
-                      {!isEditing && <span className="text-red-500">*</span>}
-                    </Label>
-                    <Input
-                      type="password"
-                      value={formData.password}
-                      onChange={(e) =>
-                        setFormData({ ...formData, password: e.target.value })
-                      }
-                      placeholder={isEditing ? '••••••' : ''}
+                  {/* Permission Selector Integration */}
+                  <div className="col-span-2">
+                    <PermissionSelector
+                      role={formData.role as UserRole}
+                      currentPermissions={formData.permissions || []}
+                      onChange={handlePermissionChange}
                     />
                   </div>
-                  <div className="grid gap-2">
-                    <Label>
-                      {t('common.confirm_password')}{' '}
-                      {!isEditing && <span className="text-red-500">*</span>}
-                    </Label>
-                    <Input
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          confirmPassword: e.target.value,
-                        })
-                      }
-                    />
+
+                  {formData.role === 'partner_employee' &&
+                    !isEditing &&
+                    (currentUser.role === 'software_tenant' ||
+                      currentUser.role === 'platform_owner') && (
+                      <div className="grid gap-2">
+                        <Label>Partner Company (Employer)</Label>
+                        <Select
+                          value={formData.parentPartnerId}
+                          onValueChange={(val) =>
+                            setFormData({ ...formData, parentPartnerId: val })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Partner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {partners.map((p) => (
+                              <SelectItem key={p.id} value={p.id}>
+                                {p.name} ({p.companyName})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                  <div className="grid grid-cols-2 gap-4 border-t pt-4">
+                    <div className="grid gap-2">
+                      <Label>
+                        {t('common.password')}{' '}
+                        {!isEditing && <span className="text-red-500">*</span>}
+                      </Label>
+                      <Input
+                        type="password"
+                        value={formData.password}
+                        onChange={(e) =>
+                          setFormData({ ...formData, password: e.target.value })
+                        }
+                        placeholder={isEditing ? '••••••' : ''}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>
+                        {t('common.confirm_password')}{' '}
+                        {!isEditing && <span className="text-red-500">*</span>}
+                      </Label>
+                      <Input
+                        type="password"
+                        value={formData.confirmPassword}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            confirmPassword: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <DialogFooter>
-                <Button
-                  onClick={handleSave}
-                  className="bg-trust-blue w-full sm:w-auto"
-                >
-                  {t('common.save')}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <DialogFooter>
+                  <Button
+                    onClick={handleSave}
+                    className="bg-trust-blue w-full sm:w-auto"
+                  >
+                    {t('common.save')}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
 

@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { PERMISSIONS_MATRIX } from '@/lib/permissions'
 import { Resource, UserRole, Permission, Action } from '@/lib/types'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { Check, ShieldAlert } from 'lucide-react'
+import { ShieldAlert } from 'lucide-react'
 
 interface PermissionSelectorProps {
   role: UserRole
@@ -24,7 +24,6 @@ const ALL_RESOURCES: Resource[] = [
   'calendar',
   'tasks',
   'financial',
-  'invoices', // Mapped to financial in logic mostly, but exists as resource in types
   'messages',
   'users',
   'settings',
