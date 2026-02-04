@@ -20226,6 +20226,20 @@ var Share2 = createLucideIcon("share-2", [
 		key: "1n3mei"
 	}]
 ]);
+var ShieldAlert = createLucideIcon("shield-alert", [
+	["path", {
+		d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+		key: "oel41y"
+	}],
+	["path", {
+		d: "M12 8v4",
+		key: "1got3b"
+	}],
+	["path", {
+		d: "M12 16h.01",
+		key: "1drbdi"
+	}]
+]);
 var ShieldCheck = createLucideIcon("shield-check", [["path", {
 	d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
 	key: "oel41y"
@@ -53689,7 +53703,8 @@ const translations = {
 			name_required: "Nome é obrigatório",
 			email_required: "Email é obrigatório",
 			address_placeholder: "Endereço completo",
-			resource: "Recurso"
+			resource: "Recurso",
+			migration: "Migração"
 		},
 		workflows: {
 			title: "Motor de Workflow",
@@ -54399,7 +54414,8 @@ const translations = {
 			name_required: "Name is required",
 			email_required: "Email is required",
 			address_placeholder: "Full address",
-			resource: "Resource"
+			resource: "Resource",
+			migration: "Migration"
 		},
 		workflows: {
 			title: "Workflow Engine",
@@ -55109,7 +55125,8 @@ const translations = {
 			name_required: "El nombre es obligatorio",
 			email_required: "El correo es obligatorio",
 			address_placeholder: "Dirección completa",
-			resource: "Recurso"
+			resource: "Recurso",
+			migration: "Migración"
 		},
 		workflows: {
 			title: "Motor de Workflow",
@@ -55484,7 +55501,7 @@ const translations = {
 			last_sync: "Última Sinc.",
 			no_links: "Ningún enlace configurado.",
 			add_link: "Agregar Enlace",
-			sync_now: "Sincronizar Ahora",
+			sync_now: "Sincronizar Agora",
 			sync_success: "Sincronización Completada",
 			sync_desc: "Calendario actualizado con éxito.",
 			export_calendar: "Exportar Calendario",
@@ -60694,7 +60711,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$79({ inst: {
+			cachedValue = useState$80({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -60708,7 +60725,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$23(function() {
+			useEffect$24(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -60731,7 +60748,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$65 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$79 = React$65.useState, useEffect$23 = React$65.useEffect, useLayoutEffect$2 = React$65.useLayoutEffect, useDebugValue = React$65.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$65 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$80 = React$65.useState, useEffect$24 = React$65.useEffect, useLayoutEffect$2 = React$65.useLayoutEffect, useDebugValue = React$65.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$65.useSyncExternalStore ? React$65.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -87818,6 +87835,141 @@ function PermissionsMatrix() {
 		}, resource)) })] })
 	});
 }
+var ALL_RESOURCES = [
+	"dashboard",
+	"properties",
+	"condominiums",
+	"tenants",
+	"owners",
+	"partners",
+	"calendar",
+	"tasks",
+	"financial",
+	"invoices",
+	"messages",
+	"users",
+	"settings",
+	"reports",
+	"market_analysis",
+	"short_term",
+	"renewals",
+	"workflows",
+	"automation",
+	"audit_logs",
+	"visits",
+	"publicity",
+	"migration",
+	"analytics",
+	"portal"
+];
+function PermissionSelector({ role, currentPermissions, onChange }) {
+	const { t: t$1 } = useLanguageStore_default();
+	const [enabledResources, setEnabledResources] = (0, import_react.useState)(/* @__PURE__ */ new Set());
+	(0, import_react.useEffect)(() => {
+		const effective = /* @__PURE__ */ new Set();
+		const roleDefaults = PERMISSIONS_MATRIX[role] || {};
+		ALL_RESOURCES.forEach((resource) => {
+			const override = currentPermissions.find((p$1) => p$1.resource === resource);
+			if (override) {
+				if (override.actions.includes("view")) effective.add(resource);
+			} else {
+				const defaultActions = roleDefaults[resource];
+				if (defaultActions && defaultActions.includes("view")) effective.add(resource);
+			}
+		});
+		setEnabledResources(effective);
+	}, [role, currentPermissions]);
+	const handleToggle = (resource, checked) => {
+		const newEnabled = new Set(enabledResources);
+		if (checked) newEnabled.add(resource);
+		else newEnabled.delete(resource);
+		setEnabledResources(newEnabled);
+		const newOverrides = [];
+		const roleDefaults = PERMISSIONS_MATRIX[role] || {};
+		ALL_RESOURCES.forEach((res) => {
+			const isEnabled = newEnabled.has(res);
+			const roleHasAccess = roleDefaults[res]?.includes("view");
+			if (isEnabled && !roleHasAccess) newOverrides.push({
+				resource: res,
+				actions: [
+					"view",
+					"create",
+					"edit",
+					"delete"
+				]
+			});
+			else if (!isEnabled && roleHasAccess) newOverrides.push({
+				resource: res,
+				actions: []
+			});
+		});
+		onChange(newOverrides);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "space-y-4 border rounded-md p-4 bg-slate-50/50",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex items-center justify-between",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "space-y-1",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
+					className: "text-sm font-medium leading-none flex items-center gap-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShieldAlert, { className: "h-4 w-4 text-trust-blue" }),
+						t$1("users.permissions"),
+						" Override"
+					]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					className: "text-xs text-muted-foreground",
+					children: [
+						"Customize access for this user. These settings override the default",
+						" ",
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: t$1(`roles.${role}`) }),
+						" role."
+					]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+				variant: "outline",
+				className: "bg-white",
+				children: [enabledResources.size, " Allowed"]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
+			className: "h-[300px] pr-4",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "grid grid-cols-1 md:grid-cols-2 gap-3",
+				children: ALL_RESOURCES.map((resource) => {
+					const isEnabled = enabledResources.has(resource);
+					const isRoleDefault = (PERMISSIONS_MATRIX[role] || {})[resource]?.includes("view");
+					const isOverridden = isEnabled !== !!isRoleDefault;
+					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: `flex items-center justify-between rounded-lg border p-3 shadow-sm transition-all ${isEnabled ? "bg-white border-slate-200" : "bg-slate-100 border-transparent opacity-80"}`,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-0.5",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								htmlFor: `perm-${resource}`,
+								className: `text-sm font-medium cursor-pointer ${isEnabled ? "text-black" : "text-slate-500"}`,
+								children: t$1(`common.${resource}`) !== `common.${resource}` ? t$1(`common.${resource}`) : resource.replace(/_/g, " ").replace(/\b\w/g, (c$1) => c$1.toUpperCase())
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2 h-4",
+								children: [isRoleDefault && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "text-[10px] text-slate-400",
+									children: "Default"
+								}), isOverridden && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+									variant: "secondary",
+									className: "h-4 px-1 text-[9px] bg-blue-100 text-blue-700 hover:bg-blue-100 border-none",
+									children: "Custom"
+								})]
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+							id: `perm-${resource}`,
+							checked: isEnabled,
+							onCheckedChange: (c$1) => handleToggle(resource, c$1)
+						})]
+					}, resource);
+				})
+			})
+		})]
+	});
+}
 function Users() {
 	const { users, addUser, updateUser, deleteUser, approveUser, blockUser } = useUserStore_default();
 	const { currentUser } = useAuthStore_default();
@@ -87874,9 +88026,6 @@ function Users() {
 				variant: "destructive"
 			});
 			return;
-		}
-		if (formData.role === "partner_employee") {
-			if ((formData.phone?.replace(/\D/g, "") || "").length !== 11 && formData.country === "BR") {}
 		}
 		if (users.find((u$1) => u$1.email.toLowerCase() === formData.email?.toLowerCase() && u$1.id !== formData.id)) {
 			toast$2({
@@ -87967,7 +88116,8 @@ function Users() {
 			password: "",
 			confirmPassword: "",
 			parentPartnerId: user.parentId,
-			country: user.country || "US"
+			country: user.country || "US",
+			permissions: user.permissions || []
 		});
 		setIsEditing(true);
 		setOpen(true);
@@ -87980,6 +88130,19 @@ function Users() {
 			description: t$1("users.copy_success")
 		});
 		setInviteOpen(false);
+	};
+	const handleRoleChange = (val) => {
+		setFormData({
+			...formData,
+			role: val,
+			permissions: []
+		});
+	};
+	const handlePermissionChange = (newPermissions) => {
+		setFormData({
+			...formData,
+			permissions: newPermissions
+		});
 	};
 	const getStatusBadge = (status) => {
 		switch (status) {
@@ -88152,11 +88315,8 @@ function Users() {
 														})
 													] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 														value: formData.role,
-														onValueChange: (val) => setFormData({
-															...formData,
-															role: val
-														}),
-														disabled: isEditing,
+														onValueChange: handleRoleChange,
+														disabled: isEditing && formData.isDemo,
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "platform_owner",
@@ -88190,6 +88350,14 @@ function Users() {
 													})]
 												})
 											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "col-span-2",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PermissionSelector, {
+												role: formData.role,
+												currentPermissions: formData.permissions || [],
+												onChange: handlePermissionChange
+											})
 										}),
 										formData.role === "partner_employee" && !isEditing && (currentUser.role === "software_tenant" || currentUser.role === "platform_owner") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "grid gap-2",
@@ -88303,7 +88471,7 @@ function Users() {
 										className: "flex items-center gap-2",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 											className: "font-medium",
-											children: user.name
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: user.name })
 										}), user.isDemo && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 											variant: "secondary",
 											className: "bg-blue-100 text-blue-700 hover:bg-blue-100 text-[10px] h-5 px-1.5",
@@ -88311,7 +88479,7 @@ function Users() {
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 										className: "text-xs text-muted-foreground",
-										children: user.email
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: user.email })
 									})]
 								}) }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -95805,4 +95973,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-C72d0L6d.js.map
+//# sourceMappingURL=index-DiEGFEv-.js.map

@@ -172,6 +172,7 @@ export const translations = {
       email_required: 'Email é obrigatório',
       address_placeholder: 'Endereço completo',
       resource: 'Recurso',
+      migration: 'Migração',
     },
     // ... existing nested objects ...
     workflows: {
@@ -892,6 +893,7 @@ export const translations = {
       email_required: 'Email is required',
       address_placeholder: 'Full address',
       resource: 'Resource',
+      migration: 'Migration',
     },
     // ... existing nested objects ...
     workflows: {
@@ -1612,6 +1614,7 @@ export const translations = {
       email_required: 'El correo es obligatorio',
       address_placeholder: 'Dirección completa',
       resource: 'Recurso',
+      migration: 'Migración',
     },
     // ... existing nested objects ...
     workflows: {
@@ -1991,7 +1994,7 @@ export const translations = {
       last_sync: 'Última Sinc.',
       no_links: 'Ningún enlace configurado.',
       add_link: 'Agregar Enlace',
-      sync_now: 'Sincronizar Ahora',
+      sync_now: 'Sincronizar Agora',
       sync_success: 'Sincronización Completada',
       sync_desc: 'Calendario actualizado con éxito.',
       export_calendar: 'Exportar Calendario',

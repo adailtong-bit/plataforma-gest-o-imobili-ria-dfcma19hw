@@ -66,12 +66,14 @@ import useUserStore from '@/stores/useUserStore'
 import useAuthStore from '@/stores/useAuthStore'
 import usePartnerStore from '@/stores/usePartnerStore'
 import { hasPermission } from '@/lib/permissions'
-import { User, UserRole } from '@/lib/types'
+import { User, UserRole, Permission } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { isValidEmail } from '@/lib/utils'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { PermissionsMatrix } from '@/components/users/PermissionsMatrix'
+import { PermissionSelector } from '@/components/users/PermissionSelector'
+import { DataMask } from '@/components/DataMask'
 
 export default function Users() {
   const { users, addUser, updateUser, deleteUser, approveUser, blockUser } =
@@ -112,6 +114,9 @@ export default function Users() {
   const [formData, setFormData] = useState(initialFormState)
   const [isEditing, setIsEditing] = useState(false)
 
+  // Track manual permissions separate from form until save, or sync with form directly
+  // We sync directly with formData.permissions in this implementation
+
   const filteredUsers = users.filter((u) => {
     if (u.isDemo) return true
     if (currentUser.role === 'platform_owner') return true
@@ -143,14 +148,6 @@ export default function Users() {
         variant: 'destructive',
       })
       return
-    }
-
-    if (formData.role === 'partner_employee') {
-      const digits = formData.phone?.replace(/\D/g, '') || ''
-      if (digits.length !== 11 && formData.country === 'BR') {
-        // Just generic check or rely on isPhoneValid logic inside
-        // For simplicity, rely on basic check
-      }
     }
 
     const duplicate = users.find(
@@ -253,6 +250,7 @@ export default function Users() {
       confirmPassword: '',
       parentPartnerId: user.parentId,
       country: user.country || 'US',
+      permissions: user.permissions || [],
     })
     setIsEditing(true)
     setOpen(true)
@@ -266,6 +264,20 @@ export default function Users() {
       description: t('users.copy_success'),
     })
     setInviteOpen(false)
+  }
+
+  const handleRoleChange = (val: UserRole) => {
+    // When role changes, we should typically reset manual permissions as they might conflict
+    // or we can keep them. Usually reseting is safer to avoid confusion.
+    setFormData({
+      ...formData,
+      role: val,
+      permissions: [], // Reset custom permissions on role change
+    })
+  }
+
+  const handlePermissionChange = (newPermissions: Permission[]) => {
+    setFormData({ ...formData, permissions: newPermissions })
   }
 
   const getStatusBadge = (status: string) => {
@@ -416,10 +428,8 @@ export default function Users() {
                     </Label>
                     <Select
                       value={formData.role}
-                      onValueChange={(val: UserRole) =>
-                        setFormData({ ...formData, role: val })
-                      }
-                      disabled={isEditing}
+                      onValueChange={handleRoleChange}
+                      disabled={isEditing && formData.isDemo}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -447,6 +457,15 @@ export default function Users() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+
+                {/* Permission Selector Integration */}
+                <div className="col-span-2">
+                  <PermissionSelector
+                    role={formData.role as UserRole}
+                    currentPermissions={formData.permissions || []}
+                    onChange={handlePermissionChange}
+                  />
                 </div>
 
                 {formData.role === 'partner_employee' &&
@@ -574,7 +593,9 @@ export default function Users() {
                         <TableCell>
                           <div className="flex flex-col">
                             <div className="flex items-center gap-2">
-                              <span className="font-medium">{user.name}</span>
+                              <span className="font-medium">
+                                <DataMask>{user.name}</DataMask>
+                              </span>
                               {user.isDemo && (
                                 <Badge
                                   variant="secondary"
@@ -585,7 +606,7 @@ export default function Users() {
                               )}
                             </div>
                             <span className="text-xs text-muted-foreground">
-                              {user.email}
+                              <DataMask>{user.email}</DataMask>
                             </span>
                           </div>
                         </TableCell>
