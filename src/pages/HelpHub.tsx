@@ -16,11 +16,19 @@ export default function HelpHub() {
   const { tutorialModules, openVideo } = useTourStore()
   const [searchTerm, setSearchTerm] = useState('')
 
-  const categories = ['All', 'Operational', 'CRM', 'Financial', 'Settings', 'System']
+  const categories = [
+    'All',
+    'Operational',
+    'CRM',
+    'Financial',
+    'Settings',
+    'System',
+  ]
 
-  const filteredModules = tutorialModules.filter((m) =>
-    m.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    m.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredModules = tutorialModules.filter(
+    (m) =>
+      m.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      m.description.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
   const getFilteredByCategory = (cat: string) => {
@@ -71,7 +79,11 @@ export default function HelpHub() {
                 </div>
               ) : (
                 getFilteredByCategory(cat).map((module) => (
-                  <Card key={module.key} className="hover:shadow-md transition-all group cursor-pointer" onClick={() => openVideo(module.videoUrl)}>
+                  <Card
+                    key={module.key}
+                    className="hover:shadow-md transition-all group cursor-pointer"
+                    onClick={() => openVideo(module.videoUrl)}
+                  >
                     <CardHeader className="pb-2">
                       <div className="aspect-video bg-slate-100 rounded-md mb-3 flex items-center justify-center relative overflow-hidden">
                         <PlayCircle className="h-12 w-12 text-slate-400 group-hover:text-primary transition-colors" />
@@ -104,14 +116,18 @@ export default function HelpHub() {
           </div>
           <div>
             <h3 className="font-semibold text-blue-900">Documentation</h3>
-            <p className="text-sm text-blue-700">Read detailed guides and API references.</p>
+            <p className="text-sm text-blue-700">
+              Read detailed guides and API references.
+            </p>
           </div>
         </div>
-        <Button variant="outline" className="bg-white text-blue-700 border-blue-200">
+        <Button
+          variant="outline"
+          className="bg-white text-blue-700 border-blue-200"
+        >
           View Docs
         </Button>
       </div>
     </div>
   )
 }
-

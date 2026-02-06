@@ -8,6 +8,7 @@ import {
   Building,
   User,
   CheckSquare,
+  HelpCircle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -23,6 +24,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import useAuthStore from '@/stores/useAuthStore'
@@ -97,6 +103,9 @@ export function AppHeader() {
       case 'task':
         navigate(`/tasks`)
         break
+      case 'help':
+        navigate(`/help`)
+        break
     }
   }
 
@@ -132,7 +141,10 @@ export function AppHeader() {
       </div>
 
       {/* Global Search Button */}
-      <div className="relative hidden md:flex flex-1 max-w-md mx-4" id="global-actions">
+      <div
+        className="relative hidden md:flex flex-1 max-w-md mx-4"
+        id="global-actions"
+      >
         <Button
           variant="outline"
           className="relative w-full justify-start text-sm text-black border-slate-300 font-medium"
@@ -150,6 +162,16 @@ export function AppHeader() {
         <CommandInput placeholder="Type to search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="System">
+            <CommandItem
+              onSelect={() => handleSearchSelect('help', '')}
+              className="text-black"
+            >
+              <HelpCircle className="mr-2 h-4 w-4" />
+              {t('common.help_hub')}
+            </CommandItem>
+          </CommandGroup>
+          <CommandSeparator />
           <CommandGroup heading={t('properties.title')}>
             {properties.slice(0, 5).map((p) => (
               <CommandItem
@@ -212,6 +234,22 @@ export function AppHeader() {
         </Button>
 
         <ThemeCustomizer />
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-black"
+              onClick={() => navigate('/help')}
+            >
+              <HelpCircle className="h-5 w-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{t('common.help_hub')}</p>
+          </TooltipContent>
+        </Tooltip>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -303,7 +341,11 @@ export function AppHeader() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full" id="user-profile">
+            <Button
+              variant="ghost"
+              className="relative h-10 w-10 rounded-full"
+              id="user-profile"
+            >
               <Avatar className="h-10 w-10 border border-slate-200">
                 <AvatarImage
                   src={currentUser?.avatar}
@@ -387,4 +429,3 @@ export function AppHeader() {
     </header>
   )
 }
-

@@ -118,14 +118,14 @@ interface AppContextType {
   typingStatus: Record<string, boolean>
   selectedPropertyId: string
   visits: Visit[]
-  
+
   // Tour Props
   isTourOpen: boolean
   currentStepIndex: number
   tourSteps: TourStep[]
   tutorialModules: TutorialModule[]
   activeVideo: string | null
-  
+
   setLanguage: (lang: Language) => void
   setSelectedPropertyId: (id: string) => void
   t: (key: string, params?: Record<string, string>) => string
@@ -216,7 +216,7 @@ interface AppContextType {
   addWorkflow: (workflow: Workflow) => void
   updateWorkflow: (workflow: Workflow) => void
   deleteWorkflow: (id: string) => void
-  
+
   // Tour Methods
   startTour: () => void
   endTour: () => void
@@ -230,7 +230,8 @@ export const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [properties, setProperties] = useState<Property[]>(initialProperties)
-  const [condominiums, setCondominiums] = useState<Condominium[]>(initialCondominiums)
+  const [condominiums, setCondominiums] =
+    useState<Condominium[]>(initialCondominiums)
   const [hotels, setHotels] = useState<Hotel[]>(initialHotels)
   const [towers, setTowers] = useState<Tower[]>(initialTowers)
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
@@ -255,32 +256,48 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [partners, setPartners] = useState<Partner[]>(initialPartners)
   const [bookings, setBookings] = useState<Booking[]>(initialBookings)
-  const [calendarBlocks, setCalendarBlocks] = useState<CalendarBlock[]>(initialBlocks)
-  const [messageTemplates, setMessageTemplates] = useState<MessageTemplate[]>(initialTemplates)
-  const [automationRules, setAutomationRules] = useState<AutomationRule[]>(initialAutomationRules)
+  const [calendarBlocks, setCalendarBlocks] =
+    useState<CalendarBlock[]>(initialBlocks)
+  const [messageTemplates, setMessageTemplates] =
+    useState<MessageTemplate[]>(initialTemplates)
+  const [automationRules, setAutomationRules] = useState<AutomationRule[]>(
+    initialAutomationRules,
+  )
   const [workflows, setWorkflows] = useState<Workflow[]>(initialWorkflows)
 
   const [allMessages, setAllMessages] = useState<Message[]>(initialMessages)
   const [users, setUsers] = useState<User[]>(systemUsers)
-  const [paymentIntegrations, setPaymentIntegrations] = useState<PaymentIntegration[]>(defaultPaymentIntegrations)
+  const [paymentIntegrations, setPaymentIntegrations] = useState<
+    PaymentIntegration[]
+  >(defaultPaymentIntegrations)
 
-  const [financialSettings, setFinancialSettings] = useState<FinancialSettings>({
-    ...defaultFinancialSettings,
-    gateways: {
-      stripe: { enabled: false },
-      paypal: { enabled: false },
-      mercadoPago: { enabled: false },
+  const [financialSettings, setFinancialSettings] = useState<FinancialSettings>(
+    {
+      ...defaultFinancialSettings,
+      gateways: {
+        stripe: { enabled: false },
+        paypal: { enabled: false },
+        mercadoPago: { enabled: false },
+      },
+      approvalThreshold: 100,
     },
-    approvalThreshold: 100,
-  })
+  )
 
-  const [bankStatements, setBankStatements] = useState<BankStatement[]>(mockBankStatements)
-  const [ledgerEntries, setLedgerEntries] = useState<LedgerEntry[]>(initialLedgerEntries)
+  const [bankStatements, setBankStatements] =
+    useState<BankStatement[]>(mockBankStatements)
+  const [ledgerEntries, setLedgerEntries] =
+    useState<LedgerEntry[]>(initialLedgerEntries)
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(initialAuditLogs)
-  const [genericServiceRates, setGenericServiceRates] = useState<ServiceRate[]>(initialGenericRates)
-  const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>(initialServiceCategories)
-  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications)
-  const [advertisements, setAdvertisements] = useState<Advertisement[]>(initialAdvertisements)
+  const [genericServiceRates, setGenericServiceRates] =
+    useState<ServiceRate[]>(initialGenericRates)
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>(
+    initialServiceCategories,
+  )
+  const [notifications, setNotifications] =
+    useState<Notification[]>(initialNotifications)
+  const [advertisements, setAdvertisements] = useState<Advertisement[]>(
+    initialAdvertisements,
+  )
   const [advertisers, setAdvertisers] = useState<Advertiser[]>(mockAdvertisers)
   const [adPricing, setAdPricingState] = useState<AdPricing>(mockAdPricing)
   const [typingStatus, setTypingStatus] = useState<Record<string, boolean>>({})
@@ -293,7 +310,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all')
 
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [currentUser, setCurrentUserObj] = useState<User | Owner | Partner | Tenant>(systemUsers[0])
+  const [currentUser, setCurrentUserObj] = useState<
+    User | Owner | Partner | Tenant
+  >(systemUsers[0])
 
   // Tour State
   const [isTourOpen, setIsTourOpen] = useState(false)
@@ -327,7 +346,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       if (!text) {
         const parts = key.split('.')
         const lastPart = parts[parts.length - 1]
-        text = lastPart.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+        text = lastPart
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, (c) => c.toUpperCase())
       }
 
       if (text && params) {
@@ -361,13 +382,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (user) {
       setCurrentUserObj(user)
       setIsAuthenticated(true)
-      
+
       // Trigger Tour on first login if not completed
       const tourCompleted = localStorage.getItem(`tour_completed_${user.id}`)
       if (!tourCompleted) {
         setTimeout(() => startTour(), 1000)
       }
-      
+
       return true
     }
     return false
@@ -385,100 +406,193 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   // ... (keeping existing handlers, omitting verbose ones to focus on Tour logic and standard CRUD)
   // Standard CRUD handlers are kept as in previous file content
   const addProperty = (p: Property) => setProperties([...properties, p])
-  const updateProperty = (p: Property) => setProperties(properties.map(prop => prop.id === p.id ? p : prop))
-  const deleteProperty = (id: string) => setProperties(properties.filter(p => p.id !== id))
-  
-  const addCondominium = (c: Condominium) => setCondominiums([...condominiums, c])
-  const updateCondominium = (c: Condominium) => setCondominiums(condominiums.map(co => co.id === c.id ? c : co))
-  const deleteCondominium = (id: string) => setCondominiums(condominiums.filter(c => c.id !== id))
-  
+  const updateProperty = (p: Property) =>
+    setProperties(properties.map((prop) => (prop.id === p.id ? p : prop)))
+  const deleteProperty = (id: string) =>
+    setProperties(properties.filter((p) => p.id !== id))
+
+  const addCondominium = (c: Condominium) =>
+    setCondominiums([...condominiums, c])
+  const updateCondominium = (c: Condominium) =>
+    setCondominiums(condominiums.map((co) => (co.id === c.id ? c : co)))
+  const deleteCondominium = (id: string) =>
+    setCondominiums(condominiums.filter((c) => c.id !== id))
+
   const addHotel = (h: Hotel) => setHotels([...hotels, h])
-  const updateHotel = (h: Hotel) => setHotels(hotels.map(ho => ho.id === h.id ? h : ho))
-  const deleteHotel = (id: string) => setHotels(hotels.filter(h => h.id !== id))
-  
+  const updateHotel = (h: Hotel) =>
+    setHotels(hotels.map((ho) => (ho.id === h.id ? h : ho)))
+  const deleteHotel = (id: string) =>
+    setHotels(hotels.filter((h) => h.id !== id))
+
   const addTower = (t: Tower) => setTowers([...towers, t])
-  const updateTower = (t: Tower) => setTowers(towers.map(to => to.id === t.id ? t : to))
-  const deleteTower = (id: string) => setTowers(towers.filter(t => t.id !== id))
+  const updateTower = (t: Tower) =>
+    setTowers(towers.map((to) => (to.id === t.id ? t : to)))
+  const deleteTower = (id: string) =>
+    setTowers(towers.filter((t) => t.id !== id))
 
   const addTask = (task: Task) => setTasks([...tasks, task])
-  const updateTask = (task: Task) => setTasks(tasks.map(t => t.id === task.id ? task : t))
-  const deleteTask = (id: string) => setTasks(tasks.filter(t => t.id !== id))
-  const updateTaskStatus = (id: string, status: Task['status']) => updateTask({ ...tasks.find(t => t.id === id)!, status })
-  
+  const updateTask = (task: Task) =>
+    setTasks(tasks.map((t) => (t.id === task.id ? task : t)))
+  const deleteTask = (id: string) => setTasks(tasks.filter((t) => t.id !== id))
+  const updateTaskStatus = (id: string, status: Task['status']) =>
+    updateTask({ ...tasks.find((t) => t.id === id)!, status })
+
   const approveTask = (id: string) => updateTaskStatus(id, 'pending') // Simplified logic
-  const rejectTask = (id: string, reason: string) => updateTask({ ...tasks.find(t => t.id === id)!, status: 'rejected' }) // Simplified
-  
-  const addInvoice = (inv: Invoice) => setFinancials(prev => ({ ...prev, invoices: [...prev.invoices, inv] }))
-  const updateInvoice = (inv: Invoice) => setFinancials(prev => ({ ...prev, invoices: prev.invoices.map(i => i.id === inv.id ? inv : i) }))
-  
+  const rejectTask = (id: string, reason: string) =>
+    updateTask({ ...tasks.find((t) => t.id === id)!, status: 'rejected' }) // Simplified
+
+  const addInvoice = (inv: Invoice) =>
+    setFinancials((prev) => ({ ...prev, invoices: [...prev.invoices, inv] }))
+  const updateInvoice = (inv: Invoice) =>
+    setFinancials((prev) => ({
+      ...prev,
+      invoices: prev.invoices.map((i) => (i.id === inv.id ? inv : i)),
+    }))
+
   const addTenant = (t: Tenant) => setTenants([...tenants, t])
-  const updateTenant = (t: Tenant) => setTenants(tenants.map(tn => ten.id === t.id ? t : tn))
-  
+  const updateTenant = (t: Tenant) =>
+    setTenants(tenants.map((tn) => (ten.id === t.id ? t : tn)))
+
   const addOwner = (o: Owner) => setOwners([...owners, o])
-  const updateOwner = (o: Owner) => setOwners(owners.map(ow => own.id === o.id ? o : ow))
-  
+  const updateOwner = (o: Owner) =>
+    setOwners(owners.map((ow) => (own.id === o.id ? o : ow)))
+
   const addPartner = (p: Partner) => setPartners([...partners, p])
-  const updatePartner = (p: Partner) => setPartners(partners.map(pa => par.id === p.id ? p : pa))
-  
+  const updatePartner = (p: Partner) =>
+    setPartners(partners.map((pa) => (par.id === p.id ? p : pa)))
+
   const addUser = (u: User) => setUsers([...users, u])
-  const updateUser = (u: User) => setUsers(users.map(us => us.id === u.id ? u : us))
-  const deleteUser = (id: string) => setUsers(users.filter(u => u.id !== id))
-  
-  const updateAutomationRule = (r: AutomationRule) => setAutomationRules(prev => prev.map(rule => rule.id === r.id ? r : rule))
-  const updatePaymentIntegration = (i: PaymentIntegration) => setPaymentIntegrations(prev => prev.map(pi => pi.provider === i.provider ? i : pi))
-  const updateFinancialSettings = (s: FinancialSettings) => setFinancialSettings(s)
-  const uploadBankStatement = (s: BankStatement) => setBankStatements(prev => [...prev, s])
-  const addLedgerEntry = (e: LedgerEntry) => setLedgerEntries(prev => [...prev, e])
-  const updateLedgerEntry = (e: LedgerEntry) => setLedgerEntries(prev => prev.map(entry => entry.id === e.id ? e : entry))
-  const deleteLedgerEntry = (id: string) => setLedgerEntries(prev => prev.filter(e => e.id !== id))
-  
-  const addAuditLog = (log: Omit<AuditLog, 'id' | 'timestamp'>) => setAuditLogs(prev => [{ ...log, id: `log-${Date.now()}`, timestamp: new Date().toISOString() }, ...prev])
-  
-  const addGenericServiceRate = (r: ServiceRate) => setGenericServiceRates(prev => [...prev, r])
-  const updateGenericServiceRate = (r: ServiceRate) => setGenericServiceRates(prev => prev.map(rate => rate.id === r.id ? r : rate))
-  const deleteGenericServiceRate = (id: string) => setGenericServiceRates(prev => prev.filter(r => r.id !== id))
-  
-  const addServiceCategory = (c: ServiceCategory) => setServiceCategories(prev => [...prev, c])
-  const updateServiceCategory = (c: ServiceCategory) => setServiceCategories(prev => prev.map(cat => cat.id === c.id ? c : cat))
-  const deleteServiceCategory = (id: string) => setServiceCategories(prev => prev.filter(c => c.id !== id))
-  
-  const addNotification = (n: Omit<Notification, 'id' | 'timestamp' | 'read'>) => setNotifications(prev => [{ ...n, id: `notif-${Date.now()}`, timestamp: new Date().toISOString(), read: false }, ...prev])
-  const markNotificationAsRead = (id: string) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
-  
-  const approveUser = (id: string) => setUsers(prev => prev.map(u => u.id === id ? { ...u, status: 'active' } : u))
-  const blockUser = (id: string) => setUsers(prev => prev.map(u => u.id === id ? { ...u, status: 'blocked' } : u))
-  
-  const renewTenantContract = (id: string, end: string, rent: number) => setTenants(prev => prev.map(t => t.id === id ? { ...t, leaseEnd: end, rentValue: rent } : t))
-  const updateTenantNegotiation = (id: string, data: any) => setTenants(prev => prev.map(t => t.id === id ? { ...t, ...data } : t))
-  
-  const addAdvertisement = (a: Advertisement) => setAdvertisements(prev => [...prev, a])
-  const updateAdvertisement = (a: Advertisement) => setAdvertisements(prev => prev.map(ad => ad.id === a.id ? a : ad))
-  const deleteAdvertisement = (id: string) => setAdvertisements(prev => prev.filter(a => a.id !== id))
-  
-  const addAdvertiser = (a: Advertiser) => setAdvertisers(prev => [...prev, a])
-  const updateAdvertiser = (a: Advertiser) => setAdvertisers(prev => prev.map(ad => ad.id === a.id ? a : ad))
-  const deleteAdvertiser = (id: string) => setAdvertisers(prev => prev.filter(a => a.id !== id))
-  
+  const updateUser = (u: User) =>
+    setUsers(users.map((us) => (us.id === u.id ? u : us)))
+  const deleteUser = (id: string) => setUsers(users.filter((u) => u.id !== id))
+
+  const updateAutomationRule = (r: AutomationRule) =>
+    setAutomationRules((prev) =>
+      prev.map((rule) => (rule.id === r.id ? r : rule)),
+    )
+  const updatePaymentIntegration = (i: PaymentIntegration) =>
+    setPaymentIntegrations((prev) =>
+      prev.map((pi) => (pi.provider === i.provider ? i : pi)),
+    )
+  const updateFinancialSettings = (s: FinancialSettings) =>
+    setFinancialSettings(s)
+  const uploadBankStatement = (s: BankStatement) =>
+    setBankStatements((prev) => [...prev, s])
+  const addLedgerEntry = (e: LedgerEntry) =>
+    setLedgerEntries((prev) => [...prev, e])
+  const updateLedgerEntry = (e: LedgerEntry) =>
+    setLedgerEntries((prev) =>
+      prev.map((entry) => (entry.id === e.id ? e : entry)),
+    )
+  const deleteLedgerEntry = (id: string) =>
+    setLedgerEntries((prev) => prev.filter((e) => e.id !== id))
+
+  const addAuditLog = (log: Omit<AuditLog, 'id' | 'timestamp'>) =>
+    setAuditLogs((prev) => [
+      { ...log, id: `log-${Date.now()}`, timestamp: new Date().toISOString() },
+      ...prev,
+    ])
+
+  const addGenericServiceRate = (r: ServiceRate) =>
+    setGenericServiceRates((prev) => [...prev, r])
+  const updateGenericServiceRate = (r: ServiceRate) =>
+    setGenericServiceRates((prev) =>
+      prev.map((rate) => (rate.id === r.id ? r : rate)),
+    )
+  const deleteGenericServiceRate = (id: string) =>
+    setGenericServiceRates((prev) => prev.filter((r) => r.id !== id))
+
+  const addServiceCategory = (c: ServiceCategory) =>
+    setServiceCategories((prev) => [...prev, c])
+  const updateServiceCategory = (c: ServiceCategory) =>
+    setServiceCategories((prev) =>
+      prev.map((cat) => (cat.id === c.id ? c : cat)),
+    )
+  const deleteServiceCategory = (id: string) =>
+    setServiceCategories((prev) => prev.filter((c) => c.id !== id))
+
+  const addNotification = (
+    n: Omit<Notification, 'id' | 'timestamp' | 'read'>,
+  ) =>
+    setNotifications((prev) => [
+      {
+        ...n,
+        id: `notif-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        read: false,
+      },
+      ...prev,
+    ])
+  const markNotificationAsRead = (id: string) =>
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+    )
+
+  const approveUser = (id: string) =>
+    setUsers((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, status: 'active' } : u)),
+    )
+  const blockUser = (id: string) =>
+    setUsers((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, status: 'blocked' } : u)),
+    )
+
+  const renewTenantContract = (id: string, end: string, rent: number) =>
+    setTenants((prev) =>
+      prev.map((t) =>
+        t.id === id ? { ...t, leaseEnd: end, rentValue: rent } : t,
+      ),
+    )
+  const updateTenantNegotiation = (id: string, data: any) =>
+    setTenants((prev) => prev.map((t) => (t.id === id ? { ...t, ...data } : t)))
+
+  const addAdvertisement = (a: Advertisement) =>
+    setAdvertisements((prev) => [...prev, a])
+  const updateAdvertisement = (a: Advertisement) =>
+    setAdvertisements((prev) => prev.map((ad) => (ad.id === a.id ? a : ad)))
+  const deleteAdvertisement = (id: string) =>
+    setAdvertisements((prev) => prev.filter((a) => a.id !== id))
+
+  const addAdvertiser = (a: Advertiser) =>
+    setAdvertisers((prev) => [...prev, a])
+  const updateAdvertiser = (a: Advertiser) =>
+    setAdvertisers((prev) => prev.map((ad) => (ad.id === a.id ? a : ad)))
+  const deleteAdvertiser = (id: string) =>
+    setAdvertisers((prev) => prev.filter((a) => a.id !== id))
+
   const updateAdPricing = (p: AdPricing) => setAdPricingState(p)
-  
-  const addVisit = (v: Visit) => setVisits(prev => [...prev, v])
-  const updateVisit = (v: Visit) => setVisits(prev => prev.map(vi => vi.id === v.id ? v : vi))
-  const deleteVisit = (id: string) => setVisits(prev => prev.filter(v => v.id !== id))
-  
-  const addWorkflow = (w: Workflow) => setWorkflows(prev => [...prev, w])
-  const updateWorkflow = (w: Workflow) => setWorkflows(prev => prev.map(wf => wf.id === w.id ? w : wf))
-  const deleteWorkflow = (id: string) => setWorkflows(prev => prev.filter(w => w.id !== id))
-  
-  const addBooking = (b: Booking) => setBookings(prev => [...prev, b])
-  const updateBooking = (b: Booking) => setBookings(prev => prev.map(bk => bk.id === b.id ? b : bk))
-  const deleteBooking = (id: string) => setBookings(prev => prev.filter(b => b.id !== id))
-  
-  const addCalendarBlock = (b: CalendarBlock) => setCalendarBlocks(prev => [...prev, b])
-  const deleteCalendarBlock = (id: string) => setCalendarBlocks(prev => prev.filter(b => b.id !== id))
-  
-  const addMessageTemplate = (t: MessageTemplate) => setMessageTemplates(prev => [...prev, t])
-  const updateMessageTemplate = (t: MessageTemplate) => setMessageTemplates(prev => prev.map(tmp => tmpl.id === t.id ? t : tmpl))
-  const deleteMessageTemplate = (id: string) => setMessageTemplates(prev => prev.filter(t => t.id !== id))
+
+  const addVisit = (v: Visit) => setVisits((prev) => [...prev, v])
+  const updateVisit = (v: Visit) =>
+    setVisits((prev) => prev.map((vi) => (vi.id === v.id ? v : vi)))
+  const deleteVisit = (id: string) =>
+    setVisits((prev) => prev.filter((v) => v.id !== id))
+
+  const addWorkflow = (w: Workflow) => setWorkflows((prev) => [...prev, w])
+  const updateWorkflow = (w: Workflow) =>
+    setWorkflows((prev) => prev.map((wf) => (wf.id === w.id ? w : wf)))
+  const deleteWorkflow = (id: string) =>
+    setWorkflows((prev) => prev.filter((w) => w.id !== id))
+
+  const addBooking = (b: Booking) => setBookings((prev) => [...prev, b])
+  const updateBooking = (b: Booking) =>
+    setBookings((prev) => prev.map((bk) => (bk.id === b.id ? b : bk)))
+  const deleteBooking = (id: string) =>
+    setBookings((prev) => prev.filter((b) => b.id !== id))
+
+  const addCalendarBlock = (b: CalendarBlock) =>
+    setCalendarBlocks((prev) => [...prev, b])
+  const deleteCalendarBlock = (id: string) =>
+    setCalendarBlocks((prev) => prev.filter((b) => b.id !== id))
+
+  const addMessageTemplate = (t: MessageTemplate) =>
+    setMessageTemplates((prev) => [...prev, t])
+  const updateMessageTemplate = (t: MessageTemplate) =>
+    setMessageTemplates((prev) =>
+      prev.map((tmp) => (tmpl.id === t.id ? t : tmpl)),
+    )
+  const deleteMessageTemplate = (id: string) =>
+    setMessageTemplates((prev) => prev.filter((t) => t.id !== id))
 
   const markPaymentAs = () => {}
   const addTaskImage = () => {}
@@ -502,7 +616,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const nextStep = () => {
     if (currentStepIndex < initialTourSteps.length - 1) {
-      setCurrentStepIndex(prev => prev + 1)
+      setCurrentStepIndex((prev) => prev + 1)
     } else {
       endTour()
     }
@@ -510,7 +624,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const prevStep = () => {
     if (currentStepIndex > 0) {
-      setCurrentStepIndex(prev => prev - 1)
+      setCurrentStepIndex((prev) => prev - 1)
     }
   }
 
@@ -525,42 +639,141 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AppContext.Provider
       value={{
-        properties, condominiums, hotels, towers, tasks, financials, messages: visibleMessages,
-        tenants, owners, partners, bookings, calendarBlocks, messageTemplates, automationRules, workflows,
-        currentUser, allUsers, users, isAuthenticated, paymentIntegrations, financialSettings,
-        bankStatements, ledgerEntries, auditLogs, genericServiceRates, serviceCategories, notifications,
-        advertisements, advertisers, adPricing, language, typingStatus, selectedPropertyId, visits,
-        
-        isTourOpen, currentStepIndex, tourSteps: initialTourSteps, tutorialModules: initialTutorialModules, activeVideo,
-        
-        setLanguage, setSelectedPropertyId, t, login, logout,
-        addProperty, updateProperty, deleteProperty,
-        addCondominium, updateCondominium, deleteCondominium,
-        addHotel, updateHotel, deleteHotel,
-        addTower, updateTower, deleteTower,
-        updateTaskStatus, updateTask, addTask, deleteTask, approveTask, rejectTask, notifySupplier,
-        addInvoice, updateInvoice, markPaymentAs, addTaskImage, addTaskEvidence, sendMessage, markAsRead, startChat, setTyping,
-        addTenant, updateTenant, addOwner, updateOwner, addPartner, updatePartner,
-        addBooking, updateBooking, deleteBooking,
-        addCalendarBlock, deleteCalendarBlock,
-        addMessageTemplate, updateMessageTemplate, deleteMessageTemplate,
-        setCurrentUser, updateAutomationRule, addUser, updateUser, deleteUser,
-        updatePaymentIntegration, updateFinancialSettings, uploadBankStatement,
-        addLedgerEntry, updateLedgerEntry, deleteLedgerEntry,
-        addAuditLog, addGenericServiceRate, updateGenericServiceRate, deleteGenericServiceRate,
-        addServiceCategory, updateServiceCategory, deleteServiceCategory,
-        addNotification, markNotificationAsRead, approveUser, blockUser,
-        renewTenantContract, updateTenantNegotiation,
-        addAdvertisement, updateAdvertisement, deleteAdvertisement,
-        addAdvertiser, updateAdvertiser, deleteAdvertiser, updateAdPricing,
-        addVisit, updateVisit, deleteVisit,
-        addWorkflow, updateWorkflow, deleteWorkflow,
-        
-        startTour, endTour, nextStep, prevStep, openVideo, closeVideo
+        properties,
+        condominiums,
+        hotels,
+        towers,
+        tasks,
+        financials,
+        messages: visibleMessages,
+        tenants,
+        owners,
+        partners,
+        bookings,
+        calendarBlocks,
+        messageTemplates,
+        automationRules,
+        workflows,
+        currentUser,
+        allUsers,
+        users,
+        isAuthenticated,
+        paymentIntegrations,
+        financialSettings,
+        bankStatements,
+        ledgerEntries,
+        auditLogs,
+        genericServiceRates,
+        serviceCategories,
+        notifications,
+        advertisements,
+        advertisers,
+        adPricing,
+        language,
+        typingStatus,
+        selectedPropertyId,
+        visits,
+
+        isTourOpen,
+        currentStepIndex,
+        tourSteps: initialTourSteps,
+        tutorialModules: initialTutorialModules,
+        activeVideo,
+
+        setLanguage,
+        setSelectedPropertyId,
+        t,
+        login,
+        logout,
+        addProperty,
+        updateProperty,
+        deleteProperty,
+        addCondominium,
+        updateCondominium,
+        deleteCondominium,
+        addHotel,
+        updateHotel,
+        deleteHotel,
+        addTower,
+        updateTower,
+        deleteTower,
+        updateTaskStatus,
+        updateTask,
+        addTask,
+        deleteTask,
+        approveTask,
+        rejectTask,
+        notifySupplier,
+        addInvoice,
+        updateInvoice,
+        markPaymentAs,
+        addTaskImage,
+        addTaskEvidence,
+        sendMessage,
+        markAsRead,
+        startChat,
+        setTyping,
+        addTenant,
+        updateTenant,
+        addOwner,
+        updateOwner,
+        addPartner,
+        updatePartner,
+        addBooking,
+        updateBooking,
+        deleteBooking,
+        addCalendarBlock,
+        deleteCalendarBlock,
+        addMessageTemplate,
+        updateMessageTemplate,
+        deleteMessageTemplate,
+        setCurrentUser,
+        updateAutomationRule,
+        addUser,
+        updateUser,
+        deleteUser,
+        updatePaymentIntegration,
+        updateFinancialSettings,
+        uploadBankStatement,
+        addLedgerEntry,
+        updateLedgerEntry,
+        deleteLedgerEntry,
+        addAuditLog,
+        addGenericServiceRate,
+        updateGenericServiceRate,
+        deleteGenericServiceRate,
+        addServiceCategory,
+        updateServiceCategory,
+        deleteServiceCategory,
+        addNotification,
+        markNotificationAsRead,
+        approveUser,
+        blockUser,
+        renewTenantContract,
+        updateTenantNegotiation,
+        addAdvertisement,
+        updateAdvertisement,
+        deleteAdvertisement,
+        addAdvertiser,
+        updateAdvertiser,
+        deleteAdvertiser,
+        updateAdPricing,
+        addVisit,
+        updateVisit,
+        deleteVisit,
+        addWorkflow,
+        updateWorkflow,
+        deleteWorkflow,
+
+        startTour,
+        endTour,
+        nextStep,
+        prevStep,
+        openVideo,
+        closeVideo,
       }}
     >
       {children}
     </AppContext.Provider>
   )
 }
-

@@ -943,4 +943,3 @@ export interface Visit {
   assignedRole?: string
   reason?: string
 }
-

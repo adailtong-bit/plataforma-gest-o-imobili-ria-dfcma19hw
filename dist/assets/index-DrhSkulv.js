@@ -17365,7 +17365,7 @@ function useToast() {
 		})
 	};
 }
-var import_react_dom$6 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
+var import_react_dom$7 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
 typeof window !== "undefined" && window.document && window.document.createElement;
 function composeEventHandlers(originalEventHandler, ourEventHandler, { checkForDefaultPrevented = true } = {}) {
 	return function handleEvent(event) {
@@ -17874,7 +17874,7 @@ var Primitive = [
 	};
 }, {});
 function dispatchDiscreteCustomEvent(target, event) {
-	if (target) import_react_dom$6.flushSync(() => target.dispatchEvent(event));
+	if (target) import_react_dom$7.flushSync(() => target.dispatchEvent(event));
 }
 function useCallbackRef(callback) {
 	const callbackRef = import_react.useRef(callback);
@@ -18068,14 +18068,14 @@ function handleAndDispatchCustomEvent$1(name, handler, detail, { discrete }) {
 var Root$11 = DismissableLayer;
 var Branch = DismissableLayerBranch;
 var useLayoutEffect2 = globalThis?.document ? import_react.useLayoutEffect : () => {};
-var import_react_dom$5 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
+var import_react_dom$6 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
 var PORTAL_NAME$7 = "Portal";
 var Portal = import_react.forwardRef((props, forwardedRef) => {
 	const { container: containerProp, ...portalProps } = props;
 	const [mounted, setMounted] = import_react.useState(false);
 	useLayoutEffect2(() => setMounted(true), []);
 	const container = containerProp || mounted && globalThis?.document?.body;
-	return container ? import_react_dom$5.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return container ? import_react_dom$6.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
 		...portalProps,
 		ref: forwardedRef
 	}), container) : null;
@@ -18257,7 +18257,7 @@ var VisuallyHidden$1 = import_react.forwardRef((props, forwardedRef) => {
 });
 VisuallyHidden$1.displayName = NAME$3;
 var Root$10 = VisuallyHidden$1;
-var import_react_dom$4 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
+var import_react_dom$5 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
 var PROVIDER_NAME$1 = "ToastProvider";
 var [Collection$3, useCollection$3, createCollectionScope$3] = createCollection("Toast");
 var [createToastContext, createToastScope] = createContextScope("Toast", [createCollectionScope$3]);
@@ -18553,7 +18553,7 @@ var ToastImpl = import_react.forwardRef((props, forwardedRef) => {
 	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ToastInteractiveProvider, {
 		scope: __scopeToast,
 		onClose: handleClose,
-		children: import_react_dom$4.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection$3.ItemSlot, {
+		children: import_react_dom$5.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection$3.ItemSlot, {
 			scope: __scopeToast,
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$11, {
 				asChild: true,
@@ -18961,6 +18961,13 @@ var Bell = createLucideIcon("bell", [["path", {
 	d: "M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326",
 	key: "11g9vi"
 }]]);
+var BookOpen = createLucideIcon("book-open", [["path", {
+	d: "M12 7v14",
+	key: "1akyts"
+}], ["path", {
+	d: "M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z",
+	key: "ruj8y"
+}]]);
 var BriefcaseBusiness = createLucideIcon("briefcase-business", [
 	["path", {
 		d: "M12 12h.01",
@@ -19259,6 +19266,22 @@ var CirclePlay = createLucideIcon("circle-play", [["path", {
 	r: "10",
 	key: "1mglay"
 }]]);
+var CircleQuestionMark = createLucideIcon("circle-question-mark", [
+	["circle", {
+		cx: "12",
+		cy: "12",
+		r: "10",
+		key: "1mglay"
+	}],
+	["path", {
+		d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3",
+		key: "1u773s"
+	}],
+	["path", {
+		d: "M12 17h.01",
+		key: "p32p05"
+	}]
+]);
 var Circle = createLucideIcon("circle", [["circle", {
 	cx: "12",
 	cy: "12",
@@ -24899,7 +24922,7 @@ import_react.memo(({ forcedTheme: e, storageKey: i$2, attribute: s$3, enableSyst
 		dangerouslySetInnerHTML: { __html: `(${M.toString()})(${p$1})` }
 	});
 });
-var import_react_dom$3 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
+var import_react_dom$4 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
 function __insertCSS(code) {
 	if (!code || typeof document == "undefined") return;
 	let head = document.head || document.getElementsByTagName("head")[0];
@@ -25644,7 +25667,7 @@ var Toaster$2 = /* @__PURE__ */ import_react.forwardRef(function Toaster$3(props
 				return;
 			}
 			setTimeout(() => {
-				import_react_dom$3.flushSync(() => {
+				import_react_dom$4.flushSync(() => {
 					setToasts((toasts$1) => {
 						const indexOfExistingToast = toasts$1.findIndex((t$1) => t$1.id === toast$2.id);
 						if (indexOfExistingToast !== -1) return [
@@ -27078,7 +27101,7 @@ var computePosition = (reference, floating, options$1) => {
 		platform: platformWithCache
 	});
 };
-var import_react_dom$2 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
+var import_react_dom$3 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
 var index = typeof document !== "undefined" ? import_react.useLayoutEffect : function noop$2() {};
 function deepEqual$2(a$2, b$1) {
 	if (a$2 === b$1) return true;
@@ -27173,7 +27196,7 @@ function useFloating(options$1) {
 			};
 			if (isMountedRef.current && !deepEqual$2(dataRef.current, fullData)) {
 				dataRef.current = fullData;
-				import_react_dom$2.flushSync(() => {
+				import_react_dom$3.flushSync(() => {
 					setData(fullData);
 				});
 			}
@@ -53649,6 +53672,215 @@ for (let i$2 = 0; i$2 < 15; i$2++) {
 		agentId: "partner_1"
 	});
 }
+const tourSteps = [
+	{
+		targetId: "center",
+		title: "Welcome to COREPM",
+		content: "Welcome! This quick tour will guide you through the main features of your new property management platform.",
+		placement: "center"
+	},
+	{
+		targetId: "sidebar-menu",
+		title: "Main Navigation",
+		content: "Use the sidebar to access all modules: Properties, CRM, Financials, and Settings.",
+		placement: "right"
+	},
+	{
+		targetId: "dashboard-kpi",
+		title: "Dashboard Overview",
+		content: "Track your key performance indicators, revenue, and pending tasks at a glance.",
+		placement: "bottom"
+	},
+	{
+		targetId: "global-search",
+		title: "Global Actions",
+		content: "Quickly search for anything or check your notifications here.",
+		placement: "bottom"
+	},
+	{
+		targetId: "user-profile",
+		title: "Profile & Settings",
+		content: "Manage your account settings, preferences, and subscription here.",
+		placement: "left"
+	}
+];
+const tutorialModules = [
+	{
+		key: "dashboard",
+		title: "Dashboard",
+		description: "Overview of system status",
+		category: "Operational",
+		videoUrl: "https://example.com/video1.mp4"
+	},
+	{
+		key: "properties",
+		title: "Properties",
+		description: "Manage your portfolio",
+		category: "Operational",
+		videoUrl: "https://example.com/video2.mp4"
+	},
+	{
+		key: "hotels",
+		title: "Hotels",
+		description: "Hotel management features",
+		category: "Operational",
+		videoUrl: "https://example.com/video3.mp4"
+	},
+	{
+		key: "short_term",
+		title: "Short Term Rental",
+		description: "Manage bookings",
+		category: "Operational",
+		videoUrl: "https://example.com/video4.mp4"
+	},
+	{
+		key: "renewals",
+		title: "Contract Renewals",
+		description: "Handle lease renewals",
+		category: "CRM",
+		videoUrl: "https://example.com/video5.mp4"
+	},
+	{
+		key: "market_analysis",
+		title: "Market Analysis",
+		description: "Analyze market trends",
+		category: "CRM",
+		videoUrl: "https://example.com/video6.mp4"
+	},
+	{
+		key: "analytics",
+		title: "Advanced Analytics",
+		description: "Deep dive into data",
+		category: "CRM",
+		videoUrl: "https://example.com/video7.mp4"
+	},
+	{
+		key: "reports",
+		title: "Reports",
+		description: "Generate system reports",
+		category: "Operational",
+		videoUrl: "https://example.com/video8.mp4"
+	},
+	{
+		key: "condominiums",
+		title: "Condominiums",
+		description: "Manage condo associations",
+		category: "Operational",
+		videoUrl: "https://example.com/video9.mp4"
+	},
+	{
+		key: "tenants",
+		title: "Tenants",
+		description: "Manage tenant profiles",
+		category: "CRM",
+		videoUrl: "https://example.com/video10.mp4"
+	},
+	{
+		key: "owners",
+		title: "Owners",
+		description: "Manage property owners",
+		category: "CRM",
+		videoUrl: "https://example.com/video11.mp4"
+	},
+	{
+		key: "partners",
+		title: "Partners",
+		description: "Manage service providers",
+		category: "Operational",
+		videoUrl: "https://example.com/video12.mp4"
+	},
+	{
+		key: "service_pricing",
+		title: "Service Pricing",
+		description: "Set service rates",
+		category: "Settings",
+		videoUrl: "https://example.com/video13.mp4"
+	},
+	{
+		key: "calendar",
+		title: "Calendar",
+		description: "Schedule view",
+		category: "Operational",
+		videoUrl: "https://example.com/video14.mp4"
+	},
+	{
+		key: "visits",
+		title: "Visits",
+		description: "Manage property visits",
+		category: "CRM",
+		videoUrl: "https://example.com/video15.mp4"
+	},
+	{
+		key: "tasks",
+		title: "Tasks",
+		description: "Task management",
+		category: "Operational",
+		videoUrl: "https://example.com/video16.mp4"
+	},
+	{
+		key: "workflows",
+		title: "Workflows",
+		description: "Automate processes",
+		category: "Settings",
+		videoUrl: "https://example.com/video17.mp4"
+	},
+	{
+		key: "automation",
+		title: "Automation Rules",
+		description: "Configure automation",
+		category: "Settings",
+		videoUrl: "https://example.com/video18.mp4"
+	},
+	{
+		key: "financial",
+		title: "Financial",
+		description: "Manage finances",
+		category: "Financial",
+		videoUrl: "https://example.com/video19.mp4"
+	},
+	{
+		key: "invoices",
+		title: "Invoices",
+		description: "Manage billing",
+		category: "Financial",
+		videoUrl: "https://example.com/video20.mp4"
+	},
+	{
+		key: "messages",
+		title: "Messages",
+		description: "Communication center",
+		category: "CRM",
+		videoUrl: "https://example.com/video21.mp4"
+	},
+	{
+		key: "migration",
+		title: "Migration Hub",
+		description: "Import data",
+		category: "System",
+		videoUrl: "https://example.com/video22.mp4"
+	},
+	{
+		key: "publicity",
+		title: "Publicity Admin",
+		description: "Manage ads",
+		category: "System",
+		videoUrl: "https://example.com/video23.mp4"
+	},
+	{
+		key: "users",
+		title: "Users",
+		description: "Manage system users",
+		category: "Settings",
+		videoUrl: "https://example.com/video24.mp4"
+	},
+	{
+		key: "settings",
+		title: "Settings",
+		description: "System configuration",
+		category: "Settings",
+		videoUrl: "https://example.com/video25.mp4"
+	}
+];
 const translations = {
 	pt: {
 		common: {
@@ -53819,7 +54051,8 @@ const translations = {
 			address_placeholder: "Endereço completo",
 			resource: "Recurso",
 			migration: "Migração",
-			hotels: "Hotéis"
+			hotels: "Hotéis",
+			help_hub: "Central de Ajuda"
 		},
 		hotels: {
 			title: "Gestão de Hotéis",
@@ -54120,7 +54353,8 @@ const translations = {
 			address_placeholder: "Full address",
 			resource: "Resource",
 			migration: "Migration",
-			hotels: "Hotels"
+			hotels: "Hotels",
+			help_hub: "Help Hub"
 		},
 		hotels: {
 			title: "Hotel Management",
@@ -54359,7 +54593,8 @@ const translations = {
 			address_placeholder: "Dirección completa",
 			resource: "Recurso",
 			migration: "Migración",
-			hotels: "Hoteles"
+			hotels: "Hoteles",
+			help_hub: "Centro de Ayuda"
 		},
 		hotels: {
 			title: "Gestión de Hoteles",
@@ -54487,8 +54722,10 @@ const AppProvider = ({ children }) => {
 	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("all");
 	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(false);
 	const [currentUser, setCurrentUserObj] = (0, import_react.useState)(systemUsers[0]);
+	const [isTourOpen, setIsTourOpen] = (0, import_react.useState)(false);
+	const [currentStepIndex, setCurrentStepIndex] = (0, import_react.useState)(0);
+	const [activeVideo, setActiveVideo] = (0, import_react.useState)(null);
 	const { toast: toast$2 } = useToast();
-	(0, import_react.useEffect)(() => {}, []);
 	const setLanguage = (lang) => {
 		setLanguageState(lang);
 		localStorage.setItem("app_language", lang);
@@ -54541,6 +54778,7 @@ const AppProvider = ({ children }) => {
 		if (user) {
 			setCurrentUserObj(user);
 			setIsAuthenticated(true);
+			if (!localStorage.getItem(`tour_completed_${user.id}`)) setTimeout(() => startTour(), 1e3);
 			return true;
 		}
 		return false;
@@ -54552,330 +54790,75 @@ const AppProvider = ({ children }) => {
 		const u$1 = allUsers.find((user) => user.id === id);
 		if (u$1) setCurrentUserObj(u$1);
 	};
-	const addAuditLog = (log$1) => {
-		const newLog = {
-			id: `log-${Date.now()}-${Math.random()}`,
-			timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-			...log$1
-		};
-		setAuditLogs((prev) => [newLog, ...prev]);
-	};
-	const addNotification = (0, import_react.useCallback)((notification) => {
-		const newNotif = {
-			id: `notif-${Date.now()}-${Math.random()}`,
-			timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-			read: false,
-			...notification
-		};
-		setNotifications((prev) => [newNotif, ...prev]);
-		toast$2({
-			title: notification.title,
-			description: notification.message,
-			duration: 3e3,
-			variant: notification.type === "critical" ? "destructive" : "default",
-			action: notification.link ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "bg-primary text-primary-foreground px-3 py-2 rounded-md text-xs cursor-pointer hover:bg-primary/90",
-				onClick: () => window.location.href = notification.link,
-				children: "View"
-			}) : void 0
-		});
-	}, [toast$2, currentUser]);
-	const addTask = (t$2) => {
-		const taskWithHistory = {
-			...t$2,
-			createdBy: currentUser.id,
-			history: [...t$2.history || [], {
-				id: `hist-${Date.now()}`,
-				action: "create",
-				statusTo: t$2.status,
-				userId: currentUser.id,
-				userName: currentUser.name,
-				timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-				note: "Task created"
-			}]
-		};
-		setTasks([...tasks$1, taskWithHistory]);
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "create",
-			entity: "Task",
-			entityId: t$2.propertyId,
-			details: `Created task: ${t$2.title} for ${t$2.propertyName}`
-		});
-		if (t$2.priority === "critical" || t$2.priority === "high") addNotification({
-			title: "Urgent Maintenance",
-			message: `High priority task created: ${t$2.title}`,
-			type: "critical",
-			category: "maintenance",
-			link: "/tasks"
-		});
-	};
-	const updateTask = (t$2) => {
-		const oldTask = tasks$1.find((task) => task.id === t$2.id);
-		const updatedTask = {
-			...t$2,
-			completedDate: t$2.status === "completed" && oldTask?.status !== "completed" ? (/* @__PURE__ */ new Date()).toISOString() : t$2.completedDate
-		};
-		setTasks(tasks$1.map((task) => task.id === t$2.id ? updatedTask : task));
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "update",
-			entity: "Task",
-			entityId: t$2.propertyId,
-			details: `Updated task: ${t$2.title}. Status: ${t$2.status}`
-		});
-		if (t$2.status === "completed" && oldTask?.status !== "completed" && (t$2.billableAmount || t$2.price)) {
-			const amount = t$2.billableAmount || t$2.price || 0;
-			addLedgerEntry({
-				id: `auto-task-${t$2.id}-${Date.now()}`,
-				propertyId: t$2.propertyId,
-				date: (/* @__PURE__ */ new Date()).toISOString(),
-				type: "expense",
-				category: t$2.type === "cleaning" ? "Cleaning" : "Maintenance",
-				amount,
-				description: `Task Completed: ${t$2.title}`,
-				referenceId: t$2.id,
-				status: "pending",
-				payee: t$2.assignee
-			});
-			toast$2({
-				title: "Financial Posting",
-				description: `Task cost (${amount}) automatically posted to ledger.`
-			});
-		}
-	};
-	const approveTask = (taskId) => {
-		const task = tasks$1.find((t$2) => t$2.id === taskId);
-		if (!task) return;
-		const isAdminOrPM = [
-			"platform_owner",
-			"software_tenant",
-			"internal_user"
-		].includes(currentUser.role);
-		let nextStatus = task.status;
-		let nextApprovalStatus = task.approvalStatus;
-		let note = "";
-		if (task.approvalStatus === "owner_pending" && !isAdminOrPM) {
-			nextApprovalStatus = "pm_pending";
-			note = "Approved by Owner. Pending PM approval.";
-			toast$2({
-				title: t$1("common.approved"),
-				description: "Aprovado. Aguardando PM."
-			});
-		} else {
-			nextApprovalStatus = "approved";
-			nextStatus = "pending";
-			note = "Task approved for execution.";
-			toast$2({
-				title: t$1("common.approved"),
-				description: "Tarefa aprovada para execução."
-			});
-		}
-		const newHistoryItem = {
-			id: `hist-${Date.now()}`,
-			action: "approve",
-			statusFrom: task.status,
-			statusTo: nextStatus,
-			userId: currentUser.id,
-			userName: currentUser.name,
-			timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-			note
-		};
-		updateTask({
-			...task,
-			status: nextStatus,
-			approvalStatus: nextApprovalStatus,
-			history: [...task.history || [], newHistoryItem]
-		});
-		if (nextApprovalStatus === "approved" && task.createdBy) addNotification({
-			title: "Task Approved",
-			message: `Your task "${task.title}" has been approved.`,
-			type: "success",
-			category: "maintenance",
-			link: "/tasks"
-		});
-	};
-	const rejectTask = (taskId, reason) => {
-		const task = tasks$1.find((t$2) => t$2.id === taskId);
-		if (!task) return;
-		const creator = allUsers.find((u$1) => u$1.id === task.createdBy);
-		const newAssigneeId = task.createdBy || task.assigneeId;
-		const newAssigneeName = creator?.name || "Requester";
-		const newHistoryItem = {
-			id: `hist-${Date.now()}`,
-			action: "reject",
-			statusFrom: task.status,
-			statusTo: "rejected",
-			userId: currentUser.id,
-			userName: currentUser.name,
-			timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-			note: reason
-		};
-		updateTask({
-			...task,
-			status: "rejected",
-			approvalStatus: void 0,
-			assigneeId: newAssigneeId,
-			assignee: newAssigneeName,
-			history: [...task.history || [], newHistoryItem]
-		});
-		if (creator) addNotification({
-			title: "Task Rejected",
-			message: `Task "${task.title}" rejected: ${reason}`,
-			type: "warning",
-			category: "maintenance",
-			link: "/tasks"
-		});
-		toast$2({
-			title: t$1("common.reject"),
-			description: "Tarefa rejeitada e retornada ao solicitante.",
-			variant: "destructive"
-		});
-	};
-	const addLedgerEntry = (entry) => {
-		setLedgerEntries((prev) => [...prev, entry]);
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "create",
-			entity: "Financial",
-			entityId: entry.propertyId,
-			details: `Financial Entry: ${entry.type === "income" ? "+" : "-"}${entry.amount} (${entry.category}) - ${entry.description}`
-		});
-	};
-	const addProperty = (p$1) => {
-		setProperties([...properties$1, p$1]);
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "create",
-			entity: "Property",
-			entityId: p$1.id,
-			details: `Created property: ${p$1.name}`
-		});
-		if (p$1.hoaValue && p$1.hoaValue > 0) {
-			const hoaEntry = {
-				id: `auto-hoa-${p$1.id}-${Date.now()}`,
-				propertyId: p$1.id,
-				date: (/* @__PURE__ */ new Date()).toISOString(),
-				dueDate: (/* @__PURE__ */ new Date()).toISOString(),
-				type: "expense",
-				category: "HOA Fee",
-				amount: p$1.hoaValue,
-				description: `Initial HOA Fee - ${p$1.community || "Association"}`,
-				status: "pending"
-			};
-			setTimeout(() => addLedgerEntry(hoaEntry), 100);
-		}
-	};
-	const updateProperty = (p$1) => {
-		setProperties(properties$1.map((prop) => prop.id === p$1.id ? p$1 : prop));
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "update",
-			entity: "Property",
-			entityId: p$1.id,
-			details: `Updated property details: ${p$1.name}`
-		});
-	};
-	const deleteProperty = (id) => {
-		const prop = properties$1.find((p$1) => p$1.id === id);
-		setProperties(properties$1.filter((p$1) => p$1.id !== id));
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "delete",
-			entity: "Property",
-			entityId: id,
-			details: `Deleted property: ${prop?.name || id}`
-		});
-	};
+	const addProperty = (p$1) => setProperties([...properties$1, p$1]);
+	const updateProperty = (p$1) => setProperties(properties$1.map((prop) => prop.id === p$1.id ? p$1 : prop));
+	const deleteProperty = (id) => setProperties(properties$1.filter((p$1) => p$1.id !== id));
 	const addCondominium = (c$1) => setCondominiums([...condominiums$1, c$1]);
-	const updateCondominium = (c$1) => setCondominiums(condominiums$1.map((condo) => condo.id === c$1.id ? c$1 : condo));
+	const updateCondominium = (c$1) => setCondominiums(condominiums$1.map((co) => co.id === c$1.id ? c$1 : co));
 	const deleteCondominium = (id) => setCondominiums(condominiums$1.filter((c$1) => c$1.id !== id));
 	const addHotel = (h) => setHotels([...hotels$1, h]);
-	const updateHotel = (h) => setHotels(hotels$1.map((hotel) => hotel.id === h.id ? h : hotel));
+	const updateHotel = (h) => setHotels(hotels$1.map((ho) => ho.id === h.id ? h : ho));
 	const deleteHotel = (id) => setHotels(hotels$1.filter((h) => h.id !== id));
 	const addTower = (t$2) => setTowers([...towers$1, t$2]);
-	const updateTower = (t$2) => setTowers(towers$1.map((tower) => tower.id === t$2.id ? t$2 : tower));
+	const updateTower = (t$2) => setTowers(towers$1.map((to) => to.id === t$2.id ? t$2 : to));
 	const deleteTower = (id) => setTowers(towers$1.filter((t$2) => t$2.id !== id));
-	const updateTaskStatus = (id, status) => {
-		const task = tasks$1.find((t$2) => t$2.id === id);
-		if (task) {
-			const newHistoryItem = {
-				id: `hist-${Date.now()}`,
-				action: "update",
-				statusFrom: task.status,
-				statusTo: status,
-				userId: currentUser.id,
-				userName: currentUser.name,
-				timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-				note: `Status updated manually to ${status}`
-			};
-			updateTask({
-				...task,
-				status,
-				history: [...task.history || [], newHistoryItem]
-			});
-		}
-	};
-	const deleteTask = (id) => {
-		const task = tasks$1.find((t$2) => t$2.id === id);
-		setTasks(tasks$1.filter((t$2) => t$2.id !== id));
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "delete",
-			entity: "Task",
-			entityId: task?.propertyId || id,
-			details: `Deleted task: ${task?.title || id}`
-		});
-	};
-	const notifySupplier = (taskId) => {
-		const task = tasks$1.find((t$2) => t$2.id === taskId);
-		if (!task) return;
-		const now$2 = (/* @__PURE__ */ new Date()).toISOString();
-		updateTask({
-			...task,
-			lastNotified: now$2
-		});
-		toast$2({
-			title: "Notification Sent",
-			description: `Supplier ${task.assignee} notified about task "${task.title}".`
-		});
-	};
-	const markNotificationAsRead = (id) => {
-		setNotifications((prev) => prev.map((n$1) => n$1.id === id ? {
-			...n$1,
-			read: true
-		} : n$1));
-	};
-	const updateLedgerEntry = (entry) => {
-		setLedgerEntries((prev) => prev.map((e) => e.id === entry.id ? entry : e));
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "update",
-			entity: "Financial",
-			entityId: entry.propertyId,
-			details: `Updated financial entry: ${entry.description}`
-		});
-	};
-	const deleteLedgerEntry = (id) => {
-		const entry = ledgerEntries$1.find((e) => e.id === id);
-		setLedgerEntries((prev) => prev.filter((e) => e.id !== id));
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "delete",
-			entity: "Financial",
-			entityId: entry?.propertyId || id,
-			details: `Deleted financial entry: ${entry?.description || id}`
-		});
-	};
+	const addTask = (task) => setTasks([...tasks$1, task]);
+	const updateTask = (task) => setTasks(tasks$1.map((t$2) => t$2.id === task.id ? task : t$2));
+	const deleteTask = (id) => setTasks(tasks$1.filter((t$2) => t$2.id !== id));
+	const updateTaskStatus = (id, status) => updateTask({
+		...tasks$1.find((t$2) => t$2.id === id),
+		status
+	});
+	const approveTask = (id) => updateTaskStatus(id, "pending");
+	const rejectTask = (id, reason) => updateTask({
+		...tasks$1.find((t$2) => t$2.id === id),
+		status: "rejected"
+	});
+	const addInvoice = (inv) => setFinancials((prev) => ({
+		...prev,
+		invoices: [...prev.invoices, inv]
+	}));
+	const updateInvoice = (inv) => setFinancials((prev) => ({
+		...prev,
+		invoices: prev.invoices.map((i$2) => i$2.id === inv.id ? inv : i$2)
+	}));
+	const addTenant = (t$2) => setTenants([...tenants$1, t$2]);
+	const updateTenant = (t$2) => setTenants(tenants$1.map((tn) => ten.id === t$2.id ? t$2 : tn));
+	const addOwner = (o$1) => setOwners([...owners$1, o$1]);
+	const updateOwner = (o$1) => setOwners(owners$1.map((ow) => own.id === o$1.id ? o$1 : ow));
+	const addPartner = (p$1) => setPartners([...partners$1, p$1]);
+	const updatePartner = (p$1) => setPartners(partners$1.map((pa) => par.id === p$1.id ? p$1 : pa));
+	const addUser = (u$1) => setUsers([...users, u$1]);
+	const updateUser = (u$1) => setUsers(users.map((us) => us.id === u$1.id ? u$1 : us));
+	const deleteUser = (id) => setUsers(users.filter((u$1) => u$1.id !== id));
+	const updateAutomationRule = (r$2) => setAutomationRules((prev) => prev.map((rule) => rule.id === r$2.id ? r$2 : rule));
+	const updatePaymentIntegration = (i$2) => setPaymentIntegrations((prev) => prev.map((pi$2) => pi$2.provider === i$2.provider ? i$2 : pi$2));
+	const updateFinancialSettings = (s$3) => setFinancialSettings(s$3);
+	const uploadBankStatement = (s$3) => setBankStatements((prev) => [...prev, s$3]);
+	const addLedgerEntry = (e) => setLedgerEntries((prev) => [...prev, e]);
+	const updateLedgerEntry = (e) => setLedgerEntries((prev) => prev.map((entry) => entry.id === e.id ? e : entry));
+	const deleteLedgerEntry = (id) => setLedgerEntries((prev) => prev.filter((e) => e.id !== id));
+	const addAuditLog = (log$1) => setAuditLogs((prev) => [{
+		...log$1,
+		id: `log-${Date.now()}`,
+		timestamp: (/* @__PURE__ */ new Date()).toISOString()
+	}, ...prev]);
+	const addGenericServiceRate = (r$2) => setGenericServiceRates((prev) => [...prev, r$2]);
+	const updateGenericServiceRate = (r$2) => setGenericServiceRates((prev) => prev.map((rate) => rate.id === r$2.id ? r$2 : rate));
+	const deleteGenericServiceRate = (id) => setGenericServiceRates((prev) => prev.filter((r$2) => r$2.id !== id));
+	const addServiceCategory = (c$1) => setServiceCategories((prev) => [...prev, c$1]);
+	const updateServiceCategory = (c$1) => setServiceCategories((prev) => prev.map((cat) => cat.id === c$1.id ? c$1 : cat));
+	const deleteServiceCategory = (id) => setServiceCategories((prev) => prev.filter((c$1) => c$1.id !== id));
+	const addNotification = (n$1) => setNotifications((prev) => [{
+		...n$1,
+		id: `notif-${Date.now()}`,
+		timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+		read: false
+	}, ...prev]);
+	const markNotificationAsRead = (id) => setNotifications((prev) => prev.map((n$1) => n$1.id === id ? {
+		...n$1,
+		read: true
+	} : n$1));
 	const approveUser = (id) => setUsers((prev) => prev.map((u$1) => u$1.id === id ? {
 		...u$1,
 		status: "active"
@@ -54884,201 +54867,61 @@ const AppProvider = ({ children }) => {
 		...u$1,
 		status: "blocked"
 	} : u$1));
-	const setTyping = (userId, isTyping) => setTypingStatus((prev) => ({
-		...prev,
-		[userId]: isTyping
-	}));
-	const sendMessage = (contactId, text, attachments = [], senderIdOverride) => {
-		const senderId = senderIdOverride || currentUser.id;
-		const newMessage = {
-			id: `msg-${Date.now()}-${Math.random()}`,
-			text,
-			senderId,
-			timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-			attachments,
-			read: false
-		};
-		setAllMessages((prev) => {
-			let nextMessages = [...prev];
-			const senderThreadIndex = nextMessages.findIndex((m$1) => m$1.ownerId === senderId && m$1.contactId === contactId);
-			if (senderThreadIndex >= 0) nextMessages[senderThreadIndex] = {
-				...nextMessages[senderThreadIndex],
-				lastMessage: text,
-				time: newMessage.timestamp,
-				history: [...nextMessages[senderThreadIndex].history, newMessage]
-			};
-			else {
-				const contact = allUsers.find((u$1) => u$1.id === contactId);
-				nextMessages.push({
-					id: `chat-${senderId}-${contactId}`,
-					contact: contact?.name || "Unknown",
-					contactId,
-					ownerId: senderId,
-					lastMessage: text,
-					time: newMessage.timestamp,
-					unread: 0,
-					avatar: contact?.avatar || "",
-					history: [newMessage]
-				});
-			}
-			const recipientThreadIndex = nextMessages.findIndex((m$1) => m$1.ownerId === contactId && m$1.contactId === senderId);
-			if (recipientThreadIndex >= 0) nextMessages[recipientThreadIndex] = {
-				...nextMessages[recipientThreadIndex],
-				lastMessage: text,
-				time: newMessage.timestamp,
-				unread: nextMessages[recipientThreadIndex].unread + 1,
-				history: [...nextMessages[recipientThreadIndex].history, newMessage]
-			};
-			else {
-				const senderUser = allUsers.find((u$1) => u$1.id === senderId);
-				nextMessages.push({
-					id: `chat-${contactId}-${senderId}`,
-					contact: senderUser?.name || "Unknown",
-					contactId: senderId,
-					ownerId: contactId,
-					lastMessage: text,
-					time: newMessage.timestamp,
-					unread: 1,
-					avatar: senderUser?.avatar || "",
-					history: [newMessage]
-				});
-			}
-			return nextMessages;
-		});
-	};
-	const markAsRead = (threadId) => {
-		setAllMessages((prev) => prev.map((m$1) => {
-			if (m$1.id === threadId) return {
-				...m$1,
-				unread: 0,
-				history: m$1.history.map((msg) => msg.senderId !== currentUser.id ? {
-					...msg,
-					read: true
-				} : msg)
-			};
-			return m$1;
-		}));
-	};
-	const startChat = (contactId) => {
-		if (allMessages.some((m$1) => m$1.ownerId === currentUser.id && m$1.contactId === contactId)) return;
-		const contact = allUsers.find((u$1) => u$1.id === contactId);
-		if (contact) setAllMessages((prev) => [...prev, {
-			id: `chat-${currentUser.id}-${contactId}`,
-			contact: contact.name,
-			contactId: contact.id,
-			ownerId: currentUser.id,
-			lastMessage: "",
-			time: (/* @__PURE__ */ new Date()).toISOString(),
-			unread: 0,
-			avatar: contact.avatar || "",
-			history: []
-		}]);
-	};
-	const addInvoice = (i$2) => {
-		setFinancials((prev) => ({
-			...prev,
-			invoices: [...prev.invoices, i$2]
-		}));
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "create",
-			entity: "Invoice",
-			details: `Generated Invoice: ${i$2.amount} - ${i$2.description}`
-		});
-	};
-	const updateInvoice = (i$2) => {
-		setFinancials((prev) => ({
-			...prev,
-			invoices: prev.invoices.map((inv) => inv.id === i$2.id ? i$2 : inv)
-		}));
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "update",
-			entity: "Invoice",
-			details: `Updated Invoice ${i$2.id}. Status: ${i$2.status}`
-		});
-	};
-	const markPaymentAs = (id, status) => {};
-	const addTaskImage = (id, img) => {};
-	const addTaskEvidence = (id, ev) => {};
-	const addTenant = (t$2) => setTenants([...tenants$1, t$2]);
-	const updateTenant = (t$2) => setTenants(tenants$1.map((ten) => ten.id === t$2.id ? t$2 : ten));
-	const addOwner = (o$1) => setOwners([...owners$1, o$1]);
-	const updateOwner = (o$1) => setOwners(owners$1.map((own) => own.id === o$1.id ? o$1 : own));
-	const addPartner = (p$1) => setPartners([...partners$1, p$1]);
-	const updatePartner = (p$1) => setPartners(partners$1.map((par) => par.id === p$1.id ? p$1 : par));
-	const addUser = (u$1) => setUsers([...users, u$1]);
-	const updateUser = (u$1) => setUsers(users.map((user) => user.id === u$1.id ? u$1 : user));
-	const deleteUser = (id) => setUsers(users.filter((u$1) => u$1.id !== id));
-	const updateAutomationRule = (r$2) => setAutomationRules((prev) => prev.map((rule) => rule.id === r$2.id ? r$2 : rule));
-	const updatePaymentIntegration = (i$2) => setPaymentIntegrations((prev) => prev.map((pi$2) => pi$2.provider === i$2.provider ? i$2 : pi$2));
-	const updateFinancialSettings = (s$3) => setFinancialSettings(s$3);
-	const uploadBankStatement = (s$3) => setBankStatements((prev) => [...prev, s$3]);
-	const addGenericServiceRate = (r$2) => setGenericServiceRates((prev) => [...prev, {
-		...r$2,
-		lastUpdated: (/* @__PURE__ */ new Date()).toISOString()
-	}]);
-	const updateGenericServiceRate = (r$2) => setGenericServiceRates((prev) => prev.map((rate) => rate.id === r$2.id ? {
-		...r$2,
-		lastUpdated: (/* @__PURE__ */ new Date()).toISOString()
-	} : rate));
-	const deleteGenericServiceRate = (id) => setGenericServiceRates((prev) => prev.filter((r$2) => r$2.id !== id));
-	const addServiceCategory = (category) => setServiceCategories((prev) => [...prev, category]);
-	const updateServiceCategory = (category) => setServiceCategories((prev) => prev.map((c$1) => c$1.id === category.id ? category : c$1));
-	const deleteServiceCategory = (categoryId) => setServiceCategories((prev) => prev.filter((c$1) => c$1.id !== categoryId));
-	const renewTenantContract = (id, end, rent, start, doc) => {
-		setTenants((prev) => prev.map((t$2) => {
-			if (t$2.id === id) {
-				const docs = doc ? [...t$2.documents || [], doc] : t$2.documents;
-				return {
-					...t$2,
-					leaseStart: start || t$2.leaseStart,
-					leaseEnd: end,
-					rentValue: rent,
-					negotiationStatus: "closed",
-					documents: docs
-				};
-			}
-			return t$2;
-		}));
-	};
-	const updateTenantNegotiation = (id, data) => {
-		setTenants((prev) => prev.map((t$2) => {
-			if (t$2.id === id) {
-				const logs = data.log ? [...t$2.negotiationLogs || [], data.log] : t$2.negotiationLogs;
-				return {
-					...t$2,
-					negotiationStatus: data.status || t$2.negotiationStatus,
-					suggestedRenewalPrice: data.suggestedPrice !== void 0 ? data.suggestedPrice : t$2.suggestedRenewalPrice,
-					negotiationLogs: logs
-				};
-			}
-			return t$2;
-		}));
-	};
+	const renewTenantContract = (id, end, rent) => setTenants((prev) => prev.map((t$2) => t$2.id === id ? {
+		...t$2,
+		leaseEnd: end,
+		rentValue: rent
+	} : t$2));
+	const updateTenantNegotiation = (id, data) => setTenants((prev) => prev.map((t$2) => t$2.id === id ? {
+		...t$2,
+		...data
+	} : t$2));
 	const addAdvertisement = (a$2) => setAdvertisements((prev) => [...prev, a$2]);
 	const updateAdvertisement = (a$2) => setAdvertisements((prev) => prev.map((ad) => ad.id === a$2.id ? a$2 : ad));
-	const deleteAdvertisement = (id) => setAdvertisements((prev) => prev.filter((ad) => ad.id !== id));
+	const deleteAdvertisement = (id) => setAdvertisements((prev) => prev.filter((a$2) => a$2.id !== id));
 	const addAdvertiser = (a$2) => setAdvertisers((prev) => [...prev, a$2]);
 	const updateAdvertiser = (a$2) => setAdvertisers((prev) => prev.map((ad) => ad.id === a$2.id ? a$2 : ad));
-	const deleteAdvertiser = (id) => setAdvertisers((prev) => prev.filter((ad) => ad.id !== id));
+	const deleteAdvertiser = (id) => setAdvertisers((prev) => prev.filter((a$2) => a$2.id !== id));
 	const updateAdPricing = (p$1) => setAdPricingState(p$1);
-	const addBooking = (booking) => setBookings((prev) => [...prev, booking]);
-	const updateBooking = (booking) => setBookings((prev) => prev.map((b$1) => b$1.id === booking.id ? booking : b$1));
-	const deleteBooking = (bookingId) => setBookings((prev) => prev.filter((b$1) => b$1.id !== bookingId));
-	const addCalendarBlock = (block) => setCalendarBlocks((prev) => [...prev, block]);
-	const deleteCalendarBlock = (blockId) => setCalendarBlocks((prev) => prev.filter((b$1) => b$1.id !== blockId));
-	const addMessageTemplate = (template) => setMessageTemplates((prev) => [...prev, template]);
-	const updateMessageTemplate = (template) => setMessageTemplates((prev) => prev.map((t$2) => t$2.id === template.id ? template : t$2));
-	const deleteMessageTemplate = (templateId) => setMessageTemplates((prev) => prev.filter((t$2) => t$2.id !== templateId));
-	const addVisit = (visit) => setVisits((prev) => [...prev, visit]);
-	const updateVisit = (visit) => setVisits((prev) => prev.map((v) => v.id === visit.id ? visit : v));
+	const addVisit = (v) => setVisits((prev) => [...prev, v]);
+	const updateVisit = (v) => setVisits((prev) => prev.map((vi) => vi.id === v.id ? v : vi));
 	const deleteVisit = (id) => setVisits((prev) => prev.filter((v) => v.id !== id));
-	const addWorkflow = (workflow) => setWorkflows((prev) => [...prev, workflow]);
-	const updateWorkflow = (workflow) => setWorkflows((prev) => prev.map((w) => w.id === workflow.id ? workflow : w));
+	const addWorkflow = (w) => setWorkflows((prev) => [...prev, w]);
+	const updateWorkflow = (w) => setWorkflows((prev) => prev.map((wf) => wf.id === w.id ? w : wf));
 	const deleteWorkflow = (id) => setWorkflows((prev) => prev.filter((w) => w.id !== id));
+	const addBooking = (b$1) => setBookings((prev) => [...prev, b$1]);
+	const updateBooking = (b$1) => setBookings((prev) => prev.map((bk) => bk.id === b$1.id ? b$1 : bk));
+	const deleteBooking = (id) => setBookings((prev) => prev.filter((b$1) => b$1.id !== id));
+	const addCalendarBlock = (b$1) => setCalendarBlocks((prev) => [...prev, b$1]);
+	const deleteCalendarBlock = (id) => setCalendarBlocks((prev) => prev.filter((b$1) => b$1.id !== id));
+	const addMessageTemplate = (t$2) => setMessageTemplates((prev) => [...prev, t$2]);
+	const updateMessageTemplate = (t$2) => setMessageTemplates((prev) => prev.map((tmp) => tmpl.id === t$2.id ? t$2 : tmpl));
+	const deleteMessageTemplate = (id) => setMessageTemplates((prev) => prev.filter((t$2) => t$2.id !== id));
+	const markPaymentAs = () => {};
+	const addTaskImage = () => {};
+	const addTaskEvidence = () => {};
+	const notifySupplier = () => {};
+	const setTyping = () => {};
+	const startChat = () => {};
+	const sendMessage = () => {};
+	const markAsRead = () => {};
+	const startTour = () => {
+		setIsTourOpen(true);
+		setCurrentStepIndex(0);
+	};
+	const endTour = () => {
+		setIsTourOpen(false);
+		localStorage.setItem(`tour_completed_${currentUser.id}`, "true");
+	};
+	const nextStep = () => {
+		if (currentStepIndex < tourSteps.length - 1) setCurrentStepIndex((prev) => prev + 1);
+		else endTour();
+	};
+	const prevStep = () => {
+		if (currentStepIndex > 0) setCurrentStepIndex((prev) => prev - 1);
+	};
+	const openVideo = (url) => setActiveVideo(url);
+	const closeVideo = () => setActiveVideo(null);
 	const visibleMessages = (0, import_react.useMemo)(() => allMessages.filter((m$1) => m$1.ownerId === currentUser.id), [allMessages, currentUser.id]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppContext.Provider, {
 		value: {
@@ -55116,7 +54959,11 @@ const AppProvider = ({ children }) => {
 			typingStatus,
 			selectedPropertyId,
 			visits: visits$1,
-			setTyping,
+			isTourOpen,
+			currentStepIndex,
+			tourSteps,
+			tutorialModules,
+			activeVideo,
 			setLanguage,
 			setSelectedPropertyId,
 			t: t$1,
@@ -55148,6 +54995,8 @@ const AppProvider = ({ children }) => {
 			addTaskEvidence,
 			sendMessage,
 			markAsRead,
+			startChat,
+			setTyping,
 			addTenant,
 			updateTenant,
 			addOwner,
@@ -55163,7 +55012,6 @@ const AppProvider = ({ children }) => {
 			updateMessageTemplate,
 			deleteMessageTemplate,
 			setCurrentUser,
-			startChat,
 			updateAutomationRule,
 			addUser,
 			updateUser,
@@ -55199,7 +55047,13 @@ const AppProvider = ({ children }) => {
 			deleteVisit,
 			addWorkflow,
 			updateWorkflow,
-			deleteWorkflow
+			deleteWorkflow,
+			startTour,
+			endTour,
+			nextStep,
+			prevStep,
+			openVideo,
+			closeVideo
 		},
 		children
 	});
@@ -57578,7 +57432,7 @@ function useDirection(localDir) {
 	const globalDir = import_react.useContext(DirectionContext);
 	return localDir || globalDir || "ltr";
 }
-var import_react_dom = /* @__PURE__ */ __toESM(require_react_dom(), 1);
+var import_react_dom$1 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
 var OPEN_KEYS = [
 	" ",
 	"Enter",
@@ -57779,7 +57633,7 @@ var SelectContent$1 = import_react.forwardRef((props, forwardedRef) => {
 	}, []);
 	if (!context.open) {
 		const frag = fragment;
-		return frag ? import_react_dom.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContentProvider, {
+		return frag ? import_react_dom$1.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContentProvider, {
 			scope: props.__scopeSelect,
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection$2.Slot, {
 				scope: props.__scopeSelect,
@@ -58319,7 +58173,7 @@ var SelectItemText = import_react.forwardRef((props, forwardedRef) => {
 		id: itemContext.textId,
 		...itemTextProps,
 		ref: composedRefs
-	}), itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? import_react_dom.createPortal(itemTextProps.children, context.valueNode) : null] });
+	}), itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? import_react_dom$1.createPortal(itemTextProps.children, context.valueNode) : null] });
 });
 SelectItemText.displayName = ITEM_TEXT_NAME;
 var ITEM_INDICATOR_NAME$1 = "SelectItemIndicator";
@@ -59451,7 +59305,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$85({ inst: {
+			cachedValue = useState$87({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -59465,7 +59319,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$24(function() {
+			useEffect$25(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -59488,7 +59342,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$65 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$85 = React$65.useState, useEffect$24 = React$65.useEffect, useLayoutEffect$2 = React$65.useLayoutEffect, useDebugValue = React$65.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$65 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$87 = React$65.useState, useEffect$25 = React$65.useEffect, useLayoutEffect$2 = React$65.useLayoutEffect, useDebugValue = React$65.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$65.useSyncExternalStore ? React$65.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -60134,6 +59988,7 @@ function AppSidebar() {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarContent, {
 				className: "bg-white",
+				id: "sidebar-menu",
 				children: [
 					(isTenant || isOwner || isPartner) && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
 						className: cn(isMobile && "text-black", "text-black font-bold"),
@@ -60240,6 +60095,17 @@ function AppSidebar() {
 									to: "/settings",
 									onClick: handleLinkClick,
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings$1, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("common.settings") })]
+								})
+							}) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+								asChild: true,
+								isActive: isActive("/help"),
+								tooltip: t$1("common.help_hub"),
+								className: "text-black font-medium hover:bg-slate-100",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+									to: "/help",
+									onClick: handleLinkClick,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("common.help_hub") })]
 								})
 							}) })
 						] }) })]
@@ -63126,6 +62992,9 @@ function AppHeader() {
 			case "task":
 				navigate(`/tasks`);
 				break;
+			case "help":
+				navigate(`/help`);
+				break;
 		}
 	};
 	const handleNotificationClick = (id) => {
@@ -63158,6 +63027,7 @@ function AppHeader() {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "relative hidden md:flex flex-1 max-w-md mx-4",
+				id: "global-actions",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 					variant: "outline",
 					className: "relative w-full justify-start text-sm text-black border-slate-300 font-medium",
@@ -63181,6 +63051,15 @@ function AppHeader() {
 				onOpenChange: setOpenSearch,
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandInput, { placeholder: "Type to search..." }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandList, { children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandEmpty, { children: "No results found." }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
+						heading: "System",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
+							onSelect: () => handleSearchSelect("help", ""),
+							className: "text-black",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "mr-2 h-4 w-4" }), t$1("common.help_hub")]
+						})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandSeparator, {}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
 						heading: t$1("properties.title"),
 						children: properties$1.slice(0, 5).map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
@@ -63225,6 +63104,16 @@ function AppHeader() {
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "h-5 w-5" })
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThemeCustomizer, {}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tooltip$1, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipTrigger, {
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							size: "icon",
+							className: "text-black",
+							onClick: () => navigate("/help"),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "h-5 w-5" })
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: t$1("common.help_hub") }) })] }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
 						asChild: true,
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -63314,6 +63203,7 @@ function AppHeader() {
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "ghost",
 							className: "relative h-10 w-10 rounded-full",
+							id: "user-profile",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
 								className: "h-10 w-10 border border-slate-200",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, {
@@ -94296,8 +94186,8 @@ function CommunicationSettings() {
 			active: true
 		});
 	};
-	const handleEdit = (tmpl) => {
-		setEditingTemplate(tmpl);
+	const handleEdit = (tmpl$1) => {
+		setEditingTemplate(tmpl$1);
 		setIsDialogOpen(true);
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -94340,19 +94230,19 @@ function CommunicationSettings() {
 						className: "text-right",
 						children: t$1("common.actions")
 					})
-				] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: messageTemplates$1.map((tmpl) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+				] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: messageTemplates$1.map((tmpl$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 						className: "font-medium",
-						children: tmpl.name
+						children: tmpl$1.name
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 						className: "capitalize",
-						children: tmpl.trigger.replace(/_/g, " ")
+						children: tmpl$1.trigger.replace(/_/g, " ")
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
-						checked: tmpl.active,
+						checked: tmpl$1.active,
 						onCheckedChange: (c$1) => updateMessageTemplate({
-							...tmpl,
+							...tmpl$1,
 							active: c$1
 						})
 					}) }),
@@ -94361,17 +94251,17 @@ function CommunicationSettings() {
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "ghost",
 							size: "icon",
-							onClick: () => handleEdit(tmpl),
+							onClick: () => handleEdit(tmpl$1),
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "ghost",
 							size: "icon",
 							className: "text-red-500",
-							onClick: () => deleteMessageTemplate(tmpl.id),
+							onClick: () => deleteMessageTemplate(tmpl$1.id),
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
 						})]
 					})
-				] }, tmpl.id)) })] })
+				] }, tmpl$1.id)) })] })
 			}) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 				open: isDialogOpen,
@@ -94825,12 +94715,12 @@ function ShortTermBookings() {
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 										className: "flex flex-wrap gap-2 mb-4",
-										children: messageTemplates$1.map((tmpl) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										children: messageTemplates$1.map((tmpl$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 											variant: "outline",
 											size: "sm",
-											onClick: () => handleSelectTemplate(tmpl),
-											children: tmpl.name
-										}, tmpl.id))
+											onClick: () => handleSelectTemplate(tmpl$1),
+											children: tmpl$1.name
+										}, tmpl$1.id))
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email Content" }),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
@@ -95892,6 +95782,127 @@ function Visits() {
 		]
 	});
 }
+var useTourStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("useTourStore must be used within AppProvider");
+	return {
+		isTourOpen: context.isTourOpen,
+		currentStepIndex: context.currentStepIndex,
+		tourSteps: context.tourSteps,
+		tutorialModules: context.tutorialModules,
+		activeVideo: context.activeVideo,
+		startTour: context.startTour,
+		endTour: context.endTour,
+		nextStep: context.nextStep,
+		prevStep: context.prevStep,
+		openVideo: context.openVideo,
+		closeVideo: context.closeVideo
+	};
+};
+var useTourStore_default = useTourStore;
+function HelpHub() {
+	const { tutorialModules: tutorialModules$1, openVideo } = useTourStore_default();
+	const [searchTerm, setSearchTerm] = (0, import_react.useState)("");
+	const categories = [
+		"All",
+		"Operational",
+		"CRM",
+		"Financial",
+		"Settings",
+		"System"
+	];
+	const filteredModules = tutorialModules$1.filter((m$1) => m$1.title.toLowerCase().includes(searchTerm.toLowerCase()) || m$1.description.toLowerCase().includes(searchTerm.toLowerCase()));
+	const getFilteredByCategory = (cat) => {
+		if (cat === "All") return filteredModules;
+		return filteredModules.filter((m$1) => m$1.category === cat);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col gap-6",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex flex-col gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", {
+					className: "text-3xl font-bold tracking-tight text-navy flex items-center gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "h-8 w-8 text-primary" }), " Help Hub"]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-muted-foreground",
+					children: "Video tutorials and guides to help you master the platform."
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "relative max-w-md",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					placeholder: "Search tutorials...",
+					className: "pl-8",
+					value: searchTerm,
+					onChange: (e) => setSearchTerm(e.target.value)
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+				defaultValue: "All",
+				className: "w-full",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsList, {
+					className: "flex flex-wrap h-auto gap-2 bg-transparent justify-start p-0",
+					children: categories.map((cat) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: cat,
+						className: "data-[state=active]:bg-primary data-[state=active]:text-white border border-transparent data-[state=active]:border-primary bg-white hover:bg-slate-100",
+						children: cat
+					}, cat))
+				}), categories.map((cat) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: cat,
+					className: "mt-6",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+						children: getFilteredByCategory(cat).length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-full text-center py-12 text-muted-foreground bg-muted/20 rounded-lg border border-dashed",
+							children: "No tutorials found in this category matching your search."
+						}) : getFilteredByCategory(cat).map((module$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+							className: "hover:shadow-md transition-all group cursor-pointer",
+							onClick: () => openVideo(module$1.videoUrl),
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+								className: "pb-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "aspect-video bg-slate-100 rounded-md mb-3 flex items-center justify-center relative overflow-hidden",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CirclePlay, { className: "h-12 w-12 text-slate-400 group-hover:text-primary transition-colors" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+									className: "text-base flex items-center justify-between",
+									children: module$1.title
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+								className: "line-clamp-2",
+								children: module$1.description
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "link",
+								className: "px-0 mt-2 text-primary",
+								children: "Watch Now"
+							})] })]
+						}, module$1.key))
+					})
+				}, cat))]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "mt-8 p-6 bg-blue-50 rounded-lg flex items-center justify-between border border-blue-100",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "p-3 bg-white rounded-full text-blue-600",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BookOpen, { className: "h-6 w-6" })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+						className: "font-semibold text-blue-900",
+						children: "Documentation"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-sm text-blue-700",
+						children: "Read detailed guides and API references."
+					})] })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "outline",
+					className: "bg-white text-blue-700 border-blue-200",
+					children: "View Docs"
+				})]
+			})
+		]
+	});
+}
 function RequirePermission({ children, resource, action = "view" }) {
 	const { currentUser, isAuthenticated } = useAuthStore_default();
 	const location = useLocation();
@@ -95939,6 +95950,120 @@ function RequirePermission({ children, resource, action = "view" }) {
 	}
 	return children;
 }
+var import_react_dom = require_react_dom();
+function TourGuide() {
+	const { isTourOpen, currentStepIndex, tourSteps: tourSteps$1, nextStep, prevStep, endTour } = useTourStore_default();
+	const [targetRect, setTargetRect] = (0, import_react.useState)(null);
+	const currentStep = tourSteps$1[currentStepIndex];
+	(0, import_react.useEffect)(() => {
+		if (!isTourOpen || !currentStep) return;
+		const updateRect = () => {
+			if (currentStep.targetId === "center") {
+				setTargetRect(null);
+				return;
+			}
+			const element = document.getElementById(currentStep.targetId);
+			if (element) {
+				setTargetRect(element.getBoundingClientRect());
+				element.scrollIntoView({
+					behavior: "smooth",
+					block: "center"
+				});
+			} else setTargetRect(null);
+		};
+		updateRect();
+		window.addEventListener("resize", updateRect);
+		return () => window.removeEventListener("resize", updateRect);
+	}, [isTourOpen, currentStep]);
+	if (!isTourOpen || !currentStep) return null;
+	const highlightStyle = targetRect ? {
+		position: "fixed",
+		top: targetRect.top - 4,
+		left: targetRect.left - 4,
+		width: targetRect.width + 8,
+		height: targetRect.height + 8,
+		boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.7)",
+		zIndex: 50,
+		borderRadius: "6px",
+		transition: "all 0.3s ease",
+		pointerEvents: "none"
+	} : {
+		position: "fixed",
+		inset: 0,
+		backgroundColor: "rgba(0, 0, 0, 0.7)",
+		zIndex: 50
+	};
+	const popoverStyle = targetRect ? {
+		position: "fixed",
+		top: targetRect.bottom + 16,
+		left: targetRect.left,
+		zIndex: 51,
+		width: "320px"
+	} : {
+		position: "fixed",
+		top: "50%",
+		left: "50%",
+		transform: "translate(-50%, -50%)",
+		zIndex: 51,
+		width: "400px"
+	};
+	if (targetRect && targetRect.left + 320 > window.innerWidth) {
+		popoverStyle.left = "auto";
+		popoverStyle.right = 16;
+	}
+	if (targetRect && targetRect.bottom + 200 > window.innerHeight) {
+		popoverStyle.top = "auto";
+		popoverStyle.bottom = window.innerHeight - targetRect.top + 16;
+	}
+	const isLastStep = currentStepIndex === tourSteps$1.length - 1;
+	return (0, import_react_dom.createPortal)(/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: highlightStyle }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+		style: popoverStyle,
+		className: "shadow-2xl border-2 border-primary",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+				className: "relative pb-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+					className: "text-lg",
+					children: currentStep.title
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "ghost",
+					size: "icon",
+					className: "absolute top-2 right-2 h-6 w-6",
+					onClick: () => endTour(),
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" })
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+				className: "text-sm text-foreground",
+				children: currentStep.content
+			}) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardFooter, {
+				className: "flex justify-between pt-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "text-xs text-muted-foreground self-center",
+					children: [
+						currentStepIndex + 1,
+						" / ",
+						tourSteps$1.length
+					]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex gap-2",
+					children: [currentStepIndex > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "outline",
+						size: "sm",
+						onClick: prevStep,
+						children: "Previous"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						size: "sm",
+						onClick: nextStep,
+						className: "bg-primary text-primary-foreground",
+						children: isLastStep ? "Finish" : "Next"
+					})]
+				})]
+			})
+		]
+	})] }), document.body);
+}
 var App = () => {
 	(0, import_react.useEffect)(() => {
 		document.title = "COREPM";
@@ -95954,6 +96079,7 @@ var App = () => {
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TooltipProvider, { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toaster, {}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toaster$1, {}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TourGuide, {}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Routes, { children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 						path: "/login",
@@ -95972,6 +96098,10 @@ var App = () => {
 									resource: "dashboard",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Index, {})
 								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
+								path: "/help",
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(HelpHub, {})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/properties",
@@ -96225,4 +96355,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-pramJLNP.js.map
+//# sourceMappingURL=index-DrhSkulv.js.map

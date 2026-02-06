@@ -38,7 +38,7 @@ import {
   PieChart,
   CalendarDays,
   Hotel,
-  HelpCircle
+  HelpCircle,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -418,12 +418,12 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={isActive('/help')}
-                  tooltip="Help Hub"
+                  tooltip={t('common.help_hub')}
                   className="text-black font-medium hover:bg-slate-100"
                 >
                   <Link to="/help" onClick={handleLinkClick}>
                     <HelpCircle className="text-black" />
-                    <span>Help Hub</span>
+                    <span>{t('common.help_hub')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -463,4 +463,3 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
-

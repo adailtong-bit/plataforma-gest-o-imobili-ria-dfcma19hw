@@ -147,4 +147,3 @@ export function TourGuide() {
     document.body,
   )
 }
-

@@ -14,7 +14,10 @@ interface VideoHelpButtonProps {
   className?: string
 }
 
-export function VideoHelpButton({ moduleKey, className }: VideoHelpButtonProps) {
+export function VideoHelpButton({
+  moduleKey,
+  className,
+}: VideoHelpButtonProps) {
   const { openVideo, activeVideo, closeVideo, tutorialModules } = useTourStore()
   const { t } = useLanguageStore()
 
@@ -66,4 +69,3 @@ export function VideoHelpButton({ moduleKey, className }: VideoHelpButtonProps) 
     </>
   )
 }
-

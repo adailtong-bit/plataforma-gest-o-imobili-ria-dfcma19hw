@@ -2,7 +2,6 @@ export type Language = 'pt' | 'en' | 'es'
 
 export const translations = {
   pt: {
-    // ... existing translations ...
     common: {
       dashboard: 'Painel',
       properties: 'Propriedades',
@@ -175,8 +174,8 @@ export const translations = {
       resource: 'Recurso',
       migration: 'Migração',
       hotels: 'Hotéis',
+      help_hub: 'Central de Ajuda',
     },
-    // ... existing nested objects ...
     hotels: {
       title: 'Gestão de Hotéis',
       subtitle: 'Gerencie redes hoteleiras, torres e quartos.',
@@ -308,7 +307,6 @@ export const translations = {
     },
   },
   en: {
-    // ... existing translations ...
     common: {
       dashboard: 'Dashboard',
       properties: 'Properties',
@@ -479,6 +477,7 @@ export const translations = {
       resource: 'Resource',
       migration: 'Migration',
       hotels: 'Hotels',
+      help_hub: 'Help Hub',
     },
     hotels: {
       title: 'Hotel Management',
@@ -549,7 +548,6 @@ export const translations = {
     },
   },
   es: {
-    // ... existing translations ...
     common: {
       dashboard: 'Panel',
       properties: 'Propiedades',
@@ -722,6 +720,7 @@ export const translations = {
       resource: 'Recurso',
       migration: 'Migración',
       hotels: 'Hoteles',
+      help_hub: 'Centro de Ayuda',
     },
     hotels: {
       title: 'Gestión de Hoteles',

@@ -21,4 +21,3 @@ const useTourStore = () => {
 }
 
 export default useTourStore
-
