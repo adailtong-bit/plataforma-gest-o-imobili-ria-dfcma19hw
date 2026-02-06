@@ -37,6 +37,7 @@ import {
   Zap,
   PieChart,
   CalendarDays,
+  Hotel,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -81,6 +82,12 @@ export function AppSidebar() {
       url: '/properties',
       icon: Building,
       resource: 'properties',
+    },
+    {
+      title: t('hotels.title'),
+      url: '/hotels',
+      icon: Hotel,
+      resource: 'hotels',
     },
     {
       title: t('common.short_term'),

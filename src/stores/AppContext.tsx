@@ -41,6 +41,8 @@ import {
   ServiceCategory,
   Visit,
   Workflow,
+  Hotel,
+  Tower,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -69,6 +71,8 @@ import {
   serviceCategories as initialServiceCategories,
   visits as initialVisits,
   workflows as initialWorkflows,
+  hotels as initialHotels,
+  towers as initialTowers,
 } from '@/lib/mockData'
 import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
@@ -77,6 +81,8 @@ import { differenceInDays, differenceInHours, parseISO } from 'date-fns'
 interface AppContextType {
   properties: Property[]
   condominiums: Condominium[]
+  hotels: Hotel[]
+  towers: Tower[]
   tasks: Task[]
   financials: Financials
   messages: Message[]
@@ -118,6 +124,12 @@ interface AppContextType {
   addCondominium: (condo: Condominium) => void
   updateCondominium: (condo: Condominium) => void
   deleteCondominium: (condoId: string) => void
+  addHotel: (hotel: Hotel) => void
+  updateHotel: (hotel: Hotel) => void
+  deleteHotel: (hotelId: string) => void
+  addTower: (tower: Tower) => void
+  updateTower: (tower: Tower) => void
+  deleteTower: (towerId: string) => void
   updateTaskStatus: (taskId: string, status: Task['status']) => void
   updateTask: (task: Task) => void
   addTask: (task: Task) => void
@@ -197,6 +209,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [properties, setProperties] = useState<Property[]>(initialProperties)
   const [condominiums, setCondominiums] =
     useState<Condominium[]>(initialCondominiums)
+  const [hotels, setHotels] = useState<Hotel[]>(initialHotels)
+  const [towers, setTowers] = useState<Tower[]>(initialTowers)
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
   const [financials, setFinancials] = useState<Financials>(initialFinancials)
   const [visits, setVisits] = useState<Visit[]>(initialVisits)
@@ -693,6 +707,27 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  const addCondominium = (c: Condominium) =>
+    setCondominiums([...condominiums, c])
+  const updateCondominium = (c: Condominium) =>
+    setCondominiums(
+      condominiums.map((condo) => (condo.id === c.id ? c : condo)),
+    )
+  const deleteCondominium = (id: string) =>
+    setCondominiums(condominiums.filter((c) => c.id !== id))
+
+  const addHotel = (h: Hotel) => setHotels([...hotels, h])
+  const updateHotel = (h: Hotel) =>
+    setHotels(hotels.map((hotel) => (hotel.id === h.id ? h : hotel)))
+  const deleteHotel = (id: string) =>
+    setHotels(hotels.filter((h) => h.id !== id))
+
+  const addTower = (t: Tower) => setTowers([...towers, t])
+  const updateTower = (t: Tower) =>
+    setTowers(towers.map((tower) => (tower.id === t.id ? t : tower)))
+  const deleteTower = (id: string) =>
+    setTowers(towers.filter((t) => t.id !== id))
+
   const updateTaskStatus = (id: string, status: Task['status']) => {
     const task = tasks.find((t) => t.id === id)
     if (task) {
@@ -939,15 +974,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       }
     }
   }, [allMessages, currentUser.id, toast])
-
-  const addCondominium = (c: Condominium) =>
-    setCondominiums([...condominiums, c])
-  const updateCondominium = (c: Condominium) =>
-    setCondominiums(
-      condominiums.map((condo) => (condo.id === c.id ? c : condo)),
-    )
-  const deleteCondominium = (id: string) =>
-    setCondominiums(condominiums.filter((c) => c.id !== id))
 
   const addInvoice = (i: Invoice) => {
     setFinancials((prev) => ({ ...prev, invoices: [...prev.invoices, i] }))
@@ -1215,6 +1241,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       value={{
         properties,
         condominiums,
+        hotels,
+        towers,
         tasks,
         financials,
         messages: visibleMessages,
@@ -1257,6 +1285,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addCondominium,
         updateCondominium,
         deleteCondominium,
+        addHotel,
+        updateHotel,
+        deleteHotel,
+        addTower,
+        updateTower,
+        deleteTower,
         updateTaskStatus,
         updateTask,
         addTask,

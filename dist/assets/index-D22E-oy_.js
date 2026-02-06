@@ -19574,6 +19574,52 @@ var History = createLucideIcon("history", [
 		key: "1fdv2h"
 	}]
 ]);
+var Hotel = createLucideIcon("hotel", [
+	["path", {
+		d: "M10 22v-6.57",
+		key: "1wmca3"
+	}],
+	["path", {
+		d: "M12 11h.01",
+		key: "z322tv"
+	}],
+	["path", {
+		d: "M12 7h.01",
+		key: "1ivr5q"
+	}],
+	["path", {
+		d: "M14 15.43V22",
+		key: "1q2vjd"
+	}],
+	["path", {
+		d: "M15 16a5 5 0 0 0-6 0",
+		key: "o9wqvi"
+	}],
+	["path", {
+		d: "M16 11h.01",
+		key: "xkw8gn"
+	}],
+	["path", {
+		d: "M16 7h.01",
+		key: "1kdx03"
+	}],
+	["path", {
+		d: "M8 11h.01",
+		key: "1dfujw"
+	}],
+	["path", {
+		d: "M8 7h.01",
+		key: "1vti4s"
+	}],
+	["rect", {
+		x: "4",
+		y: "2",
+		width: "16",
+		height: "20",
+		rx: "2",
+		key: "1uxh74"
+	}]
+]);
 var House = createLucideIcon("house", [["path", {
 	d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8",
 	key: "5wwlr5"
@@ -53162,6 +53208,59 @@ var generatedTenants = generateTenants(50, generatedProperties);
 var generatedTasksList = generateTasks(50, generatedProperties);
 var generatedFinancialsList = generateFinancials(50, generatedProperties, generatedOwners);
 var generatedServiceRates = generateServiceRates(50);
+const hotels = [{
+	id: "hotel_1",
+	name: "Grand Plaza Hotel",
+	address: "123 Beach Blvd",
+	city: "Miami",
+	state: "FL",
+	country: "US",
+	zipCode: "33101",
+	description: "Luxury hotel with ocean view.",
+	managerName: "Robert CEO",
+	managerEmail: "ceo@grandplaza.com",
+	managerPhone: "+1 (305) 555-0100",
+	towers: ["tower_1_h1", "tower_2_h1"]
+}];
+const towers = [{
+	id: "tower_1_h1",
+	hotelId: "hotel_1",
+	name: "North Tower",
+	description: "Main tower with reception.",
+	floors: 20
+}, {
+	id: "tower_2_h1",
+	hotelId: "hotel_1",
+	name: "South Tower",
+	description: "Resort suites.",
+	floors: 15
+}];
+var hotelRooms = [];
+for (let i$2 = 1; i$2 <= 10; i$2++) {
+	const room = {
+		id: `room_10${i$2}_h1`,
+		name: `Room 10${i$2}`,
+		address: "123 Beach Blvd",
+		city: "Miami",
+		state: "FL",
+		zipCode: "33101",
+		country: "US",
+		type: "Hotel Room",
+		profileType: "short_term",
+		community: "Grand Plaza Hotel",
+		hotelId: "hotel_1",
+		towerId: "tower_1_h1",
+		roomNumber: `10${i$2}`,
+		status: i$2 % 2 === 0 ? "occupied" : "available",
+		bedrooms: 1,
+		bathrooms: 1,
+		guests: 2,
+		image: "https://img.usecurling.com/p/400/300?q=hotel%20room",
+		ownerId: "user_owner_demo",
+		listingPrice: 200
+	};
+	hotelRooms.push(room);
+}
 const systemUsers = [
 	{
 		id: "user_admin",
@@ -53283,7 +53382,7 @@ const partners = [{
 	serviceRates: []
 }];
 const condominiums = generatedCondos;
-const properties = generatedProperties;
+const properties = [...generatedProperties, ...hotelRooms];
 const tasks = generatedTasksList;
 const financials = {
 	revenue: [
@@ -53715,7 +53814,30 @@ const translations = {
 			email_required: "Email é obrigatório",
 			address_placeholder: "Endereço completo",
 			resource: "Recurso",
-			migration: "Migração"
+			migration: "Migração",
+			hotels: "Hotéis"
+		},
+		hotels: {
+			title: "Gestão de Hotéis",
+			subtitle: "Gerencie redes hoteleiras, torres e quartos.",
+			new_hotel: "Novo Hotel",
+			add_title: "Adicionar Hotel",
+			new_tower: "Nova Torre",
+			add_tower: "Adicionar Torre",
+			new_room: "Novo Quarto",
+			add_room: "Adicionar Quarto",
+			towers: "Torres",
+			rooms: "Quartos",
+			room_number: "Número do Quarto",
+			floor: "Andar",
+			floors: "Andares",
+			manager: "Gerente",
+			no_hotels: "Nenhum hotel cadastrado.",
+			no_towers: "Nenhuma torre cadastrada.",
+			no_rooms: "Nenhum quarto cadastrado.",
+			hotel_details: "Detalhes do Hotel",
+			tower_details: "Detalhes da Torre",
+			room_details: "Detalhes do Quarto"
 		},
 		workflows: {
 			title: "Motor de Workflow",
@@ -53818,7 +53940,8 @@ const translations = {
 			partner_portal: "Portal do Parceiro",
 			migration_hub: "Central de Migração",
 			publicity_admin: "Admin de Publicidade",
-			users: "Usuários"
+			users: "Usuários",
+			hotels: "Hotéis"
 		},
 		condominiums: {
 			title: "Condomínios",
@@ -54426,7 +54549,30 @@ const translations = {
 			email_required: "Email is required",
 			address_placeholder: "Full address",
 			resource: "Resource",
-			migration: "Migration"
+			migration: "Migration",
+			hotels: "Hotels"
+		},
+		hotels: {
+			title: "Hotel Management",
+			subtitle: "Manage hotel networks, towers, and rooms.",
+			new_hotel: "New Hotel",
+			add_title: "Add Hotel",
+			new_tower: "New Tower",
+			add_tower: "Add Tower",
+			new_room: "New Room",
+			add_room: "Add Room",
+			towers: "Towers",
+			rooms: "Rooms",
+			room_number: "Room Number",
+			floor: "Floor",
+			floors: "Floors",
+			manager: "Manager",
+			no_hotels: "No hotels registered.",
+			no_towers: "No towers registered.",
+			no_rooms: "No rooms registered.",
+			hotel_details: "Hotel Details",
+			tower_details: "Tower Details",
+			room_details: "Room Details"
 		},
 		workflows: {
 			title: "Workflow Engine",
@@ -54529,7 +54675,8 @@ const translations = {
 			partner_portal: "Partner Portal",
 			migration_hub: "Migration Hub",
 			publicity_admin: "Publicity Admin",
-			users: "Users"
+			users: "Users",
+			hotels: "Hotels"
 		},
 		condominiums: {
 			title: "Condominiums",
@@ -55137,7 +55284,30 @@ const translations = {
 			email_required: "El correo es obligatorio",
 			address_placeholder: "Dirección completa",
 			resource: "Recurso",
-			migration: "Migración"
+			migration: "Migración",
+			hotels: "Hoteles"
+		},
+		hotels: {
+			title: "Gestión de Hoteles",
+			subtitle: "Gestione redes hoteleras, torres y habitaciones.",
+			new_hotel: "Nuevo Hotel",
+			add_title: "Agregar Hotel",
+			new_tower: "Nueva Torre",
+			add_tower: "Agregar Torre",
+			new_room: "Nueva Habitación",
+			add_room: "Agregar Habitación",
+			towers: "Torres",
+			rooms: "Habitaciones",
+			room_number: "Número de Habitación",
+			floor: "Piso",
+			floors: "Pisos",
+			manager: "Gerente",
+			no_hotels: "No hay hoteles registrados.",
+			no_towers: "No hay torres registradas.",
+			no_rooms: "No hay habitaciones registradas.",
+			hotel_details: "Detalles del Hotel",
+			tower_details: "Detalles de la Torre",
+			room_details: "Detalles de la Habitación"
 		},
 		workflows: {
 			title: "Motor de Workflow",
@@ -55240,7 +55410,8 @@ const translations = {
 			partner_portal: "Portal del Socio",
 			migration_hub: "Centro de Migración",
 			publicity_admin: "Admin de Publicidad",
-			users: "Usuarios"
+			users: "Usuarios",
+			hotels: "Hoteles"
 		},
 		condominiums: {
 			title: "Condominios",
@@ -55686,6 +55857,8 @@ const AppContext = (0, import_react.createContext)(void 0);
 const AppProvider = ({ children }) => {
 	const [properties$1, setProperties] = (0, import_react.useState)(properties);
 	const [condominiums$1, setCondominiums] = (0, import_react.useState)(condominiums);
+	const [hotels$1, setHotels] = (0, import_react.useState)(hotels);
+	const [towers$1, setTowers] = (0, import_react.useState)(towers);
 	const [tasks$1, setTasks] = (0, import_react.useState)(tasks);
 	const [financials$1, setFinancials] = (0, import_react.useState)(financials);
 	const [visits$1, setVisits] = (0, import_react.useState)(visits);
@@ -56036,6 +56209,15 @@ const AppProvider = ({ children }) => {
 			details: `Deleted property: ${prop?.name || id}`
 		});
 	};
+	const addCondominium = (c$1) => setCondominiums([...condominiums$1, c$1]);
+	const updateCondominium = (c$1) => setCondominiums(condominiums$1.map((condo) => condo.id === c$1.id ? c$1 : condo));
+	const deleteCondominium = (id) => setCondominiums(condominiums$1.filter((c$1) => c$1.id !== id));
+	const addHotel = (h) => setHotels([...hotels$1, h]);
+	const updateHotel = (h) => setHotels(hotels$1.map((hotel) => hotel.id === h.id ? h : hotel));
+	const deleteHotel = (id) => setHotels(hotels$1.filter((h) => h.id !== id));
+	const addTower = (t$2) => setTowers([...towers$1, t$2]);
+	const updateTower = (t$2) => setTowers(towers$1.map((tower) => tower.id === t$2.id ? t$2 : tower));
+	const deleteTower = (id) => setTowers(towers$1.filter((t$2) => t$2.id !== id));
 	const updateTaskStatus = (id, status) => {
 		const task = tasks$1.find((t$2) => t$2.id === id);
 		if (task) updateTask({
@@ -56224,9 +56406,6 @@ const AppProvider = ({ children }) => {
 		currentUser.id,
 		toast$2
 	]);
-	const addCondominium = (c$1) => setCondominiums([...condominiums$1, c$1]);
-	const updateCondominium = (c$1) => setCondominiums(condominiums$1.map((condo) => condo.id === c$1.id ? c$1 : condo));
-	const deleteCondominium = (id) => setCondominiums(condominiums$1.filter((c$1) => c$1.id !== id));
 	const addInvoice = (i$2) => {
 		setFinancials((prev) => ({
 			...prev,
@@ -56417,6 +56596,8 @@ const AppProvider = ({ children }) => {
 		value: {
 			properties: properties$1,
 			condominiums: condominiums$1,
+			hotels: hotels$1,
+			towers: towers$1,
 			tasks: tasks$1,
 			financials: financials$1,
 			messages: visibleMessages,
@@ -56459,6 +56640,12 @@ const AppProvider = ({ children }) => {
 			addCondominium,
 			updateCondominium,
 			deleteCondominium,
+			addHotel,
+			updateHotel,
+			deleteHotel,
+			addTower,
+			updateTower,
+			deleteTower,
 			updateTaskStatus,
 			updateTask,
 			addTask,
@@ -60772,7 +60959,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$80({ inst: {
+			cachedValue = useState$83({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -60809,7 +60996,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$65 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$80 = React$65.useState, useEffect$24 = React$65.useEffect, useLayoutEffect$2 = React$65.useLayoutEffect, useDebugValue = React$65.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$65 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$83 = React$65.useState, useEffect$24 = React$65.useEffect, useLayoutEffect$2 = React$65.useLayoutEffect, useDebugValue = React$65.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$65.useSyncExternalStore ? React$65.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -61075,7 +61262,13 @@ const PERMISSIONS_MATRIX = {
 			"edit",
 			"delete"
 		],
-		portal: ["view"]
+		portal: ["view"],
+		hotels: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		]
 	},
 	software_tenant: {
 		dashboard: ["view"],
@@ -61167,7 +61360,13 @@ const PERMISSIONS_MATRIX = {
 			"delete"
 		],
 		migration: ["view", "create"],
-		automation: ["view", "edit"]
+		automation: ["view", "edit"],
+		hotels: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		]
 	},
 	internal_user: {
 		dashboard: ["view"],
@@ -61195,6 +61394,11 @@ const PERMISSIONS_MATRIX = {
 		renewals: ["view", "edit"],
 		reports: ["view"],
 		visits: [
+			"view",
+			"create",
+			"edit"
+		],
+		hotels: [
 			"view",
 			"create",
 			"edit"
@@ -61280,6 +61484,12 @@ function AppSidebar() {
 			url: "/properties",
 			icon: Building,
 			resource: "properties"
+		},
+		{
+			title: t$1("hotels.title"),
+			url: "/hotels",
+			icon: Hotel,
+			resource: "hotels"
 		},
 		{
 			title: t$1("common.short_term"),
@@ -87938,6 +88148,949 @@ function CondominiumDetails() {
 		})]
 	});
 }
+var useHotelStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("useHotelStore must be used within AppProvider");
+	return {
+		hotels: context.hotels,
+		towers: context.towers,
+		addHotel: context.addHotel,
+		updateHotel: context.updateHotel,
+		deleteHotel: context.deleteHotel,
+		addTower: context.addTower,
+		updateTower: context.updateTower,
+		deleteTower: context.deleteTower
+	};
+};
+var useHotelStore_default = useHotelStore;
+function Hotels() {
+	const { hotels: hotels$1, addHotel } = useHotelStore_default();
+	const { t: t$1 } = useLanguageStore_default();
+	useNavigate();
+	const { toast: toast$2 } = useToast();
+	const [filter, setFilter] = (0, import_react.useState)("");
+	const [open, setOpen] = (0, import_react.useState)(false);
+	const [newHotel, setNewHotel] = (0, import_react.useState)({
+		name: "",
+		address: "",
+		city: "",
+		state: "",
+		country: "US",
+		zipCode: "",
+		description: "",
+		managerName: "",
+		managerEmail: "",
+		managerPhone: ""
+	});
+	const filteredHotels = hotels$1.filter((h) => h.name.toLowerCase().includes(filter.toLowerCase()));
+	const handleAddressSelect = (addr) => {
+		const mappedCountry = addr.country === "Brazil" ? "BR" : addr.country === "Spain" ? "ES" : addr.country === "USA" ? "US" : newHotel.country;
+		setNewHotel((prev) => ({
+			...prev,
+			address: addr.street,
+			city: addr.city,
+			state: addr.state,
+			zipCode: applyZipCodeMask(addr.zipCode, mappedCountry),
+			country: mappedCountry
+		}));
+	};
+	const handleAddHotel = () => {
+		if (!newHotel.name || !newHotel.address) {
+			toast$2({
+				title: t$1("common.error"),
+				description: t$1("common.required"),
+				variant: "destructive"
+			});
+			return;
+		}
+		addHotel({
+			id: `hotel-${Date.now()}`,
+			name: newHotel.name,
+			address: newHotel.address,
+			city: newHotel.city || "",
+			state: newHotel.state || "",
+			country: newHotel.country || "US",
+			zipCode: newHotel.zipCode || "",
+			description: newHotel.description,
+			managerName: newHotel.managerName,
+			managerEmail: newHotel.managerEmail,
+			managerPhone: newHotel.managerPhone,
+			towers: []
+		});
+		setOpen(false);
+		setNewHotel({
+			name: "",
+			address: "",
+			city: "",
+			state: "",
+			country: "US",
+			zipCode: "",
+			description: "",
+			managerName: "",
+			managerEmail: "",
+			managerPhone: ""
+		});
+		toast$2({ title: t$1("common.success") });
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col gap-6",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex justify-between items-center",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold tracking-tight text-slate-950",
+					children: t$1("hotels.title")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-slate-700 font-medium",
+					children: t$1("hotels.subtitle")
+				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+					open,
+					onOpenChange: setOpen,
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							className: "bg-trust-blue gap-2",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+								" ",
+								t$1("hotels.add_title")
+							]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+						className: "max-w-2xl max-h-[90vh] overflow-y-auto",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("hotels.new_hotel") }) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-4 py-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: newHotel.name,
+											onChange: (e) => setNewHotel({
+												...newHotel,
+												name: e.target.value
+											}),
+											placeholder: "Grand Hotel"
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.address") }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddressInput, { onAddressSelect: handleAddressSelect }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: newHotel.address,
+												onChange: (e) => setNewHotel({
+													...newHotel,
+													address: e.target.value
+												}),
+												placeholder: t$1("properties.address_placeholder"),
+												className: "mt-2"
+											})
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.city_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: newHotel.city,
+												onChange: (e) => setNewHotel({
+													...newHotel,
+													city: e.target.value
+												})
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.state_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: newHotel.state,
+												onChange: (e) => setNewHotel({
+													...newHotel,
+													state: e.target.value
+												})
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+												value: newHotel.country,
+												onValueChange: (v) => setNewHotel({
+													...newHotel,
+													country: v
+												}),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "US",
+														children: "United States"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "BR",
+														children: "Brazil"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "ES",
+														children: "Spain"
+													})
+												] })]
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.zip_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: newHotel.zipCode,
+												onChange: (e) => setNewHotel({
+													...newHotel,
+													zipCode: e.target.value
+												})
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("hotels.manager") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid grid-cols-3 gap-2",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: "Name",
+													value: newHotel.managerName,
+													onChange: (e) => setNewHotel({
+														...newHotel,
+														managerName: e.target.value
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: "Email",
+													value: newHotel.managerEmail,
+													onChange: (e) => setNewHotel({
+														...newHotel,
+														managerEmail: e.target.value
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: "Phone",
+													value: newHotel.managerPhone,
+													onChange: (e) => setNewHotel({
+														...newHotel,
+														managerPhone: e.target.value
+													})
+												})
+											]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: newHotel.description,
+											onChange: (e) => setNewHotel({
+												...newHotel,
+												description: e.target.value
+											})
+										})]
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								onClick: handleAddHotel,
+								children: t$1("common.save")
+							}) })
+						]
+					})]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "relative w-full md:w-1/3",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					placeholder: t$1("common.search"),
+					value: filter,
+					onChange: (e) => setFilter(e.target.value),
+					className: "pl-8 text-black"
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+				children: filteredHotels.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "col-span-full text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg",
+					children: t$1("hotels.no_hotels")
+				}) : filteredHotels.map((hotel) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+					className: "hover:shadow-md transition-shadow",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "flex items-start justify-between",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-3",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "p-2 bg-blue-100 rounded-lg",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hotel, { className: "h-6 w-6 text-blue-700" })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+									className: "text-lg",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.name })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.city }),
+									", ",
+									hotel.country
+								] })] })]
+							})
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2 text-sm",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2 text-muted-foreground",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "truncate",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.address })
+								})]
+							}), hotel.managerName && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+								className: "text-muted-foreground",
+								children: ["Manager: ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.managerName })]
+							})]
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
+							className: "border-t pt-4",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								asChild: true,
+								className: "w-full",
+								variant: "outline",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+									to: `/hotels/${hotel.id}`,
+									children: [
+										t$1("common.view"),
+										" ",
+										t$1("common.details")
+									]
+								})
+							})
+						})
+					]
+				}, hotel.id))
+			})
+		]
+	});
+}
+function HotelDetails() {
+	const { id } = useParams();
+	const navigate = useNavigate();
+	const { hotels: hotels$1, towers: towers$1, updateHotel, deleteHotel, addTower, deleteTower } = useHotelStore_default();
+	const { t: t$1 } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const hotel = hotels$1.find((h) => h.id === id);
+	const hotelTowers = towers$1.filter((t$2) => t$2.hotelId === id);
+	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
+	const [formData, setFormData] = (0, import_react.useState)(hotel ? { ...hotel } : null);
+	const [openTowerDialog, setOpenTowerDialog] = (0, import_react.useState)(false);
+	const [newTower, setNewTower] = (0, import_react.useState)({
+		name: "",
+		description: "",
+		floors: 1
+	});
+	if (!hotel || !formData) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: "Hotel not found" });
+	const handleSaveHotel = () => {
+		if (formData) {
+			updateHotel(formData);
+			setIsEditing(false);
+			toast$2({ title: t$1("common.success") });
+		}
+	};
+	const handleDeleteHotel = () => {
+		if (confirm(t$1("common.delete_title"))) {
+			deleteHotel(hotel.id);
+			navigate("/hotels");
+			toast$2({ title: t$1("common.success") });
+		}
+	};
+	const handleAddTower = () => {
+		if (!newTower.name) return;
+		addTower({
+			id: `tower-${Date.now()}`,
+			hotelId: hotel.id,
+			name: newTower.name,
+			description: newTower.description,
+			floors: newTower.floors || 1
+		});
+		setOpenTowerDialog(false);
+		setNewTower({
+			name: "",
+			description: "",
+			floors: 1
+		});
+		toast$2({ title: t$1("common.success") });
+	};
+	const handleDeleteTower = (towerId) => {
+		if (confirm(t$1("common.delete_title"))) {
+			deleteTower(towerId);
+			toast$2({ title: t$1("common.success") });
+		}
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col gap-6",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex items-center gap-4",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+					to: "/hotels",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "ghost",
+						size: "icon",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-5 w-5" })
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold tracking-tight text-slate-950",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.name })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-2 text-sm text-slate-500",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+							to: "/hotels",
+							className: "hover:underline",
+							children: t$1("hotels.title")
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: hotel.name })
+					]
+				})] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "ml-auto flex gap-2",
+					children: isEditing ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						onClick: handleSaveHotel,
+						className: "bg-trust-blue gap-2",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Save, { className: "h-4 w-4" }),
+							" ",
+							t$1("common.save")
+						]
+					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						variant: "outline",
+						onClick: () => setIsEditing(true),
+						className: "gap-2",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" }),
+							" ",
+							t$1("common.edit")
+						]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "destructive",
+						onClick: handleDeleteHotel,
+						size: "icon",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+					})] })
+				})
+			]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "grid grid-cols-1 md:grid-cols-3 gap-6",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "md:col-span-1",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("hotels.hotel_details") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+					className: "space-y-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: formData.name,
+								onChange: (e) => setFormData({
+									...formData,
+									name: e.target.value
+								}),
+								disabled: !isEditing
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.address") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: formData.address,
+								onChange: (e) => setFormData({
+									...formData,
+									address: e.target.value
+								}),
+								disabled: !isEditing
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.city_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: formData.city,
+								onChange: (e) => setFormData({
+									...formData,
+									city: e.target.value
+								}),
+								disabled: !isEditing
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("hotels.manager") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: formData.managerName || "",
+								onChange: (e) => setFormData({
+									...formData,
+									managerName: e.target.value
+								}),
+								disabled: !isEditing
+							})]
+						})
+					]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "md:col-span-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+					className: "flex flex-row items-center justify-between",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("hotels.towers") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Manage towers within this hotel." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+						open: openTowerDialog,
+						onOpenChange: setOpenTowerDialog,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+							asChild: true,
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								className: "bg-trust-blue gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+									" ",
+									t$1("hotels.add_tower")
+								]
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("hotels.new_tower") }) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-4 py-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: newTower.name,
+											onChange: (e) => setNewTower({
+												...newTower,
+												name: e.target.value
+											}),
+											placeholder: "North Tower"
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: newTower.description,
+											onChange: (e) => setNewTower({
+												...newTower,
+												description: e.target.value
+											})
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("hotels.floors") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "number",
+											value: newTower.floors,
+											onChange: (e) => setNewTower({
+												...newTower,
+												floors: parseInt(e.target.value)
+											})
+										})]
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								onClick: handleAddTower,
+								children: t$1("common.save")
+							}) })
+						] })]
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.description") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("hotels.floors") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "text-right",
+						children: t$1("common.actions")
+					})
+				] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: hotelTowers.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					colSpan: 4,
+					className: "text-center py-8 text-muted-foreground",
+					children: t$1("hotels.no_towers")
+				}) }) : hotelTowers.map((tower) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+						className: "font-medium flex items-center gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-blue-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+							to: `/hotels/${hotel.id}/towers/${tower.id}`,
+							className: "hover:underline text-blue-700",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.name })
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: tower.description || "-" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: tower.floors }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: "text-right",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							size: "icon",
+							onClick: () => handleDeleteTower(tower.id),
+							className: "text-red-500 hover:text-red-700",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+						})
+					})
+				] }, tower.id)) })] }) })]
+			})]
+		})]
+	});
+}
+function RoomList({ hotelId, towerId }) {
+	const { properties: properties$1, addProperty, updateProperty, deleteProperty } = usePropertyStore_default();
+	const { t: t$1 } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [open, setOpen] = (0, import_react.useState)(false);
+	const [editingRoom, setEditingRoom] = (0, import_react.useState)(null);
+	const [formData, setFormData] = (0, import_react.useState)({
+		name: "",
+		roomNumber: "",
+		bedrooms: 1,
+		bathrooms: 1,
+		guests: 2,
+		status: "available",
+		listingPrice: 0
+	});
+	const rooms = properties$1.filter((p$1) => p$1.hotelId === hotelId && p$1.towerId === towerId);
+	const handleSave = () => {
+		if (!formData.name || !formData.roomNumber) {
+			toast$2({
+				title: t$1("common.error"),
+				description: t$1("common.required"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingRoom) {
+			updateProperty({
+				...editingRoom,
+				...formData
+			});
+			toast$2({ title: t$1("common.success") });
+		} else {
+			addProperty({
+				id: `room-${Date.now()}`,
+				...formData,
+				hotelId,
+				towerId,
+				type: "Hotel Room",
+				profileType: "short_term",
+				address: "Hotel Address",
+				ownerId: "system",
+				image: "https://img.usecurling.com/p/400/300?q=hotel%20room"
+			});
+			toast$2({ title: t$1("common.success") });
+		}
+		setOpen(false);
+		setEditingRoom(null);
+		setFormData({
+			name: "",
+			roomNumber: "",
+			bedrooms: 1,
+			bathrooms: 1,
+			guests: 2,
+			status: "available",
+			listingPrice: 0
+		});
+	};
+	const handleDelete = (id) => {
+		if (confirm(t$1("common.delete_title"))) {
+			deleteProperty(id);
+			toast$2({ title: t$1("common.success") });
+		}
+	};
+	const openEdit = (room) => {
+		setEditingRoom(room);
+		setFormData({
+			name: room.name,
+			roomNumber: room.roomNumber,
+			bedrooms: room.bedrooms,
+			bathrooms: room.bathrooms,
+			guests: room.guests,
+			status: room.status,
+			listingPrice: room.listingPrice
+		});
+		setOpen(true);
+	};
+	const getStatusColor = (status) => {
+		switch (status) {
+			case "occupied":
+			case "rented": return "bg-green-100 text-green-800";
+			case "maintenance": return "bg-red-100 text-red-800";
+			case "cleaning": return "bg-yellow-100 text-yellow-800";
+			case "available": return "bg-blue-100 text-blue-800";
+			default: return "bg-gray-100";
+		}
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "space-y-4",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+				className: "text-lg font-semibold",
+				children: t$1("hotels.rooms")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open,
+				onOpenChange: (v) => {
+					setOpen(v);
+					if (!v) {
+						setEditingRoom(null);
+						setFormData({
+							name: "",
+							roomNumber: "",
+							bedrooms: 1,
+							bathrooms: 1,
+							guests: 2,
+							status: "available",
+							listingPrice: 0
+						});
+					}
+				},
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+							" ",
+							t$1("hotels.add_room")
+						]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRoom ? t$1("common.edit") : t$1("hotels.new_room") }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-4 py-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-2 gap-4",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("hotels.room_number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: formData.roomNumber,
+										onChange: (e) => setFormData({
+											...formData,
+											roomNumber: e.target.value
+										})
+									})]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: formData.name,
+										onChange: (e) => setFormData({
+											...formData,
+											name: e.target.value
+										}),
+										placeholder: "e.g. Deluxe Suite"
+									})]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-3 gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.features.bedrooms") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "number",
+											value: formData.bedrooms,
+											onChange: (e) => setFormData({
+												...formData,
+												bedrooms: parseInt(e.target.value)
+											})
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.features.bathrooms") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "number",
+											value: formData.bathrooms,
+											onChange: (e) => setFormData({
+												...formData,
+												bathrooms: parseInt(e.target.value)
+											})
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.features.guests") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "number",
+											value: formData.guests,
+											onChange: (e) => setFormData({
+												...formData,
+												guests: parseInt(e.target.value)
+											})
+										})]
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.status") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: formData.status,
+									onValueChange: (v) => setFormData({
+										...formData,
+										status: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "available",
+											children: "Available"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "occupied",
+											children: "Occupied"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "maintenance",
+											children: "Maintenance"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "cleaning",
+											children: "Cleaning"
+										})
+									] })]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nightly Rate ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "number",
+									value: formData.listingPrice,
+									onChange: (e) => setFormData({
+										...formData,
+										listingPrice: parseFloat(e.target.value)
+									})
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleSave,
+						children: t$1("common.save")
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "border rounded-md",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("hotels.room_number") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.value") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "text-right",
+					children: t$1("common.actions")
+				})
+			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: rooms.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				colSpan: 5,
+				className: "text-center py-8 text-muted-foreground",
+				children: t$1("hotels.no_rooms")
+			}) }) : rooms.map((room) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+					className: "font-bold flex items-center gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-4 w-4 text-slate-500" }), room.roomNumber]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+					to: `/properties/${room.id}`,
+					className: "hover:underline text-blue-600",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: room.name })
+				}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+					className: getStatusColor(room.status),
+					children: room.status
+				}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: ["$", room.listingPrice] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "text-right",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex justify-end gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							size: "icon",
+							onClick: () => openEdit(room),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-4 w-4" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							size: "icon",
+							className: "text-red-500 hover:text-red-700",
+							onClick: () => handleDelete(room.id),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+						})]
+					})
+				})
+			] }, room.id)) })] })
+		})]
+	});
+}
+function TowerDetails() {
+	const { id, towerId } = useParams();
+	const { hotels: hotels$1, towers: towers$1 } = useHotelStore_default();
+	const { t: t$1 } = useLanguageStore_default();
+	const hotel = hotels$1.find((h) => h.id === id);
+	const tower = towers$1.find((t$2) => t$2.id === towerId);
+	if (!hotel || !tower) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: "Tower not found" });
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col gap-6",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex items-center gap-4",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+				to: `/hotels/${hotel.id}`,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "ghost",
+					size: "icon",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-5 w-5" })
+				})
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-950",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.name })
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-2 text-sm text-slate-500",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+						to: "/hotels",
+						className: "hover:underline",
+						children: t$1("hotels.title")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+						to: `/hotels/${hotel.id}`,
+						className: "hover:underline",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.name })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.name }) })
+				]
+			})] })]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "grid grid-cols-1 md:grid-cols-3 gap-6",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "md:col-span-1",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("hotels.tower_details") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+					className: "space-y-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-3 p-3 bg-muted/20 rounded-lg border",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-8 w-8 text-blue-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "font-semibold text-sm",
+							children: t$1("common.description")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-muted-foreground",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.description || "-" })
+						})] })]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-3 p-3 bg-muted/20 rounded-lg border",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Layers, { className: "h-8 w-8 text-indigo-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "font-semibold text-sm",
+							children: t$1("hotels.floors")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-muted-foreground",
+							children: tower.floors
+						})] })]
+					})]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "md:col-span-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("hotels.rooms") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: ["Manage rooms for ", tower.name] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RoomList, {
+					hotelId: hotel.id,
+					towerId: tower.id
+				}) })]
+			})]
+		})]
+	});
+}
 var DISPLAY_RESOURCES = [
 	"dashboard",
 	"properties",
@@ -96006,6 +97159,27 @@ var App = () => {
 								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
+								path: "/hotels",
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "hotels",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hotels, {})
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
+								path: "/hotels/:id",
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "hotels",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(HotelDetails, {})
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
+								path: "/hotels/:id/towers/:towerId",
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "hotels",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TowerDetails, {})
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/short-term",
 								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
 									resource: "short_term",
@@ -96222,4 +97396,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-B3Fu0Wmf.js.map
+//# sourceMappingURL=index-D22E-oy_.js.map

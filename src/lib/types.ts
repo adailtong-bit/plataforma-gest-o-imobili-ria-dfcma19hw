@@ -32,6 +32,7 @@ export type Resource =
   | 'automation'
   | 'reports'
   | 'visits'
+  | 'hotels' // Added hotels resource
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -180,6 +181,30 @@ export interface Condominium {
   feeHistory?: HoaFeeHistory[]
 }
 
+export interface Hotel {
+  id: string
+  name: string
+  address: string
+  city: string
+  state: string
+  country: string
+  zipCode: string
+  description?: string
+  managerName?: string
+  managerEmail?: string
+  managerPhone?: string
+  image?: string
+  towers?: string[] // Array of Tower IDs for reference if needed, though towers link back to hotelId
+}
+
+export interface Tower {
+  id: string
+  hotelId: string
+  name: string
+  description?: string
+  floors?: number
+}
+
 export type PropertyStatus =
   | 'interested'
   | 'rented'
@@ -312,6 +337,9 @@ export interface Property {
   profileType: 'long_term' | 'short_term'
   community: string
   condominiumId?: string
+  hotelId?: string // Link to Hotel
+  towerId?: string // Link to Tower
+  roomNumber?: string // Specific Room Number
   status: PropertyStatus
   marketingStatus?: 'listed' | 'unlisted'
   listingPrice?: number

@@ -45,6 +45,8 @@ import {
   FixedExpense,
   PartnerEmployee,
   WorkflowStep,
+  Hotel,
+  Tower,
 } from '@/lib/types'
 
 // Helpers
@@ -410,6 +412,69 @@ const generatedFinancialsList = generateFinancials(
 )
 const generatedServiceRates = generateServiceRates(50)
 
+// Generate Hotel Data
+export const hotels: Hotel[] = [
+  {
+    id: 'hotel_1',
+    name: 'Grand Plaza Hotel',
+    address: '123 Beach Blvd',
+    city: 'Miami',
+    state: 'FL',
+    country: 'US',
+    zipCode: '33101',
+    description: 'Luxury hotel with ocean view.',
+    managerName: 'Robert CEO',
+    managerEmail: 'ceo@grandplaza.com',
+    managerPhone: '+1 (305) 555-0100',
+    towers: ['tower_1_h1', 'tower_2_h1'],
+  },
+]
+
+export const towers: Tower[] = [
+  {
+    id: 'tower_1_h1',
+    hotelId: 'hotel_1',
+    name: 'North Tower',
+    description: 'Main tower with reception.',
+    floors: 20,
+  },
+  {
+    id: 'tower_2_h1',
+    hotelId: 'hotel_1',
+    name: 'South Tower',
+    description: 'Resort suites.',
+    floors: 15,
+  },
+]
+
+// Add Hotel Rooms to Properties
+const hotelRooms: Property[] = []
+for (let i = 1; i <= 10; i++) {
+  const room: Property = {
+    id: `room_10${i}_h1`,
+    name: `Room 10${i}`,
+    address: '123 Beach Blvd',
+    city: 'Miami',
+    state: 'FL',
+    zipCode: '33101',
+    country: 'US',
+    type: 'Hotel Room',
+    profileType: 'short_term',
+    community: 'Grand Plaza Hotel',
+    hotelId: 'hotel_1',
+    towerId: 'tower_1_h1',
+    roomNumber: `10${i}`,
+    status: i % 2 === 0 ? 'occupied' : 'available',
+    bedrooms: 1,
+    bathrooms: 1,
+    guests: 2,
+    image: 'https://img.usecurling.com/p/400/300?q=hotel%20room',
+    ownerId: 'user_owner_demo',
+    listingPrice: 200, // Nightly rate
+  }
+  hotelRooms.push(room)
+}
+
 // --- 1. USERS & ENTITIES ---
 
 // Explicit Demo Users for Testing
@@ -546,7 +611,7 @@ export const partners: Partner[] = [
 // --- 2. PROPERTIES & CONDOS ---
 
 export const condominiums: Condominium[] = generatedCondos
-export const properties: Property[] = generatedProperties
+export const properties: Property[] = [...generatedProperties, ...hotelRooms]
 
 // --- 3. TASKS ---
 

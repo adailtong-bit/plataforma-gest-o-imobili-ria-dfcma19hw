@@ -30,6 +30,7 @@ export const PERMISSIONS_MATRIX: Record<
     reports: ['view'],
     visits: ['view', 'create', 'edit', 'delete'],
     portal: ['view'],
+    hotels: ['view', 'create', 'edit', 'delete'],
   },
   software_tenant: {
     dashboard: ['view'],
@@ -54,6 +55,7 @@ export const PERMISSIONS_MATRIX: Record<
     visits: ['view', 'create', 'edit', 'delete'],
     migration: ['view', 'create'],
     automation: ['view', 'edit'],
+    hotels: ['view', 'create', 'edit', 'delete'],
   },
   internal_user: {
     dashboard: ['view'],
@@ -69,6 +71,7 @@ export const PERMISSIONS_MATRIX: Record<
     renewals: ['view', 'edit'],
     reports: ['view'],
     visits: ['view', 'create', 'edit'],
+    hotels: ['view', 'create', 'edit'],
   },
   partner: {
     portal: ['view'],

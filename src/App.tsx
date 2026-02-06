@@ -23,6 +23,9 @@ import Partners from './pages/Partners'
 import PartnerDetails from './pages/PartnerDetails'
 import Condominiums from './pages/Condominiums'
 import CondominiumDetails from './pages/CondominiumDetails'
+import Hotels from './pages/Hotels'
+import HotelDetails from './pages/HotelDetails'
+import TowerDetails from './pages/TowerDetails'
 import Users from './pages/Users'
 import ServicePricing from './pages/ServicePricing'
 import TenantPortal from './pages/portal/TenantPortal'
@@ -85,6 +88,30 @@ const App = () => {
                   element={
                     <RequirePermission resource="properties">
                       <PropertyDetails />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/hotels"
+                  element={
+                    <RequirePermission resource="hotels">
+                      <Hotels />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/hotels/:id"
+                  element={
+                    <RequirePermission resource="hotels">
+                      <HotelDetails />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/hotels/:id/towers/:towerId"
+                  element={
+                    <RequirePermission resource="hotels">
+                      <TowerDetails />
                     </RequirePermission>
                   }
                 />
