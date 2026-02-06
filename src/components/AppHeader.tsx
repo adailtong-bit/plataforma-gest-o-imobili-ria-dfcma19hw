@@ -240,8 +240,9 @@ export function AppHeader() {
             <Button
               variant="ghost"
               size="icon"
-              className="text-black"
+              className="text-black hover:bg-slate-100"
               onClick={() => navigate('/help')}
+              title={t('common.help_hub')}
             >
               <HelpCircle className="h-5 w-5" />
             </Button>

@@ -413,7 +413,7 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
-              {/* Help Hub Link */}
+              {/* Help Hub Link - Enhanced Visibility */}
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
