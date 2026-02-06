@@ -801,6 +801,9 @@ video {
 .-left-\[31px\] {
   left: -31px;
 }
+.-left-\[5px\] {
+  left: -5px;
+}
 .-right-12 {
   right: -3rem;
 }
@@ -935,6 +938,9 @@ video {
 }
 .-m-\[1px\] {
   margin: -1px;
+}
+.m-0 {
+  margin: 0px;
 }
 .-mx-1 {
   margin-left: -0.25rem;
@@ -1103,6 +1109,9 @@ video {
 }
 .inline-block {
   display: inline-block;
+}
+.inline {
+  display: inline;
 }
 .flex {
   display: flex;
@@ -2228,6 +2237,10 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1));
 }
+.bg-gray-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(156 163 175 / var(--tw-bg-opacity, 1));
+}
 .bg-gray-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
@@ -2647,6 +2660,9 @@ video {
 }
 .pl-4 {
   padding-left: 1rem;
+}
+.pl-6 {
+  padding-left: 1.5rem;
 }
 .pl-8 {
   padding-left: 2rem;
@@ -3843,6 +3859,9 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
   --tw-bg-opacity: 1;
   background-color: rgb(29 78 216 / var(--tw-bg-opacity, 1));
 }
+.hover\:bg-destructive\/10:hover {
+  background-color: hsl(var(--destructive) / 0.1);
+}
 .hover\:bg-destructive\/80:hover {
   background-color: hsl(var(--destructive) / 0.8);
 }
@@ -4380,6 +4399,9 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 .data-\[selected\=true\]\:rounded-none[data-selected="true"] {
   border-radius: 0px;
 }
+.data-\[state\=active\]\:border-primary[data-state="active"] {
+  border-color: hsl(var(--primary));
+}
 .data-\[active\=true\]\:bg-sidebar-accent[data-active="true"] {
   background-color: hsl(var(--sidebar-accent));
 }
@@ -4407,6 +4429,9 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 }
 .data-\[state\=active\]\:bg-primary[data-state="active"] {
   background-color: hsl(var(--primary));
+}
+.data-\[state\=active\]\:bg-transparent[data-state="active"] {
+  background-color: transparent;
 }
 .data-\[state\=active\]\:bg-white[data-state="active"] {
   --tw-bg-opacity: 1;

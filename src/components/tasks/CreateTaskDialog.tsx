@@ -240,22 +240,18 @@ export function CreateTaskDialog({
     let initialStatus: Task['status'] = 'pending'
     let approvalStatus: Task['approvalStatus'] = undefined
 
-    // Only maintenance needs approval flow based on cost
     if (values.type === 'maintenance') {
       if (estimatedBillable > threshold) {
         initialStatus = 'pending_approval'
-        approvalStatus = 'owner_pending' // Requires Owner first
+        approvalStatus = 'owner_pending'
       } else {
-        // Below threshold: requires PM approval only
         initialStatus = 'pending_approval'
-        approvalStatus = 'pm_pending' // Requires only PM
+        approvalStatus = 'pm_pending'
       }
     } else if (values.type === 'cleaning') {
-      // Typically cleaning is auto-approved or standard, but let's default to pending partner start
       initialStatus = 'pending'
     }
 
-    // Override if creator is Owner (creating task for PM to approve? Usually Owner requests)
     if (currentUser.role === 'property_owner') {
       initialStatus = 'pending_approval'
       approvalStatus = 'pm_pending'
@@ -286,6 +282,7 @@ export function CreateTaskDialog({
       images: uploadedImages,
       source: 'manual',
       approvalStatus: approvalStatus,
+      createdBy: currentUser.id,
     })
 
     if (initialStatus === 'pending_approval') {

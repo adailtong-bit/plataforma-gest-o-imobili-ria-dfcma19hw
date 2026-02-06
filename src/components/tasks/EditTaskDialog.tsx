@@ -12,7 +12,6 @@ import {
   Save,
   ChevronsUpDown,
   Check,
-  XCircle,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
@@ -66,6 +65,7 @@ import { useToast } from '@/hooks/use-toast'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Task, ServiceRate } from '@/lib/types'
+import { RejectTaskDialog } from './RejectTaskDialog'
 
 const formSchema = z.object({
   title: z.string().min(2, 'O título deve ter pelo menos 2 caracteres.'),
@@ -99,7 +99,7 @@ export function EditTaskDialog({
   onOpenChange,
 }: EditTaskDialogProps) {
   const { properties } = usePropertyStore()
-  const { updateTask, approveTask, rejectTask } = useTaskStore()
+  const { updateTask, approveTask } = useTaskStore()
   const { partners, genericServiceRates } = usePartnerStore()
   const { currentUser } = useAuthStore()
   const { financialSettings } = useFinancialStore()
@@ -110,6 +110,7 @@ export function EditTaskDialog({
     { label: string; value: string; rate: ServiceRate }[]
   >([])
   const [openCombobox, setOpenCombobox] = useState(false)
+  const [rejectOpen, setRejectOpen] = useState(false)
 
   const isAdminOrPM = [
     'platform_owner',
@@ -248,9 +249,8 @@ export function EditTaskDialog({
     onOpenChange(false)
   }
 
-  const handleReject = () => {
-    rejectTask(task.id)
-    onOpenChange(false)
+  const handleRejectClick = () => {
+    setRejectOpen(true)
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -299,284 +299,78 @@ export function EditTaskDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] h-[90vh] flex flex-col p-0">
-        <DialogHeader className="p-6 pb-2">
-          <DialogTitle>Editar Tarefa</DialogTitle>
-          <DialogDescription>Atualize os detalhes da tarefa.</DialogDescription>
-        </DialogHeader>
+    <>
+      <RejectTaskDialog
+        taskId={task.id}
+        open={rejectOpen}
+        onOpenChange={(isOpen) => {
+          setRejectOpen(isOpen)
+          if (!isOpen && task.status === 'rejected') {
+            // Close the edit dialog if task was rejected successfully
+            onOpenChange(false)
+          }
+        }}
+      />
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[600px] h-[90vh] flex flex-col p-0">
+          <DialogHeader className="p-6 pb-2">
+            <DialogTitle>Editar Tarefa</DialogTitle>
+            <DialogDescription>
+              Atualize os detalhes da tarefa.
+            </DialogDescription>
+          </DialogHeader>
 
-        <ScrollArea className="flex-1 p-6 pt-2">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Approval Buttons at Top if applicable */}
-              {task.status === 'pending_approval' && (
-                <div className="flex gap-2 p-2 border rounded-md bg-muted/20">
-                  <Button
-                    type="button"
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-9 disabled:opacity-50"
-                    onClick={handleApprove}
-                    disabled={!canApprove}
-                  >
-                    <Check className="h-4 w-4 mr-2" />
-                    {t('common.approve')}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    className="flex-1 font-bold h-9 disabled:opacity-50"
-                    onClick={handleReject}
-                    disabled={!canApprove}
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    {t('common.reject')}
-                  </Button>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="propertyId"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>{t('properties.title')}</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={t('common.select')} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {properties.map((prop) => (
-                            <SelectItem key={prop.id} value={prop.id}>
-                              {prop.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {selectedProperty && (
-                  <div className="col-span-2 bg-muted/40 p-3 rounded-md border text-sm grid gap-1 animate-fade-in">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Building className="h-4 w-4" />
-                      <span className="font-semibold text-foreground">
-                        {selectedProperty.community}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      <span>{selectedProperty.address}</span>
-                    </div>
+          <ScrollArea className="flex-1 p-6 pt-2">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
+                {/* Approval Buttons at Top if applicable */}
+                {task.status === 'pending_approval' && (
+                  <div className="flex gap-2 p-2 border rounded-md bg-muted/20">
+                    <Button
+                      type="button"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-9 disabled:opacity-50"
+                      onClick={handleApprove}
+                      disabled={!canApprove}
+                    >
+                      <Check className="h-4 w-4 mr-2" />
+                      {t('common.approve')}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      className="flex-1 font-bold h-9 disabled:opacity-50"
+                      onClick={handleRejectClick}
+                      disabled={!canApprove}
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      {t('common.reject')}
+                    </Button>
                   </div>
                 )}
 
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>{t('tasks.task_title')}</FormLabel>
-                      <Popover
-                        open={openCombobox}
-                        onOpenChange={setOpenCombobox}
-                      >
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className={cn(
-                                'w-full justify-between',
-                                !field.value && 'text-muted-foreground',
-                              )}
-                            >
-                              {field.value || 'Selecione ou digite um título'}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                          <Command>
-                            <CommandInput placeholder="Buscar template..." />
-                            <CommandList>
-                              <CommandEmpty>
-                                Use título personalizado
-                              </CommandEmpty>
-                              {taskTemplates.length > 0 && (
-                                <CommandGroup heading="Templates de Serviço">
-                                  {taskTemplates.map((template) => (
-                                    <CommandItem
-                                      value={template.label}
-                                      key={`${template.value}-${template.rate.id}`}
-                                      onSelect={() => {
-                                        form.setValue('title', template.value)
-                                        if (template.rate) {
-                                          form.setValue(
-                                            'price',
-                                            (
-                                              template.rate.partnerPayment || 0
-                                            ).toString(),
-                                          )
-                                          form.setValue(
-                                            'materialCost',
-                                            (
-                                              template.rate.productPrice || 0
-                                            ).toString(),
-                                          )
-                                        }
-                                        setOpenCombobox(false)
-                                      }}
-                                    >
-                                      <Check
-                                        className={cn(
-                                          'mr-2 h-4 w-4',
-                                          template.value === field.value
-                                            ? 'opacity-100'
-                                            : 'opacity-0',
-                                        )}
-                                      />
-                                      {template.label}
-                                      <span className="ml-auto text-xs text-muted-foreground">
-                                        Billable: $
-                                        {template.rate.servicePrice?.toFixed(2)}
-                                      </span>
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              )}
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      <div className="mt-2">
-                        <Input
-                          placeholder="Ou digite um título personalizado..."
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('tasks.service_type')}</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={t('common.select')} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="cleaning">
-                            {t('partners.cleaning')}
-                          </SelectItem>
-                          <SelectItem value="maintenance">
-                            {t('partners.maintenance')}
-                          </SelectItem>
-                          <SelectItem value="inspection">Inspeção</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="priority"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('common.priority')}</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={t('common.select')} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="low">Baixa</SelectItem>
-                          <SelectItem value="medium">Média</SelectItem>
-                          <SelectItem value="high">Alta</SelectItem>
-                          <SelectItem value="critical">Crítica</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="assigneeId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('tasks.assignee')}</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        disabled={!watchType}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={t('common.select')} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {relevantPartners.map((p) => (
-                            <SelectItem key={p.id} value={p.id}>
-                              {p.name} ({p.companyName || ''})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {watchAssigneeId && (
+                <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="partnerEmployeeId"
+                    name="propertyId"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1">
-                          <User className="h-3 w-3" /> Membro da Equipe
-                        </FormLabel>
+                      <FormItem className="col-span-2">
+                        <FormLabel>{t('properties.title')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Atribuir a..." />
+                              <SelectValue placeholder={t('common.select')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="none">Nenhum (Geral)</SelectItem>
-                            {availableEmployees.map((e) => (
-                              <SelectItem key={e.id} value={e.id}>
-                                {e.name} ({e.role})
+                            {properties.map((prop) => (
+                              <SelectItem key={prop.id} value={prop.id}>
+                                {prop.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -585,168 +379,401 @@ export function EditTaskDialog({
                       </FormItem>
                     )}
                   />
-                )}
 
-                {isAdminOrPM && (
-                  <>
-                    <FormField
-                      control={form.control}
-                      name="price"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Partner Payment (Cost)</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="0.00"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="materialCost"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Product Price (Cost)</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="0.00"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="col-span-2 bg-muted/20 p-2 rounded text-sm flex justify-between">
-                      <span>Total Estimado (para o proprietário):</span>
-                      <span className="font-bold">
-                        ${estimatedBillable.toFixed(2)}
-                      </span>
+                  {selectedProperty && (
+                    <div className="col-span-2 bg-muted/40 p-3 rounded-md border text-sm grid gap-1 animate-fade-in">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Building className="h-4 w-4" />
+                        <span className="font-semibold text-foreground">
+                          {selectedProperty.community}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin className="h-4 w-4" />
+                        <span>{selectedProperty.address}</span>
+                      </div>
                     </div>
-                  </>
-                )}
+                  )}
 
-                {(isAdminOrPM || isPartner) && (
                   <FormField
                     control={form.control}
-                    name="teamMemberPayout"
+                    name="title"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Pagamento Equipe ($)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="0.00" {...field} />
-                        </FormControl>
+                      <FormItem className="col-span-2">
+                        <FormLabel>{t('tasks.task_title')}</FormLabel>
+                        <Popover
+                          open={openCombobox}
+                          onOpenChange={setOpenCombobox}
+                        >
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                  'w-full justify-between',
+                                  !field.value && 'text-muted-foreground',
+                                )}
+                              >
+                                {field.value || 'Selecione ou digite um título'}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                            <Command>
+                              <CommandInput placeholder="Buscar template..." />
+                              <CommandList>
+                                <CommandEmpty>
+                                  Use título personalizado
+                                </CommandEmpty>
+                                {taskTemplates.length > 0 && (
+                                  <CommandGroup heading="Templates de Serviço">
+                                    {taskTemplates.map((template) => (
+                                      <CommandItem
+                                        value={template.label}
+                                        key={`${template.value}-${template.rate.id}`}
+                                        onSelect={() => {
+                                          form.setValue('title', template.value)
+                                          if (template.rate) {
+                                            form.setValue(
+                                              'price',
+                                              (
+                                                template.rate.partnerPayment ||
+                                                0
+                                              ).toString(),
+                                            )
+                                            form.setValue(
+                                              'materialCost',
+                                              (
+                                                template.rate.productPrice || 0
+                                              ).toString(),
+                                            )
+                                          }
+                                          setOpenCombobox(false)
+                                        }}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            'mr-2 h-4 w-4',
+                                            template.value === field.value
+                                              ? 'opacity-100'
+                                              : 'opacity-0',
+                                          )}
+                                        />
+                                        {template.label}
+                                        <span className="ml-auto text-xs text-muted-foreground">
+                                          Billable: $
+                                          {template.rate.servicePrice?.toFixed(
+                                            2,
+                                          )}
+                                        </span>
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                )}
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <div className="mt-2">
+                          <Input
+                            placeholder="Ou digite um título personalizado..."
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                )}
+
+                  <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('tasks.service_type')}</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('common.select')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="cleaning">
+                              {t('partners.cleaning')}
+                            </SelectItem>
+                            <SelectItem value="maintenance">
+                              {t('partners.maintenance')}
+                            </SelectItem>
+                            <SelectItem value="inspection">Inspeção</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="priority"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('common.priority')}</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('common.select')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="low">Baixa</SelectItem>
+                            <SelectItem value="medium">Média</SelectItem>
+                            <SelectItem value="high">Alta</SelectItem>
+                            <SelectItem value="critical">Crítica</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="assigneeId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('tasks.assignee')}</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          disabled={!watchType}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('common.select')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {relevantPartners.map((p) => (
+                              <SelectItem key={p.id} value={p.id}>
+                                {p.name} ({p.companyName || ''})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {watchAssigneeId && (
+                    <FormField
+                      control={form.control}
+                      name="partnerEmployeeId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-1">
+                            <User className="h-3 w-3" /> Membro da Equipe
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Atribuir a..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="none">
+                                Nenhum (Geral)
+                              </SelectItem>
+                              {availableEmployees.map((e) => (
+                                <SelectItem key={e.id} value={e.id}>
+                                  {e.name} ({e.role})
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {isAdminOrPM && (
+                    <>
+                      <FormField
+                        control={form.control}
+                        name="price"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Partner Payment (Cost)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="0.00"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="materialCost"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Product Price (Cost)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="0.00"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="col-span-2 bg-muted/20 p-2 rounded text-sm flex justify-between">
+                        <span>Total Estimado (para o proprietário):</span>
+                        <span className="font-bold">
+                          ${estimatedBillable.toFixed(2)}
+                        </span>
+                      </div>
+                    </>
+                  )}
+
+                  {(isAdminOrPM || isPartner) && (
+                    <FormField
+                      control={form.control}
+                      name="teamMemberPayout"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pagamento Equipe ($)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0.00"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>{t('tasks.scheduled_date')}</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={'outline'}
+                                className={cn(
+                                  'w-full pl-3 text-left font-normal',
+                                  !field.value && 'text-muted-foreground',
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, 'PPP')
+                                ) : (
+                                  <span>{t('common.select')}</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <FormLabel>{t('tasks.photos_ref')}</FormLabel>
+                  <div className="flex flex-wrap gap-2">
+                    {uploadedImages.map((img, idx) => (
+                      <div
+                        key={idx}
+                        className="relative h-20 w-20 rounded-md overflow-hidden border group"
+                      >
+                        <img
+                          src={img}
+                          alt="preview"
+                          className="h-full w-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(idx)}
+                          className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                    <div className="h-20 w-20 rounded-md border border-dashed flex items-center justify-center relative hover:bg-muted/50 transition-colors">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        onChange={handleImageUpload}
+                      />
+                      <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                  </div>
+                </div>
 
                 <FormField
                   control={form.control}
-                  name="date"
+                  name="description"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>{t('tasks.scheduled_date')}</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={'outline'}
-                              className={cn(
-                                'w-full pl-3 text-left font-normal',
-                                !field.value && 'text-muted-foreground',
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, 'PPP')
-                              ) : (
-                                <span>{t('common.select')}</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
+                    <FormItem>
+                      <FormLabel>{t('tasks.detailed_desc')}</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder={t('tasks.desc_placeholder')}
+                          className="min-h-[120px]"
+                          {...field}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
 
-              <div className="space-y-3">
-                <FormLabel>{t('tasks.photos_ref')}</FormLabel>
-                <div className="flex flex-wrap gap-2">
-                  {uploadedImages.map((img, idx) => (
-                    <div
-                      key={idx}
-                      className="relative h-20 w-20 rounded-md overflow-hidden border group"
-                    >
-                      <img
-                        src={img}
-                        alt="preview"
-                        className="h-full w-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(idx)}
-                        className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
-                  <div className="h-20 w-20 rounded-md border border-dashed flex items-center justify-center relative hover:bg-muted/50 transition-colors">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      className="absolute inset-0 opacity-0 cursor-pointer"
-                      onChange={handleImageUpload}
-                    />
-                    <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                </div>
-              </div>
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('tasks.detailed_desc')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t('tasks.desc_placeholder')}
-                        className="min-h-[120px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button type="submit" className="w-full bg-trust-blue">
-                <Save className="h-4 w-4 mr-2" /> {t('common.save')}
-              </Button>
-            </form>
-          </Form>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+                <Button type="submit" className="w-full bg-trust-blue">
+                  <Save className="h-4 w-4 mr-2" /> {t('common.save')}
+                </Button>
+              </form>
+            </Form>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

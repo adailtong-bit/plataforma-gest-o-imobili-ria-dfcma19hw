@@ -40,6 +40,7 @@ import {
 import { format } from 'date-fns'
 import { TaskDetailsSheet } from '@/components/tasks/TaskDetailsSheet'
 import { EditTaskDialog } from '@/components/tasks/EditTaskDialog'
+import { RejectTaskDialog } from '@/components/tasks/RejectTaskDialog'
 import { Task } from '@/lib/types'
 
 export default function Tasks() {
@@ -49,7 +50,6 @@ export default function Tasks() {
     addTaskImage,
     addTaskEvidence,
     approveTask,
-    rejectTask,
   } = useTaskStore()
   const { t } = useLanguageStore()
   const { currentUser } = useAuthStore()
@@ -62,6 +62,10 @@ export default function Tasks() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
+
+  // Rejection Dialog State
+  const [rejectOpen, setRejectOpen] = useState(false)
+  const [taskToReject, setTaskToReject] = useState<string | null>(null)
 
   const isAdminOrPM = [
     'platform_owner',
@@ -123,6 +127,8 @@ export default function Tasks() {
         return t('tasks.in_progress')
       case 'completed':
         return t('common.completed')
+      case 'rejected':
+        return 'Rejected'
       case 'pending_approval':
         return approvalStatus === 'owner_pending'
           ? t('tasks.status_wait_owner')
@@ -140,6 +146,11 @@ export default function Tasks() {
   const openEdit = (task: Task) => {
     setSelectedTask(task)
     setEditOpen(true)
+  }
+
+  const handleRejectClick = (taskId: string) => {
+    setTaskToReject(taskId)
+    setRejectOpen(true)
   }
 
   const advanceStatus = (task: Task) => {
@@ -181,6 +192,14 @@ export default function Tasks() {
             onOpenChange={setEditOpen}
           />
         </>
+      )}
+
+      {taskToReject && (
+        <RejectTaskDialog
+          taskId={taskToReject}
+          open={rejectOpen}
+          onOpenChange={setRejectOpen}
+        />
       )}
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -415,7 +434,9 @@ export default function Tasks() {
                               ? task.approvalStatus === 'owner_pending'
                                 ? 'bg-orange-100 text-orange-800'
                                 : 'bg-yellow-100 text-yellow-800'
-                              : ''
+                              : task.status === 'rejected'
+                                ? 'bg-red-100 text-red-800'
+                                : ''
                           }
                         >
                           {getStatusLabel(task.status, task.approvalStatus)}
@@ -440,7 +461,7 @@ export default function Tasks() {
                                 size="sm"
                                 variant="destructive"
                                 className="h-8 gap-1 disabled:opacity-50"
-                                onClick={() => rejectTask(task.id)}
+                                onClick={() => handleRejectClick(task.id)}
                                 disabled={!checkCanApprove(task)}
                                 title={t('common.reject')}
                               >
@@ -467,7 +488,8 @@ export default function Tasks() {
                             <Pencil className="h-4 w-4" />
                           </Button>
                           {task.status !== 'completed' &&
-                            task.status !== 'pending_approval' && (
+                            task.status !== 'pending_approval' &&
+                            task.status !== 'rejected' && (
                               <Button
                                 variant="ghost"
                                 size="icon"

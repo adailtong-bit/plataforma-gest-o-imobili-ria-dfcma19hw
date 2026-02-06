@@ -19951,6 +19951,20 @@ var Navigation = createLucideIcon("navigation", [["polygon", {
 	points: "3 11 22 2 13 21 11 13 3 11",
 	key: "1ltx0t"
 }]]);
+var OctagonAlert = createLucideIcon("octagon-alert", [
+	["path", {
+		d: "M12 16h.01",
+		key: "1drbdi"
+	}],
+	["path", {
+		d: "M12 8v4",
+		key: "1got3b"
+	}],
+	["path", {
+		d: "M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z",
+		key: "1fd625"
+	}]
+]);
 var Package = createLucideIcon("package", [
 	["path", {
 		d: "M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z",
@@ -22253,17 +22267,6 @@ function compareLocalAsc(laterDate, earlierDate) {
 	if (diff < 0) return -1;
 	if (diff > 0) return 1;
 	return diff;
-}
-function getRoundingMethod(method) {
-	return (number$5) => {
-		const result = (method ? Math[method] : Math.trunc)(number$5);
-		return result === 0 ? 0 : result;
-	};
-}
-function differenceInHours(laterDate, earlierDate, options$1) {
-	const [laterDate_, earlierDate_] = normalizeDates(options$1?.in, laterDate, earlierDate);
-	const diff = (+laterDate_ - +earlierDate_) / millisecondsInHour;
-	return getRoundingMethod(options$1?.roundingMethod)(diff);
 }
 function endOfMonth(date$4, options$1) {
 	const _date$1 = toDate(date$4, options$1?.in);
@@ -54485,96 +54488,7 @@ const AppProvider = ({ children }) => {
 	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(false);
 	const [currentUser, setCurrentUserObj] = (0, import_react.useState)(systemUsers[0]);
 	const { toast: toast$2 } = useToast();
-	(0, import_react.useEffect)(() => {
-		const checkAutomatedAlerts = () => {
-			const today = /* @__PURE__ */ new Date();
-			tenants$1.forEach((tenant) => {
-				if (!tenant.leaseEnd) return;
-				const daysLeft = differenceInDays(parseISO(tenant.leaseEnd), today);
-				if (daysLeft <= 30 && daysLeft > 0) {
-					const notifLink = `/tenants/${tenant.id}`;
-					if (!notifications$1.some((n$1) => n$1.link === notifLink && n$1.category === "contract")) {
-						const newNotif = {
-							id: `alert-lease-${tenant.id}-${Date.now()}`,
-							title: "Contract Expiration Warning",
-							message: `Lease for ${tenant.name} expires in ${daysLeft} days.`,
-							type: "warning",
-							category: "contract",
-							link: notifLink,
-							timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-							read: false
-						};
-						setNotifications((prev) => [newNotif, ...prev]);
-					}
-				}
-			});
-			tasks$1.forEach((task) => {
-				if (task.status === "completed" || task.status === "approved" || !task.date) return;
-				const daysLeft = differenceInDays(parseISO(task.date), today);
-				if (daysLeft <= 7 && daysLeft > 0 && (task.type === "maintenance" || task.type === "cleaning")) {
-					if (!notifications$1.some((n$1) => n$1.category === "maintenance" && n$1.message.includes(task.title))) {
-						const newNotif = {
-							id: `alert-task-${task.id}-${Date.now()}`,
-							title: "Upcoming Maintenance",
-							message: `Task "${task.title}" is scheduled in ${daysLeft} days.`,
-							type: "info",
-							category: "maintenance",
-							link: `/tasks`,
-							timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-							read: false
-						};
-						setNotifications((prev) => [newNotif, ...prev]);
-					}
-				}
-			});
-			const checkPendingApprovals = () => {
-				tasks$1.forEach((task) => {
-					if (task.status === "pending_approval" && task.approvalStatus) {
-						const lastReminded = task.lastRemindedAt ? parseISO(task.lastRemindedAt) : null;
-						if ((lastReminded ? differenceInHours(today, lastReminded) : 25) >= 24) {
-							let title = "";
-							let message$1 = "";
-							let targetRole = "";
-							if (task.approvalStatus === "owner_pending") {
-								title = "Approval Required";
-								message$1 = `Owner approval required for task: ${task.title}`;
-								targetRole = "property_owner";
-							} else if (task.approvalStatus === "pm_pending") {
-								title = "Approval Required";
-								message$1 = `PM approval required for task: ${task.title}`;
-								targetRole = "software_tenant";
-							}
-							if (title) {
-								const newNotif = {
-									id: `push-approval-${task.id}-${Date.now()}`,
-									title,
-									message: message$1,
-									type: "warning",
-									category: "maintenance",
-									link: `/tasks`,
-									timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-									read: false
-								};
-								setNotifications((prev) => [newNotif, ...prev]);
-								const updatedTask = {
-									...task,
-									lastRemindedAt: (/* @__PURE__ */ new Date()).toISOString()
-								};
-								setTasks((prev) => prev.map((t$2) => t$2.id === task.id ? updatedTask : t$2));
-								if (currentUser.role === targetRole || targetRole === "software_tenant" && ["platform_owner", "internal_user"].includes(currentUser.role)) toast$2({
-									title: `Reminder: ${title}`,
-									description: message$1,
-									duration: 5e3
-								});
-							}
-						}
-					}
-				});
-			};
-			checkPendingApprovals();
-		};
-		checkAutomatedAlerts();
-	}, []);
+	(0, import_react.useEffect)(() => {}, []);
 	const setLanguage = (lang) => {
 		setLanguageState(lang);
 		localStorage.setItem("app_language", lang);
@@ -54647,11 +54561,6 @@ const AppProvider = ({ children }) => {
 		setAuditLogs((prev) => [newLog, ...prev]);
 	};
 	const addNotification = (0, import_react.useCallback)((notification) => {
-		if ("notificationPreferences" in currentUser && currentUser.notificationPreferences) {
-			if (notification.category === "financial" && !currentUser.notificationPreferences.financials) return;
-			if (notification.category === "maintenance" && !currentUser.notificationPreferences.maintenance) return;
-			if (notification.category === "contract" && !currentUser.notificationPreferences.contractUpdates) return;
-		}
 		const newNotif = {
 			id: `notif-${Date.now()}-${Math.random()}`,
 			timestamp: (/* @__PURE__ */ new Date()).toISOString(),
@@ -54672,7 +54581,20 @@ const AppProvider = ({ children }) => {
 		});
 	}, [toast$2, currentUser]);
 	const addTask = (t$2) => {
-		setTasks([...tasks$1, t$2]);
+		const taskWithHistory = {
+			...t$2,
+			createdBy: currentUser.id,
+			history: [...t$2.history || [], {
+				id: `hist-${Date.now()}`,
+				action: "create",
+				statusTo: t$2.status,
+				userId: currentUser.id,
+				userName: currentUser.name,
+				timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+				note: "Task created"
+			}]
+		};
+		setTasks([...tasks$1, taskWithHistory]);
 		addAuditLog({
 			userId: currentUser.id,
 			userName: currentUser.name,
@@ -54732,38 +54654,83 @@ const AppProvider = ({ children }) => {
 			"software_tenant",
 			"internal_user"
 		].includes(currentUser.role);
+		let nextStatus = task.status;
+		let nextApprovalStatus = task.approvalStatus;
+		let note = "";
 		if (task.approvalStatus === "owner_pending" && !isAdminOrPM) {
-			updateTask({
-				...task,
-				approvalStatus: "pm_pending"
-			});
+			nextApprovalStatus = "pm_pending";
+			note = "Approved by Owner. Pending PM approval.";
 			toast$2({
 				title: t$1("common.approved"),
 				description: "Aprovado. Aguardando PM."
 			});
 		} else {
-			updateTask({
-				...task,
-				approvalStatus: "approved",
-				status: "pending"
-			});
+			nextApprovalStatus = "approved";
+			nextStatus = "pending";
+			note = "Task approved for execution.";
 			toast$2({
 				title: t$1("common.approved"),
 				description: "Tarefa aprovada para execução."
 			});
 		}
-	};
-	const rejectTask = (taskId) => {
-		const task = tasks$1.find((t$2) => t$2.id === taskId);
-		if (!task) return;
+		const newHistoryItem = {
+			id: `hist-${Date.now()}`,
+			action: "approve",
+			statusFrom: task.status,
+			statusTo: nextStatus,
+			userId: currentUser.id,
+			userName: currentUser.name,
+			timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+			note
+		};
 		updateTask({
 			...task,
-			status: "pending",
-			approvalStatus: void 0
+			status: nextStatus,
+			approvalStatus: nextApprovalStatus,
+			history: [...task.history || [], newHistoryItem]
+		});
+		if (nextApprovalStatus === "approved" && task.createdBy) addNotification({
+			title: "Task Approved",
+			message: `Your task "${task.title}" has been approved.`,
+			type: "success",
+			category: "maintenance",
+			link: "/tasks"
+		});
+	};
+	const rejectTask = (taskId, reason) => {
+		const task = tasks$1.find((t$2) => t$2.id === taskId);
+		if (!task) return;
+		const creator = allUsers.find((u$1) => u$1.id === task.createdBy);
+		const newAssigneeId = task.createdBy || task.assigneeId;
+		const newAssigneeName = creator?.name || "Requester";
+		const newHistoryItem = {
+			id: `hist-${Date.now()}`,
+			action: "reject",
+			statusFrom: task.status,
+			statusTo: "rejected",
+			userId: currentUser.id,
+			userName: currentUser.name,
+			timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+			note: reason
+		};
+		updateTask({
+			...task,
+			status: "rejected",
+			approvalStatus: void 0,
+			assigneeId: newAssigneeId,
+			assignee: newAssigneeName,
+			history: [...task.history || [], newHistoryItem]
+		});
+		if (creator) addNotification({
+			title: "Task Rejected",
+			message: `Task "${task.title}" rejected: ${reason}`,
+			type: "warning",
+			category: "maintenance",
+			link: "/tasks"
 		});
 		toast$2({
 			title: t$1("common.reject"),
-			description: "Tarefa rejeitada e retornada para revisão.",
+			description: "Tarefa rejeitada e retornada ao solicitante.",
 			variant: "destructive"
 		});
 	};
@@ -54837,10 +54804,23 @@ const AppProvider = ({ children }) => {
 	const deleteTower = (id) => setTowers(towers$1.filter((t$2) => t$2.id !== id));
 	const updateTaskStatus = (id, status) => {
 		const task = tasks$1.find((t$2) => t$2.id === id);
-		if (task) updateTask({
-			...task,
-			status
-		});
+		if (task) {
+			const newHistoryItem = {
+				id: `hist-${Date.now()}`,
+				action: "update",
+				statusFrom: task.status,
+				statusTo: status,
+				userId: currentUser.id,
+				userName: currentUser.name,
+				timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+				note: `Status updated manually to ${status}`
+			};
+			updateTask({
+				...task,
+				status,
+				history: [...task.history || [], newHistoryItem]
+			});
+		}
 	};
 	const deleteTask = (id) => {
 		const task = tasks$1.find((t$2) => t$2.id === id);
@@ -54904,12 +54884,10 @@ const AppProvider = ({ children }) => {
 		...u$1,
 		status: "blocked"
 	} : u$1));
-	const setTyping = (userId, isTyping) => {
-		setTypingStatus((prev) => ({
-			...prev,
-			[userId]: isTyping
-		}));
-	};
+	const setTyping = (userId, isTyping) => setTypingStatus((prev) => ({
+		...prev,
+		[userId]: isTyping
+	}));
 	const sendMessage = (contactId, text, attachments = [], senderIdOverride) => {
 		const senderId = senderIdOverride || currentUser.id;
 		const newMessage = {
@@ -54967,13 +54945,6 @@ const AppProvider = ({ children }) => {
 			}
 			return nextMessages;
 		});
-		if (!senderIdOverride && contactId !== currentUser.id && Math.random() > .3) setTimeout(() => {
-			setTyping(contactId, true);
-			setTimeout(() => {
-				setTyping(contactId, false);
-				sendMessage(currentUser.id, `This is an automated reply from ${allUsers.find((u$1) => u$1.id === contactId)?.name || "User"}. I received: "${text}"`, [], contactId);
-			}, 2e3);
-		}, 1e3);
 	};
 	const markAsRead = (threadId) => {
 		setAllMessages((prev) => prev.map((m$1) => {
@@ -55003,26 +54974,6 @@ const AppProvider = ({ children }) => {
 			history: []
 		}]);
 	};
-	(0, import_react.useEffect)(() => {
-		const lastMessage = allMessages.filter((m$1) => m$1.ownerId === currentUser.id).sort((a$2, b$1) => new Date(b$1.time).getTime() - new Date(a$2.time).getTime())[0];
-		if (lastMessage && lastMessage.unread > 0 && window.location.pathname !== "/messages") {
-			const msgTime = new Date(lastMessage.time).getTime();
-			if ((/* @__PURE__ */ new Date()).getTime() - msgTime < 5e3) toast$2({
-				title: `New message from ${lastMessage.contact}`,
-				description: lastMessage.lastMessage,
-				duration: 4e3,
-				action: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "bg-primary text-primary-foreground px-3 py-2 rounded-md text-xs cursor-pointer",
-					onClick: () => window.location.href = `/messages?contactId=${lastMessage.contactId}`,
-					children: "View"
-				})
-			});
-		}
-	}, [
-		allMessages,
-		currentUser.id,
-		toast$2
-	]);
 	const addInvoice = (i$2) => {
 		setFinancials((prev) => ({
 			...prev,
@@ -55074,15 +55025,9 @@ const AppProvider = ({ children }) => {
 		lastUpdated: (/* @__PURE__ */ new Date()).toISOString()
 	} : rate));
 	const deleteGenericServiceRate = (id) => setGenericServiceRates((prev) => prev.filter((r$2) => r$2.id !== id));
-	const addServiceCategory = (category) => {
-		setServiceCategories((prev) => [...prev, category]);
-	};
-	const updateServiceCategory = (category) => {
-		setServiceCategories((prev) => prev.map((c$1) => c$1.id === category.id ? category : c$1));
-	};
-	const deleteServiceCategory = (categoryId) => {
-		setServiceCategories((prev) => prev.filter((c$1) => c$1.id !== categoryId));
-	};
+	const addServiceCategory = (category) => setServiceCategories((prev) => [...prev, category]);
+	const updateServiceCategory = (category) => setServiceCategories((prev) => prev.map((c$1) => c$1.id === category.id ? category : c$1));
+	const deleteServiceCategory = (categoryId) => setServiceCategories((prev) => prev.filter((c$1) => c$1.id !== categoryId));
 	const renewTenantContract = (id, end, rent, start, doc) => {
 		setTenants((prev) => prev.map((t$2) => {
 			if (t$2.id === id) {
@@ -55120,94 +55065,20 @@ const AppProvider = ({ children }) => {
 	const updateAdvertiser = (a$2) => setAdvertisers((prev) => prev.map((ad) => ad.id === a$2.id ? a$2 : ad));
 	const deleteAdvertiser = (id) => setAdvertisers((prev) => prev.filter((ad) => ad.id !== id));
 	const updateAdPricing = (p$1) => setAdPricingState(p$1);
-	const addBooking = (booking) => {
-		setBookings((prev) => [...prev, booking]);
-		if (booking.paid && booking.totalAmount > 0) addLedgerEntry({
-			id: `inc-${Date.now()}`,
-			propertyId: booking.propertyId,
-			date: (/* @__PURE__ */ new Date()).toISOString(),
-			dueDate: booking.checkIn,
-			paymentDate: (/* @__PURE__ */ new Date()).toISOString(),
-			type: "income",
-			category: "Rent (Short Term)",
-			amount: booking.totalAmount,
-			description: `Booking #${booking.id.slice(-4)} - ${booking.guestName}`,
-			referenceId: booking.id,
-			status: "cleared"
-		});
-	};
-	const updateBooking = (booking) => {
-		setBookings((prev) => prev.map((b$1) => b$1.id === booking.id ? booking : b$1));
-	};
-	const deleteBooking = (bookingId) => {
-		setBookings((prev) => prev.filter((b$1) => b$1.id !== bookingId));
-	};
-	const addCalendarBlock = (block) => {
-		setCalendarBlocks((prev) => [...prev, block]);
-	};
-	const deleteCalendarBlock = (blockId) => {
-		setCalendarBlocks((prev) => prev.filter((b$1) => b$1.id !== blockId));
-	};
-	const addMessageTemplate = (template) => {
-		setMessageTemplates((prev) => [...prev, template]);
-	};
-	const updateMessageTemplate = (template) => {
-		setMessageTemplates((prev) => prev.map((t$2) => t$2.id === template.id ? template : t$2));
-	};
-	const deleteMessageTemplate = (templateId) => {
-		setMessageTemplates((prev) => prev.filter((t$2) => t$2.id !== templateId));
-	};
-	const addVisit = (visit) => {
-		setVisits((prev) => [...prev, visit]);
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "create",
-			entity: "Visit",
-			entityId: visit.propertyId,
-			details: `Scheduled visit for ${visit.clientName}`
-		});
-	};
-	const updateVisit = (visit) => {
-		setVisits((prev) => prev.map((v) => v.id === visit.id ? visit : v));
-	};
-	const deleteVisit = (id) => {
-		setVisits((prev) => prev.filter((v) => v.id !== id));
-	};
-	const addWorkflow = (workflow) => {
-		setWorkflows((prev) => [...prev, workflow]);
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "create",
-			entity: "Workflow",
-			entityId: workflow.id,
-			details: `Created workflow: ${workflow.name}`
-		});
-	};
-	const updateWorkflow = (workflow) => {
-		setWorkflows((prev) => prev.map((w) => w.id === workflow.id ? workflow : w));
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "update",
-			entity: "Workflow",
-			entityId: workflow.id,
-			details: `Updated workflow: ${workflow.name}`
-		});
-	};
-	const deleteWorkflow = (id) => {
-		const wf = workflows$1.find((w) => w.id === id);
-		setWorkflows((prev) => prev.filter((w) => w.id !== id));
-		addAuditLog({
-			userId: currentUser.id,
-			userName: currentUser.name,
-			action: "delete",
-			entity: "Workflow",
-			entityId: id,
-			details: `Deleted workflow: ${wf?.name || id}`
-		});
-	};
+	const addBooking = (booking) => setBookings((prev) => [...prev, booking]);
+	const updateBooking = (booking) => setBookings((prev) => prev.map((b$1) => b$1.id === booking.id ? booking : b$1));
+	const deleteBooking = (bookingId) => setBookings((prev) => prev.filter((b$1) => b$1.id !== bookingId));
+	const addCalendarBlock = (block) => setCalendarBlocks((prev) => [...prev, block]);
+	const deleteCalendarBlock = (blockId) => setCalendarBlocks((prev) => prev.filter((b$1) => b$1.id !== blockId));
+	const addMessageTemplate = (template) => setMessageTemplates((prev) => [...prev, template]);
+	const updateMessageTemplate = (template) => setMessageTemplates((prev) => prev.map((t$2) => t$2.id === template.id ? template : t$2));
+	const deleteMessageTemplate = (templateId) => setMessageTemplates((prev) => prev.filter((t$2) => t$2.id !== templateId));
+	const addVisit = (visit) => setVisits((prev) => [...prev, visit]);
+	const updateVisit = (visit) => setVisits((prev) => prev.map((v) => v.id === visit.id ? visit : v));
+	const deleteVisit = (id) => setVisits((prev) => prev.filter((v) => v.id !== id));
+	const addWorkflow = (workflow) => setWorkflows((prev) => [...prev, workflow]);
+	const updateWorkflow = (workflow) => setWorkflows((prev) => prev.map((w) => w.id === workflow.id ? workflow : w));
+	const deleteWorkflow = (id) => setWorkflows((prev) => prev.filter((w) => w.id !== id));
 	const visibleMessages = (0, import_react.useMemo)(() => allMessages.filter((m$1) => m$1.ownerId === currentUser.id), [allMessages, currentUser.id]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppContext.Provider, {
 		value: {
@@ -59580,7 +59451,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$83({ inst: {
+			cachedValue = useState$85({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -59617,7 +59488,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$65 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$83 = React$65.useState, useEffect$24 = React$65.useEffect, useLayoutEffect$2 = React$65.useLayoutEffect, useDebugValue = React$65.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$65 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$85 = React$65.useState, useEffect$24 = React$65.useEffect, useLayoutEffect$2 = React$65.useLayoutEffect, useDebugValue = React$65.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$65.useSyncExternalStore ? React$65.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -65551,12 +65422,92 @@ var useShortTermStore = () => {
 	};
 };
 var useShortTermStore_default = useShortTermStore;
+var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
+		className: cn("flex min-h-[80px] w-full rounded-md border border-input bg-white px-3 py-2 text-base text-black ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-100 md:text-sm shadow-none", "disabled:text-black disabled:bg-white", className),
+		ref,
+		...props
+	});
+});
+Textarea.displayName = "Textarea";
+function RejectTaskDialog({ taskId, open, onOpenChange }) {
+	const { rejectTask } = useTaskStore_default();
+	const { t: t$1 } = useLanguageStore_default();
+	const [reason, setReason] = (0, import_react.useState)("");
+	const [error, setError] = (0, import_react.useState)(false);
+	const handleConfirm = () => {
+		if (!reason.trim()) {
+			setError(true);
+			return;
+		}
+		rejectTask(taskId, reason);
+		setReason("");
+		setError(false);
+		onOpenChange(false);
+	};
+	const handleOpenChange = (isOpen) => {
+		if (!isOpen) {
+			setReason("");
+			setError(false);
+		}
+		onOpenChange(isOpen);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+		open,
+		onOpenChange: handleOpenChange,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+			className: "sm:max-w-md",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogTitle, {
+					className: "flex items-center gap-2 text-destructive",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "h-5 w-5" }), "Reject Task"]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "This action will return the task to the requester for modification or cancellation. Please provide a reason." })] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "py-4 space-y-4",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								htmlFor: "reason",
+								children: "Reason for Rejection *"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+								id: "reason",
+								placeholder: "e.g. Cost is too high, details are missing...",
+								value: reason,
+								onChange: (e) => {
+									setReason(e.target.value);
+									if (error && e.target.value.trim()) setError(false);
+								},
+								className: error ? "border-destructive" : ""
+							}),
+							error && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-xs text-destructive font-medium",
+								children: "A reason is required to reject the task."
+							})
+						]
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "ghost",
+					onClick: () => handleOpenChange(false),
+					children: t$1("common.cancel")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "destructive",
+					onClick: handleConfirm,
+					children: "Reject Task"
+				})] })
+			]
+		})
+	});
+}
 function TaskDetailsSheet({ task, open, onOpenChange }) {
 	const { t: t$1 } = useLanguageStore_default();
 	const { bookings: bookings$1 } = useShortTermStore_default();
 	const { currentUser } = useAuthStore_default();
-	const { approveTask, rejectTask } = useTaskStore_default();
+	const { approveTask } = useTaskStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
+	const [rejectOpen, setRejectOpen] = (0, import_react.useState)(false);
 	if (!task) return null;
 	const getPriorityColor = (priority) => {
 		switch (priority) {
@@ -65601,7 +65552,11 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 	const showTeamPayout = isAdminOrPM || isPartner || isTeamMember;
 	const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
 	const canApprove = task.status === "pending_approval" && (task.approvalStatus === "owner_pending" && isOwner && isMyProperty || isAdminOrPM);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sheet, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RejectTaskDialog, {
+		taskId: task.id,
+		open: rejectOpen,
+		onOpenChange: setRejectOpen
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sheet, {
 		open,
 		onOpenChange,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetContent, {
@@ -65650,306 +65605,387 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						variant: "destructive",
 						className: "flex-1 font-bold disabled:opacity-50",
-						onClick: () => rejectTask(task.id),
+						onClick: () => setRejectOpen(true),
 						disabled: !canApprove,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 mr-2" }), t$1("common.reject")]
 					})]
 				})]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
-				className: "flex-1 p-6 pt-2",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "space-y-6 pb-6",
-					children: [
-						(showBillableToOwner || showInternalCosts || showPartnerRevenue || showTeamPayout) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-							className: "bg-emerald-50/50 border-emerald-100",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-								className: "p-4 space-y-3",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex items-center gap-2 text-emerald-800 font-semibold text-sm uppercase tracking-wide",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Receipt, { className: "h-4 w-4" }), " Detalhes Financeiros"]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-2 gap-4",
-									children: [
-										showBillableToOwner && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "col-span-2 md:col-span-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-muted-foreground text-xs block",
-												children: "Valor Total Faturado"
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-xl font-bold text-emerald-700",
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", (task.billableAmount || task.price || 0).toFixed(2)] })
-											})]
-										}),
-										showInternalCosts && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "col-span-2 md:col-span-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-												className: "text-muted-foreground text-xs block flex items-center gap-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hammer, { className: "h-3 w-3" }), " Custo Mão de Obra"]
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "font-medium text-gray-700",
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", (task.laborCost || task.price || 0).toFixed(2)] })
-											})]
-										}), task.materialCost && task.materialCost > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "col-span-2 md:col-span-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-												className: "text-muted-foreground text-xs block flex items-center gap-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(HardHat, { className: "h-3 w-3" }), " Custo Material"]
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "font-medium text-gray-700",
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", task.materialCost.toFixed(2)] })
-											})]
-										})] }),
-										showPartnerRevenue && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "col-span-2 md:col-span-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-												className: "text-muted-foreground text-xs block flex items-center gap-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hammer, { className: "h-3 w-3" }), " Receita (Partner)"]
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "font-medium text-gray-700",
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", (task.price || 0).toFixed(2)] })
-											})]
-										}),
-										showTeamPayout && task.teamMemberPayout && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "col-span-2 md:col-span-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-												className: "text-muted-foreground text-xs block flex items-center gap-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }), " Valor Pago à Equipe"]
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "font-medium text-blue-600",
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", task.teamMemberPayout.toFixed(2)] })
-											})]
-										})
-									]
-								})]
-							})
-						}),
-						task.rating && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-2 mb-2",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: "h-5 w-5 fill-yellow-500 text-yellow-500" }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-										className: "font-bold text-lg",
-										children: [task.rating, "/5"]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "text-sm text-yellow-700 font-medium",
-										children: "Avaliação do Cliente"
-									})
-								]
-							}), task.feedback && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-								className: "text-sm text-yellow-800 italic",
-								children: [
-									"\"",
-									task.feedback,
-									"\""
-								]
-							})]
-						}),
-						linkedBooking && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-							className: "bg-purple-50/50 border-purple-100",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-								className: "p-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex items-center gap-2 mb-2 text-purple-800 font-semibold text-sm uppercase tracking-wide",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "h-4 w-4" }),
-										" ",
-										t$1("short_term.title")
-									]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-2 gap-4 text-sm",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-muted-foreground text-xs",
-											children: t$1("short_term.guest")
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "font-medium",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: linkedBooking.guestName })
-										})] }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-muted-foreground text-xs",
-											children: t$1("short_term.platform")
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "capitalize",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: linkedBooking.platform })
-										})] }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-muted-foreground text-xs",
-											children: "Check-in"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "font-medium",
-											children: format(parseISO(linkedBooking.checkIn), "dd/MM/yyyy")
-										})] }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-muted-foreground text-xs",
-											children: "Check-out"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "font-medium",
-											children: format(parseISO(linkedBooking.checkOut), "dd/MM/yyyy")
-										})] })
-									]
-								})]
-							})
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "bg-muted/30 p-4 rounded-lg border space-y-3",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
-								className: "font-semibold flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wide",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4" }),
-									" ",
-									t$1("tasks.location")
-								]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex items-start gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-muted-foreground mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "font-medium block",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyCommunity || "Condomínio não informado" })
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "text-sm text-muted-foreground",
-										children: "Comunidade"
-									})] })]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex items-start gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4 text-muted-foreground mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "font-medium block",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyAddress || "Endereço não informado" })
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "text-sm text-muted-foreground",
-										children: "Endereço Completo"
-									})] })]
-								})]
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
-								className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-4 w-4" }),
-									" ",
-									t$1("tasks.activity_log")
-								]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden mb-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "p-3 bg-muted/50 border-b flex items-center justify-between",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "font-semibold text-xs uppercase tracking-wider text-blue-600",
-										children: t$1("tasks.arrival")
-									}), arrivalEvidence && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-3 w-3 text-green-500" })]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "p-0",
-									children: arrivalEvidence ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex flex-col",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "relative aspect-video bg-black",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-												src: arrivalEvidence.url,
-												alt: "Arrival",
-												className: "w-full h-full object-contain"
-											})
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "p-3 text-xs space-y-1.5 bg-muted/10",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "flex items-center gap-1.5 text-muted-foreground",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: format(new Date(arrivalEvidence.timestamp), "dd/MM/yyyy HH:mm") })]
-											}), arrivalEvidence.location && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "flex items-start gap-1.5 text-muted-foreground",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigation, { className: "h-3 w-3 mt-0.5 shrink-0" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-													className: "leading-tight",
-													children: arrivalEvidence.location.address
-												})]
-											})]
-										})]
-									}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "h-20 flex items-center justify-center text-xs text-muted-foreground italic bg-muted/10",
-										children: [t$1("common.pending"), " - Check-in não realizado"]
-									})
-								})]
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid grid-cols-2 gap-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-1",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
-									className: "text-sm font-medium text-muted-foreground flex items-center gap-1",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }),
-										" ",
-										t$1("tasks.assignee")
-									]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "font-medium",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.assignee })
-								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-1",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
-									className: "text-sm font-medium text-muted-foreground flex items-center gap-1",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-3 w-3" }),
-										" ",
-										t$1("tasks.scheduled_date")
-									]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "font-medium",
-									children: format(new Date(task.date), "dd/MM/yyyy")
-								})]
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-								className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide",
-								children: t$1("common.description")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "text-sm leading-relaxed whitespace-pre-wrap",
-								children: task.description || "Sem descrição detalhada."
-							})]
-						}),
-						uniqueGallery.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-3",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
-								className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image, { className: "h-4 w-4" }), " Galeria de Fotos"]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "grid grid-cols-2 gap-2",
-								children: uniqueGallery.map((img, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "relative aspect-video rounded-md overflow-hidden border bg-muted group",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-										src: img.url,
-										alt: `Gallery ${idx + 1}`,
-										className: "object-cover w-full h-full hover:scale-105 transition-transform duration-300"
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "text-[10px] text-white w-full",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-												className: "font-semibold",
-												children: img.type
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-												className: "truncate opacity-80",
-												children: format(new Date(img.date), "dd/MM HH:mm")
-											})]
-										})
-									})]
-								}, `gallery-${idx}`))
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+				defaultValue: "details",
+				className: "flex-1 flex flex-col",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "px-6",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+							className: "w-full justify-start border-b rounded-none h-auto p-0 bg-transparent",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+								value: "details",
+								className: "rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2",
+								children: "Details"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+								value: "history",
+								className: "rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2",
+								children: "Activity Log"
 							})]
 						})
-					]
-				})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+						value: "details",
+						className: "flex-1 p-0 m-0",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
+							className: "h-full p-6 pt-4",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-6 pb-6",
+								children: [
+									(showBillableToOwner || showInternalCosts || showPartnerRevenue || showTeamPayout) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+										className: "bg-emerald-50/50 border-emerald-100",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+											className: "p-4 space-y-3",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-center gap-2 text-emerald-800 font-semibold text-sm uppercase tracking-wide",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Receipt, { className: "h-4 w-4" }), " Detalhes Financeiros"]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid grid-cols-2 gap-4",
+												children: [
+													showBillableToOwner && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "col-span-2 md:col-span-1",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+															className: "text-muted-foreground text-xs block",
+															children: "Valor Total Faturado"
+														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+															className: "text-xl font-bold text-emerald-700",
+															children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", (task.billableAmount || task.price || 0).toFixed(2)] })
+														})]
+													}),
+													showInternalCosts && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "col-span-2 md:col-span-1",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+															className: "text-muted-foreground text-xs block flex items-center gap-1",
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hammer, { className: "h-3 w-3" }), " Custo Mão de Obra"]
+														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+															className: "font-medium text-gray-700",
+															children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", (task.laborCost || task.price || 0).toFixed(2)] })
+														})]
+													}), task.materialCost && task.materialCost > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "col-span-2 md:col-span-1",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+															className: "text-muted-foreground text-xs block flex items-center gap-1",
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(HardHat, { className: "h-3 w-3" }), " Custo Material"]
+														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+															className: "font-medium text-gray-700",
+															children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", task.materialCost.toFixed(2)] })
+														})]
+													})] }),
+													showPartnerRevenue && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "col-span-2 md:col-span-1",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+															className: "text-muted-foreground text-xs block flex items-center gap-1",
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hammer, { className: "h-3 w-3" }), " Receita (Partner)"]
+														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+															className: "font-medium text-gray-700",
+															children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", (task.price || 0).toFixed(2)] })
+														})]
+													}),
+													showTeamPayout && task.teamMemberPayout && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "col-span-2 md:col-span-1",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+															className: "text-muted-foreground text-xs block flex items-center gap-1",
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }), " Valor Pago à Equipe"]
+														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+															className: "font-medium text-blue-600",
+															children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", task.teamMemberPayout.toFixed(2)] })
+														})]
+													})
+												]
+											})]
+										})
+									}),
+									task.rating && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center gap-2 mb-2",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: "h-5 w-5 fill-yellow-500 text-yellow-500" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+													className: "font-bold text-lg",
+													children: [task.rating, "/5"]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "text-sm text-yellow-700 font-medium",
+													children: "Avaliação do Cliente"
+												})
+											]
+										}), task.feedback && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+											className: "text-sm text-yellow-800 italic",
+											children: [
+												"\"",
+												task.feedback,
+												"\""
+											]
+										})]
+									}),
+									linkedBooking && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+										className: "bg-purple-50/50 border-purple-100",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+											className: "p-4",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-center gap-2 mb-2 text-purple-800 font-semibold text-sm uppercase tracking-wide",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "h-4 w-4" }),
+													" ",
+													t$1("short_term.title")
+												]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid grid-cols-2 gap-4 text-sm",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "text-muted-foreground text-xs",
+														children: t$1("short_term.guest")
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+														className: "font-medium",
+														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: linkedBooking.guestName })
+													})] }),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "text-muted-foreground text-xs",
+														children: t$1("short_term.platform")
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+														className: "capitalize",
+														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: linkedBooking.platform })
+													})] }),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "text-muted-foreground text-xs",
+														children: "Check-in"
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+														className: "font-medium",
+														children: format(parseISO(linkedBooking.checkIn), "dd/MM/yyyy")
+													})] }),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "text-muted-foreground text-xs",
+														children: "Check-out"
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+														className: "font-medium",
+														children: format(parseISO(linkedBooking.checkOut), "dd/MM/yyyy")
+													})] })
+												]
+											})]
+										})
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "bg-muted/30 p-4 rounded-lg border space-y-3",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+											className: "font-semibold flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wide",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4" }),
+												" ",
+												t$1("tasks.location")
+											]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-start gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-muted-foreground mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "font-medium block",
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyCommunity || "Condomínio não informado" })
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "text-sm text-muted-foreground",
+													children: "Comunidade"
+												})] })]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-start gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4 text-muted-foreground mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "font-medium block",
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyAddress || "Endereço não informado" })
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "text-sm text-muted-foreground",
+													children: "Endereço Completo"
+												})] })]
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+											className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-4 w-4" }),
+												" ",
+												t$1("tasks.activity_log")
+											]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden mb-4",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "p-3 bg-muted/50 border-b flex items-center justify-between",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "font-semibold text-xs uppercase tracking-wider text-blue-600",
+													children: t$1("tasks.arrival")
+												}), arrivalEvidence && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-3 w-3 text-green-500" })]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+												className: "p-0",
+												children: arrivalEvidence ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "flex flex-col",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+														className: "relative aspect-video bg-black",
+														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+															src: arrivalEvidence.url,
+															alt: "Arrival",
+															className: "w-full h-full object-contain"
+														})
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "p-3 text-xs space-y-1.5 bg-muted/10",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+															className: "flex items-center gap-1.5 text-muted-foreground",
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: format(new Date(arrivalEvidence.timestamp), "dd/MM/yyyy HH:mm") })]
+														}), arrivalEvidence.location && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+															className: "flex items-start gap-1.5 text-muted-foreground",
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigation, { className: "h-3 w-3 mt-0.5 shrink-0" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+																className: "leading-tight",
+																children: arrivalEvidence.location.address
+															})]
+														})]
+													})]
+												}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "h-20 flex items-center justify-center text-xs text-muted-foreground italic bg-muted/10",
+													children: [t$1("common.pending"), " - Check-in não realizado"]
+												})
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
+												className: "text-sm font-medium text-muted-foreground flex items-center gap-1",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }),
+													" ",
+													t$1("tasks.assignee")
+												]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												className: "font-medium",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.assignee })
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
+												className: "text-sm font-medium text-muted-foreground flex items-center gap-1",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-3 w-3" }),
+													" ",
+													t$1("tasks.scheduled_date")
+												]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												className: "font-medium",
+												children: format(new Date(task.date), "dd/MM/yyyy")
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+											className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide",
+											children: t$1("common.description")
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "text-sm leading-relaxed whitespace-pre-wrap",
+											children: task.description || "Sem descrição detalhada."
+										})]
+									}),
+									uniqueGallery.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-3",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+											className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image, { className: "h-4 w-4" }), " Galeria de Fotos"]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "grid grid-cols-2 gap-2",
+											children: uniqueGallery.map((img, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "relative aspect-video rounded-md overflow-hidden border bg-muted group",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+													src: img.url,
+													alt: `Gallery ${idx + 1}`,
+													className: "object-cover w-full h-full hover:scale-105 transition-transform duration-300"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+													className: "absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2",
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "text-[10px] text-white w-full",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+															className: "font-semibold",
+															children: img.type
+														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+															className: "truncate opacity-80",
+															children: format(new Date(img.date), "dd/MM HH:mm")
+														})]
+													})
+												})]
+											}, `gallery-${idx}`))
+										})]
+									})
+								]
+							})
+						})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+						value: "history",
+						className: "flex-1 p-0 m-0",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
+							className: "h-full p-6 pt-4",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "relative border-l border-muted ml-3 space-y-6",
+								children: task.history && task.history.length > 0 ? task.history.sort((a$2, b$1) => new Date(b$1.timestamp).getTime() - new Date(a$2.timestamp).getTime()).map((item, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "relative pl-6 pb-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: `absolute -left-[5px] top-1 h-2.5 w-2.5 rounded-full border border-white ${item.action === "approve" ? "bg-green-500" : item.action === "reject" ? "bg-red-500" : item.action === "create" ? "bg-blue-500" : "bg-gray-400"}` }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex flex-col gap-1",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-center gap-2 text-sm font-semibold",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.action === "approve" ? "Approved" : item.action === "reject" ? "Rejected" : item.action === "create" ? "Created" : "Updated" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+													className: "text-xs font-normal text-muted-foreground",
+													children: ["by ", item.userName]
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-xs text-muted-foreground",
+												children: format(new Date(item.timestamp), "dd/MM/yyyy HH:mm")
+											}),
+											item.note && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "mt-1 p-2 bg-muted/40 rounded-md text-xs italic text-slate-700 border",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-3 w-3 inline mr-1 opacity-50" }), item.note]
+											}),
+											item.statusFrom && item.statusTo && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "text-[10px] text-muted-foreground mt-1",
+												children: [
+													"Changed status from",
+													" ",
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+														variant: "outline",
+														className: "text-[10px] px-1 py-0 h-4",
+														children: item.statusFrom
+													}),
+													" ",
+													"to",
+													" ",
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+														variant: "outline",
+														className: "text-[10px] px-1 py-0 h-4",
+														children: item.statusTo
+													})
+												]
+											})
+										]
+									})]
+								}, idx)) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "pl-6 text-sm text-muted-foreground italic",
+									children: "No history available for this task."
+								})
+							})
+						})
+					})
+				]
 			})]
 		})
-	});
+	})] });
 }
 function PropertyLedger({ propertyId, entries }) {
 	const { addLedgerEntry, updateLedgerEntry, deleteLedgerEntry } = useFinancialStore_default();
@@ -67100,14 +67136,6 @@ function PropertyMarketing({ data, onChange, canEdit }) {
 		}) })] })]
 	});
 }
-var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
-		className: cn("flex min-h-[80px] w-full rounded-md border border-input bg-white px-3 py-2 text-base text-black ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-100 md:text-sm shadow-none", "disabled:text-black disabled:bg-white", className),
-		ref,
-		...props
-	});
-});
-Textarea.displayName = "Textarea";
 function PropertyContent({ data, onChange, onNestedChange, canEdit }) {
 	const { toast: toast$2 } = useToast();
 	const { t: t$1 } = useLanguageStore_default();
@@ -73282,7 +73310,7 @@ var formSchema$1 = object({
 });
 function EditTaskDialog({ task, open, onOpenChange }) {
 	const { properties: properties$1 } = usePropertyStore_default();
-	const { updateTask, approveTask, rejectTask } = useTaskStore_default();
+	const { updateTask, approveTask } = useTaskStore_default();
 	const { partners: partners$1, genericServiceRates: genericServiceRates$1 } = usePartnerStore_default();
 	const { currentUser } = useAuthStore_default();
 	const { financialSettings } = useFinancialStore_default();
@@ -73291,6 +73319,7 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 	const [uploadedImages, setUploadedImages] = (0, import_react.useState)([]);
 	const [taskTemplates, setTaskTemplates] = (0, import_react.useState)([]);
 	const [openCombobox, setOpenCombobox] = (0, import_react.useState)(false);
+	const [rejectOpen, setRejectOpen] = (0, import_react.useState)(false);
 	const isAdminOrPM = [
 		"platform_owner",
 		"software_tenant",
@@ -73392,9 +73421,8 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 		approveTask(task.id);
 		onOpenChange(false);
 	};
-	const handleReject = () => {
-		rejectTask(task.id);
-		onOpenChange(false);
+	const handleRejectClick = () => {
+		setRejectOpen(true);
 	};
 	function onSubmit(values) {
 		const assignee = partners$1.find((p$1) => p$1.id === values.assigneeId);
@@ -73431,7 +73459,14 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 		});
 		onOpenChange(false);
 	}
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RejectTaskDialog, {
+		taskId: task.id,
+		open: rejectOpen,
+		onOpenChange: (isOpen) => {
+			setRejectOpen(isOpen);
+			if (!isOpen && task.status === "rejected") onOpenChange(false);
+		}
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open,
 		onOpenChange,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
@@ -73459,7 +73494,7 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 									type: "button",
 									variant: "destructive",
 									className: "flex-1 font-bold h-9 disabled:opacity-50",
-									onClick: handleReject,
+									onClick: handleRejectClick,
 									disabled: !canApprove,
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 mr-2" }), t$1("common.reject")]
 								})]
@@ -73792,7 +73827,7 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 				})
 			})]
 		})
-	});
+	})] });
 }
 function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = false }) {
 	const { toast: toast$2 } = useToast();
@@ -73800,9 +73835,10 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 	const { currentUser } = useAuthStore_default();
 	const { partners: partners$1 } = usePartnerStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
-	const { updateTask, notifySupplier, approveTask, rejectTask } = useTaskStore_default();
+	const { updateTask, notifySupplier, approveTask } = useTaskStore_default();
 	const [detailsOpen, setDetailsOpen] = (0, import_react.useState)(false);
 	const [editOpen, setEditOpen] = (0, import_react.useState)(false);
+	const [rejectOpen, setRejectOpen] = (0, import_react.useState)(false);
 	const [file, setFile] = (0, import_react.useState)(null);
 	const [checkInOpen, setCheckInOpen] = (0, import_react.useState)(false);
 	const [checkOutOpen, setCheckOutOpen] = (0, import_react.useState)(false);
@@ -73898,6 +73934,11 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 			open: editOpen,
 			onOpenChange: setEditOpen
 		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RejectTaskDialog, {
+			taskId: task.id,
+			open: rejectOpen,
+			onOpenChange: setRejectOpen
+		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(EvidenceUploadDialog, {
 			open: checkInOpen,
 			onOpenChange: setCheckInOpen,
@@ -73964,6 +74005,11 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 									task.status === "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 										className: task.approvalStatus === "owner_pending" ? "bg-orange-100 text-orange-800 border-orange-300 text-[10px] h-5" : "bg-yellow-100 text-yellow-800 border-yellow-300 text-[10px] h-5",
 										children: task.approvalStatus === "owner_pending" ? t$1("tasks.status_wait_owner") : t$1("tasks.status_wait_pm")
+									}),
+									task.status === "rejected" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+										variant: "destructive",
+										className: "text-[10px] h-5",
+										children: "Rejected"
 									}),
 									task.type === "cleaning" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 										variant: "secondary",
@@ -74154,11 +74200,21 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 								size: "sm",
 								variant: "destructive",
 								className: "flex-1 h-9 px-2 text-xs font-bold disabled:opacity-50",
-								onClick: () => rejectTask(task.id),
+								onClick: () => setRejectOpen(true),
 								disabled: !userCanApprove,
 								title: t$1("common.reject"),
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 mr-1" }), t$1("common.reject")]
 							})]
+						}),
+						task.status === "rejected" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "w-full",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								size: "sm",
+								variant: "outline",
+								className: "w-full h-9 text-xs text-destructive border-destructive hover:bg-destructive/10",
+								disabled: true,
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(OctagonAlert, { className: "h-3 w-3 mr-2" }), "Returned to Requester"]
+							})
 						}),
 						task.status === "pending" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							size: "sm",
@@ -74422,7 +74478,8 @@ function CreateTaskDialog({ initialPropertyId, initialDate, open: controlledOpen
 			recurrence: values.recurrence,
 			images: uploadedImages,
 			source: "manual",
-			approvalStatus
+			approvalStatus,
+			createdBy: currentUser.id
 		});
 		if (initialStatus === "pending_approval") toast$2({
 			title: "Approval Required",
@@ -77943,7 +78000,7 @@ function TaskInvoiceDialog({ open, onOpenChange }) {
 	});
 }
 function Tasks() {
-	const { tasks: tasks$1, updateTaskStatus, addTaskImage, addTaskEvidence, approveTask, rejectTask } = useTaskStore_default();
+	const { tasks: tasks$1, updateTaskStatus, addTaskImage, addTaskEvidence, approveTask } = useTaskStore_default();
 	const { t: t$1 } = useLanguageStore_default();
 	const { currentUser } = useAuthStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
@@ -77953,6 +78010,8 @@ function Tasks() {
 	const [selectedTask, setSelectedTask] = (0, import_react.useState)(null);
 	const [detailsOpen, setDetailsOpen] = (0, import_react.useState)(false);
 	const [editOpen, setEditOpen] = (0, import_react.useState)(false);
+	const [rejectOpen, setRejectOpen] = (0, import_react.useState)(false);
+	const [taskToReject, setTaskToReject] = (0, import_react.useState)(null);
 	const isAdminOrPM = [
 		"platform_owner",
 		"software_tenant",
@@ -77993,6 +78052,7 @@ function Tasks() {
 			case "pending": return t$1("common.pending");
 			case "in_progress": return t$1("tasks.in_progress");
 			case "completed": return t$1("common.completed");
+			case "rejected": return "Rejected";
 			case "pending_approval": return approvalStatus === "owner_pending" ? t$1("tasks.status_wait_owner") : t$1("tasks.status_wait_pm");
 			default: return status;
 		}
@@ -78004,6 +78064,10 @@ function Tasks() {
 	const openEdit = (task) => {
 		setSelectedTask(task);
 		setEditOpen(true);
+	};
+	const handleRejectClick = (taskId) => {
+		setTaskToReject(taskId);
+		setRejectOpen(true);
 	};
 	const advanceStatus = (task) => {
 		let nextStatus = task.status;
@@ -78030,6 +78094,11 @@ function Tasks() {
 				open: editOpen,
 				onOpenChange: setEditOpen
 			})] }),
+			taskToReject && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RejectTaskDialog, {
+				taskId: taskToReject,
+				open: rejectOpen,
+				onOpenChange: setRejectOpen
+			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
@@ -78275,7 +78344,7 @@ function Tasks() {
 										}) }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 											variant: "secondary",
-											className: task.status === "pending_approval" ? task.approvalStatus === "owner_pending" ? "bg-orange-100 text-orange-800" : "bg-yellow-100 text-yellow-800" : "",
+											className: task.status === "pending_approval" ? task.approvalStatus === "owner_pending" ? "bg-orange-100 text-orange-800" : "bg-yellow-100 text-yellow-800" : task.status === "rejected" ? "bg-red-100 text-red-800" : "",
 											children: getStatusLabel(task.status, task.approvalStatus)
 										}) }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -78298,7 +78367,7 @@ function Tasks() {
 														size: "sm",
 														variant: "destructive",
 														className: "h-8 gap-1 disabled:opacity-50",
-														onClick: () => rejectTask(task.id),
+														onClick: () => handleRejectClick(task.id),
 														disabled: !checkCanApprove(task),
 														title: t$1("common.reject"),
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" }), t$1("common.reject")]
@@ -78317,7 +78386,7 @@ function Tasks() {
 														title: t$1("common.edit"),
 														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4" })
 													}),
-													task.status !== "completed" && task.status !== "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+													task.status !== "completed" && task.status !== "pending_approval" && task.status !== "rejected" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 														variant: "ghost",
 														size: "icon",
 														onClick: () => advanceStatus(task),
@@ -96156,4 +96225,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BMCZtgfd.js.map
+//# sourceMappingURL=index-pramJLNP.js.map

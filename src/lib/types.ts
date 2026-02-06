@@ -32,7 +32,7 @@ export type Resource =
   | 'automation'
   | 'reports'
   | 'visits'
-  | 'hotels' // Added hotels resource
+  | 'hotels'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -194,7 +194,7 @@ export interface Hotel {
   managerEmail?: string
   managerPhone?: string
   image?: string
-  towers?: string[] // Array of Tower IDs for reference if needed, though towers link back to hotelId
+  towers?: string[]
 }
 
 export interface Tower {
@@ -337,9 +337,9 @@ export interface Property {
   profileType: 'long_term' | 'short_term'
   community: string
   condominiumId?: string
-  hotelId?: string // Link to Hotel
-  towerId?: string // Link to Tower
-  roomNumber?: string // Specific Room Number
+  hotelId?: string
+  towerId?: string
+  roomNumber?: string
   status: PropertyStatus
   marketingStatus?: 'listed' | 'unlisted'
   listingPrice?: number
@@ -633,6 +633,25 @@ export interface Evidence {
   notes?: string
 }
 
+export interface TaskHistory {
+  id: string
+  action: 'create' | 'update' | 'approve' | 'reject' | 'comment'
+  statusFrom?: string
+  statusTo?: string
+  userId: string
+  userName: string
+  timestamp: string
+  note?: string
+}
+
+export type TaskStatus =
+  | 'pending'
+  | 'in_progress'
+  | 'completed'
+  | 'approved'
+  | 'pending_approval'
+  | 'rejected'
+
 export interface Task {
   id: string
   title: string
@@ -640,12 +659,7 @@ export interface Task {
   propertyName: string
   propertyAddress?: string
   propertyCommunity?: string
-  status:
-    | 'pending'
-    | 'in_progress'
-    | 'completed'
-    | 'approved'
-    | 'pending_approval'
+  status: TaskStatus
   type: 'cleaning' | 'maintenance' | 'inspection'
   assignee: string
   assigneeId?: string
@@ -672,6 +686,8 @@ export interface Task {
   invoiceId?: string
   approvalStatus?: 'owner_pending' | 'pm_pending' | 'approved'
   lastRemindedAt?: string
+  createdBy?: string
+  history?: TaskHistory[]
 }
 
 export interface Invoice {

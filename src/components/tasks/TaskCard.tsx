@@ -35,12 +35,14 @@ import {
   Edit,
   Check,
   X,
+  AlertOctagon,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
 import { TaskDetailsSheet } from './TaskDetailsSheet'
 import { EvidenceUploadDialog } from './EvidenceUploadDialog'
 import { EditTaskDialog } from './EditTaskDialog'
+import { RejectTaskDialog } from './RejectTaskDialog'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
 import usePartnerStore from '@/stores/usePartnerStore'
@@ -75,10 +77,11 @@ export function TaskCard({
   const { currentUser } = useAuthStore()
   const { partners } = usePartnerStore()
   const { properties } = usePropertyStore()
-  const { updateTask, notifySupplier, approveTask, rejectTask } = useTaskStore()
+  const { updateTask, notifySupplier, approveTask } = useTaskStore()
 
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
+  const [rejectOpen, setRejectOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
 
   const [checkInOpen, setCheckInOpen] = useState(false)
@@ -187,14 +190,13 @@ export function TaskCard({
     (e) => e.id === task.partnerEmployeeId,
   )?.name
 
-  // Approval Visibility Logic
   const property = properties.find((p) => p.id === task.propertyId)
   const isMyProperty = property?.ownerId === currentUser.id
 
   const userCanApprove =
     task.status === 'pending_approval' &&
     ((task.approvalStatus === 'owner_pending' && isOwner && isMyProperty) ||
-      isAdminOrPM) // PM can always approve pending tasks
+      isAdminOrPM)
 
   return (
     <>
@@ -205,6 +207,11 @@ export function TaskCard({
       />
 
       <EditTaskDialog task={task} open={editOpen} onOpenChange={setEditOpen} />
+      <RejectTaskDialog
+        taskId={task.id}
+        open={rejectOpen}
+        onOpenChange={setRejectOpen}
+      />
 
       <EvidenceUploadDialog
         open={checkInOpen}
@@ -277,6 +284,11 @@ export function TaskCard({
                   {task.approvalStatus === 'owner_pending'
                     ? t('tasks.status_wait_owner')
                     : t('tasks.status_wait_pm')}
+                </Badge>
+              )}
+              {task.status === 'rejected' && (
+                <Badge variant="destructive" className="text-[10px] h-5">
+                  Rejected
                 </Badge>
               )}
               {task.type === 'cleaning' && (
@@ -398,7 +410,6 @@ export function TaskCard({
             )}
           </div>
 
-          {/* Supplier Communication - Last Notified */}
           {task.lastNotified && isAdminOrPM && (
             <div className="mt-2 text-[10px] text-slate-500 text-right italic">
               Notified: {format(new Date(task.lastNotified), 'dd/MM HH:mm')}
@@ -499,12 +510,26 @@ export function TaskCard({
                 size="sm"
                 variant="destructive"
                 className="flex-1 h-9 px-2 text-xs font-bold disabled:opacity-50"
-                onClick={() => rejectTask(task.id)}
+                onClick={() => setRejectOpen(true)}
                 disabled={!userCanApprove}
                 title={t('common.reject')}
               >
                 <X className="h-4 w-4 mr-1" />
                 {t('common.reject')}
+              </Button>
+            </div>
+          )}
+
+          {task.status === 'rejected' && (
+            <div className="w-full">
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full h-9 text-xs text-destructive border-destructive hover:bg-destructive/10"
+                disabled
+              >
+                <AlertOctagon className="h-3 w-3 mr-2" />
+                Returned to Requester
               </Button>
             </div>
           )}
