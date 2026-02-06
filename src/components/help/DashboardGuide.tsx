@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { BarChart2, Activity, PieChart } from 'lucide-react'
+import { BarChart2, Activity, PieChart, Info, Settings2 } from 'lucide-react'
 
 export function DashboardGuide() {
   return (
@@ -29,7 +29,7 @@ export function DashboardGuide() {
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="overview">
             <AccordionTrigger className="text-lg font-semibold">
-              Understanding the "Visão Geral" (Overview)
+              Understanding the KPI Cards
             </AccordionTrigger>
             <AccordionContent className="space-y-4 pt-2">
               <p className="text-sm text-slate-700">
@@ -40,24 +40,31 @@ export function DashboardGuide() {
               <ul className="list-disc pl-5 space-y-2 text-sm text-slate-700">
                 <li>
                   <strong className="text-primary">
-                    Total de Propriedades:
+                    Total de Propriedades (Total Properties):
                   </strong>{' '}
                   Calculates the total number of properties currently registered
                   and active in your portfolio. Suspended properties are
                   excluded from this count by default.
                 </li>
                 <li>
-                  <strong className="text-primary">Leads Ativos:</strong>{' '}
-                  Displays the number of potential clients currently in the{' '}
-                  <strong>"Novo"</strong> (New) or{' '}
-                  <strong>"Em Negociação"</strong> (Negotiating) status within
-                  the CRM module.
+                  <strong className="text-primary">
+                    Listagens Ativas (Active Listings):
+                  </strong>{' '}
+                  Displays the number of properties currently marketed with a
+                  status of "Available".
                 </li>
                 <li>
-                  <strong className="text-primary">Contratos Fechados:</strong>{' '}
-                  Shows the total number of leases that have been marked as{' '}
-                  <strong>"Signed"</strong> or <strong>"Active"</strong> within
-                  the current month.
+                  <strong className="text-primary">
+                    Visitas Pendentes (Pending Visits):
+                  </strong>{' '}
+                  Shows the total number of scheduled property visits that have
+                  not yet been marked as completed.
+                </li>
+                <li>
+                  <strong className="text-primary">
+                    Receita Total (Total Revenue):
+                  </strong>{' '}
+                  Aggregates all income ledger entries for the current period.
                 </li>
               </ul>
             </AccordionContent>
@@ -83,37 +90,72 @@ export function DashboardGuide() {
               <div className="flex gap-4 items-start">
                 <PieChart className="h-5 w-5 text-purple-500 mt-1 shrink-0" />
                 <div>
-                  <h4 className="font-bold text-sm">Occupancy Rate</h4>
+                  <h4 className="font-bold text-sm">Expense Distribution</h4>
                   <p className="text-sm text-slate-700">
-                    The circular chart visualizes the percentage of your
-                    properties that are currently rented versus those that are
-                    vacant. A higher percentage indicates better portfolio
-                    health.
+                    The circular chart visualizes the distribution of expenses
+                    across categories such as Maintenance, Cleaning, Taxes, and
+                    Utilities. Use this to identify cost-saving opportunities.
                   </p>
                 </div>
               </div>
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="actions">
+          <AccordionItem value="gamification">
             <AccordionTrigger className="text-lg font-semibold">
-              Quick Actions & Shortcuts
+              Portfolio Health Score
             </AccordionTrigger>
             <AccordionContent className="space-y-4 pt-2">
-              <p className="text-sm text-slate-700">
-                You can perform quick actions directly from the dashboard
-                widgets:
-              </p>
-              <ul className="list-disc pl-5 space-y-2 text-sm text-slate-700">
-                <li>
-                  Click on the <strong>"Pending Tasks"</strong> list to
-                  immediately open the task details for approval.
-                </li>
-                <li>
-                  Use the <strong>"Calendar"</strong> widget to see today's
-                  check-ins and check-outs at a glance.
-                </li>
-              </ul>
+              <div className="flex gap-4 items-start">
+                <Info className="h-5 w-5 text-yellow-500 mt-1 shrink-0" />
+                <div className="space-y-2">
+                  <p className="text-sm text-slate-700">
+                    The <strong>Health Score</strong> is a gamified metric
+                    (0-100) that indicates the overall performance of your
+                    portfolio based on:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1 text-sm text-slate-700">
+                    <li>Occupancy rates</li>
+                    <li>Timely rent collection</li>
+                    <li>Completion of maintenance tasks</li>
+                  </ul>
+                  <p className="text-sm text-slate-700">
+                    Aim for a score above <strong>80</strong> to maintain
+                    "Expert" status.
+                  </p>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="customization">
+            <AccordionTrigger className="text-lg font-semibold">
+              Customizing Your View
+            </AccordionTrigger>
+            <AccordionContent className="space-y-4 pt-2">
+              <div className="flex gap-4 items-start">
+                <Settings2 className="h-5 w-5 text-slate-500 mt-1 shrink-0" />
+                <div>
+                  <p className="text-sm text-slate-700">
+                    You can toggle visibility for specific widgets to declutter
+                    your workspace:
+                  </p>
+                  <ol className="list-decimal pl-5 space-y-1 text-sm text-slate-700 mt-2">
+                    <li>
+                      Click the <strong>Customize</strong> button at the top
+                      right of the Dashboard.
+                    </li>
+                    <li>
+                      Check or uncheck the boxes for KPI Indicators, Health
+                      Score, or Revenue Chart.
+                    </li>
+                    <li>
+                      Click <strong>Done</strong> to save your preferences for
+                      the current session.
+                    </li>
+                  </ol>
+                </div>
+              </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>

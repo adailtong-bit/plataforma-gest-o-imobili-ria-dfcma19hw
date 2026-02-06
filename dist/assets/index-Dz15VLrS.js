@@ -96041,7 +96041,7 @@ function DashboardGuide() {
 						value: "overview",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionTrigger, {
 							className: "text-lg font-semibold",
-							children: "Understanding the \"Visão Geral\" (Overview)"
+							children: "Understanding the KPI Cards"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionContent, {
 							className: "space-y-4 pt-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
@@ -96053,7 +96053,7 @@ function DashboardGuide() {
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
 											className: "text-primary",
-											children: "Total de Propriedades:"
+											children: "Total de Propriedades (Total Properties):"
 										}),
 										" ",
 										"Calculates the total number of properties currently registered and active in your portfolio. Suspended properties are excluded from this count by default."
@@ -96061,29 +96061,26 @@ function DashboardGuide() {
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
 											className: "text-primary",
-											children: "Leads Ativos:"
+											children: "Listagens Ativas (Active Listings):"
 										}),
 										" ",
-										"Displays the number of potential clients currently in the",
-										" ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "\"Novo\"" }),
-										" (New) or",
-										" ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "\"Em Negociação\"" }),
-										" (Negotiating) status within the CRM module."
+										"Displays the number of properties currently marketed with a status of \"Available\"."
 									] }),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
 											className: "text-primary",
-											children: "Contratos Fechados:"
+											children: "Visitas Pendentes (Pending Visits):"
 										}),
 										" ",
-										"Shows the total number of leases that have been marked as",
+										"Shows the total number of scheduled property visits that have not yet been marked as completed."
+									] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
+											className: "text-primary",
+											children: "Receita Total (Total Revenue):"
+										}),
 										" ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "\"Signed\"" }),
-										" or ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "\"Active\"" }),
-										" within the current month."
+										"Aggregates all income ledger entries for the current period."
 									] })
 								]
 							})]
@@ -96109,36 +96106,84 @@ function DashboardGuide() {
 								className: "flex gap-4 items-start",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartPie, { className: "h-5 w-5 text-purple-500 mt-1 shrink-0" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
 									className: "font-bold text-sm",
-									children: "Occupancy Rate"
+									children: "Expense Distribution"
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "text-sm text-slate-700",
-									children: "The circular chart visualizes the percentage of your properties that are currently rented versus those that are vacant. A higher percentage indicates better portfolio health."
+									children: "The circular chart visualizes the distribution of expenses across categories such as Maintenance, Cleaning, Taxes, and Utilities. Use this to identify cost-saving opportunities."
 								})] })]
 							})]
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionItem, {
-						value: "actions",
+						value: "gamification",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionTrigger, {
 							className: "text-lg font-semibold",
-							children: "Quick Actions & Shortcuts"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionContent, {
+							children: "Portfolio Health Score"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionContent, {
 							className: "space-y-4 pt-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "text-sm text-slate-700",
-								children: "You can perform quick actions directly from the dashboard widgets:"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
-								className: "list-disc pl-5 space-y-2 text-sm text-slate-700",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-									"Click on the ",
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "\"Pending Tasks\"" }),
-									" list to immediately open the task details for approval."
-								] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-									"Use the ",
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "\"Calendar\"" }),
-									" widget to see today's check-ins and check-outs at a glance."
-								] })]
-							})]
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex gap-4 items-start",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Info, { className: "h-5 w-5 text-yellow-500 mt-1 shrink-0" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+											className: "text-sm text-slate-700",
+											children: [
+												"The ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Health Score" }),
+												" is a gamified metric (0-100) that indicates the overall performance of your portfolio based on:"
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+											className: "list-disc pl-5 space-y-1 text-sm text-slate-700",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Occupancy rates" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Timely rent collection" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Completion of maintenance tasks" })
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+											className: "text-sm text-slate-700",
+											children: [
+												"Aim for a score above ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "80" }),
+												" to maintain \"Expert\" status."
+											]
+										})
+									]
+								})]
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionItem, {
+						value: "customization",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionTrigger, {
+							className: "text-lg font-semibold",
+							children: "Customizing Your View"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionContent, {
+							className: "space-y-4 pt-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex gap-4 items-start",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings2, { className: "h-5 w-5 text-slate-500 mt-1 shrink-0" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-slate-700",
+									children: "You can toggle visibility for specific widgets to declutter your workspace:"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ol", {
+									className: "list-decimal pl-5 space-y-1 text-sm text-slate-700 mt-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+											"Click the ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Customize" }),
+											" button at the top right of the Dashboard."
+										] }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Check or uncheck the boxes for KPI Indicators, Health Score, or Revenue Chart." }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+											"Click ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Done" }),
+											" to save your preferences for the current session."
+										] })
+									]
+								})] })]
+							})
 						})]
 					})
 				]
@@ -96151,27 +96196,27 @@ function PropertiesGuide() {
 		className: "border-none shadow-none",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
 			className: "flex items-center gap-2 text-2xl text-navy",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-6 w-6 text-primary" }), "Property Management Guide"]
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-6 w-6 text-primary" }), "Property & Hotel Management"]
 		}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 			className: "space-y-6",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "prose max-w-none text-muted-foreground",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Learn how to efficiently manage your property listings, update details, and maintain an organized portfolio using the Properties module." })
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Learn how to efficiently manage your residential properties and hotel inventory. This guide covers adding units, uploading images, and managing listings." })
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Accordion, {
 				type: "single",
 				collapsible: true,
 				className: "w-full",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionItem, {
-						value: "adding",
+						value: "residential",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionTrigger, {
 							className: "text-lg font-semibold",
-							children: "Adding a Property (Step-by-Step)"
+							children: "Adding a Residential Property"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionContent, {
 							className: "space-y-4 pt-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 								className: "text-sm text-slate-700 font-medium",
-								children: "Follow these steps to list a new property on the platform:"
+								children: "Follow these steps to list a new residential property (House, Condo, Apartment):"
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ol", {
 								className: "list-decimal pl-5 space-y-3 text-sm text-slate-700",
 								children: [
@@ -96188,31 +96233,116 @@ function PropertiesGuide() {
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "w-3 h-3 mr-1" }), " Nova Propriedade"]
 										}),
 										" ",
-										"button located at the top right corner."
+										"button."
 									] }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-										"Fill in the ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "'Informações Básicas'" }),
-										" (Basic Info) form.",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
-											className: "list-disc pl-5 mt-1 text-slate-600",
-											children: [
-												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Title:" }), " A unique name for the property."] }),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Address:" }), " Full physical address."] }),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Price:" }), " Monthly rent or sale price."] })
-											]
-										})
-									] }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-										"Select the ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Profile Type" }),
-										" (Long Term vs Short Term) to configure relevant fields automatically."
-									] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Step 1: Basic Info" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+										className: "list-disc pl-5 mt-1 text-slate-600",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+											"Select ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Rental Type" }),
+											": Short Term (Vacation) or Long Term (Lease)."
+										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+											"Enter ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Name" }),
+											" and ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Address" }),
+											". The system will auto-format the address."
+										] })]
+									})] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Step 2: Financials" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+										className: "list-disc pl-5 mt-1 text-slate-600",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+											"Input the ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Listing Price" }),
+											" (Rent/Sale value)."
+										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+											"Specify ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "HOA Fees" }),
+											" if applicable."
+										] })]
+									})] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Step 3: Details & Media" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+										className: "list-disc pl-5 mt-1 text-slate-600",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Add Bedrooms, Bathrooms, and Guest Capacity." }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+											"Upload a ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Cover Image" }),
+											" to represent the property in listings."
+										] })]
+									})] }),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
 										"Click ",
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "'Salvar'" }),
-										" (Save) to create the listing."
+										" to create the listing."
 									] })
+								]
+							})]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionItem, {
+						value: "hotels",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionTrigger, {
+							className: "text-lg font-semibold flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hotel, { className: "h-4 w-4" }), " Hotel Management"]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionContent, {
+							className: "space-y-4 pt-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+								className: "text-sm text-slate-700",
+								children: [
+									"Managing Hotels involves a hierarchy:",
+									" ",
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Hotel > Tower > Room" }),
+									"."
+								]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "border-l-2 border-blue-500 pl-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+											className: "font-bold text-sm text-blue-900",
+											children: "1. Adding a Hotel"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+											className: "text-xs text-slate-600 mt-1",
+											children: [
+												"Go to ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Hotels" }),
+												" in the sidebar and click",
+												" ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "\"Novo Hotel\"" }),
+												". Fill in the hotel name, address, and manager contact details."
+											]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "border-l-2 border-indigo-500 pl-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+											className: "font-bold text-sm text-indigo-900",
+											children: "2. Adding Towers"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+											className: "text-xs text-slate-600 mt-1",
+											children: [
+												"Open the Hotel Details page. In the \"Towers\" section, click",
+												" ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "\"Add Tower\"" }),
+												". Specify the tower name (e.g., \"North Wing\") and total floors."
+											]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "border-l-2 border-purple-500 pl-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+											className: "font-bold text-sm text-purple-900",
+											children: "3. Managing Rooms"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+											className: "text-xs text-slate-600 mt-1",
+											children: [
+												"Navigate into a Tower to see the Room List. Click",
+												" ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "\"Add Room\"" }),
+												" to create units. You can set specific room numbers and floor assignments."
+											]
+										})]
+									})
 								]
 							})]
 						})]
@@ -96221,7 +96351,7 @@ function PropertiesGuide() {
 						value: "images",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionTrigger, {
 							className: "text-lg font-semibold",
-							children: "Uploading & Managing Photos"
+							children: "Managing Photos & Documents"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionContent, {
 							className: "space-y-4 pt-2",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -96230,27 +96360,18 @@ function PropertiesGuide() {
 									className: "space-y-2",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 										className: "text-sm text-slate-700",
-										children: "High-quality images are crucial for marketing. To add photos:"
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ol", {
-										className: "list-decimal pl-5 space-y-1 text-sm text-slate-700",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Open the property details page." }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-												"Go to the ",
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "'Fotos'" }),
-												" tab."
-											] }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-												"Drag and drop images or click ",
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "'Upload'" }),
-												"."
-											] }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-												"Set the best image as the ",
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Cover Photo" }),
-												" by clicking the star icon on the image."
-											] })
-										]
+										children: "Once a property is created, you can enhance it with more details:"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+										className: "list-disc pl-5 space-y-1 text-sm text-slate-700",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+											"Go to the ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "'Fotos'" }),
+											" tab in property details to upload a gallery."
+										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+											"Use the ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "'Documentos'" }),
+											" tab to store deeds, contracts, and insurance policies securely."
+										] })]
 									})]
 								})]
 							})
@@ -96277,7 +96398,7 @@ function PropertiesGuide() {
 												" ",
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Address" }),
 												", or ",
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Tenant Name" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Community" }),
 												"."
 											]
 										}),
@@ -96287,11 +96408,7 @@ function PropertiesGuide() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
 											className: "list-disc pl-5 space-y-1 text-sm text-slate-700",
-											children: [
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Status (Available, Rented, Sold)" }),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Type (House, Apartment, Condo)" }),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Bedrooms / Bathrooms count" })
-											]
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Status:" }), " Available, Rented, Sold, Maintenance."] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Profile:" }), " Short Term vs Long Term."] })]
 										})
 									]
 								})]
@@ -96323,43 +96440,55 @@ function LeadsGuide() {
 						value: "lifecycle",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionTrigger, {
 							className: "text-lg font-semibold",
-							children: "The Lead Lifecycle"
+							children: "Lead Status Workflow"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionContent, {
 							className: "space-y-4 pt-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 								className: "text-sm text-slate-700",
-								children: "Leads progress through specific stages in the system. It is important to keep the status updated to ensure accurate reporting."
+								children: "Leads progress through specific stages. It is critical to update the status to maintain an accurate sales funnel."
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid grid-cols-1 md:grid-cols-3 gap-4 mt-2",
 								children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "border p-3 rounded-lg bg-blue-50",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
-											className: "block text-blue-700 mb-1",
-											children: "1. Novo (New)"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "border p-3 rounded-lg bg-blue-50 border-blue-100",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("strong", {
+											className: "block text-blue-800 mb-1 flex items-center gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "w-2 h-2 rounded-full bg-blue-600" }), "1. Novo (New)"]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 											className: "text-xs text-slate-600",
-											children: "Lead just arrived from website, portal, or manual entry. Not yet contacted."
+											children: [
+												"Lead just arrived from website, portal, or manual entry.",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: " Action:" }),
+												" Review contact details and assign an agent."
+											]
 										})]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "border p-3 rounded-lg bg-yellow-50",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
-											className: "block text-yellow-700 mb-1",
-											children: "2. Em Negociação"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "border p-3 rounded-lg bg-yellow-50 border-yellow-100",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("strong", {
+											className: "block text-yellow-800 mb-1 flex items-center gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "w-2 h-2 rounded-full bg-yellow-600" }), "2. Em Negociação"]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 											className: "text-xs text-slate-600",
-											children: "Contact made. Property viewings scheduled or proposals sent."
+											children: [
+												"(In Negotiation) Contact made. Property viewings scheduled or proposals sent.",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: " Action:" }),
+												" Log interactions in History."
+											]
 										})]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "border p-3 rounded-lg bg-green-50",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
-											className: "block text-green-700 mb-1",
-											children: "3. Fechado"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "border p-3 rounded-lg bg-green-50 border-green-100",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("strong", {
+											className: "block text-green-800 mb-1 flex items-center gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "w-2 h-2 rounded-full bg-green-600" }), "3. Fechado"]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 											className: "text-xs text-slate-600",
-											children: "Contract signed. Lead is converted to a Tenant."
+											children: [
+												"(Closed) Contract signed. Lead is converted to a Tenant.",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: " Action:" }),
+												" Use \"Convert to Tenant\" button."
+											]
 										})]
 									})
 								]
@@ -96375,18 +96504,33 @@ function LeadsGuide() {
 							className: "space-y-4 pt-2",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
 								className: "list-disc pl-5 space-y-3 text-sm text-slate-700",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Updating Status:" }), " Click on a lead card in the CRM board and drag it to the next column, or use the status dropdown in the lead details view."] }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Viewing Details:" }), " Click on the lead name to view contact information, source (e.g., Zillow, Airbnb), and preferred property."] }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Notes & History:" }),
-										" Use the",
-										" ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "'Histórico'" }),
-										" tab within a lead profile to log calls, emails, or visit notes."
-									] })
-								]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Updating Status:" }), " In the Kanban board view, drag and drop the lead card to the next column. Alternatively, open the lead details and use the status dropdown menu."] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Viewing Details:" }), " Click on the lead name to view contact information, source (e.g., Zillow, Airbnb), and their preferred property."] })]
 							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionItem, {
+						value: "history",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionTrigger, {
+							className: "text-lg font-semibold flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(History, { className: "h-4 w-4" }), " Contact History"]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionContent, {
+							className: "space-y-4 pt-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-sm text-slate-700",
+								children: "Keeping a record of interactions is key to closing deals."
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ol", {
+								className: "list-decimal pl-5 space-y-1 text-sm text-slate-700",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Open the Lead Profile." }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+										"Navigate to the ",
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "'Histórico'" }),
+										" tab."
+									] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "You can see a timeline of status changes and automated system notes." }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Add manual notes for calls, emails, or visit feedback." })
+								]
+							})]
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionItem, {
@@ -96402,7 +96546,7 @@ function LeadsGuide() {
 									className: "space-y-2",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 										className: "text-sm text-slate-700",
-										children: "Once a lead agrees to rent:"
+										children: "When a deal is closed:"
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ol", {
 										className: "list-decimal pl-5 space-y-1 text-sm text-slate-700",
 										children: [
@@ -96411,10 +96555,10 @@ function LeadsGuide() {
 												"Click the ",
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "'Converter para Inquilino'" }),
 												" ",
-												"(Convert to Tenant) button."
+												"(Convert to Tenant) button at the top right."
 											] }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Review the pre-filled information and add lease dates." }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "The lead will be archived, and a new Tenant profile will be created automatically." })
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Review the pre-filled information and add lease dates (Start/End)." }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "The lead will be archived, and a new Tenant profile will be created in the Tenants module automatically." })
 										]
 									})]
 								})]
@@ -96467,7 +96611,7 @@ function SettingsGuide() {
 											children: [
 												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Search Bar:" }), " Global search for properties, tenants, or leads."] }),
 												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Notifications Bell:" }), " Alerts for new tasks, messages, or system updates."] }),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Language Switcher:" }), " Toggle between Portuguese, English, and Spanish."] })
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Language Switcher:" }), " Toggle between Portuguese (PT), English (EN), and Spanish (ES)."] })
 											]
 										})
 									]
@@ -96495,19 +96639,21 @@ function SettingsGuide() {
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
 												"Click on your ",
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Avatar" }),
-												" in the top right corner."
+												" in the sidebar footer (bottom left)."
 											] }),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-												"Select ",
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "'Profile'" }),
-												" or go to",
-												" ",
+												"This opens the user menu. Currently, user settings are also accessible via the ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Settings" }),
+												" page."
+											] }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+												"Go to ",
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Settings" }),
 												" ",
 												">",
 												" ",
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Profile" }),
-												"."
+												" tab."
 											] }),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
 												"You can update your ",
@@ -96548,9 +96694,10 @@ function SettingsGuide() {
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
 										className: "list-disc pl-5 space-y-1 text-sm text-slate-700",
 										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Admin/Platform Owner:" }), " Full access to all settings and data."] }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Manager (PM):" }), " Access to day-to-day operations, properties, and CRM. Restricted from system-wide configs."] }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Agent/Partner:" }), " Limited access to assigned tasks and leads."] })
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Platform Owner (Admin):" }), " Full access to all settings, data, and system configurations."] }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Software Tenant (Manager/PM):" }), " Access to day-to-day operations, properties, CRM, and financial reports. Restricted from global system configs."] }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Internal User (Staff):" }), " Operational access to tasks, calendar, and visits."] }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Partner / Owner / Tenant:" }), " Portal-only access restricted to their own relevant data."] })
 										]
 									})]
 								})]
@@ -96573,7 +96720,7 @@ function HelpHub() {
 		},
 		{
 			id: "properties",
-			label: "Property Management",
+			label: "Properties & Hotels",
 			icon: Building,
 			component: PropertiesGuide
 		},
@@ -96597,7 +96744,7 @@ function HelpHub() {
 			className: "flex flex-col gap-2 border-b pb-6",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", {
 				className: "text-3xl font-bold tracking-tight text-navy flex items-center gap-3",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "h-8 w-8 text-primary" }), "Help Hub"]
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "h-8 w-8 text-primary" }), "Help Center"]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 				className: "text-muted-foreground max-w-2xl",
 				children: "Comprehensive step-by-step guides to help you master the COREPM platform. Select a module below to view detailed instructions."
@@ -97120,4 +97267,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BgsTl0Fd.js.map
+//# sourceMappingURL=index-Dz15VLrS.js.map

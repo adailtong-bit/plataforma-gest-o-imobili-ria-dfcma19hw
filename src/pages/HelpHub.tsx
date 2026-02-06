@@ -27,7 +27,7 @@ export default function HelpHub() {
     },
     {
       id: 'properties',
-      label: 'Property Management',
+      label: 'Properties & Hotels',
       icon: Building,
       component: PropertiesGuide,
     },
@@ -54,7 +54,7 @@ export default function HelpHub() {
       <div className="flex flex-col gap-2 border-b pb-6">
         <h1 className="text-3xl font-bold tracking-tight text-navy flex items-center gap-3">
           <HelpCircle className="h-8 w-8 text-primary" />
-          Help Hub
+          Help Center
         </h1>
         <p className="text-muted-foreground max-w-2xl">
           Comprehensive step-by-step guides to help you master the COREPM

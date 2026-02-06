@@ -52,7 +52,7 @@ export function SettingsGuide() {
                     </li>
                     <li>
                       <strong>Language Switcher:</strong> Toggle between
-                      Portuguese, English, and Spanish.
+                      Portuguese (PT), English (EN), and Spanish (ES).
                     </li>
                   </ul>
                 </div>
@@ -73,12 +73,16 @@ export function SettingsGuide() {
                   </p>
                   <ol className="list-decimal pl-5 space-y-1 text-sm text-slate-700">
                     <li>
-                      Click on your <strong>Avatar</strong> in the top right
-                      corner.
+                      Click on your <strong>Avatar</strong> in the sidebar
+                      footer (bottom left).
                     </li>
                     <li>
-                      Select <strong>'Profile'</strong> or go to{' '}
-                      <strong>Settings</strong> {'>'} <strong>Profile</strong>.
+                      This opens the user menu. Currently, user settings are
+                      also accessible via the <strong>Settings</strong> page.
+                    </li>
+                    <li>
+                      Go to <strong>Settings</strong> {'>'}{' '}
+                      <strong>Profile</strong> tab.
                     </li>
                     <li>
                       You can update your <strong>Full Name</strong>,{' '}
@@ -108,17 +112,21 @@ export function SettingsGuide() {
                   </p>
                   <ul className="list-disc pl-5 space-y-1 text-sm text-slate-700">
                     <li>
-                      <strong>Admin/Platform Owner:</strong> Full access to all
-                      settings and data.
+                      <strong>Platform Owner (Admin):</strong> Full access to
+                      all settings, data, and system configurations.
                     </li>
                     <li>
-                      <strong>Manager (PM):</strong> Access to day-to-day
-                      operations, properties, and CRM. Restricted from
-                      system-wide configs.
+                      <strong>Software Tenant (Manager/PM):</strong> Access to
+                      day-to-day operations, properties, CRM, and financial
+                      reports. Restricted from global system configs.
                     </li>
                     <li>
-                      <strong>Agent/Partner:</strong> Limited access to assigned
-                      tasks and leads.
+                      <strong>Internal User (Staff):</strong> Operational access
+                      to tasks, calendar, and visits.
+                    </li>
+                    <li>
+                      <strong>Partner / Owner / Tenant:</strong> Portal-only
+                      access restricted to their own relevant data.
                     </li>
                   </ul>
                 </div>
