@@ -87,7 +87,7 @@ export const PERMISSIONS_MATRIX: Record<
     messages: ['view', 'create'],
     short_term: ['view'],
     tasks: ['view', 'create', 'edit'],
-    users: ['view'], // Added access to users for Owner
+    users: ['view'],
   },
   tenant: {
     portal: ['view'],
@@ -128,42 +128,35 @@ export const canChat = (initiator: User, target: User): boolean => {
   const initiatorRole = initiator.role
   const targetRole = target.role
 
-  // Staff (Admin/PM/Internal) can chat with everyone EXCEPT Partner's Team (unless direct)
   if (
     ['platform_owner', 'software_tenant', 'internal_user'].includes(
       initiatorRole,
     )
   ) {
-    // PM can communicate with all related parties (Owners, Partners, PM Team), excluding the Partner's Team
     if (targetRole === 'partner_employee') {
       return false
     }
     return true
   }
 
-  // Everyone can chat with PM/Staff
   if (
     ['platform_owner', 'software_tenant', 'internal_user'].includes(targetRole)
   ) {
     return true
   }
 
-  // Partner -> Own Team
   if (initiatorRole === 'partner' && targetRole === 'partner_employee') {
     return target.parentPartnerId === initiator.id
   }
 
-  // Team -> Own Partner
   if (initiatorRole === 'partner_employee' && targetRole === 'partner') {
     return initiator.parentPartnerId === target.id
   }
 
-  // Owner -> Only PM/Staff (Already handled above)
   if (initiatorRole === 'property_owner') {
     return false
   }
 
-  // Tenant -> Only PM/Staff (Already handled above)
   if (initiatorRole === 'tenant') {
     return false
   }

@@ -17,8 +17,8 @@ import {
   Eye,
   Pencil,
   RotateCw,
-  CheckCircle,
-  XCircle,
+  Check,
+  X,
   ThumbsUp,
 } from 'lucide-react'
 import { TaskInvoiceDialog } from '@/components/financial/TaskInvoiceDialog'
@@ -208,10 +208,6 @@ export default function Tasks() {
       return isAdminOrPM
     }
     return false
-  }
-
-  const canReject = (task: Task) => {
-    return canApprove(task)
   }
 
   return (
@@ -477,21 +473,21 @@ export default function Tasks() {
                             <>
                               <Button
                                 size="sm"
-                                className="bg-green-600 hover:bg-green-700 text-white h-8"
+                                className="bg-green-600 hover:bg-green-700 text-white h-8 gap-1"
                                 onClick={() => handleApprove(task)}
                                 title={t('common.approve')}
                               >
-                                <ThumbsUp className="h-4 w-4 mr-1" />
+                                <Check className="h-4 w-4" />
                                 {t('common.approve')}
                               </Button>
                               <Button
                                 size="sm"
                                 variant="destructive"
-                                className="h-8"
+                                className="h-8 gap-1"
                                 onClick={() => handleReject(task)}
                                 title={t('common.reject')}
                               >
-                                <XCircle className="h-4 w-4 mr-1" />
+                                <X className="h-4 w-4" />
                                 {t('common.reject')}
                               </Button>
                             </>

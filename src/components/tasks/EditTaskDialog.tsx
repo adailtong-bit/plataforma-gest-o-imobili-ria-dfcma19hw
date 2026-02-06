@@ -12,7 +12,6 @@ import {
   Save,
   ChevronsUpDown,
   Check,
-  ThumbsUp,
   XCircle,
 } from 'lucide-react'
 import { format } from 'date-fns'
@@ -345,7 +344,7 @@ export function EditTaskDialog({
                     className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-9"
                     onClick={handleApprove}
                   >
-                    <ThumbsUp className="h-4 w-4 mr-2" />
+                    <Check className="h-4 w-4 mr-2" />
                     {t('common.approve')}
                   </Button>
                   <Button
@@ -354,7 +353,7 @@ export function EditTaskDialog({
                     className="flex-1 font-bold h-9"
                     onClick={handleReject}
                   >
-                    <XCircle className="h-4 w-4 mr-2" />
+                    <X className="h-4 w-4 mr-2" />
                     {t('common.reject')}
                   </Button>
                 </div>

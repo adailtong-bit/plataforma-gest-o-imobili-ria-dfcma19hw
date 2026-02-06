@@ -36,6 +36,8 @@ import {
   AlertCircle,
   Edit,
   XCircle,
+  Check,
+  X,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
@@ -546,7 +548,7 @@ export function TaskCard({
                     className="flex-1 h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold"
                     onClick={handleApprove}
                   >
-                    <ThumbsUp className="h-3 w-3 mr-2" />
+                    <Check className="h-3 w-3 mr-2" />
                     {t('common.approve')}
                   </Button>
                   {canReject && (
@@ -557,7 +559,7 @@ export function TaskCard({
                       onClick={handleReject}
                       title={t('common.reject')}
                     >
-                      <XCircle className="h-4 w-4" />
+                      <X className="h-4 w-4" />
                     </Button>
                   )}
                 </div>

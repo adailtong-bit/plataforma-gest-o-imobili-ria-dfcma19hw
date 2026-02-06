@@ -19259,22 +19259,6 @@ var CirclePlay = createLucideIcon("circle-play", [["path", {
 	r: "10",
 	key: "1mglay"
 }]]);
-var CircleX = createLucideIcon("circle-x", [
-	["circle", {
-		cx: "12",
-		cy: "12",
-		r: "10",
-		key: "1mglay"
-	}],
-	["path", {
-		d: "m15 9-6 6",
-		key: "1uzhvr"
-	}],
-	["path", {
-		d: "m9 9 6 6",
-		key: "z0biqf"
-	}]
-]);
 var Circle = createLucideIcon("circle", [["circle", {
 	cx: "12",
 	cy: "12",
@@ -20403,13 +20387,6 @@ var Tags = createLucideIcon("tags", [
 		key: "12ikhr"
 	}]
 ]);
-var ThumbsUp = createLucideIcon("thumbs-up", [["path", {
-	d: "M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z",
-	key: "emmmcr"
-}], ["path", {
-	d: "M7 10v12",
-	key: "1qc93n"
-}]]);
 var Trash2 = createLucideIcon("trash-2", [
 	["path", {
 		d: "M10 11v6",
@@ -65656,12 +65633,12 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						className: "flex-1 bg-green-600 hover:bg-green-700 text-white font-bold",
 						onClick: handleApprove,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThumbsUp, { className: "h-4 w-4 mr-2" }), t$1("common.approve")]
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4 mr-2" }), t$1("common.approve")]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						variant: "destructive",
 						className: "flex-1 font-bold",
 						onClick: handleReject,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleX, { className: "h-4 w-4 mr-2" }), t$1("common.reject")]
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 mr-2" }), t$1("common.reject")]
 					})]
 				})]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
@@ -73486,13 +73463,13 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 									type: "button",
 									className: "flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-9",
 									onClick: handleApprove,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThumbsUp, { className: "h-4 w-4 mr-2" }), t$1("common.approve")]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4 mr-2" }), t$1("common.approve")]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 									type: "button",
 									variant: "destructive",
 									className: "flex-1 font-bold h-9",
 									onClick: handleReject,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleX, { className: "h-4 w-4 mr-2" }), t$1("common.reject")]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 mr-2" }), t$1("common.reject")]
 								})]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -74224,14 +74201,14 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 								size: "sm",
 								className: "flex-1 h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold",
 								onClick: handleApprove,
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThumbsUp, { className: "h-3 w-3 mr-2" }), t$1("common.approve")]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-3 w-3 mr-2" }), t$1("common.approve")]
 							}), canReject && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								size: "sm",
 								variant: "destructive",
 								className: "h-9 px-2 text-xs font-bold",
 								onClick: handleReject,
 								title: t$1("common.reject"),
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleX, { className: "h-4 w-4" })
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" })
 							})]
 						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center justify-center gap-2 p-2 bg-yellow-50 text-yellow-800 text-xs font-medium rounded border border-yellow-200",
@@ -78411,17 +78388,17 @@ function Tasks() {
 												children: [
 													canApprove(task) && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 														size: "sm",
-														className: "bg-green-600 hover:bg-green-700 text-white h-8",
+														className: "bg-green-600 hover:bg-green-700 text-white h-8 gap-1",
 														onClick: () => handleApprove(task),
 														title: t$1("common.approve"),
-														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThumbsUp, { className: "h-4 w-4 mr-1" }), t$1("common.approve")]
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4" }), t$1("common.approve")]
 													}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 														size: "sm",
 														variant: "destructive",
-														className: "h-8",
+														className: "h-8 gap-1",
 														onClick: () => handleReject(task),
 														title: t$1("common.reject"),
-														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleX, { className: "h-4 w-4 mr-1" }), t$1("common.reject")]
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" }), t$1("common.reject")]
 													})] }),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 														variant: "ghost",
@@ -96276,4 +96253,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-gvTxn09S.js.map
+//# sourceMappingURL=index-Wvm06UTI.js.map

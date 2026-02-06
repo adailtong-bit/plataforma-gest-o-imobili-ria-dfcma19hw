@@ -24,7 +24,7 @@ import {
   HardHat,
   AlertTriangle,
   Check,
-  ThumbsUp,
+  X,
   XCircle,
 } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
@@ -220,7 +220,7 @@ export function TaskDetailsSheet({
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold"
                 onClick={handleApprove}
               >
-                <ThumbsUp className="h-4 w-4 mr-2" />
+                <Check className="h-4 w-4 mr-2" />
                 {t('common.approve')}
               </Button>
               <Button
@@ -228,7 +228,7 @@ export function TaskDetailsSheet({
                 className="flex-1 font-bold"
                 onClick={handleReject}
               >
-                <XCircle className="h-4 w-4 mr-2" />
+                <X className="h-4 w-4 mr-2" />
                 {t('common.reject')}
               </Button>
             </div>
