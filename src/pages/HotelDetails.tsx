@@ -11,6 +11,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -18,9 +24,19 @@ import {
   DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { ArrowLeft, Plus, Building, Edit, Save, Trash2 } from 'lucide-react'
+import {
+  ArrowLeft,
+  Plus,
+  Building,
+  Edit,
+  Save,
+  Trash2,
+  Users,
+  Info,
+} from 'lucide-react'
 import useHotelStore from '@/stores/useHotelStore'
 import useLanguageStore from '@/stores/useLanguageStore'
+import usePropertyStore from '@/stores/usePropertyStore'
 import { Tower } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import { DataMask } from '@/components/DataMask'
@@ -32,17 +48,31 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { RoomList } from '@/components/hotels/RoomList'
+import { Textarea } from '@/components/ui/textarea'
 
 export default function HotelDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { hotels, towers, updateHotel, deleteHotel, addTower, deleteTower } =
     useHotelStore()
+  const { properties } = usePropertyStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
   const hotel = hotels.find((h) => h.id === id)
   const hotelTowers = towers.filter((t) => t.hotelId === id)
+  const hotelRooms = properties.filter((p) => p.hotelId === id)
+
+  // Operational Stats
+  const totalRooms = hotelRooms.length
+  const occupiedRooms = hotelRooms.filter((r) => r.status === 'occupied').length
+  const readyRooms = hotelRooms.filter((r) => r.status === 'available').length
+  const maintenanceRooms = hotelRooms.filter(
+    (r) => r.status === 'maintenance',
+  ).length
+  const cleaningRooms = hotelRooms.filter((r) => r.status === 'cleaning').length
 
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState(hotel ? { ...hotel } : null)
@@ -95,6 +125,7 @@ export default function HotelDetails() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Header */}
       <div className="flex items-center gap-4">
         <Link to="/hotels">
           <Button variant="ghost" size="icon">
@@ -139,8 +170,62 @@ export default function HotelDetails() {
         </div>
       </div>
 
+      {/* Operational Dashboard */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card className="bg-blue-50 border-blue-100">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm font-medium text-blue-800">
+              Total Rooms
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-bold text-blue-900">{totalRooms}</div>
+          </CardContent>
+        </Card>
+        <Card className="bg-green-50 border-green-100">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm font-medium text-green-800">
+              Ready / Available
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-bold text-green-900">
+              {readyRooms}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-yellow-50 border-yellow-100">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm font-medium text-yellow-800">
+              Occupied
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-bold text-yellow-900">
+              {occupiedRooms}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-red-50 border-red-100">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm font-medium text-red-800">
+              Service / Maintenance
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-bold text-red-900">
+              {maintenanceRooms + cleaningRooms}
+            </div>
+            <p className="text-xs text-red-600 mt-1">
+              {cleaningRooms} Cleaning / {maintenanceRooms} Maint.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-1">
+        {/* Main Info */}
+        <Card className="md:col-span-1 h-fit">
           <CardHeader>
             <CardTitle>{t('hotels.hotel_details')}</CardTitle>
           </CardHeader>
@@ -156,6 +241,17 @@ export default function HotelDetails() {
               />
             </div>
             <div className="grid gap-2">
+              <Label>{t('common.description')}</Label>
+              <Textarea
+                value={formData.description || ''}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                disabled={!isEditing}
+                className="min-h-[100px]"
+              />
+            </div>
+            <div className="grid gap-2">
               <Label>{t('common.address')}</Label>
               <Input
                 value={formData.address}
@@ -165,40 +261,105 @@ export default function HotelDetails() {
                 disabled={!isEditing}
               />
             </div>
-            <div className="grid gap-2">
-              <Label>{t('properties.city_placeholder')}</Label>
-              <Input
-                value={formData.city}
-                onChange={(e) =>
-                  setFormData({ ...formData, city: e.target.value })
-                }
-                disabled={!isEditing}
-              />
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label>{t('properties.city_placeholder')}</Label>
+                <Input
+                  value={formData.city}
+                  onChange={(e) =>
+                    setFormData({ ...formData, city: e.target.value })
+                  }
+                  disabled={!isEditing}
+                />
+              </div>
+              <div>
+                <Label>{t('properties.state_placeholder')}</Label>
+                <Input
+                  value={formData.state}
+                  onChange={(e) =>
+                    setFormData({ ...formData, state: e.target.value })
+                  }
+                  disabled={!isEditing}
+                />
+              </div>
             </div>
-            <div className="grid gap-2">
-              <Label>{t('hotels.manager')}</Label>
-              <Input
-                value={formData.managerName || ''}
-                onChange={(e) =>
-                  setFormData({ ...formData, managerName: e.target.value })
-                }
-                disabled={!isEditing}
-              />
-            </div>
+
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="amenities">
+                <AccordionTrigger>Amenities</AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.amenities?.map((am, i) => (
+                      <Badge key={i} variant="outline">
+                        {am}
+                      </Badge>
+                    ))}
+                    {(!formData.amenities ||
+                      formData.amenities.length === 0) && (
+                      <span className="text-sm text-muted-foreground">
+                        No amenities listed.
+                      </span>
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="policies">
+                <AccordionTrigger>Policies</AccordionTrigger>
+                <AccordionContent>
+                  <ul className="list-disc pl-4 space-y-1 text-sm">
+                    {formData.policies?.map((pol, i) => (
+                      <li key={i}>{pol}</li>
+                    ))}
+                    {(!formData.policies || formData.policies.length === 0) && (
+                      <span className="text-muted-foreground">
+                        No policies listed.
+                      </span>
+                    )}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="contacts">
+                <AccordionTrigger>Team Roles</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3">
+                    {formData.contacts?.map((contact, i) => (
+                      <div
+                        key={i}
+                        className="bg-slate-50 p-2 rounded text-sm border"
+                      >
+                        <div className="font-bold flex items-center gap-2">
+                          <Users className="h-3 w-3" /> {contact.role}
+                        </div>
+                        <div>{contact.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {contact.phone} • {contact.email}
+                        </div>
+                      </div>
+                    ))}
+                    {(!formData.contacts || formData.contacts.length === 0) && (
+                      <span className="text-muted-foreground">
+                        No contacts listed.
+                      </span>
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
 
+        {/* Towers & Rooms */}
         <Card className="md:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>{t('hotels.towers')}</CardTitle>
               <CardDescription>
-                Manage towers within this hotel.
+                Manage towers and rooms within this hotel.
               </CardDescription>
             </div>
             <Dialog open={openTowerDialog} onOpenChange={setOpenTowerDialog}>
               <DialogTrigger asChild>
-                <Button className="bg-trust-blue gap-2">
+                <Button className="bg-trust-blue gap-2" size="sm">
                   <Plus className="h-4 w-4" /> {t('hotels.add_tower')}
                 </Button>
               </DialogTrigger>
@@ -250,56 +411,40 @@ export default function HotelDetails() {
             </Dialog>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('common.name')}</TableHead>
-                  <TableHead>{t('common.description')}</TableHead>
-                  <TableHead>{t('hotels.floors')}</TableHead>
-                  <TableHead className="text-right">
-                    {t('common.actions')}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {hotelTowers.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={4}
-                      className="text-center py-8 text-muted-foreground"
-                    >
-                      {t('hotels.no_towers')}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  hotelTowers.map((tower) => (
-                    <TableRow key={tower.id}>
-                      <TableCell className="font-medium flex items-center gap-2">
-                        <Building className="h-4 w-4 text-blue-500" />
-                        <Link
-                          to={`/hotels/${hotel.id}/towers/${tower.id}`}
-                          className="hover:underline text-blue-700"
-                        >
-                          <DataMask>{tower.name}</DataMask>
-                        </Link>
-                      </TableCell>
-                      <TableCell>{tower.description || '-'}</TableCell>
-                      <TableCell>{tower.floors}</TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteTower(tower.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+            {hotelTowers.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+                {t('hotels.no_towers')}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {hotelTowers.map((tower) => (
+                  <div key={tower.id} className="border rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="flex items-center gap-2">
+                        <Building className="h-5 w-5 text-slate-700" />
+                        <div>
+                          <h3 className="font-bold text-lg">{tower.name}</h3>
+                          <p className="text-xs text-muted-foreground">
+                            {tower.floors} Floors • {tower.description}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteTower(tower.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    {/* Room List Component injected per tower */}
+                    <RoomList hotelId={hotel.id} towerId={tower.id} />
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -18913,6 +18913,24 @@ var Activity = createLucideIcon("activity", [["path", {
 	d: "M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2",
 	key: "169zse"
 }]]);
+var Armchair = createLucideIcon("armchair", [
+	["path", {
+		d: "M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3",
+		key: "irtipd"
+	}],
+	["path", {
+		d: "M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z",
+		key: "1qyhux"
+	}],
+	["path", {
+		d: "M5 18v2",
+		key: "ppbyun"
+	}],
+	["path", {
+		d: "M19 18v2",
+		key: "gy7782"
+	}]
+]);
 var ArrowLeft = createLucideIcon("arrow-left", [["path", {
 	d: "m12 19-7-7 7-7",
 	key: "1l729n"
@@ -18936,6 +18954,24 @@ var Ban = createLucideIcon("ban", [["path", {
 	r: "10",
 	key: "1mglay"
 }]]);
+var BedDouble = createLucideIcon("bed-double", [
+	["path", {
+		d: "M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8",
+		key: "1k78r4"
+	}],
+	["path", {
+		d: "M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4",
+		key: "fb3tl2"
+	}],
+	["path", {
+		d: "M12 4v6",
+		key: "1dcgq2"
+	}],
+	["path", {
+		d: "M2 18h20",
+		key: "ajqnye"
+	}]
+]);
 var BellRing = createLucideIcon("bell-ring", [
 	["path", {
 		d: "M10.268 21a2 2 0 0 0 3.464 0",
@@ -19963,6 +19999,32 @@ var Moon = createLucideIcon("moon", [["path", {
 	d: "M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401",
 	key: "kfwtm"
 }]]);
+var Move = createLucideIcon("move", [
+	["path", {
+		d: "M12 2v20",
+		key: "t6zp3m"
+	}],
+	["path", {
+		d: "m15 19-3 3-3-3",
+		key: "11eu04"
+	}],
+	["path", {
+		d: "m19 9 3 3-3 3",
+		key: "1mg7y2"
+	}],
+	["path", {
+		d: "M2 12h20",
+		key: "9i4pu4"
+	}],
+	["path", {
+		d: "m5 9-3 3 3 3",
+		key: "j64kie"
+	}],
+	["path", {
+		d: "m9 5 3-3 3 3",
+		key: "l8vdw6"
+	}]
+]);
 var Navigation = createLucideIcon("navigation", [["polygon", {
 	points: "3 11 22 2 13 21 11 13 3 11",
 	key: "1ltx0t"
@@ -53239,7 +53301,33 @@ const hotels = [{
 	managerName: "Robert CEO",
 	managerEmail: "ceo@grandplaza.com",
 	managerPhone: "+1 (305) 555-0100",
-	towers: ["tower_1_h1", "tower_2_h1"]
+	towers: ["tower_1_h1", "tower_2_h1"],
+	amenities: [
+		"Wi-Fi",
+		"Pool",
+		"Gym",
+		"Parking",
+		"Spa",
+		"Restaurant"
+	],
+	policies: [
+		"No pets",
+		"No smoking in rooms",
+		"Check-in after 3 PM"
+	],
+	contacts: [{
+		id: "contact_1",
+		name: "Robert CEO",
+		role: "General Manager",
+		email: "ceo@grandplaza.com",
+		phone: "+1 (305) 555-0100"
+	}, {
+		id: "contact_2",
+		name: "Sarah Smith",
+		role: "Front Desk Lead",
+		email: "sarah@grandplaza.com",
+		phone: "+1 (305) 555-0101"
+	}]
 }];
 const towers = [{
 	id: "tower_1_h1",
@@ -53276,7 +53364,19 @@ for (let i$2 = 1; i$2 <= 10; i$2++) {
 		guests: 2,
 		image: "https://img.usecurling.com/p/400/300?q=hotel%20room",
 		ownerId: "user_owner_demo",
-		listingPrice: 200
+		listingPrice: 200,
+		roomCharacteristics: {
+			bedType: i$2 % 2 === 0 ? "King" : "Queen",
+			view: i$2 % 3 === 0 ? "Sea View" : "City View",
+			hasBalcony: i$2 > 5,
+			maxOccupancy: 2,
+			sizeSqFt: 350
+		},
+		priceHistory: [{
+			date: subMonths(/* @__PURE__ */ new Date(), 1).toISOString(),
+			price: 180,
+			changedBy: "System"
+		}]
 	};
 	hotelRooms.push(room);
 }
@@ -86745,6 +86845,7 @@ var useHotelStore = () => {
 var useHotelStore_default = useHotelStore;
 function Hotels() {
 	const { hotels: hotels$1, addHotel } = useHotelStore_default();
+	const { properties: properties$1 } = usePropertyStore_default();
 	const { t: t$1 } = useLanguageStore_default();
 	useNavigate();
 	const { toast: toast$2 } = useToast();
@@ -86760,7 +86861,18 @@ function Hotels() {
 		description: "",
 		managerName: "",
 		managerEmail: "",
-		managerPhone: ""
+		managerPhone: "",
+		amenities: [],
+		policies: [],
+		contacts: []
+	});
+	const [currentAmenity, setCurrentAmenity] = (0, import_react.useState)("");
+	const [currentPolicy, setCurrentPolicy] = (0, import_react.useState)("");
+	const [currentContact, setCurrentContact] = (0, import_react.useState)({
+		role: "",
+		name: "",
+		phone: "",
+		email: ""
 	});
 	const filteredHotels = hotels$1.filter((h) => h.name.toLowerCase().includes(filter.toLowerCase()));
 	const handleAddressSelect = (addr) => {
@@ -86773,6 +86885,41 @@ function Hotels() {
 			zipCode: applyZipCodeMask(addr.zipCode, mappedCountry),
 			country: mappedCountry
 		}));
+	};
+	const addAmenity = () => {
+		if (currentAmenity.trim()) {
+			setNewHotel((prev) => ({
+				...prev,
+				amenities: [...prev.amenities || [], currentAmenity.trim()]
+			}));
+			setCurrentAmenity("");
+		}
+	};
+	const addPolicy = () => {
+		if (currentPolicy.trim()) {
+			setNewHotel((prev) => ({
+				...prev,
+				policies: [...prev.policies || [], currentPolicy.trim()]
+			}));
+			setCurrentPolicy("");
+		}
+	};
+	const addContact = () => {
+		if (currentContact.name && currentContact.role) {
+			setNewHotel((prev) => ({
+				...prev,
+				contacts: [...prev.contacts || [], {
+					...currentContact,
+					id: `c-${Date.now()}`
+				}]
+			}));
+			setCurrentContact({
+				role: "",
+				name: "",
+				phone: "",
+				email: ""
+			});
+		}
 	};
 	const handleAddHotel = () => {
 		if (!newHotel.name || !newHotel.address) {
@@ -86795,7 +86942,10 @@ function Hotels() {
 			managerName: newHotel.managerName,
 			managerEmail: newHotel.managerEmail,
 			managerPhone: newHotel.managerPhone,
-			towers: []
+			towers: [],
+			amenities: newHotel.amenities || [],
+			policies: newHotel.policies || [],
+			contacts: newHotel.contacts || []
 		});
 		setOpen(false);
 		setNewHotel({
@@ -86808,15 +86958,27 @@ function Hotels() {
 			description: "",
 			managerName: "",
 			managerEmail: "",
-			managerPhone: ""
+			managerPhone: "",
+			amenities: [],
+			policies: [],
+			contacts: []
 		});
 		toast$2({ title: t$1("common.success") });
+	};
+	const getHotelStats = (hotelId) => {
+		const rooms = properties$1.filter((p$1) => p$1.hotelId === hotelId);
+		const occupied = rooms.filter((r$2) => r$2.status === "occupied").length;
+		const total = rooms.length;
+		return {
+			total,
+			occupancyRate: total > 0 ? Math.round(occupied / total * 100) : 0
+		};
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex justify-between items-center",
+				className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 					className: "text-3xl font-bold tracking-tight text-slate-950",
 					children: t$1("hotels.title")
@@ -86837,138 +86999,251 @@ function Hotels() {
 							]
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-						className: "max-w-2xl max-h-[90vh] overflow-y-auto",
+						className: "max-w-3xl max-h-[90vh] overflow-y-auto",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("hotels.new_hotel") }) }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-4 py-4",
+								className: "grid gap-6 py-4",
 								children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											value: newHotel.name,
-											onChange: (e) => setNewHotel({
-												...newHotel,
-												name: e.target.value
-											}),
-											placeholder: "Grand Hotel"
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
+										className: "space-y-4",
 										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.address") }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddressInput, { onAddressSelect: handleAddressSelect }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: newHotel.address,
-												onChange: (e) => setNewHotel({
-													...newHotel,
-													address: e.target.value
-												}),
-												placeholder: t$1("properties.address_placeholder"),
-												className: "mt-2"
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+												className: "text-sm font-semibold text-slate-900 border-b pb-2",
+												children: "Basic Information"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: newHotel.name,
+													onChange: (e) => setNewHotel({
+														...newHotel,
+														name: e.target.value
+													}),
+													placeholder: "Grand Hotel"
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+													value: newHotel.description,
+													onChange: (e) => setNewHotel({
+														...newHotel,
+														description: e.target.value
+													}),
+													placeholder: "Brief description of the property..."
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.address") }),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddressInput, { onAddressSelect: handleAddressSelect }),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: newHotel.address,
+														onChange: (e) => setNewHotel({
+															...newHotel,
+															address: e.target.value
+														}),
+														placeholder: t$1("properties.address_placeholder"),
+														className: "mt-2"
+													})
+												]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid grid-cols-2 gap-4",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.city_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: newHotel.city,
+														onChange: (e) => setNewHotel({
+															...newHotel,
+															city: e.target.value
+														})
+													})]
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.state_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: newHotel.state,
+														onChange: (e) => setNewHotel({
+															...newHotel,
+															state: e.target.value
+														})
+													})]
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid grid-cols-2 gap-4",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+														value: newHotel.country,
+														onValueChange: (v) => setNewHotel({
+															...newHotel,
+															country: v
+														}),
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "US",
+																children: "United States"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "BR",
+																children: "Brazil"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "ES",
+																children: "Spain"
+															})
+														] })]
+													})]
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.zip_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: newHotel.zipCode,
+														onChange: (e) => setNewHotel({
+															...newHotel,
+															zipCode: e.target.value
+														})
+													})]
+												})]
 											})
 										]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid grid-cols-2 gap-4",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.city_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: newHotel.city,
-												onChange: (e) => setNewHotel({
-													...newHotel,
-													city: e.target.value
-												})
-											})]
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.state_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: newHotel.state,
-												onChange: (e) => setNewHotel({
-													...newHotel,
-													state: e.target.value
-												})
-											})]
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid grid-cols-2 gap-4",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-												value: newHotel.country,
-												onValueChange: (v) => setNewHotel({
-													...newHotel,
-													country: v
-												}),
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "US",
-														children: "United States"
+										className: "space-y-4",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+												className: "text-sm font-semibold text-slate-900 border-b pb-2",
+												children: "Amenities & Policies"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Amenities" }),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "flex gap-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+															value: currentAmenity,
+															onChange: (e) => setCurrentAmenity(e.target.value),
+															placeholder: "e.g. Pool, Wi-Fi"
+														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+															onClick: addAmenity,
+															type: "button",
+															size: "sm",
+															children: "Add"
+														})]
 													}),
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "BR",
-														children: "Brazil"
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+														className: "flex flex-wrap gap-2 mt-2",
+														children: newHotel.amenities?.map((am, i$2) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+															variant: "secondary",
+															children: am
+														}, i$2))
+													})
+												]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Policies" }),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "flex gap-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+															value: currentPolicy,
+															onChange: (e) => setCurrentPolicy(e.target.value),
+															placeholder: "e.g. No Pets"
+														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+															onClick: addPolicy,
+															type: "button",
+															size: "sm",
+															children: "Add"
+														})]
 													}),
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "ES",
-														children: "Spain"
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+														className: "flex flex-col gap-1 mt-2",
+														children: newHotel.policies?.map((pol, i$2) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+															className: "text-sm text-slate-600",
+															children: ["• ", pol]
+														}, i$2))
 													})
-												] })]
-											})]
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.zip_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: newHotel.zipCode,
-												onChange: (e) => setNewHotel({
-													...newHotel,
-													zipCode: e.target.value
-												})
-											})]
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("hotels.manager") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid grid-cols-3 gap-2",
-											children: [
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Name",
-													value: newHotel.managerName,
-													onChange: (e) => setNewHotel({
-														...newHotel,
-														managerName: e.target.value
-													})
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Email",
-													value: newHotel.managerEmail,
-													onChange: (e) => setNewHotel({
-														...newHotel,
-														managerEmail: e.target.value
-													})
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Phone",
-													value: newHotel.managerPhone,
-													onChange: (e) => setNewHotel({
-														...newHotel,
-														managerPhone: e.target.value
-													})
-												})
-											]
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											value: newHotel.description,
-											onChange: (e) => setNewHotel({
-												...newHotel,
-												description: e.target.value
+												]
 											})
-										})]
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-4",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+												className: "text-sm font-semibold text-slate-900 border-b pb-2",
+												children: "Team Roles"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid grid-cols-2 gap-2",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														placeholder: "Role (e.g. Manager)",
+														value: currentContact.role,
+														onChange: (e) => setCurrentContact({
+															...currentContact,
+															role: e.target.value
+														})
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														placeholder: "Name",
+														value: currentContact.name,
+														onChange: (e) => setCurrentContact({
+															...currentContact,
+															name: e.target.value
+														})
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														placeholder: "Phone",
+														value: currentContact.phone,
+														onChange: (e) => setCurrentContact({
+															...currentContact,
+															phone: e.target.value
+														})
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														placeholder: "Email",
+														value: currentContact.email,
+														onChange: (e) => setCurrentContact({
+															...currentContact,
+															email: e.target.value
+														})
+													})
+												]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+												onClick: addContact,
+												type: "button",
+												size: "sm",
+												className: "w-full",
+												children: "Add Team Member"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+												className: "space-y-2 mt-2",
+												children: newHotel.contacts?.map((contact, i$2) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "flex justify-between items-center text-sm bg-slate-50 p-2 rounded",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+														/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+															className: "font-bold",
+															children: [contact.role, ":"]
+														}),
+														" ",
+														contact.name
+													] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "text-slate-500",
+														children: [
+															contact.phone,
+															" | ",
+															contact.email
+														]
+													})]
+												}, i$2))
+											})
+										]
 									})
 								]
 							}),
@@ -86994,57 +87269,1074 @@ function Hotels() {
 				children: filteredHotels.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "col-span-full text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg",
 					children: t$1("hotels.no_hotels")
-				}) : filteredHotels.map((hotel) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: "hover:shadow-md transition-shadow",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "flex items-start justify-between",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-3",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "p-2 bg-blue-100 rounded-lg",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hotel, { className: "h-6 w-6 text-blue-700" })
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-									className: "text-lg",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.name })
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.city }),
-									", ",
-									hotel.country
-								] })] })]
-							})
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2 text-sm",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-2 text-muted-foreground",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "truncate",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.address })
-								})]
-							}), hotel.managerName && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-								className: "text-muted-foreground",
-								children: ["Manager: ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.managerName })]
-							})]
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
-							className: "border-t pt-4",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								asChild: true,
-								className: "w-full",
-								variant: "outline",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-									to: `/hotels/${hotel.id}`,
+				}) : filteredHotels.map((hotel) => {
+					const stats = getHotelStats(hotel.id);
+					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "hover:shadow-md transition-shadow flex flex-col",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "flex items-start justify-between",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-3",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "p-2 bg-blue-100 rounded-lg",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hotel, { className: "h-6 w-6 text-blue-700" })
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+										className: "text-lg",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.name })
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.city }),
+										", ",
+										hotel.country
+									] })] })]
+								})
+							}) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+								className: "flex-1",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-4 text-sm",
 									children: [
-										t$1("common.view"),
-										" ",
-										t$1("common.details")
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center gap-2 text-muted-foreground",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "truncate",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.address })
+											})]
+										}),
+										hotel.managerName && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+											className: "text-muted-foreground flex items-center gap-2",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-4 w-4" }),
+												"Manager: ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.managerName })
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid grid-cols-2 gap-2 mt-4 pt-4 border-t",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "text-center",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "text-2xl font-bold text-slate-900",
+													children: stats.total
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "text-xs text-muted-foreground",
+													children: "Total Rooms"
+												})]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "text-center",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+													className: "text-2xl font-bold text-green-600",
+													children: [stats.occupancyRate, "%"]
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "text-xs text-muted-foreground",
+													children: "Occupancy"
+												})]
+											})]
+										})
 									]
 								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
+								className: "border-t pt-4",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									asChild: true,
+									className: "w-full",
+									variant: "outline",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+										to: `/hotels/${hotel.id}`,
+										children: [
+											t$1("common.view"),
+											" ",
+											t$1("common.details")
+										]
+									})
+								})
+							})
+						]
+					}, hotel.id);
+				})
+			})
+		]
+	});
+}
+var COLLAPSIBLE_NAME = "Collapsible";
+var [createCollapsibleContext, createCollapsibleScope] = createContextScope(COLLAPSIBLE_NAME);
+var [CollapsibleProvider, useCollapsibleContext] = createCollapsibleContext(COLLAPSIBLE_NAME);
+var Collapsible = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeCollapsible, open: openProp, defaultOpen, disabled, onOpenChange, ...collapsibleProps } = props;
+	const [open, setOpen] = useControllableState({
+		prop: openProp,
+		defaultProp: defaultOpen ?? false,
+		onChange: onOpenChange,
+		caller: COLLAPSIBLE_NAME
+	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleProvider, {
+		scope: __scopeCollapsible,
+		disabled,
+		contentId: useId(),
+		open,
+		onOpenToggle: import_react.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen]),
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+			"data-state": getState$1(open),
+			"data-disabled": disabled ? "" : void 0,
+			...collapsibleProps,
+			ref: forwardedRef
+		})
+	});
+});
+Collapsible.displayName = COLLAPSIBLE_NAME;
+var TRIGGER_NAME$1 = "CollapsibleTrigger";
+var CollapsibleTrigger = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeCollapsible, ...triggerProps } = props;
+	const context = useCollapsibleContext(TRIGGER_NAME$1, __scopeCollapsible);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+		type: "button",
+		"aria-controls": context.contentId,
+		"aria-expanded": context.open || false,
+		"data-state": getState$1(context.open),
+		"data-disabled": context.disabled ? "" : void 0,
+		disabled: context.disabled,
+		...triggerProps,
+		ref: forwardedRef,
+		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
+	});
+});
+CollapsibleTrigger.displayName = TRIGGER_NAME$1;
+var CONTENT_NAME$1 = "CollapsibleContent";
+var CollapsibleContent = import_react.forwardRef((props, forwardedRef) => {
+	const { forceMount, ...contentProps } = props;
+	const context = useCollapsibleContext(CONTENT_NAME$1, props.__scopeCollapsible);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
+		present: forceMount || context.open,
+		children: ({ present }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleContentImpl, {
+			...contentProps,
+			ref: forwardedRef,
+			present
+		})
+	});
+});
+CollapsibleContent.displayName = CONTENT_NAME$1;
+var CollapsibleContentImpl = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeCollapsible, present, children, ...contentProps } = props;
+	const context = useCollapsibleContext(CONTENT_NAME$1, __scopeCollapsible);
+	const [isPresent, setIsPresent] = import_react.useState(present);
+	const ref = import_react.useRef(null);
+	const composedRefs = useComposedRefs(forwardedRef, ref);
+	const heightRef = import_react.useRef(0);
+	const height = heightRef.current;
+	const widthRef = import_react.useRef(0);
+	const width = widthRef.current;
+	const isOpen = context.open || isPresent;
+	const isMountAnimationPreventedRef = import_react.useRef(isOpen);
+	const originalStylesRef = import_react.useRef(void 0);
+	import_react.useEffect(() => {
+		const rAF = requestAnimationFrame(() => isMountAnimationPreventedRef.current = false);
+		return () => cancelAnimationFrame(rAF);
+	}, []);
+	useLayoutEffect2(() => {
+		const node = ref.current;
+		if (node) {
+			originalStylesRef.current = originalStylesRef.current || {
+				transitionDuration: node.style.transitionDuration,
+				animationName: node.style.animationName
+			};
+			node.style.transitionDuration = "0s";
+			node.style.animationName = "none";
+			const rect = node.getBoundingClientRect();
+			heightRef.current = rect.height;
+			widthRef.current = rect.width;
+			if (!isMountAnimationPreventedRef.current) {
+				node.style.transitionDuration = originalStylesRef.current.transitionDuration;
+				node.style.animationName = originalStylesRef.current.animationName;
+			}
+			setIsPresent(present);
+		}
+	}, [context.open, present]);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		"data-state": getState$1(context.open),
+		"data-disabled": context.disabled ? "" : void 0,
+		id: context.contentId,
+		hidden: !isOpen,
+		...contentProps,
+		ref: composedRefs,
+		style: {
+			[`--radix-collapsible-content-height`]: height ? `${height}px` : void 0,
+			[`--radix-collapsible-content-width`]: width ? `${width}px` : void 0,
+			...props.style
+		},
+		children: isOpen && children
+	});
+});
+function getState$1(open) {
+	return open ? "open" : "closed";
+}
+var Root = Collapsible;
+var Trigger = CollapsibleTrigger;
+var Content = CollapsibleContent;
+var ACCORDION_NAME = "Accordion";
+var ACCORDION_KEYS = [
+	"Home",
+	"End",
+	"ArrowDown",
+	"ArrowUp",
+	"ArrowLeft",
+	"ArrowRight"
+];
+var [Collection, useCollection, createCollectionScope] = createCollection(ACCORDION_NAME);
+var [createAccordionContext, createAccordionScope] = createContextScope(ACCORDION_NAME, [createCollectionScope, createCollapsibleScope]);
+var useCollapsibleScope = createCollapsibleScope();
+var Accordion$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { type, ...accordionProps } = props;
+	const singleProps = accordionProps;
+	const multipleProps = accordionProps;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection.Provider, {
+		scope: props.__scopeAccordion,
+		children: type === "multiple" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionImplMultiple, {
+			...multipleProps,
+			ref: forwardedRef
+		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionImplSingle, {
+			...singleProps,
+			ref: forwardedRef
+		})
+	});
+});
+Accordion$1.displayName = ACCORDION_NAME;
+var [AccordionValueProvider, useAccordionValueContext] = createAccordionContext(ACCORDION_NAME);
+var [AccordionCollapsibleProvider, useAccordionCollapsibleContext] = createAccordionContext(ACCORDION_NAME, { collapsible: false });
+var AccordionImplSingle = import_react.forwardRef((props, forwardedRef) => {
+	const { value: valueProp, defaultValue, onValueChange = () => {}, collapsible = false, ...accordionSingleProps } = props;
+	const [value, setValue] = useControllableState({
+		prop: valueProp,
+		defaultProp: defaultValue ?? "",
+		onChange: onValueChange,
+		caller: ACCORDION_NAME
+	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionValueProvider, {
+		scope: props.__scopeAccordion,
+		value: import_react.useMemo(() => value ? [value] : [], [value]),
+		onItemOpen: setValue,
+		onItemClose: import_react.useCallback(() => collapsible && setValue(""), [collapsible, setValue]),
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionCollapsibleProvider, {
+			scope: props.__scopeAccordion,
+			collapsible,
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionImpl, {
+				...accordionSingleProps,
+				ref: forwardedRef
+			})
+		})
+	});
+});
+var AccordionImplMultiple = import_react.forwardRef((props, forwardedRef) => {
+	const { value: valueProp, defaultValue, onValueChange = () => {}, ...accordionMultipleProps } = props;
+	const [value, setValue] = useControllableState({
+		prop: valueProp,
+		defaultProp: defaultValue ?? [],
+		onChange: onValueChange,
+		caller: ACCORDION_NAME
+	});
+	const handleItemOpen = import_react.useCallback((itemValue) => setValue((prevValue = []) => [...prevValue, itemValue]), [setValue]);
+	const handleItemClose = import_react.useCallback((itemValue) => setValue((prevValue = []) => prevValue.filter((value2) => value2 !== itemValue)), [setValue]);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionValueProvider, {
+		scope: props.__scopeAccordion,
+		value,
+		onItemOpen: handleItemOpen,
+		onItemClose: handleItemClose,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionCollapsibleProvider, {
+			scope: props.__scopeAccordion,
+			collapsible: true,
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionImpl, {
+				...accordionMultipleProps,
+				ref: forwardedRef
+			})
+		})
+	});
+});
+var [AccordionImplProvider, useAccordionContext] = createAccordionContext(ACCORDION_NAME);
+var AccordionImpl = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeAccordion, disabled, dir, orientation = "vertical", ...accordionProps } = props;
+	const composedRefs = useComposedRefs(import_react.useRef(null), forwardedRef);
+	const getItems = useCollection(__scopeAccordion);
+	const isDirectionLTR = useDirection(dir) === "ltr";
+	const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
+		if (!ACCORDION_KEYS.includes(event.key)) return;
+		const target = event.target;
+		const triggerCollection = getItems().filter((item) => !item.ref.current?.disabled);
+		const triggerIndex = triggerCollection.findIndex((item) => item.ref.current === target);
+		const triggerCount = triggerCollection.length;
+		if (triggerIndex === -1) return;
+		event.preventDefault();
+		let nextIndex = triggerIndex;
+		const homeIndex = 0;
+		const endIndex = triggerCount - 1;
+		const moveNext = () => {
+			nextIndex = triggerIndex + 1;
+			if (nextIndex > endIndex) nextIndex = homeIndex;
+		};
+		const movePrev = () => {
+			nextIndex = triggerIndex - 1;
+			if (nextIndex < homeIndex) nextIndex = endIndex;
+		};
+		switch (event.key) {
+			case "Home":
+				nextIndex = homeIndex;
+				break;
+			case "End":
+				nextIndex = endIndex;
+				break;
+			case "ArrowRight":
+				if (orientation === "horizontal") if (isDirectionLTR) moveNext();
+				else movePrev();
+				break;
+			case "ArrowDown":
+				if (orientation === "vertical") moveNext();
+				break;
+			case "ArrowLeft":
+				if (orientation === "horizontal") if (isDirectionLTR) movePrev();
+				else moveNext();
+				break;
+			case "ArrowUp":
+				if (orientation === "vertical") movePrev();
+				break;
+		}
+		triggerCollection[nextIndex % triggerCount].ref.current?.focus();
+	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionImplProvider, {
+		scope: __scopeAccordion,
+		disabled,
+		direction: dir,
+		orientation,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection.Slot, {
+			scope: __scopeAccordion,
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+				...accordionProps,
+				"data-orientation": orientation,
+				ref: composedRefs,
+				onKeyDown: disabled ? void 0 : handleKeyDown
+			})
+		})
+	});
+});
+var ITEM_NAME = "AccordionItem";
+var [AccordionItemProvider, useAccordionItemContext] = createAccordionContext(ITEM_NAME);
+var AccordionItem$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeAccordion, value, ...accordionItemProps } = props;
+	const accordionContext = useAccordionContext(ITEM_NAME, __scopeAccordion);
+	const valueContext = useAccordionValueContext(ITEM_NAME, __scopeAccordion);
+	const collapsibleScope = useCollapsibleScope(__scopeAccordion);
+	const triggerId = useId();
+	const open = value && valueContext.value.includes(value) || false;
+	const disabled = accordionContext.disabled || props.disabled;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionItemProvider, {
+		scope: __scopeAccordion,
+		open,
+		disabled,
+		triggerId,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root, {
+			"data-orientation": accordionContext.orientation,
+			"data-state": getState(open),
+			...collapsibleScope,
+			...accordionItemProps,
+			ref: forwardedRef,
+			disabled,
+			open,
+			onOpenChange: (open2) => {
+				if (open2) valueContext.onItemOpen(value);
+				else valueContext.onItemClose(value);
+			}
+		})
+	});
+});
+AccordionItem$1.displayName = ITEM_NAME;
+var HEADER_NAME = "AccordionHeader";
+var AccordionHeader = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeAccordion, ...headerProps } = props;
+	const accordionContext = useAccordionContext(ACCORDION_NAME, __scopeAccordion);
+	const itemContext = useAccordionItemContext(HEADER_NAME, __scopeAccordion);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.h3, {
+		"data-orientation": accordionContext.orientation,
+		"data-state": getState(itemContext.open),
+		"data-disabled": itemContext.disabled ? "" : void 0,
+		...headerProps,
+		ref: forwardedRef
+	});
+});
+AccordionHeader.displayName = HEADER_NAME;
+var TRIGGER_NAME = "AccordionTrigger";
+var AccordionTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeAccordion, ...triggerProps } = props;
+	const accordionContext = useAccordionContext(ACCORDION_NAME, __scopeAccordion);
+	const itemContext = useAccordionItemContext(TRIGGER_NAME, __scopeAccordion);
+	const collapsibleContext = useAccordionCollapsibleContext(TRIGGER_NAME, __scopeAccordion);
+	const collapsibleScope = useCollapsibleScope(__scopeAccordion);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection.ItemSlot, {
+		scope: __scopeAccordion,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trigger, {
+			"aria-disabled": itemContext.open && !collapsibleContext.collapsible || void 0,
+			"data-orientation": accordionContext.orientation,
+			id: itemContext.triggerId,
+			...collapsibleScope,
+			...triggerProps,
+			ref: forwardedRef
+		})
+	});
+});
+AccordionTrigger$1.displayName = TRIGGER_NAME;
+var CONTENT_NAME = "AccordionContent";
+var AccordionContent$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeAccordion, ...contentProps } = props;
+	const accordionContext = useAccordionContext(ACCORDION_NAME, __scopeAccordion);
+	const itemContext = useAccordionItemContext(CONTENT_NAME, __scopeAccordion);
+	const collapsibleScope = useCollapsibleScope(__scopeAccordion);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content, {
+		role: "region",
+		"aria-labelledby": itemContext.triggerId,
+		"data-orientation": accordionContext.orientation,
+		...collapsibleScope,
+		...contentProps,
+		ref: forwardedRef,
+		style: {
+			["--radix-accordion-content-height"]: "var(--radix-collapsible-content-height)",
+			["--radix-accordion-content-width"]: "var(--radix-collapsible-content-width)",
+			...props.style
+		}
+	});
+});
+AccordionContent$1.displayName = CONTENT_NAME;
+function getState(open) {
+	return open ? "open" : "closed";
+}
+var Root2 = Accordion$1;
+var Item = AccordionItem$1;
+var Header = AccordionHeader;
+var Trigger2 = AccordionTrigger$1;
+var Content2 = AccordionContent$1;
+var Accordion = Root2;
+var AccordionItem = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Item, {
+	ref,
+	className: cn("border-b", className),
+	...props
+}));
+AccordionItem.displayName = "AccordionItem";
+var AccordionTrigger = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Header, {
+	className: "flex",
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Trigger2, {
+		ref,
+		className: cn("flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180", className),
+		...props,
+		children: [children, /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronDown, { className: "h-4 w-4 shrink-0 transition-transform duration-200" })]
+	})
+}));
+AccordionTrigger.displayName = Trigger2.displayName;
+var AccordionContent = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2, {
+	ref,
+	className: "overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
+	...props,
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: cn("pb-4 pt-0", className),
+		children
+	})
+}));
+AccordionContent.displayName = Content2.displayName;
+function RoomDetailsSheet({ open, onOpenChange, room }) {
+	if (!room) return null;
+	const characteristics = room.roomCharacteristics;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sheet, {
+		open,
+		onOpenChange,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetContent, {
+			className: "sm:max-w-md overflow-y-auto",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetHeader, {
+				className: "mb-6",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetTitle, {
+					className: "text-2xl flex items-center gap-2",
+					children: [
+						"Room ",
+						room.roomNumber,
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+							variant: "outline",
+							className: "ml-2",
+							children: room.status
+						})
+					]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetDescription, { children: [room.name, " - Detailed Information"] })]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+						className: "text-sm font-semibold text-slate-900 border-b pb-2 mb-3",
+						children: "Unit Characteristics"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-2 gap-4 text-sm",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(BedDouble, { className: "h-4 w-4 text-slate-500" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-muted-foreground",
+										children: "Bed Type:"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "font-medium",
+										children: characteristics?.bedType || "N/A"
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Armchair, { className: "h-4 w-4 text-slate-500" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-muted-foreground",
+										children: "View:"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "font-medium",
+										children: characteristics?.view || "N/A"
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Move, { className: "h-4 w-4 text-slate-500" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-muted-foreground",
+										children: "Size:"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "font-medium",
+										children: characteristics?.sizeSqFt ? `${characteristics.sizeSqFt} sq ft` : "N/A"
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4 text-slate-500" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-muted-foreground",
+										children: "Balcony:"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "font-medium",
+										children: characteristics?.hasBalcony ? "Yes" : "No"
+									})
+								]
+							})
+						]
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "bg-slate-50 p-4 rounded-lg",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex justify-between items-center",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "text-sm font-medium text-slate-600",
+								children: "Current Nightly Rate"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+								className: "text-xl font-bold text-green-700",
+								children: ["$", room.listingPrice]
+							})]
+						})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-2 mb-3",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(History, { className: "h-4 w-4 text-slate-700" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+							className: "text-sm font-semibold text-slate-900",
+							children: "Price History"
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "border rounded-md",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "h-8",
+								children: "Date"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "h-8",
+								children: "Price"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "h-8",
+								children: "By"
+							})
+						] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: !room.priceHistory || room.priceHistory.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							colSpan: 3,
+							className: "text-center text-xs text-muted-foreground py-4",
+							children: "No history recorded."
+						}) }) : room.priceHistory.map((hist, i$2) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "py-2 text-xs",
+								children: format(new Date(hist.date), "MMM dd, yyyy")
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+								className: "py-2 text-xs font-medium",
+								children: ["$", hist.price]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "py-2 text-xs text-muted-foreground",
+								children: hist.changedBy || "System"
+							})
+						] }, i$2)) })] })
+					})] })
+				]
+			})]
+		})
+	});
+}
+function RoomList({ hotelId, towerId }) {
+	const { properties: properties$1, addProperty, updateProperty, deleteProperty } = usePropertyStore_default();
+	const { t: t$1 } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [open, setOpen] = (0, import_react.useState)(false);
+	const [editingRoom, setEditingRoom] = (0, import_react.useState)(null);
+	const [detailsOpen, setDetailsOpen] = (0, import_react.useState)(false);
+	const [selectedRoom, setSelectedRoom] = (0, import_react.useState)(null);
+	const [formData, setFormData] = (0, import_react.useState)({
+		name: "",
+		roomNumber: "",
+		bedrooms: 1,
+		bathrooms: 1,
+		guests: 2,
+		status: "available",
+		listingPrice: 0,
+		roomCharacteristics: {
+			bedType: "Queen",
+			view: "Standard",
+			hasBalcony: false,
+			maxOccupancy: 2,
+			sizeSqFt: 0
+		}
+	});
+	const rooms = properties$1.filter((p$1) => p$1.hotelId === hotelId && p$1.towerId === towerId).sort((a$2, b$1) => (a$2.roomNumber || "").localeCompare(b$1.roomNumber || ""));
+	const handleSave = () => {
+		if (!formData.name || !formData.roomNumber) {
+			toast$2({
+				title: t$1("common.error"),
+				description: t$1("common.required"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingRoom) {
+			let newHistory = editingRoom.priceHistory || [];
+			if (editingRoom.listingPrice !== formData.listingPrice) newHistory = [...newHistory, {
+				date: (/* @__PURE__ */ new Date()).toISOString(),
+				price: editingRoom.listingPrice || 0,
+				changedBy: "User"
+			}];
+			updateProperty({
+				...editingRoom,
+				...formData,
+				priceHistory: newHistory
+			});
+			toast$2({ title: t$1("common.success") });
+		} else {
+			addProperty({
+				id: `room-${Date.now()}`,
+				...formData,
+				hotelId,
+				towerId,
+				type: "Hotel Room",
+				profileType: "short_term",
+				address: "Hotel Address",
+				ownerId: "system",
+				image: "https://img.usecurling.com/p/400/300?q=hotel%20room",
+				priceHistory: []
+			});
+			toast$2({ title: t$1("common.success") });
+		}
+		setOpen(false);
+		setEditingRoom(null);
+		resetForm();
+	};
+	const resetForm = () => {
+		setFormData({
+			name: "",
+			roomNumber: "",
+			bedrooms: 1,
+			bathrooms: 1,
+			guests: 2,
+			status: "available",
+			listingPrice: 0,
+			roomCharacteristics: {
+				bedType: "Queen",
+				view: "Standard",
+				hasBalcony: false,
+				maxOccupancy: 2,
+				sizeSqFt: 0
+			}
+		});
+	};
+	const handleDelete = (id) => {
+		if (confirm(t$1("common.delete_title"))) {
+			deleteProperty(id);
+			toast$2({ title: t$1("common.success") });
+		}
+	};
+	const openEdit = (room) => {
+		setEditingRoom(room);
+		setFormData({
+			name: room.name,
+			roomNumber: room.roomNumber,
+			bedrooms: room.bedrooms,
+			bathrooms: room.bathrooms,
+			guests: room.guests,
+			status: room.status,
+			listingPrice: room.listingPrice,
+			roomCharacteristics: room.roomCharacteristics || {
+				bedType: "Queen",
+				view: "Standard",
+				hasBalcony: false,
+				maxOccupancy: 2,
+				sizeSqFt: 0
+			}
+		});
+		setOpen(true);
+	};
+	const openDetails = (room) => {
+		setSelectedRoom(room);
+		setDetailsOpen(true);
+	};
+	const updateStatus = (room, newStatus) => {
+		updateProperty({
+			...room,
+			status: newStatus
+		});
+		toast$2({ title: "Status Updated" });
+	};
+	const getStatusColor = (status) => {
+		switch (status) {
+			case "occupied":
+			case "rented": return "bg-yellow-100 text-yellow-800 border-yellow-300";
+			case "maintenance": return "bg-red-100 text-red-800 border-red-300";
+			case "cleaning": return "bg-blue-100 text-blue-800 border-blue-300";
+			case "available": return "bg-green-100 text-green-800 border-green-300";
+			default: return "bg-gray-100";
+		}
+	};
+	const getStatusLabel = (status) => {
+		switch (status) {
+			case "available": return "Ready";
+			case "occupied": return "Occupied";
+			case "maintenance": return "Maintenance";
+			case "cleaning": return "In Cleaning";
+			default: return status;
+		}
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "space-y-4",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex justify-between items-center",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+					className: "text-lg font-semibold",
+					children: t$1("hotels.rooms")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+					open,
+					onOpenChange: (v) => {
+						setOpen(v);
+						if (!v) {
+							setEditingRoom(null);
+							resetForm();
+						}
+					},
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							size: "sm",
+							className: "bg-trust-blue gap-2",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+								" ",
+								t$1("hotels.add_room")
+							]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+						className: "max-w-3xl max-h-[90vh] overflow-y-auto",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRoom ? t$1("common.edit") : t$1("hotels.new_room") }) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-4 py-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("hotels.room_number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: formData.roomNumber,
+												onChange: (e) => setFormData({
+													...formData,
+													roomNumber: e.target.value
+												})
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: formData.name,
+												onChange: (e) => setFormData({
+													...formData,
+													name: e.target.value
+												}),
+												placeholder: "e.g. Deluxe Suite"
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.status") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+												value: formData.status,
+												onValueChange: (v) => setFormData({
+													...formData,
+													status: v
+												}),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "available",
+														children: "Ready"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "occupied",
+														children: "Occupied"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "maintenance",
+														children: "Maintenance"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "cleaning",
+														children: "In Cleaning"
+													})
+												] })]
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nightly Rate ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "number",
+												value: formData.listingPrice,
+												onChange: (e) => setFormData({
+													...formData,
+													listingPrice: parseFloat(e.target.value)
+												})
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "border-t pt-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+											className: "mb-2 block font-semibold",
+											children: "Unit Characteristics"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid grid-cols-2 gap-4",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Bed Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+														value: formData.roomCharacteristics?.bedType,
+														onValueChange: (v) => setFormData({
+															...formData,
+															roomCharacteristics: {
+																...formData.roomCharacteristics,
+																bedType: v
+															}
+														}),
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "King",
+																children: "King"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "Queen",
+																children: "Queen"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "Double",
+																children: "Double"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "Twin",
+																children: "Twin"
+															})
+														] })]
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "View Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+														value: formData.roomCharacteristics?.view,
+														onValueChange: (v) => setFormData({
+															...formData,
+															roomCharacteristics: {
+																...formData.roomCharacteristics,
+																view: v
+															}
+														}),
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "Standard",
+																children: "Standard"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "City View",
+																children: "City View"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "Sea View",
+																children: "Sea View"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "Garden View",
+																children: "Garden View"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "Pool View",
+																children: "Pool View"
+															})
+														] })]
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Max Occupancy" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														type: "number",
+														value: formData.roomCharacteristics?.maxOccupancy,
+														onChange: (e) => setFormData({
+															...formData,
+															roomCharacteristics: {
+																...formData.roomCharacteristics,
+																maxOccupancy: parseInt(e.target.value)
+															}
+														})
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+													className: "flex items-end mb-2",
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "flex items-center space-x-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
+															id: "balcony",
+															checked: formData.roomCharacteristics?.hasBalcony,
+															onCheckedChange: (c$1) => setFormData({
+																...formData,
+																roomCharacteristics: {
+																	...formData.roomCharacteristics,
+																	hasBalcony: c$1
+																}
+															})
+														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+															htmlFor: "balcony",
+															children: "Has Balcony"
+														})]
+													})
+												})
+											]
+										})]
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								onClick: handleSave,
+								children: t$1("common.save")
+							}) })
+						]
+					})]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "border rounded-md",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("hotels.room_number") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.type") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.value") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "text-right",
+						children: t$1("common.actions")
+					})
+				] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: rooms.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					colSpan: 5,
+					className: "text-center py-8 text-muted-foreground",
+					children: t$1("hotels.no_rooms")
+				}) }) : rooms.map((room) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+					className: "cursor-pointer hover:bg-slate-50 transition-colors",
+					onClick: () => openDetails(room),
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+							className: "font-bold flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-4 w-4 text-slate-500" }), room.roomNumber]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: [
+							room.roomCharacteristics?.bedType,
+							" /",
+							" ",
+							room.roomCharacteristics?.view
+						] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							onClick: (e) => e.stopPropagation(),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: room.status,
+								onValueChange: (v) => updateStatus(room, v),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+									className: `h-8 w-[130px] border-0 ${getStatusColor(room.status)} font-bold`,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { children: getStatusLabel(room.status) })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "available",
+										children: "Ready"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "cleaning",
+										children: "In Cleaning"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "maintenance",
+										children: "Maintenance"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "occupied",
+										children: "Occupied"
+									})
+								] })]
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: ["$", room.listingPrice] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							onClick: (e) => e.stopPropagation(),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: "ghost",
+										size: "icon",
+										onClick: () => openDetails(room),
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4" })
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: "ghost",
+										size: "icon",
+										onClick: () => openEdit(room),
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-4 w-4" })
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: "ghost",
+										size: "icon",
+										className: "text-red-500 hover:text-red-700",
+										onClick: () => handleDelete(room.id),
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+									})
+								]
 							})
 						})
 					]
-				}, hotel.id))
+				}, room.id)) })] })
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RoomDetailsSheet, {
+				open: detailsOpen,
+				onOpenChange: setDetailsOpen,
+				room: selectedRoom
 			})
 		]
 	});
@@ -87053,10 +88345,17 @@ function HotelDetails() {
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const { hotels: hotels$1, towers: towers$1, updateHotel, deleteHotel, addTower, deleteTower } = useHotelStore_default();
+	const { properties: properties$1 } = usePropertyStore_default();
 	const { t: t$1 } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const hotel = hotels$1.find((h) => h.id === id);
 	const hotelTowers = towers$1.filter((t$2) => t$2.hotelId === id);
+	const hotelRooms$1 = properties$1.filter((p$1) => p$1.hotelId === id);
+	const totalRooms = hotelRooms$1.length;
+	const occupiedRooms = hotelRooms$1.filter((r$2) => r$2.status === "occupied").length;
+	const readyRooms = hotelRooms$1.filter((r$2) => r$2.status === "available").length;
+	const maintenanceRooms = hotelRooms$1.filter((r$2) => r$2.status === "maintenance").length;
+	const cleaningRooms = hotelRooms$1.filter((r$2) => r$2.status === "cleaning").length;
 	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
 	const [formData, setFormData] = (0, import_react.useState)(hotel ? { ...hotel } : null);
 	const [openTowerDialog, setOpenTowerDialog] = (0, import_react.useState)(false);
@@ -87105,495 +88404,361 @@ function HotelDetails() {
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex items-center gap-4",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-					to: "/hotels",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						size: "icon",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-5 w-5" })
-					})
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-					className: "text-3xl font-bold tracking-tight text-slate-950",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.name })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2 text-sm text-slate-500",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-							to: "/hotels",
-							className: "hover:underline",
-							children: t$1("hotels.title")
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: hotel.name })
-					]
-				})] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "ml-auto flex gap-2",
-					children: isEditing ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						onClick: handleSaveHotel,
-						className: "bg-trust-blue gap-2",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Save, { className: "h-4 w-4" }),
-							" ",
-							t$1("common.save")
-						]
-					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						variant: "outline",
-						onClick: () => setIsEditing(true),
-						className: "gap-2",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" }),
-							" ",
-							t$1("common.edit")
-						]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "destructive",
-						onClick: handleDeleteHotel,
-						size: "icon",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-					})] })
-				})
-			]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "grid grid-cols-1 md:grid-cols-3 gap-6",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "md:col-span-1",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("hotels.hotel_details") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-					className: "space-y-4",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: formData.name,
-								onChange: (e) => setFormData({
-									...formData,
-									name: e.target.value
-								}),
-								disabled: !isEditing
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.address") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: formData.address,
-								onChange: (e) => setFormData({
-									...formData,
-									address: e.target.value
-								}),
-								disabled: !isEditing
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.city_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: formData.city,
-								onChange: (e) => setFormData({
-									...formData,
-									city: e.target.value
-								}),
-								disabled: !isEditing
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("hotels.manager") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: formData.managerName || "",
-								onChange: (e) => setFormData({
-									...formData,
-									managerName: e.target.value
-								}),
-								disabled: !isEditing
-							})]
-						})
-					]
-				})]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "md:col-span-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-					className: "flex flex-row items-center justify-between",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("hotels.towers") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Manage towers within this hotel." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-						open: openTowerDialog,
-						onOpenChange: setOpenTowerDialog,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-							asChild: true,
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-								className: "bg-trust-blue gap-2",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
-									" ",
-									t$1("hotels.add_tower")
-								]
-							})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("hotels.new_tower") }) }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-4 py-4",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											value: newTower.name,
-											onChange: (e) => setNewTower({
-												...newTower,
-												name: e.target.value
-											}),
-											placeholder: "North Tower"
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											value: newTower.description,
-											onChange: (e) => setNewTower({
-												...newTower,
-												description: e.target.value
-											})
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("hotels.floors") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "number",
-											value: newTower.floors,
-											onChange: (e) => setNewTower({
-												...newTower,
-												floors: parseInt(e.target.value)
-											})
-										})]
-									})
-								]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								onClick: handleAddTower,
-								children: t$1("common.save")
-							}) })
-						] })]
-					})]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.description") }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("hotels.floors") }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-						className: "text-right",
-						children: t$1("common.actions")
-					})
-				] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: hotelTowers.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 4,
-					className: "text-center py-8 text-muted-foreground",
-					children: t$1("hotels.no_towers")
-				}) }) : hotelTowers.map((tower) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-						className: "font-medium flex items-center gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-blue-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-							to: `/hotels/${hotel.id}/towers/${tower.id}`,
-							className: "hover:underline text-blue-700",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.name })
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: tower.description || "-" }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: tower.floors }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-						className: "text-right",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+						to: "/hotels",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "ghost",
 							size: "icon",
-							onClick: () => handleDeleteTower(tower.id),
-							className: "text-red-500 hover:text-red-700",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-5 w-5" })
 						})
-					})
-				] }, tower.id)) })] }) })]
-			})]
-		})]
-	});
-}
-function RoomList({ hotelId, towerId }) {
-	const { properties: properties$1, addProperty, updateProperty, deleteProperty } = usePropertyStore_default();
-	const { t: t$1 } = useLanguageStore_default();
-	const { toast: toast$2 } = useToast();
-	const [open, setOpen] = (0, import_react.useState)(false);
-	const [editingRoom, setEditingRoom] = (0, import_react.useState)(null);
-	const [formData, setFormData] = (0, import_react.useState)({
-		name: "",
-		roomNumber: "",
-		bedrooms: 1,
-		bathrooms: 1,
-		guests: 2,
-		status: "available",
-		listingPrice: 0
-	});
-	const rooms = properties$1.filter((p$1) => p$1.hotelId === hotelId && p$1.towerId === towerId);
-	const handleSave = () => {
-		if (!formData.name || !formData.roomNumber) {
-			toast$2({
-				title: t$1("common.error"),
-				description: t$1("common.required"),
-				variant: "destructive"
-			});
-			return;
-		}
-		if (editingRoom) {
-			updateProperty({
-				...editingRoom,
-				...formData
-			});
-			toast$2({ title: t$1("common.success") });
-		} else {
-			addProperty({
-				id: `room-${Date.now()}`,
-				...formData,
-				hotelId,
-				towerId,
-				type: "Hotel Room",
-				profileType: "short_term",
-				address: "Hotel Address",
-				ownerId: "system",
-				image: "https://img.usecurling.com/p/400/300?q=hotel%20room"
-			});
-			toast$2({ title: t$1("common.success") });
-		}
-		setOpen(false);
-		setEditingRoom(null);
-		setFormData({
-			name: "",
-			roomNumber: "",
-			bedrooms: 1,
-			bathrooms: 1,
-			guests: 2,
-			status: "available",
-			listingPrice: 0
-		});
-	};
-	const handleDelete = (id) => {
-		if (confirm(t$1("common.delete_title"))) {
-			deleteProperty(id);
-			toast$2({ title: t$1("common.success") });
-		}
-	};
-	const openEdit = (room) => {
-		setEditingRoom(room);
-		setFormData({
-			name: room.name,
-			roomNumber: room.roomNumber,
-			bedrooms: room.bedrooms,
-			bathrooms: room.bathrooms,
-			guests: room.guests,
-			status: room.status,
-			listingPrice: room.listingPrice
-		});
-		setOpen(true);
-	};
-	const getStatusColor = (status) => {
-		switch (status) {
-			case "occupied":
-			case "rented": return "bg-green-100 text-green-800";
-			case "maintenance": return "bg-red-100 text-red-800";
-			case "cleaning": return "bg-yellow-100 text-yellow-800";
-			case "available": return "bg-blue-100 text-blue-800";
-			default: return "bg-gray-100";
-		}
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "space-y-4",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex justify-between items-center",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-				className: "text-lg font-semibold",
-				children: t$1("hotels.rooms")
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-				open,
-				onOpenChange: (v) => {
-					setOpen(v);
-					if (!v) {
-						setEditingRoom(null);
-						setFormData({
-							name: "",
-							roomNumber: "",
-							bedrooms: 1,
-							bathrooms: 1,
-							guests: 2,
-							status: "available",
-							listingPrice: 0
-						});
-					}
-				},
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						className: "bg-trust-blue gap-2",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
-							" ",
-							t$1("hotels.add_room")
-						]
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRoom ? t$1("common.edit") : t$1("hotels.new_room") }) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-4 py-4",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid grid-cols-2 gap-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("hotels.room_number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-										value: formData.roomNumber,
-										onChange: (e) => setFormData({
-											...formData,
-											roomNumber: e.target.value
-										})
-									})]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-										value: formData.name,
-										onChange: (e) => setFormData({
-											...formData,
-											name: e.target.value
-										}),
-										placeholder: "e.g. Deluxe Suite"
-									})]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid grid-cols-3 gap-2",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.features.bedrooms") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "number",
-											value: formData.bedrooms,
-											onChange: (e) => setFormData({
-												...formData,
-												bedrooms: parseInt(e.target.value)
-											})
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.features.bathrooms") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "number",
-											value: formData.bathrooms,
-											onChange: (e) => setFormData({
-												...formData,
-												bathrooms: parseInt(e.target.value)
-											})
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.features.guests") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "number",
-											value: formData.guests,
-											onChange: (e) => setFormData({
-												...formData,
-												guests: parseInt(e.target.value)
-											})
-										})]
-									})
-								]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.status") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: formData.status,
-									onValueChange: (v) => setFormData({
-										...formData,
-										status: v
-									}),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "available",
-											children: "Available"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "occupied",
-											children: "Occupied"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "maintenance",
-											children: "Maintenance"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "cleaning",
-											children: "Cleaning"
-										})
-									] })]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nightly Rate ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									type: "number",
-									value: formData.listingPrice,
-									onChange: (e) => setFormData({
-										...formData,
-										listingPrice: parseFloat(e.target.value)
-									})
-								})]
-							})
-						]
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						onClick: handleSave,
-						children: t$1("common.save")
-					}) })
-				] })]
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "border rounded-md",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("hotels.room_number") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.value") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-					className: "text-right",
-					children: t$1("common.actions")
-				})
-			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: rooms.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-				colSpan: 5,
-				className: "text-center py-8 text-muted-foreground",
-				children: t$1("hotels.no_rooms")
-			}) }) : rooms.map((room) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-					className: "font-bold flex items-center gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-4 w-4 text-slate-500" }), room.roomNumber]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-					to: `/properties/${room.id}`,
-					className: "hover:underline text-blue-600",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: room.name })
-				}) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-					className: getStatusColor(room.status),
-					children: room.status
-				}) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: ["$", room.listingPrice] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					className: "text-right",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex justify-end gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "ghost",
-							size: "icon",
-							onClick: () => openEdit(room),
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-4 w-4" })
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+						className: "text-3xl font-bold tracking-tight text-slate-950",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.name })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-2 text-sm text-slate-500",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+								to: "/hotels",
+								className: "hover:underline",
+								children: t$1("hotels.title")
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: hotel.name })
+						]
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "ml-auto flex gap-2",
+						children: isEditing ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							onClick: handleSaveHotel,
+							className: "bg-trust-blue gap-2",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Save, { className: "h-4 w-4" }),
+								" ",
+								t$1("common.save")
+							]
+						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							variant: "outline",
+							onClick: () => setIsEditing(true),
+							className: "gap-2",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" }),
+								" ",
+								t$1("common.edit")
+							]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "ghost",
+							variant: "destructive",
+							onClick: handleDeleteHotel,
 							size: "icon",
-							className: "text-red-500 hover:text-red-700",
-							onClick: () => handleDelete(room.id),
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+						})] })
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid grid-cols-2 md:grid-cols-4 gap-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "bg-blue-50 border-blue-100",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+							className: "p-4 pb-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-sm font-medium text-blue-800",
+								children: "Total Rooms"
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+							className: "p-4 pt-0",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "text-2xl font-bold text-blue-900",
+								children: totalRooms
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "bg-green-50 border-green-100",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+							className: "p-4 pb-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-sm font-medium text-green-800",
+								children: "Ready / Available"
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+							className: "p-4 pt-0",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "text-2xl font-bold text-green-900",
+								children: readyRooms
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "bg-yellow-50 border-yellow-100",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+							className: "p-4 pb-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-sm font-medium text-yellow-800",
+								children: "Occupied"
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+							className: "p-4 pt-0",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "text-2xl font-bold text-yellow-900",
+								children: occupiedRooms
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "bg-red-50 border-red-100",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+							className: "p-4 pb-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-sm font-medium text-red-800",
+								children: "Service / Maintenance"
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+							className: "p-4 pt-0",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "text-2xl font-bold text-red-900",
+								children: maintenanceRooms + cleaningRooms
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+								className: "text-xs text-red-600 mt-1",
+								children: [
+									cleaningRooms,
+									" Cleaning / ",
+									maintenanceRooms,
+									" Maint."
+								]
+							})]
 						})]
 					})
-				})
-			] }, room.id)) })] })
-		})]
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid grid-cols-1 md:grid-cols-3 gap-6",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+					className: "md:col-span-1 h-fit",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("hotels.hotel_details") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+						className: "space-y-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: formData.name,
+									onChange: (e) => setFormData({
+										...formData,
+										name: e.target.value
+									}),
+									disabled: !isEditing
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+									value: formData.description || "",
+									onChange: (e) => setFormData({
+										...formData,
+										description: e.target.value
+									}),
+									disabled: !isEditing,
+									className: "min-h-[100px]"
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.address") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: formData.address,
+									onChange: (e) => setFormData({
+										...formData,
+										address: e.target.value
+									}),
+									disabled: !isEditing
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-2 gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.city_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: formData.city,
+									onChange: (e) => setFormData({
+										...formData,
+										city: e.target.value
+									}),
+									disabled: !isEditing
+								})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.state_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: formData.state,
+									onChange: (e) => setFormData({
+										...formData,
+										state: e.target.value
+									}),
+									disabled: !isEditing
+								})] })]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Accordion, {
+								type: "single",
+								collapsible: true,
+								className: "w-full",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionItem, {
+										value: "amenities",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionTrigger, { children: "Amenities" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex flex-wrap gap-2",
+											children: [formData.amenities?.map((am, i$2) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+												variant: "outline",
+												children: am
+											}, i$2)), (!formData.amenities || formData.amenities.length === 0) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-sm text-muted-foreground",
+												children: "No amenities listed."
+											})]
+										}) })]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionItem, {
+										value: "policies",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionTrigger, { children: "Policies" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+											className: "list-disc pl-4 space-y-1 text-sm",
+											children: [formData.policies?.map((pol, i$2) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: pol }, i$2)), (!formData.policies || formData.policies.length === 0) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-muted-foreground",
+												children: "No policies listed."
+											})]
+										}) })]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionItem, {
+										value: "contacts",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionTrigger, { children: "Team Roles" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-3",
+											children: [formData.contacts?.map((contact, i$2) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "bg-slate-50 p-2 rounded text-sm border",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "font-bold flex items-center gap-2",
+														children: [
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-3 w-3" }),
+															" ",
+															contact.role
+														]
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: contact.name }),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "text-xs text-muted-foreground",
+														children: [
+															contact.phone,
+															" • ",
+															contact.email
+														]
+													})
+												]
+											}, i$2)), (!formData.contacts || formData.contacts.length === 0) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-muted-foreground",
+												children: "No contacts listed."
+											})]
+										}) })]
+									})
+								]
+							})
+						]
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+					className: "md:col-span-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+						className: "flex flex-row items-center justify-between",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("hotels.towers") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Manage towers and rooms within this hotel." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+							open: openTowerDialog,
+							onOpenChange: setOpenTowerDialog,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									className: "bg-trust-blue gap-2",
+									size: "sm",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+										" ",
+										t$1("hotels.add_tower")
+									]
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("hotels.new_tower") }) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-4 py-4",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: newTower.name,
+												onChange: (e) => setNewTower({
+													...newTower,
+													name: e.target.value
+												}),
+												placeholder: "North Tower"
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: newTower.description,
+												onChange: (e) => setNewTower({
+													...newTower,
+													description: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("hotels.floors") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "number",
+												value: newTower.floors,
+												onChange: (e) => setNewTower({
+													...newTower,
+													floors: parseInt(e.target.value)
+												})
+											})]
+										})
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: handleAddTower,
+									children: t$1("common.save")
+								}) })
+							] })]
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: hotelTowers.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg",
+						children: t$1("hotels.no_towers")
+					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "space-y-6",
+						children: hotelTowers.map((tower) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "border rounded-lg p-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-between items-center mb-4",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-5 w-5 text-slate-700" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+										className: "font-bold text-lg",
+										children: tower.name
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+										className: "text-xs text-muted-foreground",
+										children: [
+											tower.floors,
+											" Floors • ",
+											tower.description
+										]
+									})] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "ghost",
+									size: "icon",
+									onClick: () => handleDeleteTower(tower.id),
+									className: "text-red-500 hover:text-red-700",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RoomList, {
+								hotelId: hotel.id,
+								towerId: tower.id
+							})]
+						}, tower.id))
+					}) })]
+				})]
+			})
+		]
 	});
 }
 function TowerDetails() {
@@ -95643,384 +96808,6 @@ function Visits() {
 		]
 	});
 }
-var COLLAPSIBLE_NAME = "Collapsible";
-var [createCollapsibleContext, createCollapsibleScope] = createContextScope(COLLAPSIBLE_NAME);
-var [CollapsibleProvider, useCollapsibleContext] = createCollapsibleContext(COLLAPSIBLE_NAME);
-var Collapsible = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeCollapsible, open: openProp, defaultOpen, disabled, onOpenChange, ...collapsibleProps } = props;
-	const [open, setOpen] = useControllableState({
-		prop: openProp,
-		defaultProp: defaultOpen ?? false,
-		onChange: onOpenChange,
-		caller: COLLAPSIBLE_NAME
-	});
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleProvider, {
-		scope: __scopeCollapsible,
-		disabled,
-		contentId: useId(),
-		open,
-		onOpenToggle: import_react.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen]),
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-			"data-state": getState$1(open),
-			"data-disabled": disabled ? "" : void 0,
-			...collapsibleProps,
-			ref: forwardedRef
-		})
-	});
-});
-Collapsible.displayName = COLLAPSIBLE_NAME;
-var TRIGGER_NAME$1 = "CollapsibleTrigger";
-var CollapsibleTrigger = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeCollapsible, ...triggerProps } = props;
-	const context = useCollapsibleContext(TRIGGER_NAME$1, __scopeCollapsible);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
-		type: "button",
-		"aria-controls": context.contentId,
-		"aria-expanded": context.open || false,
-		"data-state": getState$1(context.open),
-		"data-disabled": context.disabled ? "" : void 0,
-		disabled: context.disabled,
-		...triggerProps,
-		ref: forwardedRef,
-		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
-	});
-});
-CollapsibleTrigger.displayName = TRIGGER_NAME$1;
-var CONTENT_NAME$1 = "CollapsibleContent";
-var CollapsibleContent = import_react.forwardRef((props, forwardedRef) => {
-	const { forceMount, ...contentProps } = props;
-	const context = useCollapsibleContext(CONTENT_NAME$1, props.__scopeCollapsible);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
-		present: forceMount || context.open,
-		children: ({ present }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleContentImpl, {
-			...contentProps,
-			ref: forwardedRef,
-			present
-		})
-	});
-});
-CollapsibleContent.displayName = CONTENT_NAME$1;
-var CollapsibleContentImpl = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeCollapsible, present, children, ...contentProps } = props;
-	const context = useCollapsibleContext(CONTENT_NAME$1, __scopeCollapsible);
-	const [isPresent, setIsPresent] = import_react.useState(present);
-	const ref = import_react.useRef(null);
-	const composedRefs = useComposedRefs(forwardedRef, ref);
-	const heightRef = import_react.useRef(0);
-	const height = heightRef.current;
-	const widthRef = import_react.useRef(0);
-	const width = widthRef.current;
-	const isOpen = context.open || isPresent;
-	const isMountAnimationPreventedRef = import_react.useRef(isOpen);
-	const originalStylesRef = import_react.useRef(void 0);
-	import_react.useEffect(() => {
-		const rAF = requestAnimationFrame(() => isMountAnimationPreventedRef.current = false);
-		return () => cancelAnimationFrame(rAF);
-	}, []);
-	useLayoutEffect2(() => {
-		const node = ref.current;
-		if (node) {
-			originalStylesRef.current = originalStylesRef.current || {
-				transitionDuration: node.style.transitionDuration,
-				animationName: node.style.animationName
-			};
-			node.style.transitionDuration = "0s";
-			node.style.animationName = "none";
-			const rect = node.getBoundingClientRect();
-			heightRef.current = rect.height;
-			widthRef.current = rect.width;
-			if (!isMountAnimationPreventedRef.current) {
-				node.style.transitionDuration = originalStylesRef.current.transitionDuration;
-				node.style.animationName = originalStylesRef.current.animationName;
-			}
-			setIsPresent(present);
-		}
-	}, [context.open, present]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-		"data-state": getState$1(context.open),
-		"data-disabled": context.disabled ? "" : void 0,
-		id: context.contentId,
-		hidden: !isOpen,
-		...contentProps,
-		ref: composedRefs,
-		style: {
-			[`--radix-collapsible-content-height`]: height ? `${height}px` : void 0,
-			[`--radix-collapsible-content-width`]: width ? `${width}px` : void 0,
-			...props.style
-		},
-		children: isOpen && children
-	});
-});
-function getState$1(open) {
-	return open ? "open" : "closed";
-}
-var Root = Collapsible;
-var Trigger = CollapsibleTrigger;
-var Content = CollapsibleContent;
-var ACCORDION_NAME = "Accordion";
-var ACCORDION_KEYS = [
-	"Home",
-	"End",
-	"ArrowDown",
-	"ArrowUp",
-	"ArrowLeft",
-	"ArrowRight"
-];
-var [Collection, useCollection, createCollectionScope] = createCollection(ACCORDION_NAME);
-var [createAccordionContext, createAccordionScope] = createContextScope(ACCORDION_NAME, [createCollectionScope, createCollapsibleScope]);
-var useCollapsibleScope = createCollapsibleScope();
-var Accordion$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { type, ...accordionProps } = props;
-	const singleProps = accordionProps;
-	const multipleProps = accordionProps;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection.Provider, {
-		scope: props.__scopeAccordion,
-		children: type === "multiple" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionImplMultiple, {
-			...multipleProps,
-			ref: forwardedRef
-		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionImplSingle, {
-			...singleProps,
-			ref: forwardedRef
-		})
-	});
-});
-Accordion$1.displayName = ACCORDION_NAME;
-var [AccordionValueProvider, useAccordionValueContext] = createAccordionContext(ACCORDION_NAME);
-var [AccordionCollapsibleProvider, useAccordionCollapsibleContext] = createAccordionContext(ACCORDION_NAME, { collapsible: false });
-var AccordionImplSingle = import_react.forwardRef((props, forwardedRef) => {
-	const { value: valueProp, defaultValue, onValueChange = () => {}, collapsible = false, ...accordionSingleProps } = props;
-	const [value, setValue] = useControllableState({
-		prop: valueProp,
-		defaultProp: defaultValue ?? "",
-		onChange: onValueChange,
-		caller: ACCORDION_NAME
-	});
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionValueProvider, {
-		scope: props.__scopeAccordion,
-		value: import_react.useMemo(() => value ? [value] : [], [value]),
-		onItemOpen: setValue,
-		onItemClose: import_react.useCallback(() => collapsible && setValue(""), [collapsible, setValue]),
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionCollapsibleProvider, {
-			scope: props.__scopeAccordion,
-			collapsible,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionImpl, {
-				...accordionSingleProps,
-				ref: forwardedRef
-			})
-		})
-	});
-});
-var AccordionImplMultiple = import_react.forwardRef((props, forwardedRef) => {
-	const { value: valueProp, defaultValue, onValueChange = () => {}, ...accordionMultipleProps } = props;
-	const [value, setValue] = useControllableState({
-		prop: valueProp,
-		defaultProp: defaultValue ?? [],
-		onChange: onValueChange,
-		caller: ACCORDION_NAME
-	});
-	const handleItemOpen = import_react.useCallback((itemValue) => setValue((prevValue = []) => [...prevValue, itemValue]), [setValue]);
-	const handleItemClose = import_react.useCallback((itemValue) => setValue((prevValue = []) => prevValue.filter((value2) => value2 !== itemValue)), [setValue]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionValueProvider, {
-		scope: props.__scopeAccordion,
-		value,
-		onItemOpen: handleItemOpen,
-		onItemClose: handleItemClose,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionCollapsibleProvider, {
-			scope: props.__scopeAccordion,
-			collapsible: true,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionImpl, {
-				...accordionMultipleProps,
-				ref: forwardedRef
-			})
-		})
-	});
-});
-var [AccordionImplProvider, useAccordionContext] = createAccordionContext(ACCORDION_NAME);
-var AccordionImpl = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeAccordion, disabled, dir, orientation = "vertical", ...accordionProps } = props;
-	const composedRefs = useComposedRefs(import_react.useRef(null), forwardedRef);
-	const getItems = useCollection(__scopeAccordion);
-	const isDirectionLTR = useDirection(dir) === "ltr";
-	const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
-		if (!ACCORDION_KEYS.includes(event.key)) return;
-		const target = event.target;
-		const triggerCollection = getItems().filter((item) => !item.ref.current?.disabled);
-		const triggerIndex = triggerCollection.findIndex((item) => item.ref.current === target);
-		const triggerCount = triggerCollection.length;
-		if (triggerIndex === -1) return;
-		event.preventDefault();
-		let nextIndex = triggerIndex;
-		const homeIndex = 0;
-		const endIndex = triggerCount - 1;
-		const moveNext = () => {
-			nextIndex = triggerIndex + 1;
-			if (nextIndex > endIndex) nextIndex = homeIndex;
-		};
-		const movePrev = () => {
-			nextIndex = triggerIndex - 1;
-			if (nextIndex < homeIndex) nextIndex = endIndex;
-		};
-		switch (event.key) {
-			case "Home":
-				nextIndex = homeIndex;
-				break;
-			case "End":
-				nextIndex = endIndex;
-				break;
-			case "ArrowRight":
-				if (orientation === "horizontal") if (isDirectionLTR) moveNext();
-				else movePrev();
-				break;
-			case "ArrowDown":
-				if (orientation === "vertical") moveNext();
-				break;
-			case "ArrowLeft":
-				if (orientation === "horizontal") if (isDirectionLTR) movePrev();
-				else moveNext();
-				break;
-			case "ArrowUp":
-				if (orientation === "vertical") movePrev();
-				break;
-		}
-		triggerCollection[nextIndex % triggerCount].ref.current?.focus();
-	});
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionImplProvider, {
-		scope: __scopeAccordion,
-		disabled,
-		direction: dir,
-		orientation,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection.Slot, {
-			scope: __scopeAccordion,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-				...accordionProps,
-				"data-orientation": orientation,
-				ref: composedRefs,
-				onKeyDown: disabled ? void 0 : handleKeyDown
-			})
-		})
-	});
-});
-var ITEM_NAME = "AccordionItem";
-var [AccordionItemProvider, useAccordionItemContext] = createAccordionContext(ITEM_NAME);
-var AccordionItem$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeAccordion, value, ...accordionItemProps } = props;
-	const accordionContext = useAccordionContext(ITEM_NAME, __scopeAccordion);
-	const valueContext = useAccordionValueContext(ITEM_NAME, __scopeAccordion);
-	const collapsibleScope = useCollapsibleScope(__scopeAccordion);
-	const triggerId = useId();
-	const open = value && valueContext.value.includes(value) || false;
-	const disabled = accordionContext.disabled || props.disabled;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionItemProvider, {
-		scope: __scopeAccordion,
-		open,
-		disabled,
-		triggerId,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root, {
-			"data-orientation": accordionContext.orientation,
-			"data-state": getState(open),
-			...collapsibleScope,
-			...accordionItemProps,
-			ref: forwardedRef,
-			disabled,
-			open,
-			onOpenChange: (open2) => {
-				if (open2) valueContext.onItemOpen(value);
-				else valueContext.onItemClose(value);
-			}
-		})
-	});
-});
-AccordionItem$1.displayName = ITEM_NAME;
-var HEADER_NAME = "AccordionHeader";
-var AccordionHeader = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeAccordion, ...headerProps } = props;
-	const accordionContext = useAccordionContext(ACCORDION_NAME, __scopeAccordion);
-	const itemContext = useAccordionItemContext(HEADER_NAME, __scopeAccordion);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.h3, {
-		"data-orientation": accordionContext.orientation,
-		"data-state": getState(itemContext.open),
-		"data-disabled": itemContext.disabled ? "" : void 0,
-		...headerProps,
-		ref: forwardedRef
-	});
-});
-AccordionHeader.displayName = HEADER_NAME;
-var TRIGGER_NAME = "AccordionTrigger";
-var AccordionTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeAccordion, ...triggerProps } = props;
-	const accordionContext = useAccordionContext(ACCORDION_NAME, __scopeAccordion);
-	const itemContext = useAccordionItemContext(TRIGGER_NAME, __scopeAccordion);
-	const collapsibleContext = useAccordionCollapsibleContext(TRIGGER_NAME, __scopeAccordion);
-	const collapsibleScope = useCollapsibleScope(__scopeAccordion);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection.ItemSlot, {
-		scope: __scopeAccordion,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trigger, {
-			"aria-disabled": itemContext.open && !collapsibleContext.collapsible || void 0,
-			"data-orientation": accordionContext.orientation,
-			id: itemContext.triggerId,
-			...collapsibleScope,
-			...triggerProps,
-			ref: forwardedRef
-		})
-	});
-});
-AccordionTrigger$1.displayName = TRIGGER_NAME;
-var CONTENT_NAME = "AccordionContent";
-var AccordionContent$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeAccordion, ...contentProps } = props;
-	const accordionContext = useAccordionContext(ACCORDION_NAME, __scopeAccordion);
-	const itemContext = useAccordionItemContext(CONTENT_NAME, __scopeAccordion);
-	const collapsibleScope = useCollapsibleScope(__scopeAccordion);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content, {
-		role: "region",
-		"aria-labelledby": itemContext.triggerId,
-		"data-orientation": accordionContext.orientation,
-		...collapsibleScope,
-		...contentProps,
-		ref: forwardedRef,
-		style: {
-			["--radix-accordion-content-height"]: "var(--radix-collapsible-content-height)",
-			["--radix-accordion-content-width"]: "var(--radix-collapsible-content-width)",
-			...props.style
-		}
-	});
-});
-AccordionContent$1.displayName = CONTENT_NAME;
-function getState(open) {
-	return open ? "open" : "closed";
-}
-var Root2 = Accordion$1;
-var Item = AccordionItem$1;
-var Header = AccordionHeader;
-var Trigger2 = AccordionTrigger$1;
-var Content2 = AccordionContent$1;
-var Accordion = Root2;
-var AccordionItem = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Item, {
-	ref,
-	className: cn("border-b", className),
-	...props
-}));
-AccordionItem.displayName = "AccordionItem";
-var AccordionTrigger = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Header, {
-	className: "flex",
-	children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Trigger2, {
-		ref,
-		className: cn("flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180", className),
-		...props,
-		children: [children, /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronDown, { className: "h-4 w-4 shrink-0 transition-transform duration-200" })]
-	})
-}));
-AccordionTrigger.displayName = Trigger2.displayName;
-var AccordionContent = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2, {
-	ref,
-	className: "overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
-	...props,
-	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: cn("pb-4 pt-0", className),
-		children
-	})
-}));
-AccordionContent.displayName = Content2.displayName;
 function DashboardGuide() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 		className: "border-none shadow-none",
@@ -97267,4 +98054,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Dz15VLrS.js.map
+//# sourceMappingURL=index-lAMXmyvx.js.map

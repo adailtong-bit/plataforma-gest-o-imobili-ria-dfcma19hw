@@ -1,26 +1,5 @@
-// ... (keep existing types, adding Tour types)
+// ... (keep existing types)
 
-// Add these to existing types:
-
-export type TourStep = {
-  targetId: string
-  title: string
-  content: string
-  placement?: 'top' | 'bottom' | 'left' | 'right' | 'center'
-}
-
-export type TutorialModule = {
-  key: string
-  title: string
-  description: string
-  category: 'Operational' | 'CRM' | 'Financial' | 'Settings' | 'System'
-  videoUrl: string
-}
-
-// Update User type to include tour status if needed, or just handle locally
-// For now we use localStorage for tour completion, as requested "via Settings menu"
-
-// ... existing types ...
 export type UserRole =
   | 'platform_owner'
   | 'software_tenant'
@@ -204,6 +183,14 @@ export interface Condominium {
   feeHistory?: HoaFeeHistory[]
 }
 
+export interface HotelContact {
+  id: string
+  role: string
+  name: string
+  phone: string
+  email: string
+}
+
 export interface Hotel {
   id: string
   name: string
@@ -218,6 +205,9 @@ export interface Hotel {
   managerPhone?: string
   image?: string
   towers?: string[]
+  amenities?: string[]
+  policies?: string[]
+  contacts?: HotelContact[]
 }
 
 export interface Tower {
@@ -238,6 +228,9 @@ export type PropertyStatus =
   | 'reserved'
   | 'sold'
   | 'sale_pending'
+  | 'cleaning'
+  | 'maintenance'
+  | 'occupied'
 
 export interface FixedExpense {
   id: string
@@ -346,6 +339,20 @@ export interface Lead {
   message?: string
 }
 
+export interface PriceHistory {
+  date: string
+  price: number
+  changedBy?: string
+}
+
+export interface RoomCharacteristics {
+  bedType: string // 'King', 'Queen', 'Twin', 'Double'
+  view: string // 'Sea View', 'City View', 'Garden View', 'Pool View'
+  hasBalcony: boolean
+  maxOccupancy: number // existing 'guests' in Property, can sync or map
+  sizeSqFt?: number
+}
+
 export interface Property {
   id: string
   name: string
@@ -412,6 +419,8 @@ export interface Property {
   healthScore?: number
   inventory?: InventoryItem[]
   leads?: Lead[]
+  roomCharacteristics?: RoomCharacteristics
+  priceHistory?: PriceHistory[]
 }
 
 export type DocumentCategory =
@@ -942,4 +951,19 @@ export interface Visit {
   assignedTo?: string
   assignedRole?: string
   reason?: string
+}
+
+export type TourStep = {
+  targetId: string
+  title: string
+  content: string
+  placement?: 'top' | 'bottom' | 'left' | 'right' | 'center'
+}
+
+export type TutorialModule = {
+  key: string
+  title: string
+  description: string
+  category: 'Operational' | 'CRM' | 'Financial' | 'Settings' | 'System'
+  videoUrl: string
 }

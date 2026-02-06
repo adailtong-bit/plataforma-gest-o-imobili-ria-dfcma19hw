@@ -1667,6 +1667,10 @@ video {
 .h-auto {
   height: auto;
 }
+.h-fit {
+  height: -moz-fit-content;
+  height: fit-content;
+}
 .h-full {
   height: 100%;
 }
@@ -1834,6 +1838,9 @@ video {
 }
 .w-\[120px\] {
   width: 120px;
+}
+.w-\[130px\] {
+  width: 130px;
 }
 .w-\[150px\] {
   width: 150px;
