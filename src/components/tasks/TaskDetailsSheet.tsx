@@ -162,10 +162,10 @@ export function TaskDetailsSheet({
                       <Receipt className="h-4 w-4" /> Detalhes Financeiros
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      {showBillableToOwner && (
+                      {showBillableToOwner && !isPartner && !isTeamMember && (
                         <div className="col-span-2 md:col-span-1">
                           <span className="text-muted-foreground text-xs block">
-                            Total (Fatura Proprietário)
+                            Valor Total Faturado
                           </span>
                           <span className="text-xl font-bold text-emerald-700">
                             <DataMask>
@@ -178,11 +178,12 @@ export function TaskDetailsSheet({
                         </div>
                       )}
 
-                      {showInternalCosts && (
+                      {showInternalCosts && isAdminOrPM && (
                         <>
                           <div className="col-span-2 md:col-span-1">
                             <span className="text-muted-foreground text-xs block flex items-center gap-1">
-                              <Hammer className="h-3 w-3" /> Custo Mão de Obra
+                              <Hammer className="h-3 w-3" /> Custo de Mão de
+                              Obra
                             </span>
                             <span className="font-medium text-gray-700">
                               <DataMask>
@@ -194,7 +195,8 @@ export function TaskDetailsSheet({
                           {task.materialCost && task.materialCost > 0 && (
                             <div className="col-span-2 md:col-span-1">
                               <span className="text-muted-foreground text-xs block flex items-center gap-1">
-                                <HardHat className="h-3 w-3" /> Custo Materiais
+                                <HardHat className="h-3 w-3" /> Custo de
+                                Material
                               </span>
                               <span className="font-medium text-gray-700">
                                 <DataMask>
@@ -206,10 +208,21 @@ export function TaskDetailsSheet({
                         </>
                       )}
 
+                      {showInternalCosts && isPartner && (
+                        <div className="col-span-2 md:col-span-1">
+                          <span className="text-muted-foreground text-xs block flex items-center gap-1">
+                            <Hammer className="h-3 w-3" /> Custo (Recebimento)
+                          </span>
+                          <span className="font-medium text-gray-700">
+                            <DataMask>${(task.price || 0).toFixed(2)}</DataMask>
+                          </span>
+                        </div>
+                      )}
+
                       {showTeamPayout && task.teamMemberPayout && (
                         <div className="col-span-2 md:col-span-1">
                           <span className="text-muted-foreground text-xs block flex items-center gap-1">
-                            <User className="h-3 w-3" /> Pagamento Equipe
+                            <User className="h-3 w-3" /> Valor Pago à Equipe
                           </span>
                           <span className="font-medium text-blue-600">
                             <DataMask>

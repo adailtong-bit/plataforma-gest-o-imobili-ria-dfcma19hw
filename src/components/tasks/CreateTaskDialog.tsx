@@ -246,6 +246,7 @@ export function CreateTaskDialog({
         initialStatus = 'pending_approval'
         approvalStatus = 'owner_pending' // Requires Owner first
       } else {
+        // Below threshold: requires PM approval only
         initialStatus = 'pending_approval'
         approvalStatus = 'pm_pending' // Requires only PM
       }
@@ -292,13 +293,13 @@ export function CreateTaskDialog({
         title: 'Approval Required',
         description:
           approvalStatus === 'owner_pending'
-            ? 'Task exceeds threshold. Awaiting Owner approval.'
-            : 'Task created. Awaiting PM approval.',
+            ? 'Custo excede limite. Aguardando aprovação do Proprietário.'
+            : 'Tarefa criada. Aguardando aprovação do PM.',
       })
     } else {
       toast({
         title: t('tasks.success_created'),
-        description: 'Task created successfully.',
+        description: 'Tarefa criada com sucesso.',
       })
     }
 
@@ -577,7 +578,7 @@ export function CreateTaskDialog({
                       name="price"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Partner Payment (Cost)</FormLabel>
+                          <FormLabel>Pagamento Parceiro (Custo)</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -585,9 +586,6 @@ export function CreateTaskDialog({
                               {...field}
                             />
                           </FormControl>
-                          <FormDescription className="text-[10px]">
-                            Amount paid to partner.
-                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -597,7 +595,7 @@ export function CreateTaskDialog({
                       name="materialCost"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Product Price (Cost)</FormLabel>
+                          <FormLabel>Custo Material</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -605,15 +603,12 @@ export function CreateTaskDialog({
                               {...field}
                             />
                           </FormControl>
-                          <FormDescription className="text-[10px]">
-                            Cost of materials.
-                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                     <div className="col-span-2 bg-muted/20 p-2 rounded text-sm flex justify-between">
-                      <span>Service Price (Billable to Owner):</span>
+                      <span>Valor Faturável (Proprietário):</span>
                       <span className="font-bold">
                         ${estimatedBillable.toFixed(2)}
                       </span>

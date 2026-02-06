@@ -156,8 +156,8 @@ export function TaskCard({
         approvalStatus: 'pm_pending',
       })
       toast({
-        title: 'Approved',
-        description: 'Approved by Owner. Awaiting PM approval.',
+        title: 'Aprovado',
+        description: 'Aprovado pelo Proprietário. Aguardando aprovação do PM.',
       })
     } else if (task.approvalStatus === 'pm_pending') {
       // PM approved, ready for execution
@@ -167,15 +167,15 @@ export function TaskCard({
         status: 'pending', // Move to pending column
       })
       toast({
-        title: 'Approved',
-        description: 'Task authorized for execution.',
+        title: 'Aprovado',
+        description: 'Tarefa autorizada para execução.',
       })
     } else if (task.status === 'pending_approval' && !task.approvalStatus) {
       // Generic approval (fallback)
       onStatusChange('pending')
       toast({
-        title: 'Approved',
-        description: 'Task authorized for execution.',
+        title: 'Aprovado',
+        description: 'Tarefa autorizada para execução.',
       })
     }
   }
@@ -302,13 +302,13 @@ export function TaskCard({
                 <Badge
                   className={
                     task.approvalStatus === 'owner_pending'
-                      ? 'bg-purple-500 text-white text-[10px] h-5'
-                      : 'bg-orange-500 text-white text-[10px] h-5'
+                      ? 'bg-yellow-100 text-yellow-800 border-yellow-300 text-[10px] h-5'
+                      : 'bg-blue-100 text-blue-800 border-blue-300 text-[10px] h-5'
                   }
                 >
                   {task.approvalStatus === 'owner_pending'
-                    ? 'Wait Owner'
-                    : 'Wait PM'}
+                    ? 'Aguardando Proprietário'
+                    : 'Aguardando PM'}
                 </Badge>
               )}
               {task.type === 'cleaning' && (
@@ -386,9 +386,9 @@ export function TaskCard({
           </div>
 
           <div className="flex flex-col gap-1 mb-3">
-            {showBillable && (
+            {showBillable && !isPartner && !isTeamMember && (
               <div className="flex justify-between text-xs">
-                <span className="text-slate-500">Preço Total:</span>
+                <span className="text-slate-500">Valor Total:</span>
                 <span className="font-bold text-black">
                   <DataMask>
                     ${(task.billableAmount || task.price || 0).toFixed(2)}
@@ -396,17 +396,17 @@ export function TaskCard({
                 </span>
               </div>
             )}
-            {showPartnerPrice && task.price && (
+            {showPartnerPrice && (
               <div className="flex justify-between text-xs">
                 <span className="text-slate-500">Custo (Partner):</span>
                 <span className="font-bold text-green-700">
-                  <DataMask>${task.price.toFixed(2)}</DataMask>
+                  <DataMask>${task.price?.toFixed(2) || '0.00'}</DataMask>
                 </span>
               </div>
             )}
             {showTeamPayout && task.teamMemberPayout && (
               <div className="flex justify-between text-xs">
-                <span className="text-slate-500">Payout (Equipe):</span>
+                <span className="text-slate-500">Valor Pago à Equipe:</span>
                 <span className="font-bold text-blue-700">
                   <DataMask>${task.teamMemberPayout.toFixed(2)}</DataMask>
                 </span>
@@ -526,15 +526,15 @@ export function TaskCard({
                 >
                   <ThumbsUp className="h-3 w-3 mr-2" />
                   {task.approvalStatus === 'owner_pending'
-                    ? 'Owner Approve'
-                    : 'PM Approve'}
+                    ? 'Aprovar (Proprietário)'
+                    : 'Aprovar (PM)'}
                 </Button>
               ) : (
                 <div className="flex items-center justify-center gap-2 p-2 bg-yellow-50 text-yellow-800 text-xs font-medium rounded border border-yellow-200">
                   <AlertCircle className="h-3 w-3" />
                   {task.approvalStatus === 'owner_pending'
-                    ? 'Waiting for Owner'
-                    : 'Waiting for PM'}
+                    ? 'Aguardando Proprietário'
+                    : 'Aguardando PM'}
                 </div>
               )}
             </>

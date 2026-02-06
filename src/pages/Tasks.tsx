@@ -7,7 +7,15 @@ import { TaskCard } from '@/components/tasks/TaskCard'
 import { CreateTaskDialog } from '@/components/tasks/CreateTaskDialog'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Button } from '@/components/ui/button'
-import { FileText, Filter, LayoutGrid, List as ListIcon } from 'lucide-react'
+import {
+  FileText,
+  Filter,
+  LayoutGrid,
+  List as ListIcon,
+  Eye,
+  Pencil,
+  RotateCw,
+} from 'lucide-react'
 import { TaskInvoiceDialog } from '@/components/financial/TaskInvoiceDialog'
 import {
   Select,
@@ -26,6 +34,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { format } from 'date-fns'
+import { TaskDetailsSheet } from '@/components/tasks/TaskDetailsSheet'
+import { EditTaskDialog } from '@/components/tasks/EditTaskDialog'
+import { Task } from '@/lib/types'
 
 export default function Tasks() {
   const { tasks, updateTaskStatus, addTaskImage, addTaskEvidence } =
@@ -34,6 +45,11 @@ export default function Tasks() {
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
   const [filterType, setFilterType] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
+
+  // State for actions in List View
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
@@ -73,7 +89,7 @@ export default function Tasks() {
     }
   }
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (status: string, approvalStatus?: string) => {
     switch (status) {
       case 'pending':
         return t('common.pending')
@@ -82,14 +98,52 @@ export default function Tasks() {
       case 'completed':
         return t('common.completed')
       case 'pending_approval':
-        return t('tasks.approval')
+        return approvalStatus === 'owner_pending'
+          ? 'Aguardando Proprietário'
+          : 'Aguardando PM'
       default:
         return status
     }
   }
 
+  const openDetails = (task: Task) => {
+    setSelectedTask(task)
+    setDetailsOpen(true)
+  }
+
+  const openEdit = (task: Task) => {
+    setSelectedTask(task)
+    setEditOpen(true)
+  }
+
+  const advanceStatus = (task: Task) => {
+    let nextStatus: Task['status'] = task.status
+    if (task.status === 'pending') nextStatus = 'in_progress'
+    else if (task.status === 'in_progress') nextStatus = 'completed'
+    // Simplified flow for list view
+    if (nextStatus !== task.status) {
+      updateTaskStatus(task.id, nextStatus)
+    }
+  }
+
   return (
     <div className="flex flex-col gap-6 h-full">
+      {/* Dialogs for List View Actions */}
+      {selectedTask && (
+        <>
+          <TaskDetailsSheet
+            task={selectedTask}
+            open={detailsOpen}
+            onOpenChange={setDetailsOpen}
+          />
+          <EditTaskDialog
+            task={selectedTask}
+            open={editOpen}
+            onOpenChange={setEditOpen}
+          />
+        </>
+      )}
+
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-black">
@@ -288,6 +342,9 @@ export default function Tasks() {
                     <TableHead>{t('common.priority')}</TableHead>
                     <TableHead>{t('common.status')}</TableHead>
                     <TableHead>{t('tasks.service_type')}</TableHead>
+                    <TableHead className="text-right">
+                      {t('common.actions')}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -310,17 +367,57 @@ export default function Tasks() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">
-                          {getStatusLabel(task.status)}
+                        <Badge
+                          variant="secondary"
+                          className={
+                            task.status === 'pending_approval'
+                              ? task.approvalStatus === 'owner_pending'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-blue-100 text-blue-800'
+                              : ''
+                          }
+                        >
+                          {getStatusLabel(task.status, task.approvalStatus)}
                         </Badge>
                       </TableCell>
                       <TableCell className="capitalize">{task.type}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openDetails(task)}
+                            title={t('common.details')}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openEdit(task)}
+                            title={t('common.edit')}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          {task.status !== 'completed' &&
+                            task.status !== 'pending_approval' && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => advanceStatus(task)}
+                                title={t('tasks.change_status')}
+                              >
+                                <RotateCw className="h-4 w-4" />
+                              </Button>
+                            )}
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                   {filteredTasks.length === 0 && (
                     <TableRow>
                       <TableCell
-                        colSpan={7}
+                        colSpan={8}
                         className="text-center py-8 text-muted-foreground"
                       >
                         {t('common.empty')}
