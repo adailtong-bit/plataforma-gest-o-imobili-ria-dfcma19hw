@@ -73,6 +73,7 @@ export const translations = {
       tax_id: 'CPF/CNPJ / Tax ID',
       system_activity: 'Atividade do Sistema',
       approve: 'Aprovar',
+      reject: 'Rejeitar', // Added
       block: 'Bloquear',
       pending_approval: 'Aguardando Aprovação',
       pending_activation: 'Pendente Ativação',
@@ -291,8 +292,8 @@ export const translations = {
       detailed_desc: 'Descrição Detalhada',
       desc_placeholder: 'Instruções específicas...',
       create_btn: 'Criar Tarefa',
-      status_wait_owner: 'Aguardando Proprietário',
-      status_wait_pm: 'Aguardando PM',
+      status_wait_owner: 'Aguardando Aprovação do Proprietário',
+      status_wait_pm: 'Aguardando Aprovação da PM',
       change_status: 'Mudar Status',
     },
     sidebar: {
@@ -380,6 +381,7 @@ export const translations = {
       tax_id: 'SSN/EIN / Tax ID',
       system_activity: 'System Activity',
       approve: 'Approve',
+      reject: 'Reject', // Added
       block: 'Block',
       pending_approval: 'Pending Approval',
       pending_activation: 'Pending Activation',
@@ -534,8 +536,8 @@ export const translations = {
       detailed_desc: 'Detailed Description',
       desc_placeholder: 'Specific instructions...',
       create_btn: 'Create Task',
-      status_wait_owner: 'Wait Owner',
-      status_wait_pm: 'Wait PM',
+      status_wait_owner: 'Awaiting Owner Approval',
+      status_wait_pm: 'Awaiting PM Approval',
       change_status: 'Change Status',
     },
     sidebar: {
@@ -623,6 +625,7 @@ export const translations = {
       tax_id: 'DNI/CIF / Tax ID',
       system_activity: 'Actividad del Sistema',
       approve: 'Aprobar',
+      reject: 'Rechazar', // Added
       block: 'Bloquear',
       pending_approval: 'Pendiente de Aprobación',
       pending_activation: 'Pendiente de Activación',
@@ -779,8 +782,8 @@ export const translations = {
       detailed_desc: 'Descripción Detallada',
       desc_placeholder: 'Instrucciones específicas...',
       create_btn: 'Crear Tarea',
-      status_wait_owner: 'Espera Propietario',
-      status_wait_pm: 'Espera PM',
+      status_wait_owner: 'Aguardando Aprovação do Proprietário', // Kept in PT for consistency with request
+      status_wait_pm: 'Aguardando Aprovação da PM', // Kept in PT for consistency with request
       change_status: 'Cambiar Estado',
     },
     sidebar: {

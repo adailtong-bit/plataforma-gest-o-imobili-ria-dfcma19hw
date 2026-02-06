@@ -19259,6 +19259,22 @@ var CirclePlay = createLucideIcon("circle-play", [["path", {
 	r: "10",
 	key: "1mglay"
 }]]);
+var CircleX = createLucideIcon("circle-x", [
+	["circle", {
+		cx: "12",
+		cy: "12",
+		r: "10",
+		key: "1mglay"
+	}],
+	["path", {
+		d: "m15 9-6 6",
+		key: "1uzhvr"
+	}],
+	["path", {
+		d: "m9 9 6 6",
+		key: "z0biqf"
+	}]
+]);
 var Circle = createLucideIcon("circle", [["circle", {
 	cx: "12",
 	cy: "12",
@@ -53725,6 +53741,7 @@ const translations = {
 			tax_id: "CPF/CNPJ / Tax ID",
 			system_activity: "Atividade do Sistema",
 			approve: "Aprovar",
+			reject: "Rejeitar",
 			block: "Bloquear",
 			pending_approval: "Aguardando Aprovação",
 			pending_activation: "Pendente Ativação",
@@ -53938,8 +53955,8 @@ const translations = {
 			detailed_desc: "Descrição Detalhada",
 			desc_placeholder: "Instruções específicas...",
 			create_btn: "Criar Tarefa",
-			status_wait_owner: "Aguardando Proprietário",
-			status_wait_pm: "Aguardando PM",
+			status_wait_owner: "Aguardando Aprovação do Proprietário",
+			status_wait_pm: "Aguardando Aprovação da PM",
 			change_status: "Mudar Status"
 		},
 		sidebar: {
@@ -54025,6 +54042,7 @@ const translations = {
 			tax_id: "SSN/EIN / Tax ID",
 			system_activity: "System Activity",
 			approve: "Approve",
+			reject: "Reject",
 			block: "Block",
 			pending_approval: "Pending Approval",
 			pending_activation: "Pending Activation",
@@ -54176,8 +54194,8 @@ const translations = {
 			detailed_desc: "Detailed Description",
 			desc_placeholder: "Specific instructions...",
 			create_btn: "Create Task",
-			status_wait_owner: "Wait Owner",
-			status_wait_pm: "Wait PM",
+			status_wait_owner: "Awaiting Owner Approval",
+			status_wait_pm: "Awaiting PM Approval",
 			change_status: "Change Status"
 		},
 		sidebar: {
@@ -54263,6 +54281,7 @@ const translations = {
 			tax_id: "DNI/CIF / Tax ID",
 			system_activity: "Actividad del Sistema",
 			approve: "Aprobar",
+			reject: "Rechazar",
 			block: "Bloquear",
 			pending_approval: "Pendiente de Aprobación",
 			pending_activation: "Pendiente de Activación",
@@ -54414,8 +54433,8 @@ const translations = {
 			detailed_desc: "Descripción Detallada",
 			desc_placeholder: "Instrucciones específicas...",
 			create_btn: "Crear Tarea",
-			status_wait_owner: "Espera Propietario",
-			status_wait_pm: "Espera PM",
+			status_wait_owner: "Aguardando Aprovação do Proprietário",
+			status_wait_pm: "Aguardando Aprovação da PM",
 			change_status: "Cambiar Estado"
 		},
 		sidebar: {
@@ -59980,7 +59999,8 @@ const PERMISSIONS_MATRIX = {
 			"view",
 			"create",
 			"edit"
-		]
+		],
+		users: ["view"]
 	},
 	partner: {
 		portal: ["view"],
@@ -59993,7 +60013,12 @@ const PERMISSIONS_MATRIX = {
 		properties: ["view"],
 		financial: ["view"],
 		messages: ["view", "create"],
-		short_term: ["view"]
+		short_term: ["view"],
+		tasks: [
+			"view",
+			"create",
+			"edit"
+		]
 	},
 	tenant: {
 		portal: ["view"],
@@ -65505,6 +65530,9 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 	const { t: t$1 } = useLanguageStore_default();
 	const { bookings: bookings$1 } = useShortTermStore_default();
 	const { currentUser } = useAuthStore_default();
+	const { updateTask } = useTaskStore_default();
+	const { properties: properties$1 } = usePropertyStore_default();
+	const { toast: toast$2 } = useToast();
 	if (!task) return null;
 	const getPriorityColor = (priority) => {
 		switch (priority) {
@@ -65535,349 +65563,399 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 		})) || []
 	].filter((img, index$1, self$1) => index$1 === self$1.findIndex((t$2) => t$2.url === img.url));
 	const linkedBooking = task.bookingId ? bookings$1.find((b$1) => b$1.id === task.bookingId) : null;
-	const isAdminOrPM = ["platform_owner", "software_tenant"].includes(currentUser.role);
+	const isAdminOrPM = [
+		"platform_owner",
+		"software_tenant",
+		"internal_user"
+	].includes(currentUser.role);
 	const isPartner = currentUser.role === "partner";
 	const isTeamMember = currentUser.role === "partner_employee";
 	const isOwner = currentUser.role === "property_owner";
-	const showInternalCosts = isAdminOrPM || isPartner;
-	const showTeamPayout = isAdminOrPM || isPartner || isTeamMember;
 	const showBillableToOwner = isAdminOrPM || isOwner;
+	const showInternalCosts = isAdminOrPM;
+	const showPartnerRevenue = isPartner;
+	const showTeamPayout = isAdminOrPM || isPartner || isTeamMember;
+	const handleApprove = () => {
+		if (task.approvalStatus === "owner_pending") {
+			updateTask({
+				...task,
+				approvalStatus: "pm_pending"
+			});
+			toast$2({
+				title: t$1("common.approved"),
+				description: "Aprovado. Aguardando PM."
+			});
+		} else {
+			updateTask({
+				...task,
+				approvalStatus: "approved",
+				status: "pending"
+			});
+			toast$2({
+				title: t$1("common.approved"),
+				description: "Tarefa aprovada."
+			});
+		}
+	};
+	const handleReject = () => {
+		updateTask({
+			...task,
+			status: "pending",
+			approvalStatus: void 0
+		});
+		toast$2({
+			title: t$1("common.reject"),
+			description: "Tarefa rejeitada.",
+			variant: "destructive"
+		});
+	};
+	const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
+	const canApprove = task.status === "pending_approval" && (task.approvalStatus === "owner_pending" && isOwner && isMyProperty || task.approvalStatus === "owner_pending" && isAdminOrPM || task.approvalStatus === "pm_pending" && isAdminOrPM);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sheet, {
 		open,
 		onOpenChange,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetContent, {
-			className: "w-full sm:max-w-xl overflow-y-auto p-0",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
-				className: "h-full",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "p-6",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetHeader, {
-						className: "mb-6",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetContent, {
+			className: "w-full sm:max-w-xl overflow-y-auto p-0 flex flex-col h-full",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "p-6 pb-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetHeader, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-2 mb-2 flex-wrap",
 						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-2 mb-2 flex-wrap",
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+								variant: "outline",
+								className: getPriorityColor(task.priority),
+								children: task.priority.toUpperCase()
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+								variant: "secondary",
+								children: t$1(`common.${task.status}`)
+							}),
+							linkedBooking && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+								className: "bg-purple-100 text-purple-800 hover:bg-purple-200 border-purple-200",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "w-3 h-3 mr-1" }), " Booking Linked"]
+							}),
+							task.approvalStatus && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+								variant: "outline",
+								className: task.approvalStatus === "approved" ? "text-green-700 bg-green-50 border-green-200" : task.approvalStatus === "owner_pending" ? "text-orange-700 bg-orange-50 border-orange-200" : "text-yellow-700 bg-yellow-50 border-yellow-200",
+								children: [task.approvalStatus === "approved" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "w-3 h-3 mr-1" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "w-3 h-3 mr-1" }), task.approvalStatus === "owner_pending" ? t$1("tasks.status_wait_owner") : task.approvalStatus === "pm_pending" ? t$1("tasks.status_wait_pm") : "Approved"]
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetTitle, {
+						className: "text-2xl",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetDescription, {
+						className: "text-base",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyName })
+					})
+				] }), canApprove && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex gap-2 mt-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "flex-1 bg-green-600 hover:bg-green-700 text-white font-bold",
+						onClick: handleApprove,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThumbsUp, { className: "h-4 w-4 mr-2" }), t$1("common.approve")]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						variant: "destructive",
+						className: "flex-1 font-bold",
+						onClick: handleReject,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleX, { className: "h-4 w-4 mr-2" }), t$1("common.reject")]
+					})]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
+				className: "flex-1 p-6 pt-2",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "space-y-6 pb-6",
+					children: [
+						(showBillableToOwner || showInternalCosts || showPartnerRevenue || showTeamPayout) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+							className: "bg-emerald-50/50 border-emerald-100",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+								className: "p-4 space-y-3",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-2 text-emerald-800 font-semibold text-sm uppercase tracking-wide",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Receipt, { className: "h-4 w-4" }), " Detalhes Financeiros"]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-2 gap-4",
+									children: [
+										showBillableToOwner && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "col-span-2 md:col-span-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-muted-foreground text-xs block",
+												children: "Valor Total Faturado"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-xl font-bold text-emerald-700",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", (task.billableAmount || task.price || 0).toFixed(2)] })
+											})]
+										}),
+										showInternalCosts && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "col-span-2 md:col-span-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+												className: "text-muted-foreground text-xs block flex items-center gap-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hammer, { className: "h-3 w-3" }), " Custo Mão de Obra"]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "font-medium text-gray-700",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", (task.laborCost || task.price || 0).toFixed(2)] })
+											})]
+										}), task.materialCost && task.materialCost > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "col-span-2 md:col-span-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+												className: "text-muted-foreground text-xs block flex items-center gap-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(HardHat, { className: "h-3 w-3" }), " Custo Material"]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "font-medium text-gray-700",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", task.materialCost.toFixed(2)] })
+											})]
+										})] }),
+										showPartnerRevenue && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "col-span-2 md:col-span-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+												className: "text-muted-foreground text-xs block flex items-center gap-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hammer, { className: "h-3 w-3" }), " Receita (Partner)"]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "font-medium text-gray-700",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", (task.price || 0).toFixed(2)] })
+											})]
+										}),
+										showTeamPayout && task.teamMemberPayout && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "col-span-2 md:col-span-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+												className: "text-muted-foreground text-xs block flex items-center gap-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }), " Valor Pago à Equipe"]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "font-medium text-blue-600",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", task.teamMemberPayout.toFixed(2)] })
+											})]
+										})
+									]
+								})]
+							})
+						}),
+						task.rating && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2 mb-2",
 								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-										variant: "outline",
-										className: getPriorityColor(task.priority),
-										children: task.priority.toUpperCase()
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: "h-5 w-5 fill-yellow-500 text-yellow-500" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+										className: "font-bold text-lg",
+										children: [task.rating, "/5"]
 									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-										variant: "secondary",
-										children: t$1(`common.${task.status}`)
-									}),
-									linkedBooking && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
-										className: "bg-purple-100 text-purple-800 hover:bg-purple-200 border-purple-200",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "w-3 h-3 mr-1" }), " Booking Linked"]
-									}),
-									task.approvalStatus && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
-										variant: "outline",
-										className: task.approvalStatus === "approved" ? "text-green-700 bg-green-50 border-green-200" : "text-orange-700 bg-orange-50 border-orange-200",
-										children: [task.approvalStatus === "approved" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "w-3 h-3 mr-1" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "w-3 h-3 mr-1" }), task.approvalStatus === "owner_pending" ? "Wait Owner" : task.approvalStatus === "pm_pending" ? "Wait PM" : "Approved"]
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-sm text-yellow-700 font-medium",
+										children: "Avaliação do Cliente"
 									})
 								]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetTitle, {
-								className: "text-2xl",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetDescription, {
-								className: "text-base",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyName })
-							})
-						]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-6",
-						children: [
-							(showInternalCosts || showBillableToOwner) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-								className: "bg-emerald-50/50 border-emerald-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-									className: "p-4 space-y-3",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex items-center gap-2 text-emerald-800 font-semibold text-sm uppercase tracking-wide",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Receipt, { className: "h-4 w-4" }), " Detalhes Financeiros"]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid grid-cols-2 gap-4",
-										children: [
-											showBillableToOwner && !isPartner && !isTeamMember && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "col-span-2 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-													className: "text-muted-foreground text-xs block",
-													children: "Valor Total Faturado"
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-													className: "text-xl font-bold text-emerald-700",
-													children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", (task.billableAmount || task.price || 0).toFixed(2)] })
-												})]
-											}),
-											showInternalCosts && isAdminOrPM && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "col-span-2 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-													className: "text-muted-foreground text-xs block flex items-center gap-1",
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hammer, { className: "h-3 w-3" }), " Custo de Mão de Obra"]
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-													className: "font-medium text-gray-700",
-													children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", (task.laborCost || task.price || 0).toFixed(2)] })
-												})]
-											}), task.materialCost && task.materialCost > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "col-span-2 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-													className: "text-muted-foreground text-xs block flex items-center gap-1",
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(HardHat, { className: "h-3 w-3" }), " Custo de Material"]
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-													className: "font-medium text-gray-700",
-													children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", task.materialCost.toFixed(2)] })
-												})]
-											})] }),
-											showInternalCosts && isPartner && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "col-span-2 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-													className: "text-muted-foreground text-xs block flex items-center gap-1",
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hammer, { className: "h-3 w-3" }), " Custo (Recebimento)"]
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-													className: "font-medium text-gray-700",
-													children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", (task.price || 0).toFixed(2)] })
-												})]
-											}),
-											showTeamPayout && task.teamMemberPayout && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "col-span-2 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-													className: "text-muted-foreground text-xs block flex items-center gap-1",
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }), " Valor Pago à Equipe"]
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-													className: "font-medium text-blue-600",
-													children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", task.teamMemberPayout.toFixed(2)] })
-												})]
-											})
-										]
-									})]
-								})
-							}),
-							task.rating && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4",
+							}), task.feedback && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+								className: "text-sm text-yellow-800 italic",
+								children: [
+									"\"",
+									task.feedback,
+									"\""
+								]
+							})]
+						}),
+						linkedBooking && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+							className: "bg-purple-50/50 border-purple-100",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+								className: "p-4",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex items-center gap-2 mb-2",
+									className: "flex items-center gap-2 mb-2 text-purple-800 font-semibold text-sm uppercase tracking-wide",
 									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: "h-5 w-5 fill-yellow-500 text-yellow-500" }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-											className: "font-bold text-lg",
-											children: [task.rating, "/5"]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-sm text-yellow-700 font-medium",
-											children: "Avaliação do Cliente"
-										})
-									]
-								}), task.feedback && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-									className: "text-sm text-yellow-800 italic",
-									children: [
-										"\"",
-										task.feedback,
-										"\""
-									]
-								})]
-							}),
-							linkedBooking && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-								className: "bg-purple-50/50 border-purple-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-									className: "p-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex items-center gap-2 mb-2 text-purple-800 font-semibold text-sm uppercase tracking-wide",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "h-4 w-4" }),
-											" ",
-											t$1("short_term.title")
-										]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid grid-cols-2 gap-4 text-sm",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-muted-foreground text-xs",
-												children: t$1("short_term.guest")
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-												className: "font-medium",
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: linkedBooking.guestName })
-											})] }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-muted-foreground text-xs",
-												children: t$1("short_term.platform")
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-												className: "capitalize",
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: linkedBooking.platform })
-											})] }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-muted-foreground text-xs",
-												children: "Check-in"
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-												className: "font-medium",
-												children: format(parseISO(linkedBooking.checkIn), "dd/MM/yyyy")
-											})] }),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-muted-foreground text-xs",
-												children: "Check-out"
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-												className: "font-medium",
-												children: format(parseISO(linkedBooking.checkOut), "dd/MM/yyyy")
-											})] })
-										]
-									})]
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "bg-muted/30 p-4 rounded-lg border space-y-3",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
-									className: "font-semibold flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wide",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "h-4 w-4" }),
 										" ",
-										t$1("tasks.location")
+										t$1("short_term.title")
 									]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex items-start gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-muted-foreground mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "font-medium block",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyCommunity || "Condomínio não informado" })
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-sm text-muted-foreground",
-											children: "Comunidade"
-										})] })]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex items-start gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4 text-muted-foreground mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "font-medium block",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyAddress || "Endereço não informado" })
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-sm text-muted-foreground",
-											children: "Endereço Completo"
-										})] })]
-									})]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
-									className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2",
+									className: "grid grid-cols-2 gap-4 text-sm",
 									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-4 w-4" }),
-										" ",
-										t$1("tasks.activity_log")
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "text-muted-foreground text-xs",
+											children: t$1("short_term.guest")
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "font-medium",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: linkedBooking.guestName })
+										})] }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "text-muted-foreground text-xs",
+											children: t$1("short_term.platform")
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "capitalize",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: linkedBooking.platform })
+										})] }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "text-muted-foreground text-xs",
+											children: "Check-in"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "font-medium",
+											children: format(parseISO(linkedBooking.checkIn), "dd/MM/yyyy")
+										})] }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "text-muted-foreground text-xs",
+											children: "Check-out"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "font-medium",
+											children: format(parseISO(linkedBooking.checkOut), "dd/MM/yyyy")
+										})] })
 									]
+								})]
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "bg-muted/30 p-4 rounded-lg border space-y-3",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+								className: "font-semibold flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wide",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4" }),
+									" ",
+									t$1("tasks.location")
+								]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-start gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-muted-foreground mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "font-medium block",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyCommunity || "Condomínio não informado" })
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-sm text-muted-foreground",
+										children: "Comunidade"
+									})] })]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden mb-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "p-3 bg-muted/50 border-b flex items-center justify-between",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "font-semibold text-xs uppercase tracking-wider text-blue-600",
-											children: t$1("tasks.arrival")
-										}), arrivalEvidence && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-3 w-3 text-green-500" })]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "p-0",
-										children: arrivalEvidence ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "flex flex-col",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-												className: "relative aspect-video bg-black",
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-													src: arrivalEvidence.url,
-													alt: "Arrival",
-													className: "w-full h-full object-contain"
-												})
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "p-3 text-xs space-y-1.5 bg-muted/10",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-													className: "flex items-center gap-1.5 text-muted-foreground",
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: format(new Date(arrivalEvidence.timestamp), "dd/MM/yyyy HH:mm") })]
-												}), arrivalEvidence.location && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-													className: "flex items-start gap-1.5 text-muted-foreground",
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigation, { className: "h-3 w-3 mt-0.5 shrink-0" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-														className: "leading-tight",
-														children: arrivalEvidence.location.address
-													})]
+									className: "flex items-start gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4 text-muted-foreground mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "font-medium block",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyAddress || "Endereço não informado" })
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-sm text-muted-foreground",
+										children: "Endereço Completo"
+									})] })]
+								})]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+								className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-4 w-4" }),
+									" ",
+									t$1("tasks.activity_log")
+								]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden mb-4",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "p-3 bg-muted/50 border-b flex items-center justify-between",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "font-semibold text-xs uppercase tracking-wider text-blue-600",
+										children: t$1("tasks.arrival")
+									}), arrivalEvidence && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-3 w-3 text-green-500" })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "p-0",
+									children: arrivalEvidence ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex flex-col",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "relative aspect-video bg-black",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+												src: arrivalEvidence.url,
+												alt: "Arrival",
+												className: "w-full h-full object-contain"
+											})
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "p-3 text-xs space-y-1.5 bg-muted/10",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-center gap-1.5 text-muted-foreground",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: format(new Date(arrivalEvidence.timestamp), "dd/MM/yyyy HH:mm") })]
+											}), arrivalEvidence.location && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-start gap-1.5 text-muted-foreground",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigation, { className: "h-3 w-3 mt-0.5 shrink-0" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "leading-tight",
+													children: arrivalEvidence.location.address
 												})]
 											})]
-										}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "h-20 flex items-center justify-center text-xs text-muted-foreground italic bg-muted/10",
-											children: [t$1("common.pending"), " - Check-in não realizado"]
+										})]
+									}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "h-20 flex items-center justify-center text-xs text-muted-foreground italic bg-muted/10",
+										children: [t$1("common.pending"), " - Check-in não realizado"]
+									})
+								})]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
+									className: "text-sm font-medium text-muted-foreground flex items-center gap-1",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }),
+										" ",
+										t$1("tasks.assignee")
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "font-medium",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.assignee })
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
+									className: "text-sm font-medium text-muted-foreground flex items-center gap-1",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-3 w-3" }),
+										" ",
+										t$1("tasks.scheduled_date")
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "font-medium",
+									children: format(new Date(task.date), "dd/MM/yyyy")
+								})]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+								className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide",
+								children: t$1("common.description")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-sm leading-relaxed whitespace-pre-wrap",
+								children: task.description || "Sem descrição detalhada."
+							})]
+						}),
+						uniqueGallery.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-3",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+								className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image, { className: "h-4 w-4" }), " Galeria de Fotos"]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "grid grid-cols-2 gap-2",
+								children: uniqueGallery.map((img, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "relative aspect-video rounded-md overflow-hidden border bg-muted group",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+										src: img.url,
+										alt: `Gallery ${idx + 1}`,
+										className: "object-cover w-full h-full hover:scale-105 transition-transform duration-300"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "text-[10px] text-white w-full",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												className: "font-semibold",
+												children: img.type
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												className: "truncate opacity-80",
+												children: format(new Date(img.date), "dd/MM HH:mm")
+											})]
 										})
 									})]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid grid-cols-2 gap-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "space-y-1",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
-										className: "text-sm font-medium text-muted-foreground flex items-center gap-1",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }),
-											" ",
-											t$1("tasks.assignee")
-										]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-										className: "font-medium",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.assignee })
-									})]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "space-y-1",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h4", {
-										className: "text-sm font-medium text-muted-foreground flex items-center gap-1",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, { className: "h-3 w-3" }),
-											" ",
-											t$1("tasks.scheduled_date")
-										]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-										className: "font-medium",
-										children: format(new Date(task.date), "dd/MM/yyyy")
-									})]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-									className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide",
-									children: t$1("common.description")
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "text-sm leading-relaxed whitespace-pre-wrap",
-									children: task.description || "Sem descrição detalhada."
-								})]
-							}),
-							uniqueGallery.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-3",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
-									className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image, { className: "h-4 w-4" }), " Galeria de Fotos"]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "grid grid-cols-2 gap-2",
-									children: uniqueGallery.map((img, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "relative aspect-video rounded-md overflow-hidden border bg-muted group",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-											src: img.url,
-											alt: `Gallery ${idx + 1}`,
-											className: "object-cover w-full h-full hover:scale-105 transition-transform duration-300"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "text-[10px] text-white w-full",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-													className: "font-semibold",
-													children: img.type
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-													className: "truncate opacity-80",
-													children: format(new Date(img.date), "dd/MM HH:mm")
-												})]
-											})
-										})]
-									}, `gallery-${idx}`))
-								})]
-							})
-						]
-					})]
+								}, `gallery-${idx}`))
+							})]
+						})
+					]
 				})
-			})
+			})]
 		})
 	});
 }
@@ -73765,7 +73843,7 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 				approvalStatus: "pm_pending"
 			});
 			toast$2({
-				title: "Aprovado",
+				title: t$1("common.approved"),
 				description: "Aprovado pelo Proprietário. Aguardando aprovação do PM."
 			});
 		} else if (task.approvalStatus === "pm_pending") {
@@ -73775,16 +73853,32 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 				status: "pending"
 			});
 			toast$2({
-				title: "Aprovado",
+				title: t$1("common.approved"),
 				description: "Tarefa autorizada para execução."
 			});
-		} else if (task.status === "pending_approval" && !task.approvalStatus) {
-			onStatusChange("pending");
+		} else if (isAdminOrPM && task.status === "pending_approval") {
+			updateTask({
+				...task,
+				approvalStatus: "approved",
+				status: "pending"
+			});
 			toast$2({
-				title: "Aprovado",
+				title: t$1("common.approved"),
 				description: "Tarefa autorizada para execução."
 			});
 		}
+	};
+	const handleReject = () => {
+		updateTask({
+			...task,
+			status: "pending",
+			approvalStatus: void 0
+		});
+		toast$2({
+			title: t$1("common.reject"),
+			description: "Tarefa rejeitada e retornada para revisão.",
+			variant: "destructive"
+		});
 	};
 	const isTeamMember = currentUser.role === "partner_employee";
 	const isPartner = currentUser.role === "partner";
@@ -73812,7 +73906,8 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 	};
 	const assignedEmployeeName = partnerRecord?.employees?.find((e) => e.id === task.partnerEmployeeId)?.name;
 	const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
-	const canApprove = task.approvalStatus === "owner_pending" && isOwner && isMyProperty || task.approvalStatus === "pm_pending" && isAdminOrPM;
+	const canApprove = task.approvalStatus === "owner_pending" && isOwner && isMyProperty || task.approvalStatus === "owner_pending" && isAdminOrPM || task.approvalStatus === "pm_pending" && isAdminOrPM;
+	const canReject = canApprove;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskDetailsSheet, {
 			task,
@@ -73888,8 +73983,8 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 								className: "flex gap-1 flex-wrap justify-end",
 								children: [
 									task.status === "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-										className: task.approvalStatus === "owner_pending" ? "bg-yellow-100 text-yellow-800 border-yellow-300 text-[10px] h-5" : "bg-blue-100 text-blue-800 border-blue-300 text-[10px] h-5",
-										children: task.approvalStatus === "owner_pending" ? "Aguardando Proprietário" : "Aguardando PM"
+										className: task.approvalStatus === "owner_pending" ? "bg-orange-100 text-orange-800 border-orange-300 text-[10px] h-5" : "bg-yellow-100 text-yellow-800 border-yellow-300 text-[10px] h-5",
+										children: task.approvalStatus === "owner_pending" ? t$1("tasks.status_wait_owner") : t$1("tasks.status_wait_pm")
 									}),
 									task.type === "cleaning" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 										variant: "secondary",
@@ -74068,14 +74163,24 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(BellRing, { className: "h-3 w-3 mr-1" }), " Notify"]
 							})
 						}),
-						task.status === "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: canApprove ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-							size: "sm",
-							className: "w-full h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold",
-							onClick: handleApprove,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThumbsUp, { className: "h-3 w-3 mr-2" }), task.approvalStatus === "owner_pending" ? "Aprovar (Proprietário)" : "Aprovar (PM)"]
+						task.status === "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: canApprove ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex gap-2 w-full",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								size: "sm",
+								className: "flex-1 h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold",
+								onClick: handleApprove,
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThumbsUp, { className: "h-3 w-3 mr-2" }), t$1("common.approve")]
+							}), canReject && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								size: "sm",
+								variant: "destructive",
+								className: "h-9 px-2 text-xs font-bold",
+								onClick: handleReject,
+								title: t$1("common.reject"),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleX, { className: "h-4 w-4" })
+							})]
 						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center justify-center gap-2 p-2 bg-yellow-50 text-yellow-800 text-xs font-medium rounded border border-yellow-200",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { className: "h-3 w-3" }), task.approvalStatus === "owner_pending" ? "Aguardando Proprietário" : "Aguardando PM"]
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { className: "h-3 w-3" }), task.approvalStatus === "owner_pending" ? t$1("tasks.status_wait_owner") : t$1("tasks.status_wait_pm")]
 						}) }),
 						task.status === "pending" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							size: "sm",
@@ -77860,16 +77965,28 @@ function TaskInvoiceDialog({ open, onOpenChange }) {
 	});
 }
 function Tasks() {
-	const { tasks: tasks$1, updateTaskStatus, addTaskImage, addTaskEvidence } = useTaskStore_default();
+	const { tasks: tasks$1, updateTaskStatus, addTaskImage, addTaskEvidence, updateTask } = useTaskStore_default();
 	const { t: t$1 } = useLanguageStore_default();
+	const { currentUser } = useAuthStore_default();
+	const { properties: properties$1 } = usePropertyStore_default();
+	const { toast: toast$2 } = useToast();
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = (0, import_react.useState)(false);
 	const [filterType, setFilterType] = (0, import_react.useState)("all");
 	const [filterStatus, setFilterStatus] = (0, import_react.useState)("all");
 	const [selectedTask, setSelectedTask] = (0, import_react.useState)(null);
 	const [detailsOpen, setDetailsOpen] = (0, import_react.useState)(false);
 	const [editOpen, setEditOpen] = (0, import_react.useState)(false);
+	const isAdminOrPM = [
+		"platform_owner",
+		"software_tenant",
+		"internal_user"
+	].includes(currentUser.role);
+	const isOwner = currentUser.role === "property_owner";
 	const filteredTasks = (0, import_react.useMemo)(() => {
 		return tasks$1.filter((t$2) => {
+			if (isOwner) {
+				if (properties$1.find((p$1) => p$1.id === t$2.propertyId)?.ownerId !== currentUser.id) return false;
+			}
 			const typeMatch = filterType === "all" || t$2.type === filterType;
 			const statusMatch = filterStatus === "all" || t$2.status === filterStatus;
 			return typeMatch && statusMatch;
@@ -77877,7 +77994,10 @@ function Tasks() {
 	}, [
 		tasks$1,
 		filterType,
-		filterStatus
+		filterStatus,
+		isOwner,
+		currentUser.id,
+		properties$1
 	]);
 	const pendingTasks = (0, import_react.useMemo)(() => filteredTasks.filter((t$2) => t$2.status === "pending"), [filteredTasks]);
 	const inProgressTasks = (0, import_react.useMemo)(() => filteredTasks.filter((t$2) => t$2.status === "in_progress"), [filteredTasks]);
@@ -77896,7 +78016,7 @@ function Tasks() {
 			case "pending": return t$1("common.pending");
 			case "in_progress": return t$1("tasks.in_progress");
 			case "completed": return t$1("common.completed");
-			case "pending_approval": return approvalStatus === "owner_pending" ? "Aguardando Proprietário" : "Aguardando PM";
+			case "pending_approval": return approvalStatus === "owner_pending" ? t$1("tasks.status_wait_owner") : t$1("tasks.status_wait_pm");
 			default: return status;
 		}
 	};
@@ -77913,6 +78033,57 @@ function Tasks() {
 		if (task.status === "pending") nextStatus = "in_progress";
 		else if (task.status === "in_progress") nextStatus = "completed";
 		if (nextStatus !== task.status) updateTaskStatus(task.id, nextStatus);
+	};
+	const handleApprove = (task) => {
+		if (task.approvalStatus === "owner_pending") {
+			updateTask({
+				...task,
+				approvalStatus: "pm_pending"
+			});
+			toast$2({
+				title: t$1("common.approved"),
+				description: "Aprovado. Aguardando PM."
+			});
+		} else if (task.approvalStatus === "pm_pending") {
+			updateTask({
+				...task,
+				approvalStatus: "approved",
+				status: "pending"
+			});
+			toast$2({
+				title: t$1("common.approved"),
+				description: "Tarefa aprovada para execução."
+			});
+		} else if (isAdminOrPM && task.status === "pending_approval") {
+			updateTask({
+				...task,
+				approvalStatus: "approved",
+				status: "pending"
+			});
+			toast$2({
+				title: t$1("common.approved"),
+				description: "Tarefa aprovada pelo Gestor."
+			});
+		}
+	};
+	const handleReject = (task) => {
+		updateTask({
+			...task,
+			status: "pending",
+			approvalStatus: void 0
+		});
+		toast$2({
+			title: t$1("common.reject"),
+			description: "Tarefa rejeitada e retornada para revisão.",
+			variant: "destructive"
+		});
+	};
+	const canApprove = (task) => {
+		if (task.status !== "pending_approval") return false;
+		const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
+		if (task.approvalStatus === "owner_pending") return isOwner && isMyProperty || isAdminOrPM;
+		if (task.approvalStatus === "pm_pending") return isAdminOrPM;
+		return false;
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 h-full",
@@ -77991,7 +78162,7 @@ function Tasks() {
 								})
 							] })]
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						isAdminOrPM && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							variant: "outline",
 							size: "sm",
 							className: "gap-2 h-9 text-black border-slate-300 font-medium bg-white",
@@ -78171,7 +78342,7 @@ function Tasks() {
 										}) }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 											variant: "secondary",
-											className: task.status === "pending_approval" ? task.approvalStatus === "owner_pending" ? "bg-yellow-100 text-yellow-800" : "bg-blue-100 text-blue-800" : "",
+											className: task.status === "pending_approval" ? task.approvalStatus === "owner_pending" ? "bg-orange-100 text-orange-800" : "bg-yellow-100 text-yellow-800" : "",
 											children: getStatusLabel(task.status, task.approvalStatus)
 										}) }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -78183,6 +78354,20 @@ function Tasks() {
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "flex justify-end gap-2",
 												children: [
+													canApprove(task) && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+														size: "icon",
+														className: "bg-green-600 hover:bg-green-700 text-white h-8 w-8",
+														onClick: () => handleApprove(task),
+														title: t$1("common.approve"),
+														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheckBig, { className: "h-4 w-4" })
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+														size: "icon",
+														variant: "destructive",
+														className: "h-8 w-8",
+														onClick: () => handleReject(task),
+														title: t$1("common.reject"),
+														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleX, { className: "h-4 w-4" })
+													})] }),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 														variant: "ghost",
 														size: "icon",
@@ -96036,4 +96221,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-C4dMSP0X.js.map
+//# sourceMappingURL=index-BqfY3mNv.js.map

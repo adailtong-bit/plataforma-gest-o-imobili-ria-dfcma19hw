@@ -3,6 +3,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import useTaskStore from '@/stores/useTaskStore'
+import useAuthStore from '@/stores/useAuthStore'
+import usePropertyStore from '@/stores/usePropertyStore'
 import { TaskCard } from '@/components/tasks/TaskCard'
 import { CreateTaskDialog } from '@/components/tasks/CreateTaskDialog'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -15,6 +17,8 @@ import {
   Eye,
   Pencil,
   RotateCw,
+  CheckCircle,
+  XCircle,
 } from 'lucide-react'
 import { TaskInvoiceDialog } from '@/components/financial/TaskInvoiceDialog'
 import {
@@ -37,11 +41,15 @@ import { format } from 'date-fns'
 import { TaskDetailsSheet } from '@/components/tasks/TaskDetailsSheet'
 import { EditTaskDialog } from '@/components/tasks/EditTaskDialog'
 import { Task } from '@/lib/types'
+import { useToast } from '@/hooks/use-toast'
 
 export default function Tasks() {
-  const { tasks, updateTaskStatus, addTaskImage, addTaskEvidence } =
+  const { tasks, updateTaskStatus, addTaskImage, addTaskEvidence, updateTask } =
     useTaskStore()
   const { t } = useLanguageStore()
+  const { currentUser } = useAuthStore()
+  const { properties } = usePropertyStore()
+  const { toast } = useToast()
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
   const [filterType, setFilterType] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
@@ -51,13 +59,27 @@ export default function Tasks() {
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
 
+  const isAdminOrPM = [
+    'platform_owner',
+    'software_tenant',
+    'internal_user',
+  ].includes(currentUser.role)
+  const isOwner = currentUser.role === 'property_owner'
+
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
+      // Role-based filtering
+      if (isOwner) {
+        // Owners only see tasks for their properties
+        const property = properties.find((p) => p.id === t.propertyId)
+        if (property?.ownerId !== currentUser.id) return false
+      }
+
       const typeMatch = filterType === 'all' || t.type === filterType
       const statusMatch = filterStatus === 'all' || t.status === filterStatus
       return typeMatch && statusMatch
     })
-  }, [tasks, filterType, filterStatus])
+  }, [tasks, filterType, filterStatus, isOwner, currentUser.id, properties])
 
   const pendingTasks = useMemo(
     () => filteredTasks.filter((t) => t.status === 'pending'),
@@ -99,8 +121,8 @@ export default function Tasks() {
         return t('common.completed')
       case 'pending_approval':
         return approvalStatus === 'owner_pending'
-          ? 'Aguardando Proprietário'
-          : 'Aguardando PM'
+          ? t('tasks.status_wait_owner')
+          : t('tasks.status_wait_pm')
       default:
         return status
     }
@@ -124,6 +146,71 @@ export default function Tasks() {
     if (nextStatus !== task.status) {
       updateTaskStatus(task.id, nextStatus)
     }
+  }
+
+  const handleApprove = (task: Task) => {
+    if (task.approvalStatus === 'owner_pending') {
+      updateTask({
+        ...task,
+        approvalStatus: 'pm_pending',
+      })
+      toast({
+        title: t('common.approved'),
+        description: 'Aprovado. Aguardando PM.',
+      })
+    } else if (task.approvalStatus === 'pm_pending') {
+      updateTask({
+        ...task,
+        approvalStatus: 'approved',
+        status: 'pending',
+      })
+      toast({
+        title: t('common.approved'),
+        description: 'Tarefa aprovada para execução.',
+      })
+    } else if (isAdminOrPM && task.status === 'pending_approval') {
+      // Super Approval or Generic
+      updateTask({
+        ...task,
+        approvalStatus: 'approved',
+        status: 'pending',
+      })
+      toast({
+        title: t('common.approved'),
+        description: 'Tarefa aprovada pelo Gestor.',
+      })
+    }
+  }
+
+  const handleReject = (task: Task) => {
+    updateTask({
+      ...task,
+      status: 'pending', // Return to pending for edit/review
+      approvalStatus: undefined, // Clear approval chain
+    })
+    toast({
+      title: t('common.reject'),
+      description: 'Tarefa rejeitada e retornada para revisão.',
+      variant: 'destructive',
+    })
+  }
+
+  const canApprove = (task: Task) => {
+    if (task.status !== 'pending_approval') return false
+    const property = properties.find((p) => p.id === task.propertyId)
+    const isMyProperty = property?.ownerId === currentUser.id
+
+    if (task.approvalStatus === 'owner_pending') {
+      return (isOwner && isMyProperty) || isAdminOrPM // PM Super-Approval
+    }
+    if (task.approvalStatus === 'pm_pending') {
+      return isAdminOrPM
+    }
+    return false
+  }
+
+  const canReject = (task: Task) => {
+    return canApprove(task)
   }
 
   return (
@@ -185,15 +272,17 @@ export default function Tasks() {
             </SelectContent>
           </Select>
 
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 h-9 text-black border-slate-300 font-medium bg-white"
-            onClick={() => setInvoiceDialogOpen(true)}
-          >
-            <FileText className="h-4 w-4" />{' '}
-            {t('automation.auto_generate_invoice') || 'Generate Invoice'}
-          </Button>
+          {isAdminOrPM && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 h-9 text-black border-slate-300 font-medium bg-white"
+              onClick={() => setInvoiceDialogOpen(true)}
+            >
+              <FileText className="h-4 w-4" />{' '}
+              {t('automation.auto_generate_invoice') || 'Generate Invoice'}
+            </Button>
+          )}
           <CreateTaskDialog />
         </div>
       </div>
@@ -372,8 +461,8 @@ export default function Tasks() {
                           className={
                             task.status === 'pending_approval'
                               ? task.approvalStatus === 'owner_pending'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-blue-100 text-blue-800'
+                                ? 'bg-orange-100 text-orange-800'
+                                : 'bg-yellow-100 text-yellow-800'
                               : ''
                           }
                         >
@@ -383,6 +472,28 @@ export default function Tasks() {
                       <TableCell className="capitalize">{task.type}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          {canApprove(task) && (
+                            <>
+                              <Button
+                                size="icon"
+                                className="bg-green-600 hover:bg-green-700 text-white h-8 w-8"
+                                onClick={() => handleApprove(task)}
+                                title={t('common.approve')}
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="destructive"
+                                className="h-8 w-8"
+                                onClick={() => handleReject(task)}
+                                title={t('common.reject')}
+                              >
+                                <XCircle className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+
                           <Button
                             variant="ghost"
                             size="icon"

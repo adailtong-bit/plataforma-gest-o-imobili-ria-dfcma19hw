@@ -35,6 +35,7 @@ import {
   BellRing,
   AlertCircle,
   Edit,
+  XCircle,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
@@ -148,7 +149,6 @@ export function TaskCard({
   }
 
   const handleApprove = () => {
-    // Determine next step based on current approval status
     if (task.approvalStatus === 'owner_pending') {
       // Owner approved, now goes to PM
       updateTask({
@@ -156,7 +156,7 @@ export function TaskCard({
         approvalStatus: 'pm_pending',
       })
       toast({
-        title: 'Aprovado',
+        title: t('common.approved'),
         description: 'Aprovado pelo Proprietário. Aguardando aprovação do PM.',
       })
     } else if (task.approvalStatus === 'pm_pending') {
@@ -164,20 +164,37 @@ export function TaskCard({
       updateTask({
         ...task,
         approvalStatus: 'approved',
-        status: 'pending', // Move to pending column
+        status: 'pending',
       })
       toast({
-        title: 'Aprovado',
+        title: t('common.approved'),
         description: 'Tarefa autorizada para execução.',
       })
-    } else if (task.status === 'pending_approval' && !task.approvalStatus) {
-      // Generic approval (fallback)
-      onStatusChange('pending')
+    } else if (isAdminOrPM && task.status === 'pending_approval') {
+      // Super Approval
+      updateTask({
+        ...task,
+        approvalStatus: 'approved',
+        status: 'pending',
+      })
       toast({
-        title: 'Aprovado',
+        title: t('common.approved'),
         description: 'Tarefa autorizada para execução.',
       })
     }
+  }
+
+  const handleReject = () => {
+    updateTask({
+      ...task,
+      status: 'pending',
+      approvalStatus: undefined,
+    })
+    toast({
+      title: t('common.reject'),
+      description: 'Tarefa rejeitada e retornada para revisão.',
+      variant: 'destructive',
+    })
   }
 
   const isTeamMember = currentUser.role === 'partner_employee'
@@ -226,7 +243,10 @@ export function TaskCard({
 
   const canApprove =
     (task.approvalStatus === 'owner_pending' && isOwner && isMyProperty) || // Owner Step
+    (task.approvalStatus === 'owner_pending' && isAdminOrPM) || // PM Super-Approval
     (task.approvalStatus === 'pm_pending' && isAdminOrPM) // PM Step
+
+  const canReject = canApprove
 
   return (
     <>
@@ -302,13 +322,13 @@ export function TaskCard({
                 <Badge
                   className={
                     task.approvalStatus === 'owner_pending'
-                      ? 'bg-yellow-100 text-yellow-800 border-yellow-300 text-[10px] h-5'
-                      : 'bg-blue-100 text-blue-800 border-blue-300 text-[10px] h-5'
+                      ? 'bg-orange-100 text-orange-800 border-orange-300 text-[10px] h-5'
+                      : 'bg-yellow-100 text-yellow-800 border-yellow-300 text-[10px] h-5'
                   }
                 >
                   {task.approvalStatus === 'owner_pending'
-                    ? 'Aguardando Proprietário'
-                    : 'Aguardando PM'}
+                    ? t('tasks.status_wait_owner')
+                    : t('tasks.status_wait_pm')}
                 </Badge>
               )}
               {task.type === 'cleaning' && (
@@ -519,22 +539,33 @@ export function TaskCard({
           {task.status === 'pending_approval' && (
             <>
               {canApprove ? (
-                <Button
-                  size="sm"
-                  className="w-full h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold"
-                  onClick={handleApprove}
-                >
-                  <ThumbsUp className="h-3 w-3 mr-2" />
-                  {task.approvalStatus === 'owner_pending'
-                    ? 'Aprovar (Proprietário)'
-                    : 'Aprovar (PM)'}
-                </Button>
+                <div className="flex gap-2 w-full">
+                  <Button
+                    size="sm"
+                    className="flex-1 h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold"
+                    onClick={handleApprove}
+                  >
+                    <ThumbsUp className="h-3 w-3 mr-2" />
+                    {t('common.approve')}
+                  </Button>
+                  {canReject && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="h-9 px-2 text-xs font-bold"
+                      onClick={handleReject}
+                      title={t('common.reject')}
+                    >
+                      <XCircle className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               ) : (
                 <div className="flex items-center justify-center gap-2 p-2 bg-yellow-50 text-yellow-800 text-xs font-medium rounded border border-yellow-200">
                   <AlertCircle className="h-3 w-3" />
                   {task.approvalStatus === 'owner_pending'
-                    ? 'Aguardando Proprietário'
-                    : 'Aguardando PM'}
+                    ? t('tasks.status_wait_owner')
+                    : t('tasks.status_wait_pm')}
                 </div>
               )}
             </>
