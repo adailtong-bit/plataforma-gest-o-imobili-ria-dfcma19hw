@@ -12,6 +12,8 @@ import {
   Save,
   ChevronsUpDown,
   Check,
+  ThumbsUp,
+  XCircle,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
@@ -114,6 +116,17 @@ export function EditTaskDialog({
     currentUser.role,
   )
   const isPartner = currentUser.role === 'partner'
+  const isOwner = currentUser.role === 'property_owner'
+
+  // Determine permissions for actions
+  const property = properties.find((p) => p.id === task.propertyId)
+  const isMyProperty = property?.ownerId === currentUser.id
+
+  const canApprove =
+    task.status === 'pending_approval' &&
+    ((task.approvalStatus === 'owner_pending' && isOwner && isMyProperty) ||
+      (task.approvalStatus === 'owner_pending' && isAdminOrPM) || // PM Super Approval
+      (task.approvalStatus === 'pm_pending' && isAdminOrPM))
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -230,6 +243,44 @@ export function EditTaskDialog({
     setUploadedImages(uploadedImages.filter((_, i) => i !== index))
   }
 
+  const handleApprove = () => {
+    if (task.approvalStatus === 'owner_pending') {
+      updateTask({
+        ...task,
+        approvalStatus: 'pm_pending',
+      })
+      toast({
+        title: t('common.approved'),
+        description: 'Aprovado. Aguardando PM.',
+      })
+    } else {
+      updateTask({
+        ...task,
+        approvalStatus: 'approved',
+        status: 'pending',
+      })
+      toast({
+        title: t('common.approved'),
+        description: 'Tarefa aprovada.',
+      })
+    }
+    onOpenChange(false)
+  }
+
+  const handleReject = () => {
+    updateTask({
+      ...task,
+      status: 'pending',
+      approvalStatus: undefined,
+    })
+    toast({
+      title: t('common.reject'),
+      description: 'Tarefa rejeitada.',
+      variant: 'destructive',
+    })
+    onOpenChange(false)
+  }
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     const assignee = partners.find((p) => p.id === values.assigneeId)
     const finalLabor = values.price ? parseFloat(values.price) : 0
@@ -286,6 +337,29 @@ export function EditTaskDialog({
         <ScrollArea className="flex-1 p-6 pt-2">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Approval Buttons at Top if applicable */}
+              {canApprove && (
+                <div className="flex gap-2 p-2 border rounded-md bg-muted/20">
+                  <Button
+                    type="button"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-9"
+                    onClick={handleApprove}
+                  >
+                    <ThumbsUp className="h-4 w-4 mr-2" />
+                    {t('common.approve')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="flex-1 font-bold h-9"
+                    onClick={handleReject}
+                  >
+                    <XCircle className="h-4 w-4 mr-2" />
+                    {t('common.reject')}
+                  </Button>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}

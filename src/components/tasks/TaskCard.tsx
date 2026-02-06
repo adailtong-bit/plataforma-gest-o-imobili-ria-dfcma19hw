@@ -242,9 +242,10 @@ export function TaskCard({
   const isMyProperty = property?.ownerId === currentUser.id
 
   const canApprove =
-    (task.approvalStatus === 'owner_pending' && isOwner && isMyProperty) || // Owner Step
-    (task.approvalStatus === 'owner_pending' && isAdminOrPM) || // PM Super-Approval
-    (task.approvalStatus === 'pm_pending' && isAdminOrPM) // PM Step
+    task.status === 'pending_approval' &&
+    ((task.approvalStatus === 'owner_pending' && isOwner && isMyProperty) ||
+      (task.approvalStatus === 'owner_pending' && isAdminOrPM) || // PM Super-Approval
+      (task.approvalStatus === 'pm_pending' && isAdminOrPM)) // PM Step
 
   const canReject = canApprove
 

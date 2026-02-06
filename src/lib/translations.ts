@@ -73,7 +73,7 @@ export const translations = {
       tax_id: 'CPF/CNPJ / Tax ID',
       system_activity: 'Atividade do Sistema',
       approve: 'Aprovar',
-      reject: 'Rejeitar', // Added
+      reject: 'Rejeitar',
       block: 'Bloquear',
       pending_approval: 'Aguardando Aprovação',
       pending_activation: 'Pendente Ativação',
@@ -199,7 +199,6 @@ export const translations = {
       tower_details: 'Detalhes da Torre',
       room_details: 'Detalhes do Quarto',
     },
-    // ... rest of translations
     workflows: {
       title: 'Motor de Workflow',
       subtitle: 'Automatize processos e sequências de tarefas.',
@@ -307,7 +306,6 @@ export const translations = {
       users: 'Usuários',
       hotels: 'Hotéis',
     },
-    // ... rest of translations
   },
   en: {
     // ... existing translations ...
@@ -381,7 +379,7 @@ export const translations = {
       tax_id: 'SSN/EIN / Tax ID',
       system_activity: 'System Activity',
       approve: 'Approve',
-      reject: 'Reject', // Added
+      reject: 'Reject',
       block: 'Block',
       pending_approval: 'Pending Approval',
       pending_activation: 'Pending Activation',
@@ -482,7 +480,6 @@ export const translations = {
       migration: 'Migration',
       hotels: 'Hotels',
     },
-    // ... existing nested objects ...
     hotels: {
       title: 'Hotel Management',
       subtitle: 'Manage hotel networks, towers, and rooms.',
@@ -505,7 +502,6 @@ export const translations = {
       tower_details: 'Tower Details',
       room_details: 'Room Details',
     },
-    // ... rest of translations
     tasks: {
       title: 'Tasks',
       subtitle: 'Activity tracking and workflows.',
@@ -551,7 +547,6 @@ export const translations = {
       users: 'Users',
       hotels: 'Hotels',
     },
-    // ... rest of translations
   },
   es: {
     // ... existing translations ...
@@ -625,7 +620,7 @@ export const translations = {
       tax_id: 'DNI/CIF / Tax ID',
       system_activity: 'Actividad del Sistema',
       approve: 'Aprobar',
-      reject: 'Rechazar', // Added
+      reject: 'Rechazar',
       block: 'Bloquear',
       pending_approval: 'Pendiente de Aprobación',
       pending_activation: 'Pendiente de Activación',
@@ -728,7 +723,6 @@ export const translations = {
       migration: 'Migración',
       hotels: 'Hoteles',
     },
-    // ... existing nested objects ...
     hotels: {
       title: 'Gestión de Hoteles',
       subtitle: 'Gestione redes hoteleras, torres y habitaciones.',
@@ -751,7 +745,6 @@ export const translations = {
       tower_details: 'Detalles de la Torre',
       room_details: 'Detalles de la Habitación',
     },
-    // ... rest of translations
     tasks: {
       title: 'Tareas',
       subtitle: 'Seguimiento de actividades y flujos.',
@@ -782,8 +775,8 @@ export const translations = {
       detailed_desc: 'Descripción Detallada',
       desc_placeholder: 'Instrucciones específicas...',
       create_btn: 'Crear Tarea',
-      status_wait_owner: 'Aguardando Aprovação do Proprietário', // Kept in PT for consistency with request
-      status_wait_pm: 'Aguardando Aprovação da PM', // Kept in PT for consistency with request
+      status_wait_owner: 'Aguardando Aprovação do Proprietário',
+      status_wait_pm: 'Aguardando Aprovação da PM',
       change_status: 'Cambiar Estado',
     },
     sidebar: {
@@ -797,6 +790,5 @@ export const translations = {
       users: 'Usuarios',
       hotels: 'Hoteles',
     },
-    // ... rest of translations
   },
 }

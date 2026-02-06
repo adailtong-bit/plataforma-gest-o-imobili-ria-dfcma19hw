@@ -60018,7 +60018,8 @@ const PERMISSIONS_MATRIX = {
 			"view",
 			"create",
 			"edit"
-		]
+		],
+		users: ["view"]
 	},
 	tenant: {
 		portal: ["view"],
@@ -73301,6 +73302,9 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 	const [openCombobox, setOpenCombobox] = (0, import_react.useState)(false);
 	const isAdminOrPM = ["platform_owner", "software_tenant"].includes(currentUser.role);
 	const isPartner = currentUser.role === "partner";
+	const isOwner = currentUser.role === "property_owner";
+	const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
+	const canApprove = task.status === "pending_approval" && (task.approvalStatus === "owner_pending" && isOwner && isMyProperty || task.approvalStatus === "owner_pending" && isAdminOrPM || task.approvalStatus === "pm_pending" && isAdminOrPM);
 	const form = useForm({
 		resolver: a(formSchema$1),
 		defaultValues: {
@@ -73389,6 +73393,42 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 	const removeImage = (index$1) => {
 		setUploadedImages(uploadedImages.filter((_$1, i$2) => i$2 !== index$1));
 	};
+	const handleApprove = () => {
+		if (task.approvalStatus === "owner_pending") {
+			updateTask({
+				...task,
+				approvalStatus: "pm_pending"
+			});
+			toast$2({
+				title: t$1("common.approved"),
+				description: "Aprovado. Aguardando PM."
+			});
+		} else {
+			updateTask({
+				...task,
+				approvalStatus: "approved",
+				status: "pending"
+			});
+			toast$2({
+				title: t$1("common.approved"),
+				description: "Tarefa aprovada."
+			});
+		}
+		onOpenChange(false);
+	};
+	const handleReject = () => {
+		updateTask({
+			...task,
+			status: "pending",
+			approvalStatus: void 0
+		});
+		toast$2({
+			title: t$1("common.reject"),
+			description: "Tarefa rejeitada.",
+			variant: "destructive"
+		});
+		onOpenChange(false);
+	};
 	function onSubmit(values) {
 		const assignee = partners$1.find((p$1) => p$1.id === values.assigneeId);
 		const finalLabor = values.price ? parseFloat(values.price) : 0;
@@ -73440,6 +73480,21 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 						onSubmit: form.handleSubmit(onSubmit),
 						className: "space-y-6",
 						children: [
+							canApprove && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex gap-2 p-2 border rounded-md bg-muted/20",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									type: "button",
+									className: "flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-9",
+									onClick: handleApprove,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThumbsUp, { className: "h-4 w-4 mr-2" }), t$1("common.approve")]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									type: "button",
+									variant: "destructive",
+									className: "flex-1 font-bold h-9",
+									onClick: handleReject,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleX, { className: "h-4 w-4 mr-2" }), t$1("common.reject")]
+								})]
+							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid grid-cols-2 gap-4",
 								children: [
@@ -73906,7 +73961,7 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 	};
 	const assignedEmployeeName = partnerRecord?.employees?.find((e) => e.id === task.partnerEmployeeId)?.name;
 	const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
-	const canApprove = task.approvalStatus === "owner_pending" && isOwner && isMyProperty || task.approvalStatus === "owner_pending" && isAdminOrPM || task.approvalStatus === "pm_pending" && isAdminOrPM;
+	const canApprove = task.status === "pending_approval" && (task.approvalStatus === "owner_pending" && isOwner && isMyProperty || task.approvalStatus === "owner_pending" && isAdminOrPM || task.approvalStatus === "pm_pending" && isAdminOrPM);
 	const canReject = canApprove;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskDetailsSheet, {
@@ -78354,19 +78409,19 @@ function Tasks() {
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "flex justify-end gap-2",
 												children: [
-													canApprove(task) && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-														size: "icon",
-														className: "bg-green-600 hover:bg-green-700 text-white h-8 w-8",
+													canApprove(task) && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+														size: "sm",
+														className: "bg-green-600 hover:bg-green-700 text-white h-8",
 														onClick: () => handleApprove(task),
 														title: t$1("common.approve"),
-														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheckBig, { className: "h-4 w-4" })
-													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-														size: "icon",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThumbsUp, { className: "h-4 w-4 mr-1" }), t$1("common.approve")]
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+														size: "sm",
 														variant: "destructive",
-														className: "h-8 w-8",
+														className: "h-8",
 														onClick: () => handleReject(task),
 														title: t$1("common.reject"),
-														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleX, { className: "h-4 w-4" })
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleX, { className: "h-4 w-4 mr-1" }), t$1("common.reject")]
 													})] }),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 														variant: "ghost",
@@ -96221,4 +96276,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BqfY3mNv.js.map
+//# sourceMappingURL=index-gvTxn09S.js.map

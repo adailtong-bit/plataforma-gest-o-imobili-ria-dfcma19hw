@@ -72,7 +72,7 @@ export const PERMISSIONS_MATRIX: Record<
     reports: ['view'],
     visits: ['view', 'create', 'edit'],
     hotels: ['view', 'create', 'edit'],
-    users: ['view'], // Allow viewing users list
+    users: ['view'],
   },
   partner: {
     portal: ['view'],
@@ -86,7 +86,8 @@ export const PERMISSIONS_MATRIX: Record<
     financial: ['view'],
     messages: ['view', 'create'],
     short_term: ['view'],
-    tasks: ['view', 'create', 'edit'], // Added permission for tasks
+    tasks: ['view', 'create', 'edit'],
+    users: ['view'], // Added access to users for Owner
   },
   tenant: {
     portal: ['view'],
