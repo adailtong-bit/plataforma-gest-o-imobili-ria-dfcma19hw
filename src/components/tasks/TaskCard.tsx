@@ -31,11 +31,9 @@ import {
   Play,
   Square,
   Star,
-  ThumbsUp,
   BellRing,
   AlertCircle,
   Edit,
-  XCircle,
   Check,
   X,
 } from 'lucide-react'
@@ -243,13 +241,11 @@ export function TaskCard({
   const property = properties.find((p) => p.id === task.propertyId)
   const isMyProperty = property?.ownerId === currentUser.id
 
-  const canApprove =
+  const userCanApprove =
     task.status === 'pending_approval' &&
     ((task.approvalStatus === 'owner_pending' && isOwner && isMyProperty) ||
       (task.approvalStatus === 'owner_pending' && isAdminOrPM) || // PM Super-Approval
       (task.approvalStatus === 'pm_pending' && isAdminOrPM)) // PM Step
-
-  const canReject = canApprove
 
   return (
     <>
@@ -540,38 +536,27 @@ export function TaskCard({
           )}
 
           {task.status === 'pending_approval' && (
-            <>
-              {canApprove ? (
-                <div className="flex gap-2 w-full">
-                  <Button
-                    size="sm"
-                    className="flex-1 h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold"
-                    onClick={handleApprove}
-                  >
-                    <Check className="h-3 w-3 mr-2" />
-                    {t('common.approve')}
-                  </Button>
-                  {canReject && (
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="h-9 px-2 text-xs font-bold"
-                      onClick={handleReject}
-                      title={t('common.reject')}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ) : (
-                <div className="flex items-center justify-center gap-2 p-2 bg-yellow-50 text-yellow-800 text-xs font-medium rounded border border-yellow-200">
-                  <AlertCircle className="h-3 w-3" />
-                  {task.approvalStatus === 'owner_pending'
-                    ? t('tasks.status_wait_owner')
-                    : t('tasks.status_wait_pm')}
-                </div>
-              )}
-            </>
+            <div className="flex gap-2 w-full">
+              <Button
+                size="sm"
+                className="flex-1 h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold disabled:opacity-50"
+                onClick={handleApprove}
+                disabled={!userCanApprove}
+              >
+                <Check className="h-3 w-3 mr-2" />
+                {t('common.approve')}
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                className="h-9 px-2 text-xs font-bold disabled:opacity-50"
+                onClick={handleReject}
+                disabled={!userCanApprove}
+                title={t('common.reject')}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           )}
 
           {task.status === 'pending' && (

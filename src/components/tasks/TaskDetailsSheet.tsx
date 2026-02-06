@@ -25,7 +25,6 @@ import {
   AlertTriangle,
   Check,
   X,
-  XCircle,
 } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -214,19 +213,21 @@ export function TaskDetailsSheet({
           </SheetHeader>
 
           {/* Action Buttons in Drawer */}
-          {canApprove && (
+          {task.status === 'pending_approval' && (
             <div className="flex gap-2 mt-4">
               <Button
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold"
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold disabled:opacity-50"
                 onClick={handleApprove}
+                disabled={!canApprove}
               >
                 <Check className="h-4 w-4 mr-2" />
                 {t('common.approve')}
               </Button>
               <Button
                 variant="destructive"
-                className="flex-1 font-bold"
+                className="flex-1 font-bold disabled:opacity-50"
                 onClick={handleReject}
+                disabled={!canApprove}
               >
                 <X className="h-4 w-4 mr-2" />
                 {t('common.reject')}

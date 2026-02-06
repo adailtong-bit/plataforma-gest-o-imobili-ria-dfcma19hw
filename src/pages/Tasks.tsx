@@ -19,7 +19,6 @@ import {
   RotateCw,
   Check,
   X,
-  ThumbsUp,
 } from 'lucide-react'
 import { TaskInvoiceDialog } from '@/components/financial/TaskInvoiceDialog'
 import {
@@ -196,7 +195,7 @@ export default function Tasks() {
     })
   }
 
-  const canApprove = (task: Task) => {
+  const checkCanApprove = (task: Task) => {
     if (task.status !== 'pending_approval') return false
     const property = properties.find((p) => p.id === task.propertyId)
     const isMyProperty = property?.ownerId === currentUser.id
@@ -469,12 +468,13 @@ export default function Tasks() {
                       <TableCell className="capitalize">{task.type}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          {canApprove(task) && (
+                          {task.status === 'pending_approval' && (
                             <>
                               <Button
                                 size="sm"
-                                className="bg-green-600 hover:bg-green-700 text-white h-8 gap-1"
+                                className="bg-green-600 hover:bg-green-700 text-white h-8 gap-1 disabled:opacity-50"
                                 onClick={() => handleApprove(task)}
+                                disabled={!checkCanApprove(task)}
                                 title={t('common.approve')}
                               >
                                 <Check className="h-4 w-4" />
@@ -483,8 +483,9 @@ export default function Tasks() {
                               <Button
                                 size="sm"
                                 variant="destructive"
-                                className="h-8 gap-1"
+                                className="h-8 gap-1 disabled:opacity-50"
                                 onClick={() => handleReject(task)}
+                                disabled={!checkCanApprove(task)}
                                 title={t('common.reject')}
                               >
                                 <X className="h-4 w-4" />

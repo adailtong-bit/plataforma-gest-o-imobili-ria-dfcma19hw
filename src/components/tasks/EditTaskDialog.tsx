@@ -337,12 +337,13 @@ export function EditTaskDialog({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Approval Buttons at Top if applicable */}
-              {canApprove && (
+              {task.status === 'pending_approval' && (
                 <div className="flex gap-2 p-2 border rounded-md bg-muted/20">
                   <Button
                     type="button"
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-9"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-9 disabled:opacity-50"
                     onClick={handleApprove}
+                    disabled={!canApprove}
                   >
                     <Check className="h-4 w-4 mr-2" />
                     {t('common.approve')}
@@ -350,8 +351,9 @@ export function EditTaskDialog({
                   <Button
                     type="button"
                     variant="destructive"
-                    className="flex-1 font-bold h-9"
+                    className="flex-1 font-bold h-9 disabled:opacity-50"
                     onClick={handleReject}
+                    disabled={!canApprove}
                   >
                     <X className="h-4 w-4 mr-2" />
                     {t('common.reject')}

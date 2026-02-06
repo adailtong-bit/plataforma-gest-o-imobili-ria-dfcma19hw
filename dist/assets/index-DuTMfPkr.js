@@ -65628,16 +65628,18 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 						className: "text-base",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyName })
 					})
-				] }), canApprove && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				] }), task.status === "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex gap-2 mt-4",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						className: "flex-1 bg-green-600 hover:bg-green-700 text-white font-bold",
+						className: "flex-1 bg-green-600 hover:bg-green-700 text-white font-bold disabled:opacity-50",
 						onClick: handleApprove,
+						disabled: !canApprove,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4 mr-2" }), t$1("common.approve")]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						variant: "destructive",
-						className: "flex-1 font-bold",
+						className: "flex-1 font-bold disabled:opacity-50",
 						onClick: handleReject,
+						disabled: !canApprove,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 mr-2" }), t$1("common.reject")]
 					})]
 				})]
@@ -73457,18 +73459,20 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 						onSubmit: form.handleSubmit(onSubmit),
 						className: "space-y-6",
 						children: [
-							canApprove && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							task.status === "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex gap-2 p-2 border rounded-md bg-muted/20",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 									type: "button",
-									className: "flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-9",
+									className: "flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-9 disabled:opacity-50",
 									onClick: handleApprove,
+									disabled: !canApprove,
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4 mr-2" }), t$1("common.approve")]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 									type: "button",
 									variant: "destructive",
-									className: "flex-1 font-bold h-9",
+									className: "flex-1 font-bold h-9 disabled:opacity-50",
 									onClick: handleReject,
+									disabled: !canApprove,
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 mr-2" }), t$1("common.reject")]
 								})]
 							}),
@@ -73938,8 +73942,7 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 	};
 	const assignedEmployeeName = partnerRecord?.employees?.find((e) => e.id === task.partnerEmployeeId)?.name;
 	const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
-	const canApprove = task.status === "pending_approval" && (task.approvalStatus === "owner_pending" && isOwner && isMyProperty || task.approvalStatus === "owner_pending" && isAdminOrPM || task.approvalStatus === "pm_pending" && isAdminOrPM);
-	const canReject = canApprove;
+	const userCanApprove = task.status === "pending_approval" && (task.approvalStatus === "owner_pending" && isOwner && isMyProperty || task.approvalStatus === "owner_pending" && isAdminOrPM || task.approvalStatus === "pm_pending" && isAdminOrPM);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskDetailsSheet, {
 			task,
@@ -74195,25 +74198,24 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(BellRing, { className: "h-3 w-3 mr-1" }), " Notify"]
 							})
 						}),
-						task.status === "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: canApprove ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						task.status === "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex gap-2 w-full",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 								size: "sm",
-								className: "flex-1 h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold",
+								className: "flex-1 h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold disabled:opacity-50",
 								onClick: handleApprove,
+								disabled: !userCanApprove,
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-3 w-3 mr-2" }), t$1("common.approve")]
-							}), canReject && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								size: "sm",
 								variant: "destructive",
-								className: "h-9 px-2 text-xs font-bold",
+								className: "h-9 px-2 text-xs font-bold disabled:opacity-50",
 								onClick: handleReject,
+								disabled: !userCanApprove,
 								title: t$1("common.reject"),
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" })
 							})]
-						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center justify-center gap-2 p-2 bg-yellow-50 text-yellow-800 text-xs font-medium rounded border border-yellow-200",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { className: "h-3 w-3" }), task.approvalStatus === "owner_pending" ? t$1("tasks.status_wait_owner") : t$1("tasks.status_wait_pm")]
-						}) }),
+						}),
 						task.status === "pending" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							size: "sm",
 							className: "w-full h-9 text-xs bg-trust-blue hover:bg-trust-blue/90 text-white font-bold",
@@ -78110,7 +78112,7 @@ function Tasks() {
 			variant: "destructive"
 		});
 	};
-	const canApprove = (task) => {
+	const checkCanApprove = (task) => {
 		if (task.status !== "pending_approval") return false;
 		const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
 		if (task.approvalStatus === "owner_pending") return isOwner && isMyProperty || isAdminOrPM;
@@ -78386,17 +78388,19 @@ function Tasks() {
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "flex justify-end gap-2",
 												children: [
-													canApprove(task) && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+													task.status === "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 														size: "sm",
-														className: "bg-green-600 hover:bg-green-700 text-white h-8 gap-1",
+														className: "bg-green-600 hover:bg-green-700 text-white h-8 gap-1 disabled:opacity-50",
 														onClick: () => handleApprove(task),
+														disabled: !checkCanApprove(task),
 														title: t$1("common.approve"),
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4" }), t$1("common.approve")]
 													}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 														size: "sm",
 														variant: "destructive",
-														className: "h-8 gap-1",
+														className: "h-8 gap-1 disabled:opacity-50",
 														onClick: () => handleReject(task),
+														disabled: !checkCanApprove(task),
 														title: t$1("common.reject"),
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" }), t$1("common.reject")]
 													})] }),
@@ -96253,4 +96257,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Wvm06UTI.js.map
+//# sourceMappingURL=index-DuTMfPkr.js.map
