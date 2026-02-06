@@ -1,154 +1,121 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
-} from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
-import { Search, PlayCircle, BookOpen, HelpCircle } from 'lucide-react'
-import useTourStore from '@/stores/useTourStore'
 import { useState } from 'react'
+import {
+  HelpCircle,
+  LayoutDashboard,
+  Building,
+  Users,
+  Settings,
+} from 'lucide-react'
+import { DashboardGuide } from '@/components/help/DashboardGuide'
+import { PropertiesGuide } from '@/components/help/PropertiesGuide'
+import { LeadsGuide } from '@/components/help/LeadsGuide'
+import { SettingsGuide } from '@/components/help/SettingsGuide'
 import { Button } from '@/components/ui/button'
-import { VideoPlayerModal } from '@/components/help/VideoPlayerModal'
+import { cn } from '@/lib/utils'
 
 export default function HelpHub() {
-  const { tutorialModules, openVideo } = useTourStore()
-  const [searchTerm, setSearchTerm] = useState('')
+  const [activeGuide, setActiveGuide] = useState<
+    'dashboard' | 'properties' | 'leads' | 'settings'
+  >('dashboard')
 
-  const categories = [
-    'All',
-    'Operational',
-    'CRM',
-    'Financial',
-    'Settings',
-    'System',
-  ]
+  const menuItems = [
+    {
+      id: 'dashboard',
+      label: 'Dashboard Usage',
+      icon: LayoutDashboard,
+      component: DashboardGuide,
+    },
+    {
+      id: 'properties',
+      label: 'Property Management',
+      icon: Building,
+      component: PropertiesGuide,
+    },
+    {
+      id: 'leads',
+      label: 'Lead Management',
+      icon: Users,
+      component: LeadsGuide,
+    },
+    {
+      id: 'settings',
+      label: 'System & Settings',
+      icon: Settings,
+      component: SettingsGuide,
+    },
+  ] as const
 
-  const filteredModules = tutorialModules.filter(
-    (m) =>
-      m.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      m.description.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
-
-  const getFilteredByCategory = (cat: string) => {
-    if (cat === 'All') return filteredModules
-    return filteredModules.filter((m) => m.category === cat)
-  }
+  const ActiveComponent = menuItems.find(
+    (item) => item.id === activeGuide,
+  )!.component
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-navy flex items-center gap-2">
-          <HelpCircle className="h-8 w-8 text-primary" /> Central de Ajuda
+    <div className="flex flex-col gap-6 min-h-[calc(100vh-100px)]">
+      <div className="flex flex-col gap-2 border-b pb-6">
+        <h1 className="text-3xl font-bold tracking-tight text-navy flex items-center gap-3">
+          <HelpCircle className="h-8 w-8 text-primary" />
+          Help Hub
         </h1>
-        <p className="text-muted-foreground">
-          Tutoriais em vídeo e guias para ajudar você a dominar a plataforma.
+        <p className="text-muted-foreground max-w-2xl">
+          Comprehensive step-by-step guides to help you master the COREPM
+          platform. Select a module below to view detailed instructions.
         </p>
       </div>
 
-      <div className="relative max-w-md">
-        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Pesquisar tutoriais..."
-          className="pl-8"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+      <div className="flex flex-col lg:flex-row gap-8 h-full flex-1">
+        {/* Sidebar Navigation */}
+        <aside className="w-full lg:w-64 shrink-0 space-y-2">
+          <h3 className="font-semibold text-sm text-muted-foreground mb-4 px-2 uppercase tracking-wider">
+            Guides
+          </h3>
+          <nav className="flex flex-col gap-1">
+            {menuItems.map((item) => (
+              <Button
+                key={item.id}
+                variant="ghost"
+                className={cn(
+                  'justify-start gap-3 h-12 text-base font-medium',
+                  activeGuide === item.id
+                    ? 'bg-blue-50 text-primary hover:bg-blue-100'
+                    : 'text-slate-600 hover:bg-slate-50',
+                )}
+                onClick={() => setActiveGuide(item.id)}
+              >
+                <item.icon
+                  className={cn(
+                    'h-5 w-5',
+                    activeGuide === item.id ? 'text-primary' : 'text-slate-400',
+                  )}
+                />
+                {item.label}
+              </Button>
+            ))}
+          </nav>
 
-      <Tabs defaultValue="All" className="w-full">
-        <TabsList className="flex flex-wrap h-auto gap-2 bg-transparent justify-start p-0">
-          {categories.map((cat) => (
-            <TabsTrigger
-              key={cat}
-              value={cat}
-              className="data-[state=active]:bg-primary data-[state=active]:text-white border border-transparent data-[state=active]:border-primary bg-white hover:bg-slate-100 rounded-full px-4"
-            >
-              {cat === 'All' ? 'Todos' : cat}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        {categories.map((cat) => (
-          <TabsContent key={cat} value={cat} className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {getFilteredByCategory(cat).length === 0 ? (
-                <div className="col-span-full text-center py-12 text-muted-foreground bg-muted/20 rounded-lg border border-dashed">
-                  Nenhum tutorial encontrado nesta categoria.
-                </div>
-              ) : (
-                getFilteredByCategory(cat).map((module) => (
-                  <Card
-                    key={module.key}
-                    className="hover:shadow-lg transition-all group cursor-pointer border-slate-200"
-                    onClick={() => openVideo(module.videoUrl)}
-                  >
-                    <CardHeader className="pb-2">
-                      <div className="aspect-video bg-slate-100 rounded-md mb-3 flex items-center justify-center relative overflow-hidden group-hover:ring-2 ring-primary/20 transition-all">
-                        <PlayCircle className="h-12 w-12 text-slate-400 group-hover:text-primary transition-colors z-10" />
-                        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
-                        {/* Placeholder generic image background for aesthetic */}
-                        <img
-                          src={`https://img.usecurling.com/p/400/225?q=${module.category}%20technology&color=blue&dpr=1`}
-                          alt={module.title}
-                          className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-multiply"
-                        />
-                      </div>
-                      <CardTitle className="text-base flex items-center justify-between line-clamp-1">
-                        {module.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <CardDescription className="line-clamp-2 h-10">
-                        {module.description}
-                      </CardDescription>
-                    </CardContent>
-                    <CardFooter className="pt-0">
-                      <Button
-                        variant="default"
-                        className="w-full bg-primary hover:bg-primary/90 text-white font-semibold"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          openVideo(module.videoUrl)
-                        }}
-                      >
-                        <PlayCircle className="mr-2 h-4 w-4" /> Assistir Agora
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))
-              )}
-            </div>
-          </TabsContent>
-        ))}
-      </Tabs>
-
-      <div className="mt-8 p-6 bg-blue-50 rounded-lg flex items-center justify-between border border-blue-100">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-white rounded-full text-blue-600 shadow-sm">
-            <BookOpen className="h-6 w-6" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-blue-900 text-lg">
-              Documentação Completa
-            </h3>
-            <p className="text-sm text-blue-700">
-              Leia guias detalhados e referências da API.
+          <div className="mt-8 px-4 py-4 bg-blue-50/50 rounded-lg border border-blue-100">
+            <h4 className="text-sm font-bold text-blue-900 mb-1">
+              Need more help?
+            </h4>
+            <p className="text-xs text-blue-700 mb-3">
+              Contact our support team for specialized assistance.
             </p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full bg-white border-blue-200 text-blue-700 hover:bg-blue-50"
+            >
+              Contact Support
+            </Button>
           </div>
-        </div>
-        <Button
-          variant="outline"
-          className="bg-white text-blue-700 border-blue-200 hover:bg-blue-50 font-semibold"
-        >
-          Ver Documentação
-        </Button>
-      </div>
+        </aside>
 
-      <VideoPlayerModal />
+        {/* Content Area */}
+        <main className="flex-1 min-w-0">
+          <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+            <ActiveComponent />
+          </div>
+        </main>
+      </div>
     </div>
   )
 }
