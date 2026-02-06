@@ -21,6 +21,8 @@ import {
   Receipt,
   Hammer,
   HardHat,
+  AlertTriangle,
+  Check,
 } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -109,7 +111,7 @@ export function TaskDetailsSheet({
         <ScrollArea className="h-full">
           <div className="p-6">
             <SheetHeader className="mb-6">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <Badge
                   variant="outline"
                   className={getPriorityColor(task.priority)}
@@ -120,6 +122,27 @@ export function TaskDetailsSheet({
                 {linkedBooking && (
                   <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 border-purple-200">
                     <Briefcase className="w-3 h-3 mr-1" /> Booking Linked
+                  </Badge>
+                )}
+                {task.approvalStatus && (
+                  <Badge
+                    variant="outline"
+                    className={
+                      task.approvalStatus === 'approved'
+                        ? 'text-green-700 bg-green-50 border-green-200'
+                        : 'text-orange-700 bg-orange-50 border-orange-200'
+                    }
+                  >
+                    {task.approvalStatus === 'approved' ? (
+                      <Check className="w-3 h-3 mr-1" />
+                    ) : (
+                      <AlertTriangle className="w-3 h-3 mr-1" />
+                    )}
+                    {task.approvalStatus === 'owner_pending'
+                      ? 'Wait Owner'
+                      : task.approvalStatus === 'pm_pending'
+                        ? 'Wait PM'
+                        : 'Approved'}
                   </Badge>
                 )}
               </div>

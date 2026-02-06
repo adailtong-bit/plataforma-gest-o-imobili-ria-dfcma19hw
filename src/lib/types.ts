@@ -1,5 +1,3 @@
-// Only showing changed parts or essential parts, but full file content must be returned according to rules.
-
 export type UserRole =
   | 'platform_owner'
   | 'software_tenant'
@@ -61,7 +59,7 @@ export interface FinancialSettings {
   bankName: string
   routingNumber: string
   accountNumber: string
-  gatewayProvider: 'stripe' | 'plaid' | 'manual' // Legacy
+  gatewayProvider: 'stripe' | 'plaid' | 'manual'
   gateways: {
     stripe: { enabled: boolean; publicKey?: string; secretKey?: string }
     paypal: { enabled: boolean; clientId?: string }
@@ -74,19 +72,15 @@ export interface FinancialSettings {
   crmApiKey?: string
   isProduction: boolean
   approvalThreshold?: number
-  // Billing Model
   pmManagementFee?: number
   cleaningFeeRouting?: 'owner' | 'pm' | 'partner'
   maintenanceMarginLabor?: number
   maintenanceMarginMaterial?: number
-  // Bill.com Integration
   billComEnabled?: boolean
   billComOrgId?: string
   billComApiKey?: string
   billComEnvironment?: 'sandbox' | 'production'
-  // Service Pricing
   priceReviewThresholdDays?: number
-  // Alerts
   alertPreferences?: AlertConfig[]
 }
 
@@ -118,7 +112,7 @@ export interface User {
   country?: string
   companyName?: string
   parentId?: string
-  parentPartnerId?: string // Link employee to partner entity
+  parentPartnerId?: string
   permissions?: Permission[]
   allowedProfileTypes?: ('long_term' | 'short_term')[]
   password?: string
@@ -159,7 +153,7 @@ export interface Condominium {
   zipCode?: string
   city?: string
   state?: string
-  country?: string // Added country support
+  country?: string
   managerName?: string
   managerPhone?: string
   managerEmail?: string
@@ -274,11 +268,11 @@ export interface InventoryItem {
 }
 
 export interface InventoryCheckResult {
-  itemId?: string // Reference to original item
+  itemId?: string
   name: string
   category: string
   originalCondition: ItemCondition
-  condition: ItemCondition // Observed condition
+  condition: ItemCondition
   notes?: string
   quantity: number
 }
@@ -321,7 +315,7 @@ export interface Property {
   status: PropertyStatus
   marketingStatus?: 'listed' | 'unlisted'
   listingPrice?: number
-  purchasePrice?: number // For ROI Calculation
+  purchasePrice?: number
   publishToPortals?: boolean
   portalSettings?: {
     zillow: boolean
@@ -365,8 +359,8 @@ export interface Property {
   socialMedia?: SocialMediaLinks
   leadContact?: string
   healthScore?: number
-  inventory?: InventoryItem[] // Inventory Management
-  leads?: Lead[] // Marketing Leads
+  inventory?: InventoryItem[]
+  leads?: Lead[]
 }
 
 export type DocumentCategory =
@@ -456,7 +450,7 @@ export interface Tenant {
     nextAdjustmentDate?: string
   }
   isDemo?: boolean
-  inspections?: InventoryInspection[] // Check-in/Check-out Inspections
+  inspections?: InventoryInspection[]
 }
 
 export interface Booking {
@@ -468,8 +462,8 @@ export interface Booking {
   guestPhone?: string
   checkIn: string
   checkOut: string
-  earlyCheckIn?: string // HH:mm
-  lateCheckOut?: string // HH:mm
+  earlyCheckIn?: string
+  lateCheckOut?: string
   status: 'confirmed' | 'checked_in' | 'checked_out' | 'cancelled'
   totalAmount: number
   paid: boolean
@@ -479,7 +473,7 @@ export interface Booking {
   generatedTasks?: string[]
   adults?: number
   children?: number
-  inspections?: InventoryInspection[] // Short-term Inspections
+  inspections?: InventoryInspection[]
 }
 
 export interface CalendarBlock {
@@ -517,8 +511,8 @@ export interface Owner {
   zipCode?: string
   city?: string
   state?: string
-  description?: string // Free-text owner info
-  ownerInfo?: string // Extended owner info (500 chars)
+  description?: string
+  ownerInfo?: string
   secondContact?: {
     name: string
     phone: string
@@ -629,7 +623,7 @@ export interface Task {
   assigneeId?: string
   partnerEmployeeId?: string
   date: string
-  completedDate?: string // For efficiency reporting
+  completedDate?: string
   priority: 'low' | 'medium' | 'high' | 'critical'
   images?: string[]
   evidence?: Evidence[]
@@ -646,8 +640,10 @@ export interface Task {
   feedback?: string
   source?: 'manual' | 'migration' | 'automation'
   inventoryItemId?: string
-  lastNotified?: string // Supplier Communication Automation
+  lastNotified?: string
   invoiceId?: string
+  approvalStatus?: 'owner_pending' | 'pm_pending' | 'approved'
+  lastRemindedAt?: string
 }
 
 export interface Invoice {
@@ -856,8 +852,8 @@ export interface Advertisement {
     | 'tenant_page'
     | 'footer'
     | 'sidebar'
-  placementType?: 'header' | 'footer' // Step 1: Type
-  targetPages?: string[] // Step 2: Location
+  placementType?: 'header' | 'footer'
+  targetPages?: string[]
   advertiserId?: string
   validity?: 'weekly' | 'bi-weekly' | 'monthly'
   renewable?: boolean
@@ -871,12 +867,12 @@ export interface Visit {
   propertyId: string
   propertyName: string
   clientName: string
-  date: string // ISO string
+  date: string
   status: 'scheduled' | 'completed' | 'canceled' | 'suspended' | 'rescheduled'
   notes?: string
   agentId?: string
-  registeredBy?: string // User ID who created
-  assignedTo?: string // Team member or Partner ID
+  registeredBy?: string
+  assignedTo?: string
   assignedRole?: string
-  reason?: string // Purpose of visit
+  reason?: string
 }

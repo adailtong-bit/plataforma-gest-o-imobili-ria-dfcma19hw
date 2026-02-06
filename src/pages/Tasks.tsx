@@ -33,7 +33,7 @@ export default function Tasks() {
   const { t } = useLanguageStore()
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
   const [filterType, setFilterType] = useState<string>('all')
-  const [filterStatus, setFilterStatus] = useState<string>('all') // New status filter
+  const [filterStatus, setFilterStatus] = useState<string>('all')
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
@@ -169,11 +169,36 @@ export default function Tasks() {
 
         <TabsContent value="board" className="flex-1 min-h-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
+            {/* Approval Column */}
+            <div className="bg-orange-50 p-4 rounded-lg flex flex-col gap-4 border border-orange-100 h-full">
+              <div className="flex items-center justify-between pb-2 border-b border-orange-200">
+                <h3 className="font-bold text-sm uppercase text-orange-900">
+                  {t('tasks.approval')}
+                </h3>
+                <Badge className="bg-orange-100 text-orange-900 font-bold border-orange-300 hover:bg-orange-200">
+                  <DataMask>{approvalTasks.length}</DataMask>
+                </Badge>
+              </div>
+              <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-280px)] pr-1 custom-scrollbar">
+                {approvalTasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onStatusChange={(status) =>
+                      updateTaskStatus(task.id, status)
+                    }
+                    onAddEvidence={addTaskEvidence}
+                    canEdit={true}
+                  />
+                ))}
+              </div>
+            </div>
+
             {/* Pending Column */}
             <div className="bg-slate-50 p-4 rounded-lg flex flex-col gap-4 border border-slate-200 h-full">
               <div className="flex items-center justify-between pb-2 border-b border-slate-200">
                 <h3 className="font-bold text-sm uppercase text-black">
-                  {t('common.pending')}
+                  {t('common.pending')} (Ready)
                 </h3>
                 <Badge
                   variant="secondary"
@@ -216,31 +241,6 @@ export default function Tasks() {
                       updateTaskStatus(task.id, status)
                     }
                     onUpload={addTaskImage}
-                    onAddEvidence={addTaskEvidence}
-                    canEdit={true}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Approval Column */}
-            <div className="bg-orange-50 p-4 rounded-lg flex flex-col gap-4 border border-orange-100 h-full">
-              <div className="flex items-center justify-between pb-2 border-b border-orange-200">
-                <h3 className="font-bold text-sm uppercase text-orange-900">
-                  {t('tasks.approval')}
-                </h3>
-                <Badge className="bg-orange-100 text-orange-900 font-bold border-orange-300 hover:bg-orange-200">
-                  <DataMask>{approvalTasks.length}</DataMask>
-                </Badge>
-              </div>
-              <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-280px)] pr-1 custom-scrollbar">
-                {approvalTasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onStatusChange={(status) =>
-                      updateTaskStatus(task.id, status)
-                    }
                     onAddEvidence={addTaskEvidence}
                     canEdit={true}
                   />

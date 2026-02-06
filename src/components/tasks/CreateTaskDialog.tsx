@@ -63,7 +63,7 @@ import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { ServiceRate } from '@/lib/types'
+import { ServiceRate, Task } from '@/lib/types'
 
 const formSchema = z.object({
   title: z.string().min(2, 'O título deve ter pelo menos 2 caracteres.'),
@@ -235,9 +235,30 @@ export function CreateTaskDialog({
     const employeeId =
       values.partnerEmployeeId === 'none' ? undefined : values.partnerEmployeeId
 
-    const threshold = financialSettings.approvalThreshold || 500
-    const isHighValue = estimatedBillable > threshold
-    const initialStatus = isHighValue ? 'pending_approval' : 'pending'
+    // Approval Logic
+    const threshold = financialSettings.approvalThreshold || 100
+    let initialStatus: Task['status'] = 'pending'
+    let approvalStatus: Task['approvalStatus'] = undefined
+
+    // Only maintenance needs approval flow based on cost
+    if (values.type === 'maintenance') {
+      if (estimatedBillable > threshold) {
+        initialStatus = 'pending_approval'
+        approvalStatus = 'owner_pending' // Requires Owner first
+      } else {
+        initialStatus = 'pending_approval'
+        approvalStatus = 'pm_pending' // Requires only PM
+      }
+    } else if (values.type === 'cleaning') {
+      // Typically cleaning is auto-approved or standard, but let's default to pending partner start
+      initialStatus = 'pending'
+    }
+
+    // Override if creator is Owner (creating task for PM to approve? Usually Owner requests)
+    if (currentUser.role === 'property_owner') {
+      initialStatus = 'pending_approval'
+      approvalStatus = 'pm_pending'
+    }
 
     addTask({
       id: Math.random().toString(36).substr(2, 9),
@@ -263,14 +284,23 @@ export function CreateTaskDialog({
       recurrence: values.recurrence,
       images: uploadedImages,
       source: 'manual',
+      approvalStatus: approvalStatus,
     })
 
-    toast({
-      title: isHighValue ? 'Pending Approval' : t('tasks.success_created'),
-      description: isHighValue
-        ? 'Task exceeds threshold and requires approval.'
-        : 'Task created successfully.',
-    })
+    if (initialStatus === 'pending_approval') {
+      toast({
+        title: 'Approval Required',
+        description:
+          approvalStatus === 'owner_pending'
+            ? 'Task exceeds threshold. Awaiting Owner approval.'
+            : 'Task created. Awaiting PM approval.',
+      })
+    } else {
+      toast({
+        title: t('tasks.success_created'),
+        description: 'Task created successfully.',
+      })
+    }
 
     setOpen(false)
     form.reset()

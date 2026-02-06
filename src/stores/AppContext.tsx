@@ -72,7 +72,7 @@ import {
 } from '@/lib/mockData'
 import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
-import { differenceInDays, parseISO } from 'date-fns'
+import { differenceInDays, differenceInHours, parseISO } from 'date-fns'
 
 interface AppContextType {
   properties: Property[]
@@ -244,6 +244,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         paypal: { enabled: false },
         mercadoPago: { enabled: false },
       },
+      approvalThreshold: 100, // Default threshold
     },
   )
 
@@ -291,7 +292,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const endDate = parseISO(tenant.leaseEnd)
         const daysLeft = differenceInDays(endDate, today)
 
-        // Check if roughly 30 days or less but not expired
         if (daysLeft <= 30 && daysLeft > 0) {
           const notifLink = `/tenants/${tenant.id}`
           const exists = notifications.some(
@@ -350,22 +350,90 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           }
         }
       })
+
+      // 3. Daily Push Notifications for Pending Approvals
+      const checkPendingApprovals = () => {
+        tasks.forEach((task) => {
+          if (task.status === 'pending_approval' && task.approvalStatus) {
+            const lastReminded = task.lastRemindedAt
+              ? parseISO(task.lastRemindedAt)
+              : null
+            const hoursSinceLastReminder = lastReminded
+              ? differenceInHours(today, lastReminded)
+              : 25 // Force first reminder
+
+            if (hoursSinceLastReminder >= 24) {
+              // Trigger Notification
+              let title = ''
+              let message = ''
+              let targetRole = ''
+
+              if (task.approvalStatus === 'owner_pending') {
+                title = 'Approval Required'
+                message = `Owner approval required for task: ${task.title}`
+                targetRole = 'property_owner'
+              } else if (task.approvalStatus === 'pm_pending') {
+                title = 'Approval Required'
+                message = `PM approval required for task: ${task.title}`
+                targetRole = 'software_tenant'
+              }
+
+              if (title) {
+                // Add system notification (simulating push)
+                // In real app, we would target specific user ID
+                const newNotif: Notification = {
+                  id: `push-approval-${task.id}-${Date.now()}`,
+                  title,
+                  message,
+                  type: 'warning',
+                  category: 'maintenance',
+                  link: `/tasks`,
+                  timestamp: new Date().toISOString(),
+                  read: false,
+                }
+                setNotifications((prev) => [newNotif, ...prev])
+
+                // Update task lastRemindedAt
+                const updatedTask = {
+                  ...task,
+                  lastRemindedAt: new Date().toISOString(),
+                }
+                setTasks((prev) =>
+                  prev.map((t) => (t.id === task.id ? updatedTask : t)),
+                )
+
+                // Show toast if current user is the target
+                if (
+                  currentUser.role === targetRole ||
+                  (targetRole === 'software_tenant' &&
+                    ['platform_owner', 'internal_user'].includes(
+                      currentUser.role,
+                    ))
+                ) {
+                  toast({
+                    title: `Reminder: ${title}`,
+                    description: message,
+                    duration: 5000,
+                  })
+                }
+              }
+            }
+          }
+        })
+      }
+      checkPendingApprovals()
     }
 
     checkAutomatedAlerts()
-    // Intentionally empty dependency array to run only on mount/initial load to avoid loops
-    // In a real app, this would be a backend job or a more sophisticated poller
-  }, [])
+  }, []) // Empty deps for initial load check
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
     localStorage.setItem('app_language', lang)
   }
 
-  // Improved translation logic to support nested keys with fallback
   const t = useCallback(
     (key: string, params?: Record<string, string>) => {
-      // Helper to resolve nested key
       const resolveKey = (dict: any, k: string) => {
         const parts = k.split('.')
         let current = dict
@@ -376,25 +444,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         return typeof current === 'string' ? current : undefined
       }
 
-      // 1. Try current language
       let text = resolveKey(translations[language], key)
-
-      // 2. Fallback to English if missing and current isn't English
       if (!text && language !== 'en') {
         text = resolveKey(translations['en'], key)
       }
 
-      // 3. Fallback to human readable key (remove dots, capitalize)
       if (!text) {
         const parts = key.split('.')
         const lastPart = parts[parts.length - 1]
-        // Convert snake_case or camelCase to Title Case if needed, or just return cleaned key
         text = lastPart
           .replace(/_/g, ' ')
           .replace(/\b\w/g, (c) => c.toUpperCase())
       }
 
-      // 4. Interpolate params
       if (text && params) {
         Object.entries(params).forEach(([pkey, pval]) => {
           text = text!.replace(`{${pkey}}`, pval)
@@ -1104,7 +1166,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setVisits((prev) => prev.filter((v) => v.id !== id))
   }
 
-  // Workflows Actions
   const addWorkflow = (workflow: Workflow) => {
     setWorkflows((prev) => [...prev, workflow])
     addAuditLog({

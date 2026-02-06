@@ -27,13 +27,14 @@ import {
   Eye,
   CheckCircle2,
   User,
-  Edit,
   Pencil,
   Play,
   Square,
   Star,
   ThumbsUp,
   BellRing,
+  AlertCircle,
+  Edit,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
@@ -43,6 +44,7 @@ import { EditTaskDialog } from './EditTaskDialog'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
 import usePartnerStore from '@/stores/usePartnerStore'
+import usePropertyStore from '@/stores/usePropertyStore'
 import {
   Select,
   SelectContent,
@@ -72,6 +74,7 @@ export function TaskCard({
   const { t } = useLanguageStore()
   const { currentUser } = useAuthStore()
   const { partners } = usePartnerStore()
+  const { properties } = usePropertyStore()
   const { updateTask, notifySupplier } = useTaskStore()
 
   const [detailsOpen, setDetailsOpen] = useState(false)
@@ -145,11 +148,36 @@ export function TaskCard({
   }
 
   const handleApprove = () => {
-    onStatusChange('pending')
-    toast({
-      title: 'Aprovado',
-      description: 'Tarefa autorizada para execução.',
-    })
+    // Determine next step based on current approval status
+    if (task.approvalStatus === 'owner_pending') {
+      // Owner approved, now goes to PM
+      updateTask({
+        ...task,
+        approvalStatus: 'pm_pending',
+      })
+      toast({
+        title: 'Approved',
+        description: 'Approved by Owner. Awaiting PM approval.',
+      })
+    } else if (task.approvalStatus === 'pm_pending') {
+      // PM approved, ready for execution
+      updateTask({
+        ...task,
+        approvalStatus: 'approved',
+        status: 'pending', // Move to pending column
+      })
+      toast({
+        title: 'Approved',
+        description: 'Task authorized for execution.',
+      })
+    } else if (task.status === 'pending_approval' && !task.approvalStatus) {
+      // Generic approval (fallback)
+      onStatusChange('pending')
+      toast({
+        title: 'Approved',
+        description: 'Task authorized for execution.',
+      })
+    }
   }
 
   const isTeamMember = currentUser.role === 'partner_employee'
@@ -191,6 +219,14 @@ export function TaskCard({
   const assignedEmployeeName = partnerRecord?.employees?.find(
     (e) => e.id === task.partnerEmployeeId,
   )?.name
+
+  // Approval Visibility Logic
+  const property = properties.find((p) => p.id === task.propertyId)
+  const isMyProperty = property?.ownerId === currentUser.id
+
+  const canApprove =
+    (task.approvalStatus === 'owner_pending' && isOwner && isMyProperty) || // Owner Step
+    (task.approvalStatus === 'pm_pending' && isAdminOrPM) // PM Step
 
   return (
     <>
@@ -263,8 +299,16 @@ export function TaskCard({
             </Badge>
             <div className="flex gap-1 flex-wrap justify-end">
               {task.status === 'pending_approval' && (
-                <Badge className="bg-orange-500 text-white text-[10px] h-5">
-                  Approval Req
+                <Badge
+                  className={
+                    task.approvalStatus === 'owner_pending'
+                      ? 'bg-purple-500 text-white text-[10px] h-5'
+                      : 'bg-orange-500 text-white text-[10px] h-5'
+                  }
+                >
+                  {task.approvalStatus === 'owner_pending'
+                    ? 'Wait Owner'
+                    : 'Wait PM'}
                 </Badge>
               )}
               {task.type === 'cleaning' && (
@@ -472,14 +516,28 @@ export function TaskCard({
             </div>
           )}
 
-          {task.status === 'pending_approval' && isAdminOrPM && (
-            <Button
-              size="sm"
-              className="w-full h-9 text-xs bg-orange-600 hover:bg-orange-700 text-white font-bold"
-              onClick={handleApprove}
-            >
-              <ThumbsUp className="h-3 w-3 mr-2" /> Aprovar Orçamento
-            </Button>
+          {task.status === 'pending_approval' && (
+            <>
+              {canApprove ? (
+                <Button
+                  size="sm"
+                  className="w-full h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold"
+                  onClick={handleApprove}
+                >
+                  <ThumbsUp className="h-3 w-3 mr-2" />
+                  {task.approvalStatus === 'owner_pending'
+                    ? 'Owner Approve'
+                    : 'PM Approve'}
+                </Button>
+              ) : (
+                <div className="flex items-center justify-center gap-2 p-2 bg-yellow-50 text-yellow-800 text-xs font-medium rounded border border-yellow-200">
+                  <AlertCircle className="h-3 w-3" />
+                  {task.approvalStatus === 'owner_pending'
+                    ? 'Waiting for Owner'
+                    : 'Waiting for PM'}
+                </div>
+              )}
+            </>
           )}
 
           {task.status === 'pending' && (

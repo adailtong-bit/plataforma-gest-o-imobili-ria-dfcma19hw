@@ -2298,10 +2298,6 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(249 115 22 / var(--tw-bg-opacity, 1));
 }
-.bg-orange-600 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(234 88 12 / var(--tw-bg-opacity, 1));
-}
 .bg-popover {
   background-color: hsl(var(--popover));
 }
@@ -2405,6 +2401,9 @@ video {
 .bg-yellow-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 252 232 / var(--tw-bg-opacity, 1));
+}
+.bg-yellow-50\/30 {
+  background-color: rgb(254 252 232 / 0.3);
 }
 .bg-yellow-500 {
   --tw-bg-opacity: 1;
@@ -3889,10 +3888,6 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 .hover\:bg-orange-50:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(255 247 237 / var(--tw-bg-opacity, 1));
-}
-.hover\:bg-orange-700:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(194 65 12 / var(--tw-bg-opacity, 1));
 }
 .hover\:bg-primary\/80:hover {
   background-color: hsl(var(--primary) / 0.8);

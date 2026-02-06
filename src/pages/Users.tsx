@@ -50,8 +50,6 @@ import {
   Plus,
   Trash2,
   Edit,
-  Share2,
-  Copy,
   CheckCircle2,
   Ban,
   Unlock,
@@ -83,9 +81,7 @@ export default function Users() {
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
-  // Dialog States
   const [open, setOpen] = useState(false)
-  const [inviteOpen, setInviteOpen] = useState(false)
   const [blockDialogOpen, setBlockDialogOpen] = useState(false)
   const [userToBlock, setUserToBlock] = useState<string | null>(null)
 
@@ -114,40 +110,27 @@ export default function Users() {
   const [formData, setFormData] = useState(initialFormState)
   const [isEditing, setIsEditing] = useState(false)
 
-  // Filter users based on hierarchy visibility rules
   const filteredUsers = users.filter((u) => {
     if (u.isDemo) return true
-
-    if (currentUser.role === 'platform_owner') return true // Admin sees all
-
+    if (currentUser.role === 'platform_owner') return true
     if (currentUser.role === 'software_tenant') {
-      // PM sees all users they created or related to them
       return u.parentId === currentUser.id || u.role === 'partner_employee'
     }
-
     if (currentUser.role === 'partner') {
-      // Partner only sees their own team
       return (
         u.role === 'partner_employee' && u.parentPartnerId === currentUser.id
       )
     }
-
     return false
   })
 
-  // Define allowed roles for creation based on hierarchy rules
+  // strict hierarchy enforcement
   const getAllowedRoles = () => {
     if (currentUser.role === 'platform_owner') {
       return ['software_tenant']
     }
     if (currentUser.role === 'software_tenant') {
-      return [
-        'property_owner',
-        'partner',
-        'internal_user',
-        'tenant',
-        'partner_employee',
-      ]
+      return ['property_owner', 'partner', 'internal_user', 'tenant']
     }
     if (currentUser.role === 'partner') {
       return ['partner_employee']
@@ -218,7 +201,6 @@ export default function Users() {
     let finalParentId = currentUser.id
     let finalPartnerId = parentPartnerId
 
-    // Partner creating employee automatically links to themselves
     if (currentUser.role === 'partner') {
       finalPartnerId = currentUser.id
     }
@@ -289,16 +271,6 @@ export default function Users() {
     })
     setIsEditing(true)
     setOpen(true)
-  }
-
-  const copyInviteLink = () => {
-    const url = window.location.origin
-    navigator.clipboard.writeText(url)
-    toast({
-      title: t('users.link_copied'),
-      description: t('users.copy_success'),
-    })
-    setInviteOpen(false)
   }
 
   const handleRoleChange = (val: UserRole) => {
@@ -446,42 +418,16 @@ export default function Users() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {allowedRoles.includes('software_tenant') && (
-                            <SelectItem value="software_tenant">
-                              {t('roles.software_tenant')}
+                          {allowedRoles.map((role) => (
+                            <SelectItem key={role} value={role}>
+                              {t(`roles.${role}`)}
                             </SelectItem>
-                          )}
-                          {allowedRoles.includes('internal_user') && (
-                            <SelectItem value="internal_user">
-                              {t('roles.internal_user')}
-                            </SelectItem>
-                          )}
-                          {allowedRoles.includes('partner') && (
-                            <SelectItem value="partner">
-                              {t('roles.partner')}
-                            </SelectItem>
-                          )}
-                          {allowedRoles.includes('property_owner') && (
-                            <SelectItem value="property_owner">
-                              {t('roles.property_owner')}
-                            </SelectItem>
-                          )}
-                          {allowedRoles.includes('tenant') && (
-                            <SelectItem value="tenant">
-                              {t('roles.tenant')}
-                            </SelectItem>
-                          )}
-                          {allowedRoles.includes('partner_employee') && (
-                            <SelectItem value="partner_employee">
-                              {t('roles.partner_employee')}
-                            </SelectItem>
-                          )}
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
 
-                  {/* Permission Selector Integration */}
                   <div className="col-span-2">
                     <PermissionSelector
                       role={formData.role as UserRole}
@@ -489,32 +435,6 @@ export default function Users() {
                       onChange={handlePermissionChange}
                     />
                   </div>
-
-                  {formData.role === 'partner_employee' &&
-                    !isEditing &&
-                    (currentUser.role === 'software_tenant' ||
-                      currentUser.role === 'platform_owner') && (
-                      <div className="grid gap-2">
-                        <Label>Partner Company (Employer)</Label>
-                        <Select
-                          value={formData.parentPartnerId}
-                          onValueChange={(val) =>
-                            setFormData({ ...formData, parentPartnerId: val })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Partner" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {partners.map((p) => (
-                              <SelectItem key={p.id} value={p.id}>
-                                {p.name} ({p.companyName})
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
 
                   <div className="grid grid-cols-2 gap-4 border-t pt-4">
                     <div className="grid gap-2">

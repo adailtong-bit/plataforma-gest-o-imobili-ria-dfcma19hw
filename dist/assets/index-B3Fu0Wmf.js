@@ -22208,6 +22208,17 @@ function compareLocalAsc(laterDate, earlierDate) {
 	if (diff > 0) return 1;
 	return diff;
 }
+function getRoundingMethod(method) {
+	return (number$5) => {
+		const result = (method ? Math[method] : Math.trunc)(number$5);
+		return result === 0 ? 0 : result;
+	};
+}
+function differenceInHours(laterDate, earlierDate, options$1) {
+	const [laterDate_, earlierDate_] = normalizeDates(options$1?.in, laterDate, earlierDate);
+	const diff = (+laterDate_ - +earlierDate_) / millisecondsInHour;
+	return getRoundingMethod(options$1?.roundingMethod)(diff);
+}
 function endOfMonth(date$4, options$1) {
 	const _date$1 = toDate(date$4, options$1?.in);
 	const month = _date$1.getMonth();
@@ -55707,7 +55718,8 @@ const AppProvider = ({ children }) => {
 			stripe: { enabled: false },
 			paypal: { enabled: false },
 			mercadoPago: { enabled: false }
-		}
+		},
+		approvalThreshold: 100
 	});
 	const [bankStatements, setBankStatements] = (0, import_react.useState)(mockBankStatements);
 	const [ledgerEntries$1, setLedgerEntries] = (0, import_react.useState)(ledgerEntries);
@@ -55768,6 +55780,51 @@ const AppProvider = ({ children }) => {
 					}
 				}
 			});
+			const checkPendingApprovals = () => {
+				tasks$1.forEach((task) => {
+					if (task.status === "pending_approval" && task.approvalStatus) {
+						const lastReminded = task.lastRemindedAt ? parseISO(task.lastRemindedAt) : null;
+						if ((lastReminded ? differenceInHours(today, lastReminded) : 25) >= 24) {
+							let title = "";
+							let message$1 = "";
+							let targetRole = "";
+							if (task.approvalStatus === "owner_pending") {
+								title = "Approval Required";
+								message$1 = `Owner approval required for task: ${task.title}`;
+								targetRole = "property_owner";
+							} else if (task.approvalStatus === "pm_pending") {
+								title = "Approval Required";
+								message$1 = `PM approval required for task: ${task.title}`;
+								targetRole = "software_tenant";
+							}
+							if (title) {
+								const newNotif = {
+									id: `push-approval-${task.id}-${Date.now()}`,
+									title,
+									message: message$1,
+									type: "warning",
+									category: "maintenance",
+									link: `/tasks`,
+									timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+									read: false
+								};
+								setNotifications((prev) => [newNotif, ...prev]);
+								const updatedTask = {
+									...task,
+									lastRemindedAt: (/* @__PURE__ */ new Date()).toISOString()
+								};
+								setTasks((prev) => prev.map((t$2) => t$2.id === task.id ? updatedTask : t$2));
+								if (currentUser.role === targetRole || targetRole === "software_tenant" && ["platform_owner", "internal_user"].includes(currentUser.role)) toast$2({
+									title: `Reminder: ${title}`,
+									description: message$1,
+									duration: 5e3
+								});
+							}
+						}
+					}
+				});
+			};
+			checkPendingApprovals();
 		};
 		checkAutomatedAlerts();
 	}, []);
@@ -66710,7 +66767,7 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 						className: "mb-6",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-2 mb-2",
+								className: "flex items-center gap-2 mb-2 flex-wrap",
 								children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 										variant: "outline",
@@ -66724,6 +66781,11 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 									linkedBooking && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
 										className: "bg-purple-100 text-purple-800 hover:bg-purple-200 border-purple-200",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "w-3 h-3 mr-1" }), " Booking Linked"]
+									}),
+									task.approvalStatus && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+										variant: "outline",
+										className: task.approvalStatus === "approved" ? "text-green-700 bg-green-50 border-green-200" : "text-orange-700 bg-orange-50 border-orange-200",
+										children: [task.approvalStatus === "approved" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "w-3 h-3 mr-1" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "w-3 h-3 mr-1" }), task.approvalStatus === "owner_pending" ? "Wait Owner" : task.approvalStatus === "pm_pending" ? "Wait PM" : "Approved"]
 									})
 								]
 							}),
@@ -74837,6 +74899,7 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 	const { t: t$1 } = useLanguageStore_default();
 	const { currentUser } = useAuthStore_default();
 	const { partners: partners$1 } = usePartnerStore_default();
+	const { properties: properties$1 } = usePropertyStore_default();
 	const { updateTask, notifySupplier } = useTaskStore_default();
 	const [detailsOpen, setDetailsOpen] = (0, import_react.useState)(false);
 	const [editOpen, setEditOpen] = (0, import_react.useState)(false);
@@ -74898,11 +74961,32 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 		});
 	};
 	const handleApprove = () => {
-		onStatusChange("pending");
-		toast$2({
-			title: "Aprovado",
-			description: "Tarefa autorizada para execução."
-		});
+		if (task.approvalStatus === "owner_pending") {
+			updateTask({
+				...task,
+				approvalStatus: "pm_pending"
+			});
+			toast$2({
+				title: "Approved",
+				description: "Approved by Owner. Awaiting PM approval."
+			});
+		} else if (task.approvalStatus === "pm_pending") {
+			updateTask({
+				...task,
+				approvalStatus: "approved",
+				status: "pending"
+			});
+			toast$2({
+				title: "Approved",
+				description: "Task authorized for execution."
+			});
+		} else if (task.status === "pending_approval" && !task.approvalStatus) {
+			onStatusChange("pending");
+			toast$2({
+				title: "Approved",
+				description: "Task authorized for execution."
+			});
+		}
 	};
 	const isTeamMember = currentUser.role === "partner_employee";
 	const isPartner = currentUser.role === "partner";
@@ -74929,6 +75013,8 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 		setAssignOpen(false);
 	};
 	const assignedEmployeeName = partnerRecord?.employees?.find((e) => e.id === task.partnerEmployeeId)?.name;
+	const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
+	const canApprove = task.approvalStatus === "owner_pending" && isOwner && isMyProperty || task.approvalStatus === "pm_pending" && isAdminOrPM;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskDetailsSheet, {
 			task,
@@ -75004,8 +75090,8 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 								className: "flex gap-1 flex-wrap justify-end",
 								children: [
 									task.status === "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-										className: "bg-orange-500 text-white text-[10px] h-5",
-										children: "Approval Req"
+										className: task.approvalStatus === "owner_pending" ? "bg-purple-500 text-white text-[10px] h-5" : "bg-orange-500 text-white text-[10px] h-5",
+										children: task.approvalStatus === "owner_pending" ? "Wait Owner" : "Wait PM"
 									}),
 									task.type === "cleaning" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 										variant: "secondary",
@@ -75184,12 +75270,15 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(BellRing, { className: "h-3 w-3 mr-1" }), " Notify"]
 							})
 						}),
-						task.status === "pending_approval" && isAdminOrPM && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						task.status === "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: canApprove ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							size: "sm",
-							className: "w-full h-9 text-xs bg-orange-600 hover:bg-orange-700 text-white font-bold",
+							className: "w-full h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold",
 							onClick: handleApprove,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThumbsUp, { className: "h-3 w-3 mr-2" }), " Aprovar Orçamento"]
-						}),
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThumbsUp, { className: "h-3 w-3 mr-2" }), task.approvalStatus === "owner_pending" ? "Owner Approve" : "PM Approve"]
+						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center justify-center gap-2 p-2 bg-yellow-50 text-yellow-800 text-xs font-medium rounded border border-yellow-200",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { className: "h-3 w-3" }), task.approvalStatus === "owner_pending" ? "Waiting for Owner" : "Waiting for PM"]
+						}) }),
 						task.status === "pending" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							size: "sm",
 							className: "w-full h-9 text-xs bg-trust-blue hover:bg-trust-blue/90 text-white font-bold",
@@ -75413,9 +75502,21 @@ function CreateTaskDialog({ initialPropertyId, initialDate, open: controlledOpen
 		const finalMaterialCost = values.materialCost ? parseFloat(values.materialCost) : 0;
 		const finalPayout = values.teamMemberPayout ? parseFloat(values.teamMemberPayout) : void 0;
 		const employeeId = values.partnerEmployeeId === "none" ? void 0 : values.partnerEmployeeId;
-		const threshold$1 = financialSettings.approvalThreshold || 500;
-		const isHighValue = estimatedBillable > threshold$1;
-		const initialStatus = isHighValue ? "pending_approval" : "pending";
+		const threshold$1 = financialSettings.approvalThreshold || 100;
+		let initialStatus = "pending";
+		let approvalStatus = void 0;
+		if (values.type === "maintenance") if (estimatedBillable > threshold$1) {
+			initialStatus = "pending_approval";
+			approvalStatus = "owner_pending";
+		} else {
+			initialStatus = "pending_approval";
+			approvalStatus = "pm_pending";
+		}
+		else if (values.type === "cleaning") initialStatus = "pending";
+		if (currentUser.role === "property_owner") {
+			initialStatus = "pending_approval";
+			approvalStatus = "pm_pending";
+		}
 		addTask({
 			id: Math.random().toString(36).substr(2, 9),
 			title: values.title,
@@ -75439,11 +75540,16 @@ function CreateTaskDialog({ initialPropertyId, initialDate, open: controlledOpen
 			backToBack: values.backToBack,
 			recurrence: values.recurrence,
 			images: uploadedImages,
-			source: "manual"
+			source: "manual",
+			approvalStatus
 		});
-		toast$2({
-			title: isHighValue ? "Pending Approval" : t$1("tasks.success_created"),
-			description: isHighValue ? "Task exceeds threshold and requires approval." : "Task created successfully."
+		if (initialStatus === "pending_approval") toast$2({
+			title: "Approval Required",
+			description: approvalStatus === "owner_pending" ? "Task exceeds threshold. Awaiting Owner approval." : "Task created. Awaiting PM approval."
+		});
+		else toast$2({
+			title: t$1("tasks.success_created"),
+			description: "Task created successfully."
 		});
 		setOpen(false);
 		form.reset();
@@ -79122,12 +79228,33 @@ function Tasks() {
 							className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "bg-orange-50 p-4 rounded-lg flex flex-col gap-4 border border-orange-100 h-full",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center justify-between pb-2 border-b border-orange-200",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+											className: "font-bold text-sm uppercase text-orange-900",
+											children: t$1("tasks.approval")
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+											className: "bg-orange-100 text-orange-900 font-bold border-orange-300 hover:bg-orange-200",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: approvalTasks.length })
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-280px)] pr-1 custom-scrollbar",
+										children: approvalTasks.map((task) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskCard, {
+											task,
+											onStatusChange: (status) => updateTaskStatus(task.id, status),
+											onAddEvidence: addTaskEvidence,
+											canEdit: true
+										}, task.id))
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "bg-slate-50 p-4 rounded-lg flex flex-col gap-4 border border-slate-200 h-full",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "flex items-center justify-between pb-2 border-b border-slate-200",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
 											className: "font-bold text-sm uppercase text-black",
-											children: t$1("common.pending")
+											children: [t$1("common.pending"), " (Ready)"]
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 											variant: "secondary",
 											className: "bg-white border text-black font-bold border-slate-300",
@@ -79160,27 +79287,6 @@ function Tasks() {
 											task,
 											onStatusChange: (status) => updateTaskStatus(task.id, status),
 											onUpload: addTaskImage,
-											onAddEvidence: addTaskEvidence,
-											canEdit: true
-										}, task.id))
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "bg-orange-50 p-4 rounded-lg flex flex-col gap-4 border border-orange-100 h-full",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex items-center justify-between pb-2 border-b border-orange-200",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-											className: "font-bold text-sm uppercase text-orange-900",
-											children: t$1("tasks.approval")
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-											className: "bg-orange-100 text-orange-900 font-bold border-orange-300 hover:bg-orange-200",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: approvalTasks.length })
-										})]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-280px)] pr-1 custom-scrollbar",
-										children: approvalTasks.map((task) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskCard, {
-											task,
-											onStatusChange: (status) => updateTaskStatus(task.id, status),
 											onAddEvidence: addTaskEvidence,
 											canEdit: true
 										}, task.id))
@@ -81631,6 +81737,32 @@ function Settings() {
 						})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 							className: "space-y-6",
 							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "border border-yellow-200 rounded-md p-4 bg-yellow-50/30",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+										className: "text-base font-bold text-black mb-2 flex items-center gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "h-4 w-4 text-yellow-600" }), "Maintenance Approval Workflow"]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-2",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												className: "text-black font-bold",
+												children: "Direct Approval Threshold ($)"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												className: "text-xs text-muted-foreground mb-1",
+												children: "Maintenance tasks below this amount require only PM approval. Tasks above this amount require Owner approval first, then PM approval."
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "number",
+												value: financialData.approvalThreshold ?? 100,
+												onChange: (e) => handleFinancialChange("approvalThreshold", parseFloat(e.target.value)),
+												className: "text-black max-w-[200px]"
+											})
+										]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, { className: "bg-slate-200" }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "space-y-4",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
@@ -88026,7 +88158,6 @@ function Users() {
 	const { t: t$1 } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const [open, setOpen] = (0, import_react.useState)(false);
-	const [inviteOpen, setInviteOpen] = (0, import_react.useState)(false);
 	const [blockDialogOpen, setBlockDialogOpen] = (0, import_react.useState)(false);
 	const [userToBlock, setUserToBlock] = (0, import_react.useState)(null);
 	const initialFormState = {
@@ -88061,8 +88192,7 @@ function Users() {
 			"property_owner",
 			"partner",
 			"internal_user",
-			"tenant",
-			"partner_employee"
+			"tenant"
 		];
 		if (currentUser.role === "partner") return ["partner_employee"];
 		return [];
@@ -88342,32 +88472,10 @@ function Users() {
 														value: formData.role,
 														onValueChange: handleRoleChange,
 														disabled: isEditing && formData.isDemo,
-														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-															allowedRoles.includes("software_tenant") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-																value: "software_tenant",
-																children: t$1("roles.software_tenant")
-															}),
-															allowedRoles.includes("internal_user") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-																value: "internal_user",
-																children: t$1("roles.internal_user")
-															}),
-															allowedRoles.includes("partner") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-																value: "partner",
-																children: t$1("roles.partner")
-															}),
-															allowedRoles.includes("property_owner") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-																value: "property_owner",
-																children: t$1("roles.property_owner")
-															}),
-															allowedRoles.includes("tenant") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-																value: "tenant",
-																children: t$1("roles.tenant")
-															}),
-															allowedRoles.includes("partner_employee") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-																value: "partner_employee",
-																children: t$1("roles.partner_employee")
-															})
-														] })]
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: allowedRoles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															value: role,
+															children: t$1(`roles.${role}`)
+														}, role)) })]
 													})]
 												})
 											]
@@ -88379,25 +88487,6 @@ function Users() {
 												currentPermissions: formData.permissions || [],
 												onChange: handlePermissionChange
 											})
-										}),
-										formData.role === "partner_employee" && !isEditing && (currentUser.role === "software_tenant" || currentUser.role === "platform_owner") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Partner Company (Employer)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-												value: formData.parentPartnerId,
-												onValueChange: (val) => setFormData({
-													...formData,
-													parentPartnerId: val
-												}),
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Partner" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: partners$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-													value: p$1.id,
-													children: [
-														p$1.name,
-														" (",
-														p$1.companyName,
-														")"
-													]
-												}, p$1.id)) })]
-											})]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "grid grid-cols-2 gap-4 border-t pt-4",
@@ -96133,4 +96222,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-YyY2a2Dn.js.map
+//# sourceMappingURL=index-B3Fu0Wmf.js.map

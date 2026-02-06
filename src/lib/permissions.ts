@@ -42,7 +42,7 @@ export const PERMISSIONS_MATRIX: Record<
     tasks: ['view', 'create', 'edit', 'delete'],
     financial: ['view', 'create', 'edit', 'delete'],
     messages: ['view', 'create', 'edit', 'delete'],
-    users: ['view', 'create', 'edit', 'delete'], // Can manage their own users
+    users: ['view', 'create', 'edit', 'delete'],
     settings: ['view', 'edit'],
     audit_logs: ['view'],
     market_analysis: ['view'],
@@ -52,7 +52,7 @@ export const PERMISSIONS_MATRIX: Record<
     analytics: ['view'],
     reports: ['view'],
     visits: ['view', 'create', 'edit', 'delete'],
-    migration: ['view', 'create'], // Can import data
+    migration: ['view', 'create'],
     automation: ['view', 'edit'],
   },
   internal_user: {
@@ -72,25 +72,25 @@ export const PERMISSIONS_MATRIX: Record<
   },
   partner: {
     portal: ['view'],
-    tasks: ['view', 'edit'], // Assigned tasks
+    tasks: ['view', 'edit'],
     messages: ['view', 'create'],
-    financial: ['view'], // Own financial data
+    financial: ['view'],
   },
   property_owner: {
     portal: ['view'],
-    properties: ['view'], // Own properties
-    financial: ['view'], // Own statements
+    properties: ['view'],
+    financial: ['view'],
     messages: ['view', 'create'],
-    short_term: ['view'], // Calendar availability
+    short_term: ['view'],
   },
   tenant: {
     portal: ['view'],
     messages: ['view', 'create'],
-    financial: ['view'], // Own payments
+    financial: ['view'],
   },
   partner_employee: {
     portal: ['view'],
-    tasks: ['view', 'edit'], // Assigned tasks
+    tasks: ['view', 'edit'],
     messages: ['view', 'create'],
   },
 }
@@ -102,7 +102,6 @@ export const hasPermission = (
 ): boolean => {
   if (!user || !user.role) return false
 
-  // 1. Check granular overrides first (if user has specific permission overrides)
   if (user.permissions && user.permissions.length > 0) {
     const override = user.permissions.find((p) => p.resource === resource)
     if (override) {
@@ -110,7 +109,6 @@ export const hasPermission = (
     }
   }
 
-  // 2. Check Role-based Matrix
   const rolePermissions = PERMISSIONS_MATRIX[user.role]
   if (!rolePermissions) return false
 
@@ -124,21 +122,20 @@ export const canChat = (initiator: User, target: User): boolean => {
   const initiatorRole = initiator.role
   const targetRole = target.role
 
-  // Staff (Admin/PM/Internal) can chat with everyone
+  // Staff (Admin/PM/Internal) can chat with everyone EXCEPT Partner's Team (unless direct)
   if (
     ['platform_owner', 'software_tenant', 'internal_user'].includes(
       initiatorRole,
     )
   ) {
-    // Exception: PM/Staff cannot chat with Partner's Team (unless direct staff)
-    // Direct staff are 'internal_user', external team are 'partner_employee'
+    // PM can communicate with all related parties (Owners, Partners, PM Team), excluding the Partner's Team
     if (targetRole === 'partner_employee') {
       return false
     }
     return true
   }
 
-  // Everyone can chat with PM/Staff (Admin/PM/Internal)
+  // Everyone can chat with PM/Staff
   if (
     ['platform_owner', 'software_tenant', 'internal_user'].includes(targetRole)
   ) {
@@ -147,23 +144,20 @@ export const canChat = (initiator: User, target: User): boolean => {
 
   // Partner -> Own Team
   if (initiatorRole === 'partner' && targetRole === 'partner_employee') {
-    // Check if employee belongs to partner
     return target.parentPartnerId === initiator.id
   }
 
   // Team -> Own Partner
   if (initiatorRole === 'partner_employee' && targetRole === 'partner') {
-    // Check if employee belongs to partner
     return initiator.parentPartnerId === target.id
   }
 
-  // Owner -> Only PM (already covered above) or PM's Staff (already covered above)
-  // Owner cannot chat with Partner, Tenant, or other Owners
+  // Owner -> Only PM/Staff (Already handled above)
   if (initiatorRole === 'property_owner') {
-    return false // If target was staff, it would have returned true above
+    return false
   }
 
-  // Tenant -> Only PM (already covered above)
+  // Tenant -> Only PM/Staff (Already handled above)
   if (initiatorRole === 'tenant') {
     return false
   }

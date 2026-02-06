@@ -13,12 +13,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
@@ -26,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -34,7 +32,7 @@ import {
   Edit,
   Trash2,
   ExternalLink,
-  Image as ImageIcon,
+  ImageIcon,
   FileText,
   ArrowRight,
   ArrowLeft,
@@ -57,7 +55,7 @@ export function AdsManager() {
   } = usePublicityStore()
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
-  const [step, setStep] = useState(1) // Wizard Step
+  const [step, setStep] = useState(1)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [invoiceOpen, setInvoiceOpen] = useState(false)
   const [selectedAdForInvoice, setSelectedAdForInvoice] =
@@ -79,7 +77,6 @@ export function AdsManager() {
     startDate: format(new Date(), 'yyyy-MM-dd'),
   })
 
-  // Auto-calculate price and dates when validity changes
   const updatePricingAndDates = (validity: string) => {
     let price = 0
     let endDate = new Date(formData.startDate || new Date())
@@ -214,7 +211,6 @@ export function AdsManager() {
             </DialogHeader>
 
             {step === 1 ? (
-              // Step 1: Basic Info & Type
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label>Placement Type</Label>
@@ -276,7 +272,6 @@ export function AdsManager() {
                 </div>
               </div>
             ) : (
-              // Step 2: Location (Pages) & Details
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label>Display Locations (Pages)</Label>
@@ -477,7 +472,6 @@ export function AdsManager() {
         </Table>
       </div>
 
-      {/* Invoice Modal */}
       {selectedAdForInvoice && (
         <InvoiceGenerator
           open={invoiceOpen}

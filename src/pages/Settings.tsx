@@ -15,24 +15,22 @@ import { Switch } from '@/components/ui/switch'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useAuthStore from '@/stores/useAuthStore'
+import useUserStore from '@/stores/useUserStore'
 import { hasPermission } from '@/lib/permissions'
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 import { AuditLogList } from '@/components/audit/AuditLogList'
 import { User, FinancialSettings } from '@/lib/types'
-import useUserStore from '@/stores/useUserStore'
 import {
   Globe,
   CreditCard,
-  Bell,
   Wallet,
   CheckCircle,
   RefreshCw,
-  Lock,
+  AlertTriangle,
 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
-import { DataMask } from '@/components/DataMask'
 
 export default function Settings() {
   const { t } = useLanguageStore()
@@ -65,10 +63,9 @@ export default function Settings() {
     vrbo: { connected: false, lastSync: 'Never', status: 'Disconnected' },
   })
 
-  // Role Checks
   const isPlatformOwner = currentUser.role === 'platform_owner'
   const isPM = ['platform_owner', 'software_tenant'].includes(currentUser.role)
-  const canManageSystem = isPM // Only PMs and Admins can change system settings
+  const canManageSystem = isPM
 
   const canViewAudit =
     hasPermission(currentUser as User, 'audit_logs', 'view') || isPlatformOwner
@@ -314,7 +311,6 @@ export default function Settings() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Channel Managers */}
                 <div>
                   <h3 className="text-lg font-medium mb-4 flex items-center gap-2 text-black">
                     <Globe className="h-5 w-5" /> Booking Channels
@@ -399,6 +395,37 @@ export default function Settings() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Approval Threshold Configuration */}
+                <div className="border border-yellow-200 rounded-md p-4 bg-yellow-50/30">
+                  <h3 className="text-base font-bold text-black mb-2 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                    Maintenance Approval Workflow
+                  </h3>
+                  <div className="space-y-2">
+                    <Label className="text-black font-bold">
+                      Direct Approval Threshold ($)
+                    </Label>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Maintenance tasks below this amount require only PM
+                      approval. Tasks above this amount require Owner approval
+                      first, then PM approval.
+                    </p>
+                    <Input
+                      type="number"
+                      value={financialData.approvalThreshold ?? 100}
+                      onChange={(e) =>
+                        handleFinancialChange(
+                          'approvalThreshold',
+                          parseFloat(e.target.value),
+                        )
+                      }
+                      className="text-black max-w-[200px]"
+                    />
+                  </div>
+                </div>
+
+                <Separator className="bg-slate-200" />
+
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium flex items-center gap-2 text-black">
                     <Wallet className="h-5 w-5" />{' '}
