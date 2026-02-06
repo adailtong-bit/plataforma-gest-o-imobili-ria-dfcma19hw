@@ -36,7 +36,6 @@ import useTaskStore from '@/stores/useTaskStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import { Card, CardContent } from '@/components/ui/card'
 import { DataMask } from '@/components/DataMask'
-import { useToast } from '@/hooks/use-toast'
 
 interface TaskDetailsSheetProps {
   task: Task | null
@@ -52,9 +51,8 @@ export function TaskDetailsSheet({
   const { t } = useLanguageStore()
   const { bookings } = useShortTermStore()
   const { currentUser } = useAuthStore()
-  const { updateTask } = useTaskStore()
+  const { approveTask, rejectTask } = useTaskStore()
   const { properties } = usePropertyStore()
-  const { toast } = useToast()
 
   if (!task) return null
 
@@ -117,50 +115,13 @@ export function TaskDetailsSheet({
   const showPartnerRevenue = isPartner
   const showTeamPayout = isAdminOrPM || isPartner || isTeamMember
 
-  const handleApprove = () => {
-    if (task.approvalStatus === 'owner_pending') {
-      updateTask({
-        ...task,
-        approvalStatus: 'pm_pending',
-      })
-      toast({
-        title: t('common.approved'),
-        description: 'Aprovado. Aguardando PM.',
-      })
-    } else {
-      updateTask({
-        ...task,
-        approvalStatus: 'approved',
-        status: 'pending',
-      })
-      toast({
-        title: t('common.approved'),
-        description: 'Tarefa aprovada.',
-      })
-    }
-  }
-
-  const handleReject = () => {
-    updateTask({
-      ...task,
-      status: 'pending',
-      approvalStatus: undefined,
-    })
-    toast({
-      title: t('common.reject'),
-      description: 'Tarefa rejeitada.',
-      variant: 'destructive',
-    })
-  }
-
   const property = properties.find((p) => p.id === task.propertyId)
   const isMyProperty = property?.ownerId === currentUser.id
 
   const canApprove =
     task.status === 'pending_approval' &&
     ((task.approvalStatus === 'owner_pending' && isOwner && isMyProperty) ||
-      (task.approvalStatus === 'owner_pending' && isAdminOrPM) || // PM Super Approval
-      (task.approvalStatus === 'pm_pending' && isAdminOrPM))
+      isAdminOrPM)
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -217,7 +178,7 @@ export function TaskDetailsSheet({
             <div className="flex gap-2 mt-4">
               <Button
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold disabled:opacity-50"
-                onClick={handleApprove}
+                onClick={() => approveTask(task.id)}
                 disabled={!canApprove}
               >
                 <Check className="h-4 w-4 mr-2" />
@@ -226,7 +187,7 @@ export function TaskDetailsSheet({
               <Button
                 variant="destructive"
                 className="flex-1 font-bold disabled:opacity-50"
-                onClick={handleReject}
+                onClick={() => rejectTask(task.id)}
                 disabled={!canApprove}
               >
                 <X className="h-4 w-4 mr-2" />

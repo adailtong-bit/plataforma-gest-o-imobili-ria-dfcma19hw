@@ -32,7 +32,6 @@ import {
   Square,
   Star,
   BellRing,
-  AlertCircle,
   Edit,
   Check,
   X,
@@ -76,7 +75,7 @@ export function TaskCard({
   const { currentUser } = useAuthStore()
   const { partners } = usePartnerStore()
   const { properties } = usePropertyStore()
-  const { updateTask, notifySupplier } = useTaskStore()
+  const { updateTask, notifySupplier, approveTask, rejectTask } = useTaskStore()
 
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
@@ -148,55 +147,6 @@ export function TaskCard({
     })
   }
 
-  const handleApprove = () => {
-    if (task.approvalStatus === 'owner_pending') {
-      // Owner approved, now goes to PM
-      updateTask({
-        ...task,
-        approvalStatus: 'pm_pending',
-      })
-      toast({
-        title: t('common.approved'),
-        description: 'Aprovado pelo Proprietário. Aguardando aprovação do PM.',
-      })
-    } else if (task.approvalStatus === 'pm_pending') {
-      // PM approved, ready for execution
-      updateTask({
-        ...task,
-        approvalStatus: 'approved',
-        status: 'pending',
-      })
-      toast({
-        title: t('common.approved'),
-        description: 'Tarefa autorizada para execução.',
-      })
-    } else if (isAdminOrPM && task.status === 'pending_approval') {
-      // Super Approval
-      updateTask({
-        ...task,
-        approvalStatus: 'approved',
-        status: 'pending',
-      })
-      toast({
-        title: t('common.approved'),
-        description: 'Tarefa autorizada para execução.',
-      })
-    }
-  }
-
-  const handleReject = () => {
-    updateTask({
-      ...task,
-      status: 'pending',
-      approvalStatus: undefined,
-    })
-    toast({
-      title: t('common.reject'),
-      description: 'Tarefa rejeitada e retornada para revisão.',
-      variant: 'destructive',
-    })
-  }
-
   const isTeamMember = currentUser.role === 'partner_employee'
   const isPartner = currentUser.role === 'partner'
   const isOwner = currentUser.role === 'property_owner'
@@ -244,8 +194,7 @@ export function TaskCard({
   const userCanApprove =
     task.status === 'pending_approval' &&
     ((task.approvalStatus === 'owner_pending' && isOwner && isMyProperty) ||
-      (task.approvalStatus === 'owner_pending' && isAdminOrPM) || // PM Super-Approval
-      (task.approvalStatus === 'pm_pending' && isAdminOrPM)) // PM Step
+      isAdminOrPM) // PM can always approve pending tasks
 
   return (
     <>
@@ -540,7 +489,7 @@ export function TaskCard({
               <Button
                 size="sm"
                 className="flex-1 h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold disabled:opacity-50"
-                onClick={handleApprove}
+                onClick={() => approveTask(task.id)}
                 disabled={!userCanApprove}
               >
                 <Check className="h-3 w-3 mr-2" />
@@ -549,12 +498,13 @@ export function TaskCard({
               <Button
                 size="sm"
                 variant="destructive"
-                className="h-9 px-2 text-xs font-bold disabled:opacity-50"
-                onClick={handleReject}
+                className="flex-1 h-9 px-2 text-xs font-bold disabled:opacity-50"
+                onClick={() => rejectTask(task.id)}
                 disabled={!userCanApprove}
                 title={t('common.reject')}
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4 mr-1" />
+                {t('common.reject')}
               </Button>
             </div>
           )}

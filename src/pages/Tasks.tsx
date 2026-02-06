@@ -41,15 +41,19 @@ import { format } from 'date-fns'
 import { TaskDetailsSheet } from '@/components/tasks/TaskDetailsSheet'
 import { EditTaskDialog } from '@/components/tasks/EditTaskDialog'
 import { Task } from '@/lib/types'
-import { useToast } from '@/hooks/use-toast'
 
 export default function Tasks() {
-  const { tasks, updateTaskStatus, addTaskImage, addTaskEvidence, updateTask } =
-    useTaskStore()
+  const {
+    tasks,
+    updateTaskStatus,
+    addTaskImage,
+    addTaskEvidence,
+    approveTask,
+    rejectTask,
+  } = useTaskStore()
   const { t } = useLanguageStore()
   const { currentUser } = useAuthStore()
   const { properties } = usePropertyStore()
-  const { toast } = useToast()
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
   const [filterType, setFilterType] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
@@ -148,63 +152,15 @@ export default function Tasks() {
     }
   }
 
-  const handleApprove = (task: Task) => {
-    if (task.approvalStatus === 'owner_pending') {
-      updateTask({
-        ...task,
-        approvalStatus: 'pm_pending',
-      })
-      toast({
-        title: t('common.approved'),
-        description: 'Aprovado. Aguardando PM.',
-      })
-    } else if (task.approvalStatus === 'pm_pending') {
-      updateTask({
-        ...task,
-        approvalStatus: 'approved',
-        status: 'pending',
-      })
-      toast({
-        title: t('common.approved'),
-        description: 'Tarefa aprovada para execução.',
-      })
-    } else if (isAdminOrPM && task.status === 'pending_approval') {
-      // Super Approval or Generic
-      updateTask({
-        ...task,
-        approvalStatus: 'approved',
-        status: 'pending',
-      })
-      toast({
-        title: t('common.approved'),
-        description: 'Tarefa aprovada pelo Gestor.',
-      })
-    }
-  }
-
-  const handleReject = (task: Task) => {
-    updateTask({
-      ...task,
-      status: 'pending', // Return to pending for edit/review
-      approvalStatus: undefined, // Clear approval chain
-    })
-    toast({
-      title: t('common.reject'),
-      description: 'Tarefa rejeitada e retornada para revisão.',
-      variant: 'destructive',
-    })
-  }
-
   const checkCanApprove = (task: Task) => {
     if (task.status !== 'pending_approval') return false
+    if (isAdminOrPM) return true
+
     const property = properties.find((p) => p.id === task.propertyId)
     const isMyProperty = property?.ownerId === currentUser.id
 
     if (task.approvalStatus === 'owner_pending') {
-      return (isOwner && isMyProperty) || isAdminOrPM // PM Super-Approval
-    }
-    if (task.approvalStatus === 'pm_pending') {
-      return isAdminOrPM
+      return isOwner && isMyProperty
     }
     return false
   }
@@ -473,7 +429,7 @@ export default function Tasks() {
                               <Button
                                 size="sm"
                                 className="bg-green-600 hover:bg-green-700 text-white h-8 gap-1 disabled:opacity-50"
-                                onClick={() => handleApprove(task)}
+                                onClick={() => approveTask(task.id)}
                                 disabled={!checkCanApprove(task)}
                                 title={t('common.approve')}
                               >
@@ -484,7 +440,7 @@ export default function Tasks() {
                                 size="sm"
                                 variant="destructive"
                                 className="h-8 gap-1 disabled:opacity-50"
-                                onClick={() => handleReject(task)}
+                                onClick={() => rejectTask(task.id)}
                                 disabled={!checkCanApprove(task)}
                                 title={t('common.reject')}
                               >

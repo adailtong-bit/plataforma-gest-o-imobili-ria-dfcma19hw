@@ -99,7 +99,7 @@ export function EditTaskDialog({
   onOpenChange,
 }: EditTaskDialogProps) {
   const { properties } = usePropertyStore()
-  const { updateTask } = useTaskStore()
+  const { updateTask, approveTask, rejectTask } = useTaskStore()
   const { partners, genericServiceRates } = usePartnerStore()
   const { currentUser } = useAuthStore()
   const { financialSettings } = useFinancialStore()
@@ -111,9 +111,11 @@ export function EditTaskDialog({
   >([])
   const [openCombobox, setOpenCombobox] = useState(false)
 
-  const isAdminOrPM = ['platform_owner', 'software_tenant'].includes(
-    currentUser.role,
-  )
+  const isAdminOrPM = [
+    'platform_owner',
+    'software_tenant',
+    'internal_user',
+  ].includes(currentUser.role)
   const isPartner = currentUser.role === 'partner'
   const isOwner = currentUser.role === 'property_owner'
 
@@ -124,8 +126,7 @@ export function EditTaskDialog({
   const canApprove =
     task.status === 'pending_approval' &&
     ((task.approvalStatus === 'owner_pending' && isOwner && isMyProperty) ||
-      (task.approvalStatus === 'owner_pending' && isAdminOrPM) || // PM Super Approval
-      (task.approvalStatus === 'pm_pending' && isAdminOrPM))
+      isAdminOrPM)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -243,40 +244,12 @@ export function EditTaskDialog({
   }
 
   const handleApprove = () => {
-    if (task.approvalStatus === 'owner_pending') {
-      updateTask({
-        ...task,
-        approvalStatus: 'pm_pending',
-      })
-      toast({
-        title: t('common.approved'),
-        description: 'Aprovado. Aguardando PM.',
-      })
-    } else {
-      updateTask({
-        ...task,
-        approvalStatus: 'approved',
-        status: 'pending',
-      })
-      toast({
-        title: t('common.approved'),
-        description: 'Tarefa aprovada.',
-      })
-    }
+    approveTask(task.id)
     onOpenChange(false)
   }
 
   const handleReject = () => {
-    updateTask({
-      ...task,
-      status: 'pending',
-      approvalStatus: undefined,
-    })
-    toast({
-      title: t('common.reject'),
-      description: 'Tarefa rejeitada.',
-      variant: 'destructive',
-    })
+    rejectTask(task.id)
     onOpenChange(false)
   }
 

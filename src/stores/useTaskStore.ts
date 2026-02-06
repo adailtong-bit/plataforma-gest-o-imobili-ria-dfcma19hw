@@ -11,6 +11,8 @@ const useTaskStore = () => {
     updateTask: context.updateTask,
     addTask: context.addTask,
     deleteTask: context.deleteTask,
+    approveTask: context.approveTask,
+    rejectTask: context.rejectTask,
     addTaskImage: context.addTaskImage,
     addTaskEvidence: context.addTaskEvidence,
     notifySupplier: context.notifySupplier,

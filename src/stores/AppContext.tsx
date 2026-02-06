@@ -134,6 +134,8 @@ interface AppContextType {
   updateTask: (task: Task) => void
   addTask: (task: Task) => void
   deleteTask: (taskId: string) => void
+  approveTask: (taskId: string) => void
+  rejectTask: (taskId: string) => void
   notifySupplier: (taskId: string) => void
   addInvoice: (invoice: Invoice) => void
   updateInvoice: (invoice: Invoice) => void
@@ -641,6 +643,45 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         description: `Task cost (${amount}) automatically posted to ledger.`,
       })
     }
+  }
+
+  const approveTask = (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId)
+    if (!task) return
+
+    const isAdminOrPM = [
+      'platform_owner',
+      'software_tenant',
+      'internal_user',
+    ].includes(currentUser.role)
+
+    // If Owner Pending, and user is NOT PM (so it is Owner), move to PM Pending
+    if (task.approvalStatus === 'owner_pending' && !isAdminOrPM) {
+      updateTask({ ...task, approvalStatus: 'pm_pending' })
+      toast({
+        title: t('common.approved'),
+        description: 'Aprovado. Aguardando PM.',
+      })
+    } else {
+      // If PM, or if status is pm_pending, or any other case -> Approved
+      updateTask({ ...task, approvalStatus: 'approved', status: 'pending' })
+      toast({
+        title: t('common.approved'),
+        description: 'Tarefa aprovada para execução.',
+      })
+    }
+  }
+
+  const rejectTask = (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId)
+    if (!task) return
+    // Resets task to pending for revision/edit
+    updateTask({ ...task, status: 'pending', approvalStatus: undefined })
+    toast({
+      title: t('common.reject'),
+      description: 'Tarefa rejeitada e retornada para revisão.',
+      variant: 'destructive',
+    })
   }
 
   const addLedgerEntry = (entry: LedgerEntry) => {
@@ -1295,6 +1336,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateTask,
         addTask,
         deleteTask,
+        approveTask,
+        rejectTask,
         notifySupplier,
         addInvoice,
         updateInvoice,

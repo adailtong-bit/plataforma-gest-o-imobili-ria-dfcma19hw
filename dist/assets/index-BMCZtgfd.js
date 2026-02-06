@@ -54724,6 +54724,49 @@ const AppProvider = ({ children }) => {
 			});
 		}
 	};
+	const approveTask = (taskId) => {
+		const task = tasks$1.find((t$2) => t$2.id === taskId);
+		if (!task) return;
+		const isAdminOrPM = [
+			"platform_owner",
+			"software_tenant",
+			"internal_user"
+		].includes(currentUser.role);
+		if (task.approvalStatus === "owner_pending" && !isAdminOrPM) {
+			updateTask({
+				...task,
+				approvalStatus: "pm_pending"
+			});
+			toast$2({
+				title: t$1("common.approved"),
+				description: "Aprovado. Aguardando PM."
+			});
+		} else {
+			updateTask({
+				...task,
+				approvalStatus: "approved",
+				status: "pending"
+			});
+			toast$2({
+				title: t$1("common.approved"),
+				description: "Tarefa aprovada para execução."
+			});
+		}
+	};
+	const rejectTask = (taskId) => {
+		const task = tasks$1.find((t$2) => t$2.id === taskId);
+		if (!task) return;
+		updateTask({
+			...task,
+			status: "pending",
+			approvalStatus: void 0
+		});
+		toast$2({
+			title: t$1("common.reject"),
+			description: "Tarefa rejeitada e retornada para revisão.",
+			variant: "destructive"
+		});
+	};
 	const addLedgerEntry = (entry) => {
 		setLedgerEntries((prev) => [...prev, entry]);
 		addAuditLog({
@@ -55224,6 +55267,8 @@ const AppProvider = ({ children }) => {
 			updateTask,
 			addTask,
 			deleteTask,
+			approveTask,
+			rejectTask,
 			notifySupplier,
 			addInvoice,
 			updateInvoice,
@@ -55297,6 +55342,8 @@ var useTaskStore = () => {
 		updateTask: context.updateTask,
 		addTask: context.addTask,
 		deleteTask: context.deleteTask,
+		approveTask: context.approveTask,
+		rejectTask: context.rejectTask,
 		addTaskImage: context.addTaskImage,
 		addTaskEvidence: context.addTaskEvidence,
 		notifySupplier: context.notifySupplier
@@ -65508,9 +65555,8 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 	const { t: t$1 } = useLanguageStore_default();
 	const { bookings: bookings$1 } = useShortTermStore_default();
 	const { currentUser } = useAuthStore_default();
-	const { updateTask } = useTaskStore_default();
+	const { approveTask, rejectTask } = useTaskStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
-	const { toast: toast$2 } = useToast();
 	if (!task) return null;
 	const getPriorityColor = (priority) => {
 		switch (priority) {
@@ -65553,42 +65599,8 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 	const showInternalCosts = isAdminOrPM;
 	const showPartnerRevenue = isPartner;
 	const showTeamPayout = isAdminOrPM || isPartner || isTeamMember;
-	const handleApprove = () => {
-		if (task.approvalStatus === "owner_pending") {
-			updateTask({
-				...task,
-				approvalStatus: "pm_pending"
-			});
-			toast$2({
-				title: t$1("common.approved"),
-				description: "Aprovado. Aguardando PM."
-			});
-		} else {
-			updateTask({
-				...task,
-				approvalStatus: "approved",
-				status: "pending"
-			});
-			toast$2({
-				title: t$1("common.approved"),
-				description: "Tarefa aprovada."
-			});
-		}
-	};
-	const handleReject = () => {
-		updateTask({
-			...task,
-			status: "pending",
-			approvalStatus: void 0
-		});
-		toast$2({
-			title: t$1("common.reject"),
-			description: "Tarefa rejeitada.",
-			variant: "destructive"
-		});
-	};
 	const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
-	const canApprove = task.status === "pending_approval" && (task.approvalStatus === "owner_pending" && isOwner && isMyProperty || task.approvalStatus === "owner_pending" && isAdminOrPM || task.approvalStatus === "pm_pending" && isAdminOrPM);
+	const canApprove = task.status === "pending_approval" && (task.approvalStatus === "owner_pending" && isOwner && isMyProperty || isAdminOrPM);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sheet, {
 		open,
 		onOpenChange,
@@ -65632,13 +65644,13 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 					className: "flex gap-2 mt-4",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						className: "flex-1 bg-green-600 hover:bg-green-700 text-white font-bold disabled:opacity-50",
-						onClick: handleApprove,
+						onClick: () => approveTask(task.id),
 						disabled: !canApprove,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4 mr-2" }), t$1("common.approve")]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						variant: "destructive",
 						className: "flex-1 font-bold disabled:opacity-50",
-						onClick: handleReject,
+						onClick: () => rejectTask(task.id),
 						disabled: !canApprove,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 mr-2" }), t$1("common.reject")]
 					})]
@@ -73270,7 +73282,7 @@ var formSchema$1 = object({
 });
 function EditTaskDialog({ task, open, onOpenChange }) {
 	const { properties: properties$1 } = usePropertyStore_default();
-	const { updateTask } = useTaskStore_default();
+	const { updateTask, approveTask, rejectTask } = useTaskStore_default();
 	const { partners: partners$1, genericServiceRates: genericServiceRates$1 } = usePartnerStore_default();
 	const { currentUser } = useAuthStore_default();
 	const { financialSettings } = useFinancialStore_default();
@@ -73279,11 +73291,15 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 	const [uploadedImages, setUploadedImages] = (0, import_react.useState)([]);
 	const [taskTemplates, setTaskTemplates] = (0, import_react.useState)([]);
 	const [openCombobox, setOpenCombobox] = (0, import_react.useState)(false);
-	const isAdminOrPM = ["platform_owner", "software_tenant"].includes(currentUser.role);
+	const isAdminOrPM = [
+		"platform_owner",
+		"software_tenant",
+		"internal_user"
+	].includes(currentUser.role);
 	const isPartner = currentUser.role === "partner";
 	const isOwner = currentUser.role === "property_owner";
 	const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
-	const canApprove = task.status === "pending_approval" && (task.approvalStatus === "owner_pending" && isOwner && isMyProperty || task.approvalStatus === "owner_pending" && isAdminOrPM || task.approvalStatus === "pm_pending" && isAdminOrPM);
+	const canApprove = task.status === "pending_approval" && (task.approvalStatus === "owner_pending" && isOwner && isMyProperty || isAdminOrPM);
 	const form = useForm({
 		resolver: a(formSchema$1),
 		defaultValues: {
@@ -73373,39 +73389,11 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 		setUploadedImages(uploadedImages.filter((_$1, i$2) => i$2 !== index$1));
 	};
 	const handleApprove = () => {
-		if (task.approvalStatus === "owner_pending") {
-			updateTask({
-				...task,
-				approvalStatus: "pm_pending"
-			});
-			toast$2({
-				title: t$1("common.approved"),
-				description: "Aprovado. Aguardando PM."
-			});
-		} else {
-			updateTask({
-				...task,
-				approvalStatus: "approved",
-				status: "pending"
-			});
-			toast$2({
-				title: t$1("common.approved"),
-				description: "Tarefa aprovada."
-			});
-		}
+		approveTask(task.id);
 		onOpenChange(false);
 	};
 	const handleReject = () => {
-		updateTask({
-			...task,
-			status: "pending",
-			approvalStatus: void 0
-		});
-		toast$2({
-			title: t$1("common.reject"),
-			description: "Tarefa rejeitada.",
-			variant: "destructive"
-		});
+		rejectTask(task.id);
 		onOpenChange(false);
 	};
 	function onSubmit(values) {
@@ -73812,7 +73800,7 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 	const { currentUser } = useAuthStore_default();
 	const { partners: partners$1 } = usePartnerStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
-	const { updateTask, notifySupplier } = useTaskStore_default();
+	const { updateTask, notifySupplier, approveTask, rejectTask } = useTaskStore_default();
 	const [detailsOpen, setDetailsOpen] = (0, import_react.useState)(false);
 	const [editOpen, setEditOpen] = (0, import_react.useState)(false);
 	const [file, setFile] = (0, import_react.useState)(null);
@@ -73872,50 +73860,6 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 			description: "Obrigado pelo feedback!"
 		});
 	};
-	const handleApprove = () => {
-		if (task.approvalStatus === "owner_pending") {
-			updateTask({
-				...task,
-				approvalStatus: "pm_pending"
-			});
-			toast$2({
-				title: t$1("common.approved"),
-				description: "Aprovado pelo Proprietário. Aguardando aprovação do PM."
-			});
-		} else if (task.approvalStatus === "pm_pending") {
-			updateTask({
-				...task,
-				approvalStatus: "approved",
-				status: "pending"
-			});
-			toast$2({
-				title: t$1("common.approved"),
-				description: "Tarefa autorizada para execução."
-			});
-		} else if (isAdminOrPM && task.status === "pending_approval") {
-			updateTask({
-				...task,
-				approvalStatus: "approved",
-				status: "pending"
-			});
-			toast$2({
-				title: t$1("common.approved"),
-				description: "Tarefa autorizada para execução."
-			});
-		}
-	};
-	const handleReject = () => {
-		updateTask({
-			...task,
-			status: "pending",
-			approvalStatus: void 0
-		});
-		toast$2({
-			title: t$1("common.reject"),
-			description: "Tarefa rejeitada e retornada para revisão.",
-			variant: "destructive"
-		});
-	};
 	const isTeamMember = currentUser.role === "partner_employee";
 	const isPartner = currentUser.role === "partner";
 	const isOwner = currentUser.role === "property_owner";
@@ -73942,7 +73886,7 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 	};
 	const assignedEmployeeName = partnerRecord?.employees?.find((e) => e.id === task.partnerEmployeeId)?.name;
 	const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
-	const userCanApprove = task.status === "pending_approval" && (task.approvalStatus === "owner_pending" && isOwner && isMyProperty || task.approvalStatus === "owner_pending" && isAdminOrPM || task.approvalStatus === "pm_pending" && isAdminOrPM);
+	const userCanApprove = task.status === "pending_approval" && (task.approvalStatus === "owner_pending" && isOwner && isMyProperty || isAdminOrPM);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskDetailsSheet, {
 			task,
@@ -74203,17 +74147,17 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 								size: "sm",
 								className: "flex-1 h-9 text-xs bg-green-600 hover:bg-green-700 text-white font-bold disabled:opacity-50",
-								onClick: handleApprove,
+								onClick: () => approveTask(task.id),
 								disabled: !userCanApprove,
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-3 w-3 mr-2" }), t$1("common.approve")]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 								size: "sm",
 								variant: "destructive",
-								className: "h-9 px-2 text-xs font-bold disabled:opacity-50",
-								onClick: handleReject,
+								className: "flex-1 h-9 px-2 text-xs font-bold disabled:opacity-50",
+								onClick: () => rejectTask(task.id),
 								disabled: !userCanApprove,
 								title: t$1("common.reject"),
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" })
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 mr-1" }), t$1("common.reject")]
 							})]
 						}),
 						task.status === "pending" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
@@ -77999,11 +77943,10 @@ function TaskInvoiceDialog({ open, onOpenChange }) {
 	});
 }
 function Tasks() {
-	const { tasks: tasks$1, updateTaskStatus, addTaskImage, addTaskEvidence, updateTask } = useTaskStore_default();
+	const { tasks: tasks$1, updateTaskStatus, addTaskImage, addTaskEvidence, approveTask, rejectTask } = useTaskStore_default();
 	const { t: t$1 } = useLanguageStore_default();
 	const { currentUser } = useAuthStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
-	const { toast: toast$2 } = useToast();
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = (0, import_react.useState)(false);
 	const [filterType, setFilterType] = (0, import_react.useState)("all");
 	const [filterStatus, setFilterStatus] = (0, import_react.useState)("all");
@@ -78068,55 +78011,11 @@ function Tasks() {
 		else if (task.status === "in_progress") nextStatus = "completed";
 		if (nextStatus !== task.status) updateTaskStatus(task.id, nextStatus);
 	};
-	const handleApprove = (task) => {
-		if (task.approvalStatus === "owner_pending") {
-			updateTask({
-				...task,
-				approvalStatus: "pm_pending"
-			});
-			toast$2({
-				title: t$1("common.approved"),
-				description: "Aprovado. Aguardando PM."
-			});
-		} else if (task.approvalStatus === "pm_pending") {
-			updateTask({
-				...task,
-				approvalStatus: "approved",
-				status: "pending"
-			});
-			toast$2({
-				title: t$1("common.approved"),
-				description: "Tarefa aprovada para execução."
-			});
-		} else if (isAdminOrPM && task.status === "pending_approval") {
-			updateTask({
-				...task,
-				approvalStatus: "approved",
-				status: "pending"
-			});
-			toast$2({
-				title: t$1("common.approved"),
-				description: "Tarefa aprovada pelo Gestor."
-			});
-		}
-	};
-	const handleReject = (task) => {
-		updateTask({
-			...task,
-			status: "pending",
-			approvalStatus: void 0
-		});
-		toast$2({
-			title: t$1("common.reject"),
-			description: "Tarefa rejeitada e retornada para revisão.",
-			variant: "destructive"
-		});
-	};
 	const checkCanApprove = (task) => {
 		if (task.status !== "pending_approval") return false;
+		if (isAdminOrPM) return true;
 		const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
-		if (task.approvalStatus === "owner_pending") return isOwner && isMyProperty || isAdminOrPM;
-		if (task.approvalStatus === "pm_pending") return isAdminOrPM;
+		if (task.approvalStatus === "owner_pending") return isOwner && isMyProperty;
 		return false;
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -78391,7 +78290,7 @@ function Tasks() {
 													task.status === "pending_approval" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 														size: "sm",
 														className: "bg-green-600 hover:bg-green-700 text-white h-8 gap-1 disabled:opacity-50",
-														onClick: () => handleApprove(task),
+														onClick: () => approveTask(task.id),
 														disabled: !checkCanApprove(task),
 														title: t$1("common.approve"),
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4" }), t$1("common.approve")]
@@ -78399,7 +78298,7 @@ function Tasks() {
 														size: "sm",
 														variant: "destructive",
 														className: "h-8 gap-1 disabled:opacity-50",
-														onClick: () => handleReject(task),
+														onClick: () => rejectTask(task.id),
 														disabled: !checkCanApprove(task),
 														title: t$1("common.reject"),
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" }), t$1("common.reject")]
@@ -96257,4 +96156,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-DuTMfPkr.js.map
+//# sourceMappingURL=index-BMCZtgfd.js.map
