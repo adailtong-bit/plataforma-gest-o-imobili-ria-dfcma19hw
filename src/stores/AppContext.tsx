@@ -77,8 +77,8 @@ import {
   hotels as initialHotels,
   towers as initialTowers,
   tourSteps as initialTourSteps,
-  tutorialModules as initialTutorialModules,
 } from '@/lib/mockData'
+import { tutorialModules as initialTutorialModules } from '@/lib/tutorials'
 import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
 
@@ -403,8 +403,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (u) setCurrentUserObj(u)
   }
 
-  // ... (keeping existing handlers, omitting verbose ones to focus on Tour logic and standard CRUD)
-  // Standard CRUD handlers are kept as in previous file content
   const addProperty = (p: Property) => setProperties([...properties, p])
   const updateProperty = (p: Property) =>
     setProperties(properties.map((prop) => (prop.id === p.id ? p : prop)))
@@ -437,9 +435,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const updateTaskStatus = (id: string, status: Task['status']) =>
     updateTask({ ...tasks.find((t) => t.id === id)!, status })
 
-  const approveTask = (id: string) => updateTaskStatus(id, 'pending') // Simplified logic
+  const approveTask = (id: string) => updateTaskStatus(id, 'pending')
   const rejectTask = (id: string, reason: string) =>
-    updateTask({ ...tasks.find((t) => t.id === id)!, status: 'rejected' }) // Simplified
+    updateTask({ ...tasks.find((t) => t.id === id)!, status: 'rejected' })
 
   const addInvoice = (inv: Invoice) =>
     setFinancials((prev) => ({ ...prev, invoices: [...prev.invoices, inv] }))

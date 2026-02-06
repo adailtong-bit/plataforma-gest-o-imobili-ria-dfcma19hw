@@ -53706,179 +53706,46 @@ const tourSteps = [
 ];
 const tutorialModules = [
 	{
-		key: "dashboard",
-		title: "Dashboard",
-		description: "Overview of system status",
-		category: "Operational",
-		videoUrl: "https://example.com/video1.mp4"
-	},
-	{
-		key: "properties",
-		title: "Properties",
-		description: "Manage your portfolio",
-		category: "Operational",
-		videoUrl: "https://example.com/video2.mp4"
-	},
-	{
-		key: "hotels",
-		title: "Hotels",
-		description: "Hotel management features",
-		category: "Operational",
-		videoUrl: "https://example.com/video3.mp4"
-	},
-	{
-		key: "short_term",
-		title: "Short Term Rental",
-		description: "Manage bookings",
-		category: "Operational",
-		videoUrl: "https://example.com/video4.mp4"
-	},
-	{
-		key: "renewals",
-		title: "Contract Renewals",
-		description: "Handle lease renewals",
-		category: "CRM",
-		videoUrl: "https://example.com/video5.mp4"
-	},
-	{
-		key: "market_analysis",
-		title: "Market Analysis",
-		description: "Analyze market trends",
-		category: "CRM",
-		videoUrl: "https://example.com/video6.mp4"
-	},
-	{
-		key: "analytics",
-		title: "Advanced Analytics",
-		description: "Deep dive into data",
-		category: "CRM",
-		videoUrl: "https://example.com/video7.mp4"
-	},
-	{
-		key: "reports",
-		title: "Reports",
-		description: "Generate system reports",
-		category: "Operational",
-		videoUrl: "https://example.com/video8.mp4"
-	},
-	{
-		key: "condominiums",
-		title: "Condominiums",
-		description: "Manage condo associations",
-		category: "Operational",
-		videoUrl: "https://example.com/video9.mp4"
-	},
-	{
-		key: "tenants",
-		title: "Tenants",
-		description: "Manage tenant profiles",
-		category: "CRM",
-		videoUrl: "https://example.com/video10.mp4"
-	},
-	{
-		key: "owners",
-		title: "Owners",
-		description: "Manage property owners",
-		category: "CRM",
-		videoUrl: "https://example.com/video11.mp4"
-	},
-	{
-		key: "partners",
-		title: "Partners",
-		description: "Manage service providers",
-		category: "Operational",
-		videoUrl: "https://example.com/video12.mp4"
-	},
-	{
-		key: "service_pricing",
-		title: "Service Pricing",
-		description: "Set service rates",
-		category: "Settings",
-		videoUrl: "https://example.com/video13.mp4"
-	},
-	{
-		key: "calendar",
-		title: "Calendar",
-		description: "Schedule view",
-		category: "Operational",
-		videoUrl: "https://example.com/video14.mp4"
-	},
-	{
-		key: "visits",
-		title: "Visits",
-		description: "Manage property visits",
-		category: "CRM",
-		videoUrl: "https://example.com/video15.mp4"
-	},
-	{
-		key: "tasks",
-		title: "Tasks",
-		description: "Task management",
-		category: "Operational",
-		videoUrl: "https://example.com/video16.mp4"
-	},
-	{
-		key: "workflows",
-		title: "Workflows",
-		description: "Automate processes",
-		category: "Settings",
-		videoUrl: "https://example.com/video17.mp4"
-	},
-	{
-		key: "automation",
-		title: "Automation Rules",
-		description: "Configure automation",
-		category: "Settings",
-		videoUrl: "https://example.com/video18.mp4"
-	},
-	{
-		key: "financial",
-		title: "Financial",
-		description: "Manage finances",
-		category: "Financial",
-		videoUrl: "https://example.com/video19.mp4"
-	},
-	{
-		key: "invoices",
-		title: "Invoices",
-		description: "Manage billing",
-		category: "Financial",
-		videoUrl: "https://example.com/video20.mp4"
-	},
-	{
-		key: "messages",
-		title: "Messages",
-		description: "Communication center",
-		category: "CRM",
-		videoUrl: "https://example.com/video21.mp4"
-	},
-	{
-		key: "migration",
-		title: "Migration Hub",
-		description: "Import data",
+		key: "dashboard-overview",
+		title: "Dashboard Overview & Metrics",
+		description: "Learn how to navigate the dashboard, interpret key performance indicators (KPIs), and monitor your portfolio health.",
 		category: "System",
-		videoUrl: "https://example.com/video22.mp4"
+		videoUrl: "https://www.youtube.com/embed/LXb3EKWsInQ"
 	},
 	{
-		key: "publicity",
-		title: "Publicity Admin",
-		description: "Manage ads",
-		category: "System",
-		videoUrl: "https://example.com/video23.mp4"
+		key: "properties-management",
+		title: "Property Management",
+		description: "Comprehensive guide to listing properties, managing units, setting up amenities, and tracking inventory.",
+		category: "Operational",
+		videoUrl: "https://www.youtube.com/embed/EngW7tLk6R8"
 	},
 	{
-		key: "users",
-		title: "Users",
-		description: "Manage system users",
+		key: "leads-crm",
+		title: "Leads & CRM Strategy",
+		description: "Master customer relationship management, track leads from different sources, and manage conversion pipelines.",
+		category: "CRM",
+		videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ"
+	},
+	{
+		key: "financial-invoices",
+		title: "Financials & Invoicing",
+		description: "How to generate invoices, track payments, manage owners statements, and handle expense reconciliation.",
+		category: "Financial",
+		videoUrl: "https://www.youtube.com/embed/YE7VzlLtp-4"
+	},
+	{
+		key: "system-settings",
+		title: "System Configuration",
+		description: "Setting up user roles, permissions, automation rules, and global platform preferences.",
 		category: "Settings",
-		videoUrl: "https://example.com/video24.mp4"
+		videoUrl: "https://www.youtube.com/embed/jNQXAC9IVRw"
 	},
 	{
-		key: "settings",
-		title: "Settings",
-		description: "System configuration",
-		category: "Settings",
-		videoUrl: "https://example.com/video25.mp4"
+		key: "maintenance-workflows",
+		title: "Maintenance Workflows",
+		description: "Automating maintenance requests, assigning tasks to partners, and tracking completion evidence.",
+		category: "Operational",
+		videoUrl: "https://www.youtube.com/embed/ScMzIvxBSi4"
 	}
 ];
 const translations = {
@@ -95831,26 +95698,27 @@ function VideoPlayerModal() {
 	const { activeVideo, closeVideo, tutorialModules: tutorialModules$1 } = useTourStore_default();
 	const activeModule = tutorialModules$1.find((m$1) => m$1.videoUrl === activeVideo);
 	if (!activeVideo) return null;
+	const videoUrlWithAutoplay = activeVideo.includes("?") ? `${activeVideo}&autoplay=1` : `${activeVideo}?autoplay=1`;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open: !!activeVideo,
 		onOpenChange: (open) => !open && closeVideo(),
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-			className: "sm:max-w-4xl p-0 overflow-hidden bg-white",
+			className: "sm:max-w-4xl p-0 overflow-hidden bg-white border-none shadow-2xl",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "p-6 pb-0",
+				className: "p-6 pb-2",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, {
 					className: "text-xl font-bold text-navy",
 					children: activeModule?.title || "Tutorial Video"
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, {
 					className: "text-muted-foreground",
-					children: activeModule?.description || "Assista a este tutorial para aprender mais sobre a plataforma."
+					children: activeModule?.description || "Watch this tutorial to learn more about the platform features."
 				})] })
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "w-full bg-black aspect-video relative",
+				className: "w-full bg-black relative",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AspectRatio, {
 					ratio: 16 / 9,
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("iframe", {
-						src: activeVideo,
+						src: videoUrlWithAutoplay,
 						className: "w-full h-full",
 						allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
 						allowFullScreen: true,
@@ -96436,4 +96304,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-S3MMAoP0.js.map
+//# sourceMappingURL=index-CbSbCARb.js.map
