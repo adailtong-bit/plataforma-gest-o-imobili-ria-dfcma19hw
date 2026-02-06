@@ -132,7 +132,7 @@ export function AppHeader() {
       </div>
 
       {/* Global Search Button */}
-      <div className="relative hidden md:flex flex-1 max-w-md mx-4">
+      <div className="relative hidden md:flex flex-1 max-w-md mx-4" id="global-actions">
         <Button
           variant="outline"
           className="relative w-full justify-start text-sm text-black border-slate-300 font-medium"
@@ -303,7 +303,7 @@ export function AppHeader() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full" id="user-profile">
               <Avatar className="h-10 w-10 border border-slate-200">
                 <AvatarImage
                   src={currentUser?.avatar}
@@ -387,3 +387,4 @@ export function AppHeader() {
     </header>
   )
 }
+

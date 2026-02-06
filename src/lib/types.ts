@@ -1,3 +1,26 @@
+// ... (keep existing types, adding Tour types)
+
+// Add these to existing types:
+
+export type TourStep = {
+  targetId: string
+  title: string
+  content: string
+  placement?: 'top' | 'bottom' | 'left' | 'right' | 'center'
+}
+
+export type TutorialModule = {
+  key: string
+  title: string
+  description: string
+  category: 'Operational' | 'CRM' | 'Financial' | 'Settings' | 'System'
+  videoUrl: string
+}
+
+// Update User type to include tour status if needed, or just handle locally
+// For now we use localStorage for tour completion, as requested "via Settings menu"
+
+// ... existing types ...
 export type UserRole =
   | 'platform_owner'
   | 'software_tenant'
@@ -920,3 +943,4 @@ export interface Visit {
   assignedRole?: string
   reason?: string
 }
+

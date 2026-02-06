@@ -38,6 +38,7 @@ import {
   PieChart,
   CalendarDays,
   Hotel,
+  HelpCircle
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -243,7 +244,7 @@ export function AppSidebar() {
           </span>
         </Link>
       </SidebarHeader>
-      <SidebarContent className="bg-white">
+      <SidebarContent className="bg-white" id="sidebar-menu">
         {/* Portal Links - Shown based on Role directly as they are specialized views */}
         {(isTenant || isOwner || isPartner) && (
           <SidebarGroup>
@@ -412,6 +413,20 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
+              {/* Help Hub Link */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/help')}
+                  tooltip="Help Hub"
+                  className="text-black font-medium hover:bg-slate-100"
+                >
+                  <Link to="/help" onClick={handleLinkClick}>
+                    <HelpCircle className="text-black" />
+                    <span>Help Hub</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -448,3 +463,4 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
+

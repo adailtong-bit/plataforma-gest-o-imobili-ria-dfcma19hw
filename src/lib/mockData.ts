@@ -47,6 +47,8 @@ import {
   WorkflowStep,
   Hotel,
   Tower,
+  TourStep,
+  TutorialModule,
 } from '@/lib/types'
 
 // Helpers
@@ -851,3 +853,67 @@ for (let i = 0; i < 15; i++) {
     agentId: 'partner_1',
   })
 }
+
+// --- 9. TOUR DATA ---
+
+export const tourSteps: TourStep[] = [
+  {
+    targetId: 'center',
+    title: 'Welcome to COREPM',
+    content: 'Welcome! This quick tour will guide you through the main features of your new property management platform.',
+    placement: 'center',
+  },
+  {
+    targetId: 'sidebar-menu',
+    title: 'Main Navigation',
+    content: 'Use the sidebar to access all modules: Properties, CRM, Financials, and Settings.',
+    placement: 'right',
+  },
+  {
+    targetId: 'dashboard-kpi',
+    title: 'Dashboard Overview',
+    content: 'Track your key performance indicators, revenue, and pending tasks at a glance.',
+    placement: 'bottom',
+  },
+  {
+    targetId: 'global-search',
+    title: 'Global Actions',
+    content: 'Quickly search for anything or check your notifications here.',
+    placement: 'bottom',
+  },
+  {
+    targetId: 'user-profile',
+    title: 'Profile & Settings',
+    content: 'Manage your account settings, preferences, and subscription here.',
+    placement: 'left',
+  },
+]
+
+export const tutorialModules: TutorialModule[] = [
+  { key: 'dashboard', title: 'Dashboard', description: 'Overview of system status', category: 'Operational', videoUrl: 'https://example.com/video1.mp4' },
+  { key: 'properties', title: 'Properties', description: 'Manage your portfolio', category: 'Operational', videoUrl: 'https://example.com/video2.mp4' },
+  { key: 'hotels', title: 'Hotels', description: 'Hotel management features', category: 'Operational', videoUrl: 'https://example.com/video3.mp4' },
+  { key: 'short_term', title: 'Short Term Rental', description: 'Manage bookings', category: 'Operational', videoUrl: 'https://example.com/video4.mp4' },
+  { key: 'renewals', title: 'Contract Renewals', description: 'Handle lease renewals', category: 'CRM', videoUrl: 'https://example.com/video5.mp4' },
+  { key: 'market_analysis', title: 'Market Analysis', description: 'Analyze market trends', category: 'CRM', videoUrl: 'https://example.com/video6.mp4' },
+  { key: 'analytics', title: 'Advanced Analytics', description: 'Deep dive into data', category: 'CRM', videoUrl: 'https://example.com/video7.mp4' },
+  { key: 'reports', title: 'Reports', description: 'Generate system reports', category: 'Operational', videoUrl: 'https://example.com/video8.mp4' },
+  { key: 'condominiums', title: 'Condominiums', description: 'Manage condo associations', category: 'Operational', videoUrl: 'https://example.com/video9.mp4' },
+  { key: 'tenants', title: 'Tenants', description: 'Manage tenant profiles', category: 'CRM', videoUrl: 'https://example.com/video10.mp4' },
+  { key: 'owners', title: 'Owners', description: 'Manage property owners', category: 'CRM', videoUrl: 'https://example.com/video11.mp4' },
+  { key: 'partners', title: 'Partners', description: 'Manage service providers', category: 'Operational', videoUrl: 'https://example.com/video12.mp4' },
+  { key: 'service_pricing', title: 'Service Pricing', description: 'Set service rates', category: 'Settings', videoUrl: 'https://example.com/video13.mp4' },
+  { key: 'calendar', title: 'Calendar', description: 'Schedule view', category: 'Operational', videoUrl: 'https://example.com/video14.mp4' },
+  { key: 'visits', title: 'Visits', description: 'Manage property visits', category: 'CRM', videoUrl: 'https://example.com/video15.mp4' },
+  { key: 'tasks', title: 'Tasks', description: 'Task management', category: 'Operational', videoUrl: 'https://example.com/video16.mp4' },
+  { key: 'workflows', title: 'Workflows', description: 'Automate processes', category: 'Settings', videoUrl: 'https://example.com/video17.mp4' },
+  { key: 'automation', title: 'Automation Rules', description: 'Configure automation', category: 'Settings', videoUrl: 'https://example.com/video18.mp4' },
+  { key: 'financial', title: 'Financial', description: 'Manage finances', category: 'Financial', videoUrl: 'https://example.com/video19.mp4' },
+  { key: 'invoices', title: 'Invoices', description: 'Manage billing', category: 'Financial', videoUrl: 'https://example.com/video20.mp4' },
+  { key: 'messages', title: 'Messages', description: 'Communication center', category: 'CRM', videoUrl: 'https://example.com/video21.mp4' },
+  { key: 'migration', title: 'Migration Hub', description: 'Import data', category: 'System', videoUrl: 'https://example.com/video22.mp4' },
+  { key: 'publicity', title: 'Publicity Admin', description: 'Manage ads', category: 'System', videoUrl: 'https://example.com/video23.mp4' },
+  { key: 'users', title: 'Users', description: 'Manage system users', category: 'Settings', videoUrl: 'https://example.com/video24.mp4' },
+  { key: 'settings', title: 'Settings', description: 'System configuration', category: 'Settings', videoUrl: 'https://example.com/video25.mp4' },
+]
+

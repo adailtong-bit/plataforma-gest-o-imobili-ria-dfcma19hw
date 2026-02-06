@@ -41,10 +41,12 @@ import Automation from './pages/admin/Automation'
 import ShortTerm from './pages/ShortTerm'
 import Reports from './pages/Reports'
 import Visits from './pages/Visits'
+import HelpHub from './pages/HelpHub'
 import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { useEffect } from 'react'
 import { RequirePermission } from '@/components/RequirePermission'
+import { TourGuide } from '@/components/tour/TourGuide'
 
 const App = () => {
   useEffect(() => {
@@ -60,6 +62,7 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
+            <TourGuide />
             <Routes>
               {/* Public Routes */}
               <Route path="/login" element={<Login />} />
@@ -75,6 +78,7 @@ const App = () => {
                     </RequirePermission>
                   }
                 />
+                <Route path="/help" element={<HelpHub />} />
                 <Route
                   path="/properties"
                   element={
@@ -363,3 +367,4 @@ const App = () => {
 }
 
 export default App
+
