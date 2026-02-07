@@ -422,3 +422,27 @@ export const tourSteps = [
     content: 'Track revenue, expenses, and generate financial reports here.',
   },
 ]
+
+export const marketData = {
+  marketTrends: [
+    { month: 'Jan', occupancy: 65, rate: 120 },
+    { month: 'Feb', occupancy: 70, rate: 125 },
+    { month: 'Mar', occupancy: 75, rate: 135 },
+    { month: 'Apr', occupancy: 72, rate: 130 },
+    { month: 'May', occupancy: 68, rate: 140 },
+    { month: 'Jun', occupancy: 80, rate: 150 },
+  ],
+  competitors: [
+    { name: 'Grand Plaza', rate: 150, occupancy: 75, rating: 4.8 },
+    { name: 'Sunset Bay', rate: 130, occupancy: 70, rating: 4.5 },
+    { name: 'Ocean View', rate: 140, occupancy: 65, rating: 4.2 },
+    { name: 'City Center', rate: 110, occupancy: 80, rating: 4.0 },
+  ],
+  demandForecast: [
+    { date: '2024-07-01', demand: 'High' },
+    { date: '2024-07-02', demand: 'High' },
+    { date: '2024-07-03', demand: 'Medium' },
+    { date: '2024-07-04', demand: 'Low' },
+    { date: '2024-07-05', demand: 'High' },
+  ],
+}
