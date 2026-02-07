@@ -26,14 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Plus, Trash2, Edit2, Key, Eye } from 'lucide-react'
+import { Plus, Trash2, Edit2, Key, Eye, Filter } from 'lucide-react'
 import usePropertyStore from '@/stores/usePropertyStore'
-import { Property, PropertyStatus, RoomCharacteristics } from '@/lib/types'
+import { Property, PropertyStatus } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Link } from 'react-router-dom'
-import { DataMask } from '@/components/DataMask'
-import { RoomDetailsSheet } from '@/components/hotels/RoomDetailsSheet'
 import { Checkbox } from '@/components/ui/checkbox'
 
 interface RoomListProps {
@@ -50,9 +48,11 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
   const [open, setOpen] = useState(false)
   const [editingRoom, setEditingRoom] = useState<Property | null>(null)
 
-  // Detail Sheet State
-  const [detailsOpen, setDetailsOpen] = useState(false)
-  const [selectedRoom, setSelectedRoom] = useState<Property | null>(null)
+  // Advanced Filters
+  const [filterRoomNumber, setFilterRoomNumber] = useState('')
+  const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [filterOccupancy, setFilterOccupancy] = useState<string>('all')
+  const [filterService, setFilterService] = useState<string>('all')
 
   const [formData, setFormData] = useState<Partial<Property>>({
     name: '',
@@ -69,11 +69,53 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
       maxOccupancy: 2,
       sizeSqFt: 0,
     },
+    amenities: [],
   })
 
-  const rooms = properties
-    .filter((p) => p.hotelId === hotelId && p.towerId === towerId)
+  // Filter Logic
+  const filteredRooms = properties
+    .filter((p) => {
+      // Basic context filtering
+      if (p.hotelId !== hotelId) return false
+      // If towerId is 'none', we show rooms without a towerId or explicitly linked to 'none' if that was a thing.
+      // But usually 'none' implies direct hotel rooms.
+      // However, if we are in HotelDetails (no towers mode), we want ALL rooms of the hotel regardless of towerId (which should be undefined).
+      if (towerId !== 'none' && p.towerId !== towerId) return false
+      if (towerId === 'none' && p.towerId) return false // Only show direct rooms if no tower context
+
+      // Advanced filters
+      if (
+        filterRoomNumber &&
+        !p.roomNumber?.toLowerCase().includes(filterRoomNumber.toLowerCase())
+      )
+        return false
+      if (filterStatus !== 'all' && p.status !== filterStatus) return false
+
+      // Occupancy Filter (Mock logic: based on maxOccupancy)
+      if (filterOccupancy !== 'all') {
+        const capacity = p.roomCharacteristics?.maxOccupancy || 0
+        if (filterOccupancy === 'single' && capacity !== 1) return false
+        if (filterOccupancy === 'double' && capacity !== 2) return false
+        if (filterOccupancy === 'family' && capacity < 3) return false
+      }
+
+      // Service/Amenities Filter
+      if (filterService !== 'all') {
+        if (!p.amenities?.includes(filterService)) return false
+      }
+
+      return true
+    })
     .sort((a, b) => (a.roomNumber || '').localeCompare(b.roomNumber || ''))
+
+  // Extract unique amenities for filter
+  const allAmenities = Array.from(
+    new Set(
+      properties
+        .filter((p) => p.hotelId === hotelId)
+        .flatMap((p) => p.amenities || []),
+    ),
+  )
 
   const handleSave = () => {
     if (!formData.name || !formData.roomNumber) {
@@ -86,23 +128,9 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
     }
 
     if (editingRoom) {
-      // Check if price changed to record history
-      let newHistory = editingRoom.priceHistory || []
-      if (editingRoom.listingPrice !== formData.listingPrice) {
-        newHistory = [
-          ...newHistory,
-          {
-            date: new Date().toISOString(),
-            price: editingRoom.listingPrice || 0,
-            changedBy: 'User', // ideally current user name
-          },
-        ]
-      }
-
       updateProperty({
         ...editingRoom,
         ...formData,
-        priceHistory: newHistory,
       } as Property)
       toast({ title: t('common.success') })
     } else {
@@ -110,11 +138,10 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
         id: `room-${Date.now()}`,
         ...formData,
         hotelId,
-        towerId,
+        towerId: towerId === 'none' ? undefined : towerId,
         type: 'Hotel Room',
         profileType: 'short_term',
-        address: 'Hotel Address', // Inherit from Hotel typically
-        ownerId: 'system', // Default owner
+        ownerId: 'system',
         image: 'https://img.usecurling.com/p/400/300?q=hotel%20room',
         priceHistory: [],
       } as Property)
@@ -141,6 +168,7 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
         maxOccupancy: 2,
         sizeSqFt: 0,
       },
+      amenities: [],
     })
   }
 
@@ -168,13 +196,9 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
         maxOccupancy: 2,
         sizeSqFt: 0,
       },
+      amenities: room.amenities || [],
     })
     setOpen(true)
-  }
-
-  const openDetails = (room: Property) => {
-    setSelectedRoom(room)
-    setDetailsOpen(true)
   }
 
   const updateStatus = (room: Property, newStatus: PropertyStatus) => {
@@ -190,33 +214,66 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
       case 'maintenance':
         return 'bg-red-100 text-red-800 border-red-300'
       case 'cleaning':
-        return 'bg-blue-100 text-blue-800 border-blue-300' // "In Cleaning" often associated with blue/cyan
+        return 'bg-blue-100 text-blue-800 border-blue-300'
       case 'available':
-        return 'bg-green-100 text-green-800 border-green-300' // "Ready"
+        return 'bg-green-100 text-green-800 border-green-300'
       default:
         return 'bg-gray-100'
     }
   }
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'available':
-        return 'Ready'
-      case 'occupied':
-        return 'Occupied'
-      case 'maintenance':
-        return 'Maintenance'
-      case 'cleaning':
-        return 'In Cleaning'
-      default:
-        return status
-    }
-  }
-
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">{t('hotels.rooms')}</h3>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50 p-4 rounded-lg border">
+        <div className="flex flex-wrap gap-2 w-full md:w-auto">
+          {/* Filters */}
+          <div className="relative">
+            <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Room No."
+              value={filterRoomNumber}
+              onChange={(e) => setFilterRoomNumber(e.target.value)}
+              className="pl-8 w-[120px] bg-white"
+            />
+          </div>
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="w-[130px] bg-white">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="available">Ready</SelectItem>
+              <SelectItem value="occupied">Occupied</SelectItem>
+              <SelectItem value="maintenance">Maintenance</SelectItem>
+              <SelectItem value="cleaning">Cleaning</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filterOccupancy} onValueChange={setFilterOccupancy}>
+            <SelectTrigger className="w-[130px] bg-white">
+              <SelectValue placeholder="Capacity" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Any Capacity</SelectItem>
+              <SelectItem value="single">Single (1)</SelectItem>
+              <SelectItem value="double">Double (2)</SelectItem>
+              <SelectItem value="family">Family (3+)</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filterService} onValueChange={setFilterService}>
+            <SelectTrigger className="w-[130px] bg-white">
+              <SelectValue placeholder="Services" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Services</SelectItem>
+              {allAmenities.map((am) => (
+                <SelectItem key={am} value={am}>
+                  {am}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <Dialog
           open={open}
           onOpenChange={(v) => {
@@ -298,7 +355,7 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
               {/* Characteristics */}
               <div className="border-t pt-4">
                 <Label className="mb-2 block font-semibold">
-                  Unit Characteristics
+                  Characteristics
                 </Label>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
@@ -327,32 +384,6 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
                     </Select>
                   </div>
                   <div className="grid gap-2">
-                    <Label>View Type</Label>
-                    <Select
-                      value={formData.roomCharacteristics?.view}
-                      onValueChange={(v) =>
-                        setFormData({
-                          ...formData,
-                          roomCharacteristics: {
-                            ...formData.roomCharacteristics!,
-                            view: v,
-                          },
-                        })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Standard">Standard</SelectItem>
-                        <SelectItem value="City View">City View</SelectItem>
-                        <SelectItem value="Sea View">Sea View</SelectItem>
-                        <SelectItem value="Garden View">Garden View</SelectItem>
-                        <SelectItem value="Pool View">Pool View</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
                     <Label>Max Occupancy</Label>
                     <Input
                       type="number"
@@ -368,23 +399,21 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
                       }
                     />
                   </div>
-                  <div className="flex items-end mb-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="balcony"
-                        checked={formData.roomCharacteristics?.hasBalcony}
-                        onCheckedChange={(c) =>
-                          setFormData({
-                            ...formData,
-                            roomCharacteristics: {
-                              ...formData.roomCharacteristics!,
-                              hasBalcony: c as boolean,
-                            },
-                          })
-                        }
-                      />
-                      <Label htmlFor="balcony">Has Balcony</Label>
-                    </div>
+                  <div className="flex items-center space-x-2 mt-4">
+                    <Checkbox
+                      id="balcony"
+                      checked={formData.roomCharacteristics?.hasBalcony}
+                      onCheckedChange={(c) =>
+                        setFormData({
+                          ...formData,
+                          roomCharacteristics: {
+                            ...formData.roomCharacteristics!,
+                            hasBalcony: c as boolean,
+                          },
+                        })
+                      }
+                    />
+                    <Label htmlFor="balcony">Has Balcony</Label>
                   </div>
                 </div>
               </div>
@@ -403,38 +432,31 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
               <TableHead>{t('hotels.room_number')}</TableHead>
               <TableHead>{t('common.type')}</TableHead>
               <TableHead>{t('common.status')}</TableHead>
-              <TableHead>{t('common.value')}</TableHead>
+              <TableHead>Occupancy</TableHead>
               <TableHead className="text-right">
                 {t('common.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rooms.length === 0 ? (
+            {filteredRooms.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={5}
                   className="text-center py-8 text-muted-foreground"
                 >
-                  {t('hotels.no_rooms')}
+                  No rooms found matching filters.
                 </TableCell>
               </TableRow>
             ) : (
-              rooms.map((room) => (
-                <TableRow
-                  key={room.id}
-                  className="cursor-pointer hover:bg-slate-50 transition-colors"
-                  onClick={() => openDetails(room)}
-                >
+              filteredRooms.map((room) => (
+                <TableRow key={room.id} className="hover:bg-slate-50">
                   <TableCell className="font-bold flex items-center gap-2">
                     <Key className="h-4 w-4 text-slate-500" />
                     {room.roomNumber}
                   </TableCell>
+                  <TableCell>{room.roomCharacteristics?.bedType}</TableCell>
                   <TableCell>
-                    {room.roomCharacteristics?.bedType} /{' '}
-                    {room.roomCharacteristics?.view}
-                  </TableCell>
-                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <Select
                       value={room.status}
                       onValueChange={(v) =>
@@ -444,7 +466,7 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
                       <SelectTrigger
                         className={`h-8 w-[130px] border-0 ${getStatusColor(room.status)} font-bold`}
                       >
-                        <SelectValue>{getStatusLabel(room.status)}</SelectValue>
+                        <SelectValue>{room.status}</SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="available">Ready</SelectItem>
@@ -454,23 +476,27 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
                       </SelectContent>
                     </Select>
                   </TableCell>
-                  <TableCell>${room.listingPrice}</TableCell>
-                  <TableCell
-                    className="text-right"
-                    onClick={(e) => e.stopPropagation()}
-                  >
+                  <TableCell>
+                    {room.roomCharacteristics?.maxOccupancy || 2} Guests
+                  </TableCell>
+                  <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openDetails(room)}
+                      <Link
+                        to={
+                          towerId !== 'none'
+                            ? `/hotels/${hotelId}/towers/${towerId}/rooms/${room.id}`
+                            : `/hotels/${hotelId}/rooms/${room.id}`
+                        }
                       >
-                        <Eye className="h-4 w-4" />
-                      </Button>
+                        <Button variant="ghost" size="icon" title="View Detail">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </Link>
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => openEdit(room)}
+                        title="Quick Edit"
                       >
                         <Edit2 className="h-4 w-4" />
                       </Button>
@@ -490,12 +516,6 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
           </TableBody>
         </Table>
       </div>
-
-      <RoomDetailsSheet
-        open={detailsOpen}
-        onOpenChange={setDetailsOpen}
-        room={selectedRoom}
-      />
     </div>
   )
 }

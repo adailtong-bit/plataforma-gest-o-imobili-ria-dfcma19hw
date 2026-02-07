@@ -26,6 +26,7 @@ import CondominiumDetails from './pages/CondominiumDetails'
 import Hotels from './pages/Hotels'
 import HotelDetails from './pages/HotelDetails'
 import TowerDetails from './pages/TowerDetails'
+import HotelRoomDetails from './pages/HotelRoomDetails' // New Page
 import Users from './pages/Users'
 import ServicePricing from './pages/ServicePricing'
 import TenantPortal from './pages/portal/TenantPortal'
@@ -108,6 +109,24 @@ const App = () => {
                   element={
                     <RequirePermission resource="hotels">
                       <HotelDetails />
+                    </RequirePermission>
+                  }
+                />
+                {/* Direct Room Navigation */}
+                <Route
+                  path="/hotels/:hotelId/rooms/:roomId"
+                  element={
+                    <RequirePermission resource="hotels">
+                      <HotelRoomDetails />
+                    </RequirePermission>
+                  }
+                />
+                {/* Tower Room Navigation */}
+                <Route
+                  path="/hotels/:hotelId/towers/:towerId/rooms/:roomId"
+                  element={
+                    <RequirePermission resource="hotels">
+                      <HotelRoomDetails />
                     </RequirePermission>
                   }
                 />

@@ -33,6 +33,7 @@ import {
   Trash2,
   Users,
   Info,
+  Layers,
 } from 'lucide-react'
 import useHotelStore from '@/stores/useHotelStore'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -40,14 +41,6 @@ import usePropertyStore from '@/stores/usePropertyStore'
 import { Tower } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import { DataMask } from '@/components/DataMask'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { RoomList } from '@/components/hotels/RoomList'
 import { Textarea } from '@/components/ui/textarea'
@@ -84,6 +77,8 @@ export default function HotelDetails() {
   })
 
   if (!hotel || !formData) return <div>Hotel not found</div>
+
+  const hasTowers = hotelTowers.length > 0
 
   const handleSaveHotel = () => {
     if (formData) {
@@ -348,104 +343,138 @@ export default function HotelDetails() {
           </CardContent>
         </Card>
 
-        {/* Towers & Rooms */}
+        {/* Conditional View: Towers OR Rooms */}
         <Card className="md:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>{t('hotels.towers')}</CardTitle>
-              <CardDescription>
-                Manage towers and rooms within this hotel.
-              </CardDescription>
-            </div>
-            <Dialog open={openTowerDialog} onOpenChange={setOpenTowerDialog}>
-              <DialogTrigger asChild>
-                <Button className="bg-trust-blue gap-2" size="sm">
-                  <Plus className="h-4 w-4" /> {t('hotels.add_tower')}
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>{t('hotels.new_tower')}</DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label>{t('common.name')}</Label>
-                    <Input
-                      value={newTower.name}
-                      onChange={(e) =>
-                        setNewTower({ ...newTower, name: e.target.value })
-                      }
-                      placeholder="North Tower"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>{t('common.description')}</Label>
-                    <Input
-                      value={newTower.description}
-                      onChange={(e) =>
-                        setNewTower({
-                          ...newTower,
-                          description: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>{t('hotels.floors')}</Label>
-                    <Input
-                      type="number"
-                      value={newTower.floors}
-                      onChange={(e) =>
-                        setNewTower({
-                          ...newTower,
-                          floors: parseInt(e.target.value),
-                        })
-                      }
-                    />
-                  </div>
+          {hasTowers ? (
+            // TOWERS VIEW
+            <>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>{t('hotels.towers')}</CardTitle>
+                  <CardDescription>
+                    Manage towers within {hotel.name}. Select a tower to view
+                    its rooms.
+                  </CardDescription>
                 </div>
-                <DialogFooter>
-                  <Button onClick={handleAddTower}>{t('common.save')}</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </CardHeader>
-          <CardContent>
-            {hotelTowers.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-                {t('hotels.no_towers')}
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {hotelTowers.map((tower) => (
-                  <div key={tower.id} className="border rounded-lg p-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <div className="flex items-center gap-2">
-                        <Building className="h-5 w-5 text-slate-700" />
-                        <div>
-                          <h3 className="font-bold text-lg">{tower.name}</h3>
-                          <p className="text-xs text-muted-foreground">
-                            {tower.floors} Floors • {tower.description}
-                          </p>
-                        </div>
+                <Dialog
+                  open={openTowerDialog}
+                  onOpenChange={setOpenTowerDialog}
+                >
+                  <DialogTrigger asChild>
+                    <Button className="bg-trust-blue gap-2" size="sm">
+                      <Plus className="h-4 w-4" /> {t('hotels.add_tower')}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>{t('hotels.new_tower')}</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid gap-2">
+                        <Label>{t('common.name')}</Label>
+                        <Input
+                          value={newTower.name}
+                          onChange={(e) =>
+                            setNewTower({ ...newTower, name: e.target.value })
+                          }
+                          placeholder="North Tower"
+                        />
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteTower(tower.id)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="grid gap-2">
+                        <Label>{t('common.description')}</Label>
+                        <Input
+                          value={newTower.description}
+                          onChange={(e) =>
+                            setNewTower({
+                              ...newTower,
+                              description: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>{t('hotels.floors')}</Label>
+                        <Input
+                          type="number"
+                          value={newTower.floors}
+                          onChange={(e) =>
+                            setNewTower({
+                              ...newTower,
+                              floors: parseInt(e.target.value),
+                            })
+                          }
+                        />
+                      </div>
                     </div>
+                    <DialogFooter>
+                      <Button onClick={handleAddTower}>
+                        {t('common.save')}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {hotelTowers.map((tower) => (
+                    <div
+                      key={tower.id}
+                      className="border rounded-lg p-4 flex flex-col gap-4 bg-white"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-100 rounded-full">
+                            <Building className="h-6 w-6 text-blue-700" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-lg">{tower.name}</h3>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Layers className="h-3 w-3" />
+                              {tower.floors} Floors •{' '}
+                              {tower.description || 'No description'}
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteTower(tower.id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
 
-                    {/* Room List Component injected per tower */}
-                    <RoomList hotelId={hotel.id} towerId={tower.id} />
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
+                      <div className="flex justify-end border-t pt-3">
+                        <Button asChild>
+                          <Link
+                            to={`/hotels/${hotel.id}/towers/${tower.id}`}
+                            className="w-full sm:w-auto"
+                          >
+                            Ver Detalhes (View Rooms)
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </>
+          ) : (
+            // DIRECT ROOMS VIEW
+            <>
+              <CardHeader>
+                <CardTitle>{t('hotels.rooms')}</CardTitle>
+                <CardDescription>
+                  Manage rooms for {hotel.name}.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {/* No towerId passed implies direct hotel rooms context */}
+                <RoomList hotelId={hotel.id} towerId="none" />
+              </CardContent>
+            </>
+          )}
         </Card>
       </div>
     </div>

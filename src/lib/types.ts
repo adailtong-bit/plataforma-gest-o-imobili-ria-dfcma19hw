@@ -1,5 +1,77 @@
 // ... (keep existing types)
 
+export interface Property {
+  id: string
+  name: string
+  address: string
+  neighborhood?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  country?: string
+  additionalInfo?: string
+  type: string
+  profileType: 'long_term' | 'short_term'
+  community: string
+  condominiumId?: string
+  hotelId?: string
+  towerId?: string
+  roomNumber?: string
+  status: PropertyStatus
+  marketingStatus?: 'listed' | 'unlisted'
+  listingPrice?: number
+  purchasePrice?: number
+  publishToPortals?: boolean
+  portalSettings?: {
+    zillow: boolean
+    idealista: boolean
+  }
+  image: string
+  gallery?: string[]
+  bedrooms: number
+  bathrooms: number
+  guests: number
+  wifiSsid?: string
+  wifiPassword?: string
+  accessCodeBuilding?: string
+  accessCodeUnit?: string
+  accessCodeGuest?: string
+  accessCodeService?: string
+  accessCodeCleaning?: string
+  accessCodePool?: string
+  hoaValue?: number
+  hoaFrequency?: 'monthly' | 'quarterly' | 'semi-annually' | 'annually'
+  description?: {
+    pt: string
+    en: string
+    es: string
+  }
+  hoaRules?: {
+    pt: string
+    en: string
+    es: string
+  }
+  documents?: PropertyDocument[]
+  contractConfig?: {
+    expirationAlertDays: number
+    renewalAlertDate?: string
+  }
+  ownerId: string
+  agentId?: string
+  iCalUrl?: string
+  channelLinks?: ChannelLink[]
+  fixedExpenses?: FixedExpense[]
+  socialMedia?: SocialMediaLinks
+  leadContact?: string
+  healthScore?: number
+  inventory?: InventoryItem[]
+  leads?: Lead[]
+  roomCharacteristics?: RoomCharacteristics
+  priceHistory?: PriceHistory[]
+  amenities?: string[] // Added for filtering services
+}
+
+// ... (keep remaining types)
 export type UserRole =
   | 'platform_owner'
   | 'software_tenant'
@@ -351,76 +423,6 @@ export interface RoomCharacteristics {
   hasBalcony: boolean
   maxOccupancy: number // existing 'guests' in Property, can sync or map
   sizeSqFt?: number
-}
-
-export interface Property {
-  id: string
-  name: string
-  address: string
-  neighborhood?: string
-  city?: string
-  state?: string
-  zipCode?: string
-  country?: string
-  additionalInfo?: string
-  type: string
-  profileType: 'long_term' | 'short_term'
-  community: string
-  condominiumId?: string
-  hotelId?: string
-  towerId?: string
-  roomNumber?: string
-  status: PropertyStatus
-  marketingStatus?: 'listed' | 'unlisted'
-  listingPrice?: number
-  purchasePrice?: number
-  publishToPortals?: boolean
-  portalSettings?: {
-    zillow: boolean
-    idealista: boolean
-  }
-  image: string
-  gallery?: string[]
-  bedrooms: number
-  bathrooms: number
-  guests: number
-  wifiSsid?: string
-  wifiPassword?: string
-  accessCodeBuilding?: string
-  accessCodeUnit?: string
-  accessCodeGuest?: string
-  accessCodeService?: string
-  accessCodeCleaning?: string
-  accessCodePool?: string
-  hoaValue?: number
-  hoaFrequency?: 'monthly' | 'quarterly' | 'semi-annually' | 'annually'
-  description?: {
-    pt: string
-    en: string
-    es: string
-  }
-  hoaRules?: {
-    pt: string
-    en: string
-    es: string
-  }
-  documents?: PropertyDocument[]
-  contractConfig?: {
-    expirationAlertDays: number
-    renewalAlertDate?: string
-  }
-  ownerId: string
-  agentId?: string
-  iCalUrl?: string
-  channelLinks?: ChannelLink[]
-  fixedExpenses?: FixedExpense[]
-  socialMedia?: SocialMediaLinks
-  leadContact?: string
-  healthScore?: number
-  inventory?: InventoryItem[]
-  leads?: Lead[]
-  roomCharacteristics?: RoomCharacteristics
-  priceHistory?: PriceHistory[]
 }
 
 export type DocumentCategory =

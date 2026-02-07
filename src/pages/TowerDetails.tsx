@@ -84,6 +84,7 @@ export default function TowerDetails() {
             <CardDescription>Manage rooms for {tower.name}</CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Using the filtered RoomList component */}
             <RoomList hotelId={hotel.id} towerId={tower.id} />
           </CardContent>
         </Card>
