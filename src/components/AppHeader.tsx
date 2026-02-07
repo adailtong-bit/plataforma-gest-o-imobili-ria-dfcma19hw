@@ -36,7 +36,7 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import useNotificationStore from '@/stores/useNotificationStore'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { format } from 'date-fns'
+import { format, isValid } from 'date-fns'
 import {
   CommandDialog,
   CommandEmpty,
@@ -308,32 +308,37 @@ export function AppHeader() {
                 </div>
               ) : (
                 <div className="flex flex-col">
-                  {notifications.map((notif) => (
-                    <button
-                      key={notif.id}
-                      className={`flex flex-col items-start gap-1 p-4 text-left hover:bg-slate-50 transition-colors border-b last:border-0 ${!notif.read ? 'bg-blue-50' : ''}`}
-                      onClick={() => handleNotificationClick(notif.id)}
-                    >
-                      <div className="flex items-center justify-between w-full">
-                        <span
-                          className={`text-sm text-black ${!notif.read ? 'font-bold' : 'font-medium'}`}
-                        >
-                          <DataMask>{notif.title}</DataMask>
+                  {notifications.map((notif) => {
+                    const notifDate = new Date(notif.timestamp)
+                    const dateDisplay = isValid(notifDate)
+                      ? format(notifDate, 'dd/MM HH:mm')
+                      : ''
+
+                    return (
+                      <button
+                        key={notif.id}
+                        className={`flex flex-col items-start gap-1 p-4 text-left hover:bg-slate-50 transition-colors border-b last:border-0 ${!notif.read ? 'bg-blue-50' : ''}`}
+                        onClick={() => handleNotificationClick(notif.id)}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span
+                            className={`text-sm text-black ${!notif.read ? 'font-bold' : 'font-medium'}`}
+                          >
+                            <DataMask>{notif.title}</DataMask>
+                          </span>
+                          {!notif.read && (
+                            <Circle className="h-2 w-2 fill-blue-600 text-blue-600" />
+                          )}
+                        </div>
+                        <span className="text-xs text-black font-medium line-clamp-2">
+                          <DataMask>{notif.message}</DataMask>
                         </span>
-                        {!notif.read && (
-                          <Circle className="h-2 w-2 fill-blue-600 text-blue-600" />
-                        )}
-                      </div>
-                      <span className="text-xs text-black font-medium line-clamp-2">
-                        <DataMask>{notif.message}</DataMask>
-                      </span>
-                      <span className="text-[10px] text-black font-bold mt-1">
-                        <DataMask>
-                          {format(new Date(notif.timestamp), 'dd/MM HH:mm')}
-                        </DataMask>
-                      </span>
-                    </button>
-                  ))}
+                        <span className="text-[10px] text-black font-bold mt-1">
+                          <DataMask>{dateDisplay}</DataMask>
+                        </span>
+                      </button>
+                    )
+                  })}
                 </div>
               )}
             </ScrollArea>

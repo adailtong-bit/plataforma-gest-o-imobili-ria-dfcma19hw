@@ -62701,27 +62701,31 @@ function AppHeader() {
 								children: "Nenhuma notificação."
 							}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 								className: "flex flex-col",
-								children: notifications$1.map((notif) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-									className: `flex flex-col items-start gap-1 p-4 text-left hover:bg-slate-50 transition-colors border-b last:border-0 ${!notif.read ? "bg-blue-50" : ""}`,
-									onClick: () => handleNotificationClick(notif.id),
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "flex items-center justify-between w-full",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: `text-sm text-black ${!notif.read ? "font-bold" : "font-medium"}`,
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: notif.title })
-											}), !notif.read && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Circle, { className: "h-2 w-2 fill-blue-600 text-blue-600" })]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-xs text-black font-medium line-clamp-2",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: notif.message })
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-[10px] text-black font-bold mt-1",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: format(new Date(notif.timestamp), "dd/MM HH:mm") })
-										})
-									]
-								}, notif.id))
+								children: notifications$1.map((notif) => {
+									const notifDate = new Date(notif.timestamp);
+									const dateDisplay = isValid(notifDate) ? format(notifDate, "dd/MM HH:mm") : "";
+									return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+										className: `flex flex-col items-start gap-1 p-4 text-left hover:bg-slate-50 transition-colors border-b last:border-0 ${!notif.read ? "bg-blue-50" : ""}`,
+										onClick: () => handleNotificationClick(notif.id),
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-center justify-between w-full",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: `text-sm text-black ${!notif.read ? "font-bold" : "font-medium"}`,
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: notif.title })
+												}), !notif.read && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Circle, { className: "h-2 w-2 fill-blue-600 text-blue-600" })]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-xs text-black font-medium line-clamp-2",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: notif.message })
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-[10px] text-black font-bold mt-1",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: dateDisplay })
+											})
+										]
+									}, notif.id);
+								})
 							})
 						})]
 					})] }),
@@ -99230,4 +99234,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-ZLLgDJ4_.js.map
+//# sourceMappingURL=index-C32lJEIU.js.map
