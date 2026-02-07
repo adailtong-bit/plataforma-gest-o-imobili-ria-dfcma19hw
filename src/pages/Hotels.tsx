@@ -39,7 +39,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 
 export default function Hotels() {
-  const { hotels, addHotel } = useHotelStore()
+  const { hotels, towers, addHotel } = useHotelStore()
   const { properties } = usePropertyStore()
   const { t } = useLanguageStore()
   const navigate = useNavigate()
@@ -183,6 +183,10 @@ export default function Hotels() {
     const total = rooms.length
     const occupancyRate = total > 0 ? Math.round((occupied / total) * 100) : 0
     return { total, occupancyRate }
+  }
+
+  const getTowersCount = (hotelId: string) => {
+    return towers.filter((t) => t.hotelId === hotelId).length
   }
 
   return (
@@ -438,6 +442,7 @@ export default function Hotels() {
         ) : (
           filteredHotels.map((hotel) => {
             const stats = getHotelStats(hotel.id)
+            const towerCount = getTowersCount(hotel.id)
             return (
               <Card
                 key={hotel.id}
@@ -473,6 +478,11 @@ export default function Hotels() {
                         <Users className="h-4 w-4" />
                         Manager: <DataMask>{hotel.managerName}</DataMask>
                       </p>
+                    )}
+                    {towerCount > 0 && (
+                      <Badge variant="outline" className="bg-slate-50">
+                        {towerCount} Towers
+                      </Badge>
                     )}
                     <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t">
                       <div className="text-center">

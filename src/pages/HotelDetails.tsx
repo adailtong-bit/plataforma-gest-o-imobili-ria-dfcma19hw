@@ -32,7 +32,6 @@ import {
   Save,
   Trash2,
   Users,
-  Info,
   Layers,
 } from 'lucide-react'
 import useHotelStore from '@/stores/useHotelStore'

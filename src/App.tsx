@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -26,7 +26,7 @@ import CondominiumDetails from './pages/CondominiumDetails'
 import Hotels from './pages/Hotels'
 import HotelDetails from './pages/HotelDetails'
 import TowerDetails from './pages/TowerDetails'
-import HotelRoomDetails from './pages/HotelRoomDetails' // New Page
+import HotelRoomDetails from './pages/HotelRoomDetails'
 import Users from './pages/Users'
 import ServicePricing from './pages/ServicePricing'
 import TenantPortal from './pages/portal/TenantPortal'
@@ -71,8 +71,18 @@ const App = () => {
 
               {/* Protected Routes */}
               <Route element={<DashboardLayout />}>
+                {/* Hotel Management Dashboard as Main Route */}
                 <Route
                   path="/"
+                  element={
+                    <RequirePermission resource="hotels">
+                      <Hotels />
+                    </RequirePermission>
+                  }
+                />
+                {/* Legacy Dashboard Route */}
+                <Route
+                  path="/dashboard"
                   element={
                     <RequirePermission resource="dashboard">
                       <Index />

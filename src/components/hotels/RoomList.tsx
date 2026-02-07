@@ -8,7 +8,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -78,8 +77,6 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
       // Basic context filtering
       if (p.hotelId !== hotelId) return false
       // If towerId is 'none', we show rooms without a towerId or explicitly linked to 'none' if that was a thing.
-      // But usually 'none' implies direct hotel rooms.
-      // However, if we are in HotelDetails (no towers mode), we want ALL rooms of the hotel regardless of towerId (which should be undefined).
       if (towerId !== 'none' && p.towerId !== towerId) return false
       if (towerId === 'none' && p.towerId) return false // Only show direct rooms if no tower context
 
