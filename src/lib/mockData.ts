@@ -30,13 +30,10 @@ import {
   Promotion,
   Campaign,
   ServiceOrder,
+  MarketData,
 } from '@/lib/types'
 
 // Mock Data for the Application
-
-// ... (Keep existing systemUsers, owners, tenants, partners, hotels, towers, properties, tasks, financials, etc. as they were)
-// To keep it shorter and focused on new features, I assume existing data is preserved.
-// I will just add the NEW data arrays here.
 
 export const systemUsers: User[] = [
   {
@@ -329,5 +326,50 @@ export const campaigns: Campaign[] = [
     endDate: '2024-08-31',
     promotions: ['promo1'],
     targetAudience: 'all',
+  },
+]
+
+export const marketData: MarketData[] = [
+  {
+    region: 'South Beach',
+    averagePrice: 450000,
+    occupancyRate: 85,
+    trend: 'up',
+    competitorCount: 150,
+    averageDaysOnMarket: 45,
+    shortTermRate: 280,
+    longTermRate: 3500,
+    pricePerSqFt: 650,
+    saturationIndex: 75,
+    propertyTaxAvg: 1.8,
+    hoaAvg: 600,
+  },
+  {
+    region: 'Downtown',
+    averagePrice: 550000,
+    occupancyRate: 80,
+    trend: 'stable',
+    competitorCount: 200,
+    averageDaysOnMarket: 35,
+    shortTermRate: 320,
+    longTermRate: 4000,
+    pricePerSqFt: 580,
+    saturationIndex: 60,
+    propertyTaxAvg: 1.5,
+    hoaAvg: 800,
+  },
+  {
+    region: 'Brickell',
+    averagePrice: 650000,
+    occupancyRate: 88,
+    trend: 'up',
+    competitorCount: 250,
+    averageDaysOnMarket: 25,
+    shortTermRate: 350,
+    longTermRate: 4500,
+    pricePerSqFt: 700,
+    saturationIndex: 85,
+    propertyTaxAvg: 1.6,
+    hoaAvg: 900,
   },
 ]
