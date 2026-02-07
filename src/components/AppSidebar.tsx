@@ -148,7 +148,7 @@ export function AppSidebar() {
       title: t('common.service_pricing'),
       url: '/service-pricing',
       icon: Tags,
-      resource: 'settings', // Part of Settings essentially
+      resource: 'settings',
     },
     {
       title: t('common.calendar'),
@@ -160,7 +160,7 @@ export function AppSidebar() {
       title: t('common.visits'),
       url: '/visits',
       icon: CalendarDays,
-      resource: 'visits', // Visits Resource
+      resource: 'visits',
     },
     {
       title: t('common.tasks'),
@@ -190,7 +190,7 @@ export function AppSidebar() {
       title: t('common.invoices'),
       url: '/invoices',
       icon: FileText,
-      resource: 'financial', // Part of Financial
+      resource: 'financial',
     },
     {
       title: t('common.messages'),
@@ -217,7 +217,6 @@ export function AppSidebar() {
   const showUsers = hasPermission(currentUser as User, 'users', 'view')
   const showSettings = hasPermission(currentUser as User, 'settings', 'view')
 
-  // Portals logic remains similar but leverages role check implicitly via hasPermission usually
   const isTenant = currentUser.role === 'tenant'
   const isOwner = currentUser.role === 'property_owner'
   const isPartner =
@@ -245,7 +244,7 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent className="bg-white" id="sidebar-menu">
-        {/* Portal Links - Shown based on Role directly as they are specialized views */}
+        {/* Portal Links */}
         {(isTenant || isOwner || isPartner) && (
           <SidebarGroup>
             <SidebarGroupLabel
@@ -413,7 +412,6 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
-              {/* Help Hub Link - Enhanced Visibility */}
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
@@ -436,9 +434,9 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <div className="flex items-center gap-2 p-2">
               <Avatar className="h-8 w-8 border border-slate-200">
-                <AvatarImage src={currentUser.avatar} />
+                <AvatarImage src={currentUser?.avatar} />
                 <AvatarFallback className="bg-slate-100 text-black font-bold">
-                  {currentUser.name.charAt(0)}
+                  {currentUser?.name?.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <div
@@ -447,12 +445,12 @@ export function AppSidebar() {
                 )}
               >
                 <span className="font-bold truncate w-32 text-black">
-                  <DataMask>{currentUser.name}</DataMask>
+                  <DataMask>{currentUser?.name}</DataMask>
                 </span>
                 <span
                   className={cn('text-xs text-black truncate w-32 font-medium')}
                 >
-                  <DataMask>{currentUser.email}</DataMask>
+                  <DataMask>{currentUser?.email}</DataMask>
                 </span>
               </div>
             </div>

@@ -52,13 +52,16 @@ export default function Login() {
         demoEmail = 'admin@corepm.com'
         break
       case 'manager':
-        demoEmail = 'pm@corepm.com'
+        demoEmail = 'pm@corepm.com' // Matches mockData
         break
       case 'owner':
-        demoEmail = 'owner@demo.com'
+        demoEmail = 'owner@demo.com' // Matches mockData
         break
       case 'tenant':
-        demoEmail = 'tenant@demo.com'
+        demoEmail = 'tenant@demo.com' // Matches mockData
+        break
+      case 'partner':
+        demoEmail = 'partner@demo.com' // Matches mockData
         break
       default:
         demoEmail = 'admin@corepm.com'
@@ -132,6 +135,14 @@ export default function Login() {
                 onClick={() => handleDemoLogin('tenant')}
               >
                 Tenant
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white text-xs h-8 col-span-2"
+                onClick={() => handleDemoLogin('partner')}
+              >
+                Partner
               </Button>
             </div>
           </div>

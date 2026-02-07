@@ -40,7 +40,7 @@ export function RequirePermission({
   }
 
   if (!hasAccess) {
-    // Redirect to dashboard or portal based on role if access denied
+    // Redirect logic for portals based on roles
     if (
       currentUser.role === 'tenant' ||
       currentUser.role === 'property_owner' ||
@@ -55,22 +55,29 @@ export function RequirePermission({
             ? '/portal/partner'
             : '/portal/tenant'
 
-      // Avoid infinite redirect if checking access to the portal itself and failing (should not happen with correct matrix)
-      if (location.pathname !== portalPath) {
+      // Check if current location IS NOT the portal path to prevent loops
+      // Also ensure we are not already in a sub-route of the portal
+      if (!location.pathname.startsWith(portalPath)) {
         return <Navigate to={portalPath} replace />
+      }
+    } else {
+      // For Admin/Manager/Internal roles, redirect to root if not already there or allowed
+      if (location.pathname !== '/') {
+        return <Navigate to="/" replace />
       }
     }
 
-    if (location.pathname !== '/') {
-      return <Navigate to="/" replace />
-    }
-
-    // If at root and still no access (edge case), show simple message
+    // Fallback if redirects didn't happen or we are at a route we shouldn't be but no specific redirect
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
-          <p>You do not have permission to view this page.</p>
+          <p className="mt-2 text-gray-600">
+            You do not have permission to view this page.
+          </p>
+          <p className="text-sm text-gray-500 mt-1">
+            Required Resource: {resource}
+          </p>
         </div>
       </div>
     )
