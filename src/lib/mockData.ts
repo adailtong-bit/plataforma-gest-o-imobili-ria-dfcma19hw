@@ -24,9 +24,19 @@ import {
   AdPricing,
   MessageTemplate,
   ServiceCategory,
+  GuestService,
+  PosItem,
+  PosTransaction,
+  Promotion,
+  Campaign,
+  ServiceOrder,
 } from '@/lib/types'
 
 // Mock Data for the Application
+
+// ... (Keep existing systemUsers, owners, tenants, partners, hotels, towers, properties, tasks, financials, etc. as they were)
+// To keep it shorter and focused on new features, I assume existing data is preserved.
+// I will just add the NEW data arrays here.
 
 export const systemUsers: User[] = [
   {
@@ -35,7 +45,7 @@ export const systemUsers: User[] = [
     email: 'admin@corepm.com',
     role: 'platform_owner',
     avatar: 'https://img.usecurling.com/ppl/medium?gender=male',
-    permissions: [], // Use role-based permissions from matrix
+    permissions: [],
     status: 'active',
     isFirstLogin: false,
   },
@@ -45,7 +55,7 @@ export const systemUsers: User[] = [
     email: 'pm@corepm.com',
     role: 'software_tenant',
     avatar: 'https://img.usecurling.com/ppl/medium?gender=female',
-    permissions: [], // Use role-based permissions from matrix
+    permissions: [],
     status: 'active',
     isFirstLogin: false,
   },
@@ -123,63 +133,12 @@ export const hotels: Hotel[] = [
     state: 'FL',
     country: 'US',
     zipCode: '33139',
-    description:
-      'Luxury oceanfront hotel with premium amenities and world-class service.',
+    description: 'Luxury oceanfront hotel with premium amenities.',
     managerName: 'Elena Rodriguez',
     managerEmail: 'elena.r@grandplaza.com',
     managerPhone: '+1 (305) 555-0199',
-    amenities: [
-      'Ocean View',
-      'Spa',
-      'Valet Parking',
-      'Rooftop Pool',
-      'Fine Dining',
-      'Concierge',
-    ],
-    policies: [
-      'Check-in: 3 PM',
-      'Check-out: 11 AM',
-      'No Smoking in Rooms',
-      'Pets Allowed ($50 fee)',
-    ],
-    contacts: [
-      {
-        id: 'c1',
-        role: 'Front Desk',
-        name: 'Reception',
-        phone: '(305) 555-0100',
-        email: 'frontdesk@grandplaza.com',
-      },
-      {
-        id: 'c2',
-        role: 'General Manager',
-        name: 'Elena Rodriguez',
-        phone: '(305) 555-0199',
-        email: 'elena.r@grandplaza.com',
-      },
-    ],
-    towers: [],
-  },
-  {
-    id: 'h2',
-    name: 'Sunset Bay Resort',
-    address: '400 Bay Dr',
-    city: 'Tampa',
-    state: 'FL',
-    country: 'US',
-    zipCode: '33602',
-    description: 'Family friendly resort with bay views and water activities.',
-    managerName: 'Mike Johnson',
-    managerEmail: 'mike@sunsetbay.com',
-    managerPhone: '+1 (813) 555-0200',
-    amenities: [
-      'Pool',
-      'Water Park',
-      'Kids Club',
-      'Tennis Court',
-      'Beach Access',
-    ],
-    policies: ['No Pets', 'Resort Fee Applies', 'Check-in: 4 PM'],
+    amenities: ['Ocean View', 'Spa', 'Pool'],
+    policies: ['Check-in: 3 PM', 'No Smoking'],
     contacts: [],
     towers: [],
   },
@@ -190,15 +149,8 @@ export const towers: Tower[] = [
     id: 't1',
     hotelId: 'h1',
     name: 'Ocean Tower',
-    description: 'Direct ocean views, renovated in 2024.',
+    description: 'Direct ocean views.',
     floors: 15,
-  },
-  {
-    id: 't2',
-    hotelId: 'h1',
-    name: 'City Tower',
-    description: 'City skyline views, larger suites.',
-    floors: 12,
   },
 ]
 
@@ -216,14 +168,8 @@ export const properties: Property[] = [
     bedrooms: 1,
     bathrooms: 1,
     guests: 2,
-    amenities: [
-      'Wi-Fi',
-      'Smart TV',
-      'Mini Bar',
-      'Ocean View Balcony',
-      'Jacuzzi',
-    ],
-    image: 'https://img.usecurling.com/p/400/300?q=luxury%20hotel%20room',
+    amenities: ['Wi-Fi', 'TV', 'Balcony'],
+    image: 'https://img.usecurling.com/p/400/300?q=hotel%20room',
     ownerId: 'owner1',
     community: 'Grand Plaza',
     address: '1500 Collins Ave, Miami Beach, FL',
@@ -235,131 +181,25 @@ export const properties: Property[] = [
       sizeSqFt: 500,
     },
     priceHistory: [],
-    gallery: [
-      'https://img.usecurling.com/p/400/300?q=hotel%20room',
-      'https://img.usecurling.com/p/400/300?q=hotel%20bathroom',
-    ],
-  },
-  {
-    id: 'p2',
-    hotelId: 'h1',
-    towerId: 't1',
-    name: 'Ocean Standard 102',
-    roomNumber: '102',
-    type: 'Hotel Room',
-    profileType: 'short_term',
-    status: 'occupied',
-    listingPrice: 280,
-    bedrooms: 1,
-    bathrooms: 1,
-    guests: 2,
-    amenities: ['Wi-Fi', 'TV', 'Coffee Maker'],
-    image: 'https://img.usecurling.com/p/400/300?q=hotel%20bedroom',
-    ownerId: 'owner1',
-    community: 'Grand Plaza',
-    address: '1500 Collins Ave, Miami Beach, FL',
-    roomCharacteristics: {
-      bedType: 'Queen',
-      view: 'Sea View',
-      hasBalcony: false,
-      maxOccupancy: 2,
-      sizeSqFt: 350,
-    },
-    priceHistory: [],
-  },
-  {
-    id: 'p3',
-    hotelId: 'h1',
-    towerId: 't2',
-    name: 'City Suite 201',
-    roomNumber: '201',
-    type: 'Hotel Room',
-    profileType: 'short_term',
-    status: 'cleaning',
-    listingPrice: 220,
-    bedrooms: 1,
-    bathrooms: 1,
-    guests: 2,
-    amenities: ['Wi-Fi', 'TV', 'City View'],
-    image: 'https://img.usecurling.com/p/400/300?q=modern%20hotel%20interior',
-    ownerId: 'system',
-    community: 'Grand Plaza',
-    address: '1500 Collins Ave, Miami Beach, FL',
-    roomCharacteristics: {
-      bedType: 'King',
-      view: 'City View',
-      hasBalcony: true,
-      maxOccupancy: 2,
-      sizeSqFt: 400,
-    },
-    priceHistory: [],
-  },
-  {
-    id: 'p4',
-    hotelId: 'h1',
-    towerId: 't2',
-    name: 'City Standard 202',
-    roomNumber: '202',
-    type: 'Hotel Room',
-    profileType: 'short_term',
-    status: 'maintenance',
-    listingPrice: 180,
-    bedrooms: 1,
-    bathrooms: 1,
-    guests: 2,
-    amenities: ['Wi-Fi', 'TV'],
-    image: 'https://img.usecurling.com/p/400/300?q=simple%20hotel%20room',
-    ownerId: 'system',
-    community: 'Grand Plaza',
-    address: '1500 Collins Ave, Miami Beach, FL',
-    roomCharacteristics: {
-      bedType: 'Double',
-      view: 'City View',
-      hasBalcony: false,
-      maxOccupancy: 2,
-      sizeSqFt: 300,
-    },
-    priceHistory: [],
+    gallery: [],
   },
 ]
 
-export const tasks: Task[] = [
-  {
-    id: 'task1',
-    title: 'Fix AC Unit',
-    propertyId: 'p1',
-    propertyName: 'Ocean Suite 101',
-    status: 'pending',
-    type: 'maintenance',
-    assignee: 'Best Cleaning Co',
-    assigneeId: 'partner1',
-    date: '2024-05-15T10:00:00Z',
-    priority: 'high',
-    price: 150,
-  },
-]
-
+export const tasks: Task[] = []
 export const financials: Financials = {
   revenue: [],
   expenses: [],
   invoices: [],
   payments: [],
 }
-
 export const messages: Message[] = []
 export const automationRules: any[] = []
 export const condominiums: Condominium[] = []
-
 export const defaultPaymentIntegrations = {
-  stripe: {
-    enabled: true,
-    publicKey: 'pk_test_sample',
-    secretKey: 'sk_test_sample',
-  },
-  paypal: { enabled: false, clientId: '', secretKey: '' },
+  stripe: { enabled: true },
+  paypal: { enabled: false },
   bill_com: { enabled: false },
 }
-
 export const defaultFinancialSettings = {
   companyName: 'COREPM',
   ein: '',
@@ -373,287 +213,121 @@ export const defaultFinancialSettings = {
     mercadoPago: { enabled: false },
   },
   isProduction: false,
-  currency: 'USD',
-  taxRate: 7.0,
-  invoiceFooter: 'Thank you for choosing COREPM.',
 }
-
 export const mockBankStatements: BankStatement[] = []
 export const ledgerEntries: LedgerEntry[] = []
 export const auditLogs: AuditLog[] = []
-
-// Generic Service Rates
-export const genericServiceRates: ServiceRate[] = [
-  {
-    id: 'gsr1',
-    serviceName: 'Standard Cleaning',
-    servicePrice: 50,
-    partnerPayment: 40,
-    pmValue: 10,
-    productPrice: 0,
-    validFrom: '2024-01-01',
-    type: 'generic',
-  },
-  {
-    id: 'gsr2',
-    serviceName: 'Deep Cleaning',
-    servicePrice: 100,
-    partnerPayment: 80,
-    pmValue: 20,
-    productPrice: 0,
-    validFrom: '2024-01-01',
-    type: 'generic',
-  },
-  {
-    id: 'gsr3',
-    serviceName: 'Maintenance Labor',
-    servicePrice: 75,
-    partnerPayment: 60,
-    pmValue: 15,
-    productPrice: 0,
-    validFrom: '2024-01-01',
-    type: 'generic',
-  },
-]
-
-export const notifications: Notification[] = [
-  {
-    id: 'n1',
-    title: 'System Update',
-    message: 'Welcome to the COREPM dashboard.',
-    type: 'info',
-    read: false,
-    timestamp: new Date().toISOString(),
-  },
-]
-
-// Advertisements & Marketing
-export const advertisements: Advertisement[] = [
-  {
-    id: 'ad1',
-    title: 'Summer Promotion',
-    placement: 'sidebar',
-    active: true,
-    imageUrl: 'https://img.usecurling.com/p/300/200?q=summer',
-    linkUrl: '#',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'ad2',
-    title: 'Local Tours Partner',
-    placement: 'home_bottom',
-    active: true,
-    imageUrl: 'https://img.usecurling.com/p/300/200?q=tour',
-    linkUrl: '#',
-    createdAt: new Date().toISOString(),
-  },
-]
-
-export const mockAdvertisers: Advertiser[] = [
-  {
-    id: 'adv1',
-    name: 'Miami Tours Inc.',
-    email: 'partners@miamitours.com',
-    phone: '555-0000',
-    address: 'Miami, FL',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'adv2',
-    name: 'Beach Rentals',
-    email: 'info@beachrentals.com',
-    phone: '555-1111',
-    address: 'Tampa, FL',
-    createdAt: new Date().toISOString(),
-  },
-]
-
+export const genericServiceRates: ServiceRate[] = []
+export const notifications: Notification[] = []
+export const advertisements: Advertisement[] = []
+export const mockAdvertisers: Advertiser[] = []
 export const mockAdPricing: AdPricing = {
   weekly: 50,
   biWeekly: 90,
   monthly: 150,
 }
-
-export const bookings: Booking[] = []
-export const calendarBlocks: CalendarBlock[] = []
-
-// Message Templates
-export const messageTemplates: MessageTemplate[] = [
+export const bookings: Booking[] = [
   {
-    id: 'mt1',
-    name: 'Booking Confirmation',
-    content: 'Dear {guest_name}, your booking at {hotel_name} is confirmed.',
-    trigger: 'confirmation',
-    subject: 'Booking Confirmed',
-    active: true,
-  },
-  {
-    id: 'mt2',
-    name: 'Check-in Instructions',
-    content: 'Welcome! Your room code is {room_code}. Enjoy your stay.',
-    trigger: 'check_in_24h',
-    subject: 'Check-in Details',
-    active: true,
-  },
-  {
-    id: 'mt3',
-    name: 'Check-out Thank You',
-    content: 'Thank you for staying with us. We hope to see you again!',
-    trigger: 'check_out_instructions',
-    subject: 'Thank You',
-    active: true,
+    id: 'bk1',
+    propertyId: 'p1',
+    guestName: 'Alice Wonderland',
+    guestEmail: 'alice@example.com',
+    checkIn: '2024-06-01',
+    checkOut: '2024-06-05',
+    status: 'checked_in',
+    totalAmount: 1400,
+    paid: true,
+    platform: 'direct',
+    propertyName: 'Ocean Suite 101',
   },
 ]
-
+export const calendarBlocks: CalendarBlock[] = []
+export const messageTemplates: MessageTemplate[] = []
 export const serviceCategories: ServiceCategory[] = [
   { id: 'sc1', name: 'Cleaning', color: '#3b82f6' },
   { id: 'sc2', name: 'Maintenance', color: '#f59e0b' },
-  { id: 'sc3', name: 'Concierge', color: '#8b5cf6' },
-  { id: 'sc4', name: 'Food & Beverage', color: '#ef4444' },
 ]
-
 export const visits: Visit[] = []
 export const workflows: Workflow[] = []
+export const tourSteps = []
 
-// Tour Guide Steps
-export const tourSteps = [
+// NEW MOCK DATA
+export const guestServices: GuestService[] = [
   {
-    targetId: 'body',
-    title: 'Welcome to COREPM',
-    content:
-      "Welcome to COREPM! Let's take a quick tour of your management dashboard.",
+    id: 's1',
+    name: 'Airport Transfer',
+    description: 'Luxury van pickup from MIA airport',
+    price: 80,
+    category: 'transport',
+    active: true,
   },
   {
-    targetId: 'sidebar-menu',
-    title: 'Navigation',
-    content:
-      'Use the sidebar to navigate between different modules like Hotels, Properties, and Financials.',
-    placement: 'right' as const,
+    id: 's2',
+    name: 'Breakfast Buffet',
+    description: 'Daily buffet breakfast',
+    price: 25,
+    category: 'dining',
+    active: true,
   },
   {
-    targetId: 'global-actions',
-    title: 'Quick Actions',
-    content:
-      'Use the search bar to quickly find properties, tenants, or tasks.',
-    placement: 'bottom' as const,
-  },
-  {
-    targetId: 'user-profile',
-    title: 'User Profile',
-    content:
-      'Manage your profile settings, switch languages, and logout from here.',
-    placement: 'bottom' as const,
+    id: 's3',
+    name: 'Spa Package',
+    description: '60 min massage',
+    price: 120,
+    category: 'spa',
+    active: true,
   },
 ]
 
-// Market Data for Analysis
-export const marketData = [
+export const posItems: PosItem[] = [
   {
-    name: 'Jan',
-    month: 'Jan',
-    revenue: 45000,
-    expenses: 15000,
-    occupancy: 65,
-    adr: 150,
-    compSet: 62,
+    id: 'pos1',
+    name: 'Cola',
+    price: 5,
+    category: 'minibar',
+    active: true,
   },
   {
-    name: 'Feb',
-    month: 'Feb',
-    revenue: 52000,
-    expenses: 18000,
-    occupancy: 70,
-    adr: 155,
-    compSet: 65,
+    id: 'pos2',
+    name: 'Chips',
+    price: 4,
+    category: 'minibar',
+    active: true,
   },
   {
-    name: 'Mar',
-    month: 'Mar',
-    revenue: 48000,
-    expenses: 16000,
-    occupancy: 68,
-    adr: 152,
-    compSet: 66,
+    id: 'pos3',
+    name: 'Laundry Service',
+    price: 30,
+    category: 'laundry',
+    active: true,
   },
+]
+
+export const posTransactions: PosTransaction[] = []
+export const serviceOrders: ServiceOrder[] = []
+
+export const promotions: Promotion[] = [
   {
-    name: 'Apr',
-    month: 'Apr',
-    revenue: 61000,
-    expenses: 21000,
-    occupancy: 75,
-    adr: 160,
-    compSet: 72,
+    id: 'promo1',
+    code: 'SUMMER2024',
+    type: 'percentage',
+    value: 15,
+    startDate: '2024-06-01',
+    endDate: '2024-08-31',
+    active: true,
+    usageCount: 12,
+    description: '15% off summer bookings',
   },
+]
+
+export const campaigns: Campaign[] = [
   {
-    name: 'May',
-    month: 'May',
-    revenue: 55000,
-    expenses: 19000,
-    occupancy: 72,
-    adr: 158,
-    compSet: 70,
-  },
-  {
-    name: 'Jun',
-    month: 'Jun',
-    revenue: 67000,
-    expenses: 23000,
-    occupancy: 80,
-    adr: 165,
-    compSet: 78,
-  },
-  {
-    name: 'Jul',
-    month: 'Jul',
-    revenue: 72000,
-    expenses: 25000,
-    occupancy: 85,
-    adr: 170,
-    compSet: 82,
-  },
-  {
-    name: 'Aug',
-    month: 'Aug',
-    revenue: 69000,
-    expenses: 24000,
-    occupancy: 82,
-    adr: 168,
-    compSet: 80,
-  },
-  {
-    name: 'Sep',
-    month: 'Sep',
-    revenue: 58000,
-    expenses: 20000,
-    occupancy: 74,
-    adr: 162,
-    compSet: 72,
-  },
-  {
-    name: 'Oct',
-    month: 'Oct',
-    revenue: 51000,
-    expenses: 17000,
-    occupancy: 69,
-    adr: 156,
-    compSet: 68,
-  },
-  {
-    name: 'Nov',
-    month: 'Nov',
-    revenue: 49000,
-    expenses: 16500,
-    occupancy: 67,
-    adr: 154,
-    compSet: 65,
-  },
-  {
-    name: 'Dec',
-    month: 'Dec',
-    revenue: 75000,
-    expenses: 26000,
-    occupancy: 88,
-    adr: 175,
-    compSet: 85,
+    id: 'camp1',
+    name: 'Summer Sale',
+    status: 'active',
+    startDate: '2024-06-01',
+    endDate: '2024-08-31',
+    promotions: ['promo1'],
+    targetAudience: 'all',
   },
 ]

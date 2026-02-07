@@ -31,6 +31,10 @@ export const PERMISSIONS_MATRIX: Record<
     visits: ['view', 'create', 'edit', 'delete'],
     portal: ['view'],
     hotels: ['view', 'create', 'edit', 'delete'],
+    performance: ['view', 'create', 'edit', 'delete'],
+    guest_services: ['view', 'create', 'edit', 'delete'],
+    pos: ['view', 'create', 'edit', 'delete'],
+    marketing: ['view', 'create', 'edit', 'delete'],
   },
   software_tenant: {
     dashboard: ['view'],
@@ -56,6 +60,10 @@ export const PERMISSIONS_MATRIX: Record<
     migration: ['view', 'create'],
     automation: ['view', 'edit'],
     hotels: ['view', 'create', 'edit', 'delete'],
+    performance: ['view', 'create', 'edit'],
+    guest_services: ['view', 'create', 'edit', 'delete'],
+    pos: ['view', 'create', 'edit', 'delete'],
+    marketing: ['view', 'create', 'edit', 'delete'],
   },
   internal_user: {
     dashboard: ['view'],
@@ -73,6 +81,8 @@ export const PERMISSIONS_MATRIX: Record<
     visits: ['view', 'create', 'edit'],
     hotels: ['view', 'create', 'edit'],
     users: ['view'],
+    guest_services: ['view', 'edit'],
+    pos: ['view', 'create'],
   },
   partner: {
     portal: ['view'],
@@ -108,7 +118,6 @@ export const hasPermission = (
 ): boolean => {
   if (!user || !user.role) return false
 
-  // Check for specific permission overrides
   if (user.permissions && user.permissions.length > 0) {
     const override = user.permissions.find((p) => p.resource === resource)
     if (override) {
@@ -116,7 +125,6 @@ export const hasPermission = (
     }
   }
 
-  // Fallback to role-based matrix
   const rolePermissions = PERMISSIONS_MATRIX[user.role]
   if (!rolePermissions) return false
 
@@ -135,14 +143,12 @@ export const canChat = (initiator: User, target: User): boolean => {
       initiatorRole,
     )
   ) {
-    // Admins can chat with everyone except maybe specific partner employees if restricted
     return true
   }
 
   if (
     ['platform_owner', 'software_tenant', 'internal_user'].includes(targetRole)
   ) {
-    // Everyone can chat with admins/managers
     return true
   }
 
@@ -153,9 +159,6 @@ export const canChat = (initiator: User, target: User): boolean => {
   if (initiatorRole === 'partner_employee' && targetRole === 'partner') {
     return initiator.parentPartnerId === target.id
   }
-
-  // Tenants and owners can chat with managers (covered above), but maybe not each other directly without manager?
-  // Current logic allows manager chats mostly.
 
   return false
 }

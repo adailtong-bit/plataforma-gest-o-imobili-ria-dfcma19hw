@@ -39,6 +39,10 @@ import {
   CalendarDays,
   Hotel,
   HelpCircle,
+  Activity,
+  ShoppingBag,
+  CreditCard,
+  Gift,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -79,6 +83,12 @@ export function AppSidebar() {
       resource: 'dashboard',
     },
     {
+      title: 'Performance',
+      url: '/performance',
+      icon: Activity,
+      resource: 'performance',
+    },
+    {
       title: t('common.properties'),
       url: '/properties',
       icon: Building,
@@ -95,6 +105,24 @@ export function AppSidebar() {
       url: '/short-term',
       icon: BriefcaseBusiness,
       resource: 'short_term',
+    },
+    {
+      title: 'Guest Services',
+      url: '/guest-services',
+      icon: ShoppingBag,
+      resource: 'guest_services',
+    },
+    {
+      title: 'Point of Sale',
+      url: '/pos',
+      icon: CreditCard,
+      resource: 'pos',
+    },
+    {
+      title: 'Marketing',
+      url: '/marketing',
+      icon: Gift,
+      resource: 'marketing',
     },
     {
       title: t('common.renewals'),
@@ -211,7 +239,6 @@ export function AppSidebar() {
     return false
   }
 
-  // System menu items checks
   const showMigration = hasPermission(currentUser as User, 'migration', 'view')
   const showPublicity = hasPermission(currentUser as User, 'publicity', 'view')
   const showUsers = hasPermission(currentUser as User, 'users', 'view')
@@ -244,7 +271,6 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent className="bg-white" id="sidebar-menu">
-        {/* Portal Links */}
         {(isTenant || isOwner || isPartner) && (
           <SidebarGroup>
             <SidebarGroupLabel

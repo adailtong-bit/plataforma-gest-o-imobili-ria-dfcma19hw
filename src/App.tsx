@@ -43,9 +43,13 @@ import ShortTerm from './pages/ShortTerm'
 import Reports from './pages/Reports'
 import Visits from './pages/Visits'
 import HelpHub from './pages/HelpHub'
-import Housekeeping from './pages/Housekeeping' // New
-import RoomConcierge from './pages/guest/RoomConcierge' // New
-import NightAudit from './pages/NightAudit' // New
+import Housekeeping from './pages/Housekeeping'
+import RoomConcierge from './pages/guest/RoomConcierge'
+import NightAudit from './pages/NightAudit'
+import Performance from './pages/Performance'
+import GuestServices from './pages/GuestServices'
+import PointOfSale from './pages/PointOfSale'
+import Marketing from './pages/Marketing'
 import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { useEffect } from 'react'
@@ -94,6 +98,41 @@ const App = () => {
                   }
                 />
                 <Route path="/help" element={<HelpHub />} />
+
+                {/* Advanced Management Tools */}
+                <Route
+                  path="/performance"
+                  element={
+                    <RequirePermission resource="performance">
+                      <Performance />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/guest-services"
+                  element={
+                    <RequirePermission resource="guest_services">
+                      <GuestServices />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/pos"
+                  element={
+                    <RequirePermission resource="pos">
+                      <PointOfSale />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/marketing"
+                  element={
+                    <RequirePermission resource="marketing">
+                      <Marketing />
+                    </RequirePermission>
+                  }
+                />
+
                 <Route
                   path="/properties"
                   element={

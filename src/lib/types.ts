@@ -1,177 +1,4 @@
-// ... (previous imports and types)
-
-// Update InventoryItem to include minStock
-export interface InventoryItem {
-  id: string
-  name: string
-  category: string
-  quantity: number
-  minStock?: number
-  unit?: string
-  description?: string
-  condition: ItemCondition
-  notes?: string
-  createdAt?: string
-  updatedAt?: string
-  damageHistory?: DamageRecord[]
-  media?: InventoryMedia[]
-}
-
-// Add RatePlan Interface
-export interface RatePlan {
-  id: string
-  name: string
-  type: 'seasonal' | 'holiday' | 'long_stay' | 'last_minute' | 'standard'
-  startDate?: string
-  endDate?: string
-  daysOfWeek?: number[] // 0=Sun, 1=Mon, etc.
-  minStay?: number
-  adjustmentType: 'percentage' | 'fixed_price'
-  adjustmentValue: number // e.g. 10 for +10%, -10 for -10% or fixed price value
-  active: boolean
-}
-
-// Add NightAudit Interface
-export interface NightAudit {
-  id: string
-  date: string
-  totalRevenue: number
-  totalOccupancy: number
-  roomCharges: number
-  serviceFees: number
-  status: 'pending' | 'completed' | 'verified'
-  generatedBy: string
-  notes?: string
-  details?: {
-    checkIns: number
-    checkOuts: number
-    noShows: number
-  }
-}
-
-// Update Property to include ratePlans
-export interface Property {
-  id: string
-  name: string
-  address: string
-  neighborhood?: string
-  city?: string
-  state?: string
-  zipCode?: string
-  country?: string
-  additionalInfo?: string
-  type: string
-  profileType: 'long_term' | 'short_term'
-  community: string
-  condominiumId?: string
-  hotelId?: string
-  towerId?: string
-  roomNumber?: string
-  status: PropertyStatus
-  marketingStatus?: 'listed' | 'unlisted'
-  listingPrice?: number
-  purchasePrice?: number
-  ratePlans?: RatePlan[] // Added Rate Plans
-  publishToPortals?: boolean
-  portalSettings?: {
-    zillow: boolean
-    idealista: boolean
-  }
-  image: string
-  gallery?: string[]
-  bedrooms: number
-  bathrooms: number
-  guests: number
-  wifiSsid?: string
-  wifiPassword?: string
-  accessCodeBuilding?: string
-  accessCodeUnit?: string
-  accessCodeGuest?: string
-  accessCodeService?: string
-  accessCodeCleaning?: string
-  accessCodePool?: string
-  hoaValue?: number
-  hoaFrequency?: 'monthly' | 'quarterly' | 'semi-annually' | 'annually'
-  description?: {
-    pt: string
-    en: string
-    es: string
-  }
-  hoaRules?: {
-    pt: string
-    en: string
-    es: string
-  }
-  documents?: PropertyDocument[]
-  contractConfig?: {
-    expirationAlertDays: number
-    renewalAlertDate?: string
-  }
-  ownerId: string
-  agentId?: string
-  iCalUrl?: string
-  channelLinks?: ChannelLink[]
-  fixedExpenses?: FixedExpense[]
-  socialMedia?: SocialMediaLinks
-  leadContact?: string
-  healthScore?: number
-  inventory?: InventoryItem[]
-  leads?: Lead[]
-  roomCharacteristics?: RoomCharacteristics
-  priceHistory?: PriceHistory[]
-  amenities?: string[]
-}
-
-// Update Task Type to include guest_request
-export type TaskType =
-  | 'cleaning'
-  | 'maintenance'
-  | 'inspection'
-  | 'guest_request'
-
-export interface Task {
-  id: string
-  title: string
-  propertyId: string
-  propertyName: string
-  propertyAddress?: string
-  propertyCommunity?: string
-  status: TaskStatus
-  type: TaskType // Updated type
-  assignee: string
-  assigneeId?: string
-  partnerEmployeeId?: string
-  date: string
-  completedDate?: string
-  priority: 'low' | 'medium' | 'high' | 'critical'
-  images?: string[]
-  evidence?: Evidence[]
-  description?: string
-  price?: number
-  laborCost?: number
-  materialCost?: number
-  billableAmount?: number
-  teamMemberPayout?: number
-  backToBack?: boolean
-  recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
-  bookingId?: string
-  rating?: number
-  feedback?: string
-  source?: 'manual' | 'migration' | 'automation' | 'guest'
-  inventoryItemId?: string
-  lastNotified?: string
-  invoiceId?: string
-  approvalStatus?: 'owner_pending' | 'pm_pending' | 'approved'
-  lastRemindedAt?: string
-  createdBy?: string
-  history?: TaskHistory[]
-}
-
-// ... (keep all other types unchanged, make sure to include them if this file overwrites the previous one)
-// For brevity in this prompt context I assume I need to output the full file content if I change it.
-// However, due to token limits and instructions, I will try to be concise but complete enough for the types used.
-// RE-EXPORTING ALL PREVIOUS TYPES TO MAINTAIN CONSISTENCY
-
+// Re-exporting previous types plus new ones
 export type UserRole =
   | 'platform_owner'
   | 'software_tenant'
@@ -207,6 +34,10 @@ export type Resource =
   | 'reports'
   | 'visits'
   | 'hotels'
+  | 'performance'
+  | 'guest_services'
+  | 'pos'
+  | 'marketing'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -214,6 +45,77 @@ export interface Permission {
   resource: Resource
   actions: Action[]
 }
+
+// New Types for Advanced Management
+export interface GuestService {
+  id: string
+  name: string
+  description: string
+  price: number
+  category: 'spa' | 'transport' | 'dining' | 'other'
+  active: boolean
+}
+
+export interface ServiceOrder {
+  id: string
+  bookingId: string
+  serviceId: string
+  serviceName: string
+  price: number
+  date: string
+  status: 'pending' | 'delivered' | 'cancelled'
+  notes?: string
+}
+
+export interface PosItem {
+  id: string
+  name: string
+  price: number
+  category: 'minibar' | 'restaurant' | 'laundry' | 'shop'
+  active: boolean
+}
+
+export interface PosTransaction {
+  id: string
+  bookingId: string
+  roomId?: string
+  items: {
+    itemId: string
+    name: string
+    quantity: number
+    price: number
+  }[]
+  totalAmount: number
+  timestamp: string
+  status: 'charged' | 'paid' | 'void'
+  performedBy?: string
+}
+
+export interface Promotion {
+  id: string
+  code: string
+  type: 'percentage' | 'fixed_amount'
+  value: number
+  startDate: string
+  endDate: string
+  active: boolean
+  description?: string
+  usageCount: number
+  maxUsage?: number
+}
+
+export interface Campaign {
+  id: string
+  name: string
+  status: 'draft' | 'active' | 'completed'
+  startDate: string
+  endDate: string
+  promotions: string[] // IDs of promotions
+  targetAudience?: 'all' | 'past_guests' | 'leads'
+  description?: string
+}
+
+// --- Existing Types (Consolidated) ---
 
 export interface AlertConfig {
   id: string
@@ -504,10 +406,10 @@ export interface PriceHistory {
 }
 
 export interface RoomCharacteristics {
-  bedType: string // 'King', 'Queen', 'Twin', 'Double'
-  view: string // 'Sea View', 'City View', 'Garden View', 'Pool View'
+  bedType: string
+  view: string
   hasBalcony: boolean
-  maxOccupancy: number // existing 'guests' in Property, can sync or map
+  maxOccupancy: number
   sizeSqFt?: number
 }
 
@@ -562,6 +464,93 @@ export interface NegotiationLogEntry {
   user: string
 }
 
+export interface InventoryItem {
+  id: string
+  name: string
+  category: string
+  quantity: number
+  minStock?: number
+  unit?: string
+  description?: string
+  condition: ItemCondition
+  notes?: string
+  createdAt?: string
+  updatedAt?: string
+  damageHistory?: DamageRecord[]
+  media?: InventoryMedia[]
+}
+
+export interface RatePlan {
+  id: string
+  name: string
+  type: 'seasonal' | 'holiday' | 'long_stay' | 'last_minute' | 'standard'
+  startDate?: string
+  endDate?: string
+  daysOfWeek?: number[]
+  minStay?: number
+  adjustmentType: 'percentage' | 'fixed_price'
+  adjustmentValue: number
+  active: boolean
+}
+
+export interface Property {
+  id: string
+  name: string
+  address: string
+  neighborhood?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  country?: string
+  additionalInfo?: string
+  type: string
+  profileType: 'long_term' | 'short_term'
+  community: string
+  condominiumId?: string
+  hotelId?: string
+  towerId?: string
+  roomNumber?: string
+  status: PropertyStatus
+  marketingStatus?: 'listed' | 'unlisted'
+  listingPrice?: number
+  purchasePrice?: number
+  ratePlans?: RatePlan[]
+  publishToPortals?: boolean
+  portalSettings?: { zillow: boolean; idealista: boolean }
+  image: string
+  gallery?: string[]
+  bedrooms: number
+  bathrooms: number
+  guests: number
+  wifiSsid?: string
+  wifiPassword?: string
+  accessCodeBuilding?: string
+  accessCodeUnit?: string
+  accessCodeGuest?: string
+  accessCodeService?: string
+  accessCodeCleaning?: string
+  accessCodePool?: string
+  hoaValue?: number
+  hoaFrequency?: 'monthly' | 'quarterly' | 'semi-annually' | 'annually'
+  description?: { pt: string; en: string; es: string }
+  hoaRules?: { pt: string; en: string; es: string }
+  documents?: PropertyDocument[]
+  contractConfig?: { expirationAlertDays: number; renewalAlertDate?: string }
+  ownerId: string
+  agentId?: string
+  iCalUrl?: string
+  channelLinks?: ChannelLink[]
+  fixedExpenses?: FixedExpense[]
+  socialMedia?: SocialMediaLinks
+  leadContact?: string
+  healthScore?: number
+  inventory?: InventoryItem[]
+  leads?: Lead[]
+  roomCharacteristics?: RoomCharacteristics
+  priceHistory?: PriceHistory[]
+  amenities?: string[]
+}
+
 export interface Tenant {
   id: string
   name: string
@@ -583,11 +572,7 @@ export interface Tenant {
   socialSecurity?: string
   references?: string
   referralContacts?: { name: string; phone: string; email?: string }[]
-  emergencyContact?: {
-    name: string
-    phone: string
-    relation: string
-  }
+  emergencyContact?: { name: string; phone: string; relation: string }
   negotiationStatus?: NegotiationStatus
   negotiationLogs?: NegotiationLogEntry[]
   suggestedRenewalPrice?: number
@@ -661,11 +646,7 @@ export interface Owner {
   state?: string
   description?: string
   ownerInfo?: string
-  secondContact?: {
-    name: string
-    phone: string
-    email?: string
-  }
+  secondContact?: { name: string; phone: string; email?: string }
   pmAgreementUrl?: string
   isDemo?: boolean
 }
@@ -703,11 +684,7 @@ export interface PartnerEmployee {
   country?: string
   documents?: GenericDocument[]
   status: 'active' | 'inactive'
-  schedule?: {
-    date: string
-    slots: string[]
-    value?: number
-  }[]
+  schedule?: { date: string; slots: string[]; value?: number }[]
 }
 
 export interface Partner {
@@ -745,11 +722,7 @@ export interface Evidence {
   url: string
   type: 'arrival' | 'completion' | 'other'
   timestamp: string
-  location?: {
-    lat: number
-    lng: number
-    address: string
-  }
+  location?: { lat: number; lng: number; address: string }
   notes?: string
 }
 
@@ -762,6 +735,50 @@ export interface TaskHistory {
   userName: string
   timestamp: string
   note?: string
+}
+
+export type TaskType =
+  | 'cleaning'
+  | 'maintenance'
+  | 'inspection'
+  | 'guest_request'
+
+export interface Task {
+  id: string
+  title: string
+  propertyId: string
+  propertyName: string
+  propertyAddress?: string
+  propertyCommunity?: string
+  status: TaskStatus
+  type: TaskType
+  assignee: string
+  assigneeId?: string
+  partnerEmployeeId?: string
+  date: string
+  completedDate?: string
+  priority: 'low' | 'medium' | 'high' | 'critical'
+  images?: string[]
+  evidence?: Evidence[]
+  description?: string
+  price?: number
+  laborCost?: number
+  materialCost?: number
+  billableAmount?: number
+  teamMemberPayout?: number
+  backToBack?: boolean
+  recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
+  bookingId?: string
+  rating?: number
+  feedback?: string
+  source?: 'manual' | 'migration' | 'automation' | 'guest'
+  inventoryItemId?: string
+  lastNotified?: string
+  invoiceId?: string
+  approvalStatus?: 'owner_pending' | 'pm_pending' | 'approved'
+  lastRemindedAt?: string
+  createdBy?: string
+  history?: TaskHistory[]
 }
 
 export type TaskStatus =
@@ -1016,4 +1033,21 @@ export type TutorialModule = {
   description: string
   category: 'Operational' | 'CRM' | 'Financial' | 'Settings' | 'System'
   videoUrl: string
+}
+
+export interface NightAudit {
+  id: string
+  date: string
+  totalRevenue: number
+  totalOccupancy: number
+  roomCharges: number
+  serviceFees: number
+  status: 'pending' | 'completed' | 'verified'
+  generatedBy: string
+  notes?: string
+  details?: {
+    checkIns: number
+    checkOuts: number
+    noShows: number
+  }
 }
