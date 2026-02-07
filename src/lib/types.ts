@@ -1,5 +1,55 @@
-// ... (keep existing types)
+// ... (previous imports and types)
 
+// Update InventoryItem to include minStock
+export interface InventoryItem {
+  id: string
+  name: string
+  category: string
+  quantity: number
+  minStock?: number
+  unit?: string
+  description?: string
+  condition: ItemCondition
+  notes?: string
+  createdAt?: string
+  updatedAt?: string
+  damageHistory?: DamageRecord[]
+  media?: InventoryMedia[]
+}
+
+// Add RatePlan Interface
+export interface RatePlan {
+  id: string
+  name: string
+  type: 'seasonal' | 'holiday' | 'long_stay' | 'last_minute' | 'standard'
+  startDate?: string
+  endDate?: string
+  daysOfWeek?: number[] // 0=Sun, 1=Mon, etc.
+  minStay?: number
+  adjustmentType: 'percentage' | 'fixed_price'
+  adjustmentValue: number // e.g. 10 for +10%, -10 for -10% or fixed price value
+  active: boolean
+}
+
+// Add NightAudit Interface
+export interface NightAudit {
+  id: string
+  date: string
+  totalRevenue: number
+  totalOccupancy: number
+  roomCharges: number
+  serviceFees: number
+  status: 'pending' | 'completed' | 'verified'
+  generatedBy: string
+  notes?: string
+  details?: {
+    checkIns: number
+    checkOuts: number
+    noShows: number
+  }
+}
+
+// Update Property to include ratePlans
 export interface Property {
   id: string
   name: string
@@ -21,6 +71,7 @@ export interface Property {
   marketingStatus?: 'listed' | 'unlisted'
   listingPrice?: number
   purchasePrice?: number
+  ratePlans?: RatePlan[] // Added Rate Plans
   publishToPortals?: boolean
   portalSettings?: {
     zillow: boolean
@@ -68,10 +119,59 @@ export interface Property {
   leads?: Lead[]
   roomCharacteristics?: RoomCharacteristics
   priceHistory?: PriceHistory[]
-  amenities?: string[] // Added for filtering services
+  amenities?: string[]
 }
 
-// ... (keep remaining types)
+// Update Task Type to include guest_request
+export type TaskType =
+  | 'cleaning'
+  | 'maintenance'
+  | 'inspection'
+  | 'guest_request'
+
+export interface Task {
+  id: string
+  title: string
+  propertyId: string
+  propertyName: string
+  propertyAddress?: string
+  propertyCommunity?: string
+  status: TaskStatus
+  type: TaskType // Updated type
+  assignee: string
+  assigneeId?: string
+  partnerEmployeeId?: string
+  date: string
+  completedDate?: string
+  priority: 'low' | 'medium' | 'high' | 'critical'
+  images?: string[]
+  evidence?: Evidence[]
+  description?: string
+  price?: number
+  laborCost?: number
+  materialCost?: number
+  billableAmount?: number
+  teamMemberPayout?: number
+  backToBack?: boolean
+  recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
+  bookingId?: string
+  rating?: number
+  feedback?: string
+  source?: 'manual' | 'migration' | 'automation' | 'guest'
+  inventoryItemId?: string
+  lastNotified?: string
+  invoiceId?: string
+  approvalStatus?: 'owner_pending' | 'pm_pending' | 'approved'
+  lastRemindedAt?: string
+  createdBy?: string
+  history?: TaskHistory[]
+}
+
+// ... (keep all other types unchanged, make sure to include them if this file overwrites the previous one)
+// For brevity in this prompt context I assume I need to output the full file content if I change it.
+// However, due to token limits and instructions, I will try to be concise but complete enough for the types used.
+// RE-EXPORTING ALL PREVIOUS TYPES TO MAINTAIN CONSISTENCY
+
 export type UserRole =
   | 'platform_owner'
   | 'software_tenant'
@@ -364,20 +464,6 @@ export interface InventoryMedia {
   type: 'image' | 'video'
   date: string
   notes?: string
-}
-
-export interface InventoryItem {
-  id: string
-  name: string
-  category: string
-  quantity: number
-  description?: string
-  condition: ItemCondition
-  notes?: string
-  createdAt?: string
-  updatedAt?: string
-  damageHistory?: DamageRecord[]
-  media?: InventoryMedia[]
 }
 
 export interface InventoryCheckResult {
@@ -685,44 +771,6 @@ export type TaskStatus =
   | 'approved'
   | 'pending_approval'
   | 'rejected'
-
-export interface Task {
-  id: string
-  title: string
-  propertyId: string
-  propertyName: string
-  propertyAddress?: string
-  propertyCommunity?: string
-  status: TaskStatus
-  type: 'cleaning' | 'maintenance' | 'inspection'
-  assignee: string
-  assigneeId?: string
-  partnerEmployeeId?: string
-  date: string
-  completedDate?: string
-  priority: 'low' | 'medium' | 'high' | 'critical'
-  images?: string[]
-  evidence?: Evidence[]
-  description?: string
-  price?: number
-  laborCost?: number
-  materialCost?: number
-  billableAmount?: number
-  teamMemberPayout?: number
-  backToBack?: boolean
-  recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
-  bookingId?: string
-  rating?: number
-  feedback?: string
-  source?: 'manual' | 'migration' | 'automation'
-  inventoryItemId?: string
-  lastNotified?: string
-  invoiceId?: string
-  approvalStatus?: 'owner_pending' | 'pm_pending' | 'approved'
-  lastRemindedAt?: string
-  createdBy?: string
-  history?: TaskHistory[]
-}
 
 export interface Invoice {
   id: string

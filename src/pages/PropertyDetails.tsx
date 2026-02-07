@@ -16,6 +16,7 @@ import {
   Hammer,
   BarChart,
   PieChart,
+  TrendingUp,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -55,6 +56,7 @@ import { PropertyInventory } from '@/components/properties/PropertyInventory'
 import { PropertyContracts } from '@/components/properties/PropertyContracts'
 import { MaintenanceReport } from '@/components/maintenance/MaintenanceReport'
 import { PropertyAnalytics } from '@/components/properties/PropertyAnalytics'
+import { RatePlanManager } from '@/components/pricing/RatePlanManager' // Imported RatePlanManager
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -350,6 +352,12 @@ export default function PropertyDetails() {
             {t('properties.tabs.overview')}
           </TabsTrigger>
           <TabsTrigger
+            value="pricing"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
+          >
+            <TrendingUp className="h-4 w-4 mr-2" /> Pricing
+          </TabsTrigger>
+          <TabsTrigger
             value="analytics"
             className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
@@ -441,6 +449,10 @@ export default function PropertyDetails() {
             onChange={handleChange}
             canEdit={isEditing}
           />
+        </TabsContent>
+
+        <TabsContent value="pricing">
+          <RatePlanManager property={formData} />
         </TabsContent>
 
         <TabsContent value="analytics">

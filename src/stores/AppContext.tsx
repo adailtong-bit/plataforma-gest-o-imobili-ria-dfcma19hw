@@ -46,6 +46,8 @@ import {
   TaskHistory,
   TourStep,
   TutorialModule,
+  NightAudit,
+  RatePlan,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -118,6 +120,7 @@ interface AppContextType {
   typingStatus: Record<string, boolean>
   selectedPropertyId: string
   visits: Visit[]
+  nightAudits: NightAudit[] // New
 
   // Tour Props
   isTourOpen: boolean
@@ -216,6 +219,7 @@ interface AppContextType {
   addWorkflow: (workflow: Workflow) => void
   updateWorkflow: (workflow: Workflow) => void
   deleteWorkflow: (id: string) => void
+  runNightAudit: () => void // New
 
   // Tour Methods
   startTour: () => void
@@ -237,6 +241,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
   const [financials, setFinancials] = useState<Financials>(initialFinancials)
   const [visits, setVisits] = useState<Visit[]>(initialVisits)
+  const [nightAudits, setNightAudits] = useState<NightAudit[]>([])
 
   const [tenants, setTenants] = useState<Tenant[]>(() => {
     const saved = localStorage.getItem('app_tenants')
@@ -404,8 +409,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const addProperty = (p: Property) => setProperties([...properties, p])
-  const updateProperty = (p: Property) =>
+  const updateProperty = (p: Property) => {
+    // Check inventory for stock levels
+    if (p.inventory) {
+      p.inventory.forEach((item) => {
+        if (item.minStock !== undefined && item.quantity < item.minStock) {
+          addNotification({
+            title: 'Low Stock Alert',
+            message: `Item "${item.name}" at ${p.name} is below minimum stock (${item.quantity} < ${item.minStock}).`,
+            type: 'warning',
+            category: 'maintenance',
+          })
+        }
+      })
+    }
     setProperties(properties.map((prop) => (prop.id === p.id ? p : prop)))
+  }
   const deleteProperty = (id: string) =>
     setProperties(properties.filter((p) => p.id !== id))
 
@@ -449,15 +468,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const addTenant = (t: Tenant) => setTenants([...tenants, t])
   const updateTenant = (t: Tenant) =>
-    setTenants(tenants.map((tn) => (ten.id === t.id ? t : tn)))
+    setTenants(tenants.map((tn) => (tn.id === t.id ? t : tn)))
 
   const addOwner = (o: Owner) => setOwners([...owners, o])
   const updateOwner = (o: Owner) =>
-    setOwners(owners.map((ow) => (own.id === o.id ? o : ow)))
+    setOwners(owners.map((ow) => (ow.id === o.id ? o : ow)))
 
   const addPartner = (p: Partner) => setPartners([...partners, p])
   const updatePartner = (p: Partner) =>
-    setPartners(partners.map((pa) => (par.id === p.id ? p : pa)))
+    setPartners(partners.map((pa) => (pa.id === p.id ? p : pa)))
 
   const addUser = (u: User) => setUsers([...users, u])
   const updateUser = (u: User) =>
@@ -587,10 +606,46 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setMessageTemplates((prev) => [...prev, t])
   const updateMessageTemplate = (t: MessageTemplate) =>
     setMessageTemplates((prev) =>
-      prev.map((tmp) => (tmpl.id === t.id ? t : tmpl)),
+      prev.map((tmpl) => (tmpl.id === t.id ? t : tmpl)),
     )
   const deleteMessageTemplate = (id: string) =>
     setMessageTemplates((prev) => prev.filter((t) => t.id !== id))
+
+  const runNightAudit = () => {
+    const today = new Date().toISOString()
+    const dailyRevenue = bookings
+      .filter((b) => b.status === 'confirmed' || b.status === 'checked_in')
+      .reduce((acc, b) => acc + (b.totalAmount || 0) / 1, 0) // Simplified revenue calc
+
+    const newAudit: NightAudit = {
+      id: `audit-${Date.now()}`,
+      date: today,
+      totalRevenue: dailyRevenue,
+      totalOccupancy: bookings.filter((b) => b.status === 'checked_in').length,
+      roomCharges: dailyRevenue * 0.8,
+      serviceFees: dailyRevenue * 0.2,
+      status: 'completed',
+      generatedBy: currentUser.name,
+      details: {
+        checkIns: bookings.filter(
+          (b) =>
+            new Date(b.checkIn).toDateString() === new Date().toDateString(),
+        ).length,
+        checkOuts: bookings.filter(
+          (b) =>
+            new Date(b.checkOut).toDateString() === new Date().toDateString(),
+        ).length,
+        noShows: 0,
+      },
+    }
+    setNightAudits((prev) => [newAudit, ...prev])
+    addNotification({
+      title: 'Night Audit Completed',
+      message: `Audit for ${new Date().toLocaleDateString()} generated successfully.`,
+      type: 'success',
+      category: 'financial',
+    })
+  }
 
   const markPaymentAs = () => {}
   const addTaskImage = () => {}
@@ -671,6 +726,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         typingStatus,
         selectedPropertyId,
         visits,
+        nightAudits,
 
         isTourOpen,
         currentStepIndex,
@@ -762,6 +818,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addWorkflow,
         updateWorkflow,
         deleteWorkflow,
+        runNightAudit,
 
         startTour,
         endTour,

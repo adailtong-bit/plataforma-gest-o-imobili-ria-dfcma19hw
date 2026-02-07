@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -43,6 +43,9 @@ import ShortTerm from './pages/ShortTerm'
 import Reports from './pages/Reports'
 import Visits from './pages/Visits'
 import HelpHub from './pages/HelpHub'
+import Housekeeping from './pages/Housekeeping' // New
+import RoomConcierge from './pages/guest/RoomConcierge' // New
+import NightAudit from './pages/NightAudit' // New
 import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { useEffect } from 'react'
@@ -68,6 +71,7 @@ const App = () => {
               {/* Public Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/guest/:roomId" element={<RoomConcierge />} />
 
               {/* Protected Routes */}
               <Route element={<DashboardLayout />}>
@@ -321,6 +325,22 @@ const App = () => {
                   element={
                     <RequirePermission resource="visits">
                       <Visits />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/housekeeping"
+                  element={
+                    <RequirePermission resource="tasks">
+                      <Housekeeping />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/night-audit"
+                  element={
+                    <RequirePermission resource="financial">
+                      <NightAudit />
                     </RequirePermission>
                   }
                 />
