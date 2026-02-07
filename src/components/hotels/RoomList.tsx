@@ -25,13 +25,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Plus, Trash2, Edit2, Key, Eye, Filter } from 'lucide-react'
+import {
+  Plus,
+  Trash2,
+  Edit2,
+  Key,
+  Eye,
+  Filter,
+  Search,
+  BedDouble,
+  Users,
+} from 'lucide-react'
 import usePropertyStore from '@/stores/usePropertyStore'
 import { Property, PropertyStatus } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Link } from 'react-router-dom'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/ui/badge'
 
 interface RoomListProps {
   hotelId: string
@@ -215,27 +226,33 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
       case 'available':
         return 'bg-green-100 text-green-800 border-green-300'
       default:
-        return 'bg-gray-100'
+        return 'bg-gray-100 border-slate-300 text-slate-800'
     }
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50 p-4 rounded-lg border">
-        <div className="flex flex-wrap gap-2 w-full md:w-auto">
-          {/* Filters */}
-          <div className="relative">
-            <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+    <div className="flex flex-col h-full">
+      {/* Horizontal Filter Toolbar */}
+      <div className="p-4 border-b bg-slate-50/50 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 sticky top-0 z-10">
+        <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+          {/* Room Number Filter */}
+          <div className="relative w-full sm:w-auto">
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
             <Input
-              placeholder="Room No."
+              placeholder="Search Room..."
               value={filterRoomNumber}
               onChange={(e) => setFilterRoomNumber(e.target.value)}
-              className="pl-8 w-[120px] bg-white"
+              className="pl-9 w-full sm:w-[180px] bg-white border-slate-300 focus-visible:ring-blue-500"
             />
           </div>
+
+          {/* Status Filter */}
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-[130px] bg-white">
-              <SelectValue placeholder="Status" />
+            <SelectTrigger className="w-full sm:w-[150px] bg-white border-slate-300">
+              <div className="flex items-center gap-2">
+                <Filter className="h-3.5 w-3.5 text-slate-500" />
+                <SelectValue placeholder="Status" />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
@@ -245,9 +262,14 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
               <SelectItem value="cleaning">Cleaning</SelectItem>
             </SelectContent>
           </Select>
+
+          {/* Capacity Filter */}
           <Select value={filterOccupancy} onValueChange={setFilterOccupancy}>
-            <SelectTrigger className="w-[130px] bg-white">
-              <SelectValue placeholder="Capacity" />
+            <SelectTrigger className="w-full sm:w-[150px] bg-white border-slate-300">
+              <div className="flex items-center gap-2">
+                <Users className="h-3.5 w-3.5 text-slate-500" />
+                <SelectValue placeholder="Capacity" />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Any Capacity</SelectItem>
@@ -256,9 +278,14 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
               <SelectItem value="family">Family (3+)</SelectItem>
             </SelectContent>
           </Select>
+
+          {/* Service Filter */}
           <Select value={filterService} onValueChange={setFilterService}>
-            <SelectTrigger className="w-[130px] bg-white">
-              <SelectValue placeholder="Services" />
+            <SelectTrigger className="w-full sm:w-[160px] bg-white border-slate-300">
+              <div className="flex items-center gap-2">
+                <BedDouble className="h-3.5 w-3.5 text-slate-500" />
+                <SelectValue placeholder="Amenities" />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Services</SelectItem>
@@ -271,101 +298,62 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
           </Select>
         </div>
 
-        <Dialog
-          open={open}
-          onOpenChange={(v) => {
-            setOpen(v)
-            if (!v) {
-              setEditingRoom(null)
-              resetForm()
-            }
-          }}
-        >
-          <DialogTrigger asChild>
-            <Button size="sm" className="bg-trust-blue gap-2">
-              <Plus className="h-4 w-4" /> {t('hotels.add_room')}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {editingRoom ? t('common.edit') : t('hotels.new_room')}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>{t('hotels.room_number')}</Label>
-                  <Input
-                    value={formData.roomNumber}
-                    onChange={(e) =>
-                      setFormData({ ...formData, roomNumber: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>{t('common.name')}</Label>
-                  <Input
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    placeholder="e.g. Deluxe Suite"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>{t('common.status')}</Label>
-                  <Select
-                    value={formData.status}
-                    onValueChange={(v) =>
-                      setFormData({ ...formData, status: v as PropertyStatus })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="available">Ready</SelectItem>
-                      <SelectItem value="occupied">Occupied</SelectItem>
-                      <SelectItem value="maintenance">Maintenance</SelectItem>
-                      <SelectItem value="cleaning">In Cleaning</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Nightly Rate ($)</Label>
-                  <Input
-                    type="number"
-                    value={formData.listingPrice}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        listingPrice: parseFloat(e.target.value),
-                      })
-                    }
-                  />
-                </div>
-              </div>
-
-              {/* Characteristics */}
-              <div className="border-t pt-4">
-                <Label className="mb-2 block font-semibold">
-                  Characteristics
-                </Label>
+        <div className="w-full xl:w-auto flex justify-end">
+          <Dialog
+            open={open}
+            onOpenChange={(v) => {
+              setOpen(v)
+              if (!v) {
+                setEditingRoom(null)
+                resetForm()
+              }
+            }}
+          >
+            <DialogTrigger asChild>
+              <Button
+                size="sm"
+                className="bg-trust-blue hover:bg-blue-700 text-white gap-2 font-bold w-full sm:w-auto"
+              >
+                <Plus className="h-4 w-4" /> {t('hotels.add_room')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingRoom ? t('common.edit') : t('hotels.new_room')}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Bed Type</Label>
+                    <Label>{t('hotels.room_number')}</Label>
+                    <Input
+                      value={formData.roomNumber}
+                      onChange={(e) =>
+                        setFormData({ ...formData, roomNumber: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>{t('common.name')}</Label>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      placeholder="e.g. Deluxe Suite"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>{t('common.status')}</Label>
                     <Select
-                      value={formData.roomCharacteristics?.bedType}
+                      value={formData.status}
                       onValueChange={(v) =>
                         setFormData({
                           ...formData,
-                          roomCharacteristics: {
-                            ...formData.roomCharacteristics!,
-                            bedType: v,
-                          },
+                          status: v as PropertyStatus,
                         })
                       }
                     >
@@ -373,64 +361,123 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="King">King</SelectItem>
-                        <SelectItem value="Queen">Queen</SelectItem>
-                        <SelectItem value="Double">Double</SelectItem>
-                        <SelectItem value="Twin">Twin</SelectItem>
+                        <SelectItem value="available">Ready</SelectItem>
+                        <SelectItem value="occupied">Occupied</SelectItem>
+                        <SelectItem value="maintenance">Maintenance</SelectItem>
+                        <SelectItem value="cleaning">In Cleaning</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="grid gap-2">
-                    <Label>Max Occupancy</Label>
+                    <Label>Nightly Rate ($)</Label>
                     <Input
                       type="number"
-                      value={formData.roomCharacteristics?.maxOccupancy}
+                      value={formData.listingPrice}
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          roomCharacteristics: {
-                            ...formData.roomCharacteristics!,
-                            maxOccupancy: parseInt(e.target.value),
-                          },
+                          listingPrice: parseFloat(e.target.value),
                         })
                       }
                     />
                   </div>
-                  <div className="flex items-center space-x-2 mt-4">
-                    <Checkbox
-                      id="balcony"
-                      checked={formData.roomCharacteristics?.hasBalcony}
-                      onCheckedChange={(c) =>
-                        setFormData({
-                          ...formData,
-                          roomCharacteristics: {
-                            ...formData.roomCharacteristics!,
-                            hasBalcony: c as boolean,
-                          },
-                        })
-                      }
-                    />
-                    <Label htmlFor="balcony">Has Balcony</Label>
+                </div>
+
+                {/* Characteristics */}
+                <div className="border-t pt-4">
+                  <Label className="mb-2 block font-semibold">
+                    Characteristics
+                  </Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>Bed Type</Label>
+                      <Select
+                        value={formData.roomCharacteristics?.bedType}
+                        onValueChange={(v) =>
+                          setFormData({
+                            ...formData,
+                            roomCharacteristics: {
+                              ...formData.roomCharacteristics!,
+                              bedType: v,
+                            },
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="King">King</SelectItem>
+                          <SelectItem value="Queen">Queen</SelectItem>
+                          <SelectItem value="Double">Double</SelectItem>
+                          <SelectItem value="Twin">Twin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Max Occupancy</Label>
+                      <Input
+                        type="number"
+                        value={formData.roomCharacteristics?.maxOccupancy}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            roomCharacteristics: {
+                              ...formData.roomCharacteristics!,
+                              maxOccupancy: parseInt(e.target.value),
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center space-x-2 mt-4">
+                      <Checkbox
+                        id="balcony"
+                        checked={formData.roomCharacteristics?.hasBalcony}
+                        onCheckedChange={(c) =>
+                          setFormData({
+                            ...formData,
+                            roomCharacteristics: {
+                              ...formData.roomCharacteristics!,
+                              hasBalcony: c as boolean,
+                            },
+                          })
+                        }
+                      />
+                      <Label htmlFor="balcony">Has Balcony</Label>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <DialogFooter>
-              <Button onClick={handleSave}>{t('common.save')}</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter>
+                <Button onClick={handleSave}>{t('common.save')}</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
-      <div className="border rounded-md">
+      {/* Expanded Room List Table */}
+      <div className="flex-1 overflow-auto">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-slate-50 sticky top-0 z-0">
             <TableRow>
-              <TableHead>{t('hotels.room_number')}</TableHead>
-              <TableHead>{t('common.type')}</TableHead>
-              <TableHead>{t('common.status')}</TableHead>
-              <TableHead>Occupancy</TableHead>
-              <TableHead className="text-right">
+              <TableHead className="w-[120px] font-bold text-slate-700">
+                {t('hotels.room_number')}
+              </TableHead>
+              <TableHead className="font-bold text-slate-700">
+                {t('common.type')}
+              </TableHead>
+              <TableHead className="font-bold text-slate-700">
+                {t('common.status')}
+              </TableHead>
+              <TableHead className="font-bold text-slate-700">
+                Occupancy
+              </TableHead>
+              <TableHead className="font-bold text-slate-700">
+                Features
+              </TableHead>
+              <TableHead className="text-right font-bold text-slate-700">
                 {t('common.actions')}
               </TableHead>
             </TableRow>
@@ -439,20 +486,39 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
             {filteredRooms.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
-                  className="text-center py-8 text-muted-foreground"
+                  colSpan={6}
+                  className="text-center py-12 text-muted-foreground"
                 >
-                  No rooms found matching filters.
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <Key className="h-8 w-8 text-slate-300" />
+                    <p>No rooms found matching filters.</p>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
               filteredRooms.map((room) => (
-                <TableRow key={room.id} className="hover:bg-slate-50">
-                  <TableCell className="font-bold flex items-center gap-2">
-                    <Key className="h-4 w-4 text-slate-500" />
-                    {room.roomNumber}
+                <TableRow
+                  key={room.id}
+                  className="hover:bg-slate-50/80 transition-colors"
+                >
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-slate-100 rounded text-slate-600">
+                        <Key className="h-4 w-4" />
+                      </div>
+                      <span className="font-bold text-slate-900">
+                        {room.roomNumber}
+                      </span>
+                    </div>
                   </TableCell>
-                  <TableCell>{room.roomCharacteristics?.bedType}</TableCell>
+                  <TableCell>
+                    <div className="font-medium text-slate-700">
+                      {room.roomCharacteristics?.bedType}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {room.name}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <Select
                       value={room.status}
@@ -461,7 +527,7 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
                       }
                     >
                       <SelectTrigger
-                        className={`h-8 w-[130px] border-0 ${getStatusColor(room.status)} font-bold`}
+                        className={`h-8 w-[140px] border-0 focus:ring-0 ${getStatusColor(room.status)} font-bold rounded-full`}
                       >
                         <SelectValue>{room.status}</SelectValue>
                       </SelectTrigger>
@@ -474,10 +540,38 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
                     </Select>
                   </TableCell>
                   <TableCell>
-                    {room.roomCharacteristics?.maxOccupancy || 2} Guests
+                    <Badge
+                      variant="outline"
+                      className="text-slate-600 border-slate-300"
+                    >
+                      {room.roomCharacteristics?.maxOccupancy || 2} Guests
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-1 flex-wrap">
+                      {room.roomCharacteristics?.hasBalcony && (
+                        <Badge variant="secondary" className="text-[10px] h-5">
+                          Balcony
+                        </Badge>
+                      )}
+                      {room.roomCharacteristics?.view && (
+                        <Badge variant="secondary" className="text-[10px] h-5">
+                          {room.roomCharacteristics.view}
+                        </Badge>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openEdit(room)}
+                        title="Quick Edit"
+                        className="text-slate-500 hover:text-slate-900"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
                       <Link
                         to={
                           towerId !== 'none'
@@ -485,22 +579,19 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
                             : `/hotels/${hotelId}/rooms/${room.id}`
                         }
                       >
-                        <Button variant="ghost" size="icon" title="View Detail">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          title="View Detail"
+                          className="text-slate-500 hover:text-blue-600"
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
                       </Link>
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => openEdit(room)}
-                        title="Quick Edit"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-red-500 hover:text-red-700"
+                        className="text-slate-400 hover:text-red-600"
                         onClick={() => handleDelete(room.id)}
                       >
                         <Trash2 className="h-4 w-4" />

@@ -18936,6 +18936,24 @@ var Ban = createLucideIcon("ban", [["path", {
 	r: "10",
 	key: "1mglay"
 }]]);
+var BedDouble = createLucideIcon("bed-double", [
+	["path", {
+		d: "M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8",
+		key: "1k78r4"
+	}],
+	["path", {
+		d: "M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4",
+		key: "fb3tl2"
+	}],
+	["path", {
+		d: "M12 4v6",
+		key: "1dcgq2"
+	}],
+	["path", {
+		d: "M2 18h20",
+		key: "ajqnye"
+	}]
+]);
 var BellRing = createLucideIcon("bell-ring", [
 	["path", {
 		d: "M10.268 21a2 2 0 0 0 3.464 0",
@@ -87585,31 +87603,34 @@ function RoomList({ hotelId, towerId }) {
 			case "maintenance": return "bg-red-100 text-red-800 border-red-300";
 			case "cleaning": return "bg-blue-100 text-blue-800 border-blue-300";
 			case "available": return "bg-green-100 text-green-800 border-green-300";
-			default: return "bg-gray-100";
+			default: return "bg-gray-100 border-slate-300 text-slate-800";
 		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "space-y-4",
+		className: "flex flex-col h-full",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50 p-4 rounded-lg border",
+			className: "p-4 border-b bg-slate-50/50 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 sticky top-0 z-10",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-wrap gap-2 w-full md:w-auto",
+				className: "flex flex-wrap items-center gap-3 w-full xl:w-auto",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "relative",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Funnel, { className: "absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							placeholder: "Room No.",
+						className: "relative w-full sm:w-auto",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-3 top-2.5 h-4 w-4 text-slate-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							placeholder: "Search Room...",
 							value: filterRoomNumber,
 							onChange: (e) => setFilterRoomNumber(e.target.value),
-							className: "pl-8 w-[120px] bg-white"
+							className: "pl-9 w-full sm:w-[180px] bg-white border-slate-300 focus-visible:ring-blue-500"
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 						value: filterStatus,
 						onValueChange: setFilterStatus,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "w-[130px] bg-white",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Status" })
+							className: "w-full sm:w-[150px] bg-white border-slate-300",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Funnel, { className: "h-3.5 w-3.5 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Status" })]
+							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "all",
@@ -87637,8 +87658,11 @@ function RoomList({ hotelId, towerId }) {
 						value: filterOccupancy,
 						onValueChange: setFilterOccupancy,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "w-[130px] bg-white",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Capacity" })
+							className: "w-full sm:w-[150px] bg-white border-slate-300",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-3.5 w-3.5 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Capacity" })]
+							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "all",
@@ -87662,8 +87686,11 @@ function RoomList({ hotelId, towerId }) {
 						value: filterService,
 						onValueChange: setFilterService,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "w-[130px] bg-white",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Services" })
+							className: "w-full sm:w-[160px] bg-white border-slate-300",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(BedDouble, { className: "h-3.5 w-3.5 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Amenities" })]
+							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 							value: "all",
 							children: "All Services"
@@ -87673,207 +87700,244 @@ function RoomList({ hotelId, towerId }) {
 						}, am))] })]
 					})
 				]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-				open,
-				onOpenChange: (v) => {
-					setOpen(v);
-					if (!v) {
-						setEditingRoom(null);
-						resetForm();
-					}
-				},
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						size: "sm",
-						className: "bg-trust-blue gap-2",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
-							" ",
-							t$1("hotels.add_room")
-						]
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-					className: "max-w-3xl max-h-[90vh] overflow-y-auto",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRoom ? t$1("common.edit") : t$1("hotels.new_room") }) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-4 py-4",
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "w-full xl:w-auto flex justify-end",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+					open,
+					onOpenChange: (v) => {
+						setOpen(v);
+						if (!v) {
+							setEditingRoom(null);
+							resetForm();
+						}
+					},
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							size: "sm",
+							className: "bg-trust-blue hover:bg-blue-700 text-white gap-2 font-bold w-full sm:w-auto",
 							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-2 gap-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("hotels.room_number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											value: formData.roomNumber,
-											onChange: (e) => setFormData({
-												...formData,
-												roomNumber: e.target.value
-											})
-										})]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											value: formData.name,
-											onChange: (e) => setFormData({
-												...formData,
-												name: e.target.value
-											}),
-											placeholder: "e.g. Deluxe Suite"
-										})]
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-2 gap-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.status") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-											value: formData.status,
-											onValueChange: (v) => setFormData({
-												...formData,
-												status: v
-											}),
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-													value: "available",
-													children: "Ready"
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-													value: "occupied",
-													children: "Occupied"
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-													value: "maintenance",
-													children: "Maintenance"
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-													value: "cleaning",
-													children: "In Cleaning"
-												})
-											] })]
-										})]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nightly Rate ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "number",
-											value: formData.listingPrice,
-											onChange: (e) => setFormData({
-												...formData,
-												listingPrice: parseFloat(e.target.value)
-											})
-										})]
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "border-t pt-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-										className: "mb-2 block font-semibold",
-										children: "Characteristics"
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid grid-cols-2 gap-4",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Bed Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-													value: formData.roomCharacteristics?.bedType,
-													onValueChange: (v) => setFormData({
-														...formData,
-														roomCharacteristics: {
-															...formData.roomCharacteristics,
-															bedType: v
-														}
-													}),
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-															value: "King",
-															children: "King"
-														}),
-														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-															value: "Queen",
-															children: "Queen"
-														}),
-														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-															value: "Double",
-															children: "Double"
-														}),
-														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-															value: "Twin",
-															children: "Twin"
-														})
-													] })]
-												})]
-											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Max Occupancy" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													type: "number",
-													value: formData.roomCharacteristics?.maxOccupancy,
-													onChange: (e) => setFormData({
-														...formData,
-														roomCharacteristics: {
-															...formData.roomCharacteristics,
-															maxOccupancy: parseInt(e.target.value)
-														}
-													})
-												})]
-											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "flex items-center space-x-2 mt-4",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
-													id: "balcony",
-													checked: formData.roomCharacteristics?.hasBalcony,
-													onCheckedChange: (c$1) => setFormData({
-														...formData,
-														roomCharacteristics: {
-															...formData.roomCharacteristics,
-															hasBalcony: c$1
-														}
-													})
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-													htmlFor: "balcony",
-													children: "Has Balcony"
-												})]
-											})
-										]
-									})]
-								})
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+								" ",
+								t$1("hotels.add_room")
 							]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							onClick: handleSave,
-							children: t$1("common.save")
-						}) })
-					]
-				})]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+						className: "max-w-3xl max-h-[90vh] overflow-y-auto",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRoom ? t$1("common.edit") : t$1("hotels.new_room") }) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-4 py-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("hotels.room_number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: formData.roomNumber,
+												onChange: (e) => setFormData({
+													...formData,
+													roomNumber: e.target.value
+												})
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: formData.name,
+												onChange: (e) => setFormData({
+													...formData,
+													name: e.target.value
+												}),
+												placeholder: "e.g. Deluxe Suite"
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.status") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+												value: formData.status,
+												onValueChange: (v) => setFormData({
+													...formData,
+													status: v
+												}),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "available",
+														children: "Ready"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "occupied",
+														children: "Occupied"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "maintenance",
+														children: "Maintenance"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "cleaning",
+														children: "In Cleaning"
+													})
+												] })]
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nightly Rate ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "number",
+												value: formData.listingPrice,
+												onChange: (e) => setFormData({
+													...formData,
+													listingPrice: parseFloat(e.target.value)
+												})
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "border-t pt-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+											className: "mb-2 block font-semibold",
+											children: "Characteristics"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid grid-cols-2 gap-4",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Bed Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+														value: formData.roomCharacteristics?.bedType,
+														onValueChange: (v) => setFormData({
+															...formData,
+															roomCharacteristics: {
+																...formData.roomCharacteristics,
+																bedType: v
+															}
+														}),
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "King",
+																children: "King"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "Queen",
+																children: "Queen"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "Double",
+																children: "Double"
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "Twin",
+																children: "Twin"
+															})
+														] })]
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Max Occupancy" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														type: "number",
+														value: formData.roomCharacteristics?.maxOccupancy,
+														onChange: (e) => setFormData({
+															...formData,
+															roomCharacteristics: {
+																...formData.roomCharacteristics,
+																maxOccupancy: parseInt(e.target.value)
+															}
+														})
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "flex items-center space-x-2 mt-4",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
+														id: "balcony",
+														checked: formData.roomCharacteristics?.hasBalcony,
+														onCheckedChange: (c$1) => setFormData({
+															...formData,
+															roomCharacteristics: {
+																...formData.roomCharacteristics,
+																hasBalcony: c$1
+															}
+														})
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+														htmlFor: "balcony",
+														children: "Has Balcony"
+													})]
+												})
+											]
+										})]
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								onClick: handleSave,
+								children: t$1("common.save")
+							}) })
+						]
+					})]
+				})
 			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "border rounded-md",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("hotels.room_number") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.type") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Occupancy" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-					className: "text-right",
-					children: t$1("common.actions")
-				})
-			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredRooms.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-				colSpan: 5,
-				className: "text-center py-8 text-muted-foreground",
-				children: "No rooms found matching filters."
-			}) }) : filteredRooms.map((room) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
-				className: "hover:bg-slate-50",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-						className: "font-bold flex items-center gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-4 w-4 text-slate-500" }), room.roomNumber]
+			className: "flex-1 overflow-auto",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+				className: "bg-slate-50 sticky top-0 z-0",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "w-[120px] font-bold text-slate-700",
+						children: t$1("hotels.room_number")
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: room.roomCharacteristics?.bedType }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-slate-700",
+						children: t$1("common.type")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-slate-700",
+						children: t$1("common.status")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-slate-700",
+						children: "Occupancy"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-slate-700",
+						children: "Features"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "text-right font-bold text-slate-700",
+						children: t$1("common.actions")
+					})
+				] })
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredRooms.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				colSpan: 6,
+				className: "text-center py-12 text-muted-foreground",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex flex-col items-center justify-center gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-8 w-8 text-slate-300" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "No rooms found matching filters." })]
+				})
+			}) }) : filteredRooms.map((room) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+				className: "hover:bg-slate-50/80 transition-colors",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "p-1.5 bg-slate-100 rounded text-slate-600",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-4 w-4" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "font-bold text-slate-900",
+							children: room.roomNumber
+						})]
+					}) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "font-medium text-slate-700",
+						children: room.roomCharacteristics?.bedType
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "text-xs text-muted-foreground",
+						children: room.name
+					})] }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 						value: room.status,
 						onValueChange: (v) => updateStatus(room, v),
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: `h-8 w-[130px] border-0 ${getStatusColor(room.status)} font-bold`,
+							className: `h-8 w-[140px] border-0 focus:ring-0 ${getStatusColor(room.status)} font-bold rounded-full`,
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { children: room.status })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
@@ -87894,32 +87958,50 @@ function RoomList({ hotelId, towerId }) {
 							})
 						] })]
 					}) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: [room.roomCharacteristics?.maxOccupancy || 2, " Guests"] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+						variant: "outline",
+						className: "text-slate-600 border-slate-300",
+						children: [room.roomCharacteristics?.maxOccupancy || 2, " Guests"]
+					}) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex gap-1 flex-wrap",
+						children: [room.roomCharacteristics?.hasBalcony && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+							variant: "secondary",
+							className: "text-[10px] h-5",
+							children: "Balcony"
+						}), room.roomCharacteristics?.view && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+							variant: "secondary",
+							className: "text-[10px] h-5",
+							children: room.roomCharacteristics.view
+						})]
+					}) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 						className: "text-right",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex justify-end gap-2",
+							className: "flex justify-end gap-1",
 							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "ghost",
+									size: "icon",
+									onClick: () => openEdit(room),
+									title: "Quick Edit",
+									className: "text-slate-500 hover:text-slate-900",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-4 w-4" })
+								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 									to: towerId !== "none" ? `/hotels/${hotelId}/towers/${towerId}/rooms/${room.id}` : `/hotels/${hotelId}/rooms/${room.id}`,
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 										variant: "ghost",
 										size: "icon",
 										title: "View Detail",
+										className: "text-slate-500 hover:text-blue-600",
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4" })
 									})
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 									variant: "ghost",
 									size: "icon",
-									onClick: () => openEdit(room),
-									title: "Quick Edit",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-4 w-4" })
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									variant: "ghost",
-									size: "icon",
-									className: "text-red-500 hover:text-red-700",
+									className: "text-slate-400 hover:text-red-600",
 									onClick: () => handleDelete(room.id),
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
 								})
@@ -88375,76 +88457,168 @@ function HotelDetails() {
 function TowerDetails() {
 	const { id, towerId } = useParams();
 	const { hotels: hotels$1, towers: towers$1 } = useHotelStore_default();
+	const { properties: properties$1 } = usePropertyStore_default();
 	const { t: t$1 } = useLanguageStore_default();
 	const hotel = hotels$1.find((h) => h.id === id);
 	const tower = towers$1.find((t$2) => t$2.id === towerId);
 	if (!hotel || !tower) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: "Tower not found" });
+	const towerRooms = properties$1.filter((p$1) => p$1.towerId === towerId);
+	const totalRooms = towerRooms.length;
+	const occupiedRooms = towerRooms.filter((r$2) => r$2.status === "occupied").length;
+	const maintenanceRooms = towerRooms.filter((r$2) => r$2.status === "maintenance").length;
+	const cleaningRooms = towerRooms.filter((r$2) => r$2.status === "cleaning").length;
+	const availableRooms = towerRooms.filter((r$2) => r$2.status === "available").length;
+	const occupancyRate = totalRooms > 0 ? Math.round(occupiedRooms / totalRooms * 100) : 0;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "flex flex-col gap-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex items-center gap-4",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-				to: `/hotels/${hotel.id}`,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					variant: "ghost",
-					size: "icon",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-5 w-5" })
-				})
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-slate-950",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.name })
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-2 text-sm text-slate-500",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-						to: "/hotels",
-						className: "hover:underline",
-						children: t$1("hotels.title")
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-						to: `/hotels/${hotel.id}`,
-						className: "hover:underline",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.name })
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.name }) })
-				]
-			})] })]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "grid grid-cols-1 md:grid-cols-3 gap-6",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "md:col-span-1",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("hotels.tower_details") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-					className: "space-y-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-3 p-3 bg-muted/20 rounded-lg border",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-8 w-8 text-blue-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "font-semibold text-sm",
-							children: t$1("common.description")
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-sm text-muted-foreground",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.description || "-" })
-						})] })]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-3 p-3 bg-muted/20 rounded-lg border",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Layers, { className: "h-8 w-8 text-indigo-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "font-semibold text-sm",
-							children: t$1("hotels.floors")
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-sm text-muted-foreground",
-							children: tower.floors
-						})] })]
-					})]
+		className: "flex flex-col gap-6 w-full animate-in fade-in duration-500",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+					to: `/hotels/${hotel.id}`,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "ghost",
+						size: "icon",
+						className: "hover:bg-slate-100",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-5 w-5 text-slate-700" })
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold tracking-tight text-slate-950 flex items-center gap-2",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.name })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-2 text-sm text-slate-500 font-medium",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+							to: "/hotels",
+							className: "hover:underline hover:text-slate-700",
+							children: t$1("hotels.title")
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+							to: `/hotels/${hotel.id}`,
+							className: "hover:underline hover:text-slate-700",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.name })
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-slate-900",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.name })
+						})
+					]
+				})] })]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "border-slate-200 shadow-sm bg-white overflow-hidden",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "absolute top-0 left-0 w-1 h-full bg-blue-600" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+					className: "p-6",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex flex-col lg:flex-row gap-8 justify-between items-start lg:items-center",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-3 flex-1",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "p-2 bg-blue-50 rounded-lg",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-5 w-5 text-blue-600" })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+									className: "text-xl font-bold text-slate-900",
+									children: "Tower Overview"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.description || "Tower details and configuration." })
+								})] })]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex flex-wrap gap-3 mt-2 pl-11",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+									variant: "secondary",
+									className: "flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-700 border-slate-200",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Layers, { className: "h-3.5 w-3.5" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "font-semibold",
+											children: tower.floors
+										}),
+										" ",
+										t$1("hotels.floors")
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+									variant: "outline",
+									className: "flex items-center gap-1.5 px-3 py-1 border-slate-300 text-slate-700",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-3.5 w-3.5" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "font-semibold",
+											children: totalRooms
+										}),
+										" Total Rooms"
+									]
+								})]
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-wrap gap-4 w-full lg:w-auto justify-start lg:justify-end",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex flex-col items-center justify-center p-3 bg-white border border-slate-200 rounded-lg min-w-[110px] shadow-sm",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center gap-1 text-slate-500 mb-1",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "text-xs font-bold uppercase tracking-wider",
+											children: "Occupancy"
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+										className: "text-2xl font-bold text-slate-900",
+										children: [occupancyRate, "%"]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex flex-col items-center justify-center p-3 bg-green-50/50 border border-green-100 rounded-lg min-w-[110px] shadow-sm",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center gap-1 text-green-600 mb-1",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "text-xs font-bold uppercase tracking-wider",
+											children: "Available"
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-2xl font-bold text-green-700",
+										children: availableRooms
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex flex-col items-center justify-center p-3 bg-red-50/50 border border-red-100 rounded-lg min-w-[110px] shadow-sm",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center gap-1 text-red-600 mb-1",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Wrench, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "text-xs font-bold uppercase tracking-wider",
+											children: "Service"
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-2xl font-bold text-red-700",
+										children: maintenanceRooms + cleaningRooms
+									})]
+								})
+							]
+						})]
+					})
 				})]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "md:col-span-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("hotels.rooms") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: ["Manage rooms for ", tower.name] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RoomList, {
-					hotelId: hotel.id,
-					towerId: tower.id
-				}) })]
-			})]
-		})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "flex-1 border-slate-200 shadow-sm bg-white flex flex-col",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+					className: "pb-4 border-b",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("hotels.rooms") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [
+						"Manage and view all rooms associated with ",
+						tower.name,
+						"."
+					] })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+					className: "p-0",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RoomList, {
+						hotelId: hotel.id,
+						towerId: tower.id
+					})
+				})]
+			})
+		]
 	});
 }
 function isObject$1(subject) {
@@ -99374,4 +99548,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-D82EXE-r.js.map
+//# sourceMappingURL=index-BopgYcyU.js.map
