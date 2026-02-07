@@ -22,6 +22,10 @@ import {
   Invoice,
   Payment,
   CalendarBlock,
+  PaymentIntegration,
+  FinancialSettings,
+  BankStatement,
+  LedgerEntry,
 } from '@/lib/types'
 
 // Mock Users
@@ -46,6 +50,9 @@ export const users: User[] = [
     isFirstLogin: false,
   },
 ]
+
+// Export systemUsers (alias to users for now, or could be a separate list)
+export const systemUsers = users
 
 // Mock Owners
 export const owners: Owner[] = [
@@ -258,6 +265,64 @@ export const marketData: MarketData = {
   pricePerSqFt: 400,
   saturationIndex: 50,
 }
+
+// Additional Mock Data required by AppContext
+export const defaultPaymentIntegrations: PaymentIntegration[] = [
+  {
+    provider: 'credit_card',
+    enabled: true,
+    config: { provider: 'stripe' },
+  },
+  {
+    provider: 'bank_transfer',
+    enabled: true,
+  },
+]
+
+export const defaultFinancialSettings: FinancialSettings = {
+  companyName: 'COREPM Demo',
+  ein: '12-3456789',
+  bankName: 'Demo Bank',
+  routingNumber: '123456789',
+  accountNumber: '987654321',
+  gatewayProvider: 'stripe',
+  gateways: {
+    stripe: {
+      enabled: true,
+      publicKey: 'pk_test_mock',
+      secretKey: 'sk_test_mock',
+    },
+    paypal: { enabled: false },
+    mercadoPago: { enabled: false },
+  },
+  isProduction: false,
+  alertPreferences: [],
+}
+
+export const mockBankStatements: BankStatement[] = [
+  {
+    id: 'bs1',
+    fileName: 'January 2024 Statement.pdf',
+    uploadDate: new Date().toISOString(),
+    status: 'reconciled',
+    itemsCount: 45,
+    totalAmount: 15420.5,
+    url: '#',
+  },
+]
+
+export const ledgerEntries: LedgerEntry[] = [
+  {
+    id: 'le1',
+    propertyId: 'prop1',
+    date: new Date().toISOString(),
+    type: 'income',
+    category: 'Rent',
+    amount: 2000,
+    description: 'January Rent',
+    status: 'cleared',
+  },
+]
 
 // Other empty or minimal exports to satisfy imports
 export const bookings: Booking[] = []
