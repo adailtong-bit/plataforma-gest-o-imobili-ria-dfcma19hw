@@ -1,336 +1,424 @@
 import {
+  Hotel,
+  Tower,
   Property,
   User,
+  Task,
+  FinancialRecord,
+  Message,
   Tenant,
   Owner,
   Partner,
-  Task,
-  Financials,
-  Message,
-  MarketData,
   Condominium,
-  Hotel,
-  Tower,
   Booking,
-  Notification,
-  AuditLog,
-  Workflow,
-  AutomationRule,
-  Visit,
-  Lead,
-  InventoryItem,
-  Invoice,
-  Payment,
   CalendarBlock,
-  PaymentIntegration,
-  FinancialSettings,
-  BankStatement,
-  LedgerEntry,
+  Visit,
+  Workflow,
+  Notification,
 } from '@/lib/types'
 
-// Mock Users
-export const users: User[] = [
+// Mock Data for the Application
+
+export const systemUsers: User[] = [
   {
     id: 'u1',
     name: 'Admin User',
     email: 'admin@corepm.com',
-    role: 'platform_owner',
-    status: 'active',
-    isFirstLogin: false,
-    permissions: [
-      { resource: 'dashboard', actions: ['view', 'create', 'edit', 'delete'] },
-    ],
+    role: 'admin',
+    avatar: 'https://img.usecurling.com/ppl/medium?gender=male',
+    permissions: ['*'],
   },
   {
     id: 'u2',
-    name: 'Manager Demo',
+    name: 'Hotel Manager',
     email: 'manager@corepm.com',
-    role: 'internal_user',
-    status: 'active',
-    isFirstLogin: false,
+    role: 'manager',
+    avatar: 'https://img.usecurling.com/ppl/medium?gender=female',
+    permissions: ['hotels', 'properties', 'tenants', 'calendar', 'tasks'],
   },
 ]
 
-// Export systemUsers (alias to users for now, or could be a separate list)
-export const systemUsers = users
-
-// Mock Owners
-export const owners: Owner[] = [
-  {
-    id: 'o1',
-    name: 'James Wilson',
-    email: 'james@example.com',
-    phone: '555-0101',
-    status: 'active',
-    role: 'property_owner',
-    country: 'US',
-    city: 'Miami',
-    state: 'FL',
-  },
-]
-
-// Mock Partners
-export const partners: Partner[] = [
-  {
-    id: 'p1',
-    name: 'Top Cleaners',
-    type: 'cleaning',
-    email: 'info@topclean.com',
-    phone: '555-0102',
-    status: 'active',
-    role: 'partner',
-  },
-]
-
-// Mock Tenants
-export const tenants: Tenant[] = [
-  {
-    id: 't1',
-    name: 'Sarah Connor',
-    email: 'sarah@example.com',
-    phone: '555-0103',
-    rentValue: 2000,
-    status: 'active',
-    role: 'tenant',
-    propertyId: 'prop1',
-  },
-]
-
-// Mock Hotels
 export const hotels: Hotel[] = [
   {
     id: 'h1',
-    name: 'Grand Plaza',
-    address: '100 Ocean Dr',
-    city: 'Miami',
+    name: 'Grand Plaza Miami',
+    address: '1500 Collins Ave',
+    city: 'Miami Beach',
     state: 'FL',
     country: 'US',
     zipCode: '33139',
-    managerName: 'Carlos Manager',
-    towers: ['tow1'],
+    description:
+      'Luxury oceanfront hotel with premium amenities and world-class service.',
+    managerName: 'Elena Rodriguez',
+    managerEmail: 'elena.r@grandplaza.com',
+    managerPhone: '+1 (305) 555-0199',
+    amenities: [
+      'Ocean View',
+      'Spa',
+      'Valet Parking',
+      'Rooftop Pool',
+      'Fine Dining',
+      'Concierge',
+    ],
+    policies: [
+      'Check-in: 3 PM',
+      'Check-out: 11 AM',
+      'No Smoking in Rooms',
+      'Pets Allowed ($50 fee)',
+    ],
+    contacts: [
+      {
+        id: 'c1',
+        role: 'Front Desk',
+        name: 'Reception',
+        phone: '(305) 555-0100',
+        email: 'frontdesk@grandplaza.com',
+      },
+      {
+        id: 'c2',
+        role: 'General Manager',
+        name: 'Elena Rodriguez',
+        phone: '(305) 555-0199',
+        email: 'elena.r@grandplaza.com',
+      },
+    ],
+    towers: [],
+  },
+  {
+    id: 'h2',
+    name: 'Sunset Bay Resort',
+    address: '400 Bay Dr',
+    city: 'Tampa',
+    state: 'FL',
+    country: 'US',
+    zipCode: '33602',
+    description: 'Family friendly resort with bay views and water activities.',
+    managerName: 'Mike Johnson',
+    managerEmail: 'mike@sunsetbay.com',
+    managerPhone: '+1 (813) 555-0200',
+    amenities: [
+      'Pool',
+      'Water Park',
+      'Kids Club',
+      'Tennis Court',
+      'Beach Access',
+    ],
+    policies: ['No Pets', 'Resort Fee Applies', 'Check-in: 4 PM'],
+    contacts: [],
+    towers: [],
   },
 ]
 
-// Mock Towers
 export const towers: Tower[] = [
   {
-    id: 'tow1',
+    id: 't1',
     hotelId: 'h1',
-    name: 'Tower A',
+    name: 'Ocean Tower',
+    description: 'Direct ocean views, renovated in 2024.',
+    floors: 15,
+  },
+  {
+    id: 't2',
+    hotelId: 'h1',
+    name: 'City Tower',
+    description: 'City skyline views, larger suites.',
     floors: 12,
   },
 ]
 
-// Mock Properties
-const baseProperties: Property[] = [
+export const properties: Property[] = [
   {
-    id: 'prop1',
-    name: 'Downtown Condo',
-    address: '123 Main St',
-    type: 'Apartment',
-    profileType: 'long_term',
-    community: 'Metro City',
-    status: 'rented',
-    ownerId: 'o1',
-    image: 'https://img.usecurling.com/p/400/300?q=apartment',
-    bedrooms: 2,
-    bathrooms: 2,
-    guests: 4,
-    listingPrice: 2000,
-    amenities: ['Gym', 'Pool'],
-  },
-]
-
-const hotelRooms: Property[] = []
-for (let i = 1; i <= 10; i++) {
-  hotelRooms.push({
-    id: `hr${i}`,
-    name: `Room 10${i}`,
-    address: '100 Ocean Dr',
+    id: 'p1',
+    hotelId: 'h1',
+    towerId: 't1',
+    name: 'Ocean Suite 101',
+    roomNumber: '101',
     type: 'Hotel Room',
     profileType: 'short_term',
-    community: 'Grand Plaza',
-    hotelId: 'h1',
-    towerId: 'tow1',
-    roomNumber: `10${i}`,
-    status: i % 3 === 0 ? 'occupied' : 'available',
+    status: 'available',
+    listingPrice: 350,
     bedrooms: 1,
     bathrooms: 1,
     guests: 2,
-    image: 'https://img.usecurling.com/p/400/300?q=hotel%20room',
+    amenities: [
+      'Wi-Fi',
+      'Smart TV',
+      'Mini Bar',
+      'Ocean View Balcony',
+      'Jacuzzi',
+    ],
+    image: 'https://img.usecurling.com/p/400/300?q=luxury%20hotel%20room',
     ownerId: 'system',
-    listingPrice: 250,
-    amenities: ['Wifi', 'TV', 'Minibar'],
     roomCharacteristics: {
       bedType: 'King',
-      view: 'Ocean',
+      view: 'Sea View',
       hasBalcony: true,
       maxOccupancy: 2,
+      sizeSqFt: 500,
     },
-  })
-}
-
-export const properties: Property[] = [...baseProperties, ...hotelRooms]
-
-// Mock Condominiums
-export const condominiums: Condominium[] = [
+    priceHistory: [],
+    gallery: [
+      'https://img.usecurling.com/p/400/300?q=hotel%20room',
+      'https://img.usecurling.com/p/400/300?q=hotel%20bathroom',
+    ],
+  },
   {
-    id: 'c1',
-    name: 'Metro City',
-    address: '123 Main St',
-    city: 'Miami',
-    state: 'FL',
+    id: 'p2',
+    hotelId: 'h1',
+    towerId: 't1',
+    name: 'Ocean Standard 102',
+    roomNumber: '102',
+    type: 'Hotel Room',
+    profileType: 'short_term',
+    status: 'occupied',
+    listingPrice: 280,
+    bedrooms: 1,
+    bathrooms: 1,
+    guests: 2,
+    amenities: ['Wi-Fi', 'TV', 'Coffee Maker'],
+    image: 'https://img.usecurling.com/p/400/300?q=hotel%20bedroom',
+    ownerId: 'system',
+    roomCharacteristics: {
+      bedType: 'Queen',
+      view: 'Sea View',
+      hasBalcony: false,
+      maxOccupancy: 2,
+      sizeSqFt: 350,
+    },
+    priceHistory: [],
+  },
+  {
+    id: 'p3',
+    hotelId: 'h1',
+    towerId: 't2',
+    name: 'City Suite 201',
+    roomNumber: '201',
+    type: 'Hotel Room',
+    profileType: 'short_term',
+    status: 'cleaning',
+    listingPrice: 220,
+    bedrooms: 1,
+    bathrooms: 1,
+    guests: 2,
+    amenities: ['Wi-Fi', 'TV', 'City View'],
+    image: 'https://img.usecurling.com/p/400/300?q=modern%20hotel%20interior',
+    ownerId: 'system',
+    roomCharacteristics: {
+      bedType: 'King',
+      view: 'City View',
+      hasBalcony: true,
+      maxOccupancy: 2,
+      sizeSqFt: 400,
+    },
+    priceHistory: [],
+  },
+  {
+    id: 'p4',
+    hotelId: 'h1',
+    towerId: 't2',
+    name: 'City Standard 202',
+    roomNumber: '202',
+    type: 'Hotel Room',
+    profileType: 'short_term',
+    status: 'maintenance',
+    listingPrice: 180,
+    bedrooms: 1,
+    bathrooms: 1,
+    guests: 2,
+    amenities: ['Wi-Fi', 'TV'],
+    image: 'https://img.usecurling.com/p/400/300?q=simple%20hotel%20room',
+    ownerId: 'system',
+    roomCharacteristics: {
+      bedType: 'Double',
+      view: 'City View',
+      hasBalcony: false,
+      maxOccupancy: 2,
+      sizeSqFt: 300,
+    },
+    priceHistory: [],
   },
 ]
 
-// Mock Tasks
-export const tasks: Task[] = [
+export const tasks: Task[] = []
+export const financials: FinancialRecord[] = []
+export const messages: Message[] = []
+export const tenants: Tenant[] = []
+export const owners: Owner[] = []
+export const partners: Partner[] = []
+export const automationRules: any[] = []
+export const condominiums: Condominium[] = []
+
+export const defaultPaymentIntegrations = {
+  stripe: {
+    enabled: true,
+    publicKey: 'pk_test_sample',
+    secretKey: 'sk_test_sample',
+  },
+  paypal: { enabled: false, clientId: '', secretKey: '' },
+}
+
+export const defaultFinancialSettings = {
+  currency: 'USD',
+  taxRate: 7.0,
+  invoiceFooter: 'Thank you for choosing COREPM.',
+}
+
+export const mockBankStatements: any[] = []
+export const ledgerEntries: any[] = []
+export const auditLogs: any[] = []
+
+// Generic Service Rates
+export const genericServiceRates = [
   {
-    id: 'tsk1',
-    title: 'Leaking Faucet',
-    propertyId: 'prop1',
-    propertyName: 'Downtown Condo',
+    id: 'gsr1',
+    name: 'Standard Cleaning',
+    amount: 50,
+    type: 'flat',
+    description: 'Regular room cleaning',
+  },
+  {
+    id: 'gsr2',
+    name: 'Deep Cleaning',
+    amount: 100,
+    type: 'flat',
+    description: 'Deep cleaning and sanitization',
+  },
+  {
+    id: 'gsr3',
+    name: 'Maintenance Labor',
+    amount: 75,
+    type: 'hourly',
+    description: 'General maintenance work',
+  },
+  {
+    id: 'gsr4',
+    name: 'Room Service Surcharge',
+    amount: 15,
+    type: 'percentage',
+    description: 'Fee on food orders',
+  },
+]
+
+export const notifications: Notification[] = [
+  {
+    id: 'n1',
+    userId: 'u1',
+    title: 'System Update',
+    message: 'Welcome to the COREPM dashboard.',
+    type: 'info',
+    read: false,
+    createdAt: new Date().toISOString(),
+  },
+]
+
+// Advertisements & Marketing
+export const advertisements = [
+  {
+    id: 'ad1',
+    title: 'Summer Promotion',
+    placement: 'sidebar',
+    active: true,
+    impressions: 1200,
+    clicks: 45,
+  },
+  {
+    id: 'ad2',
+    title: 'Local Tours Partner',
+    placement: 'dashboard',
+    active: true,
+    impressions: 3400,
+    clicks: 120,
+  },
+]
+
+export const mockAdvertisers = [
+  {
+    id: 'adv1',
+    name: 'Miami Tours Inc.',
+    contact: 'partners@miamitours.com',
+    status: 'active',
+  },
+  {
+    id: 'adv2',
+    name: 'Beach Rentals',
+    contact: 'info@beachrentals.com',
     status: 'pending',
-    type: 'maintenance',
-    assignee: 'p1',
-    date: new Date().toISOString(),
-    priority: 'medium',
   },
 ]
 
-// Mock Financials
-export const invoices: Invoice[] = [
-  {
-    id: 'inv1',
-    description: 'Rent Jan',
-    amount: 2000,
-    status: 'paid',
-    date: new Date().toISOString(),
-  },
-]
-
-export const payments: Payment[] = [
-  {
-    id: 'pay1',
-    tenantId: 't1',
-    tenantName: 'Sarah Connor',
-    propertyId: 'prop1',
-    amount: 2000,
-    date: new Date().toISOString(),
-    dueDate: new Date().toISOString(),
-    status: 'paid',
-    type: 'rent',
-  },
-]
-
-export const financials: Financials = {
-  revenue: [
-    { month: 'Jan', value: 2000 },
-    { month: 'Feb', value: 2500 },
-    { month: 'Mar', value: 2200 },
-  ],
-  expenses: [
-    { category: 'Maintenance', value: 150, fill: '#ef4444' },
-    { category: 'Utilities', value: 300, fill: '#3b82f6' },
-  ],
-  invoices,
-  payments,
+export const mockAdPricing = {
+  sidebar: 50,
+  banner: 100,
+  featured: 200,
+  popup: 300,
 }
 
-// Mock Messages
-export const messages: Message[] = [
-  {
-    id: 'm1',
-    contact: 'Sarah Connor',
-    contactId: 't1',
-    ownerId: 'u1',
-    lastMessage: 'Is the parking included?',
-    time: '09:00',
-    unread: 1,
-    avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=female',
-    history: [],
-  },
-]
-
-// Mock Market Data
-export const marketData: MarketData = {
-  region: 'Miami, FL',
-  averagePrice: 500000,
-  occupancyRate: 88,
-  trend: 'up',
-  competitorCount: 50,
-  averageDaysOnMarket: 30,
-  shortTermRate: 300,
-  longTermRate: 2500,
-  pricePerSqFt: 400,
-  saturationIndex: 50,
-}
-
-// Additional Mock Data required by AppContext
-export const defaultPaymentIntegrations: PaymentIntegration[] = [
-  {
-    provider: 'credit_card',
-    enabled: true,
-    config: { provider: 'stripe' },
-  },
-  {
-    provider: 'bank_transfer',
-    enabled: true,
-  },
-]
-
-export const defaultFinancialSettings: FinancialSettings = {
-  companyName: 'COREPM Demo',
-  ein: '12-3456789',
-  bankName: 'Demo Bank',
-  routingNumber: '123456789',
-  accountNumber: '987654321',
-  gatewayProvider: 'stripe',
-  gateways: {
-    stripe: {
-      enabled: true,
-      publicKey: 'pk_test_mock',
-      secretKey: 'sk_test_mock',
-    },
-    paypal: { enabled: false },
-    mercadoPago: { enabled: false },
-  },
-  isProduction: false,
-  alertPreferences: [],
-}
-
-export const mockBankStatements: BankStatement[] = [
-  {
-    id: 'bs1',
-    fileName: 'January 2024 Statement.pdf',
-    uploadDate: new Date().toISOString(),
-    status: 'reconciled',
-    itemsCount: 45,
-    totalAmount: 15420.5,
-    url: '#',
-  },
-]
-
-export const ledgerEntries: LedgerEntry[] = [
-  {
-    id: 'le1',
-    propertyId: 'prop1',
-    date: new Date().toISOString(),
-    type: 'income',
-    category: 'Rent',
-    amount: 2000,
-    description: 'January Rent',
-    status: 'cleared',
-  },
-]
-
-// Other empty or minimal exports to satisfy imports
 export const bookings: Booking[] = []
-export const notifications: Notification[] = []
-export const auditLogs: AuditLog[] = []
-export const workflows: Workflow[] = []
-export const automationRules: AutomationRule[] = []
-export const visits: Visit[] = []
-export const leads: Lead[] = []
-export const inventory: InventoryItem[] = []
 export const calendarBlocks: CalendarBlock[] = []
+
+// Message Templates
+export const messageTemplates = [
+  {
+    id: 'mt1',
+    name: 'Booking Confirmation',
+    content: 'Dear {guest_name}, your booking at {hotel_name} is confirmed.',
+    type: 'email',
+  },
+  {
+    id: 'mt2',
+    name: 'Payment Reminder',
+    content: 'This is a reminder that your invoice is due.',
+    type: 'sms',
+  },
+  {
+    id: 'mt3',
+    name: 'Check-in Instructions',
+    content: 'Welcome! Your room code is {room_code}. Enjoy your stay.',
+    type: 'email',
+  },
+  {
+    id: 'mt4',
+    name: 'Check-out Thank You',
+    content: 'Thank you for staying with us. We hope to see you again!',
+    type: 'email',
+  },
+]
+
+export const serviceCategories = [
+  { id: 'sc1', name: 'Cleaning', description: 'Housekeeping services' },
+  { id: 'sc2', name: 'Maintenance', description: 'Repairs and upkeep' },
+  { id: 'sc3', name: 'Concierge', description: 'Guest assistance' },
+  { id: 'sc4', name: 'Food & Beverage', description: 'Dining services' },
+]
+
+export const visits: Visit[] = []
+export const workflows: Workflow[] = []
+
+// Tour Guide Steps
+export const tourSteps = [
+  {
+    target: 'body',
+    content:
+      "Welcome to COREPM! Let's take a quick tour of your management dashboard.",
+    disableBeacon: true,
+  },
+  {
+    target: '[href="/hotels"]',
+    content:
+      'Manage your Hotels and Towers here. You can view occupancy, add rooms, and manage staff.',
+  },
+  {
+    target: '[href="/properties"]',
+    content:
+      'View a master list of all rooms and properties across all locations.',
+  },
+  {
+    target: '[href="/calendar"]',
+    content:
+      'Use the Calendar to view bookings, availability, and manage reservations.',
+  },
+  {
+    target: '[href="/financial"]',
+    content: 'Track revenue, expenses, and generate financial reports here.',
+  },
+]
