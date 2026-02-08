@@ -53141,7 +53141,8 @@ const properties = [{
 		sizeSqFt: 500
 	},
 	priceHistory: [],
-	gallery: []
+	gallery: [],
+	channelMappings: []
 }];
 const tasks = [];
 const financials = {
@@ -53271,6 +53272,7 @@ const promotions = [{
 	endDate: "2024-08-31",
 	active: true,
 	usageCount: 12,
+	totalDiscountApplied: 450,
 	description: "15% off summer bookings"
 }];
 const campaigns = [{
@@ -53326,6 +53328,60 @@ const marketData = [
 		hoaAvg: 900
 	}
 ];
+const feedbacks = [{
+	id: "f1",
+	bookingId: "bk1",
+	propertyId: "p1",
+	guestName: "Alice Wonderland",
+	rating: 5,
+	comment: "Amazing stay! The ocean view was breathtaking.",
+	date: "2024-06-05T10:00:00Z",
+	status: "new"
+}, {
+	id: "f2",
+	bookingId: "bk2",
+	propertyId: "p1",
+	guestName: "Bob Builder",
+	rating: 4,
+	comment: "Great location, but the wifi was a bit slow.",
+	date: "2024-05-20T11:00:00Z",
+	status: "reviewed",
+	response: "Thanks Bob, we are upgrading the network next week!"
+}];
+const channelMappings = [{
+	id: "cm1",
+	propertyId: "p1",
+	platform: "airbnb",
+	otaRoomId: "123456",
+	status: "mapped",
+	lastSync: "2024-06-01T08:00:00Z"
+}];
+const marketingWorkflows = [{
+	id: "mw1",
+	name: "Welcome Email",
+	trigger: "booking_confirmed",
+	offsetTime: 0,
+	templateId: "et1",
+	active: true
+}, {
+	id: "mw2",
+	name: "Pre-Arrival Upsell",
+	trigger: "check_in",
+	offsetTime: -48,
+	templateId: "et2",
+	active: true
+}];
+const emailTemplates = [{
+	id: "et1",
+	name: "Welcome Confirmation",
+	subject: "Booking Confirmed!",
+	body: "Hi {guest_name}, thank you for booking {property_name}. See you soon!"
+}, {
+	id: "et2",
+	name: "Pre-Arrival",
+	subject: "Get ready for your trip",
+	body: "Hi {guest_name}, enhance your stay with our spa package!"
+}];
 const tutorialModules = [
 	{
 		key: "dashboard-overview",
@@ -54209,6 +54265,10 @@ const AppProvider = ({ children }) => {
 	const [promotions$1, setPromotions] = (0, import_react.useState)(promotions);
 	const [campaigns$1, setCampaigns] = (0, import_react.useState)(campaigns);
 	const [serviceOrders$1, setServiceOrders] = (0, import_react.useState)(serviceOrders);
+	const [feedbacks$1, setFeedbacks] = (0, import_react.useState)(feedbacks);
+	const [channelMappings$1, setChannelMappings] = (0, import_react.useState)(channelMappings);
+	const [marketingWorkflows$1, setMarketingWorkflows] = (0, import_react.useState)(marketingWorkflows);
+	const [emailTemplates$1, setEmailTemplates] = (0, import_react.useState)(emailTemplates);
 	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("all");
 	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(false);
 	const [currentUser, setCurrentUserObj] = (0, import_react.useState)(systemUsers[0]);
@@ -54383,6 +54443,17 @@ const AppProvider = ({ children }) => {
 	const prevStep = () => setCurrentStepIndex(currentStepIndex - 1);
 	const openVideo = (url) => setActiveVideo(url);
 	const closeVideo = () => setActiveVideo(null);
+	const addFeedback = (f) => setFeedbacks([...feedbacks$1, f]);
+	const updateFeedback = (f) => setFeedbacks(feedbacks$1.map((x$2) => x$2.id === f.id ? f : x$2));
+	const addChannelMapping = (m$1) => setChannelMappings([...channelMappings$1, m$1]);
+	const updateChannelMapping = (m$1) => setChannelMappings(channelMappings$1.map((x$2) => x$2.id === m$1.id ? m$1 : x$2));
+	const deleteChannelMapping = (id) => setChannelMappings(channelMappings$1.filter((x$2) => x$2.id !== id));
+	const addMarketingWorkflow = (w) => setMarketingWorkflows([...marketingWorkflows$1, w]);
+	const updateMarketingWorkflow = (w) => setMarketingWorkflows(marketingWorkflows$1.map((x$2) => x$2.id === w.id ? w : x$2));
+	const deleteMarketingWorkflow = (id) => setMarketingWorkflows(marketingWorkflows$1.filter((x$2) => x$2.id !== id));
+	const addEmailTemplate = (t$2) => setEmailTemplates([...emailTemplates$1, t$2]);
+	const updateEmailTemplate = (t$2) => setEmailTemplates(emailTemplates$1.map((x$2) => x$2.id === t$2.id ? t$2 : x$2));
+	const deleteEmailTemplate = (id) => setEmailTemplates(emailTemplates$1.filter((x$2) => x$2.id !== id));
 	const visibleMessages = (0, import_react.useMemo)(() => allMessages.filter((m$1) => m$1.ownerId === currentUser.id), [allMessages, currentUser.id]);
 	const allUsers = (0, import_react.useMemo)(() => [
 		...users,
@@ -54438,6 +54509,10 @@ const AppProvider = ({ children }) => {
 			promotions: promotions$1,
 			campaigns: campaigns$1,
 			serviceOrders: serviceOrders$1,
+			feedbacks: feedbacks$1,
+			channelMappings: channelMappings$1,
+			marketingWorkflows: marketingWorkflows$1,
+			emailTemplates: emailTemplates$1,
 			isTourOpen,
 			currentStepIndex,
 			tourSteps,
@@ -54547,7 +54622,18 @@ const AppProvider = ({ children }) => {
 			nextStep,
 			prevStep,
 			openVideo,
-			closeVideo
+			closeVideo,
+			addFeedback,
+			updateFeedback,
+			addChannelMapping,
+			updateChannelMapping,
+			deleteChannelMapping,
+			addMarketingWorkflow,
+			updateMarketingWorkflow,
+			deleteMarketingWorkflow,
+			addEmailTemplate,
+			updateEmailTemplate,
+			deleteEmailTemplate
 		},
 		children
 	});
@@ -54603,9 +54689,13 @@ var usePropertyStore = () => {
 	if (!context) throw new Error("usePropertyStore must be used within AppProvider");
 	return {
 		properties: context.properties,
+		channelMappings: context.channelMappings,
 		addProperty: context.addProperty,
 		updateProperty: context.updateProperty,
-		deleteProperty: context.deleteProperty
+		deleteProperty: context.deleteProperty,
+		addChannelMapping: context.addChannelMapping,
+		updateChannelMapping: context.updateChannelMapping,
+		deleteChannelMapping: context.deleteChannelMapping
 	};
 };
 var usePropertyStore_default = usePropertyStore;
@@ -58809,7 +58899,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$95({ inst: {
+			cachedValue = useState$97({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -58846,7 +58936,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$66 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$95 = React$66.useState, useEffect$26 = React$66.useEffect, useLayoutEffect$2 = React$66.useLayoutEffect, useDebugValue = React$66.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$66 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$97 = React$66.useState, useEffect$26 = React$66.useEffect, useLayoutEffect$2 = React$66.useLayoutEffect, useDebugValue = React$66.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$66.useSyncExternalStore ? React$66.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -64878,6 +64968,7 @@ var useShortTermStore = () => {
 		bookings: context.bookings,
 		calendarBlocks: context.calendarBlocks,
 		messageTemplates: context.messageTemplates,
+		feedbacks: context.feedbacks,
 		addBooking: context.addBooking,
 		updateBooking: context.updateBooking,
 		deleteBooking: context.deleteBooking,
@@ -64885,7 +64976,9 @@ var useShortTermStore = () => {
 		deleteCalendarBlock: context.deleteCalendarBlock,
 		addMessageTemplate: context.addMessageTemplate,
 		updateMessageTemplate: context.updateMessageTemplate,
-		deleteMessageTemplate: context.deleteMessageTemplate
+		deleteMessageTemplate: context.deleteMessageTemplate,
+		addFeedback: context.addFeedback,
+		updateFeedback: context.updateFeedback
 	};
 };
 var useShortTermStore_default = useShortTermStore;
@@ -74701,6 +74794,131 @@ function PropertyActivityLog({ propertyId }) {
 		})
 	}) })] });
 }
+function ChannelMapping({ property: property$2 }) {
+	const { channelMappings: channelMappings$1, addChannelMapping, deleteChannelMapping, updateChannelMapping } = usePropertyStore_default();
+	const { toast: toast$2 } = useToast();
+	const [platform$1, setPlatform] = (0, import_react.useState)("airbnb");
+	const [otaRoomId, setOtaRoomId] = (0, import_react.useState)("");
+	const [localType, setLocalType] = (0, import_react.useState)(property$2.type);
+	const mappings = channelMappings$1.filter((m$1) => m$1.propertyId === property$2.id);
+	const handleAddMapping = () => {
+		if (!otaRoomId) return;
+		addChannelMapping({
+			id: `map-${Date.now()}`,
+			propertyId: property$2.id,
+			platform: platform$1,
+			otaRoomId,
+			localRoomTypeId: localType,
+			status: "pending"
+		});
+		setOtaRoomId("");
+		toast$2({ title: "Mapping Added" });
+	};
+	const handleSync = (mapping) => {
+		updateChannelMapping({
+			...mapping,
+			status: "mapped",
+			lastSync: (/* @__PURE__ */ new Date()).toISOString()
+		});
+		toast$2({
+			title: "Availability Synced",
+			description: `Updated ${mapping.platform}`
+		});
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Advanced OTA Mapping" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Link local room types to external channel IDs for real-time sync." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+		className: "space-y-6",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex gap-4 items-end border p-4 rounded-lg bg-slate-50",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2 flex-1",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "text-sm font-medium",
+						children: "Platform"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: platform$1,
+						onValueChange: (v) => setPlatform(v),
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "airbnb",
+								children: "Airbnb"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "booking.com",
+								children: "Booking.com"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "vrbo",
+								children: "Vrbo"
+							})
+						] })]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2 flex-1",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "text-sm font-medium",
+						children: "OTA Room ID"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+						value: otaRoomId,
+						onChange: (e) => setOtaRoomId(e.target.value),
+						placeholder: "e.g. 12345678"
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: handleAddMapping,
+					className: "bg-trust-blue gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Add Map"]
+				})
+			]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Platform" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "OTA ID" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Last Sync" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "text-right",
+				children: "Actions"
+			})
+		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: mappings.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+			colSpan: 5,
+			className: "text-center py-6 text-muted-foreground",
+			children: "No active mappings."
+		}) }) : mappings.map((map$4) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "capitalize font-medium",
+				children: map$4.platform
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "font-mono",
+				children: map$4.otaRoomId
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+				variant: map$4.status === "mapped" ? "default" : "secondary",
+				children: map$4.status
+			}) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: map$4.lastSync ? formatDate(map$4.lastSync) : "Never" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-right",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex justify-end gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						variant: "outline",
+						size: "sm",
+						onClick: () => handleSync(map$4),
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RefreshCw, { className: "h-3 w-3 mr-1" }), " Sync"]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "ghost",
+						size: "icon",
+						onClick: () => deleteChannelMapping(map$4.id),
+						className: "text-red-500",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+					})]
+				})
+			})
+		] }, map$4.id)) })] })]
+	})] });
+}
 function PropertySync({ data, onChange, canEdit }) {
 	const { toast: toast$2 } = useToast();
 	const { t: t$1, language } = useLanguageStore_default();
@@ -74751,132 +74969,136 @@ function PropertySync({ data, onChange, canEdit }) {
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "space-y-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("sync.title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("sync.subtitle") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-			className: "space-y-6",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex gap-4 items-end",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2 flex-1",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("sync.platform") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-								value: platform$1,
-								onValueChange: (v) => setPlatform(v),
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Basic iCal Synchronization" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Simple calendar syncing via URL." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex gap-4 items-end",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2 flex-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("sync.platform") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: platform$1,
+									onValueChange: (v) => setPlatform(v),
+									disabled: !canEdit,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "airbnb",
+											children: "Airbnb (iCal)"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "booking.com",
+											children: "Booking.com (iCal)"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "vrbo",
+											children: "Vrbo (iCal)"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "other",
+											children: "Other"
+										})
+									] })]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2 flex-[2]",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("sync.ical_url") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									placeholder: "https://...",
+									value: newLink,
+									onChange: (e) => setNewLink(e.target.value),
+									disabled: !canEdit
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								onClick: handleAddLink,
 								disabled: !canEdit,
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "airbnb",
-										children: "Airbnb (iCal)"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "booking.com",
-										children: "Booking.com (iCal)"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "vrbo",
-										children: "Vrbo (iCal)"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "other",
-										children: "Other"
-									})
-								] })]
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2 flex-[2]",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("sync.ical_url") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								placeholder: "https://...",
-								value: newLink,
-								onChange: (e) => setNewLink(e.target.value),
-								disabled: !canEdit
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-							onClick: handleAddLink,
-							disabled: !canEdit,
-							className: "bg-trust-blue",
+								className: "bg-trust-blue",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4 mr-2" }),
+									" ",
+									t$1("sync.add_link")
+								]
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "border rounded-md",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("sync.platform") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "URL" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("sync.status") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("sync.last_sync") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "text-right",
+								children: t$1("common.actions")
+							})
+						] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [(!data.channelLinks || data.channelLinks.length === 0) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							colSpan: 5,
+							className: "text-center py-6 text-muted-foreground",
+							children: t$1("sync.no_links")
+						}) }), data.channelLinks?.map((link) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "capitalize font-medium",
+								children: link.platform
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "max-w-[200px] truncate text-xs text-muted-foreground",
+								children: link.url
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+								variant: "secondary",
+								className: link.status === "active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800",
+								children: link.status
+							}) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "text-xs",
+								children: link.lastSync ? formatDate(link.lastSync, language) : "-"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "text-right",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "ghost",
+									size: "icon",
+									onClick: () => handleRemoveLink(link.id),
+									disabled: !canEdit,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 text-red-500" })
+								})
+							})
+						] }, link.id))] })] })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "flex justify-end",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							variant: "outline",
+							onClick: handleSyncNow,
+							className: "gap-2",
 							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4 mr-2" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RefreshCw, { className: "h-4 w-4" }),
 								" ",
-								t$1("sync.add_link")
+								t$1("sync.sync_now")
 							]
 						})
-					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "border rounded-md",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("sync.platform") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "URL" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("sync.status") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("sync.last_sync") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: t$1("common.actions")
-						})
-					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [(!data.channelLinks || data.channelLinks.length === 0) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-						colSpan: 5,
-						className: "text-center py-6 text-muted-foreground",
-						children: t$1("sync.no_links")
-					}) }), data.channelLinks?.map((link) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "capitalize font-medium",
-							children: link.platform
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "max-w-[200px] truncate text-xs text-muted-foreground",
-							children: link.url
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-							variant: "secondary",
-							className: link.status === "active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800",
-							children: link.status
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-xs",
-							children: link.lastSync ? formatDate(link.lastSync, language) : "-"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								variant: "ghost",
-								size: "icon",
-								onClick: () => handleRemoveLink(link.id),
-								disabled: !canEdit,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 text-red-500" })
-							})
-						})
-					] }, link.id))] })] })
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "flex justify-end",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						variant: "outline",
-						onClick: handleSyncNow,
-						className: "gap-2",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RefreshCw, { className: "h-4 w-4" }),
-							" ",
-							t$1("sync.sync_now")
-						]
 					})
-				})
-			]
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("sync.export_calendar") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("sync.copy_link") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex gap-2",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-				readOnly: true,
-				value: `https://api.corepm.com/ical/${data.id}.ics`
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				variant: "outline",
-				onClick: () => {
-					navigator.clipboard.writeText(`https://api.corepm.com/ical/${data.id}.ics`);
-					toast$2({ title: t$1("sync.copy_link") });
-				},
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, { className: "h-4 w-4" })
-			})]
-		}) })] })]
+				]
+			})] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChannelMapping, { property: data }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("sync.export_calendar") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1("sync.copy_link") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					readOnly: true,
+					value: `https://api.corepm.com/ical/${data.id}.ics`
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "outline",
+					onClick: () => {
+						navigator.clipboard.writeText(`https://api.corepm.com/ical/${data.id}.ics`);
+						toast$2({ title: t$1("sync.copy_link") });
+					},
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, { className: "h-4 w-4" })
+				})]
+			}) })] })
+		]
 	});
 }
 function InventoryImportDialog({ isOpen, onClose, onImport }) {
@@ -99396,10 +99618,14 @@ function RoomConcierge() {
 	const { roomId } = useParams();
 	const { properties: properties$1 } = usePropertyStore_default();
 	const { addTask } = useTaskStore_default();
+	const { addFeedback } = useShortTermStore_default();
 	const { toast: toast$2 } = useToast();
 	const [property$2, setProperty] = (0, import_react.useState)(null);
 	const [requestText, setRequestText] = (0, import_react.useState)("");
 	const [submitted, setSubmitted] = (0, import_react.useState)(false);
+	const [rating, setRating] = (0, import_react.useState)(0);
+	const [feedbackComment, setFeedbackComment] = (0, import_react.useState)("");
+	const [feedbackSubmitted, setFeedbackSubmitted] = (0, import_react.useState)(false);
 	(0, import_react.useEffect)(() => {
 		const found = properties$1.find((p$1) => p$1.id === roomId);
 		if (found) setProperty(found);
@@ -99424,6 +99650,24 @@ function RoomConcierge() {
 		toast$2({
 			title: "Request Sent",
 			description: "Our team will attend to you shortly."
+		});
+	};
+	const handleSubmitFeedback = () => {
+		if (!property$2) return;
+		addFeedback({
+			id: `fb-${Date.now()}`,
+			bookingId: `bk-guest-${Date.now()}`,
+			propertyId: property$2.id,
+			guestName: "Guest (Concierge)",
+			rating,
+			comment: feedbackComment,
+			date: (/* @__PURE__ */ new Date()).toISOString(),
+			status: "new"
+		});
+		setFeedbackSubmitted(true);
+		toast$2({
+			title: "Thank You!",
+			description: "We appreciate your feedback."
 		});
 	};
 	if (!property$2) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -99541,6 +99785,48 @@ function RoomConcierge() {
 						className: "w-full bg-trust-blue",
 						children: "Submit Request"
 					})]
+				}) })] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+					className: "pb-2 flex flex-row items-center gap-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "p-2 bg-yellow-100 rounded-full",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: "h-6 w-6 text-yellow-600" })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+						className: "text-lg",
+						children: "Rate Your Stay"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "We value your feedback" })] })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: feedbackSubmitted ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "text-center p-4 bg-green-50 text-green-700 rounded-lg",
+					children: "Thank you for your feedback!"
+				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "space-y-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "flex justify-center gap-2",
+							children: [
+								1,
+								2,
+								3,
+								4,
+								5
+							].map((star) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								onClick: () => setRating(star),
+								className: `text-2xl transition-transform hover:scale-110 ${rating >= star ? "text-yellow-500" : "text-slate-300"}`,
+								children: "★"
+							}, star))
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+							placeholder: "Leave a comment...",
+							value: feedbackComment,
+							onChange: (e) => setFeedbackComment(e.target.value)
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							onClick: handleSubmitFeedback,
+							className: "w-full bg-trust-blue",
+							disabled: rating === 0,
+							children: "Submit Review"
+						})
+					]
 				}) })] })
 			]
 		})
@@ -99655,7 +99941,7 @@ function NightAudit() {
 }
 function Performance() {
 	const { towers: towers$1 } = useHotelStore_default();
-	const { bookings: bookings$1 } = useShortTermStore_default();
+	const { bookings: bookings$1, feedbacks: feedbacks$1 } = useShortTermStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
 	const { toast: toast$2 } = useToast();
 	const [dateRange, setDateRange] = (0, import_react.useState)({
@@ -99728,147 +100014,259 @@ function Performance() {
 			description: "Performance data downloaded."
 		});
 	};
+	const reviews = feedbacks$1.filter((f) => {
+		const prop = properties$1.find((p$1) => p$1.id === f.propertyId);
+		if (!prop) return false;
+		if (selectedTower !== "all" && prop.towerId !== selectedTower) return false;
+		return true;
+	});
+	const avgRating = reviews.length ? reviews.reduce((acc, r$2) => acc + r$2.rating, 0) / reviews.length : 0;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-					className: "text-3xl font-bold tracking-tight text-navy",
-					children: "Performance Dashboard"
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "text-muted-foreground",
-					children: "Real-time metrics for RevPAR, ADR, and Occupancy."
-				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex gap-2 items-center",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DatePickerWithRange, {
-							date: dateRange,
-							setDate: setDateRange
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-							value: selectedTower,
-							onValueChange: setSelectedTower,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-								className: "w-[180px]",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "All Towers" })
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "all",
-								children: "All Towers"
-							}), towers$1.map((t$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: t$1.id,
-								children: t$1.name
-							}, t$1.id))] })]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "outline",
-							onClick: handleExport,
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" })
-						})
-					]
-				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid grid-cols-1 md:grid-cols-3 gap-6",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-navy",
+				children: "Performance Dashboard"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Real-time metrics for RevPAR, ADR, and Occupancy."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex gap-2 items-center",
 				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
-						className: "pb-2",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-							className: "text-sm font-medium",
-							children: "Avg Occupancy"
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "text-2xl font-bold",
-						children: [metrics.length > 0 ? Math.round(metrics.reduce((a$2, b$1) => a$2 + b$1.occupancy, 0) / metrics.length) : 0, "%"]
-					}) })] }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
-						className: "pb-2",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-							className: "text-sm font-medium",
-							children: "Avg ADR"
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "text-2xl font-bold",
-						children: ["$", metrics.length > 0 ? Math.round(metrics.reduce((a$2, b$1) => a$2 + b$1.adr, 0) / metrics.length) : 0]
-					}) })] }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
-						className: "pb-2",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-							className: "text-sm font-medium",
-							children: "Avg RevPAR"
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "text-2xl font-bold",
-						children: ["$", metrics.length > 0 ? Math.round(metrics.reduce((a$2, b$1) => a$2 + b$1.revPar, 0) / metrics.length) : 0]
-					}) })] })
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DatePickerWithRange, {
+						date: dateRange,
+						setDate: setDateRange
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: selectedTower,
+						onValueChange: setSelectedTower,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+							className: "w-[180px]",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "All Towers" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+							value: "all",
+							children: "All Towers"
+						}), towers$1.map((t$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+							value: t$1.id,
+							children: t$1.name
+						}, t$1.id))] })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "outline",
+						onClick: handleExport,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" })
+					})
 				]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Performance Trends" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Daily metrics over selected period" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "h-[400px] w-full",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
-					config: {
-						occupancy: {
-							label: "Occupancy %",
-							color: "#3b82f6"
-						},
-						adr: {
-							label: "ADR $",
-							color: "#10b981"
-						},
-						revPar: {
-							label: "RevPAR $",
-							color: "#f59e0b"
-						}
-					},
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ResponsiveContainer, {
-						width: "100%",
-						height: "100%",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(LineChart, {
-							data: metrics,
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+			defaultValue: "overview",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+					value: "overview",
+					children: "Financials"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+					value: "reviews",
+					children: "Guest Reviews"
+				})] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+					value: "overview",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-1 md:grid-cols-3 gap-6 mb-6",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+								className: "pb-2",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+									className: "text-sm font-medium",
+									children: "Avg Occupancy"
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "text-2xl font-bold",
+								children: [metrics.length > 0 ? Math.round(metrics.reduce((a$2, b$1) => a$2 + b$1.occupancy, 0) / metrics.length) : 0, "%"]
+							}) })] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+								className: "pb-2",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+									className: "text-sm font-medium",
+									children: "Avg ADR"
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "text-2xl font-bold",
+								children: ["$", metrics.length > 0 ? Math.round(metrics.reduce((a$2, b$1) => a$2 + b$1.adr, 0) / metrics.length) : 0]
+							}) })] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+								className: "pb-2",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+									className: "text-sm font-medium",
+									children: "Avg RevPAR"
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "text-2xl font-bold",
+								children: ["$", metrics.length > 0 ? Math.round(metrics.reduce((a$2, b$1) => a$2 + b$1.revPar, 0) / metrics.length) : 0]
+							}) })] })
+						]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Performance Trends" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Daily metrics over selected period" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "h-[400px] w-full",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
+							config: {
+								occupancy: {
+									label: "Occupancy %",
+									color: "#3b82f6"
+								},
+								adr: {
+									label: "ADR $",
+									color: "#10b981"
+								},
+								revPar: {
+									label: "RevPAR $",
+									color: "#f59e0b"
+								}
+							},
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ResponsiveContainer, {
+								width: "100%",
+								height: "100%",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(LineChart, {
+									data: metrics,
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
+											strokeDasharray: "3 3",
+											vertical: false
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, { dataKey: "date" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, { yAxisId: "left" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {
+											yAxisId: "right",
+											orientation: "right",
+											unit: "%"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, {}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Line, {
+											yAxisId: "right",
+											type: "monotone",
+											dataKey: "occupancy",
+											stroke: "#3b82f6",
+											name: "Occupancy %",
+											strokeWidth: 2
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Line, {
+											yAxisId: "left",
+											type: "monotone",
+											dataKey: "adr",
+											stroke: "#10b981",
+											name: "ADR $",
+											strokeWidth: 2
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Line, {
+											yAxisId: "left",
+											type: "monotone",
+											dataKey: "revPar",
+											stroke: "#f59e0b",
+											name: "RevPAR $",
+											strokeWidth: 2
+										})
+									]
+								})
+							})
+						})
+					}) })] })]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+					value: "reviews",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "grid grid-cols-1 md:grid-cols-3 gap-6 mb-6",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+							className: "bg-yellow-50/50",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+								className: "pb-2",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+									className: "text-sm font-medium",
+									children: "Average Rating"
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "text-4xl font-bold text-yellow-600",
+									children: avgRating.toFixed(1)
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex flex-col",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "flex",
+										children: [
+											1,
+											2,
+											3,
+											4,
+											5
+										].map((star) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: `h-4 w-4 ${avgRating >= star ? "fill-yellow-500 text-yellow-500" : "text-slate-300"}` }, star))
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+										className: "text-xs text-muted-foreground",
+										children: [
+											"Based on ",
+											reviews.length,
+											" reviews"
+										]
+									})]
+								})]
+							})]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "grid gap-4",
+						children: reviews.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg",
+							children: "No reviews yet."
+						}) : reviews.map((rev) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+							className: "p-4",
 							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
-									strokeDasharray: "3 3",
-									vertical: false
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex justify-between items-start",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex flex-col gap-1",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "font-bold",
+												children: rev.guestName
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+												className: "flex",
+												children: [
+													1,
+													2,
+													3,
+													4,
+													5
+												].map((star) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: `h-3 w-3 ${rev.rating >= star ? "fill-yellow-500 text-yellow-500" : "text-slate-300"}` }, star))
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "text-xs text-muted-foreground",
+											children: format(new Date(rev.date), "PP")
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+										variant: "outline",
+										children: rev.status
+									})]
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, { dataKey: "date" }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, { yAxisId: "left" }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {
-									yAxisId: "right",
-									orientation: "right",
-									unit: "%"
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "mt-2 text-sm text-slate-700",
+									children: rev.comment
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}) }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, {}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Line, {
-									yAxisId: "right",
-									type: "monotone",
-									dataKey: "occupancy",
-									stroke: "#3b82f6",
-									name: "Occupancy %",
-									strokeWidth: 2
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Line, {
-									yAxisId: "left",
-									type: "monotone",
-									dataKey: "adr",
-									stroke: "#10b981",
-									name: "ADR $",
-									strokeWidth: 2
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Line, {
-									yAxisId: "left",
-									type: "monotone",
-									dataKey: "revPar",
-									stroke: "#f59e0b",
-									name: "RevPAR $",
-									strokeWidth: 2
+								rev.response && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "mt-3 bg-slate-50 p-2 rounded text-sm text-slate-600 border-l-2 border-blue-500",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "font-semibold",
+											children: "Response:"
+										}),
+										" ",
+										rev.response
+									]
 								})
 							]
-						})
-					})
+						}) }, rev.id))
+					})]
 				})
-			}) })] })
-		]
+			]
+		})]
 	});
 }
 var useManagementStore = () => {
@@ -99894,10 +100292,91 @@ var useManagementStore = () => {
 		deletePromotion: context.deletePromotion,
 		addCampaign: context.addCampaign,
 		updateCampaign: context.updateCampaign,
-		deleteCampaign: context.deleteCampaign
+		deleteCampaign: context.deleteCampaign,
+		marketingWorkflows: context.marketingWorkflows,
+		emailTemplates: context.emailTemplates,
+		addMarketingWorkflow: context.addMarketingWorkflow,
+		updateMarketingWorkflow: context.updateMarketingWorkflow,
+		deleteMarketingWorkflow: context.deleteMarketingWorkflow,
+		addEmailTemplate: context.addEmailTemplate,
+		updateEmailTemplate: context.updateEmailTemplate,
+		deleteEmailTemplate: context.deleteEmailTemplate
 	};
 };
 var useManagementStore_default = useManagementStore;
+function ServiceProfitabilityReport() {
+	const { serviceOrders: serviceOrders$1, promotions: promotions$1, guestServices: guestServices$1 } = useManagementStore_default();
+	const chartData = (0, import_react.useMemo)(() => {
+		const data = {};
+		serviceOrders$1.forEach((order) => {
+			const service = guestServices$1.find((s$3) => s$3.id === order.serviceId);
+			if (service) data[service.category] = (data[service.category] || 0) + order.price;
+		});
+		return Object.entries(data).map(([name, value]) => ({
+			name,
+			value
+		}));
+	}, [serviceOrders$1, guestServices$1]);
+	const promoData = (0, import_react.useMemo)(() => {
+		return promotions$1.map((promo) => ({
+			...promo,
+			roi: promo.totalDiscountApplied ? promo.usageCount * 100 / promo.totalDiscountApplied : 0
+		}));
+	}, [promotions$1]);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "grid gap-6",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Service Revenue by Category" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Breakdown of revenue from additional services." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "h-[300px] w-full",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
+				config: { revenue: {
+					label: "Revenue",
+					color: "#8884d8"
+				} },
+				className: "h-full w-full",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ResponsiveContainer, {
+					width: "100%",
+					height: "100%",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(BarChart, {
+						data: chartData,
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
+								vertical: false,
+								strokeDasharray: "3 3"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, { dataKey: "name" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, { tickFormatter: (val) => `$${val}` }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
+								dataKey: "value",
+								fill: "#8884d8",
+								radius: [
+									4,
+									4,
+									0,
+									0
+								],
+								name: "Revenue"
+							})
+						]
+					})
+				})
+			})
+		}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Promotional Code ROI" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Track the performance of your discount codes." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Code" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Usage Count" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Total Discount Applied" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Estimated ROI" })
+		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: promoData.map((promo) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "font-mono font-bold",
+				children: promo.code
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: promo.usageCount }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatCurrency(promo.totalDiscountApplied || 0) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: [promo.roi.toFixed(1), "%"] })
+		] }, promo.id)) })] }) })] })]
+	});
+}
 function GuestServices() {
 	const { guestServices: guestServices$1, addGuestService, updateGuestService, deleteGuestService, addServiceOrder } = useManagementStore_default();
 	const { bookings: bookings$1 } = useShortTermStore_default();
@@ -99971,197 +100450,217 @@ function GuestServices() {
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 			className: "flex justify-between items-center",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 				className: "text-3xl font-bold tracking-tight text-navy",
 				children: "Guest Services"
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 				className: "text-muted-foreground",
 				children: "Manage additional services and amenities catalog."
-			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-					open: assignOpen,
-					onOpenChange: setAssignOpen,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-						asChild: true,
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-							variant: "outline",
-							className: "gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShoppingCart, { className: "h-4 w-4" }), " Assign Service"]
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Assign Service to Guest" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-4 py-4",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Select Booking" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: selectedBooking,
-									onValueChange: setSelectedBooking,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Guest/Room" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: activeBookings.map((b$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-										value: b$1.id,
-										children: [
-											b$1.guestName,
-											" (",
-											b$1.propertyName,
-											")"
-										]
-									}, b$1.id)) })]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Select Service" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: serviceToAssign,
-									onValueChange: setServiceToAssign,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Service" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: guestServices$1.filter((s$3) => s$3.active).map((s$3) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-										value: s$3.id,
-										children: [
-											s$3.name,
-											" - $",
-											s$3.price
-										]
-									}, s$3.id)) })]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								onClick: handleAssign,
-								className: "bg-trust-blue",
-								children: "Confirm Assignment"
-							})
-						]
-					})] })]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-					open,
-					onOpenChange: setOpen,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-						asChild: true,
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-							className: "bg-trust-blue gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Add Service"]
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: isEditing ? "Edit Service" : "New Service" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-4 py-4",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: currentService.name,
-									onChange: (e) => setCurrentService({
-										...currentService,
-										name: e.target.value
+			})] })
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+			defaultValue: "catalog",
+			className: "space-y-4",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+					value: "catalog",
+					children: "Service Catalog"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+					value: "financials",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumn, { className: "h-4 w-4 mr-2" }), " Financial Insights"]
+				})] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+					value: "catalog",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex justify-end gap-2 mb-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+							open: assignOpen,
+							onOpenChange: setAssignOpen,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									variant: "outline",
+									className: "gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShoppingCart, { className: "h-4 w-4" }), " Assign Service"]
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Assign Service to Guest" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-4 py-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Select Booking" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											value: selectedBooking,
+											onValueChange: setSelectedBooking,
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Guest/Room" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: activeBookings.map((b$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+												value: b$1.id,
+												children: [
+													b$1.guestName,
+													" (",
+													b$1.propertyName,
+													")"
+												]
+											}, b$1.id)) })]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Select Service" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											value: serviceToAssign,
+											onValueChange: setServiceToAssign,
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Service" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: guestServices$1.filter((s$3) => s$3.active).map((s$3) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+												value: s$3.id,
+												children: [
+													s$3.name,
+													" - $",
+													s$3.price
+												]
+											}, s$3.id)) })]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										onClick: handleAssign,
+										className: "bg-trust-blue",
+										children: "Confirm Assignment"
 									})
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Description" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: currentService.description,
-									onChange: (e) => setCurrentService({
-										...currentService,
-										description: e.target.value
-									})
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid grid-cols-2 gap-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Price ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-										type: "number",
-										value: currentService.price,
-										onChange: (e) => setCurrentService({
-											...currentService,
-											price: Number(e.target.value)
-										})
-									})]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Category" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-										value: currentService.category,
-										onValueChange: (v) => setCurrentService({
-											...currentService,
-											category: v
-										}),
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "spa",
-												children: "Spa"
-											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "transport",
-												children: "Transport"
-											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "dining",
-												children: "Dining"
-											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "other",
-												children: "Other"
+								]
+							})] })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+							open,
+							onOpenChange: setOpen,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									className: "bg-trust-blue gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Add Service"]
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: isEditing ? "Edit Service" : "New Service" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-4 py-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: currentService.name,
+											onChange: (e) => setCurrentService({
+												...currentService,
+												name: e.target.value
 											})
-										] })]
-									})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Description" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: currentService.description,
+											onChange: (e) => setCurrentService({
+												...currentService,
+												description: e.target.value
+											})
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Price ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "number",
+												value: currentService.price,
+												onChange: (e) => setCurrentService({
+													...currentService,
+													price: Number(e.target.value)
+												})
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Category" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+												value: currentService.category,
+												onValueChange: (v) => setCurrentService({
+													...currentService,
+													category: v
+												}),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "spa",
+														children: "Spa"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "transport",
+														children: "Transport"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "dining",
+														children: "Dining"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "other",
+														children: "Other"
+													})
+												] })]
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										onClick: handleSave,
+										className: "bg-trust-blue",
+										children: "Save"
+									})
+								]
+							})] })]
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+						className: "p-0",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Service Name" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Category" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Price" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "text-right",
+								children: "Actions"
+							})
+						] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: guestServices$1.map((service) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+								className: "font-medium",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: service.name }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "text-xs text-muted-foreground",
+									children: service.description
 								})]
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								onClick: handleSave,
-								className: "bg-trust-blue",
-								children: "Save"
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "capitalize",
+								children: service.category
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatCurrency(service.price) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+								variant: service.active ? "default" : "secondary",
+								children: service.active ? "Active" : "Inactive"
+							}) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "text-right",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex justify-end gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: "ghost",
+										size: "icon",
+										onClick: () => handleEdit(service),
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: "ghost",
+										size: "icon",
+										className: "text-red-500",
+										onClick: () => handleDelete(service.id),
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+									})]
+								})
 							})
-						]
-					})] })]
-				})]
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-			className: "p-0",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Service Name" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Category" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Price" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-					className: "text-right",
-					children: "Actions"
-				})
-			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: guestServices$1.map((service) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-					className: "font-medium",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: service.name }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "text-xs text-muted-foreground",
-						children: service.description
-					})]
+						] }, service.id)) })] })
+					}) })]
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					className: "capitalize",
-					children: service.category
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatCurrency(service.price) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-					variant: service.active ? "default" : "secondary",
-					children: service.active ? "Active" : "Inactive"
-				}) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					className: "text-right",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex justify-end gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "ghost",
-							size: "icon",
-							onClick: () => handleEdit(service),
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "ghost",
-							size: "icon",
-							className: "text-red-500",
-							onClick: () => handleDelete(service.id),
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-						})]
-					})
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "financials",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ServiceProfitabilityReport, {})
 				})
-			] }, service.id)) })] })
-		}) })]
+			]
+		})]
 	});
 }
 function PointOfSale() {
@@ -100341,6 +100840,350 @@ function PointOfSale() {
 		})]
 	});
 }
+function MarketingAutomation() {
+	const { marketingWorkflows: marketingWorkflows$1, emailTemplates: emailTemplates$1, addMarketingWorkflow, updateMarketingWorkflow, deleteMarketingWorkflow, addEmailTemplate, updateEmailTemplate, deleteEmailTemplate } = useManagementStore_default();
+	const { toast: toast$2 } = useToast();
+	const [workflowDialogOpen, setWorkflowDialogOpen] = (0, import_react.useState)(false);
+	const [templateDialogOpen, setTemplateDialogOpen] = (0, import_react.useState)(false);
+	const [editingWorkflow, setEditingWorkflow] = (0, import_react.useState)({
+		name: "",
+		trigger: "booking_confirmed",
+		offsetTime: 0,
+		active: true
+	});
+	const [editingTemplate, setEditingTemplate] = (0, import_react.useState)({
+		name: "",
+		subject: "",
+		body: ""
+	});
+	const handleSaveWorkflow = () => {
+		if (!editingWorkflow.name || !editingWorkflow.templateId) {
+			toast$2({
+				title: "Error",
+				description: "Name and Template are required.",
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingWorkflow.id) updateMarketingWorkflow(editingWorkflow);
+		else addMarketingWorkflow({
+			...editingWorkflow,
+			id: `mw-${Date.now()}`
+		});
+		setWorkflowDialogOpen(false);
+		setEditingWorkflow({
+			name: "",
+			trigger: "booking_confirmed",
+			offsetTime: 0,
+			active: true
+		});
+		toast$2({
+			title: "Success",
+			description: "Workflow saved."
+		});
+	};
+	const handleSaveTemplate = () => {
+		if (!editingTemplate.name || !editingTemplate.subject || !editingTemplate.body) {
+			toast$2({
+				title: "Error",
+				description: "All fields are required.",
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingTemplate.id) updateEmailTemplate(editingTemplate);
+		else addEmailTemplate({
+			...editingTemplate,
+			id: `et-${Date.now()}`
+		});
+		setTemplateDialogOpen(false);
+		setEditingTemplate({
+			name: "",
+			subject: "",
+			body: ""
+		});
+		toast$2({
+			title: "Success",
+			description: "Template saved."
+		});
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "grid gap-6",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+				className: "flex flex-row items-center justify-between",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Automated Workflows" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Trigger emails based on booking events." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: () => setWorkflowDialogOpen(true),
+					className: "gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " New Workflow"]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Name" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Trigger" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Timing" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Template" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "text-right",
+					children: "Actions"
+				})
+			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: marketingWorkflows$1.map((wf) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "font-medium",
+					children: wf.name
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "capitalize",
+					children: wf.trigger.replace("_", " ")
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.offsetTime === 0 ? "Immediately" : `${Math.abs(wf.offsetTime)} hours ${wf.offsetTime > 0 ? "after" : "before"}` }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: emailTemplates$1.find((t$1) => t$1.id === wf.templateId)?.name || "Unknown" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+					variant: wf.active ? "default" : "secondary",
+					children: wf.active ? "Active" : "Inactive"
+				}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "text-right",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex justify-end gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							size: "icon",
+							onClick: () => {
+								setEditingWorkflow(wf);
+								setWorkflowDialogOpen(true);
+							},
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-4 w-4" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							size: "icon",
+							className: "text-red-500",
+							onClick: () => deleteMarketingWorkflow(wf.id),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+						})]
+					})
+				})
+			] }, wf.id)) })] }) })] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+				className: "flex flex-row items-center justify-between",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Email Templates" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [
+					"Reusable content with placeholders like ",
+					"{guest_name}",
+					"."
+				] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: () => setTemplateDialogOpen(true),
+					variant: "outline",
+					className: "gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, { className: "h-4 w-4" }), " New Template"]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
+				children: emailTemplates$1.map((tpl) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+					className: "bg-slate-50",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+						className: "p-4 pb-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex justify-between items-start",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-base font-bold",
+								children: tpl.name
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex gap-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "ghost",
+									size: "icon",
+									className: "h-6 w-6",
+									onClick: () => {
+										setEditingTemplate(tpl);
+										setTemplateDialogOpen(true);
+									},
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-3 w-3" })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "ghost",
+									size: "icon",
+									className: "h-6 w-6 text-red-500",
+									onClick: () => deleteEmailTemplate(tpl.id),
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-3 w-3" })
+								})]
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+							className: "text-xs truncate",
+							children: tpl.subject
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+						className: "p-4 pt-2 text-xs text-muted-foreground line-clamp-3",
+						children: tpl.body
+					})]
+				}, tpl.id))
+			}) })] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: workflowDialogOpen,
+				onOpenChange: setWorkflowDialogOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingWorkflow.id ? "Edit Workflow" : "New Workflow" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-4 py-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: editingWorkflow.name,
+									onChange: (e) => setEditingWorkflow({
+										...editingWorkflow,
+										name: e.target.value
+									})
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Trigger Event" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: editingWorkflow.trigger,
+									onValueChange: (v) => setEditingWorkflow({
+										...editingWorkflow,
+										trigger: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "booking_confirmed",
+											children: "Booking Confirmed"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "check_in",
+											children: "Check In"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "check_out",
+											children: "Check Out"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "cancellation",
+											children: "Cancellation"
+										})
+									] })]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Timing (Hours offset)" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										type: "number",
+										value: editingWorkflow.offsetTime,
+										onChange: (e) => setEditingWorkflow({
+											...editingWorkflow,
+											offsetTime: Number(e.target.value)
+										}),
+										placeholder: "e.g. -24 for 1 day before"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-xs text-muted-foreground",
+										children: "Negative for \"before event\", positive for \"after event\", 0 for \"immediate\"."
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email Template" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: editingWorkflow.templateId,
+									onValueChange: (v) => setEditingWorkflow({
+										...editingWorkflow,
+										templateId: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select a template" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: emailTemplates$1.map((t$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: t$1.id,
+										children: t$1.name
+									}, t$1.id)) })]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+									checked: editingWorkflow.active,
+									onCheckedChange: (c$1) => setEditingWorkflow({
+										...editingWorkflow,
+										active: c$1
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Active" })]
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleSaveWorkflow,
+						children: "Save Workflow"
+					}) })
+				] })
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: templateDialogOpen,
+				onOpenChange: setTemplateDialogOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "max-w-lg",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingTemplate.id ? "Edit Template" : "New Template" }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-4 py-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Template Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: editingTemplate.name,
+										onChange: (e) => setEditingTemplate({
+											...editingTemplate,
+											name: e.target.value
+										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email Subject" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: editingTemplate.subject,
+										onChange: (e) => setEditingTemplate({
+											...editingTemplate,
+											subject: e.target.value
+										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email Body" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+											value: editingTemplate.body,
+											onChange: (e) => setEditingTemplate({
+												...editingTemplate,
+												body: e.target.value
+											}),
+											rows: 6
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+											className: "text-xs text-muted-foreground",
+											children: [
+												"Available placeholders: ",
+												"{guest_name}",
+												", ",
+												"{property_name}",
+												",",
+												" ",
+												"{check_in}",
+												", ",
+												"{check_out}",
+												"."
+											]
+										})
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							onClick: handleSaveTemplate,
+							children: "Save Template"
+						}) })
+					]
+				})
+			})
+		]
+	});
+}
 function Marketing() {
 	const { promotions: promotions$1, campaigns: campaigns$1, addPromotion, deletePromotion, addCampaign, deleteCampaign } = useManagementStore_default();
 	const { toast: toast$2 } = useToast();
@@ -100392,19 +101235,30 @@ function Marketing() {
 				children: "Marketing & Promotions"
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 				className: "text-muted-foreground",
-				children: "Manage discount codes and promotional campaigns."
+				children: "Manage discount codes, promotional campaigns, and automation workflows."
 			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
-			defaultValue: "promotions",
+			defaultValue: "automation",
 			className: "space-y-4",
 			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
-					value: "promotions",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tag, { className: "h-4 w-4 mr-2" }), " Promotions"]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
-					value: "campaigns",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Megaphone, { className: "h-4 w-4 mr-2" }), " Campaigns"]
-				})] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+						value: "automation",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Workflow, { className: "h-4 w-4 mr-2" }), " Automation"]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+						value: "promotions",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tag, { className: "h-4 w-4 mr-2" }), " Promotions"]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+						value: "campaigns",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Megaphone, { className: "h-4 w-4 mr-2" }), " Campaigns"]
+					})
+				] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "automation",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MarketingAutomation, {})
+				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
 					value: "promotions",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -101178,4 +102032,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-CCx04rzS.js.map
+//# sourceMappingURL=index-CxlzFnkQ.js.map

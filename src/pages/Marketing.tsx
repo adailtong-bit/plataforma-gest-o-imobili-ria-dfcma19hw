@@ -32,11 +32,12 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Tag, Megaphone, Trash2, Calendar } from 'lucide-react'
+import { Plus, Tag, Megaphone, Trash2, Calendar, Workflow } from 'lucide-react'
 import useManagementStore from '@/stores/useManagementStore'
 import { useToast } from '@/hooks/use-toast'
 import { Promotion, Campaign } from '@/lib/types'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { MarketingAutomation } from '@/components/marketing/MarketingAutomation'
 
 export default function Marketing() {
   const {
@@ -100,12 +101,16 @@ export default function Marketing() {
           Marketing & Promotions
         </h1>
         <p className="text-muted-foreground">
-          Manage discount codes and promotional campaigns.
+          Manage discount codes, promotional campaigns, and automation
+          workflows.
         </p>
       </div>
 
-      <Tabs defaultValue="promotions" className="space-y-4">
+      <Tabs defaultValue="automation" className="space-y-4">
         <TabsList>
+          <TabsTrigger value="automation">
+            <Workflow className="h-4 w-4 mr-2" /> Automation
+          </TabsTrigger>
           <TabsTrigger value="promotions">
             <Tag className="h-4 w-4 mr-2" /> Promotions
           </TabsTrigger>
@@ -113,6 +118,10 @@ export default function Marketing() {
             <Megaphone className="h-4 w-4 mr-2" /> Campaigns
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="automation">
+          <MarketingAutomation />
+        </TabsContent>
 
         <TabsContent value="promotions">
           <div className="flex justify-end mb-4">

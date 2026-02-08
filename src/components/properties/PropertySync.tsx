@@ -32,6 +32,7 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import useShortTermStore from '@/stores/useShortTermStore'
 import { addDays } from 'date-fns'
 import { formatDate } from '@/lib/utils'
+import { ChannelMapping } from './ChannelMapping'
 
 interface PropertySyncProps {
   data: Property
@@ -102,10 +103,11 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
 
   return (
     <div className="space-y-6">
+      {/* Basic iCal Sync */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('sync.title')}</CardTitle>
-          <CardDescription>{t('sync.subtitle')}</CardDescription>
+          <CardTitle>Basic iCal Synchronization</CardTitle>
+          <CardDescription>Simple calendar syncing via URL.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex gap-4 items-end">
@@ -219,6 +221,9 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Advanced Mapping */}
+      <ChannelMapping property={data} />
 
       <Card>
         <CardHeader>

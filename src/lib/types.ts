@@ -102,6 +102,7 @@ export interface Promotion {
   description?: string
   usageCount: number
   maxUsage?: number
+  totalDiscountApplied?: number
 }
 
 export interface Campaign {
@@ -113,6 +114,45 @@ export interface Campaign {
   promotions: string[] // IDs of promotions
   targetAudience?: 'all' | 'past_guests' | 'leads'
   description?: string
+}
+
+export interface Feedback {
+  id: string
+  bookingId: string
+  propertyId: string
+  guestName: string
+  rating: number
+  comment: string
+  date: string
+  status: 'new' | 'reviewed' | 'addressed'
+  response?: string
+}
+
+export interface ChannelMapping {
+  id: string
+  propertyId: string
+  platform: 'airbnb' | 'booking.com' | 'vrbo'
+  localRoomTypeId?: string
+  otaRoomId: string
+  otaRateId?: string
+  status: 'mapped' | 'error' | 'pending'
+  lastSync?: string
+}
+
+export interface MarketingWorkflow {
+  id: string
+  name: string
+  trigger: 'booking_confirmed' | 'check_in' | 'check_out' | 'cancellation'
+  offsetTime: number // hours, can be negative for 'before'
+  templateId: string
+  active: boolean
+}
+
+export interface EmailTemplate {
+  id: string
+  name: string
+  subject: string
+  body: string
 }
 
 // --- Existing Types (Consolidated) ---
@@ -549,6 +589,7 @@ export interface Property {
   roomCharacteristics?: RoomCharacteristics
   priceHistory?: PriceHistory[]
   amenities?: string[]
+  channelMappings?: ChannelMapping[]
 }
 
 export interface Tenant {
@@ -607,6 +648,7 @@ export interface Booking {
   adults?: number
   children?: number
   inspections?: InventoryInspection[]
+  feedbackId?: string
 }
 
 export interface CalendarBlock {

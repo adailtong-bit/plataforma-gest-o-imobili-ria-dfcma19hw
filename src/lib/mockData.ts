@@ -31,6 +31,10 @@ import {
   Campaign,
   ServiceOrder,
   MarketData,
+  Feedback,
+  ChannelMapping,
+  MarketingWorkflow,
+  EmailTemplate,
 } from '@/lib/types'
 
 // Mock Data for the Application
@@ -179,6 +183,7 @@ export const properties: Property[] = [
     },
     priceHistory: [],
     gallery: [],
+    channelMappings: [],
   },
 ]
 
@@ -313,6 +318,7 @@ export const promotions: Promotion[] = [
     endDate: '2024-08-31',
     active: true,
     usageCount: 12,
+    totalDiscountApplied: 450,
     description: '15% off summer bookings',
   },
 ]
@@ -371,5 +377,74 @@ export const marketData: MarketData[] = [
     saturationIndex: 85,
     propertyTaxAvg: 1.6,
     hoaAvg: 900,
+  },
+]
+
+export const feedbacks: Feedback[] = [
+  {
+    id: 'f1',
+    bookingId: 'bk1',
+    propertyId: 'p1',
+    guestName: 'Alice Wonderland',
+    rating: 5,
+    comment: 'Amazing stay! The ocean view was breathtaking.',
+    date: '2024-06-05T10:00:00Z',
+    status: 'new',
+  },
+  {
+    id: 'f2',
+    bookingId: 'bk2',
+    propertyId: 'p1',
+    guestName: 'Bob Builder',
+    rating: 4,
+    comment: 'Great location, but the wifi was a bit slow.',
+    date: '2024-05-20T11:00:00Z',
+    status: 'reviewed',
+    response: 'Thanks Bob, we are upgrading the network next week!',
+  },
+]
+
+export const channelMappings: ChannelMapping[] = [
+  {
+    id: 'cm1',
+    propertyId: 'p1',
+    platform: 'airbnb',
+    otaRoomId: '123456',
+    status: 'mapped',
+    lastSync: '2024-06-01T08:00:00Z',
+  },
+]
+
+export const marketingWorkflows: MarketingWorkflow[] = [
+  {
+    id: 'mw1',
+    name: 'Welcome Email',
+    trigger: 'booking_confirmed',
+    offsetTime: 0,
+    templateId: 'et1',
+    active: true,
+  },
+  {
+    id: 'mw2',
+    name: 'Pre-Arrival Upsell',
+    trigger: 'check_in',
+    offsetTime: -48,
+    templateId: 'et2',
+    active: true,
+  },
+]
+
+export const emailTemplates: EmailTemplate[] = [
+  {
+    id: 'et1',
+    name: 'Welcome Confirmation',
+    subject: 'Booking Confirmed!',
+    body: 'Hi {guest_name}, thank you for booking {property_name}. See you soon!',
+  },
+  {
+    id: 'et2',
+    name: 'Pre-Arrival',
+    subject: 'Get ready for your trip',
+    body: 'Hi {guest_name}, enhance your stay with our spa package!',
   },
 ]

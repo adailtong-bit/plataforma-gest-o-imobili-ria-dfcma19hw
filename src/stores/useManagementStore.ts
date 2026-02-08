@@ -32,6 +32,16 @@ const useManagementStore = () => {
     addCampaign: context.addCampaign,
     updateCampaign: context.updateCampaign,
     deleteCampaign: context.deleteCampaign,
+
+    // Marketing Automation (New)
+    marketingWorkflows: context.marketingWorkflows,
+    emailTemplates: context.emailTemplates,
+    addMarketingWorkflow: context.addMarketingWorkflow,
+    updateMarketingWorkflow: context.updateMarketingWorkflow,
+    deleteMarketingWorkflow: context.deleteMarketingWorkflow,
+    addEmailTemplate: context.addEmailTemplate,
+    updateEmailTemplate: context.updateEmailTemplate,
+    deleteEmailTemplate: context.deleteEmailTemplate,
   }
 }
 

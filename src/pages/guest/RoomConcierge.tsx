@@ -10,25 +10,37 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Wifi, MapPin, Coffee, MessageSquare, CheckCircle } from 'lucide-react'
+import {
+  Wifi,
+  MapPin,
+  Coffee,
+  MessageSquare,
+  CheckCircle,
+  Star,
+} from 'lucide-react'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useTaskStore from '@/stores/useTaskStore'
+import useShortTermStore from '@/stores/useShortTermStore'
 import { useToast } from '@/hooks/use-toast'
-import { Property } from '@/lib/types'
+import { Property, Feedback } from '@/lib/types'
 
 export default function RoomConcierge() {
   const { roomId } = useParams()
   const { properties } = usePropertyStore()
   const { addTask } = useTaskStore()
+  const { addFeedback } = useShortTermStore()
   const { toast } = useToast()
 
   const [property, setProperty] = useState<Property | null>(null)
   const [requestText, setRequestText] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
+  // Rating State
+  const [rating, setRating] = useState(0)
+  const [feedbackComment, setFeedbackComment] = useState('')
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false)
+
   useEffect(() => {
-    // In a real app, this would fetch from API based on roomId
-    // Here we use the store
     const found = properties.find((p) => p.id === roomId)
     if (found) setProperty(found)
   }, [roomId, properties])
@@ -56,6 +68,25 @@ export default function RoomConcierge() {
       title: 'Request Sent',
       description: 'Our team will attend to you shortly.',
     })
+  }
+
+  const handleSubmitFeedback = () => {
+    if (!property) return
+
+    const newFeedback: Feedback = {
+      id: `fb-${Date.now()}`,
+      bookingId: `bk-guest-${Date.now()}`, // Placeholder as we don't have auth here usually
+      propertyId: property.id,
+      guestName: 'Guest (Concierge)',
+      rating,
+      comment: feedbackComment,
+      date: new Date().toISOString(),
+      status: 'new',
+    }
+
+    addFeedback(newFeedback)
+    setFeedbackSubmitted(true)
+    toast({ title: 'Thank You!', description: 'We appreciate your feedback.' })
   }
 
   if (!property) {
@@ -175,6 +206,54 @@ export default function RoomConcierge() {
                   className="w-full bg-trust-blue"
                 >
                   Submit Request
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Rate Your Stay */}
+        <Card>
+          <CardHeader className="pb-2 flex flex-row items-center gap-4">
+            <div className="p-2 bg-yellow-100 rounded-full">
+              <Star className="h-6 w-6 text-yellow-600" />
+            </div>
+            <div>
+              <CardTitle className="text-lg">Rate Your Stay</CardTitle>
+              <CardDescription>We value your feedback</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {feedbackSubmitted ? (
+              <div className="text-center p-4 bg-green-50 text-green-700 rounded-lg">
+                Thank you for your feedback!
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex justify-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => setRating(star)}
+                      className={`text-2xl transition-transform hover:scale-110 ${
+                        rating >= star ? 'text-yellow-500' : 'text-slate-300'
+                      }`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+                <Textarea
+                  placeholder="Leave a comment..."
+                  value={feedbackComment}
+                  onChange={(e) => setFeedbackComment(e.target.value)}
+                />
+                <Button
+                  onClick={handleSubmitFeedback}
+                  className="w-full bg-trust-blue"
+                  disabled={rating === 0}
+                >
+                  Submit Review
                 </Button>
               </div>
             )}

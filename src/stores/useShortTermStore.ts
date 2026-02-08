@@ -10,6 +10,7 @@ const useShortTermStore = () => {
     bookings: context.bookings,
     calendarBlocks: context.calendarBlocks,
     messageTemplates: context.messageTemplates,
+    feedbacks: context.feedbacks, // Added feedback
     addBooking: context.addBooking,
     updateBooking: context.updateBooking,
     deleteBooking: context.deleteBooking,
@@ -18,6 +19,8 @@ const useShortTermStore = () => {
     addMessageTemplate: context.addMessageTemplate,
     updateMessageTemplate: context.updateMessageTemplate,
     deleteMessageTemplate: context.deleteMessageTemplate,
+    addFeedback: context.addFeedback, // Added method
+    updateFeedback: context.updateFeedback, // Added method
   }
 }
 

@@ -51,6 +51,10 @@ import {
   Promotion,
   Campaign,
   ServiceOrder,
+  Feedback,
+  ChannelMapping,
+  MarketingWorkflow,
+  EmailTemplate,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -88,6 +92,10 @@ import {
   promotions as initialPromotions,
   campaigns as initialCampaigns,
   serviceOrders as initialServiceOrders,
+  feedbacks as initialFeedbacks,
+  channelMappings as initialChannelMappings,
+  marketingWorkflows as initialMarketingWorkflows,
+  emailTemplates as initialEmailTemplates,
 } from '@/lib/mockData'
 import { tutorialModules as initialTutorialModules } from '@/lib/tutorials'
 import { translations, Language } from '@/lib/translations'
@@ -138,6 +146,10 @@ interface AppContextType {
   promotions: Promotion[]
   campaigns: Campaign[]
   serviceOrders: ServiceOrder[]
+  feedbacks: Feedback[]
+  channelMappings: ChannelMapping[]
+  marketingWorkflows: MarketingWorkflow[]
+  emailTemplates: EmailTemplate[]
 
   // Tour Props
   isTourOpen: boolean
@@ -254,6 +266,17 @@ interface AppContextType {
   addCampaign: (campaign: Campaign) => void
   updateCampaign: (campaign: Campaign) => void
   deleteCampaign: (id: string) => void
+  addFeedback: (feedback: Feedback) => void
+  updateFeedback: (feedback: Feedback) => void
+  addChannelMapping: (mapping: ChannelMapping) => void
+  updateChannelMapping: (mapping: ChannelMapping) => void
+  deleteChannelMapping: (id: string) => void
+  addMarketingWorkflow: (workflow: MarketingWorkflow) => void
+  updateMarketingWorkflow: (workflow: MarketingWorkflow) => void
+  deleteMarketingWorkflow: (id: string) => void
+  addEmailTemplate: (template: EmailTemplate) => void
+  updateEmailTemplate: (template: EmailTemplate) => void
+  deleteEmailTemplate: (id: string) => void
 
   startTour: () => void
   endTour: () => void
@@ -350,6 +373,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns)
   const [serviceOrders, setServiceOrders] =
     useState<ServiceOrder[]>(initialServiceOrders)
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>(initialFeedbacks)
+  const [channelMappings, setChannelMappings] = useState<ChannelMapping[]>(
+    initialChannelMappings,
+  )
+  const [marketingWorkflows, setMarketingWorkflows] = useState<
+    MarketingWorkflow[]
+  >(initialMarketingWorkflows)
+  const [emailTemplates, setEmailTemplates] = useState<EmailTemplate[]>(
+    initialEmailTemplates,
+  )
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -364,9 +397,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const { toast } = useToast()
 
-  // ... (Keep all existing methods, just list them for brevity or copy them if possible.
-  // I will assume I need to copy the full logic to be safe, as requested).
-
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
     localStorage.setItem('app_language', lang)
@@ -374,7 +404,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const t = useCallback(
     (key: string, params?: Record<string, string>) => {
-      // (Keep existing implementation)
       const resolveKey = (dict: any, k: string) => {
         const parts = k.split('.')
         let current = dict
@@ -416,7 +445,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (u) setCurrentUserObj(u)
   }
 
-  // Simple setters for CRUD (Shortened for response size, assume full implementation in real file)
+  // Simple setters for CRUD
   const addProperty = (p: Property) => setProperties([...properties, p])
   const updateProperty = (p: Property) =>
     setProperties(properties.map((x) => (x.id === p.id ? p : x)))
@@ -459,9 +488,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       invoices: prev.invoices.map((x) => (x.id === i.id ? i : x)),
     }))
 
-  // ... (Implement all other existing CRUD methods similarly)
-  // For new methods:
-
   const addGuestService = (s: GuestService) =>
     setGuestServices([...guestServices, s])
   const updateGuestService = (s: GuestService) =>
@@ -493,7 +519,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const deleteCampaign = (id: string) =>
     setCampaigns(campaigns.filter((x) => x.id !== id))
 
-  // ... (Missing impls from previous file to keep valid context)
   const addTenant = (t: Tenant) => setTenants([...tenants, t])
   const updateTenant = (t: Tenant) =>
     setTenants(tenants.map((x) => (x.id === t.id ? t : x)))
@@ -605,9 +630,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setWorkflows(workflows.map((x) => (x.id === w.id ? w : x)))
   const deleteWorkflow = (id: string) =>
     setWorkflows(workflows.filter((x) => x.id !== id))
-  const runNightAudit = () => {
-    /* Mock */
-  }
+  const runNightAudit = () => {}
   const markPaymentAs = () => {}
   const addTaskImage = () => {}
   const addTaskEvidence = () => {}
@@ -622,6 +645,34 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const prevStep = () => setCurrentStepIndex(currentStepIndex - 1)
   const openVideo = (url: string) => setActiveVideo(url)
   const closeVideo = () => setActiveVideo(null)
+
+  // New Methods Implementation
+  const addFeedback = (f: Feedback) => setFeedbacks([...feedbacks, f])
+  const updateFeedback = (f: Feedback) =>
+    setFeedbacks(feedbacks.map((x) => (x.id === f.id ? f : x)))
+
+  const addChannelMapping = (m: ChannelMapping) =>
+    setChannelMappings([...channelMappings, m])
+  const updateChannelMapping = (m: ChannelMapping) =>
+    setChannelMappings(channelMappings.map((x) => (x.id === m.id ? m : x)))
+  const deleteChannelMapping = (id: string) =>
+    setChannelMappings(channelMappings.filter((x) => x.id !== id))
+
+  const addMarketingWorkflow = (w: MarketingWorkflow) =>
+    setMarketingWorkflows([...marketingWorkflows, w])
+  const updateMarketingWorkflow = (w: MarketingWorkflow) =>
+    setMarketingWorkflows(
+      marketingWorkflows.map((x) => (x.id === w.id ? w : x)),
+    )
+  const deleteMarketingWorkflow = (id: string) =>
+    setMarketingWorkflows(marketingWorkflows.filter((x) => x.id !== id))
+
+  const addEmailTemplate = (t: EmailTemplate) =>
+    setEmailTemplates([...emailTemplates, t])
+  const updateEmailTemplate = (t: EmailTemplate) =>
+    setEmailTemplates(emailTemplates.map((x) => (x.id === t.id ? t : x)))
+  const deleteEmailTemplate = (id: string) =>
+    setEmailTemplates(emailTemplates.filter((x) => x.id !== id))
 
   const visibleMessages = useMemo(
     () => allMessages.filter((m) => m.ownerId === currentUser.id),
@@ -676,6 +727,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         promotions,
         campaigns,
         serviceOrders,
+        feedbacks,
+        channelMappings,
+        marketingWorkflows,
+        emailTemplates,
         isTourOpen,
         currentStepIndex,
         tourSteps: initialTourSteps,
@@ -786,6 +841,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         prevStep,
         openVideo,
         closeVideo,
+        addFeedback,
+        updateFeedback,
+        addChannelMapping,
+        updateChannelMapping,
+        deleteChannelMapping,
+        addMarketingWorkflow,
+        updateMarketingWorkflow,
+        deleteMarketingWorkflow,
+        addEmailTemplate,
+        updateEmailTemplate,
+        deleteEmailTemplate,
       }}
     >
       {children}
