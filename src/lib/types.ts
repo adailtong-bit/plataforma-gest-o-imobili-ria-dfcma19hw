@@ -826,6 +826,7 @@ export interface Task {
   lastRemindedAt?: string
   createdBy?: string
   history?: TaskHistory[]
+  assignedRole?: UserRole
 }
 
 export type TaskStatus =

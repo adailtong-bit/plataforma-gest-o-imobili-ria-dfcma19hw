@@ -83,11 +83,27 @@ export default function Tasks() {
         if (property?.ownerId !== currentUser.id) return false
       }
 
+      // Workflow Role Filtering
+      if (t.assignedRole) {
+        const isAdmin = ['platform_owner', 'software_tenant'].includes(
+          currentUser.role,
+        )
+        const isRoleMatch = t.assignedRole === currentUser.role
+
+        // If I'm not an admin and the task isn't assigned to my role, I shouldn't see it
+        // Note: internal_user (Staff) is also filtered here unless they are admin/PM
+        if (!isAdmin && !isRoleMatch) {
+          // Exception: If current user is 'internal_user' but role is 'software_tenant' (Manager), maybe?
+          // For strict compliance with user story: "users who possess the matching role"
+          return false
+        }
+      }
+
       const typeMatch = filterType === 'all' || t.type === filterType
       const statusMatch = filterStatus === 'all' || t.status === filterStatus
       return typeMatch && statusMatch
     })
-  }, [tasks, filterType, filterStatus, isOwner, currentUser.id, properties])
+  }, [tasks, filterType, filterStatus, isOwner, currentUser, properties])
 
   const pendingTasks = useMemo(
     () => filteredTasks.filter((t) => t.status === 'pending'),

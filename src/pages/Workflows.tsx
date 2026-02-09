@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -34,11 +35,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { Plus, Settings, Play, Trash2 } from 'lucide-react'
+import { Plus, Settings, Play, Trash2, Building } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import useWorkflowStore from '@/stores/useWorkflowStore'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { Workflow, WorkflowStep, UserRole } from '@/lib/types'
+import usePropertyStore from '@/stores/usePropertyStore'
+import useTaskStore from '@/stores/useTaskStore'
+import { Workflow, WorkflowStep, UserRole, Task } from '@/lib/types'
 
 const initialWorkflowState: Omit<Workflow, 'id'> = {
   name: '',
@@ -55,9 +58,32 @@ const initialStepState: WorkflowStep = {
   actionType: 'task',
 }
 
+const getRoleName = (role: UserRole) => {
+  switch (role) {
+    case 'platform_owner':
+      return 'Admin'
+    case 'software_tenant':
+      return 'Manager'
+    case 'internal_user':
+      return 'Staff'
+    case 'partner':
+      return 'Partner'
+    case 'partner_employee':
+      return 'Partner Employee'
+    case 'property_owner':
+      return 'Owner'
+    case 'tenant':
+      return 'Tenant'
+    default:
+      return 'Unknown'
+  }
+}
+
 export default function Workflows() {
   const { workflows, addWorkflow, updateWorkflow, deleteWorkflow } =
     useWorkflowStore()
+  const { properties } = usePropertyStore()
+  const { addTask } = useTaskStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
@@ -68,11 +94,80 @@ export default function Workflows() {
   >(initialWorkflowState)
   const [newStep, setNewStep] = useState<WorkflowStep>(initialStepState)
 
-  const handleRun = (id: string, name: string) => {
+  // Execution State
+  const [runDialogOpen, setRunDialogOpen] = useState(false)
+  const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(
+    null,
+  )
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string>('')
+
+  const handleRunClick = (wf: Workflow) => {
+    setSelectedWorkflow(wf)
+    setSelectedPropertyId('')
+    setRunDialogOpen(true)
+  }
+
+  const executeWorkflow = () => {
+    if (!selectedWorkflow) return
+    if (selectedWorkflow.trigger !== 'manual' && !selectedPropertyId) {
+      // If we enforce property selection for all manual triggers:
+      if (!selectedPropertyId) {
+        toast({
+          title: t('common.error'),
+          description: 'Please select a property context.',
+          variant: 'destructive',
+        })
+        return
+      }
+    }
+
+    const property = properties.find((p) => p.id === selectedPropertyId)
+    // If no property selected but it's allowed, we might proceed with null property (though Tasks require propertyId)
+    // Here we enforce property selection for task generation
+    if (!property) {
+      toast({
+        title: t('common.error'),
+        description: 'Selected property not found.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    let tasksCreated = 0
+
+    selectedWorkflow.steps.forEach((step, index) => {
+      if (step.actionType === 'task') {
+        const newTask: Task = {
+          id: `wf_task_${Date.now()}_${index}`,
+          title: step.name,
+          description:
+            step.description ||
+            `Auto-generated from workflow: ${selectedWorkflow.name}`,
+          propertyId: property.id,
+          propertyName: property.name,
+          propertyAddress: property.address,
+          propertyCommunity: property.community,
+          status: 'pending',
+          type: 'maintenance', // Default generic type
+          priority: 'medium',
+          date: new Date().toISOString(),
+          assignee: getRoleName(step.role),
+          assignedRole: step.role,
+          source: 'automation',
+        }
+        addTask(newTask)
+        tasksCreated++
+      }
+    })
+
     toast({
       title: t('workflows.run_success'),
-      description: t('workflows.run_desc', { name }),
+      description: `Workflow initiated. ${tasksCreated} tasks created for ${property.name}.`,
     })
+
+    setRunDialogOpen(false)
+    setSelectedWorkflow(null)
+    setSelectedPropertyId('')
   }
 
   const handleOpenChange = (val: boolean) => {
@@ -215,7 +310,7 @@ export default function Workflows() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleRun(wf.id, wf.name)}
+                          onClick={() => handleRunClick(wf)}
                           title={t('workflows.run_manual')}
                         >
                           <Play className="h-4 w-4 text-blue-600" />
@@ -247,7 +342,70 @@ export default function Workflows() {
         </CardContent>
       </Card>
 
-      {/* Workflow Dialog */}
+      {/* Run Workflow Dialog */}
+      <Dialog open={runDialogOpen} onOpenChange={setRunDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Run Workflow</DialogTitle>
+            <DialogDescription>
+              Select a property to execute the workflow "
+              {selectedWorkflow?.name}
+              ". This will generate tasks for the configured steps.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="property-select">Select Property</Label>
+              <Select
+                value={selectedPropertyId}
+                onValueChange={setSelectedPropertyId}
+              >
+                <SelectTrigger id="property-select">
+                  <SelectValue placeholder="Select a property..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {properties.map((property) => (
+                    <SelectItem key={property.id} value={property.id}>
+                      <div className="flex items-center gap-2">
+                        <Building className="h-4 w-4 text-muted-foreground" />
+                        <span>{property.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {selectedWorkflow?.steps && selectedWorkflow.steps.length > 0 && (
+              <div className="border rounded-md p-3 bg-muted/20 text-sm">
+                <span className="font-semibold mb-2 block">Steps Summary:</span>
+                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                  {selectedWorkflow.steps.map((step, idx) => (
+                    <li key={idx}>
+                      {step.name} ({getRoleName(step.role)})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRunDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={executeWorkflow}
+              className="bg-trust-blue"
+              disabled={!selectedPropertyId}
+            >
+              <Play className="h-4 w-4 mr-2" /> Run Workflow
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Workflow Edit Dialog */}
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -334,7 +492,7 @@ export default function Workflows() {
                       <div>
                         <p className="font-medium">{step.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {step.role} - {step.actionType}
+                          {getRoleName(step.role)} - {step.actionType}
                         </p>
                       </div>
                     </div>

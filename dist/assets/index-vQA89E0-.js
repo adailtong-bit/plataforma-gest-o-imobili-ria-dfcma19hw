@@ -78048,6 +78048,11 @@ function Tasks() {
 			if (isOwner) {
 				if (properties$1.find((p$1) => p$1.id === t$2.propertyId)?.ownerId !== currentUser.id) return false;
 			}
+			if (t$2.assignedRole) {
+				const isAdmin = ["platform_owner", "software_tenant"].includes(currentUser.role);
+				const isRoleMatch = t$2.assignedRole === currentUser.role;
+				if (!isAdmin && !isRoleMatch) return false;
+			}
 			const typeMatch = filterType === "all" || t$2.type === filterType;
 			const statusMatch = filterStatus === "all" || t$2.status === filterStatus;
 			return typeMatch && statusMatch;
@@ -78057,7 +78062,7 @@ function Tasks() {
 		filterType,
 		filterStatus,
 		isOwner,
-		currentUser.id,
+		currentUser,
 		properties$1
 	]);
 	const pendingTasks = (0, import_react.useMemo)(() => filteredTasks.filter((t$2) => t$2.status === "pending"), [filteredTasks]);
@@ -93322,19 +93327,86 @@ var initialStepState = {
 	role: "platform_owner",
 	actionType: "task"
 };
+var getRoleName = (role) => {
+	switch (role) {
+		case "platform_owner": return "Admin";
+		case "software_tenant": return "Manager";
+		case "internal_user": return "Staff";
+		case "partner": return "Partner";
+		case "partner_employee": return "Partner Employee";
+		case "property_owner": return "Owner";
+		case "tenant": return "Tenant";
+		default: return "Unknown";
+	}
+};
 function Workflows() {
 	const { workflows: workflows$1, addWorkflow, updateWorkflow, deleteWorkflow } = useWorkflowStore_default();
+	const { properties: properties$1 } = usePropertyStore_default();
+	const { addTask } = useTaskStore_default();
 	const { t: t$1 } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const [open, setOpen] = (0, import_react.useState)(false);
 	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
 	const [currentWorkflow, setCurrentWorkflow] = (0, import_react.useState)(initialWorkflowState);
 	const [newStep, setNewStep] = (0, import_react.useState)(initialStepState);
-	const handleRun = (id, name) => {
+	const [runDialogOpen, setRunDialogOpen] = (0, import_react.useState)(false);
+	const [selectedWorkflow, setSelectedWorkflow] = (0, import_react.useState)(null);
+	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("");
+	const handleRunClick = (wf) => {
+		setSelectedWorkflow(wf);
+		setSelectedPropertyId("");
+		setRunDialogOpen(true);
+	};
+	const executeWorkflow = () => {
+		if (!selectedWorkflow) return;
+		if (selectedWorkflow.trigger !== "manual" && !selectedPropertyId) {
+			if (!selectedPropertyId) {
+				toast$2({
+					title: t$1("common.error"),
+					description: "Please select a property context.",
+					variant: "destructive"
+				});
+				return;
+			}
+		}
+		const property$2 = properties$1.find((p$1) => p$1.id === selectedPropertyId);
+		if (!property$2) {
+			toast$2({
+				title: t$1("common.error"),
+				description: "Selected property not found.",
+				variant: "destructive"
+			});
+			return;
+		}
+		let tasksCreated = 0;
+		selectedWorkflow.steps.forEach((step, index$1) => {
+			if (step.actionType === "task") {
+				addTask({
+					id: `wf_task_${Date.now()}_${index$1}`,
+					title: step.name,
+					description: step.description || `Auto-generated from workflow: ${selectedWorkflow.name}`,
+					propertyId: property$2.id,
+					propertyName: property$2.name,
+					propertyAddress: property$2.address,
+					propertyCommunity: property$2.community,
+					status: "pending",
+					type: "maintenance",
+					priority: "medium",
+					date: (/* @__PURE__ */ new Date()).toISOString(),
+					assignee: getRoleName(step.role),
+					assignedRole: step.role,
+					source: "automation"
+				});
+				tasksCreated++;
+			}
+		});
 		toast$2({
 			title: t$1("workflows.run_success"),
-			description: t$1("workflows.run_desc", { name })
+			description: `Workflow initiated. ${tasksCreated} tasks created for ${property$2.name}.`
 		});
+		setRunDialogOpen(false);
+		setSelectedWorkflow(null);
+		setSelectedPropertyId("");
 	};
 	const handleOpenChange = (val) => {
 		setOpen(val);
@@ -93470,7 +93542,7 @@ function Workflows() {
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								variant: "ghost",
 								size: "icon",
-								onClick: () => handleRun(wf.id, wf.name),
+								onClick: () => handleRunClick(wf),
 								title: t$1("workflows.run_manual"),
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { className: "h-4 w-4 text-blue-600" })
 							}),
@@ -93493,6 +93565,67 @@ function Workflows() {
 					})
 				})
 			] }, wf.id)) })] }) })] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: runDialogOpen,
+				onOpenChange: setRunDialogOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "sm:max-w-md",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Run Workflow" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogDescription, { children: [
+							"Select a property to execute the workflow \"",
+							selectedWorkflow?.name,
+							"\". This will generate tasks for the configured steps."
+						] })] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-4 py-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									htmlFor: "property-select",
+									children: "Select Property"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: selectedPropertyId,
+									onValueChange: setSelectedPropertyId,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+										id: "property-select",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select a property..." })
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: properties$1.map((property$2) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: property$2.id,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: property$2.name })]
+										})
+									}, property$2.id)) })]
+								})]
+							}), selectedWorkflow?.steps && selectedWorkflow.steps.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "border rounded-md p-3 bg-muted/20 text-sm",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "font-semibold mb-2 block",
+									children: "Steps Summary:"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", {
+									className: "list-disc list-inside space-y-1 text-muted-foreground",
+									children: selectedWorkflow.steps.map((step, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+										step.name,
+										" (",
+										getRoleName(step.role),
+										")"
+									] }, idx))
+								})]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "outline",
+							onClick: () => setRunDialogOpen(false),
+							children: "Cancel"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							onClick: executeWorkflow,
+							className: "bg-trust-blue",
+							disabled: !selectedPropertyId,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { className: "h-4 w-4 mr-2" }), " Run Workflow"]
+						})] })
+					]
+				})
+			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 				open,
 				onOpenChange: handleOpenChange,
@@ -93587,7 +93720,7 @@ function Workflows() {
 												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 													className: "text-xs text-muted-foreground",
 													children: [
-														step.role,
+														getRoleName(step.role),
 														" - ",
 														step.actionType
 													]
@@ -102509,4 +102642,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-JNW8kah0.js.map
+//# sourceMappingURL=index-vQA89E0-.js.map
