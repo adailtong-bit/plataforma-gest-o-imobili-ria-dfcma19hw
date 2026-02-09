@@ -1,3 +1,5 @@
+import { type ClassValue } from 'clsx'
+
 // Re-exporting previous types plus new ones
 export type UserRole =
   | 'platform_owner'
@@ -954,6 +956,7 @@ export interface Workflow {
     | 'after_checkout'
   steps: WorkflowStep[]
   active: boolean
+  propertyIds?: string[] // Added propertyIds for multi-property selection
 }
 
 export interface MarketData {

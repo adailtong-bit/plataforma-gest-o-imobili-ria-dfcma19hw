@@ -1731,6 +1731,9 @@ video {
 .min-h-0 {
   min-height: 0px;
 }
+.min-h-10 {
+  min-height: 2.5rem;
+}
 .min-h-\[100px\] {
   min-height: 100px;
 }
@@ -6041,6 +6044,9 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 }
 .\[\&_svg\]\:pointer-events-none svg {
   pointer-events: none;
+}
+.\[\&_svg\]\:invisible svg {
+  visibility: hidden;
 }
 .\[\&_svg\]\:size-4 svg {
   width: 1rem;

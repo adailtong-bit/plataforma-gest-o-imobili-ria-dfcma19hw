@@ -41,6 +41,8 @@ import useWorkflowStore from '@/stores/useWorkflowStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import { Workflow, WorkflowStep, UserRole } from '@/lib/types'
+import { MultiSelect } from '@/components/ui/multi-select'
+import { useNavigate } from 'react-router-dom'
 
 const initialWorkflowState: Omit<Workflow, 'id'> = {
   name: '',
@@ -48,6 +50,7 @@ const initialWorkflowState: Omit<Workflow, 'id'> = {
   trigger: 'manual',
   active: true,
   steps: [],
+  propertyIds: [],
 }
 
 const initialStepState: WorkflowStep = {
@@ -84,11 +87,12 @@ export default function Workflows() {
     addWorkflow,
     updateWorkflow,
     deleteWorkflow,
-    runWorkflows,
+    executeWorkflow,
   } = useWorkflowStore()
   const { properties } = usePropertyStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
+  const navigate = useNavigate()
 
   const [open, setOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -102,59 +106,45 @@ export default function Workflows() {
   const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(
     null,
   )
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string>('')
+  const [selectedRunPropertyIds, setSelectedRunPropertyIds] = useState<
+    string[]
+  >([])
+
+  const propertyOptions = properties.map((p) => ({
+    label: p.name,
+    value: p.id,
+  }))
 
   const handleRunClick = (wf: Workflow) => {
     setSelectedWorkflow(wf)
-    setSelectedPropertyId('')
+    // If workflow has configured properties, default to them. Else, empty.
+    setSelectedRunPropertyIds(
+      wf.propertyIds && wf.propertyIds.length > 0 ? wf.propertyIds : [],
+    )
     setRunDialogOpen(true)
   }
 
-  const executeWorkflow = () => {
+  const handleExecute = () => {
     if (!selectedWorkflow) return
-    if (!selectedPropertyId) {
+
+    if (selectedRunPropertyIds.length === 0) {
       toast({
         title: t('common.error'),
-        description: 'Please select a property context.',
+        description: 'Please select at least one property.',
         variant: 'destructive',
       })
       return
     }
 
-    const property = properties.find((p) => p.id === selectedPropertyId)
-    if (!property) return
-
-    // We utilize the centralized runner, passing manual trigger and specific context
-    // Ideally we might refactor runWorkflows to take workflow ID directly, but trigger-based is standard
-    // Since we are forcing a run of *this specific* workflow, we might need to bypass the trigger check or ensure it matches
-    // But for simplicity in this frontend demo, we will use the same logic if trigger matches, or a direct run logic if we extracted it.
-    // However, the best way to leverage the intelligent assignment logic in AppContext is to call runWorkflows with 'manual'
-    // AND ensure the selected workflow is set to 'manual' or handle the discrepancy.
-
-    // For this specific 'Run Manual' button, we are simulating a manual trigger.
-    if (selectedWorkflow.trigger !== 'manual') {
-      toast({
-        title: 'Notice',
-        description:
-          'This workflow is set to run automatically. Manual run might not have all context (like booking data).',
-        variant: 'default',
-      })
-    }
-
-    // We use the context runner but we need to pass the property context
-    // The context runner currently filters by trigger.
-    // To support running ANY workflow manually, we'd need to modify runWorkflows to accept a specific workflow ID.
-    // Given the constraints, let's assume we temporarily invoke the logic for this workflow manually here,
-    // OR we just rely on `runWorkflows` doing the right thing if we pass 'manual' and the workflow is manual.
-    // If the workflow is 'after_checkout', running it manually without a booking context might fail the priority check logic, which is expected.
-
-    // Let's call runWorkflows with the trigger of the selected workflow, hoping it picks it up.
-    // We pass property context.
-    runWorkflows(selectedWorkflow.trigger, { property })
+    // Execute directly using the dedicated method
+    executeWorkflow(selectedWorkflow, selectedRunPropertyIds)
 
     setRunDialogOpen(false)
     setSelectedWorkflow(null)
-    setSelectedPropertyId('')
+    setSelectedRunPropertyIds([])
+
+    // Redirect to Tasks
+    navigate('/tasks')
   }
 
   const handleOpenChange = (val: boolean) => {
@@ -250,6 +240,7 @@ export default function Workflows() {
               <TableRow>
                 <TableHead>{t('common.name')}</TableHead>
                 <TableHead>{t('workflows.trigger')}</TableHead>
+                <TableHead>{t('properties.title')}</TableHead>
                 <TableHead>{t('workflows.steps')}</TableHead>
                 <TableHead>{t('common.status')}</TableHead>
                 <TableHead className="text-right">
@@ -261,7 +252,7 @@ export default function Workflows() {
               {workflows.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="text-center py-8 text-muted-foreground"
                   >
                     No workflows found.
@@ -280,6 +271,13 @@ export default function Workflows() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{wf.trigger}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">
+                        {wf.propertyIds && wf.propertyIds.length > 0
+                          ? `${wf.propertyIds.length} properties`
+                          : 'All / Unbound'}
+                      </Badge>
                     </TableCell>
                     <TableCell>{wf.steps.length}</TableCell>
                     <TableCell>
@@ -335,33 +333,23 @@ export default function Workflows() {
           <DialogHeader>
             <DialogTitle>Run Workflow</DialogTitle>
             <DialogDescription>
-              Select a property to execute the workflow "
-              {selectedWorkflow?.name}
-              ".
+              Select properties to execute the workflow "
+              {selectedWorkflow?.name}".
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="property-select">Select Property</Label>
-              <Select
-                value={selectedPropertyId}
-                onValueChange={setSelectedPropertyId}
-              >
-                <SelectTrigger id="property-select">
-                  <SelectValue placeholder="Select a property..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {properties.map((property) => (
-                    <SelectItem key={property.id} value={property.id}>
-                      <div className="flex items-center gap-2">
-                        <Building className="h-4 w-4 text-muted-foreground" />
-                        <span>{property.name}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>Select Properties</Label>
+              <MultiSelect
+                options={propertyOptions}
+                selected={selectedRunPropertyIds}
+                onChange={setSelectedRunPropertyIds}
+                placeholder="Select properties..."
+              />
+              <p className="text-xs text-muted-foreground">
+                Tasks will be generated for each selected property.
+              </p>
             </div>
           </div>
 
@@ -370,9 +358,9 @@ export default function Workflows() {
               Cancel
             </Button>
             <Button
-              onClick={executeWorkflow}
+              onClick={handleExecute}
               className="bg-trust-blue"
-              disabled={!selectedPropertyId}
+              disabled={selectedRunPropertyIds.length === 0}
             >
               <Play className="h-4 w-4 mr-2" /> Run Workflow
             </Button>
@@ -432,6 +420,25 @@ export default function Workflows() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label>{t('properties.title')}</Label>
+              <MultiSelect
+                options={propertyOptions}
+                selected={currentWorkflow.propertyIds || []}
+                onChange={(selected) =>
+                  setCurrentWorkflow({
+                    ...currentWorkflow,
+                    propertyIds: selected,
+                  })
+                }
+                placeholder="Select applicable properties (leave empty for all)"
+              />
+              <p className="text-xs text-muted-foreground">
+                Select which properties this workflow applies to. If empty, it
+                may be considered global or selected at runtime.
+              </p>
             </div>
 
             <div className="grid gap-2">

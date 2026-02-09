@@ -54498,79 +54498,81 @@ const AppProvider = ({ children }) => {
 		partners$1,
 		tenants$1
 	]);
-	const runWorkflows = (0, import_react.useCallback)((trigger, context) => {
-		const activeWorkflows = workflows$1.filter((wf) => wf.active && wf.trigger === trigger);
-		if (activeWorkflows.length === 0) return;
-		let propertyId = context?.property?.id || context?.booking?.propertyId;
-		const property$2 = properties$1.find((p$1) => p$1.id === propertyId);
-		if (!property$2) if (trigger === "manual" && selectedPropertyId && selectedPropertyId !== "all") propertyId = selectedPropertyId;
-		else return;
+	const executeWorkflow = (0, import_react.useCallback)((workflow, targetPropertyIds) => {
+		const propertyIds = targetPropertyIds && targetPropertyIds.length > 0 ? targetPropertyIds : workflow.propertyIds && workflow.propertyIds.length > 0 ? workflow.propertyIds : [];
+		if (propertyIds.length === 0) return;
 		let tasksCreated = 0;
-		activeWorkflows.forEach((wf) => {
-			wf.steps.forEach((step, index$1) => {
+		propertyIds.forEach((propertyId) => {
+			const property$2 = properties$1.find((p$1) => p$1.id === propertyId);
+			if (!property$2) return;
+			workflow.steps.forEach((step, index$1) => {
 				if (step.actionType === "task") {
 					let assigneeName = getRoleName$1(step.role);
 					let assigneeId = void 0;
 					let assignedRole = step.role;
-					if (step.role === "partner") {
-						const linkedPartner = partners$1.find((p$1) => p$1.linkedPropertyIds?.includes(propertyId) && (p$1.type === "cleaning" || p$1.type === "maintenance"));
-						if (linkedPartner) {
-							assigneeName = linkedPartner.name;
-							assigneeId = linkedPartner.id;
-						}
+					const linkedPartner = partners$1.find((p$1) => p$1.linkedPropertyIds?.includes(propertyId) && (step.name.toLowerCase().includes("clean") ? p$1.type === "cleaning" : p$1.type === "maintenance"));
+					if (linkedPartner) {
+						assigneeName = linkedPartner.name;
+						assigneeId = linkedPartner.id;
 					}
 					let priority = "medium";
 					let isBackToBack = false;
-					if (context?.booking && trigger === "after_checkout") {
-						const checkoutDate = context.booking.checkOut;
-						if (bookings$1.some((b$1) => b$1.propertyId === propertyId && b$1.id !== context.booking.id && isSameDay(parseISO(b$1.checkIn), parseISO(checkoutDate)))) {
-							priority = "critical";
-							isBackToBack = true;
-						}
+					const today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+					const checkOutToday = bookings$1.find((b$1) => b$1.propertyId === propertyId && b$1.checkOut === today);
+					const checkInToday = bookings$1.find((b$1) => b$1.propertyId === propertyId && b$1.checkIn === today);
+					if (checkOutToday && checkInToday) {
+						priority = "critical";
+						isBackToBack = true;
 					}
 					addTask({
-						id: `wf_task_${Date.now()}_${wf.id}_${index$1}`,
+						id: `wf_task_${Date.now()}_${workflow.id}_${propertyId}_${index$1}`,
 						title: step.name,
-						description: step.description || `Auto-generated from workflow: ${wf.name}`,
+						description: step.description || `Auto-generated from workflow: ${workflow.name}`,
 						propertyId,
-						propertyName: property$2?.name || "Unknown",
-						propertyAddress: property$2?.address,
-						propertyCommunity: property$2?.community,
+						propertyName: property$2.name || "Unknown",
+						propertyAddress: property$2.address,
+						propertyCommunity: property$2.community,
 						status: "pending",
-						type: "cleaning",
+						type: step.name.toLowerCase().includes("clean") ? "cleaning" : "maintenance",
 						priority,
 						date: (/* @__PURE__ */ new Date()).toISOString(),
 						assignee: assigneeName,
 						assigneeId,
 						assignedRole,
 						source: "automation",
-						backToBack: isBackToBack
+						backToBack: isBackToBack,
+						createdBy: currentUser.id
 					});
 					tasksCreated++;
-					if (priority === "critical") addNotification({
-						title: "Critical Task Alert",
-						message: `Back-to-back booking detected for ${property$2?.name}. Critical task created.`,
-						type: "critical",
-						category: "maintenance",
-						link: "/tasks"
-					});
 				}
 			});
 		});
 		if (tasksCreated > 0) toast$2({
 			title: "Workflow Executed",
-			description: `${tasksCreated} tasks generated automatically.`
+			description: `${tasksCreated} tasks created across ${propertyIds.length} properties.`
 		});
 	}, [
-		workflows$1,
 		properties$1,
 		partners$1,
 		bookings$1,
 		addTask,
-		addNotification,
 		toast$2,
-		selectedPropertyId
+		currentUser.id
 	]);
+	const runWorkflows = (0, import_react.useCallback)((trigger, context) => {
+		const activeWorkflows = workflows$1.filter((wf) => wf.active && wf.trigger === trigger);
+		if (activeWorkflows.length === 0) return;
+		let propertyId = context?.property?.id || context?.booking?.propertyId;
+		if (propertyId) activeWorkflows.forEach((wf) => {
+			if (wf.propertyIds && wf.propertyIds.length > 0) {
+				if (!wf.propertyIds.includes(propertyId)) return;
+			}
+			executeWorkflow(wf, [propertyId]);
+		});
+		else activeWorkflows.forEach((wf) => {
+			executeWorkflow(wf);
+		});
+	}, [workflows$1, executeWorkflow]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppContext.Provider, {
 		value: {
 			properties: properties$1,
@@ -54739,7 +54741,8 @@ const AppProvider = ({ children }) => {
 			addEmailTemplate,
 			updateEmailTemplate,
 			deleteEmailTemplate,
-			runWorkflows
+			runWorkflows,
+			executeWorkflow
 		},
 		children
 	});
@@ -93423,16 +93426,99 @@ var useWorkflowStore = () => {
 		addWorkflow: context.addWorkflow,
 		updateWorkflow: context.updateWorkflow,
 		deleteWorkflow: context.deleteWorkflow,
-		runWorkflows: context.runWorkflows
+		runWorkflows: context.runWorkflows,
+		executeWorkflow: context.executeWorkflow
 	};
 };
 var useWorkflowStore_default = useWorkflowStore;
+function MultiSelect({ options: options$1, selected, onChange, placeholder = "Select items...", className, disabled = false }) {
+	const [open, setOpen] = import_react.useState(false);
+	const handleUnselect = (item) => {
+		onChange(selected.filter((i$2) => i$2 !== item));
+	};
+	const handleSelect = (itemValue) => {
+		if (selected.includes(itemValue)) onChange(selected.filter((i$2) => i$2 !== itemValue));
+		else onChange([...selected, itemValue]);
+	};
+	const handleSelectAll = () => {
+		if (selected.length === options$1.length) onChange([]);
+		else onChange(options$1.map((opt) => opt.value));
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, {
+		open,
+		onOpenChange: setOpen,
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
+			asChild: true,
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+				variant: "outline",
+				role: "combobox",
+				"aria-expanded": open,
+				className: cn("w-full justify-between h-auto min-h-10 py-2", className),
+				disabled,
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex flex-wrap gap-1",
+					children: [selected.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "text-muted-foreground font-normal",
+						children: placeholder
+					}), selected.length > 0 && selected.length <= 3 ? selected.map((itemValue) => {
+						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+							variant: "secondary",
+							className: "mr-1 mb-1",
+							onClick: (e) => {
+								e.stopPropagation();
+								handleUnselect(itemValue);
+							},
+							children: [options$1.find((o$1) => o$1.value === itemValue)?.label || itemValue, /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: "ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+								onKeyDown: (e) => {
+									if (e.key === "Enter") handleUnselect(itemValue);
+								},
+								onMouseDown: (e) => {
+									e.preventDefault();
+									e.stopPropagation();
+								},
+								onClick: (e) => {
+									e.preventDefault();
+									e.stopPropagation();
+									handleUnselect(itemValue);
+								},
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-3 w-3 text-muted-foreground hover:text-foreground" })
+							})]
+						}, itemValue);
+					}) : selected.length > 3 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+						variant: "secondary",
+						className: "mr-1 mb-1",
+						children: [selected.length, " selected"]
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronsUpDown, { className: "ml-2 h-4 w-4 shrink-0 opacity-50" })]
+			})
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContent, {
+			className: "w-full p-0",
+			align: "start",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Command, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandInput, { placeholder: "Search..." }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandList, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandEmpty, { children: "No item found." }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
+				onSelect: handleSelectAll,
+				className: "font-medium border-b",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: cn("mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary", selected.length === options$1.length ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible"),
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: cn("h-4 w-4") })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Select All" })]
+			}), options$1.map((option) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
+				onSelect: () => handleSelect(option.value),
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: cn("mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary", selected.includes(option.value) ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible"),
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: cn("h-4 w-4") })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: option.label })]
+			}, option.value))] })] })] })
+		})]
+	});
+}
 var initialWorkflowState = {
 	name: "",
 	description: "",
 	trigger: "manual",
 	active: true,
-	steps: []
+	steps: [],
+	propertyIds: []
 };
 var initialStepState = {
 	id: "",
@@ -93453,43 +93539,42 @@ var getRoleName = (role) => {
 	}
 };
 function Workflows() {
-	const { workflows: workflows$1, addWorkflow, updateWorkflow, deleteWorkflow, runWorkflows } = useWorkflowStore_default();
+	const { workflows: workflows$1, addWorkflow, updateWorkflow, deleteWorkflow, executeWorkflow } = useWorkflowStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
 	const { t: t$1 } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
+	const navigate = useNavigate();
 	const [open, setOpen] = (0, import_react.useState)(false);
 	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
 	const [currentWorkflow, setCurrentWorkflow] = (0, import_react.useState)(initialWorkflowState);
 	const [newStep, setNewStep] = (0, import_react.useState)(initialStepState);
 	const [runDialogOpen, setRunDialogOpen] = (0, import_react.useState)(false);
 	const [selectedWorkflow, setSelectedWorkflow] = (0, import_react.useState)(null);
-	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("");
+	const [selectedRunPropertyIds, setSelectedRunPropertyIds] = (0, import_react.useState)([]);
+	const propertyOptions = properties$1.map((p$1) => ({
+		label: p$1.name,
+		value: p$1.id
+	}));
 	const handleRunClick = (wf) => {
 		setSelectedWorkflow(wf);
-		setSelectedPropertyId("");
+		setSelectedRunPropertyIds(wf.propertyIds && wf.propertyIds.length > 0 ? wf.propertyIds : []);
 		setRunDialogOpen(true);
 	};
-	const executeWorkflow = () => {
+	const handleExecute = () => {
 		if (!selectedWorkflow) return;
-		if (!selectedPropertyId) {
+		if (selectedRunPropertyIds.length === 0) {
 			toast$2({
 				title: t$1("common.error"),
-				description: "Please select a property context.",
+				description: "Please select at least one property.",
 				variant: "destructive"
 			});
 			return;
 		}
-		const property$2 = properties$1.find((p$1) => p$1.id === selectedPropertyId);
-		if (!property$2) return;
-		if (selectedWorkflow.trigger !== "manual") toast$2({
-			title: "Notice",
-			description: "This workflow is set to run automatically. Manual run might not have all context (like booking data).",
-			variant: "default"
-		});
-		runWorkflows(selectedWorkflow.trigger, { property: property$2 });
+		executeWorkflow(selectedWorkflow, selectedRunPropertyIds);
 		setRunDialogOpen(false);
 		setSelectedWorkflow(null);
-		setSelectedPropertyId("");
+		setSelectedRunPropertyIds([]);
+		navigate("/tasks");
 	};
 	const handleOpenChange = (val) => {
 		setOpen(val);
@@ -93586,6 +93671,7 @@ function Workflows() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1("workflows.title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [workflows$1.length, " workflows configurados."] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.name") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("workflows.trigger") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("properties.title") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("workflows.steps") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
@@ -93593,7 +93679,7 @@ function Workflows() {
 					children: t$1("common.actions")
 				})
 			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: workflows$1.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-				colSpan: 5,
+				colSpan: 6,
 				className: "text-center py-8 text-muted-foreground",
 				children: "No workflows found."
 			}) }) : workflows$1.map((wf) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
@@ -93610,6 +93696,10 @@ function Workflows() {
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 					variant: "outline",
 					children: wf.trigger
+				}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+					variant: "secondary",
+					children: wf.propertyIds && wf.propertyIds.length > 0 ? `${wf.propertyIds.length} properties` : "All / Unbound"
 				}) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.steps.length }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
@@ -93655,7 +93745,7 @@ function Workflows() {
 					className: "sm:max-w-md",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Run Workflow" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogDescription, { children: [
-							"Select a property to execute the workflow \"",
+							"Select properties to execute the workflow \"",
 							selectedWorkflow?.name,
 							"\"."
 						] })] }),
@@ -93663,23 +93753,19 @@ function Workflows() {
 							className: "grid gap-4 py-4",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-									htmlFor: "property-select",
-									children: "Select Property"
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: selectedPropertyId,
-									onValueChange: setSelectedPropertyId,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-										id: "property-select",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select a property..." })
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: properties$1.map((property$2) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: property$2.id,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "flex items-center gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: property$2.name })]
-										})
-									}, property$2.id)) })]
-								})]
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Select Properties" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MultiSelect, {
+										options: propertyOptions,
+										selected: selectedRunPropertyIds,
+										onChange: setSelectedRunPropertyIds,
+										placeholder: "Select properties..."
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-xs text-muted-foreground",
+										children: "Tasks will be generated for each selected property."
+									})
+								]
 							})
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -93687,9 +93773,9 @@ function Workflows() {
 							onClick: () => setRunDialogOpen(false),
 							children: "Cancel"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-							onClick: executeWorkflow,
+							onClick: handleExecute,
 							className: "bg-trust-blue",
-							disabled: !selectedPropertyId,
+							disabled: selectedRunPropertyIds.length === 0,
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { className: "h-4 w-4 mr-2" }), " Run Workflow"]
 						})] })
 					]
@@ -93752,6 +93838,25 @@ function Workflows() {
 											] })]
 										})]
 									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("properties.title") }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MultiSelect, {
+											options: propertyOptions,
+											selected: currentWorkflow.propertyIds || [],
+											onChange: (selected) => setCurrentWorkflow({
+												...currentWorkflow,
+												propertyIds: selected
+											}),
+											placeholder: "Select applicable properties (leave empty for all)"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "text-xs text-muted-foreground",
+											children: "Select which properties this workflow applies to. If empty, it may be considered global or selected at runtime."
+										})
+									]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
@@ -102719,4 +102824,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Cv39mV5U.js.map
+//# sourceMappingURL=index-BeCrXXhn.js.map

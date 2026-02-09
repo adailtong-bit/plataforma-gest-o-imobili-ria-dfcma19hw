@@ -12,6 +12,7 @@ const useWorkflowStore = () => {
     updateWorkflow: context.updateWorkflow,
     deleteWorkflow: context.deleteWorkflow,
     runWorkflows: context.runWorkflows,
+    executeWorkflow: context.executeWorkflow,
   }
 }
 
