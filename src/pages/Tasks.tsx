@@ -90,11 +90,7 @@ export default function Tasks() {
         )
         const isRoleMatch = t.assignedRole === currentUser.role
 
-        // If I'm not an admin and the task isn't assigned to my role, I shouldn't see it
-        // Note: internal_user (Staff) is also filtered here unless they are admin/PM
         if (!isAdmin && !isRoleMatch) {
-          // Exception: If current user is 'internal_user' but role is 'software_tenant' (Manager), maybe?
-          // For strict compliance with user story: "users who possess the matching role"
           return false
         }
       }

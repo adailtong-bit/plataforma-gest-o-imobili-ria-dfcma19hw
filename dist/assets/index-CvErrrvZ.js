@@ -73690,6 +73690,28 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 				}) })
 			] })
 		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+			open: assignOpen,
+			onOpenChange: setAssignOpen,
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Delegar Tarefa" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "py-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Selecione um funcionário" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+					onValueChange: handleAssignEmployee,
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+						className: "mt-2",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Escolha..." })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: partnerRecord?.employees?.map((emp) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+						value: emp.id,
+						children: [
+							emp.name,
+							" (",
+							emp.role,
+							")"
+						]
+					}, emp.id)) })]
+				})]
+			})] })
+		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 			className: "hover:shadow-md transition-shadow group flex flex-col h-full relative border-slate-200",
 			children: [
@@ -73848,35 +73870,12 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 										title: "Alterar Atribuição",
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-3 w-3" })
 									})]
-								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-									open: assignOpen,
-									onOpenChange: setAssignOpen,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-										asChild: true,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-											variant: "ghost",
-											size: "sm",
-											className: "h-6 text-[10px] px-2 text-blue-600 font-medium",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 mr-1" }), " Atribuir"]
-										})
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Delegar Tarefa" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "py-4",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Selecione um funcionário" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-											onValueChange: handleAssignEmployee,
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-												className: "mt-2",
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Escolha..." })
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: partnerRecord?.employees?.map((emp) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-												value: emp.id,
-												children: [
-													emp.name,
-													" (",
-													emp.role,
-													")"
-												]
-											}, emp.id)) })]
-										})]
-									})] })]
+								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									variant: "ghost",
+									size: "sm",
+									className: "h-6 text-[10px] px-2 text-blue-600 font-medium",
+									onClick: () => setAssignOpen(true),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 mr-1" }), " Atribuir"]
 								})]
 							})
 						})
@@ -102824,4 +102823,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BeCrXXhn.js.map
+//# sourceMappingURL=index-CvErrrvZ.js.map

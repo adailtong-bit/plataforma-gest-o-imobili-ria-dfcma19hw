@@ -263,6 +263,29 @@ export function TaskCard({
         </DialogContent>
       </Dialog>
 
+      <Dialog open={assignOpen} onOpenChange={setAssignOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delegar Tarefa</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Label>Selecione um funcionário</Label>
+            <Select onValueChange={handleAssignEmployee}>
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder="Escolha..." />
+              </SelectTrigger>
+              <SelectContent>
+                {partnerRecord?.employees?.map((emp) => (
+                  <SelectItem key={emp.id} value={emp.id}>
+                    {emp.name} ({emp.role})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Card className="hover:shadow-md transition-shadow group flex flex-col h-full relative border-slate-200">
         <CardHeader className="p-4 pb-2 space-y-2">
           <div className="flex justify-between items-start">
@@ -451,37 +474,14 @@ export function TaskCard({
                     )}
                   </div>
                 ) : (
-                  <Dialog open={assignOpen} onOpenChange={setAssignOpen}>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 text-[10px] px-2 text-blue-600 font-medium"
-                      >
-                        <User className="h-3 w-3 mr-1" /> Atribuir
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Delegar Tarefa</DialogTitle>
-                      </DialogHeader>
-                      <div className="py-4">
-                        <Label>Selecione um funcionário</Label>
-                        <Select onValueChange={handleAssignEmployee}>
-                          <SelectTrigger className="mt-2">
-                            <SelectValue placeholder="Escolha..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {partnerRecord?.employees?.map((emp) => (
-                              <SelectItem key={emp.id} value={emp.id}>
-                                {emp.name} ({emp.role})
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 text-[10px] px-2 text-blue-600 font-medium"
+                    onClick={() => setAssignOpen(true)}
+                  >
+                    <User className="h-3 w-3 mr-1" /> Atribuir
+                  </Button>
                 )}
               </div>
             </div>
