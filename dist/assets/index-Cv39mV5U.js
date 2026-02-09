@@ -54231,6 +54231,18 @@ const translations = {
 	}
 };
 const AppContext = (0, import_react.createContext)(void 0);
+var getRoleName$1 = (role) => {
+	switch (role) {
+		case "platform_owner": return "Admin";
+		case "software_tenant": return "Manager";
+		case "internal_user": return "Staff";
+		case "partner": return "Partner";
+		case "partner_employee": return "Partner Employee";
+		case "property_owner": return "Owner";
+		case "tenant": return "Tenant";
+		default: return "Unknown";
+	}
+};
 const AppProvider = ({ children }) => {
 	const [properties$1, setProperties] = (0, import_react.useState)(properties);
 	const [condominiums$1, setCondominiums] = (0, import_react.useState)(condominiums);
@@ -54408,7 +54420,7 @@ const AppProvider = ({ children }) => {
 	const addServiceCategory = (c$1) => setServiceCategories([...serviceCategories$1, c$1]);
 	const updateServiceCategory = (c$1) => setServiceCategories(serviceCategories$1.map((x$2) => x$2.id === c$1.id ? c$1 : x$2));
 	const deleteServiceCategory = (id) => setServiceCategories(serviceCategories$1.filter((x$2) => x$2.id !== id));
-	const addNotification = (n$1) => setNotifications([...notifications$1, {
+	const addNotification = (n$1) => setNotifications((prev) => [...prev, {
 		...n$1,
 		id: Date.now().toString(),
 		timestamp: (/* @__PURE__ */ new Date()).toISOString(),
@@ -54439,7 +54451,7 @@ const AppProvider = ({ children }) => {
 	const updateAdvertisement = (a$2) => setAdvertisements(advertisements$1.map((x$2) => x$2.id === a$2.id ? a$2 : x$2));
 	const deleteAdvertisement = (id) => setAdvertisements(advertisements$1.filter((x$2) => x$2.id !== id));
 	const addAdvertiser = (a$2) => setAdvertisers([...advertisers, a$2]);
-	const updateAdvertiser = (a$2) => setAdvertisers(advertisers.map((x$2) => x$2.id === a$2.id ? a$2 : x$2));
+	const updateAdvertiser = (a$2) => setAdvertisements(advertisers.map((x$2) => x$2.id === a$2.id ? a$2 : x$2));
 	const deleteAdvertiser = (id) => setAdvertisers(advertisers.filter((x$2) => x$2.id !== id));
 	const updateAdPricing = (p$1) => setAdPricingState(p$1);
 	const addVisit = (v) => setVisits([...visits$1, v]);
@@ -54485,6 +54497,79 @@ const AppProvider = ({ children }) => {
 		owners$1,
 		partners$1,
 		tenants$1
+	]);
+	const runWorkflows = (0, import_react.useCallback)((trigger, context) => {
+		const activeWorkflows = workflows$1.filter((wf) => wf.active && wf.trigger === trigger);
+		if (activeWorkflows.length === 0) return;
+		let propertyId = context?.property?.id || context?.booking?.propertyId;
+		const property$2 = properties$1.find((p$1) => p$1.id === propertyId);
+		if (!property$2) if (trigger === "manual" && selectedPropertyId && selectedPropertyId !== "all") propertyId = selectedPropertyId;
+		else return;
+		let tasksCreated = 0;
+		activeWorkflows.forEach((wf) => {
+			wf.steps.forEach((step, index$1) => {
+				if (step.actionType === "task") {
+					let assigneeName = getRoleName$1(step.role);
+					let assigneeId = void 0;
+					let assignedRole = step.role;
+					if (step.role === "partner") {
+						const linkedPartner = partners$1.find((p$1) => p$1.linkedPropertyIds?.includes(propertyId) && (p$1.type === "cleaning" || p$1.type === "maintenance"));
+						if (linkedPartner) {
+							assigneeName = linkedPartner.name;
+							assigneeId = linkedPartner.id;
+						}
+					}
+					let priority = "medium";
+					let isBackToBack = false;
+					if (context?.booking && trigger === "after_checkout") {
+						const checkoutDate = context.booking.checkOut;
+						if (bookings$1.some((b$1) => b$1.propertyId === propertyId && b$1.id !== context.booking.id && isSameDay(parseISO(b$1.checkIn), parseISO(checkoutDate)))) {
+							priority = "critical";
+							isBackToBack = true;
+						}
+					}
+					addTask({
+						id: `wf_task_${Date.now()}_${wf.id}_${index$1}`,
+						title: step.name,
+						description: step.description || `Auto-generated from workflow: ${wf.name}`,
+						propertyId,
+						propertyName: property$2?.name || "Unknown",
+						propertyAddress: property$2?.address,
+						propertyCommunity: property$2?.community,
+						status: "pending",
+						type: "cleaning",
+						priority,
+						date: (/* @__PURE__ */ new Date()).toISOString(),
+						assignee: assigneeName,
+						assigneeId,
+						assignedRole,
+						source: "automation",
+						backToBack: isBackToBack
+					});
+					tasksCreated++;
+					if (priority === "critical") addNotification({
+						title: "Critical Task Alert",
+						message: `Back-to-back booking detected for ${property$2?.name}. Critical task created.`,
+						type: "critical",
+						category: "maintenance",
+						link: "/tasks"
+					});
+				}
+			});
+		});
+		if (tasksCreated > 0) toast$2({
+			title: "Workflow Executed",
+			description: `${tasksCreated} tasks generated automatically.`
+		});
+	}, [
+		workflows$1,
+		properties$1,
+		partners$1,
+		bookings$1,
+		addTask,
+		addNotification,
+		toast$2,
+		selectedPropertyId
 	]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppContext.Provider, {
 		value: {
@@ -54653,7 +54738,8 @@ const AppProvider = ({ children }) => {
 			deleteMarketingWorkflow,
 			addEmailTemplate,
 			updateEmailTemplate,
-			deleteEmailTemplate
+			deleteEmailTemplate,
+			runWorkflows
 		},
 		children
 	});
@@ -65008,18 +65094,9 @@ var useShortTermStore = () => {
 					...property$2,
 					status: "cleaning"
 				});
-				context.addTask({
-					id: `task-cleaning-${Date.now()}`,
-					title: `Cleaning: ${booking.guestName} Checkout`,
-					propertyId: property$2.id,
-					propertyName: property$2.name,
-					status: "pending",
-					type: "cleaning",
-					assignee: "Unassigned",
-					priority: "high",
-					description: "Auto-generated task after guest checkout.",
-					date: (/* @__PURE__ */ new Date()).toISOString(),
-					source: "automation"
+				context.runWorkflows("after_checkout", {
+					booking,
+					property: property$2
 				});
 			}
 		}
@@ -84937,14 +85014,34 @@ function PartnerStaff({ partner, onUpdate, canEdit }) {
 }
 function PartnerProperties({ partner, onUpdate, canEdit }) {
 	const { properties: properties$1 } = usePropertyStore_default();
+	const { partners: partners$1 } = usePartnerStore_default();
+	const { currentUser } = useAuthStore_default();
 	const { toast: toast$2 } = useToast();
+	const { t: t$1 } = useLanguageStore_default();
 	const [open, setOpen] = (0, import_react.useState)(false);
 	const [selectedPropId, setSelectedPropId] = (0, import_react.useState)("");
 	const linkedIds = partner.linkedPropertyIds || [];
 	const linkedProperties = properties$1.filter((p$1) => linkedIds.includes(p$1.id));
 	const availableProperties = properties$1.filter((p$1) => !linkedIds.includes(p$1.id));
+	const isAdminOrPM = [
+		"platform_owner",
+		"software_tenant",
+		"internal_user"
+	].includes(currentUser.role);
+	const canModifyBindings = canEdit && isAdminOrPM;
 	const handleLink = () => {
 		if (!selectedPropId) return;
+		if (partner.type === "cleaning") {
+			const existingLink = partners$1.find((p$1) => p$1.type === "cleaning" && p$1.id !== partner.id && p$1.linkedPropertyIds?.includes(selectedPropId));
+			if (existingLink) {
+				toast$2({
+					title: t$1("common.error"),
+					description: `This property is already assigned to cleaning partner: ${existingLink.name}. Please unlink it first.`,
+					variant: "destructive"
+				});
+				return;
+			}
+		}
 		const newLinks = [...linkedIds, selectedPropId];
 		onUpdate({
 			...partner,
@@ -84952,9 +85049,17 @@ function PartnerProperties({ partner, onUpdate, canEdit }) {
 		});
 		setOpen(false);
 		setSelectedPropId("");
-		toast$2({ title: "Propriedade vinculada" });
+		toast$2({ title: "Propriedade vinculada com sucesso" });
 	};
 	const handleUnlink = (id) => {
+		if (!canModifyBindings) {
+			toast$2({
+				title: t$1("common.error"),
+				description: "Permission denied. Only Admins can unlink properties.",
+				variant: "destructive"
+			});
+			return;
+		}
 		if (confirm("Desvincular propriedade?")) {
 			const newLinks = linkedIds.filter((lid) => lid !== id);
 			onUpdate({
@@ -84965,7 +85070,7 @@ function PartnerProperties({ partner, onUpdate, canEdit }) {
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 		className: "flex flex-row items-center justify-between",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Propriedades Vinculadas (Whitelist)" }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Propriedades Vinculadas (Whitelist)" }), canModifyBindings && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 			open,
 			onOpenChange: setOpen,
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
@@ -84979,14 +85084,21 @@ function PartnerProperties({ partner, onUpdate, canEdit }) {
 				className: "grid gap-4 py-4",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Selecione a Propriedade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-						value: selectedPropId,
-						onValueChange: setSelectedPropId,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Escolha..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: availableProperties.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: p$1.id,
-							children: p$1.name
-						}, p$1.id)) })]
-					})]
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Selecione a Propriedade" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: selectedPropId,
+							onValueChange: setSelectedPropId,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Escolha..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: availableProperties.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: p$1.id,
+								children: p$1.name
+							}, p$1.id)) })]
+						}),
+						partner.type === "cleaning" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-xs text-muted-foreground",
+							children: "* Cleaning partners have exclusive assignment to properties."
+						})
+					]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 					onClick: handleLink,
 					disabled: !selectedPropId,
@@ -84998,7 +85110,7 @@ function PartnerProperties({ partner, onUpdate, canEdit }) {
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Propriedade" }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Endereço" }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Comunidade" }),
-		canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+		canModifyBindings && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 			className: "text-right",
 			children: "Ações"
 		})
@@ -85013,7 +85125,7 @@ function PartnerProperties({ partner, onUpdate, canEdit }) {
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: prop.address }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: prop.community }),
-		canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+		canModifyBindings && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 			className: "text-right",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 				variant: "ghost",
@@ -93310,7 +93422,8 @@ var useWorkflowStore = () => {
 		workflows: context.workflows,
 		addWorkflow: context.addWorkflow,
 		updateWorkflow: context.updateWorkflow,
-		deleteWorkflow: context.deleteWorkflow
+		deleteWorkflow: context.deleteWorkflow,
+		runWorkflows: context.runWorkflows
 	};
 };
 var useWorkflowStore_default = useWorkflowStore;
@@ -93340,9 +93453,8 @@ var getRoleName = (role) => {
 	}
 };
 function Workflows() {
-	const { workflows: workflows$1, addWorkflow, updateWorkflow, deleteWorkflow } = useWorkflowStore_default();
+	const { workflows: workflows$1, addWorkflow, updateWorkflow, deleteWorkflow, runWorkflows } = useWorkflowStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
-	const { addTask } = useTaskStore_default();
 	const { t: t$1 } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const [open, setOpen] = (0, import_react.useState)(false);
@@ -93359,51 +93471,22 @@ function Workflows() {
 	};
 	const executeWorkflow = () => {
 		if (!selectedWorkflow) return;
-		if (selectedWorkflow.trigger !== "manual" && !selectedPropertyId) {
-			if (!selectedPropertyId) {
-				toast$2({
-					title: t$1("common.error"),
-					description: "Please select a property context.",
-					variant: "destructive"
-				});
-				return;
-			}
-		}
-		const property$2 = properties$1.find((p$1) => p$1.id === selectedPropertyId);
-		if (!property$2) {
+		if (!selectedPropertyId) {
 			toast$2({
 				title: t$1("common.error"),
-				description: "Selected property not found.",
+				description: "Please select a property context.",
 				variant: "destructive"
 			});
 			return;
 		}
-		let tasksCreated = 0;
-		selectedWorkflow.steps.forEach((step, index$1) => {
-			if (step.actionType === "task") {
-				addTask({
-					id: `wf_task_${Date.now()}_${index$1}`,
-					title: step.name,
-					description: step.description || `Auto-generated from workflow: ${selectedWorkflow.name}`,
-					propertyId: property$2.id,
-					propertyName: property$2.name,
-					propertyAddress: property$2.address,
-					propertyCommunity: property$2.community,
-					status: "pending",
-					type: "maintenance",
-					priority: "medium",
-					date: (/* @__PURE__ */ new Date()).toISOString(),
-					assignee: getRoleName(step.role),
-					assignedRole: step.role,
-					source: "automation"
-				});
-				tasksCreated++;
-			}
+		const property$2 = properties$1.find((p$1) => p$1.id === selectedPropertyId);
+		if (!property$2) return;
+		if (selectedWorkflow.trigger !== "manual") toast$2({
+			title: "Notice",
+			description: "This workflow is set to run automatically. Manual run might not have all context (like booking data).",
+			variant: "default"
 		});
-		toast$2({
-			title: t$1("workflows.run_success"),
-			description: `Workflow initiated. ${tasksCreated} tasks created for ${property$2.name}.`
-		});
+		runWorkflows(selectedWorkflow.trigger, { property: property$2 });
 		setRunDialogOpen(false);
 		setSelectedWorkflow(null);
 		setSelectedPropertyId("");
@@ -93574,11 +93657,11 @@ function Workflows() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Run Workflow" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogDescription, { children: [
 							"Select a property to execute the workflow \"",
 							selectedWorkflow?.name,
-							"\". This will generate tasks for the configured steps."
+							"\"."
 						] })] }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "grid gap-4 py-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 									htmlFor: "property-select",
@@ -93597,21 +93680,7 @@ function Workflows() {
 										})
 									}, property$2.id)) })]
 								})]
-							}), selectedWorkflow?.steps && selectedWorkflow.steps.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "border rounded-md p-3 bg-muted/20 text-sm",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "font-semibold mb-2 block",
-									children: "Steps Summary:"
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", {
-									className: "list-disc list-inside space-y-1 text-muted-foreground",
-									children: selectedWorkflow.steps.map((step, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-										step.name,
-										" (",
-										getRoleName(step.role),
-										")"
-									] }, idx))
-								})]
-							})]
+							})
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "outline",
@@ -93659,6 +93728,14 @@ function Workflows() {
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 													value: "manual",
 													children: "Manual"
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "before_checkin",
+													children: "Before Check-in"
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "after_checkout",
+													children: "After Check-out"
 												}),
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 													value: "lease_start",
@@ -102642,4 +102719,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-vQA89E0-.js.map
+//# sourceMappingURL=index-Cv39mV5U.js.map

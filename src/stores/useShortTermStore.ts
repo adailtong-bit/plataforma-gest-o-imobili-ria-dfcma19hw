@@ -20,6 +20,9 @@ const useShortTermStore = () => {
         guestSignature: data.signature,
         estimatedArrival: data.arrivalTime,
       })
+
+      // Trigger 'before_checkin' actually happens before, but for demo we might assume checkin triggers arrival workflows
+      // Or we assume 'after_checkout' is the main one for turnover.
     }
   }
 
@@ -41,20 +44,8 @@ const useShortTermStore = () => {
       if (property) {
         context.updateProperty({ ...property, status: 'cleaning' })
 
-        // 3. Create Cleaning Task automatically
-        context.addTask({
-          id: `task-cleaning-${Date.now()}`,
-          title: `Cleaning: ${booking.guestName} Checkout`,
-          propertyId: property.id,
-          propertyName: property.name,
-          status: 'pending',
-          type: 'cleaning',
-          assignee: 'Unassigned', // To be picked up
-          priority: 'high',
-          description: 'Auto-generated task after guest checkout.',
-          date: new Date().toISOString(),
-          source: 'automation',
-        })
+        // 3. Run Automation Workflow for 'after_checkout'
+        context.runWorkflows('after_checkout', { booking, property })
       }
     }
   }

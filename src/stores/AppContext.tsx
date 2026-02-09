@@ -55,6 +55,7 @@ import {
   ChannelMapping,
   MarketingWorkflow,
   EmailTemplate,
+  UserRole,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -100,6 +101,7 @@ import {
 import { tutorialModules as initialTutorialModules } from '@/lib/tutorials'
 import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
+import { isSameDay, parseISO } from 'date-fns'
 
 interface AppContextType {
   // Existing props
@@ -278,6 +280,9 @@ interface AppContextType {
   updateEmailTemplate: (template: EmailTemplate) => void
   deleteEmailTemplate: (id: string) => void
 
+  // Automation
+  runWorkflows: (trigger: string, context?: any) => void
+
   startTour: () => void
   endTour: () => void
   nextStep: () => void
@@ -287,6 +292,27 @@ interface AppContextType {
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
+
+const getRoleName = (role: UserRole) => {
+  switch (role) {
+    case 'platform_owner':
+      return 'Admin'
+    case 'software_tenant':
+      return 'Manager'
+    case 'internal_user':
+      return 'Staff'
+    case 'partner':
+      return 'Partner'
+    case 'partner_employee':
+      return 'Partner Employee'
+    case 'property_owner':
+      return 'Owner'
+    case 'tenant':
+      return 'Tenant'
+    default:
+      return 'Unknown'
+  }
+}
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [properties, setProperties] = useState<Property[]>(initialProperties)
@@ -427,6 +453,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     [language],
   )
 
+  // ... (Login/Logout and simple CRUD setters omitted for brevity, logic preserved in return)
   const login = (email: string) => {
     const user = allUsers.find(
       (u) => u.email.toLowerCase() === email.toLowerCase(),
@@ -438,39 +465,32 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
     return false
   }
-
   const logout = () => setIsAuthenticated(false)
   const setCurrentUser = (id: string) => {
     const u = allUsers.find((u) => u.id === id)
     if (u) setCurrentUserObj(u)
   }
-
-  // Simple setters for CRUD
   const addProperty = (p: Property) => setProperties([...properties, p])
   const updateProperty = (p: Property) =>
     setProperties(properties.map((x) => (x.id === p.id ? p : x)))
   const deleteProperty = (id: string) =>
     setProperties(properties.filter((x) => x.id !== id))
-
   const addCondominium = (c: Condominium) =>
     setCondominiums([...condominiums, c])
   const updateCondominium = (c: Condominium) =>
     setCondominiums(condominiums.map((x) => (x.id === c.id ? c : x)))
   const deleteCondominium = (id: string) =>
     setCondominiums(condominiums.filter((x) => x.id !== id))
-
   const addHotel = (h: Hotel) => setHotels([...hotels, h])
   const updateHotel = (h: Hotel) =>
     setHotels(hotels.map((x) => (x.id === h.id ? h : x)))
   const deleteHotel = (id: string) =>
     setHotels(hotels.filter((x) => x.id !== id))
-
   const addTower = (t: Tower) => setTowers([...towers, t])
   const updateTower = (t: Tower) =>
     setTowers(towers.map((x) => (x.id === t.id ? t : x)))
   const deleteTower = (id: string) =>
     setTowers(towers.filter((x) => x.id !== id))
-
   const addTask = (t: Task) => setTasks([...tasks, t])
   const updateTask = (t: Task) =>
     setTasks(tasks.map((x) => (x.id === t.id ? t : x)))
@@ -479,7 +499,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     updateTask({ ...tasks.find((t) => t.id === id)!, status })
   const approveTask = (id: string) => updateTaskStatus(id, 'pending')
   const rejectTask = (id: string) => updateTaskStatus(id, 'rejected')
-
   const addInvoice = (i: Invoice) =>
     setFinancials((prev) => ({ ...prev, invoices: [...prev.invoices, i] }))
   const updateInvoice = (i: Invoice) =>
@@ -487,38 +506,31 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       ...prev,
       invoices: prev.invoices.map((x) => (x.id === i.id ? i : x)),
     }))
-
   const addGuestService = (s: GuestService) =>
     setGuestServices([...guestServices, s])
   const updateGuestService = (s: GuestService) =>
     setGuestServices(guestServices.map((x) => (x.id === s.id ? s : x)))
   const deleteGuestService = (id: string) =>
     setGuestServices(guestServices.filter((x) => x.id !== id))
-
   const addServiceOrder = (o: ServiceOrder) =>
     setServiceOrders([...serviceOrders, o])
-
   const addPosItem = (i: PosItem) => setPosItems([...posItems, i])
   const updatePosItem = (i: PosItem) =>
     setPosItems(posItems.map((x) => (x.id === i.id ? i : x)))
   const deletePosItem = (id: string) =>
     setPosItems(posItems.filter((x) => x.id !== id))
-
   const addPosTransaction = (t: PosTransaction) =>
     setPosTransactions([...posTransactions, t])
-
   const addPromotion = (p: Promotion) => setPromotions([...promotions, p])
   const updatePromotion = (p: Promotion) =>
     setPromotions(promotions.map((x) => (x.id === p.id ? p : x)))
   const deletePromotion = (id: string) =>
     setPromotions(promotions.filter((x) => x.id !== id))
-
   const addCampaign = (c: Campaign) => setCampaigns([...campaigns, c])
   const updateCampaign = (c: Campaign) =>
     setCampaigns(campaigns.map((x) => (x.id === c.id ? c : x)))
   const deleteCampaign = (id: string) =>
     setCampaigns(campaigns.filter((x) => x.id !== id))
-
   const addTenant = (t: Tenant) => setTenants([...tenants, t])
   const updateTenant = (t: Tenant) =>
     setTenants(tenants.map((x) => (x.id === t.id ? t : x)))
@@ -583,8 +595,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const deleteServiceCategory = (id: string) =>
     setServiceCategories(serviceCategories.filter((x) => x.id !== id))
   const addNotification = (n: any) =>
-    setNotifications([
-      ...notifications,
+    setNotifications((prev) => [
+      ...prev,
       {
         ...n,
         id: Date.now().toString(),
@@ -616,7 +628,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setAdvertisements(advertisements.filter((x) => x.id !== id))
   const addAdvertiser = (a: Advertiser) => setAdvertisers([...advertisers, a])
   const updateAdvertiser = (a: Advertiser) =>
-    setAdvertisers(advertisers.map((x) => (x.id === a.id ? a : x)))
+    setAdvertisements(advertisers.map((x) => (x.id === a.id ? a : x)))
   const deleteAdvertiser = (id: string) =>
     setAdvertisers(advertisers.filter((x) => x.id !== id))
   const updateAdPricing = (p: AdPricing) => setAdPricingState(p)
@@ -645,19 +657,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const prevStep = () => setCurrentStepIndex(currentStepIndex - 1)
   const openVideo = (url: string) => setActiveVideo(url)
   const closeVideo = () => setActiveVideo(null)
-
-  // New Methods Implementation
   const addFeedback = (f: Feedback) => setFeedbacks([...feedbacks, f])
   const updateFeedback = (f: Feedback) =>
     setFeedbacks(feedbacks.map((x) => (x.id === f.id ? f : x)))
-
   const addChannelMapping = (m: ChannelMapping) =>
     setChannelMappings([...channelMappings, m])
   const updateChannelMapping = (m: ChannelMapping) =>
     setChannelMappings(channelMappings.map((x) => (x.id === m.id ? m : x)))
   const deleteChannelMapping = (id: string) =>
     setChannelMappings(channelMappings.filter((x) => x.id !== id))
-
   const addMarketingWorkflow = (w: MarketingWorkflow) =>
     setMarketingWorkflows([...marketingWorkflows, w])
   const updateMarketingWorkflow = (w: MarketingWorkflow) =>
@@ -666,7 +674,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     )
   const deleteMarketingWorkflow = (id: string) =>
     setMarketingWorkflows(marketingWorkflows.filter((x) => x.id !== id))
-
   const addEmailTemplate = (t: EmailTemplate) =>
     setEmailTemplates([...emailTemplates, t])
   const updateEmailTemplate = (t: EmailTemplate) =>
@@ -681,6 +688,141 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const allUsers = useMemo(
     () => [...users, ...owners, ...partners, ...tenants],
     [users, owners, partners, tenants],
+  )
+
+  // --- Automation Logic ---
+  const runWorkflows = useCallback(
+    (trigger: string, context?: any) => {
+      // 1. Filter relevant workflows
+      const activeWorkflows = workflows.filter(
+        (wf) => wf.active && wf.trigger === trigger,
+      )
+
+      if (activeWorkflows.length === 0) return
+
+      let propertyId = context?.property?.id || context?.booking?.propertyId
+      const property = properties.find((p) => p.id === propertyId)
+
+      if (!property) {
+        // If triggering manual, we might need selectedPropertyId from context or state
+        if (
+          trigger === 'manual' &&
+          selectedPropertyId &&
+          selectedPropertyId !== 'all'
+        ) {
+          propertyId = selectedPropertyId
+        } else {
+          // Can't run without property context usually
+          return
+        }
+      }
+
+      let tasksCreated = 0
+
+      activeWorkflows.forEach((wf) => {
+        wf.steps.forEach((step, index) => {
+          if (step.actionType === 'task') {
+            // Intelligent Assignment Logic
+            // If it's a cleaning task, try to find the linked cleaning partner
+            let assigneeName = getRoleName(step.role)
+            let assigneeId = undefined
+            let assignedRole = step.role
+
+            // Check if there is a cleaning partner linked to this property
+            // We assume 'cleaning' tasks in workflow steps might be generic,
+            // but if we have a linked partner, we use them.
+            // Or if the step role is 'partner', we look for specific type.
+
+            // NOTE: Ideally the workflow step config would specify "Use Linked Partner"
+            // For now, we infer: if role is 'partner', check property links.
+            if (step.role === 'partner') {
+              const linkedPartner = partners.find(
+                (p) =>
+                  p.linkedPropertyIds?.includes(propertyId) &&
+                  (p.type === 'cleaning' || p.type === 'maintenance'), // simplistic assumption
+              )
+
+              if (linkedPartner) {
+                assigneeName = linkedPartner.name
+                assigneeId = linkedPartner.id
+              }
+            }
+
+            // Overlap Detection (Back-to-Back)
+            let priority: Task['priority'] = 'medium'
+            let isBackToBack = false
+
+            // Check for overlap if we have a booking context (e.g. after_checkout)
+            if (context?.booking && trigger === 'after_checkout') {
+              const checkoutDate = context.booking.checkOut
+              // Find any other booking checking IN on this day
+              const hasNextBooking = bookings.some(
+                (b) =>
+                  b.propertyId === propertyId &&
+                  b.id !== context.booking.id &&
+                  isSameDay(parseISO(b.checkIn), parseISO(checkoutDate)),
+              )
+
+              if (hasNextBooking) {
+                priority = 'critical'
+                isBackToBack = true
+              }
+            }
+
+            const newTask: Task = {
+              id: `wf_task_${Date.now()}_${wf.id}_${index}`,
+              title: step.name,
+              description:
+                step.description || `Auto-generated from workflow: ${wf.name}`,
+              propertyId: propertyId,
+              propertyName: property?.name || 'Unknown',
+              propertyAddress: property?.address,
+              propertyCommunity: property?.community,
+              status: 'pending',
+              type: 'cleaning', // Default, should be configurable in step ideally
+              priority: priority,
+              date: new Date().toISOString(),
+              assignee: assigneeName,
+              assigneeId: assigneeId,
+              assignedRole: assignedRole,
+              source: 'automation',
+              backToBack: isBackToBack,
+            }
+
+            addTask(newTask)
+            tasksCreated++
+
+            // Alert System
+            if (priority === 'critical') {
+              addNotification({
+                title: 'Critical Task Alert',
+                message: `Back-to-back booking detected for ${property?.name}. Critical task created.`,
+                type: 'critical',
+                category: 'maintenance',
+                link: '/tasks',
+              })
+            }
+          }
+        })
+      })
+
+      if (tasksCreated > 0) {
+        toast({
+          title: 'Workflow Executed',
+          description: `${tasksCreated} tasks generated automatically.`,
+        })
+      }
+    },
+    [
+      workflows,
+      properties,
+      partners,
+      bookings,
+      addTask,
+      addNotification,
+      toast,
+      selectedPropertyId,
+    ],
   )
 
   return (
@@ -852,6 +994,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addEmailTemplate,
         updateEmailTemplate,
         deleteEmailTemplate,
+        runWorkflows, // Exposed
       }}
     >
       {children}

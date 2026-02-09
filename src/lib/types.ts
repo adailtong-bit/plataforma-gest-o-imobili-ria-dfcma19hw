@@ -945,7 +945,13 @@ export interface Workflow {
   id: string
   name: string
   description: string
-  trigger: 'manual' | 'lease_start' | 'lease_end' | 'maintenance_request'
+  trigger:
+    | 'manual'
+    | 'lease_start'
+    | 'lease_end'
+    | 'maintenance_request'
+    | 'before_checkin'
+    | 'after_checkout'
   steps: WorkflowStep[]
   active: boolean
 }
