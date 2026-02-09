@@ -5,7 +5,7 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card'
-import { marketData } from '@/lib/mockData'
+import { marketAnalysisData } from '@/lib/mockData'
 import {
   BarChart,
   Bar,
@@ -35,6 +35,11 @@ export default function MarketAnalysis() {
       color: 'hsl(var(--chart-2))',
     },
   }
+
+  // Fallback safe data access
+  const trendsData = marketAnalysisData?.marketTrends || []
+  const competitorsData = marketAnalysisData?.competitors || []
+  const forecastData = marketAnalysisData?.demandForecast || []
 
   return (
     <div className="flex flex-col gap-6">
@@ -111,7 +116,7 @@ export default function MarketAnalysis() {
               className="min-h-[300px] w-full"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={marketData.marketTrends}>
+                <LineChart data={trendsData}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis
                     dataKey="month"
@@ -166,7 +171,7 @@ export default function MarketAnalysis() {
               className="min-h-[300px] w-full"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={marketData.competitors} layout="vertical">
+                <BarChart data={competitorsData} layout="vertical">
                   <CartesianGrid
                     strokeDasharray="3 3"
                     horizontal={true}
@@ -204,30 +209,38 @@ export default function MarketAnalysis() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
-            {marketData.demandForecast.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col items-center p-4 border rounded-lg min-w-[120px]"
-              >
-                <span className="text-sm font-medium text-slate-500">
-                  {new Date(item.date).toLocaleDateString(undefined, {
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </span>
-                <span
-                  className={`text-lg font-bold mt-1 ${
-                    item.demand === 'High'
-                      ? 'text-green-600'
-                      : item.demand === 'Medium'
-                        ? 'text-yellow-600'
-                        : 'text-slate-600'
-                  }`}
+            {forecastData &&
+            Array.isArray(forecastData) &&
+            forecastData.length > 0 ? (
+              forecastData.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex flex-col items-center p-4 border rounded-lg min-w-[120px]"
                 >
-                  {item.demand}
-                </span>
+                  <span className="text-sm font-medium text-slate-500">
+                    {new Date(item.date).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </span>
+                  <span
+                    className={`text-lg font-bold mt-1 ${
+                      item.demand === 'High'
+                        ? 'text-green-600'
+                        : item.demand === 'Medium'
+                          ? 'text-yellow-600'
+                          : 'text-slate-600'
+                    }`}
+                  >
+                    {item.demand}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center w-full p-6 text-muted-foreground text-sm">
+                No forecast data available at the moment.
               </div>
-            ))}
+            )}
           </div>
         </CardContent>
       </Card>

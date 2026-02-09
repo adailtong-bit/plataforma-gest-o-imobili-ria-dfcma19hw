@@ -526,6 +526,31 @@ export const marketData: MarketData[] = [
   },
 ]
 
+export const marketAnalysisData = {
+  marketTrends: [
+    { month: 'Jan', occupancy: 74, rate: 138 },
+    { month: 'Feb', occupancy: 72, rate: 135 },
+    { month: 'Mar', occupancy: 80, rate: 145 },
+    { month: 'Apr', occupancy: 76, rate: 140 },
+    { month: 'May', occupancy: 82, rate: 148 },
+    { month: 'Jun', occupancy: 78, rate: 142 },
+  ],
+  competitors: [
+    { name: 'Grand Hotel', rate: 155 },
+    { name: 'Ocean View', rate: 145 },
+    { name: 'Our Property', rate: 142 },
+    { name: 'City Inn', rate: 130 },
+    { name: 'Beach Stay', rate: 160 },
+  ],
+  demandForecast: [
+    { date: '2024-07-01', demand: 'High' },
+    { date: '2024-07-02', demand: 'High' },
+    { date: '2024-07-03', demand: 'Medium' },
+    { date: '2024-07-04', demand: 'High' },
+    { date: '2024-07-05', demand: 'Low' },
+  ],
+}
+
 export const feedbacks: Feedback[] = [
   {
     id: 'f1',

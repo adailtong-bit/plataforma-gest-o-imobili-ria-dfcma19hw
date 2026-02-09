@@ -53468,20 +53468,84 @@ const campaigns = [{
 	promotions: ["promo1"],
 	targetAudience: "all"
 }];
-const marketData = [{
-	region: "South Beach",
-	averagePrice: 45e4,
-	occupancyRate: 85,
-	trend: "up",
-	competitorCount: 150,
-	averageDaysOnMarket: 45,
-	shortTermRate: 280,
-	longTermRate: 3500,
-	pricePerSqFt: 650,
-	saturationIndex: 75,
-	propertyTaxAvg: 1.8,
-	hoaAvg: 600
-}];
+const marketAnalysisData = {
+	marketTrends: [
+		{
+			month: "Jan",
+			occupancy: 74,
+			rate: 138
+		},
+		{
+			month: "Feb",
+			occupancy: 72,
+			rate: 135
+		},
+		{
+			month: "Mar",
+			occupancy: 80,
+			rate: 145
+		},
+		{
+			month: "Apr",
+			occupancy: 76,
+			rate: 140
+		},
+		{
+			month: "May",
+			occupancy: 82,
+			rate: 148
+		},
+		{
+			month: "Jun",
+			occupancy: 78,
+			rate: 142
+		}
+	],
+	competitors: [
+		{
+			name: "Grand Hotel",
+			rate: 155
+		},
+		{
+			name: "Ocean View",
+			rate: 145
+		},
+		{
+			name: "Our Property",
+			rate: 142
+		},
+		{
+			name: "City Inn",
+			rate: 130
+		},
+		{
+			name: "Beach Stay",
+			rate: 160
+		}
+	],
+	demandForecast: [
+		{
+			date: "2024-07-01",
+			demand: "High"
+		},
+		{
+			date: "2024-07-02",
+			demand: "High"
+		},
+		{
+			date: "2024-07-03",
+			demand: "Medium"
+		},
+		{
+			date: "2024-07-04",
+			demand: "High"
+		},
+		{
+			date: "2024-07-05",
+			demand: "Low"
+		}
+	]
+};
 const feedbacks = [{
 	id: "f1",
 	bookingId: "bk1",
@@ -93170,6 +93234,9 @@ function MarketAnalysis() {
 			color: "hsl(var(--chart-2))"
 		}
 	};
+	const trendsData = marketAnalysisData?.marketTrends || [];
+	const competitorsData = marketAnalysisData?.competitors || [];
+	const forecastData = marketAnalysisData?.demandForecast || [];
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
 		children: [
@@ -93246,7 +93313,7 @@ function MarketAnalysis() {
 						width: "100%",
 						height: "100%",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(LineChart, {
-							data: marketData.marketTrends,
+							data: trendsData,
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
 									strokeDasharray: "3 3",
@@ -93298,7 +93365,7 @@ function MarketAnalysis() {
 						width: "100%",
 						height: "100%",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(BarChart, {
-							data: marketData.competitors,
+							data: competitorsData,
 							layout: "vertical",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
@@ -93337,7 +93404,7 @@ function MarketAnalysis() {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Demand Forecast" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Projected demand levels for upcoming dates" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "flex flex-wrap gap-4",
-				children: marketData.demandForecast.map((item, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				children: forecastData && Array.isArray(forecastData) && forecastData.length > 0 ? forecastData.map((item, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex flex-col items-center p-4 border rounded-lg min-w-[120px]",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 						className: "text-sm font-medium text-slate-500",
@@ -93349,7 +93416,10 @@ function MarketAnalysis() {
 						className: `text-lg font-bold mt-1 ${item.demand === "High" ? "text-green-600" : item.demand === "Medium" ? "text-yellow-600" : "text-slate-600"}`,
 						children: item.demand
 					})]
-				}, idx))
+				}, idx)) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "flex items-center justify-center w-full p-6 text-muted-foreground text-sm",
+					children: "No forecast data available at the moment."
+				})
 			}) })] })
 		]
 	});
@@ -102834,4 +102904,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-CFz6Bxb2.js.map
+//# sourceMappingURL=index-BtO0vZPS.js.map
