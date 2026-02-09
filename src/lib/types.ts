@@ -649,6 +649,10 @@ export interface Booking {
   children?: number
   inspections?: InventoryInspection[]
   feedbackId?: string
+  checkedInAt?: string
+  checkedOutAt?: string
+  guestSignature?: string
+  estimatedArrival?: string
 }
 
 export interface CalendarBlock {
@@ -784,6 +788,7 @@ export type TaskType =
   | 'maintenance'
   | 'inspection'
   | 'guest_request'
+  | 'reception'
 
 export interface Task {
   id: string

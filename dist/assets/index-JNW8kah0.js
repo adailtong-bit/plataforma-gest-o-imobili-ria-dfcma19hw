@@ -20106,6 +20106,26 @@ var Paperclip = createLucideIcon("paperclip", [["path", {
 	d: "m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551",
 	key: "1miecu"
 }]]);
+var PenTool = createLucideIcon("pen-tool", [
+	["path", {
+		d: "M15.707 21.293a1 1 0 0 1-1.414 0l-1.586-1.586a1 1 0 0 1 0-1.414l5.586-5.586a1 1 0 0 1 1.414 0l1.586 1.586a1 1 0 0 1 0 1.414z",
+		key: "nt11vn"
+	}],
+	["path", {
+		d: "m18 13-1.375-6.874a1 1 0 0 0-.746-.776L3.235 2.028a1 1 0 0 0-1.207 1.207L5.35 15.879a1 1 0 0 0 .776.746L13 18",
+		key: "15qc1e"
+	}],
+	["path", {
+		d: "m2.3 2.3 7.286 7.286",
+		key: "1wuzzi"
+	}],
+	["circle", {
+		cx: "11",
+		cy: "11",
+		r: "2",
+		key: "xmgehs"
+	}]
+]);
 var Pen = createLucideIcon("pen", [["path", {
 	d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
 	key: "1a8usu"
@@ -58899,7 +58919,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$97({ inst: {
+			cachedValue = useState$99({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -58913,7 +58933,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$26(function() {
+			useEffect$28(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -58936,7 +58956,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$66 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$97 = React$66.useState, useEffect$26 = React$66.useEffect, useLayoutEffect$2 = React$66.useLayoutEffect, useDebugValue = React$66.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$66 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$99 = React$66.useState, useEffect$28 = React$66.useEffect, useLayoutEffect$2 = React$66.useLayoutEffect, useDebugValue = React$66.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$66.useSyncExternalStore ? React$66.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -64964,11 +64984,52 @@ TableCaption.displayName = "TableCaption";
 var useShortTermStore = () => {
 	const context = (0, import_react.useContext)(AppContext);
 	if (!context) throw new Error("useShortTermStore must be used within AppProvider");
+	const performCheckIn = (bookingId, data) => {
+		const booking = context.bookings.find((b$1) => b$1.id === bookingId);
+		if (booking) context.updateBooking({
+			...booking,
+			status: "checked_in",
+			checkedInAt: (/* @__PURE__ */ new Date()).toISOString(),
+			guestSignature: data.signature,
+			estimatedArrival: data.arrivalTime
+		});
+	};
+	const performCheckOut = (bookingId) => {
+		const booking = context.bookings.find((b$1) => b$1.id === bookingId);
+		if (booking) {
+			context.updateBooking({
+				...booking,
+				status: "checked_out",
+				checkedOutAt: (/* @__PURE__ */ new Date()).toISOString()
+			});
+			const property$2 = context.properties.find((p$1) => p$1.id === booking.propertyId);
+			if (property$2) {
+				context.updateProperty({
+					...property$2,
+					status: "cleaning"
+				});
+				context.addTask({
+					id: `task-cleaning-${Date.now()}`,
+					title: `Cleaning: ${booking.guestName} Checkout`,
+					propertyId: property$2.id,
+					propertyName: property$2.name,
+					status: "pending",
+					type: "cleaning",
+					assignee: "Unassigned",
+					priority: "high",
+					description: "Auto-generated task after guest checkout.",
+					date: (/* @__PURE__ */ new Date()).toISOString(),
+					source: "automation"
+				});
+			}
+		}
+	};
 	return {
 		bookings: context.bookings,
 		calendarBlocks: context.calendarBlocks,
 		messageTemplates: context.messageTemplates,
 		feedbacks: context.feedbacks,
+		posTransactions: context.posTransactions,
 		addBooking: context.addBooking,
 		updateBooking: context.updateBooking,
 		deleteBooking: context.deleteBooking,
@@ -64978,7 +65039,9 @@ var useShortTermStore = () => {
 		updateMessageTemplate: context.updateMessageTemplate,
 		deleteMessageTemplate: context.deleteMessageTemplate,
 		addFeedback: context.addFeedback,
-		updateFeedback: context.updateFeedback
+		updateFeedback: context.updateFeedback,
+		performCheckIn,
+		performCheckOut
 	};
 };
 var useShortTermStore_default = useShortTermStore;
@@ -73586,6 +73649,11 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 										className: "text-[10px] h-5 text-black border border-slate-300",
 										children: "Inspeção"
 									}),
+									task.type === "reception" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+										variant: "secondary",
+										className: "text-[10px] h-5 text-purple-800 border border-purple-300 bg-purple-100",
+										children: "Reception"
+									}),
 									task.backToBack && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
 										variant: "destructive",
 										className: "text-[10px] px-1 h-5",
@@ -73872,7 +73940,8 @@ var formSchema = object({
 	type: _enum([
 		"cleaning",
 		"maintenance",
-		"inspection"
+		"inspection",
+		"reception"
 	], { required_error: "Selecione o tipo de serviço." }),
 	assigneeId: string().min(2, "Selecione o responsável."),
 	partnerEmployeeId: string().optional(),
@@ -73959,7 +74028,7 @@ function CreateTaskDialog({ initialPropertyId, initialDate, open: controlledOpen
 	const relevantPartners = partners$1.filter((p$1) => {
 		if (watchType === "cleaning") return p$1.type === "cleaning";
 		if (watchType === "maintenance") return p$1.type === "maintenance";
-		if (watchType === "inspection") return p$1.type === "agent";
+		if (watchType === "inspection" || watchType === "reception") return p$1.type === "agent";
 		return true;
 	}).filter((p$1, index$1, self$1) => index$1 === self$1.findIndex((t$2) => t$2.id === p$1.id));
 	const selectedPartner = partners$1.find((p$1) => p$1.id === watchAssigneeId);
@@ -74009,7 +74078,7 @@ function CreateTaskDialog({ initialPropertyId, initialDate, open: controlledOpen
 			initialStatus = "pending_approval";
 			approvalStatus = "pm_pending";
 		}
-		else if (values.type === "cleaning") initialStatus = "pending";
+		else if (values.type === "cleaning" || values.type === "reception") initialStatus = "pending";
 		if (currentUser.role === "property_owner") {
 			initialStatus = "pending_approval";
 			approvalStatus = "pm_pending";
@@ -74122,6 +74191,10 @@ function CreateTaskDialog({ initialPropertyId, initialDate, open: controlledOpen
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 														value: "inspection",
 														children: "Inspeção"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "reception",
+														children: "Recepção"
 													})
 												] })]
 											}),
@@ -99832,6 +99905,402 @@ function RoomConcierge() {
 		})
 	});
 }
+function OnlineCheckIn() {
+	const { bookingId } = useParams();
+	const { bookings: bookings$1, performCheckIn } = useShortTermStore_default();
+	const { toast: toast$2 } = useToast();
+	const navigate = useNavigate();
+	const [booking, setBooking] = (0, import_react.useState)(null);
+	const [arrivalTime, setArrivalTime] = (0, import_react.useState)("15:00");
+	const [signature, setSignature] = (0, import_react.useState)("");
+	const [termsAccepted, setTermsAccepted] = (0, import_react.useState)(false);
+	const [isSubmitting, setIsSubmitting] = (0, import_react.useState)(false);
+	(0, import_react.useEffect)(() => {
+		const found = bookings$1.find((b$1) => b$1.id === bookingId);
+		if (found) setBooking(found);
+	}, [bookingId, bookings$1]);
+	if (!booking) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "flex items-center justify-center min-h-screen bg-slate-50",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+			className: "w-full max-w-md",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+				className: "pt-6 text-center",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-muted-foreground",
+					children: "Loading reservation details..."
+				})
+			})
+		})
+	});
+	if (booking.status === "checked_in" || booking.status === "checked_out") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "flex items-center justify-center min-h-screen bg-slate-50 p-4",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+			className: "w-full max-w-md bg-green-50 border-green-200",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+				className: "pt-6 text-center space-y-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "bg-green-100 p-3 rounded-full w-fit mx-auto",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheckBig, { className: "h-8 w-8 text-green-600" })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+						className: "text-2xl font-bold text-green-800",
+						children: "Check-in Completed"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+						className: "text-green-700",
+						children: [
+							"Welcome, ",
+							booking.guestName,
+							"! You are already checked in."
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						className: "bg-green-600 hover:bg-green-700 w-full",
+						onClick: () => navigate(`/guest/${booking.propertyId}`),
+						children: "Go to Room Concierge"
+					})
+				]
+			})
+		})
+	});
+	const handleCheckIn = () => {
+		if (!signature.trim() || !termsAccepted) {
+			toast$2({
+				title: "Validation Error",
+				description: "Please sign and accept the terms to proceed.",
+				variant: "destructive"
+			});
+			return;
+		}
+		setIsSubmitting(true);
+		setTimeout(() => {
+			performCheckIn(booking.id, {
+				signature,
+				arrivalTime
+			});
+			setIsSubmitting(false);
+			toast$2({
+				title: "Check-in Successful",
+				description: "Welcome! Your stay has officially started."
+			});
+			navigate(`/guest/${booking.propertyId}`);
+		}, 1500);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "min-h-screen bg-slate-50 flex flex-col items-center p-4 py-10",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "w-full max-w-lg space-y-6",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "text-center space-y-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold text-navy",
+					children: "Online Check-in"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					className: "text-muted-foreground",
+					children: ["Prepare for your arrival at ", booking.propertyName]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+					className: "text-xl",
+					children: "Reservation Details"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Please verify your information" })] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+					className: "space-y-6",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4 text-sm",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+										className: "text-muted-foreground flex items-center gap-1",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }), " Guest"]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "font-semibold",
+										children: booking.guestName
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+										className: "text-muted-foreground flex items-center gap-1",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-3 w-3" }), " Property"]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "font-semibold",
+										children: booking.propertyName
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-muted-foreground",
+										children: "Check-in Date"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "font-semibold",
+										children: format(new Date(booking.checkIn), "PPP")
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-muted-foreground",
+										children: "Check-out Date"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "font-semibold",
+										children: format(new Date(booking.checkOut), "PPP")
+									})]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-3 pt-4 border-t",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+								htmlFor: "arrival",
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "h-4 w-4" }), " Estimated Arrival Time"]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								id: "arrival",
+								type: "time",
+								value: arrivalTime,
+								onChange: (e) => setArrivalTime(e.target.value)
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-3",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+									htmlFor: "signature",
+									className: "flex items-center gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PenTool, { className: "h-4 w-4" }), " Digital Signature"]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									id: "signature",
+									placeholder: "Type your full name to sign",
+									value: signature,
+									onChange: (e) => setSignature(e.target.value),
+									className: "font-script text-lg italic"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-xs text-muted-foreground",
+									children: "By typing your name, you agree to the property rules and terms of service."
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center space-x-2 bg-slate-50 p-3 rounded-md border",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
+								id: "terms",
+								checked: termsAccepted,
+								onCheckedChange: (c$1) => setTermsAccepted(c$1)
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+								htmlFor: "terms",
+								className: "text-sm font-normal",
+								children: [
+									"I accept the",
+									" ",
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "underline text-blue-600",
+										children: "Terms & Conditions"
+									}),
+									" ",
+									"and verify that my identity information is correct."
+								]
+							})]
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					className: "w-full bg-trust-blue h-12 text-lg",
+					onClick: handleCheckIn,
+					disabled: isSubmitting,
+					children: isSubmitting ? "Processing..." : "Confirm Check-in"
+				}) })
+			] })]
+		})
+	});
+}
+function OnlineCheckOut() {
+	const { bookingId } = useParams();
+	const { bookings: bookings$1, posTransactions: posTransactions$1, performCheckOut } = useShortTermStore_default();
+	const { toast: toast$2 } = useToast();
+	useNavigate();
+	const [booking, setBooking] = (0, import_react.useState)(null);
+	const [showPayment, setShowPayment] = (0, import_react.useState)(false);
+	const [isProcessing, setIsProcessing] = (0, import_react.useState)(false);
+	(0, import_react.useEffect)(() => {
+		const found = bookings$1.find((b$1) => b$1.id === bookingId);
+		if (found) setBooking(found);
+	}, [bookingId, bookings$1]);
+	const extraCharges = (0, import_react.useMemo)(() => {
+		if (!booking) return [];
+		return posTransactions$1.filter((t$1) => t$1.bookingId === booking.id);
+	}, [booking, posTransactions$1]);
+	const totalExtras = extraCharges.reduce((acc, curr) => acc + curr.totalAmount, 0);
+	const grandTotal = (booking?.totalAmount || 0) + totalExtras;
+	const amountDue = extraCharges.filter((t$1) => t$1.status !== "paid").reduce((acc, curr) => acc + curr.totalAmount, 0);
+	if (!booking) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "flex items-center justify-center min-h-screen bg-slate-50",
+		children: "Loading..."
+	});
+	if (booking.status === "checked_out") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "flex items-center justify-center min-h-screen bg-slate-50 p-4",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+			className: "w-full max-w-md bg-blue-50 border-blue-200",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+				className: "pt-6 text-center space-y-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "bg-blue-100 p-3 rounded-full w-fit mx-auto",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheckBig, { className: "h-8 w-8 text-blue-600" })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+						className: "text-2xl font-bold text-blue-800",
+						children: "Check-out Complete"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+						className: "text-blue-700",
+						children: [
+							"Thank you for staying with us, ",
+							booking.guestName,
+							". Have a safe trip!"
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+						className: "text-sm text-blue-600",
+						children: [
+							"Your final folio has been emailed to ",
+							booking.guestEmail,
+							"."
+						]
+					})
+				]
+			})
+		})
+	});
+	const handlePaymentSuccess = () => {
+		toast$2({
+			title: "Payment Confirmed",
+			description: "Balance cleared."
+		});
+	};
+	const handleCheckOut = () => {
+		if (amountDue > 0) {
+			toast$2({
+				title: "Outstanding Balance",
+				description: "Please pay the outstanding balance before checking out.",
+				variant: "destructive"
+			});
+			setShowPayment(true);
+			return;
+		}
+		setIsProcessing(true);
+		setTimeout(() => {
+			performCheckOut(booking.id);
+			setIsProcessing(false);
+			toast$2({
+				title: "Checked Out",
+				description: "Departure confirmed. Housekeeping notified."
+			});
+		}, 1500);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "min-h-screen bg-slate-50 flex flex-col items-center p-4 py-10",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "w-full max-w-lg space-y-6",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "text-center space-y-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold text-navy",
+					children: "Online Check-out"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-muted-foreground",
+					children: "Review your folio and confirm departure"
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+					className: "flex items-center gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Receipt, { className: "h-5 w-5" }), " Stay Folio"]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: booking.propertyName })] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+					className: "space-y-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2 text-sm",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-between",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "text-muted-foreground",
+									children: "Room Charges"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "font-medium",
+									children: formatCurrency(booking.totalAmount)
+								})]
+							}),
+							extraCharges.map((charge, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-between",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									className: "text-muted-foreground",
+									children: [
+										"POS / Services (",
+										new Date(charge.timestamp).toLocaleDateString(),
+										")"
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "font-medium",
+									children: formatCurrency(charge.totalAmount)
+								})]
+							}, idx)),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, { className: "my-2" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-between text-lg font-bold",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Grand Total" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: formatCurrency(grandTotal) })]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-between text-sm text-green-600",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Paid" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["-", formatCurrency(grandTotal - amountDue)] })]
+							}),
+							amountDue > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-between text-base font-bold text-red-600 pt-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Balance Due" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: formatCurrency(amountDue) })]
+							})
+						]
+					}), amountDue > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "bg-red-50 p-4 rounded-md border border-red-100 flex flex-col gap-3",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-red-800 font-medium text-center",
+							children: "Please settle your balance to complete check-out."
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							onClick: () => setShowPayment(true),
+							className: "w-full bg-red-600 hover:bg-red-700",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CreditCard, { className: "mr-2 h-4 w-4" }),
+								" Pay",
+								" ",
+								formatCurrency(amountDue)
+							]
+						})]
+					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "bg-green-50 p-3 rounded-md text-center text-sm text-green-700 font-medium",
+						children: "Balance Settled. Ready for departure."
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					className: "w-full bg-trust-blue h-12 text-lg",
+					onClick: handleCheckOut,
+					disabled: isProcessing,
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LogOut, { className: "mr-2 h-5 w-5" }), isProcessing ? "Processing..." : "Confirm Departure"]
+				}) })
+			] })]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PaymentModal, {
+			open: showPayment,
+			onOpenChange: setShowPayment,
+			amount: amountDue,
+			description: `Check-out Balance for ${booking.propertyName}`,
+			onSuccess: handlePaymentSuccess
+		})]
+	});
+}
 function NightAudit() {
 	const { nightAudits, runNightAudit } = (0, import_react.useContext)(AppContext);
 	const { language } = useLanguageStore_default();
@@ -101703,6 +102172,14 @@ var App = () => {
 						path: "/guest/:roomId",
 						element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RoomConcierge, {})
 					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
+						path: "/guest/checkin/:bookingId",
+						element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OnlineCheckIn, {})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
+						path: "/guest/checkout/:bookingId",
+						element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OnlineCheckOut, {})
+					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Route, {
 						element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DashboardLayout, {}),
 						children: [
@@ -102032,4 +102509,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-CxlzFnkQ.js.map
+//# sourceMappingURL=index-JNW8kah0.js.map

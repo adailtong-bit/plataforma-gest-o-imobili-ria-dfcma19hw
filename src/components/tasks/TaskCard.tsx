@@ -315,6 +315,14 @@ export function TaskCard({
                   Inspeção
                 </Badge>
               )}
+              {task.type === 'reception' && (
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] h-5 text-purple-800 border border-purple-300 bg-purple-100"
+                >
+                  Reception
+                </Badge>
+              )}
               {task.backToBack && (
                 <Badge variant="destructive" className="text-[10px] px-1 h-5">
                   B2B

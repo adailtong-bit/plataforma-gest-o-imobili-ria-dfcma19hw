@@ -45,6 +45,8 @@ import Visits from './pages/Visits'
 import HelpHub from './pages/HelpHub'
 import Housekeeping from './pages/Housekeeping'
 import RoomConcierge from './pages/guest/RoomConcierge'
+import OnlineCheckIn from './pages/guest/OnlineCheckIn'
+import OnlineCheckOut from './pages/guest/OnlineCheckOut'
 import NightAudit from './pages/NightAudit'
 import Performance from './pages/Performance'
 import GuestServices from './pages/GuestServices'
@@ -76,6 +78,14 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/guest/:roomId" element={<RoomConcierge />} />
+              <Route
+                path="/guest/checkin/:bookingId"
+                element={<OnlineCheckIn />}
+              />
+              <Route
+                path="/guest/checkout/:bookingId"
+                element={<OnlineCheckOut />}
+              />
 
               {/* Protected Routes */}
               <Route element={<DashboardLayout />}>

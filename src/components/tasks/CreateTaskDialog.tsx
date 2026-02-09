@@ -68,7 +68,7 @@ import { ServiceRate, Task } from '@/lib/types'
 const formSchema = z.object({
   title: z.string().min(2, 'O título deve ter pelo menos 2 caracteres.'),
   propertyId: z.string().min(1, 'Selecione uma propriedade.'),
-  type: z.enum(['cleaning', 'maintenance', 'inspection'], {
+  type: z.enum(['cleaning', 'maintenance', 'inspection', 'reception'], {
     required_error: 'Selecione o tipo de serviço.',
   }),
   assigneeId: z.string().min(2, 'Selecione o responsável.'),
@@ -174,7 +174,8 @@ export function CreateTaskDialog({
     .filter((p) => {
       if (watchType === 'cleaning') return p.type === 'cleaning'
       if (watchType === 'maintenance') return p.type === 'maintenance'
-      if (watchType === 'inspection') return p.type === 'agent'
+      if (watchType === 'inspection' || watchType === 'reception')
+        return p.type === 'agent'
       return true
     })
     .filter((p, index, self) => index === self.findIndex((t) => t.id === p.id))
@@ -248,7 +249,7 @@ export function CreateTaskDialog({
         initialStatus = 'pending_approval'
         approvalStatus = 'pm_pending'
       }
-    } else if (values.type === 'cleaning') {
+    } else if (values.type === 'cleaning' || values.type === 'reception') {
       initialStatus = 'pending'
     }
 
@@ -376,6 +377,7 @@ export function CreateTaskDialog({
                             {t('partners.maintenance')}
                           </SelectItem>
                           <SelectItem value="inspection">Inspeção</SelectItem>
+                          <SelectItem value="reception">Recepção</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
