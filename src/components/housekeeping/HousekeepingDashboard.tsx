@@ -59,10 +59,19 @@ export function HousekeepingDashboard() {
 
   const handleStatusChange = (room: Property, status: PropertyStatus) => {
     updateProperty({ ...room, status })
-    toast({
-      title: 'Status Updated',
-      description: `${room.name} is now ${status}.`,
-    })
+
+    // Simulate stock deduction if moving from cleaning to ready (e.g. amenities used)
+    if (status === 'available' && room.status === 'cleaning') {
+      toast({
+        title: 'Room Ready',
+        description: `${room.roomNumber} is ready. Amenities stock deducted (Simulated).`,
+      })
+    } else {
+      toast({
+        title: 'Status Updated',
+        description: `${room.roomNumber} is now ${status}.`,
+      })
+    }
   }
 
   const RoomCard = ({ room }: { room: Property }) => (

@@ -20,7 +20,7 @@ import {
   PieChart as PieChartIcon,
   BarChart2,
   Globe,
-  Filter,
+  Building2,
 } from 'lucide-react'
 import {
   BarChart,
@@ -40,19 +40,18 @@ import useFinancialStore from '@/stores/useFinancialStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useShortTermStore from '@/stores/useShortTermStore'
+import useHotelStore from '@/stores/useHotelStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { AppContext } from '@/stores/AppContext'
 import {
   format,
-  subMonths,
   startOfMonth,
-  startOfQuarter,
-  startOfYear,
   addMonths,
   eachMonthOfInterval,
   endOfMonth,
   isWithinInterval,
   parseISO,
+  subMonths,
 } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { exportToCSV, formatCurrency } from '@/lib/utils'
@@ -65,6 +64,7 @@ export function FinancialReports() {
   const { properties } = usePropertyStore()
   const { tenants } = useTenantStore()
   const { bookings } = useShortTermStore()
+  const { towers } = useHotelStore()
   const { toast } = useToast()
   const { language, t } = useLanguageStore()
   const context = useContext(AppContext)
@@ -72,7 +72,6 @@ export function FinancialReports() {
   // Global property selection
   const globalPropertyId = context?.selectedPropertyId || 'all'
 
-  // Local state for interactive filters on the report page
   const [selectedPropertyId, setSelectedPropertyId] =
     useState<string>(globalPropertyId)
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -80,13 +79,9 @@ export function FinancialReports() {
     to: new Date(),
   })
 
-  // Sync local state with global change if user hasn't manually overridden it on this page
-  // (Optional: here we just initialize. A strict sync might be annoying if user is comparing)
   useEffect(() => {
     setSelectedPropertyId(globalPropertyId)
   }, [globalPropertyId])
-
-  // --- 1. HISTORICAL DATA PREPARATION ---
 
   const filteredEntries = useMemo(() => {
     return ledgerEntries.filter((e) => {
@@ -106,43 +101,46 @@ export function FinancialReports() {
     })
   }, [ledgerEntries, dateRange, selectedPropertyId])
 
-  // --- 2. PROFITABILITY BY TYPE (STR vs LTR) ---
+  // --- Breakdown by Category (Room, F&B, Services) ---
+  const revenueByCategory = useMemo(() => {
+    const data = { Room: 0, 'F&B': 0, Services: 0 }
+    filteredEntries.forEach((e) => {
+      if (e.type === 'income') {
+        const cat = e.category as keyof typeof data
+        if (data[cat] !== undefined) {
+          data[cat] += e.amount
+        }
+      }
+    })
+    return Object.entries(data).map(([name, value]) => ({ name, value }))
+  }, [filteredEntries])
 
-  const profitabilityByType = useMemo(() => {
-    const data = {
-      short_term: { income: 0, expense: 0 },
-      long_term: { income: 0, expense: 0 },
-    }
+  // --- Breakdown by Tower ---
+  const revenueByTower = useMemo(() => {
+    const data: Record<string, number> = {}
+    towers.forEach((t) => (data[t.name] = 0))
+    data['Other'] = 0
 
-    filteredEntries.forEach((entry) => {
-      const prop = properties.find((p) => p.id === entry.propertyId)
-      if (prop) {
-        const type = prop.profileType
-        if (entry.type === 'income') {
-          data[type].income += entry.amount
+    filteredEntries.forEach((e) => {
+      if (e.type === 'income') {
+        const prop = properties.find((p) => p.id === e.propertyId)
+        if (prop && prop.towerId) {
+          const tower = towers.find((t) => t.id === prop.towerId)
+          if (tower) {
+            data[tower.name] = (data[tower.name] || 0) + e.amount
+          } else {
+            data['Other'] += e.amount
+          }
         } else {
-          data[type].expense += entry.amount
+          data['Other'] += e.amount
         }
       }
     })
 
-    return [
-      {
-        name: 'Short Term (STR)',
-        income: data.short_term.income,
-        expense: data.short_term.expense,
-        profit: data.short_term.income - data.short_term.expense,
-      },
-      {
-        name: 'Long Term (LTR)',
-        income: data.long_term.income,
-        expense: data.long_term.expense,
-        profit: data.long_term.income - data.long_term.expense,
-      },
-    ]
-  }, [filteredEntries, properties])
-
-  // --- 3. PROJECTED CASH FLOW (Next 6 Months) ---
+    return Object.entries(data)
+      .map(([name, value]) => ({ name, value }))
+      .filter((d) => d.value > 0)
+  }, [filteredEntries, properties, towers])
 
   const projectedCashFlow = useMemo(() => {
     const months = eachMonthOfInterval({
@@ -155,8 +153,6 @@ export function FinancialReports() {
       const monthStart = startOfMonth(month)
       const monthEnd = endOfMonth(month)
 
-      // 1. Projected Income
-      // LTR: Sum of rent for active tenants
       const ltrIncome = tenants.reduce((acc, t) => {
         if (
           t.status === 'active' &&
@@ -165,7 +161,6 @@ export function FinancialReports() {
           t.leaseEnd &&
           new Date(t.leaseEnd) >= monthStart
         ) {
-          // Check if lease covers this month
           const leaseStart = t.leaseStart ? new Date(t.leaseStart) : new Date(0)
           if (leaseStart <= monthEnd) {
             return acc + (t.rentValue || 0)
@@ -174,7 +169,6 @@ export function FinancialReports() {
         return acc
       }, 0)
 
-      // STR: Sum of confirmed bookings for this month
       const strIncome = bookings.reduce((acc, b) => {
         if (
           b.status !== 'cancelled' &&
@@ -188,24 +182,17 @@ export function FinancialReports() {
         return acc
       }, 0)
 
-      // 2. Projected Expenses
-      // Fixed Expenses (Internet, etc)
       const fixedExpenses = properties.reduce((acc, p) => {
         if (selectedPropertyId !== 'all' && p.id !== selectedPropertyId)
           return acc
-
-        const expenseSum = (p.fixedExpenses || []).reduce((eAcc, fe) => {
-          // Basic logic: assume monthly for projection simplicity
-          return eAcc + (fe.amount || 0)
-        }, 0)
-
-        // Add HOA if applicable
+        const expenseSum = (p.fixedExpenses || []).reduce(
+          (eAcc, fe) => eAcc + (fe.amount || 0),
+          0,
+        )
         const hoa = p.hoaValue && p.hoaFrequency === 'monthly' ? p.hoaValue : 0
-
         return acc + expenseSum + hoa
       }, 0)
 
-      // Estimated Maintenance (e.g. 10% of projected revenue as heuristic)
       const totalProjectedIncome = ltrIncome + strIncome
       const estimatedMaintenance = totalProjectedIncome * 0.1
 
@@ -219,52 +206,6 @@ export function FinancialReports() {
     })
   }, [tenants, bookings, properties, selectedPropertyId])
 
-  // --- 4. CHANNEL ANALYTICS ---
-
-  const channelAnalytics = useMemo(() => {
-    // Filter bookings based on period and selected property
-    const relevantBookings = bookings.filter((b) => {
-      const date = parseISO(b.checkIn)
-      let isDateValid = true
-      if (dateRange?.from && dateRange?.to) {
-        isDateValid = isWithinInterval(date, {
-          start: dateRange.from,
-          end: dateRange.to,
-        })
-      }
-
-      const isPropertyValid =
-        selectedPropertyId === 'all' || b.propertyId === selectedPropertyId
-      return isDateValid && isPropertyValid && b.status !== 'cancelled'
-    })
-
-    const data: Record<
-      string,
-      { revenue: number; bookings: number; name: string }
-    > = {
-      airbnb: { revenue: 0, bookings: 0, name: 'Airbnb' },
-      vrbo: { revenue: 0, bookings: 0, name: 'Vrbo' },
-      'booking.com': { revenue: 0, bookings: 0, name: 'Booking.com' },
-      direct: { revenue: 0, bookings: 0, name: 'Direct' },
-      other: { revenue: 0, bookings: 0, name: 'Other' },
-    }
-
-    relevantBookings.forEach((b) => {
-      const platform = b.platform || 'other'
-      if (data[platform]) {
-        data[platform].revenue += b.totalAmount || 0
-        data[platform].bookings += 1
-      } else {
-        data.other.revenue += b.totalAmount || 0
-        data.other.bookings += 1
-      }
-    })
-
-    return Object.values(data).filter((d) => d.revenue > 0 || d.bookings > 0)
-  }, [bookings, dateRange, selectedPropertyId])
-
-  // --- 5. EXPORT HANDLER ---
-
   const handleExport = () => {
     const headers = [
       'Date',
@@ -275,7 +216,6 @@ export function FinancialReports() {
       'Amount',
       'Status',
     ]
-
     const rows = filteredEntries.map((entry) => {
       const property = properties.find((p) => p.id === entry.propertyId)
       return [
@@ -288,7 +228,6 @@ export function FinancialReports() {
         entry.status,
       ]
     })
-
     exportToCSV('financial_report', headers, rows)
     toast({
       title: t('common.export_success'),
@@ -296,7 +235,6 @@ export function FinancialReports() {
     })
   }
 
-  // --- CHARTS CONFIG ---
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8']
 
   return (
@@ -310,7 +248,6 @@ export function FinancialReports() {
               </Label>
               <DatePickerWithRange date={dateRange} setDate={setDateRange} />
             </div>
-
             <div className="space-y-2">
               <Label className="text-sm font-medium">
                 {t('common.property')}
@@ -332,7 +269,6 @@ export function FinancialReports() {
                 </SelectContent>
               </Select>
             </div>
-
             <div className="md:col-start-4">
               <Button
                 variant="outline"
@@ -351,19 +287,21 @@ export function FinancialReports() {
           <TabsTrigger value="overview">
             <BarChart2 className="h-4 w-4 mr-2" /> Overview & P&L
           </TabsTrigger>
+          <TabsTrigger value="towers">
+            <Building2 className="h-4 w-4 mr-2" /> Tower Breakdown
+          </TabsTrigger>
           <TabsTrigger value="channels">
             <Globe className="h-4 w-4 mr-2" /> Channel Analytics
           </TabsTrigger>
           <TabsTrigger value="projection">
             <TrendingUp className="h-4 w-4 mr-2" /> Projected Cash Flow
           </TabsTrigger>
-          <TabsTrigger value="profitability">
-            <PieChartIcon className="h-4 w-4 mr-2" /> Profitability by Type
+          <TabsTrigger value="category">
+            <PieChartIcon className="h-4 w-4 mr-2" /> Profitability by Category
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          {/* P&L Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="bg-green-50 border-green-200">
               <CardContent className="pt-6">
@@ -414,53 +352,36 @@ export function FinancialReports() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
 
+        <TabsContent value="towers">
           <Card>
             <CardHeader>
-              <CardTitle>Historical Financial Performance</CardTitle>
+              <CardTitle>Revenue by Tower</CardTitle>
               <CardDescription>
-                Income vs Expense over selected period
+                Financial performance split by building towers.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {/* Basic aggregated bar chart for filtered entries */}
               <div className="h-[300px] w-full">
                 <ChartContainer
-                  config={{
-                    income: { label: 'Income', color: '#22c55e' },
-                    expense: { label: 'Expense', color: '#ef4444' },
-                  }}
+                  config={{ revenue: { label: 'Revenue', color: '#8884d8' } }}
                   className="h-full w-full"
                 >
                   <BarChart
-                    data={[
-                      {
-                        name: 'Total',
-                        income: filteredEntries
-                          .filter((e) => e.type === 'income')
-                          .reduce((acc, curr) => acc + curr.amount, 0),
-                        expense: filteredEntries
-                          .filter((e) => e.type === 'expense')
-                          .reduce((acc, curr) => acc + curr.amount, 0),
-                      },
-                    ]}
+                    data={revenueByTower}
+                    layout="vertical"
+                    margin={{ left: 40 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" />
-                    <YAxis />
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                    <XAxis type="number" />
+                    <YAxis dataKey="name" type="category" width={100} />
                     <Tooltip content={<ChartTooltipContent />} />
-                    <Legend />
                     <Bar
-                      dataKey="income"
-                      fill="#22c55e"
-                      name="Income"
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="expense"
-                      fill="#ef4444"
-                      name="Expense"
-                      radius={[4, 4, 0, 0]}
+                      dataKey="value"
+                      fill="#8884d8"
+                      radius={[0, 4, 4, 0]}
+                      name="Revenue"
                     />
                   </BarChart>
                 </ChartContainer>
@@ -469,105 +390,58 @@ export function FinancialReports() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="channels">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Revenue by Channel</CardTitle>
-                <CardDescription>
-                  Total income generated per platform.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px] w-full">
-                  <ChartContainer
-                    config={{
-                      revenue: { label: 'Revenue', color: '#8884d8' },
-                    }}
-                    className="h-full w-full"
-                  >
-                    <BarChart
-                      data={channelAnalytics}
-                      layout="vertical"
-                      margin={{ left: 20 }}
+        <TabsContent value="category">
+          <Card>
+            <CardHeader>
+              <CardTitle>Revenue by Category</CardTitle>
+              <CardDescription>
+                Room vs F&B vs Services distribution.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] w-full">
+                <ChartContainer
+                  config={{ value: { label: 'Value', color: '#82ca9d' } }}
+                  className="h-full w-full"
+                >
+                  <PieChart>
+                    <Pie
+                      data={revenueByCategory}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      fill="#82ca9d"
+                      label
                     >
-                      <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                      <XAxis type="number" />
-                      <YAxis dataKey="name" type="category" width={100} />
-                      <Tooltip content={<ChartTooltipContent />} />
-                      <Bar
-                        dataKey="revenue"
-                        fill="#8884d8"
-                        radius={[0, 4, 4, 0]}
-                        name="Revenue"
-                      />
-                    </BarChart>
-                  </ChartContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Booking Volume</CardTitle>
-                <CardDescription>
-                  Number of reservations per platform.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px] w-full">
-                  <ChartContainer
-                    config={{
-                      bookings: { label: 'Bookings', color: '#82ca9d' },
-                    }}
-                    className="h-full w-full"
-                  >
-                    <PieChart>
-                      <Pie
-                        data={channelAnalytics}
-                        dataKey="bookings"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        fill="#82ca9d"
-                        label={({ name, percent }) =>
-                          `${name} ${(percent * 100).toFixed(0)}%`
-                        }
-                      >
-                        {channelAnalytics.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
-                  </ChartContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                      {revenueByCategory.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ChartContainer>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="projection">
           <Card>
             <CardHeader>
               <CardTitle>Projected Cash Flow (6 Months)</CardTitle>
-              <CardDescription>
-                Estimated based on active leases, confirmed bookings, and fixed
-                expenses.
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-[400px] w-full">
                 <ChartContainer
                   config={{
-                    income: { label: 'Projected Income', color: '#22c55e' },
-                    expenses: { label: 'Projected Expenses', color: '#ef4444' },
-                    netCashFlow: { label: 'Net Cash Flow', color: '#3b82f6' },
+                    income: { label: 'Income', color: '#22c55e' },
+                    expenses: { label: 'Expenses', color: '#ef4444' },
                   }}
                   className="h-full w-full"
                 >
@@ -589,98 +463,8 @@ export function FinancialReports() {
                       name="Expenses"
                       radius={[4, 4, 0, 0]}
                     />
-                    <Bar
-                      dataKey="netCashFlow"
-                      fill="#3b82f6"
-                      name="Net Flow"
-                      radius={[4, 4, 0, 0]}
-                    />
                   </BarChart>
                 </ChartContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="profitability">
-          <Card>
-            <CardHeader>
-              <CardTitle>Profitability by Property Type</CardTitle>
-              <CardDescription>
-                Comparing Short Term (STR) vs Long Term (LTR) performance.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="h-[300px]">
-                  <h4 className="text-sm font-medium text-center mb-4">
-                    Revenue Distribution
-                  </h4>
-                  <ChartContainer config={{}} className="h-full w-full">
-                    <PieChart>
-                      <Pie
-                        data={profitabilityByType}
-                        dataKey="income"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        fill="#8884d8"
-                        label={({ name, percent }) =>
-                          `${name} ${(percent * 100).toFixed(0)}%`
-                        }
-                      >
-                        {profitabilityByType.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ChartContainer>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-center mb-4">
-                    Net Profit Comparison
-                  </h4>
-                  <div className="space-y-4 pt-8">
-                    {profitabilityByType.map((item) => (
-                      <div key={item.name} className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="font-semibold">{item.name}</span>
-                          <span
-                            className={
-                              item.profit >= 0
-                                ? 'text-green-600'
-                                : 'text-red-600'
-                            }
-                          >
-                            {formatCurrency(item.profit, language)}
-                          </span>
-                        </div>
-                        <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-blue-600"
-                            style={{
-                              width: `${(item.profit / (profitabilityByType[0].profit + profitabilityByType[1].profit || 1)) * 100}%`,
-                            }}
-                          />
-                        </div>
-                        <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>
-                            Income: {formatCurrency(item.income, language)}
-                          </span>
-                          <span>
-                            Expense: {formatCurrency(item.expense, language)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
             </CardContent>
           </Card>

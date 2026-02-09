@@ -49,21 +49,18 @@ export default function Performance() {
   })
   const [selectedTower, setSelectedTower] = useState<string>('all')
 
-  // Calculate Metrics
   const metrics = useMemo(() => {
     if (!dateRange?.from || !dateRange?.to) return []
 
     const days = eachDayOfInterval({ start: dateRange.from, end: dateRange.to })
 
     return days.map((day) => {
-      // Filter bookings active on this day
       const dailyBookings = bookings.filter((b) => {
         const start = new Date(b.checkIn)
         const end = new Date(b.checkOut)
         return day >= start && day < end && b.status !== 'cancelled'
       })
 
-      // Filter rooms based on tower selection
       const totalRooms = properties.filter((p) => {
         if (p.profileType !== 'short_term') return false
         if (selectedTower === 'all') return true
@@ -83,7 +80,6 @@ export default function Performance() {
         if (selectedTower !== 'all' && property.towerId !== selectedTower)
           return acc
 
-        // Simplified daily rate extraction
         const nights = Math.max(
           1,
           (new Date(b.checkOut).getTime() - new Date(b.checkIn).getTime()) /
@@ -128,7 +124,6 @@ export default function Performance() {
     })
   }
 
-  // Reviews Calc
   const reviews = feedbacks.filter((f) => {
     const prop = properties.find((p) => p.id === f.propertyId)
     if (!prop) return false
@@ -148,10 +143,13 @@ export default function Performance() {
             Performance Dashboard
           </h1>
           <p className="text-muted-foreground">
-            Real-time metrics for RevPAR, ADR, and Occupancy.
+            Metrics filtered by Tower:{' '}
+            {selectedTower === 'all'
+              ? 'All'
+              : towers.find((t) => t.id === selectedTower)?.name}
           </p>
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center flex-wrap">
           <DatePickerWithRange date={dateRange} setDate={setDateRange} />
           <Select value={selectedTower} onValueChange={setSelectedTower}>
             <SelectTrigger className="w-[180px]">

@@ -15,16 +15,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Trash2, ShoppingCart, DollarSign } from 'lucide-react'
+import { Trash2, ShoppingCart, DollarSign, Package } from 'lucide-react'
 import useManagementStore from '@/stores/useManagementStore'
 import useShortTermStore from '@/stores/useShortTermStore'
+import usePropertyStore from '@/stores/usePropertyStore'
 import { useToast } from '@/hooks/use-toast'
 import { PosItem, PosTransaction } from '@/lib/types'
 import { formatCurrency } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 
 export default function PointOfSale() {
   const { posItems, addPosTransaction } = useManagementStore()
   const { bookings } = useShortTermStore()
+  const { properties, updateProperty } = usePropertyStore()
   const { toast } = useToast()
 
   const [selectedBooking, setSelectedBooking] = useState('')
@@ -34,9 +37,27 @@ export default function PointOfSale() {
     (b) => b.status === 'confirmed' || b.status === 'checked_in',
   )
 
+  const globalStock = properties.find((p) => p.id === 'stock_main')
+
   const addToCart = (itemId: string) => {
     const item = posItems.find((i) => i.id === itemId)
     if (!item) return
+
+    // Check stock availability (based on name matching for simplicity)
+    const stockItem = globalStock?.inventory?.find(
+      (inv) => inv.name.toLowerCase() === item.name.toLowerCase(),
+    )
+
+    const currentInCart = cart.find((c) => c.item.id === itemId)?.quantity || 0
+
+    if (stockItem && stockItem.quantity <= currentInCart) {
+      toast({
+        title: 'Out of Stock',
+        description: `Only ${stockItem.quantity} units of ${item.name} available.`,
+        variant: 'destructive',
+      })
+      return
+    }
 
     const existing = cart.find((c) => c.item.id === itemId)
     if (existing) {
@@ -77,6 +98,26 @@ export default function PointOfSale() {
       return
     }
 
+    // Deduct from Global Inventory
+    if (globalStock && globalStock.inventory) {
+      const updatedInventory = [...globalStock.inventory]
+      let stockUpdated = false
+
+      cart.forEach((cartItem) => {
+        const invIndex = updatedInventory.findIndex(
+          (inv) => inv.name.toLowerCase() === cartItem.item.name.toLowerCase(),
+        )
+        if (invIndex >= 0) {
+          updatedInventory[invIndex].quantity -= cartItem.quantity
+          stockUpdated = true
+        }
+      })
+
+      if (stockUpdated) {
+        updateProperty({ ...globalStock, inventory: updatedInventory })
+      }
+    }
+
     const transaction: PosTransaction = {
       id: `pos-${Date.now()}`,
       bookingId: selectedBooking,
@@ -96,47 +137,82 @@ export default function PointOfSale() {
     setSelectedBooking('')
     toast({
       title: 'Transaction Successful',
-      description: `Charged ${formatCurrency(totalAmount)} to folio.`,
+      description: `Charged ${formatCurrency(totalAmount)} to folio. Inventory updated.`,
     })
   }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 flex flex-col gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Point of Sale
-          </h1>
-          <p className="text-muted-foreground">
-            Internal POS for Minibar, Restaurant, and Services.
-          </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-navy">
+              Point of Sale
+            </h1>
+            <p className="text-muted-foreground">
+              Internal POS for Minibar, Restaurant, and Services.
+            </p>
+          </div>
+          {globalStock && (
+            <Badge variant="outline" className="bg-slate-50 text-slate-700">
+              <Package className="h-3 w-3 mr-1" /> Stock Connected
+            </Badge>
+          )}
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {posItems.map((item) => (
-            <Card
-              key={item.id}
-              className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => addToCart(item.id)}
-            >
-              <CardHeader className="p-4">
-                <CardTitle className="text-base">{item.name}</CardTitle>
-                <CardDescription className="capitalize">
-                  {item.category}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <div className="text-lg font-bold text-green-700">
-                  {formatCurrency(item.price)}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {posItems.map((item) => {
+            const stockItem = globalStock?.inventory?.find(
+              (inv) => inv.name.toLowerCase() === item.name.toLowerCase(),
+            )
+            const inStock = stockItem ? stockItem.quantity : 999 // Fallback high if no stock track
+
+            return (
+              <Card
+                key={item.id}
+                className="cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden"
+                onClick={() => {
+                  if (inStock > 0) addToCart(item.id)
+                }}
+              >
+                {inStock === 0 && (
+                  <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center font-bold text-red-600">
+                    Out of Stock
+                  </div>
+                )}
+                <CardHeader className="p-4">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-base">{item.name}</CardTitle>
+                    {stockItem && (
+                      <Badge
+                        variant="secondary"
+                        className={
+                          inStock < 10
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-green-100 text-green-800'
+                        }
+                      >
+                        {inStock} left
+                      </Badge>
+                    )}
+                  </div>
+                  <CardDescription className="capitalize">
+                    {item.category}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <div className="text-lg font-bold text-green-700">
+                    {formatCurrency(item.price)}
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       </div>
 
       <div className="lg:col-span-1">
-        <Card className="h-full flex flex-col">
+        <Card className="h-full flex flex-col border-l-4 border-l-trust-blue">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShoppingCart className="h-5 w-5" /> Current Order
@@ -162,9 +238,10 @@ export default function PointOfSale() {
               </Select>
             </div>
 
-            <div className="flex-1 overflow-auto border rounded-md p-2 bg-slate-50">
+            <div className="flex-1 overflow-auto border rounded-md p-2 bg-slate-50 min-h-[200px]">
               {cart.length === 0 ? (
-                <div className="text-center text-sm text-muted-foreground py-8">
+                <div className="text-center text-sm text-muted-foreground py-8 flex flex-col items-center">
+                  <ShoppingCart className="h-8 w-8 opacity-20 mb-2" />
                   Cart is empty
                 </div>
               ) : (
@@ -172,7 +249,7 @@ export default function PointOfSale() {
                   {cart.map((c) => (
                     <div
                       key={c.item.id}
-                      className="flex justify-between items-center bg-white p-2 rounded border"
+                      className="flex justify-between items-center bg-white p-2 rounded border shadow-sm"
                     >
                       <div className="text-sm">
                         <div className="font-bold">{c.item.name}</div>
@@ -187,7 +264,7 @@ export default function PointOfSale() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 text-red-500"
+                          className="h-6 w-6 text-red-500 hover:bg-red-50"
                           onClick={(e) => {
                             e.stopPropagation()
                             removeFromCart(c.item.id)
@@ -205,10 +282,12 @@ export default function PointOfSale() {
             <div className="border-t pt-4">
               <div className="flex justify-between items-center text-lg font-bold mb-4">
                 <span>Total</span>
-                <span>{formatCurrency(totalAmount)}</span>
+                <span className="text-trust-blue">
+                  {formatCurrency(totalAmount)}
+                </span>
               </div>
               <Button
-                className="w-full bg-trust-blue h-12 text-lg"
+                className="w-full bg-trust-blue h-12 text-lg hover:bg-blue-800"
                 onClick={handleCheckout}
                 disabled={cart.length === 0}
               >

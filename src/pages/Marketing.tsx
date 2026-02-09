@@ -80,7 +80,7 @@ export default function Marketing() {
       active: true,
     } as Promotion)
     setPromoOpen(false)
-    toast({ title: 'Promotion Created' })
+    toast({ title: 'Promotion Created', description: 'Discount code ready.' })
   }
 
   const handleSaveCamp = () => {

@@ -128,20 +128,21 @@ export const partners: Partner[] = [
 export const hotels: Hotel[] = [
   {
     id: 'h1',
-    name: 'Grand Plaza Miami',
+    name: 'Grand Heritage Hotel',
     address: '1500 Collins Ave',
     city: 'Miami Beach',
     state: 'FL',
     country: 'US',
     zipCode: '33139',
-    description: 'Luxury oceanfront hotel with premium amenities.',
+    description:
+      'Luxury oceanfront hotel with two distinct towers: Torre Norte and Torre Sul.',
     managerName: 'Elena Rodriguez',
-    managerEmail: 'elena.r@grandplaza.com',
+    managerEmail: 'elena.r@grandheritage.com',
     managerPhone: '+1 (305) 555-0199',
-    amenities: ['Ocean View', 'Spa', 'Pool'],
-    policies: ['Check-in: 3 PM', 'No Smoking'],
+    amenities: ['Ocean View', 'Spa', 'Pool', 'Fine Dining', 'Concierge'],
+    policies: ['Check-in: 3 PM', 'Check-out: 11 AM', 'No Smoking'],
     contacts: [],
-    towers: [],
+    towers: ['t1', 't2'],
   },
 ]
 
@@ -149,18 +150,80 @@ export const towers: Tower[] = [
   {
     id: 't1',
     hotelId: 'h1',
-    name: 'Ocean Tower',
-    description: 'Direct ocean views.',
+    name: 'Torre Norte',
+    description: 'Heritage wing with classic decor and ocean views.',
+    floors: 10,
+  },
+  {
+    id: 't2',
+    hotelId: 'h1',
+    name: 'Torre Sul',
+    description: 'Modern wing with contemporary suites and city views.',
     floors: 15,
   },
 ]
 
+// Separate property for Global Stock
+export const globalStockProperty: Property = {
+  id: 'stock_main',
+  name: 'Grand Heritage Storage',
+  address: 'Basement Level',
+  type: 'Storage',
+  profileType: 'short_term',
+  status: 'available',
+  community: 'Grand Heritage',
+  hotelId: 'h1',
+  ownerId: 'system',
+  image: '',
+  bedrooms: 0,
+  bathrooms: 0,
+  guests: 0,
+  inventory: [
+    {
+      id: 'inv_coke',
+      name: 'Cola',
+      category: 'Minibar',
+      quantity: 150,
+      condition: 'New',
+    },
+    {
+      id: 'inv_chips',
+      name: 'Chips',
+      category: 'Minibar',
+      quantity: 200,
+      condition: 'New',
+    },
+    {
+      id: 'inv_water',
+      name: 'Water',
+      category: 'Minibar',
+      quantity: 300,
+      condition: 'New',
+    },
+    {
+      id: 'inv_towel',
+      name: 'Towel',
+      category: 'Linens',
+      quantity: 500,
+      condition: 'Good',
+    },
+    {
+      id: 'inv_soap',
+      name: 'Soap',
+      category: 'Amenities',
+      quantity: 1000,
+      condition: 'New',
+    },
+  ],
+}
+
 export const properties: Property[] = [
+  globalStockProperty,
   {
     id: 'p1',
     hotelId: 'h1',
     towerId: 't1',
-    name: 'Ocean Suite 101',
+    name: 'Suite 101 (Norte)',
     roomNumber: '101',
     type: 'Hotel Room',
     profileType: 'short_term',
@@ -169,10 +232,10 @@ export const properties: Property[] = [
     bedrooms: 1,
     bathrooms: 1,
     guests: 2,
-    amenities: ['Wi-Fi', 'TV', 'Balcony'],
+    amenities: ['Wi-Fi', 'TV', 'Balcony', 'Minibar'],
     image: 'https://img.usecurling.com/p/400/300?q=hotel%20room',
     ownerId: 'owner1',
-    community: 'Grand Plaza',
+    community: 'Grand Heritage',
     address: '1500 Collins Ave, Miami Beach, FL',
     roomCharacteristics: {
       bedType: 'King',
@@ -184,6 +247,37 @@ export const properties: Property[] = [
     priceHistory: [],
     gallery: [],
     channelMappings: [],
+    inventory: [],
+  },
+  {
+    id: 'p2',
+    hotelId: 'h1',
+    towerId: 't2',
+    name: 'Suite 205 (Sul)',
+    roomNumber: '205',
+    type: 'Hotel Room',
+    profileType: 'short_term',
+    status: 'occupied',
+    listingPrice: 420,
+    bedrooms: 1,
+    bathrooms: 1,
+    guests: 2,
+    amenities: ['Wi-Fi', 'TV', 'City View', 'Minibar'],
+    image: 'https://img.usecurling.com/p/400/300?q=modern%20suite',
+    ownerId: 'owner1',
+    community: 'Grand Heritage',
+    address: '1500 Collins Ave, Miami Beach, FL',
+    roomCharacteristics: {
+      bedType: 'Queen',
+      view: 'City View',
+      hasBalcony: false,
+      maxOccupancy: 2,
+      sizeSqFt: 450,
+    },
+    priceHistory: [],
+    gallery: [],
+    channelMappings: [],
+    inventory: [],
   },
 ]
 
@@ -217,7 +311,48 @@ export const defaultFinancialSettings = {
   isProduction: false,
 }
 export const mockBankStatements: BankStatement[] = []
-export const ledgerEntries: LedgerEntry[] = []
+export const ledgerEntries: LedgerEntry[] = [
+  {
+    id: 'le1',
+    propertyId: 'p1',
+    date: '2024-05-01',
+    type: 'income',
+    category: 'Room',
+    amount: 1400,
+    description: 'Booking BK1 Payment',
+    status: 'cleared',
+  },
+  {
+    id: 'le2',
+    propertyId: 'p2',
+    date: '2024-05-02',
+    type: 'income',
+    category: 'Room',
+    amount: 1200,
+    description: 'Booking BK2 Payment',
+    status: 'cleared',
+  },
+  {
+    id: 'le3',
+    propertyId: 'p1',
+    date: '2024-05-05',
+    type: 'income',
+    category: 'F&B',
+    amount: 50,
+    description: 'Minibar Charge',
+    status: 'cleared',
+  },
+  {
+    id: 'le4',
+    propertyId: 'p2',
+    date: '2024-05-06',
+    type: 'income',
+    category: 'Services',
+    amount: 120,
+    description: 'Spa Service',
+    status: 'cleared',
+  },
+]
 export const auditLogs: AuditLog[] = []
 export const genericServiceRates: ServiceRate[] = []
 export const notifications: Notification[] = []
@@ -240,7 +375,20 @@ export const bookings: Booking[] = [
     totalAmount: 1400,
     paid: true,
     platform: 'direct',
-    propertyName: 'Ocean Suite 101',
+    propertyName: 'Suite 101 (Norte)',
+  },
+  {
+    id: 'bk2',
+    propertyId: 'p2',
+    guestName: 'Bob Builder',
+    guestEmail: 'bob@example.com',
+    checkIn: '2024-06-10',
+    checkOut: '2024-06-15',
+    status: 'confirmed',
+    totalAmount: 1200,
+    paid: true,
+    platform: 'booking.com',
+    propertyName: 'Suite 205 (Sul)',
   },
 ]
 export const calendarBlocks: CalendarBlock[] = []
@@ -253,7 +401,6 @@ export const visits: Visit[] = []
 export const workflows: Workflow[] = []
 export const tourSteps = []
 
-// NEW MOCK DATA
 export const guestServices: GuestService[] = [
   {
     id: 's1',
@@ -277,6 +424,14 @@ export const guestServices: GuestService[] = [
     description: '60 min massage',
     price: 120,
     category: 'spa',
+    active: true,
+  },
+  {
+    id: 's4',
+    name: 'Room Service',
+    description: 'In-room dining service',
+    price: 15,
+    category: 'dining',
     active: true,
   },
 ]
@@ -303,6 +458,13 @@ export const posItems: PosItem[] = [
     category: 'laundry',
     active: true,
   },
+  {
+    id: 'pos4',
+    name: 'Club Sandwich',
+    price: 18,
+    category: 'restaurant',
+    active: true,
+  },
 ]
 
 export const posTransactions: PosTransaction[] = []
@@ -320,6 +482,18 @@ export const promotions: Promotion[] = [
     usageCount: 12,
     totalDiscountApplied: 450,
     description: '15% off summer bookings',
+  },
+  {
+    id: 'promo2',
+    code: 'EARLYBIRD',
+    type: 'percentage',
+    value: 10,
+    startDate: '2024-01-01',
+    endDate: '2024-12-31',
+    active: true,
+    usageCount: 5,
+    totalDiscountApplied: 200,
+    description: 'Early bird special',
   },
 ]
 
@@ -350,34 +524,6 @@ export const marketData: MarketData[] = [
     propertyTaxAvg: 1.8,
     hoaAvg: 600,
   },
-  {
-    region: 'Downtown',
-    averagePrice: 550000,
-    occupancyRate: 80,
-    trend: 'stable',
-    competitorCount: 200,
-    averageDaysOnMarket: 35,
-    shortTermRate: 320,
-    longTermRate: 4000,
-    pricePerSqFt: 580,
-    saturationIndex: 60,
-    propertyTaxAvg: 1.5,
-    hoaAvg: 800,
-  },
-  {
-    region: 'Brickell',
-    averagePrice: 650000,
-    occupancyRate: 88,
-    trend: 'up',
-    competitorCount: 250,
-    averageDaysOnMarket: 25,
-    shortTermRate: 350,
-    longTermRate: 4500,
-    pricePerSqFt: 700,
-    saturationIndex: 85,
-    propertyTaxAvg: 1.6,
-    hoaAvg: 900,
-  },
 ]
 
 export const feedbacks: Feedback[] = [
@@ -391,29 +537,9 @@ export const feedbacks: Feedback[] = [
     date: '2024-06-05T10:00:00Z',
     status: 'new',
   },
-  {
-    id: 'f2',
-    bookingId: 'bk2',
-    propertyId: 'p1',
-    guestName: 'Bob Builder',
-    rating: 4,
-    comment: 'Great location, but the wifi was a bit slow.',
-    date: '2024-05-20T11:00:00Z',
-    status: 'reviewed',
-    response: 'Thanks Bob, we are upgrading the network next week!',
-  },
 ]
 
-export const channelMappings: ChannelMapping[] = [
-  {
-    id: 'cm1',
-    propertyId: 'p1',
-    platform: 'airbnb',
-    otaRoomId: '123456',
-    status: 'mapped',
-    lastSync: '2024-06-01T08:00:00Z',
-  },
-]
+export const channelMappings: ChannelMapping[] = []
 
 export const marketingWorkflows: MarketingWorkflow[] = [
   {
@@ -424,14 +550,6 @@ export const marketingWorkflows: MarketingWorkflow[] = [
     templateId: 'et1',
     active: true,
   },
-  {
-    id: 'mw2',
-    name: 'Pre-Arrival Upsell',
-    trigger: 'check_in',
-    offsetTime: -48,
-    templateId: 'et2',
-    active: true,
-  },
 ]
 
 export const emailTemplates: EmailTemplate[] = [
@@ -440,11 +558,5 @@ export const emailTemplates: EmailTemplate[] = [
     name: 'Welcome Confirmation',
     subject: 'Booking Confirmed!',
     body: 'Hi {guest_name}, thank you for booking {property_name}. See you soon!',
-  },
-  {
-    id: 'et2',
-    name: 'Pre-Arrival',
-    subject: 'Get ready for your trip',
-    body: 'Hi {guest_name}, enhance your stay with our spa package!',
   },
 ]

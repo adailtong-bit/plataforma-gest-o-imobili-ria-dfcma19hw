@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { AppContext } from '@/stores/AppContext'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,14 +17,42 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Moon, RefreshCw, FileCheck } from 'lucide-react'
-import { formatCurrency, formatDate } from '@/lib/utils'
+import { Moon, RefreshCw, FileCheck, Download } from 'lucide-react'
+import { formatCurrency, formatDate, exportToCSV } from '@/lib/utils'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { NightAudit as NightAuditType } from '@/lib/types'
 
 export default function NightAudit() {
   const context = useContext(AppContext)
   const { nightAudits, runNightAudit } = context!
   const { language } = useLanguageStore()
+  const [isRunning, setIsRunning] = useState(false)
+
+  const handleRunAudit = () => {
+    setIsRunning(true)
+    setTimeout(() => {
+      runNightAudit()
+      setIsRunning(false)
+    }, 2000)
+  }
+
+  const handleExport = (audit: NightAuditType) => {
+    const headers = [
+      'Date',
+      'Revenue',
+      'Room Charges',
+      'Service Fees',
+      'Status',
+    ]
+    const row = [
+      formatDate(audit.date, language),
+      audit.totalRevenue,
+      audit.roomCharges,
+      audit.serviceFees,
+      audit.status,
+    ]
+    exportToCSV(`audit_${audit.date}`, headers, [row])
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -38,10 +66,12 @@ export default function NightAudit() {
           </p>
         </div>
         <Button
-          onClick={runNightAudit}
+          onClick={handleRunAudit}
+          disabled={isRunning}
           className="bg-indigo-600 hover:bg-indigo-700 gap-2"
         >
-          <RefreshCw className="h-4 w-4" /> Run Night Audit
+          <RefreshCw className={`h-4 w-4 ${isRunning ? 'animate-spin' : ''}`} />
+          {isRunning ? 'Running...' : 'Run Night Audit'}
         </Button>
       </div>
 
@@ -143,8 +173,12 @@ export default function NightAudit() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">
-                        <FileCheck className="h-4 w-4" />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleExport(audit)}
+                      >
+                        <Download className="h-4 w-4" />
                       </Button>
                     </TableCell>
                   </TableRow>

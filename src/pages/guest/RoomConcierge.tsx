@@ -8,7 +8,6 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Wifi,
@@ -75,7 +74,7 @@ export default function RoomConcierge() {
 
     const newFeedback: Feedback = {
       id: `fb-${Date.now()}`,
-      bookingId: `bk-guest-${Date.now()}`, // Placeholder as we don't have auth here usually
+      bookingId: `bk-guest-${Date.now()}`,
       propertyId: property.id,
       guestName: 'Guest (Concierge)',
       rating,
@@ -103,7 +102,7 @@ export default function RoomConcierge() {
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold text-navy">
-            Welcome to {property.community || 'Our Hotel'}
+            Welcome to {property.community || 'Grand Heritage Hotel'}
           </h1>
           <p className="text-muted-foreground">
             Room {property.roomNumber} - Digital Concierge
@@ -136,33 +135,6 @@ export default function RoomConcierge() {
                 </span>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Local Guide */}
-        <Card>
-          <CardHeader className="pb-2 flex flex-row items-center gap-4">
-            <div className="p-2 bg-green-100 rounded-full">
-              <MapPin className="h-6 w-6 text-green-600" />
-            </div>
-            <div>
-              <CardTitle className="text-lg">Local Guide</CardTitle>
-              <CardDescription>Explore the area</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="grid gap-2">
-            <Button
-              variant="outline"
-              className="justify-start gap-2 h-auto py-3"
-            >
-              <Coffee className="h-4 w-4" /> Best Coffee Nearby
-            </Button>
-            <Button
-              variant="outline"
-              className="justify-start gap-2 h-auto py-3"
-            >
-              <MapPin className="h-4 w-4" /> Top Attractions
-            </Button>
           </CardContent>
         </Card>
 

@@ -19339,24 +19339,6 @@ var Clock = createLucideIcon("clock", [["path", {
 	r: "10",
 	key: "1mglay"
 }]]);
-var Coffee = createLucideIcon("coffee", [
-	["path", {
-		d: "M10 2v2",
-		key: "7u0qdc"
-	}],
-	["path", {
-		d: "M14 2v2",
-		key: "6buw04"
-	}],
-	["path", {
-		d: "M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1",
-		key: "pwadti"
-	}],
-	["path", {
-		d: "M6 2v2",
-		key: "colzsn"
-	}]
-]);
 var Copy = createLucideIcon("copy", [["rect", {
 	width: "14",
 	height: "14",
@@ -53105,65 +53087,168 @@ const partners = [{
 }];
 const hotels = [{
 	id: "h1",
-	name: "Grand Plaza Miami",
+	name: "Grand Heritage Hotel",
 	address: "1500 Collins Ave",
 	city: "Miami Beach",
 	state: "FL",
 	country: "US",
 	zipCode: "33139",
-	description: "Luxury oceanfront hotel with premium amenities.",
+	description: "Luxury oceanfront hotel with two distinct towers: Torre Norte and Torre Sul.",
 	managerName: "Elena Rodriguez",
-	managerEmail: "elena.r@grandplaza.com",
+	managerEmail: "elena.r@grandheritage.com",
 	managerPhone: "+1 (305) 555-0199",
 	amenities: [
 		"Ocean View",
 		"Spa",
-		"Pool"
+		"Pool",
+		"Fine Dining",
+		"Concierge"
 	],
-	policies: ["Check-in: 3 PM", "No Smoking"],
+	policies: [
+		"Check-in: 3 PM",
+		"Check-out: 11 AM",
+		"No Smoking"
+	],
 	contacts: [],
-	towers: []
+	towers: ["t1", "t2"]
 }];
 const towers = [{
 	id: "t1",
 	hotelId: "h1",
-	name: "Ocean Tower",
-	description: "Direct ocean views.",
+	name: "Torre Norte",
+	description: "Heritage wing with classic decor and ocean views.",
+	floors: 10
+}, {
+	id: "t2",
+	hotelId: "h1",
+	name: "Torre Sul",
+	description: "Modern wing with contemporary suites and city views.",
 	floors: 15
 }];
-const properties = [{
-	id: "p1",
-	hotelId: "h1",
-	towerId: "t1",
-	name: "Ocean Suite 101",
-	roomNumber: "101",
-	type: "Hotel Room",
-	profileType: "short_term",
-	status: "available",
-	listingPrice: 350,
-	bedrooms: 1,
-	bathrooms: 1,
-	guests: 2,
-	amenities: [
-		"Wi-Fi",
-		"TV",
-		"Balcony"
-	],
-	image: "https://img.usecurling.com/p/400/300?q=hotel%20room",
-	ownerId: "owner1",
-	community: "Grand Plaza",
-	address: "1500 Collins Ave, Miami Beach, FL",
-	roomCharacteristics: {
-		bedType: "King",
-		view: "Sea View",
-		hasBalcony: true,
-		maxOccupancy: 2,
-		sizeSqFt: 500
+const properties = [
+	{
+		id: "stock_main",
+		name: "Grand Heritage Storage",
+		address: "Basement Level",
+		type: "Storage",
+		profileType: "short_term",
+		status: "available",
+		community: "Grand Heritage",
+		hotelId: "h1",
+		ownerId: "system",
+		image: "",
+		bedrooms: 0,
+		bathrooms: 0,
+		guests: 0,
+		inventory: [
+			{
+				id: "inv_coke",
+				name: "Cola",
+				category: "Minibar",
+				quantity: 150,
+				condition: "New"
+			},
+			{
+				id: "inv_chips",
+				name: "Chips",
+				category: "Minibar",
+				quantity: 200,
+				condition: "New"
+			},
+			{
+				id: "inv_water",
+				name: "Water",
+				category: "Minibar",
+				quantity: 300,
+				condition: "New"
+			},
+			{
+				id: "inv_towel",
+				name: "Towel",
+				category: "Linens",
+				quantity: 500,
+				condition: "Good"
+			},
+			{
+				id: "inv_soap",
+				name: "Soap",
+				category: "Amenities",
+				quantity: 1e3,
+				condition: "New"
+			}
+		]
 	},
-	priceHistory: [],
-	gallery: [],
-	channelMappings: []
-}];
+	{
+		id: "p1",
+		hotelId: "h1",
+		towerId: "t1",
+		name: "Suite 101 (Norte)",
+		roomNumber: "101",
+		type: "Hotel Room",
+		profileType: "short_term",
+		status: "available",
+		listingPrice: 350,
+		bedrooms: 1,
+		bathrooms: 1,
+		guests: 2,
+		amenities: [
+			"Wi-Fi",
+			"TV",
+			"Balcony",
+			"Minibar"
+		],
+		image: "https://img.usecurling.com/p/400/300?q=hotel%20room",
+		ownerId: "owner1",
+		community: "Grand Heritage",
+		address: "1500 Collins Ave, Miami Beach, FL",
+		roomCharacteristics: {
+			bedType: "King",
+			view: "Sea View",
+			hasBalcony: true,
+			maxOccupancy: 2,
+			sizeSqFt: 500
+		},
+		priceHistory: [],
+		gallery: [],
+		channelMappings: [],
+		inventory: []
+	},
+	{
+		id: "p2",
+		hotelId: "h1",
+		towerId: "t2",
+		name: "Suite 205 (Sul)",
+		roomNumber: "205",
+		type: "Hotel Room",
+		profileType: "short_term",
+		status: "occupied",
+		listingPrice: 420,
+		bedrooms: 1,
+		bathrooms: 1,
+		guests: 2,
+		amenities: [
+			"Wi-Fi",
+			"TV",
+			"City View",
+			"Minibar"
+		],
+		image: "https://img.usecurling.com/p/400/300?q=modern%20suite",
+		ownerId: "owner1",
+		community: "Grand Heritage",
+		address: "1500 Collins Ave, Miami Beach, FL",
+		roomCharacteristics: {
+			bedType: "Queen",
+			view: "City View",
+			hasBalcony: false,
+			maxOccupancy: 2,
+			sizeSqFt: 450
+		},
+		priceHistory: [],
+		gallery: [],
+		channelMappings: [],
+		inventory: []
+	}
+];
 const tasks = [];
 const financials = {
 	revenue: [],
@@ -53194,7 +53279,48 @@ const defaultFinancialSettings = {
 	isProduction: false
 };
 const mockBankStatements = [];
-const ledgerEntries = [];
+const ledgerEntries = [
+	{
+		id: "le1",
+		propertyId: "p1",
+		date: "2024-05-01",
+		type: "income",
+		category: "Room",
+		amount: 1400,
+		description: "Booking BK1 Payment",
+		status: "cleared"
+	},
+	{
+		id: "le2",
+		propertyId: "p2",
+		date: "2024-05-02",
+		type: "income",
+		category: "Room",
+		amount: 1200,
+		description: "Booking BK2 Payment",
+		status: "cleared"
+	},
+	{
+		id: "le3",
+		propertyId: "p1",
+		date: "2024-05-05",
+		type: "income",
+		category: "F&B",
+		amount: 50,
+		description: "Minibar Charge",
+		status: "cleared"
+	},
+	{
+		id: "le4",
+		propertyId: "p2",
+		date: "2024-05-06",
+		type: "income",
+		category: "Services",
+		amount: 120,
+		description: "Spa Service",
+		status: "cleared"
+	}
+];
 const auditLogs = [];
 const genericServiceRates = [];
 const notifications = [];
@@ -53216,7 +53342,19 @@ const bookings = [{
 	totalAmount: 1400,
 	paid: true,
 	platform: "direct",
-	propertyName: "Ocean Suite 101"
+	propertyName: "Suite 101 (Norte)"
+}, {
+	id: "bk2",
+	propertyId: "p2",
+	guestName: "Bob Builder",
+	guestEmail: "bob@example.com",
+	checkIn: "2024-06-10",
+	checkOut: "2024-06-15",
+	status: "confirmed",
+	totalAmount: 1200,
+	paid: true,
+	platform: "booking.com",
+	propertyName: "Suite 205 (Sul)"
 }];
 const calendarBlocks = [];
 const messageTemplates = [];
@@ -53256,6 +53394,14 @@ const guestServices = [
 		price: 120,
 		category: "spa",
 		active: true
+	},
+	{
+		id: "s4",
+		name: "Room Service",
+		description: "In-room dining service",
+		price: 15,
+		category: "dining",
+		active: true
 	}
 ];
 const posItems = [
@@ -53279,6 +53425,13 @@ const posItems = [
 		price: 30,
 		category: "laundry",
 		active: true
+	},
+	{
+		id: "pos4",
+		name: "Club Sandwich",
+		price: 18,
+		category: "restaurant",
+		active: true
 	}
 ];
 const posTransactions = [];
@@ -53294,6 +53447,17 @@ const promotions = [{
 	usageCount: 12,
 	totalDiscountApplied: 450,
 	description: "15% off summer bookings"
+}, {
+	id: "promo2",
+	code: "EARLYBIRD",
+	type: "percentage",
+	value: 10,
+	startDate: "2024-01-01",
+	endDate: "2024-12-31",
+	active: true,
+	usageCount: 5,
+	totalDiscountApplied: 200,
+	description: "Early bird special"
 }];
 const campaigns = [{
 	id: "camp1",
@@ -53304,50 +53468,20 @@ const campaigns = [{
 	promotions: ["promo1"],
 	targetAudience: "all"
 }];
-const marketData = [
-	{
-		region: "South Beach",
-		averagePrice: 45e4,
-		occupancyRate: 85,
-		trend: "up",
-		competitorCount: 150,
-		averageDaysOnMarket: 45,
-		shortTermRate: 280,
-		longTermRate: 3500,
-		pricePerSqFt: 650,
-		saturationIndex: 75,
-		propertyTaxAvg: 1.8,
-		hoaAvg: 600
-	},
-	{
-		region: "Downtown",
-		averagePrice: 55e4,
-		occupancyRate: 80,
-		trend: "stable",
-		competitorCount: 200,
-		averageDaysOnMarket: 35,
-		shortTermRate: 320,
-		longTermRate: 4e3,
-		pricePerSqFt: 580,
-		saturationIndex: 60,
-		propertyTaxAvg: 1.5,
-		hoaAvg: 800
-	},
-	{
-		region: "Brickell",
-		averagePrice: 65e4,
-		occupancyRate: 88,
-		trend: "up",
-		competitorCount: 250,
-		averageDaysOnMarket: 25,
-		shortTermRate: 350,
-		longTermRate: 4500,
-		pricePerSqFt: 700,
-		saturationIndex: 85,
-		propertyTaxAvg: 1.6,
-		hoaAvg: 900
-	}
-];
+const marketData = [{
+	region: "South Beach",
+	averagePrice: 45e4,
+	occupancyRate: 85,
+	trend: "up",
+	competitorCount: 150,
+	averageDaysOnMarket: 45,
+	shortTermRate: 280,
+	longTermRate: 3500,
+	pricePerSqFt: 650,
+	saturationIndex: 75,
+	propertyTaxAvg: 1.8,
+	hoaAvg: 600
+}];
 const feedbacks = [{
 	id: "f1",
 	bookingId: "bk1",
@@ -53357,25 +53491,8 @@ const feedbacks = [{
 	comment: "Amazing stay! The ocean view was breathtaking.",
 	date: "2024-06-05T10:00:00Z",
 	status: "new"
-}, {
-	id: "f2",
-	bookingId: "bk2",
-	propertyId: "p1",
-	guestName: "Bob Builder",
-	rating: 4,
-	comment: "Great location, but the wifi was a bit slow.",
-	date: "2024-05-20T11:00:00Z",
-	status: "reviewed",
-	response: "Thanks Bob, we are upgrading the network next week!"
 }];
-const channelMappings = [{
-	id: "cm1",
-	propertyId: "p1",
-	platform: "airbnb",
-	otaRoomId: "123456",
-	status: "mapped",
-	lastSync: "2024-06-01T08:00:00Z"
-}];
+const channelMappings = [];
 const marketingWorkflows = [{
 	id: "mw1",
 	name: "Welcome Email",
@@ -53383,24 +53500,12 @@ const marketingWorkflows = [{
 	offsetTime: 0,
 	templateId: "et1",
 	active: true
-}, {
-	id: "mw2",
-	name: "Pre-Arrival Upsell",
-	trigger: "check_in",
-	offsetTime: -48,
-	templateId: "et2",
-	active: true
 }];
 const emailTemplates = [{
 	id: "et1",
 	name: "Welcome Confirmation",
 	subject: "Booking Confirmed!",
 	body: "Hi {guest_name}, thank you for booking {property_name}. See you soon!"
-}, {
-	id: "et2",
-	name: "Pre-Arrival",
-	subject: "Get ready for your trip",
-	body: "Hi {guest_name}, enhance your stay with our spa package!"
 }];
 const tutorialModules = [
 	{
@@ -59008,7 +59113,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$99({ inst: {
+			cachedValue = useState$100({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -59045,7 +59150,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$66 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$99 = React$66.useState, useEffect$28 = React$66.useEffect, useLayoutEffect$2 = React$66.useLayoutEffect, useDebugValue = React$66.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$66 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$100 = React$66.useState, useEffect$28 = React$66.useEffect, useLayoutEffect$2 = React$66.useLayoutEffect, useDebugValue = React$66.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$66.useSyncExternalStore ? React$66.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -78519,6 +78624,21 @@ function Tasks() {
 		]
 	});
 }
+var useHotelStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("useHotelStore must be used within AppProvider");
+	return {
+		hotels: context.hotels,
+		towers: context.towers,
+		addHotel: context.addHotel,
+		updateHotel: context.updateHotel,
+		deleteHotel: context.deleteHotel,
+		addTower: context.addTower,
+		updateTower: context.updateTower,
+		deleteTower: context.deleteTower
+	};
+};
+var useHotelStore_default = useHotelStore;
 function DatePickerWithRange({ className, date: date$4, setDate: setDate$1 }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: cn("grid gap-2", className),
@@ -78554,6 +78674,7 @@ function FinancialReports() {
 	const { properties: properties$1 } = usePropertyStore_default();
 	const { tenants: tenants$1 } = useTenantStore_default();
 	const { bookings: bookings$1 } = useShortTermStore_default();
+	const { towers: towers$1 } = useHotelStore_default();
 	const { toast: toast$2 } = useToast();
 	const { language, t: t$1 } = useLanguageStore_default();
 	const globalPropertyId = (0, import_react.useContext)(AppContext)?.selectedPropertyId || "all";
@@ -78581,37 +78702,46 @@ function FinancialReports() {
 		dateRange,
 		selectedPropertyId
 	]);
-	const profitabilityByType = (0, import_react.useMemo)(() => {
+	const revenueByCategory = (0, import_react.useMemo)(() => {
 		const data = {
-			short_term: {
-				income: 0,
-				expense: 0
-			},
-			long_term: {
-				income: 0,
-				expense: 0
-			}
+			Room: 0,
+			"F&B": 0,
+			Services: 0
 		};
-		filteredEntries.forEach((entry) => {
-			const prop = properties$1.find((p$1) => p$1.id === entry.propertyId);
-			if (prop) {
-				const type = prop.profileType;
-				if (entry.type === "income") data[type].income += entry.amount;
-				else data[type].expense += entry.amount;
+		filteredEntries.forEach((e) => {
+			if (e.type === "income") {
+				const cat = e.category;
+				if (data[cat] !== void 0) data[cat] += e.amount;
 			}
 		});
-		return [{
-			name: "Short Term (STR)",
-			income: data.short_term.income,
-			expense: data.short_term.expense,
-			profit: data.short_term.income - data.short_term.expense
-		}, {
-			name: "Long Term (LTR)",
-			income: data.long_term.income,
-			expense: data.long_term.expense,
-			profit: data.long_term.income - data.long_term.expense
-		}];
-	}, [filteredEntries, properties$1]);
+		return Object.entries(data).map(([name, value]) => ({
+			name,
+			value
+		}));
+	}, [filteredEntries]);
+	const revenueByTower = (0, import_react.useMemo)(() => {
+		const data = {};
+		towers$1.forEach((t$2) => data[t$2.name] = 0);
+		data["Other"] = 0;
+		filteredEntries.forEach((e) => {
+			if (e.type === "income") {
+				const prop = properties$1.find((p$1) => p$1.id === e.propertyId);
+				if (prop && prop.towerId) {
+					const tower = towers$1.find((t$2) => t$2.id === prop.towerId);
+					if (tower) data[tower.name] = (data[tower.name] || 0) + e.amount;
+					else data["Other"] += e.amount;
+				} else data["Other"] += e.amount;
+			}
+		});
+		return Object.entries(data).map(([name, value]) => ({
+			name,
+			value
+		})).filter((d) => d.value > 0);
+	}, [
+		filteredEntries,
+		properties$1,
+		towers$1
+	]);
 	const projectedCashFlow = (0, import_react.useMemo)(() => {
 		return eachMonthOfInterval({
 			start: startOfMonth(/* @__PURE__ */ new Date()),
@@ -78637,9 +78767,7 @@ function FinancialReports() {
 			}, 0);
 			const fixedExpenses = properties$1.reduce((acc, p$1) => {
 				if (selectedPropertyId !== "all" && p$1.id !== selectedPropertyId) return acc;
-				const expenseSum = (p$1.fixedExpenses || []).reduce((eAcc, fe$1) => {
-					return eAcc + (fe$1.amount || 0);
-				}, 0);
+				const expenseSum = (p$1.fixedExpenses || []).reduce((eAcc, fe$1) => eAcc + (fe$1.amount || 0), 0);
 				const hoa = p$1.hoaValue && p$1.hoaFrequency === "monthly" ? p$1.hoaValue : 0;
 				return acc + expenseSum + hoa;
 			}, 0);
@@ -78656,60 +78784,6 @@ function FinancialReports() {
 		tenants$1,
 		bookings$1,
 		properties$1,
-		selectedPropertyId
-	]);
-	const channelAnalytics = (0, import_react.useMemo)(() => {
-		const relevantBookings = bookings$1.filter((b$1) => {
-			const date$4 = parseISO(b$1.checkIn);
-			let isDateValid = true;
-			if (dateRange?.from && dateRange?.to) isDateValid = isWithinInterval(date$4, {
-				start: dateRange.from,
-				end: dateRange.to
-			});
-			const isPropertyValid = selectedPropertyId === "all" || b$1.propertyId === selectedPropertyId;
-			return isDateValid && isPropertyValid && b$1.status !== "cancelled";
-		});
-		const data = {
-			airbnb: {
-				revenue: 0,
-				bookings: 0,
-				name: "Airbnb"
-			},
-			vrbo: {
-				revenue: 0,
-				bookings: 0,
-				name: "Vrbo"
-			},
-			"booking.com": {
-				revenue: 0,
-				bookings: 0,
-				name: "Booking.com"
-			},
-			direct: {
-				revenue: 0,
-				bookings: 0,
-				name: "Direct"
-			},
-			other: {
-				revenue: 0,
-				bookings: 0,
-				name: "Other"
-			}
-		};
-		relevantBookings.forEach((b$1) => {
-			const platform$1 = b$1.platform || "other";
-			if (data[platform$1]) {
-				data[platform$1].revenue += b$1.totalAmount || 0;
-				data[platform$1].bookings += 1;
-			} else {
-				data.other.revenue += b$1.totalAmount || 0;
-				data.other.bookings += 1;
-			}
-		});
-		return Object.values(data).filter((d) => d.revenue > 0 || d.bookings > 0);
-	}, [
-		bookings$1,
-		dateRange,
 		selectedPropertyId
 	]);
 	const handleExport = () => {
@@ -78804,6 +78878,10 @@ function FinancialReports() {
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumn, { className: "h-4 w-4 mr-2" }), " Overview & P&L"]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+						value: "towers",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-4 w-4 mr-2" }), " Tower Breakdown"]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 						value: "channels",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-4 w-4 mr-2" }), " Channel Analytics"]
 					}),
@@ -78812,14 +78890,14 @@ function FinancialReports() {
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrendingUp, { className: "h-4 w-4 mr-2" }), " Projected Cash Flow"]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
-						value: "profitability",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartPie, { className: "h-4 w-4 mr-2" }), " Profitability by Type"]
+						value: "category",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartPie, { className: "h-4 w-4 mr-2" }), " Profitability by Category"]
 					})
 				] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "overview",
 					className: "space-y-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid grid-cols-1 md:grid-cols-3 gap-6",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
@@ -78862,148 +78940,91 @@ function FinancialReports() {
 								})
 							})
 						]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Historical Financial Performance" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Income vs Expense over selected period" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "towers",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Revenue by Tower" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Financial performance split by building towers." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 						className: "h-[300px] w-full",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
+							config: { revenue: {
+								label: "Revenue",
+								color: "#8884d8"
+							} },
+							className: "h-full w-full",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(BarChart, {
+								data: revenueByTower,
+								layout: "vertical",
+								margin: { left: 40 },
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
+										strokeDasharray: "3 3",
+										horizontal: false
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, { type: "number" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {
+										dataKey: "name",
+										type: "category",
+										width: 100
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
+										dataKey: "value",
+										fill: "#8884d8",
+										radius: [
+											0,
+											4,
+											4,
+											0
+										],
+										name: "Revenue"
+									})
+								]
+							})
+						})
+					}) })] })
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "category",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Revenue by Category" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Room vs F&B vs Services distribution." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "h-[300px] w-full",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
+							config: { value: {
+								label: "Value",
+								color: "#82ca9d"
+							} },
+							className: "h-full w-full",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PieChart, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pie, {
+									data: revenueByCategory,
+									dataKey: "value",
+									nameKey: "name",
+									cx: "50%",
+									cy: "50%",
+									outerRadius: 80,
+									fill: "#82ca9d",
+									label: true,
+									children: revenueByCategory.map((entry, index$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Cell, { fill: COLORS$1[index$1 % COLORS$1.length] }, `cell-${index$1}`))
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, {}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, {})
+							] })
+						})
+					}) })] })
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "projection",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Projected Cash Flow (6 Months)" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "h-[400px] w-full",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 							config: {
 								income: {
 									label: "Income",
 									color: "#22c55e"
 								},
-								expense: {
-									label: "Expense",
-									color: "#ef4444"
-								}
-							},
-							className: "h-full w-full",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(BarChart, {
-								data: [{
-									name: "Total",
-									income: filteredEntries.filter((e) => e.type === "income").reduce((acc, curr) => acc + curr.amount, 0),
-									expense: filteredEntries.filter((e) => e.type === "expense").reduce((acc, curr) => acc + curr.amount, 0)
-								}],
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
-										strokeDasharray: "3 3",
-										vertical: false
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, { dataKey: "name" }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}) }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, {}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
-										dataKey: "income",
-										fill: "#22c55e",
-										name: "Income",
-										radius: [
-											4,
-											4,
-											0,
-											0
-										]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
-										dataKey: "expense",
-										fill: "#ef4444",
-										name: "Expense",
-										radius: [
-											4,
-											4,
-											0,
-											0
-										]
-									})
-								]
-							})
-						})
-					}) })] })]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
-					value: "channels",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid grid-cols-1 md:grid-cols-2 gap-6",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Revenue by Channel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Total income generated per platform." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "h-[300px] w-full",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
-								config: { revenue: {
-									label: "Revenue",
-									color: "#8884d8"
-								} },
-								className: "h-full w-full",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(BarChart, {
-									data: channelAnalytics,
-									layout: "vertical",
-									margin: { left: 20 },
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
-											strokeDasharray: "3 3",
-											horizontal: false
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, { type: "number" }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {
-											dataKey: "name",
-											type: "category",
-											width: 100
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}) }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
-											dataKey: "revenue",
-											fill: "#8884d8",
-											radius: [
-												0,
-												4,
-												4,
-												0
-											],
-											name: "Revenue"
-										})
-									]
-								})
-							})
-						}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Booking Volume" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Number of reservations per platform." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "h-[300px] w-full",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
-								config: { bookings: {
-									label: "Bookings",
-									color: "#82ca9d"
-								} },
-								className: "h-full w-full",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PieChart, { children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pie, {
-										data: channelAnalytics,
-										dataKey: "bookings",
-										nameKey: "name",
-										cx: "50%",
-										cy: "50%",
-										outerRadius: 80,
-										fill: "#82ca9d",
-										label: ({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`,
-										children: channelAnalytics.map((entry, index$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Cell, { fill: COLORS$1[index$1 % COLORS$1.length] }, `cell-${index$1}`))
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, {}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, {})
-								] })
-							})
-						}) })] })]
-					})
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
-					value: "projection",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Projected Cash Flow (6 Months)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Estimated based on active leases, confirmed bookings, and fixed expenses." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "h-[400px] w-full",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
-							config: {
-								income: {
-									label: "Projected Income",
-									color: "#22c55e"
-								},
 								expenses: {
-									label: "Projected Expenses",
+									label: "Expenses",
 									color: "#ef4444"
-								},
-								netCashFlow: {
-									label: "Net Cash Flow",
-									color: "#3b82f6"
 								}
 							},
 							className: "h-full w-full",
@@ -79039,79 +79060,10 @@ function FinancialReports() {
 											0,
 											0
 										]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
-										dataKey: "netCashFlow",
-										fill: "#3b82f6",
-										name: "Net Flow",
-										radius: [
-											4,
-											4,
-											0,
-											0
-										]
 									})
 								]
 							})
 						})
-					}) })] })
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
-					value: "profitability",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Profitability by Property Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Comparing Short Term (STR) vs Long Term (LTR) performance." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid grid-cols-1 md:grid-cols-2 gap-8",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "h-[300px]",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
-								className: "text-sm font-medium text-center mb-4",
-								children: "Revenue Distribution"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
-								config: {},
-								className: "h-full w-full",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PieChart, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pie, {
-									data: profitabilityByType,
-									dataKey: "income",
-									nameKey: "name",
-									cx: "50%",
-									cy: "50%",
-									outerRadius: 80,
-									fill: "#8884d8",
-									label: ({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`,
-									children: profitabilityByType.map((entry, index$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Cell, { fill: COLORS$1[index$1 % COLORS$1.length] }, `cell-${index$1}`))
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, {})] })
-							})]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
-							className: "text-sm font-medium text-center mb-4",
-							children: "Net Profit Comparison"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "space-y-4 pt-8",
-							children: profitabilityByType.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex justify-between text-sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "font-semibold",
-											children: item.name
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: item.profit >= 0 ? "text-green-600" : "text-red-600",
-											children: formatCurrency(item.profit, language)
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "h-2 w-full bg-secondary rounded-full overflow-hidden",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "h-full bg-blue-600",
-											style: { width: `${item.profit / (profitabilityByType[0].profit + profitabilityByType[1].profit || 1) * 100}%` }
-										})
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex justify-between text-xs text-muted-foreground",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["Income: ", formatCurrency(item.income, language)] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["Expense: ", formatCurrency(item.expense, language)] })]
-									})
-								]
-							}, item.name))
-						})] })]
 					}) })] })
 				})
 			]
@@ -87121,21 +87073,6 @@ function CondominiumDetails() {
 		})]
 	});
 }
-var useHotelStore = () => {
-	const context = (0, import_react.useContext)(AppContext);
-	if (!context) throw new Error("useHotelStore must be used within AppProvider");
-	return {
-		hotels: context.hotels,
-		towers: context.towers,
-		addHotel: context.addHotel,
-		updateHotel: context.updateHotel,
-		deleteHotel: context.deleteHotel,
-		addTower: context.addTower,
-		updateTower: context.updateTower,
-		deleteTower: context.deleteTower
-	};
-};
-var useHotelStore_default = useHotelStore;
 function Hotels() {
 	const { hotels: hotels$1, towers: towers$1, addHotel } = useHotelStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
@@ -99844,9 +99781,13 @@ function HousekeepingDashboard() {
 			...room,
 			status
 		});
-		toast$2({
+		if (status === "available" && room.status === "cleaning") toast$2({
+			title: "Room Ready",
+			description: `${room.roomNumber} is ready. Amenities stock deducted (Simulated).`
+		});
+		else toast$2({
 			title: "Status Updated",
-			description: `${room.name} is now ${status}.`
+			description: `${room.roomNumber} is now ${status}.`
 		});
 	};
 	const RoomCard = ({ room }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
@@ -100070,7 +100011,7 @@ function RoomConcierge() {
 					className: "text-center space-y-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", {
 						className: "text-2xl font-bold text-navy",
-						children: ["Welcome to ", property$2.community || "Our Hotel"]
+						children: ["Welcome to ", property$2.community || "Grand Heritage Hotel"]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 						className: "text-muted-foreground",
 						children: [
@@ -100111,27 +100052,6 @@ function RoomConcierge() {
 						})]
 					})]
 				}) })] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-					className: "pb-2 flex flex-row items-center gap-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "p-2 bg-green-100 rounded-full",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-6 w-6 text-green-600" })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-						className: "text-lg",
-						children: "Local Guide"
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Explore the area" })] })]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						variant: "outline",
-						className: "justify-start gap-2 h-auto py-3",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Coffee, { className: "h-4 w-4" }), " Best Coffee Nearby"]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						variant: "outline",
-						className: "justify-start gap-2 h-auto py-3",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4" }), " Top Attractions"]
-					})]
-				})] }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 					className: "pb-2 flex flex-row items-center gap-4",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -100618,6 +100538,31 @@ function OnlineCheckOut() {
 function NightAudit() {
 	const { nightAudits, runNightAudit } = (0, import_react.useContext)(AppContext);
 	const { language } = useLanguageStore_default();
+	const [isRunning, setIsRunning] = (0, import_react.useState)(false);
+	const handleRunAudit = () => {
+		setIsRunning(true);
+		setTimeout(() => {
+			runNightAudit();
+			setIsRunning(false);
+		}, 2e3);
+	};
+	const handleExport = (audit) => {
+		const headers = [
+			"Date",
+			"Revenue",
+			"Room Charges",
+			"Service Fees",
+			"Status"
+		];
+		const row = [
+			formatDate(audit.date, language),
+			audit.totalRevenue,
+			audit.roomCharges,
+			audit.serviceFees,
+			audit.status
+		];
+		exportToCSV(`audit_${audit.date}`, headers, [row]);
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
 		children: [
@@ -100630,9 +100575,10 @@ function NightAudit() {
 					className: "text-muted-foreground",
 					children: "Daily financial reconciliation and reporting."
 				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-					onClick: runNightAudit,
+					onClick: handleRunAudit,
+					disabled: isRunning,
 					className: "bg-indigo-600 hover:bg-indigo-700 gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RefreshCw, { className: "h-4 w-4" }), " Run Night Audit"]
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RefreshCw, { className: `h-4 w-4 ${isRunning ? "animate-spin" : ""}` }), isRunning ? "Running..." : "Run Night Audit"]
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -100715,7 +100661,8 @@ function NightAudit() {
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						variant: "ghost",
 						size: "sm",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileCheck, { className: "h-4 w-4" })
+						onClick: () => handleExport(audit),
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" })
 					})
 				})
 			] }, audit.id)) })] }) })] })
@@ -100811,11 +100758,15 @@ function Performance() {
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 				className: "text-3xl font-bold tracking-tight text-navy",
 				children: "Performance Dashboard"
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 				className: "text-muted-foreground",
-				children: "Real-time metrics for RevPAR, ADR, and Occupancy."
+				children: [
+					"Metrics filtered by Tower:",
+					" ",
+					selectedTower === "all" ? "All" : towers$1.find((t$1) => t$1.id === selectedTower)?.name
+				]
 			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex gap-2 items-center",
+				className: "flex gap-2 items-center flex-wrap",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DatePickerWithRange, {
 						date: dateRange,
@@ -101449,13 +101400,25 @@ function GuestServices() {
 function PointOfSale() {
 	const { posItems: posItems$1, addPosTransaction } = useManagementStore_default();
 	const { bookings: bookings$1 } = useShortTermStore_default();
+	const { properties: properties$1, updateProperty } = usePropertyStore_default();
 	const { toast: toast$2 } = useToast();
 	const [selectedBooking, setSelectedBooking] = (0, import_react.useState)("");
 	const [cart, setCart] = (0, import_react.useState)([]);
 	const activeBookings = bookings$1.filter((b$1) => b$1.status === "confirmed" || b$1.status === "checked_in");
+	const globalStock = properties$1.find((p$1) => p$1.id === "stock_main");
 	const addToCart = (itemId) => {
 		const item = posItems$1.find((i$2) => i$2.id === itemId);
 		if (!item) return;
+		const stockItem = globalStock?.inventory?.find((inv) => inv.name.toLowerCase() === item.name.toLowerCase());
+		const currentInCart = cart.find((c$1) => c$1.item.id === itemId)?.quantity || 0;
+		if (stockItem && stockItem.quantity <= currentInCart) {
+			toast$2({
+				title: "Out of Stock",
+				description: `Only ${stockItem.quantity} units of ${item.name} available.`,
+				variant: "destructive"
+			});
+			return;
+		}
 		if (cart.find((c$1) => c$1.item.id === itemId)) setCart(cart.map((c$1) => c$1.item.id === itemId ? {
 			...c$1,
 			quantity: c$1.quantity + 1
@@ -101486,6 +101449,21 @@ function PointOfSale() {
 			});
 			return;
 		}
+		if (globalStock && globalStock.inventory) {
+			const updatedInventory = [...globalStock.inventory];
+			let stockUpdated = false;
+			cart.forEach((cartItem) => {
+				const invIndex = updatedInventory.findIndex((inv) => inv.name.toLowerCase() === cartItem.item.name.toLowerCase());
+				if (invIndex >= 0) {
+					updatedInventory[invIndex].quantity -= cartItem.quantity;
+					stockUpdated = true;
+				}
+			});
+			if (stockUpdated) updateProperty({
+				...globalStock,
+				inventory: updatedInventory
+			});
+		}
 		addPosTransaction({
 			id: `pos-${Date.now()}`,
 			bookingId: selectedBooking,
@@ -101503,46 +101481,73 @@ function PointOfSale() {
 		setSelectedBooking("");
 		toast$2({
 			title: "Transaction Successful",
-			description: `Charged ${formatCurrency(totalAmount)} to folio.`
+			description: `Charged ${formatCurrency(totalAmount)} to folio. Inventory updated.`
 		});
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "lg:col-span-2 flex flex-col gap-6",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-navy",
-				children: "Point of Sale"
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-muted-foreground",
-				children: "Internal POS for Minibar, Restaurant, and Services."
-			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex justify-between items-start",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold tracking-tight text-navy",
+					children: "Point of Sale"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-muted-foreground",
+					children: "Internal POS for Minibar, Restaurant, and Services."
+				})] }), globalStock && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+					variant: "outline",
+					className: "bg-slate-50 text-slate-700",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Package, { className: "h-3 w-3 mr-1" }), " Stock Connected"]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "grid grid-cols-2 md:grid-cols-3 gap-4",
-				children: posItems$1.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: "cursor-pointer hover:shadow-md transition-shadow",
-					onClick: () => addToCart(item.id),
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-						className: "p-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-							className: "text-base",
-							children: item.name
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
-							className: "capitalize",
-							children: item.category
-						})]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-						className: "p-4 pt-0",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "text-lg font-bold text-green-700",
-							children: formatCurrency(item.price)
-						})
-					})]
-				}, item.id))
+				children: posItems$1.map((item) => {
+					const stockItem = globalStock?.inventory?.find((inv) => inv.name.toLowerCase() === item.name.toLowerCase());
+					const inStock = stockItem ? stockItem.quantity : 999;
+					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden",
+						onClick: () => {
+							if (inStock > 0) addToCart(item.id);
+						},
+						children: [
+							inStock === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "absolute inset-0 bg-white/80 z-10 flex items-center justify-center font-bold text-red-600",
+								children: "Out of Stock"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+								className: "p-4",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex justify-between items-start",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+										className: "text-base",
+										children: item.name
+									}), stockItem && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+										variant: "secondary",
+										className: inStock < 10 ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800",
+										children: [inStock, " left"]
+									})]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+									className: "capitalize",
+									children: item.category
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+								className: "p-4 pt-0",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "text-lg font-bold text-green-700",
+									children: formatCurrency(item.price)
+								})
+							})
+						]
+					}, item.id);
+				})
 			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 			className: "lg:col-span-1",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "h-full flex flex-col",
+				className: "h-full flex flex-col border-l-4 border-l-trust-blue",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
 					className: "flex items-center gap-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShoppingCart, { className: "h-5 w-5" }), " Current Order"]
@@ -101565,14 +101570,14 @@ function PointOfSale() {
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "flex-1 overflow-auto border rounded-md p-2 bg-slate-50",
-							children: cart.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "text-center text-sm text-muted-foreground py-8",
-								children: "Cart is empty"
+							className: "flex-1 overflow-auto border rounded-md p-2 bg-slate-50 min-h-[200px]",
+							children: cart.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "text-center text-sm text-muted-foreground py-8 flex flex-col items-center",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShoppingCart, { className: "h-8 w-8 opacity-20 mb-2" }), "Cart is empty"]
 							}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 								className: "space-y-2",
 								children: cart.map((c$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex justify-between items-center bg-white p-2 rounded border",
+									className: "flex justify-between items-center bg-white p-2 rounded border shadow-sm",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "text-sm",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -101594,7 +101599,7 @@ function PointOfSale() {
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 											variant: "ghost",
 											size: "icon",
-											className: "h-6 w-6 text-red-500",
+											className: "h-6 w-6 text-red-500 hover:bg-red-50",
 											onClick: (e) => {
 												e.stopPropagation();
 												removeFromCart(c$1.item.id);
@@ -101609,9 +101614,12 @@ function PointOfSale() {
 							className: "border-t pt-4",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex justify-between items-center text-lg font-bold mb-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Total" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: formatCurrency(totalAmount) })]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Total" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "text-trust-blue",
+									children: formatCurrency(totalAmount)
+								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-								className: "w-full bg-trust-blue h-12 text-lg",
+								className: "w-full bg-trust-blue h-12 text-lg hover:bg-blue-800",
 								onClick: handleCheckout,
 								disabled: cart.length === 0,
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "mr-2 h-5 w-5" }), " Charge to Room"]
@@ -101997,7 +102005,10 @@ function Marketing() {
 			active: true
 		});
 		setPromoOpen(false);
-		toast$2({ title: "Promotion Created" });
+		toast$2({
+			title: "Promotion Created",
+			description: "Discount code ready."
+		});
 	};
 	const handleSaveCamp = () => {
 		if (!newCamp.name) return;
@@ -102823,4 +102834,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-CvErrrvZ.js.map
+//# sourceMappingURL=index-CFz6Bxb2.js.map
