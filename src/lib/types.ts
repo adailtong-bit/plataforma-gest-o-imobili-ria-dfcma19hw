@@ -49,6 +49,13 @@ export interface Permission {
 }
 
 // New Types for Advanced Management
+export interface SeasonalPrice {
+  id: string
+  startDate: string
+  endDate: string
+  price: number
+}
+
 export interface GuestService {
   id: string
   name: string
@@ -56,6 +63,8 @@ export interface GuestService {
   price: number
   category: 'spa' | 'transport' | 'dining' | 'other'
   active: boolean
+  validityStart?: string
+  seasonalPrices?: SeasonalPrice[]
 }
 
 export interface ServiceOrder {
@@ -65,6 +74,7 @@ export interface ServiceOrder {
   serviceName: string
   price: number
   date: string
+  scheduledFor?: string // Scheduled Date & Time
   status: 'pending' | 'delivered' | 'cancelled'
   notes?: string
 }
@@ -75,6 +85,7 @@ export interface PosItem {
   price: number
   category: 'minibar' | 'restaurant' | 'laundry' | 'shop'
   active: boolean
+  validityStart?: string
 }
 
 export interface PosTransaction {

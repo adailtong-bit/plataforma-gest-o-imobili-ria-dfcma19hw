@@ -41,6 +41,18 @@ export default function MarketAnalysis() {
   const competitorsData = marketAnalysisData?.competitors || []
   const forecastData = marketAnalysisData?.demandForecast || []
 
+  // Ensure data has necessary keys to prevent crashes
+  const safeTrendsData = trendsData.map((d) => ({
+    month: d?.month || 'N/A',
+    occupancy: d?.occupancy || 0,
+    rate: d?.rate || 0,
+  }))
+
+  const safeCompetitorsData = competitorsData.map((d) => ({
+    name: d?.name || 'Unknown',
+    rate: d?.rate || 0,
+  }))
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -116,7 +128,7 @@ export default function MarketAnalysis() {
               className="min-h-[300px] w-full"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={trendsData}>
+                <LineChart data={safeTrendsData}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis
                     dataKey="month"
@@ -171,7 +183,7 @@ export default function MarketAnalysis() {
               className="min-h-[300px] w-full"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={competitorsData} layout="vertical">
+                <BarChart data={safeCompetitorsData} layout="vertical">
                   <CartesianGrid
                     strokeDasharray="3 3"
                     horizontal={true}

@@ -1,22 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -26,14 +10,25 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Edit, Trash2, ShoppingCart, BarChart2 } from 'lucide-react'
+import {
+  Plus,
+  Edit,
+  Trash2,
+  ShoppingCart,
+  BarChart2,
+  Calendar,
+} from 'lucide-react'
 import useManagementStore from '@/stores/useManagementStore'
 import useShortTermStore from '@/stores/useShortTermStore'
 import { useToast } from '@/hooks/use-toast'
-import { GuestService } from '@/lib/types'
+import { GuestService, ServiceOrder } from '@/lib/types'
 import { formatCurrency } from '@/lib/utils'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ServiceProfitabilityReport } from '@/components/financial/ServiceProfitabilityReport'
+import { ServiceDialog } from '@/components/services/ServiceDialog'
+import { ScheduleServiceDialog } from '@/components/services/ScheduleServiceDialog'
+import useLanguageStore from '@/stores/useLanguageStore'
+import { DataMask } from '@/components/DataMask'
 
 export default function GuestServices() {
   const {
@@ -45,83 +40,43 @@ export default function GuestServices() {
   } = useManagementStore()
   const { bookings } = useShortTermStore()
   const { toast } = useToast()
+  const { t, language } = useLanguageStore()
 
-  const [open, setOpen] = useState(false)
-  const [assignOpen, setAssignOpen] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [currentService, setCurrentService] = useState<Partial<GuestService>>({
-    name: '',
-    description: '',
-    price: 0,
-    category: 'other',
-    active: true,
-  })
-
-  const [selectedBooking, setSelectedBooking] = useState('')
-  const [serviceToAssign, setServiceToAssign] = useState<string>('')
-
-  const activeBookings = bookings.filter(
-    (b) => b.status === 'confirmed' || b.status === 'checked_in',
+  // State
+  const [serviceDialogOpen, setServiceDialogOpen] = useState(false)
+  const [editingService, setEditingService] = useState<GuestService | null>(
+    null,
   )
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false)
 
-  const handleSave = () => {
-    if (!currentService.name || !currentService.price) return
-
-    if (isEditing && currentService.id) {
-      updateGuestService(currentService as GuestService)
-      toast({ title: 'Service Updated' })
+  const handleSaveService = (service: Partial<GuestService>) => {
+    if (editingService) {
+      updateGuestService({ ...editingService, ...service } as GuestService)
+      toast({ title: t('guest_services.save_success') })
     } else {
       addGuestService({
-        ...currentService,
+        ...service,
         id: `svc-${Date.now()}`,
         active: true,
       } as GuestService)
-      toast({ title: 'Service Created' })
+      toast({ title: t('guest_services.save_success') })
     }
-    setOpen(false)
-    setIsEditing(false)
-    setCurrentService({
-      name: '',
-      description: '',
-      price: 0,
-      category: 'other',
-      active: true,
-    })
+    setEditingService(null)
   }
 
-  const handleEdit = (service: GuestService) => {
-    setCurrentService(service)
-    setIsEditing(true)
-    setOpen(true)
-  }
-
-  const handleDelete = (id: string) => {
-    if (confirm('Delete this service?')) {
+  const handleDeleteService = (id: string) => {
+    if (confirm(t('common.delete_title'))) {
       deleteGuestService(id)
-      toast({ title: 'Service Deleted' })
+      toast({ title: t('common.success') })
     }
   }
 
-  const handleAssign = () => {
-    if (!selectedBooking || !serviceToAssign) return
-    const service = guestServices.find((s) => s.id === serviceToAssign)
-
-    if (service) {
-      addServiceOrder({
-        id: `ord-${Date.now()}`,
-        bookingId: selectedBooking,
-        serviceId: service.id,
-        serviceName: service.name,
-        price: service.price,
-        date: new Date().toISOString(),
-        status: 'pending',
-      })
-      toast({
-        title: 'Service Assigned',
-        description: `Added ${service.name} to booking.`,
-      })
-      setAssignOpen(false)
-    }
+  const handleScheduleService = (order: ServiceOrder) => {
+    addServiceOrder(order)
+    toast({
+      title: t('guest_services.service_assigned'),
+      description: `${order.serviceName} - ${t('common.scheduled')}`,
+    })
   }
 
   return (
@@ -129,17 +84,19 @@ export default function GuestServices() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Guest Services
+            {t('guest_services.title')}
           </h1>
           <p className="text-muted-foreground">
-            Manage additional services and amenities catalog.
+            {t('guest_services.subtitle')}
           </p>
         </div>
       </div>
 
       <Tabs defaultValue="catalog" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="catalog">Service Catalog</TabsTrigger>
+          <TabsTrigger value="catalog">
+            {t('guest_services.manage_services')}
+          </TabsTrigger>
           <TabsTrigger value="financials">
             <BarChart2 className="h-4 w-4 mr-2" /> Financial Insights
           </TabsTrigger>
@@ -147,139 +104,24 @@ export default function GuestServices() {
 
         <TabsContent value="catalog">
           <div className="flex justify-end gap-2 mb-4">
-            <Dialog open={assignOpen} onOpenChange={setAssignOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <ShoppingCart className="h-4 w-4" /> Assign Service
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Assign Service to Guest</DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label>Select Booking</Label>
-                    <Select
-                      value={selectedBooking}
-                      onValueChange={setSelectedBooking}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Guest/Room" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {activeBookings.map((b) => (
-                          <SelectItem key={b.id} value={b.id}>
-                            {b.guestName} ({b.propertyName})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Select Service</Label>
-                    <Select
-                      value={serviceToAssign}
-                      onValueChange={setServiceToAssign}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Service" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {guestServices
-                          .filter((s) => s.active)
-                          .map((s) => (
-                            <SelectItem key={s.id} value={s.id}>
-                              {s.name} - ${s.price}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button onClick={handleAssign} className="bg-trust-blue">
-                    Confirm Assignment
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => setScheduleDialogOpen(true)}
+            >
+              <ShoppingCart className="h-4 w-4" />{' '}
+              {t('guest_services.schedule')}
+            </Button>
 
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-trust-blue gap-2">
-                  <Plus className="h-4 w-4" /> Add Service
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>
-                    {isEditing ? 'Edit Service' : 'New Service'}
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label>Name</Label>
-                    <Input
-                      value={currentService.name}
-                      onChange={(e) =>
-                        setCurrentService({
-                          ...currentService,
-                          name: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Description</Label>
-                    <Input
-                      value={currentService.description}
-                      onChange={(e) =>
-                        setCurrentService({
-                          ...currentService,
-                          description: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label>Price ($)</Label>
-                      <Input
-                        type="number"
-                        value={currentService.price}
-                        onChange={(e) =>
-                          setCurrentService({
-                            ...currentService,
-                            price: Number(e.target.value),
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Category</Label>
-                      <Select
-                        value={currentService.category}
-                        onValueChange={(v: any) =>
-                          setCurrentService({ ...currentService, category: v })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="spa">Spa</SelectItem>
-                          <SelectItem value="transport">Transport</SelectItem>
-                          <SelectItem value="dining">Dining</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <Button onClick={handleSave} className="bg-trust-blue">
-                    Save
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button
+              className="bg-trust-blue gap-2"
+              onClick={() => {
+                setEditingService(null)
+                setServiceDialogOpen(true)
+              }}
+            >
+              <Plus className="h-4 w-4" /> {t('guest_services.new_service')}
+            </Button>
           </div>
 
           <Card>
@@ -287,31 +129,62 @@ export default function GuestServices() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Service Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>
+                      {t('guest_services.service_name')}
+                    </TableHead>
+                    <TableHead>{t('guest_services.category')}</TableHead>
+                    <TableHead>{t('guest_services.price')}</TableHead>
+                    <TableHead>
+                      {t('guest_services.validity_start')}
+                    </TableHead>
+                    <TableHead>
+                      {t('guest_services.seasonal_pricing')}
+                    </TableHead>
+                    <TableHead>{t('common.status')}</TableHead>
+                    <TableHead className="text-right">
+                      {t('common.actions')}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {guestServices.map((service) => (
                     <TableRow key={service.id}>
                       <TableCell className="font-medium">
-                        <div>{service.name}</div>
+                        <div>
+                          <DataMask>{service.name}</DataMask>
+                        </div>
                         <div className="text-xs text-muted-foreground">
-                          {service.description}
+                          <DataMask>{service.description}</DataMask>
                         </div>
                       </TableCell>
                       <TableCell className="capitalize">
                         {service.category}
                       </TableCell>
-                      <TableCell>{formatCurrency(service.price)}</TableCell>
+                      <TableCell>
+                        <DataMask>
+                          {formatCurrency(service.price, language)}
+                        </DataMask>
+                      </TableCell>
+                      <TableCell>{service.validityStart || '-'}</TableCell>
+                      <TableCell>
+                        {service.seasonalPrices &&
+                        service.seasonalPrices.length > 0 ? (
+                          <Badge variant="outline" className="gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {service.seasonalPrices.length}
+                          </Badge>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
                       <TableCell>
                         <Badge
                           variant={service.active ? 'default' : 'secondary'}
+                          className={service.active ? 'bg-green-600' : ''}
                         >
-                          {service.active ? 'Active' : 'Inactive'}
+                          {service.active
+                            ? t('common.active')
+                            : t('common.inactive')}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -319,15 +192,18 @@ export default function GuestServices() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleEdit(service)}
+                            onClick={() => {
+                              setEditingService(service)
+                              setServiceDialogOpen(true)
+                            }}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-red-500"
-                            onClick={() => handleDelete(service.id)}
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => handleDeleteService(service.id)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -345,6 +221,21 @@ export default function GuestServices() {
           <ServiceProfitabilityReport />
         </TabsContent>
       </Tabs>
+
+      <ServiceDialog
+        open={serviceDialogOpen}
+        onOpenChange={setServiceDialogOpen}
+        onSave={handleSaveService}
+        service={editingService}
+      />
+
+      <ScheduleServiceDialog
+        open={scheduleDialogOpen}
+        onOpenChange={setScheduleDialogOpen}
+        onSave={handleScheduleService}
+        services={guestServices}
+        bookings={bookings}
+      />
     </div>
   )
 }

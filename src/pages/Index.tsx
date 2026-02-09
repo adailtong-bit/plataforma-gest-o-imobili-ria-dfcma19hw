@@ -13,9 +13,10 @@ import {
   CalendarDays,
   Building,
   Key,
+  TrendingUp,
 } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
-import { useState, useContext } from 'react'
+import { useState, useContext, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   ChartContainer,
@@ -38,6 +39,7 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useNotificationStore from '@/stores/useNotificationStore'
 import useVisitStore from '@/stores/useVisitStore'
+import useShortTermStore from '@/stores/useShortTermStore'
 import { AppContext } from '@/stores/AppContext'
 import {
   Dialog,
@@ -64,6 +66,7 @@ function DashboardContent() {
   const { ledgerEntries, financials } = useFinancialStore()
   const { properties } = usePropertyStore()
   const { visits } = useVisitStore()
+  const { bookings } = useShortTermStore()
   const { t, language } = useLanguageStore()
   const context = useContext(AppContext)
   const selectedPropertyId = context?.selectedPropertyId || 'all'
@@ -141,6 +144,31 @@ function DashboardContent() {
     (p) => p.status === 'available',
   ).length
   const pendingVisits = visits.filter((v) => v.status === 'scheduled').length
+
+  // Hotel Specific Metrics
+  const totalRooms = properties.filter((p) => p.profileType === 'short_term')
+    .length
+  const occupiedRooms = properties.filter(
+    (p) => p.profileType === 'short_term' && p.status === 'occupied',
+  ).length
+  const occupancyRate =
+    totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0
+
+  // Calculate ADR (Average Daily Rate) and RevPAR
+  const confirmedBookings = bookings.filter((b) => b.status !== 'cancelled')
+  const totalBookingRevenue = confirmedBookings.reduce(
+    (acc, b) => acc + b.totalAmount,
+    0,
+  )
+  const totalNights = confirmedBookings.reduce((acc, b) => {
+    const nights =
+      (new Date(b.checkOut).getTime() - new Date(b.checkIn).getTime()) /
+      (1000 * 60 * 60 * 24)
+    return acc + Math.max(1, nights)
+  }, 0)
+
+  const adr = totalNights > 0 ? totalBookingRevenue / totalNights : 0
+  const revPar = totalRooms > 0 ? totalBookingRevenue / (totalRooms * 30) : 0 // Rough monthly estimate
 
   // Gamification: Calculate Global Health Score
   const relevantProperties =
@@ -225,54 +253,6 @@ function DashboardContent() {
           <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-bold text-black">
-                {t('dashboard.total_properties')}
-              </CardTitle>
-              <Building className="h-4 w-4 text-black" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black">
-                <DataMask>{totalProperties}</DataMask>
-              </div>
-              <p className="text-xs text-black font-bold">
-                {t('dashboard.in_portfolio')}
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-slate-200 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-bold text-black">
-                {t('common.active_listings')}
-              </CardTitle>
-              <Key className="h-4 w-4 text-black" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black">
-                <DataMask>{activeListings}</DataMask>
-              </div>
-              <p className="text-xs text-black font-bold">
-                {t('status.available')}
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-slate-200 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-bold text-black">
-                {t('common.pending_visits')}
-              </CardTitle>
-              <CalendarDays className="h-4 w-4 text-black" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black">
-                <DataMask>{pendingVisits}</DataMask>
-              </div>
-              <p className="text-xs text-black font-bold">
-                {t('common.scheduled')}
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-slate-200 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-bold text-black">
                 {t('common.total_revenue')}
               </CardTitle>
               <DollarSign className="h-4 w-4 text-black" />
@@ -284,6 +264,50 @@ function DashboardContent() {
               <p className="text-xs text-black font-bold">
                 +20.1% {t('dashboard.from_last_month')}
               </p>
+            </CardContent>
+          </Card>
+          <Card className="border-slate-200 shadow-sm bg-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-bold text-black">
+                Occupancy Rate
+              </CardTitle>
+              <Building className="h-4 w-4 text-black" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-black">
+                <DataMask>{occupancyRate}%</DataMask>
+              </div>
+              <p className="text-xs text-black font-bold">
+                {occupiedRooms} / {totalRooms} rooms
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="border-slate-200 shadow-sm bg-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-bold text-black">
+                ADR (Avg Rate)
+              </CardTitle>
+              <TrendingUp className="h-4 w-4 text-black" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-black">
+                <DataMask>{formatCurrency(adr, language)}</DataMask>
+              </div>
+              <p className="text-xs text-black font-bold">Average Daily Rate</p>
+            </CardContent>
+          </Card>
+          <Card className="border-slate-200 shadow-sm bg-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-bold text-black">
+                RevPAR
+              </CardTitle>
+              <Activity className="h-4 w-4 text-black" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-black">
+                <DataMask>{formatCurrency(revPar, language)}</DataMask>
+              </div>
+              <p className="text-xs text-black font-bold">Revenue Per Room</p>
             </CardContent>
           </Card>
         </div>
