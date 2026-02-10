@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
 
 interface DataMaskProps {
   children?: React.ReactNode
@@ -16,10 +15,11 @@ export function DataMask({ children, className, blur }: DataMaskProps) {
   return (
     <span
       className={cn(
-        'transition-all duration-300 ease-in-out',
+        'transition-all duration-300 ease-in-out inline-block align-baseline',
         // If blur is enabled, apply filter and remove it on hover
+        // Changed from blur-[5px] to blur-sm (4px) for a more subtle effect
         blur
-          ? 'filter blur-[5px] hover:blur-0 cursor-default select-none hover:select-text'
+          ? 'filter blur-sm hover:blur-0 cursor-default select-none hover:select-text'
           : '',
         className,
       )}

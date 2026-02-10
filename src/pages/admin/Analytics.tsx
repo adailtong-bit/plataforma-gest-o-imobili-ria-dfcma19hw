@@ -14,13 +14,11 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer,
   LineChart,
   Line,
 } from 'recharts'
 import {
   ChartContainer,
-  ChartTooltipContent,
   ChartLegendContent,
   ChartConfig,
 } from '@/components/ui/chart'
@@ -222,21 +220,21 @@ export default function Analytics() {
   }, [filteredData])
 
   const chartConfig: ChartConfig = {
-    internal: {
-      label: t('analytics.internal_perf'),
-      color: '#2563eb', // blue-600
+    internalOcc: {
+      label: t('common.analytics.internal_perf'),
+      color: 'hsl(var(--chart-1))',
     },
-    market: {
-      label: t('analytics.market_avg'),
-      color: '#9ca3af', // gray-400
+    marketOcc: {
+      label: t('common.analytics.market_avg'),
+      color: 'hsl(var(--chart-2))',
     },
-    profit: {
+    internalProfit: {
       label: t('common.profit'),
-      color: '#16a34a', // green-600
+      color: 'hsl(var(--chart-3))',
     },
-    revenue: {
+    internalRevenue: {
       label: t('common.revenue'),
-      color: '#8b5cf6', // violet-500
+      color: 'hsl(var(--chart-4))',
     },
   }
 
@@ -246,16 +244,16 @@ export default function Analytics() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            {t('analytics.benchmark_title')}
+            {t('common.analytics.benchmark_title')}
           </h1>
           <p className="text-muted-foreground mt-1">
-            {t('analytics.benchmark_desc')}
+            {t('common.analytics.benchmark_desc')}
           </p>
         </div>
         <div className="flex gap-3">
           <Select value={houseModel} onValueChange={setHouseModel}>
             <SelectTrigger className="w-[200px] shadow-sm">
-              <SelectValue placeholder={t('analytics.house_model')} />
+              <SelectValue placeholder={t('common.analytics.house_model')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">{t('common.all')}</SelectItem>
@@ -292,7 +290,7 @@ export default function Analytics() {
                   {formatCurrency(kpis.mktRevenue, language)}
                 </DataMask>
               </span>{' '}
-              {t('analytics.market_avg')}
+              {t('common.analytics.market_avg')}
             </p>
           </CardContent>
         </Card>
@@ -315,7 +313,7 @@ export default function Analytics() {
                   {formatCurrency(kpis.mktProfit, language)}
                 </DataMask>
               </span>{' '}
-              {t('analytics.market_avg')}
+              {t('common.analytics.market_avg')}
             </p>
           </CardContent>
         </Card>
@@ -324,7 +322,7 @@ export default function Analytics() {
         <Card className="shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-              {t('analytics.occupancy')}
+              {t('common.analytics.occupancy')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -336,7 +334,7 @@ export default function Analytics() {
               <span className="font-medium text-foreground">
                 <DataMask blur>{Math.round(kpis.mktOcc)}%</DataMask>
               </span>{' '}
-              {t('analytics.market_avg')}
+              {t('common.analytics.market_avg')}
             </p>
           </CardContent>
         </Card>
@@ -359,7 +357,7 @@ export default function Analytics() {
                   {formatCurrency(kpis.mktAdr, language)}
                 </DataMask>
               </span>{' '}
-              {t('analytics.market_avg')}
+              {t('common.analytics.market_avg')}
             </p>
           </CardContent>
         </Card>
@@ -374,80 +372,91 @@ export default function Analytics() {
               {t('common.revenue')} & {t('common.profit')}
             </CardTitle>
             <CardDescription>
-              {t('analytics.internal_perf')} vs {t('analytics.market_avg')}
+              {t('common.analytics.internal_perf')} vs{' '}
+              {t('common.analytics.market_avg')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[350px] w-full">
-              {/* DataMask applied to the container of the chart for privacy */}
-              <DataMask className="w-full h-full block" blur>
-                <ChartContainer config={chartConfig} className="h-full w-full">
-                  <BarChart
-                    data={filteredData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis
-                      dataKey="month"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={10}
-                    />
-                    <YAxis
-                      tickFormatter={(value) =>
-                        formatCurrency(value, language).split(/[\s,.]/)[0]
-                      }
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <Tooltip
-                      content={({ active, payload, label }) => {
-                        if (active && payload && payload.length) {
-                          return (
-                            <div className="rounded-lg border bg-background p-2 shadow-sm">
+              {/* DataMask removed from wrapper to keep axes visible */}
+              <ChartContainer config={chartConfig} className="h-full w-full">
+                <BarChart
+                  data={filteredData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={10}
+                  />
+                  <YAxis
+                    tickFormatter={(value) =>
+                      formatCurrency(value, language).split(/[\s,.]/)[0]
+                    }
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="rounded-lg border bg-background p-2 shadow-sm min-w-[150px]">
+                            <div className="flex flex-col gap-2">
+                              <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                {label}
+                              </span>
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="flex flex-col">
                                   <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                    {label}
-                                  </span>
-                                  <span className="font-bold text-muted-foreground">
                                     {t('common.revenue')}
                                   </span>
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                  <span className="font-bold text-violet-500">
-                                    {formatCurrency(
-                                      Number(payload[0].value),
-                                      language,
-                                    )}
+                                  <span className="font-bold text-foreground">
+                                    <DataMask blur>
+                                      {formatCurrency(
+                                        Number(payload[0].value),
+                                        language,
+                                      )}
+                                    </DataMask>
                                   </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {t('analytics.internal_perf')}
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                    {t('common.profit')}
+                                  </span>
+                                  <span className="font-bold text-foreground">
+                                    <DataMask blur>
+                                      {formatCurrency(
+                                        Number(payload[1].value),
+                                        language,
+                                      )}
+                                    </DataMask>
                                   </span>
                                 </div>
                               </div>
                             </div>
-                          )
-                        }
-                        return null
-                      }}
-                    />
-                    <Legend content={<ChartLegendContent />} />
-                    <Bar
-                      dataKey="internalRevenue"
-                      fill="var(--color-revenue)"
-                      name={t('common.revenue')}
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="internalProfit"
-                      fill="var(--color-profit)"
-                      name={t('common.profit')}
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ChartContainer>
-              </DataMask>
+                          </div>
+                        )
+                      }
+                      return null
+                    }}
+                  />
+                  <Legend content={<ChartLegendContent />} />
+                  <Bar
+                    dataKey="internalRevenue"
+                    fill="var(--color-internalRevenue)"
+                    name={t('common.revenue')}
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="internalProfit"
+                    fill="var(--color-internalProfit)"
+                    name={t('common.profit')}
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ChartContainer>
             </div>
           </CardContent>
         </Card>
@@ -455,55 +464,84 @@ export default function Analytics() {
         {/* Occupancy Chart */}
         <Card className="shadow-sm">
           <CardHeader>
-            <CardTitle>{t('analytics.occupancy')}</CardTitle>
+            <CardTitle>{t('common.analytics.occupancy')}</CardTitle>
             <CardDescription>
-              {t('analytics.internal_perf')} vs {t('analytics.market_avg')}
+              {t('common.analytics.internal_perf')} vs{' '}
+              {t('common.analytics.market_avg')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[350px] w-full">
-              <DataMask className="w-full h-full block" blur>
-                <ChartContainer config={chartConfig} className="h-full w-full">
-                  <LineChart
-                    data={filteredData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis
-                      dataKey="month"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={10}
-                    />
-                    <YAxis
-                      unit="%"
-                      domain={[0, 100]}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Legend content={<ChartLegendContent />} />
-                    <Line
-                      type="monotone"
-                      dataKey="internalOcc"
-                      stroke="var(--color-internal)"
-                      strokeWidth={3}
-                      name={t('analytics.internal_perf')}
-                      dot={{ r: 4, fill: 'var(--color-internal)' }}
-                      activeDot={{ r: 6 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="marketOcc"
-                      stroke="var(--color-market)"
-                      strokeWidth={2}
-                      strokeDasharray="5 5"
-                      name={t('analytics.market_avg')}
-                      dot={{ r: 4, fill: 'var(--color-market)' }}
-                    />
-                  </LineChart>
-                </ChartContainer>
-              </DataMask>
+              <ChartContainer config={chartConfig} className="h-full w-full">
+                <LineChart
+                  data={filteredData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={10}
+                  />
+                  <YAxis
+                    unit="%"
+                    domain={[0, 100]}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="rounded-lg border bg-background p-2 shadow-sm min-w-[150px]">
+                            <div className="flex flex-col gap-2">
+                              <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                {label}
+                              </span>
+                              <div className="flex flex-col gap-1">
+                                {payload.map((entry: any, index: number) => (
+                                  <div
+                                    key={index}
+                                    className="flex justify-between items-center gap-2"
+                                  >
+                                    <span className="text-xs text-muted-foreground">
+                                      {entry.name}:
+                                    </span>
+                                    <span className="font-bold text-foreground">
+                                      <DataMask blur>{entry.value}%</DataMask>
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      }
+                      return null
+                    }}
+                  />
+                  <Legend content={<ChartLegendContent />} />
+                  <Line
+                    type="monotone"
+                    dataKey="internalOcc"
+                    stroke="var(--color-internalOcc)"
+                    strokeWidth={3}
+                    name={t('common.analytics.internal_perf')}
+                    dot={{ r: 4, fill: 'var(--color-internalOcc)' }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="marketOcc"
+                    stroke="var(--color-marketOcc)"
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    name={t('common.analytics.market_avg')}
+                    dot={{ r: 4, fill: 'var(--color-marketOcc)' }}
+                  />
+                </LineChart>
+              </ChartContainer>
             </div>
           </CardContent>
         </Card>
