@@ -55160,6 +55160,7 @@ const translations = {
 			market_analysis: "Análise de Mercado",
 			advanced_analytics: "Análise Avançada",
 			automation_rules: "Regras de Automação",
+			workflows: "Fluxos de Trabalho",
 			portal: "Portal",
 			publicity: "Publicidade",
 			login: "Entrar",
@@ -55851,6 +55852,7 @@ const translations = {
 			market_analysis: "Market Analysis",
 			advanced_analytics: "Advanced Analytics",
 			automation_rules: "Automation Rules",
+			workflows: "Workflows",
 			portal: "Portal",
 			publicity: "Publicity",
 			login: "Login",
@@ -92193,4 +92195,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-X8M-Pnt5.js.map
+//# sourceMappingURL=index-Bn7t8hME.js.map
