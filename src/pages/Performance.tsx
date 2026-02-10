@@ -36,12 +36,15 @@ import { exportToCSV } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
+import useLanguageStore from '@/stores/useLanguageStore'
+import { DataMask } from '@/components/DataMask'
 
 export default function Performance() {
   const { towers } = useHotelStore()
   const { bookings, feedbacks } = useShortTermStore()
   const { properties } = usePropertyStore()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 30),
@@ -119,7 +122,7 @@ export default function Performance() {
     ])
     exportToCSV('performance_report', headers, rows)
     toast({
-      title: 'Export Successful',
+      title: t('common.export_success'),
       description: 'Performance data downloaded.',
     })
   }
@@ -140,12 +143,12 @@ export default function Performance() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Performance Dashboard
+            {t('sidebar.performance')}
           </h1>
           <p className="text-muted-foreground">
-            Metrics filtered by Tower:{' '}
+            {t('common.filter')}:{' '}
             {selectedTower === 'all'
-              ? 'All'
+              ? t('common.all')
               : towers.find((t) => t.id === selectedTower)?.name}
           </p>
         </div>
@@ -156,7 +159,7 @@ export default function Performance() {
               <SelectValue placeholder="All Towers" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Towers</SelectItem>
+              <SelectItem value="all">{t('common.all')}</SelectItem>
               {towers.map((t) => (
                 <SelectItem key={t.id} value={t.id}>
                   {t.name}
@@ -172,7 +175,7 @@ export default function Performance() {
 
       <Tabs defaultValue="overview">
         <TabsList>
-          <TabsTrigger value="overview">Financials</TabsTrigger>
+          <TabsTrigger value="overview">{t('common.financial')}</TabsTrigger>
           <TabsTrigger value="reviews">Guest Reviews</TabsTrigger>
         </TabsList>
 
@@ -181,33 +184,40 @@ export default function Performance() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Avg Occupancy
+                  {t('market.avg_occupancy')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {metrics.length > 0
-                    ? Math.round(
-                        metrics.reduce((a, b) => a + b.occupancy, 0) /
-                          metrics.length,
-                      )
-                    : 0}
-                  %
+                  <DataMask>
+                    {metrics.length > 0
+                      ? Math.round(
+                          metrics.reduce((a, b) => a + b.occupancy, 0) /
+                            metrics.length,
+                        )
+                      : 0}
+                    %
+                  </DataMask>
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Avg ADR</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  {t('market.avg_daily_rate')}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   $
-                  {metrics.length > 0
-                    ? Math.round(
-                        metrics.reduce((a, b) => a + b.adr, 0) / metrics.length,
-                      )
-                    : 0}
+                  <DataMask>
+                    {metrics.length > 0
+                      ? Math.round(
+                          metrics.reduce((a, b) => a + b.adr, 0) /
+                            metrics.length,
+                        )
+                      : 0}
+                  </DataMask>
                 </div>
               </CardContent>
             </Card>
@@ -220,12 +230,14 @@ export default function Performance() {
               <CardContent>
                 <div className="text-2xl font-bold">
                   $
-                  {metrics.length > 0
-                    ? Math.round(
-                        metrics.reduce((a, b) => a + b.revPar, 0) /
-                          metrics.length,
-                      )
-                    : 0}
+                  <DataMask>
+                    {metrics.length > 0
+                      ? Math.round(
+                          metrics.reduce((a, b) => a + b.revPar, 0) /
+                            metrics.length,
+                        )
+                      : 0}
+                  </DataMask>
                 </div>
               </CardContent>
             </Card>
@@ -233,55 +245,61 @@ export default function Performance() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Performance Trends</CardTitle>
-              <CardDescription>
-                Daily metrics over selected period
-              </CardDescription>
+              <CardTitle>{t('common.spending_trends')}</CardTitle>
+              <CardDescription>{t('common.daily_metrics')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-[400px] w-full">
-                <ChartContainer
-                  config={{
-                    occupancy: { label: 'Occupancy %', color: '#3b82f6' },
-                    adr: { label: 'ADR $', color: '#10b981' },
-                    revPar: { label: 'RevPAR $', color: '#f59e0b' },
-                  }}
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={metrics}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis dataKey="date" />
-                      <YAxis yAxisId="left" />
-                      <YAxis yAxisId="right" orientation="right" unit="%" />
-                      <Tooltip content={<ChartTooltipContent />} />
-                      <Legend />
-                      <Line
-                        yAxisId="right"
-                        type="monotone"
-                        dataKey="occupancy"
-                        stroke="#3b82f6"
-                        name="Occupancy %"
-                        strokeWidth={2}
-                      />
-                      <Line
-                        yAxisId="left"
-                        type="monotone"
-                        dataKey="adr"
-                        stroke="#10b981"
-                        name="ADR $"
-                        strokeWidth={2}
-                      />
-                      <Line
-                        yAxisId="left"
-                        type="monotone"
-                        dataKey="revPar"
-                        stroke="#f59e0b"
-                        name="RevPAR $"
-                        strokeWidth={2}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
+                <DataMask className="w-full h-full block">
+                  <ChartContainer
+                    config={{
+                      occupancy: {
+                        label: t('market.avg_occupancy'),
+                        color: '#3b82f6',
+                      },
+                      adr: {
+                        label: t('market.avg_daily_rate'),
+                        color: '#10b981',
+                      },
+                      revPar: { label: 'RevPAR $', color: '#f59e0b' },
+                    }}
+                  >
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={metrics}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="date" />
+                        <YAxis yAxisId="left" />
+                        <YAxis yAxisId="right" orientation="right" unit="%" />
+                        <Tooltip content={<ChartTooltipContent />} />
+                        <Legend />
+                        <Line
+                          yAxisId="right"
+                          type="monotone"
+                          dataKey="occupancy"
+                          stroke="#3b82f6"
+                          name={t('market.avg_occupancy')}
+                          strokeWidth={2}
+                        />
+                        <Line
+                          yAxisId="left"
+                          type="monotone"
+                          dataKey="adr"
+                          stroke="#10b981"
+                          name={t('market.avg_daily_rate')}
+                          strokeWidth={2}
+                        />
+                        <Line
+                          yAxisId="left"
+                          type="monotone"
+                          dataKey="revPar"
+                          stroke="#f59e0b"
+                          name="RevPAR $"
+                          strokeWidth={2}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
+                </DataMask>
               </div>
             </CardContent>
           </Card>
@@ -332,7 +350,9 @@ export default function Performance() {
                     <div className="flex justify-between items-start">
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold">{rev.guestName}</span>
+                          <span className="font-bold">
+                            <DataMask>{rev.guestName}</DataMask>
+                          </span>
                           <div className="flex">
                             {[1, 2, 3, 4, 5].map((star) => (
                               <Star

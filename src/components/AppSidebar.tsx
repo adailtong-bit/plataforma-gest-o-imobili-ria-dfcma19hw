@@ -83,7 +83,7 @@ export function AppSidebar() {
       resource: 'dashboard',
     },
     {
-      title: 'Performance',
+      title: t('sidebar.performance'),
       url: '/performance',
       icon: Activity,
       resource: 'performance',
@@ -107,19 +107,19 @@ export function AppSidebar() {
       resource: 'short_term',
     },
     {
-      title: 'Guest Services',
+      title: t('sidebar.guest_services'),
       url: '/guest-services',
       icon: ShoppingBag,
       resource: 'guest_services',
     },
     {
-      title: 'Point of Sale',
+      title: t('sidebar.pos'),
       url: '/pos',
       icon: CreditCard,
       resource: 'pos',
     },
     {
-      title: 'Marketing',
+      title: t('sidebar.marketing'),
       url: '/marketing',
       icon: Gift,
       resource: 'marketing',

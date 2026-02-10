@@ -23,25 +23,26 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart'
 import { TrendingUp, Users, DollarSign, Activity } from 'lucide-react'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function MarketAnalysis() {
+  const { t } = useLanguageStore()
+
   const chartConfig = {
     occupancy: {
-      label: 'Occupancy (%)',
+      label: t('market.avg_occupancy'),
       color: 'hsl(var(--chart-1))',
     },
     rate: {
-      label: 'Avg Rate ($)',
+      label: t('market.avg_daily_rate'),
       color: 'hsl(var(--chart-2))',
     },
   }
 
-  // Fallback safe data access
   const trendsData = marketAnalysisData?.marketTrends || []
   const competitorsData = marketAnalysisData?.competitors || []
   const forecastData = marketAnalysisData?.demandForecast || []
 
-  // Ensure data has necessary keys to prevent crashes
   const safeTrendsData = trendsData.map((d) => ({
     month: d?.month || 'N/A',
     occupancy: d?.occupancy || 0,
@@ -57,11 +58,10 @@ export default function MarketAnalysis() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-950">
-          Market Analysis
+          {t('common.market_analysis')}
         </h1>
         <p className="text-slate-700 font-medium">
-          Insights into market trends, competitor analysis, and demand
-          forecasts.
+          {t('analytics.benchmark_desc')}
         </p>
       </div>
 
@@ -69,7 +69,7 @@ export default function MarketAnalysis() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Market Occupancy
+              {t('market.avg_occupancy')}
             </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -80,7 +80,9 @@ export default function MarketAnalysis() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('market.avg_daily_rate')}
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -117,9 +119,9 @@ export default function MarketAnalysis() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Occupancy & Rate Trends</CardTitle>
+            <CardTitle>{t('common.spending_trends')}</CardTitle>
             <CardDescription>
-              6-month historical view of market performance
+              Historical view of market performance
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -154,7 +156,7 @@ export default function MarketAnalysis() {
                     dataKey="occupancy"
                     stroke="hsl(var(--chart-1))"
                     strokeWidth={2}
-                    name="Occupancy (%)"
+                    name={t('market.avg_occupancy')}
                     dot={false}
                   />
                   <Line
@@ -163,7 +165,7 @@ export default function MarketAnalysis() {
                     dataKey="rate"
                     stroke="hsl(var(--chart-2))"
                     strokeWidth={2}
-                    name="Rate ($)"
+                    name={t('market.avg_daily_rate')}
                     dot={false}
                   />
                 </LineChart>
@@ -202,7 +204,7 @@ export default function MarketAnalysis() {
                     dataKey="rate"
                     fill="hsl(var(--primary))"
                     radius={[0, 4, 4, 0]}
-                    name="Avg Rate ($)"
+                    name={t('market.avg_daily_rate')}
                     barSize={30}
                   />
                 </BarChart>

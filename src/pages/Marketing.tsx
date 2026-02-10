@@ -38,6 +38,9 @@ import { useToast } from '@/hooks/use-toast'
 import { Promotion, Campaign } from '@/lib/types'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { MarketingAutomation } from '@/components/marketing/MarketingAutomation'
+import useLanguageStore from '@/stores/useLanguageStore'
+import { DataMask } from '@/components/DataMask'
+import { formatCurrency } from '@/lib/utils'
 
 export default function Marketing() {
   const {
@@ -49,6 +52,7 @@ export default function Marketing() {
     deleteCampaign,
   } = useManagementStore()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
 
   const [promoOpen, setPromoOpen] = useState(false)
   const [campOpen, setCampOpen] = useState(false)
@@ -80,7 +84,10 @@ export default function Marketing() {
       active: true,
     } as Promotion)
     setPromoOpen(false)
-    toast({ title: 'Promotion Created', description: 'Discount code ready.' })
+    toast({
+      title: t('common.success'),
+      description: 'Discount code created.',
+    })
   }
 
   const handleSaveCamp = () => {
@@ -91,25 +98,22 @@ export default function Marketing() {
       promotions: [],
     } as Campaign)
     setCampOpen(false)
-    toast({ title: 'Campaign Created' })
+    toast({ title: t('common.success') })
   }
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-navy">
-          Marketing & Promotions
+          {t('sidebar.marketing')}
         </h1>
-        <p className="text-muted-foreground">
-          Manage discount codes, promotional campaigns, and automation
-          workflows.
-        </p>
+        <p className="text-muted-foreground">{t('marketing_tab.leads')}</p>
       </div>
 
       <Tabs defaultValue="automation" className="space-y-4">
         <TabsList>
           <TabsTrigger value="automation">
-            <Workflow className="h-4 w-4 mr-2" /> Automation
+            <Workflow className="h-4 w-4 mr-2" /> {t('common.automation')}
           </TabsTrigger>
           <TabsTrigger value="promotions">
             <Tag className="h-4 w-4 mr-2" /> Promotions
@@ -128,7 +132,7 @@ export default function Marketing() {
             <Dialog open={promoOpen} onOpenChange={setPromoOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-trust-blue gap-2">
-                  <Plus className="h-4 w-4" /> New Code
+                  <Plus className="h-4 w-4" /> {t('common.new')} Code
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -151,7 +155,7 @@ export default function Marketing() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label>Type</Label>
+                      <Label>{t('common.type')}</Label>
                       <Select
                         value={newPromo.type}
                         onValueChange={(v: any) =>
@@ -172,7 +176,7 @@ export default function Marketing() {
                       </Select>
                     </div>
                     <div className="grid gap-2">
-                      <Label>Value</Label>
+                      <Label>{t('common.value')}</Label>
                       <Input
                         type="number"
                         value={newPromo.value}
@@ -187,7 +191,7 @@ export default function Marketing() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label>Start Date</Label>
+                      <Label>{t('common.start_date')}</Label>
                       <Input
                         type="date"
                         value={newPromo.startDate}
@@ -200,7 +204,7 @@ export default function Marketing() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>End Date</Label>
+                      <Label>{t('common.end_date')}</Label>
                       <Input
                         type="date"
                         value={newPromo.endDate}
@@ -211,7 +215,7 @@ export default function Marketing() {
                     </div>
                   </div>
                   <div className="grid gap-2">
-                    <Label>Description</Label>
+                    <Label>{t('common.description')}</Label>
                     <Input
                       value={newPromo.description}
                       onChange={(e) =>
@@ -223,7 +227,7 @@ export default function Marketing() {
                     />
                   </div>
                   <Button onClick={handleSavePromo} className="bg-trust-blue">
-                    Save Promotion
+                    {t('common.save')}
                   </Button>
                 </div>
               </DialogContent>
@@ -239,15 +243,17 @@ export default function Marketing() {
                     <TableHead>Discount</TableHead>
                     <TableHead>Validity</TableHead>
                     <TableHead>Usage</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
+                    <TableHead>{t('common.status')}</TableHead>
+                    <TableHead className="text-right">
+                      {t('common.actions')}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {promotions.map((p) => (
                     <TableRow key={p.id}>
                       <TableCell className="font-bold font-mono text-lg">
-                        {p.code}
+                        <DataMask>{p.code}</DataMask>
                       </TableCell>
                       <TableCell>
                         {p.value}
@@ -262,7 +268,9 @@ export default function Marketing() {
                       <TableCell>{p.usageCount}</TableCell>
                       <TableCell>
                         <Badge variant={p.active ? 'default' : 'secondary'}>
-                          {p.active ? 'Active' : 'Inactive'}
+                          {p.active
+                            ? t('users.status_active')
+                            : t('common.inactive')}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -287,7 +295,7 @@ export default function Marketing() {
             <Dialog open={campOpen} onOpenChange={setCampOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-trust-blue gap-2">
-                  <Plus className="h-4 w-4" /> New Campaign
+                  <Plus className="h-4 w-4" /> {t('common.new')} Campaign
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -296,7 +304,7 @@ export default function Marketing() {
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
-                    <Label>Campaign Name</Label>
+                    <Label>{t('common.name')}</Label>
                     <Input
                       value={newCamp.name}
                       onChange={(e) =>
@@ -316,14 +324,14 @@ export default function Marketing() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Contacts</SelectItem>
+                        <SelectItem value="all">{t('common.all')}</SelectItem>
                         <SelectItem value="past_guests">Past Guests</SelectItem>
                         <SelectItem value="leads">Leads</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <Button onClick={handleSaveCamp} className="bg-trust-blue">
-                    Create Campaign
+                    {t('common.save')}
                   </Button>
                 </div>
               </DialogContent>
@@ -355,7 +363,7 @@ export default function Marketing() {
                       size="sm"
                       onClick={() => deleteCampaign(c.id)}
                     >
-                      Delete
+                      {t('common.delete')}
                     </Button>
                   </div>
                 </CardContent>

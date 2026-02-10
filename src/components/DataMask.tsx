@@ -8,12 +8,14 @@ interface DataMaskProps {
 }
 
 export function DataMask({ children, className }: DataMaskProps) {
-  // Pass-through component that renders children directly without any masking,
-  // obscuring, or opacity reduction, ensuring full visibility.
+  // Enhanced component that applies a blur effect to sensitive data by default
+  // This simulates data masking for sensitive fields across the application
   return (
     <span
       className={cn(
-        'text-black opacity-100 bg-transparent inline-block align-middle',
+        'inline-block align-middle transition-all duration-300',
+        // Default blur to mask sensitive info, hover to reveal
+        'blur-[4px] hover:blur-0 select-none hover:select-text cursor-default',
         className,
       )}
     >

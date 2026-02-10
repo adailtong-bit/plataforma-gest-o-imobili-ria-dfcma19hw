@@ -4,6 +4,7 @@ import { hasPermission } from '@/lib/permissions'
 import { Resource, Action, User } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import { useEffect } from 'react'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface RequirePermissionProps {
   children: JSX.Element
@@ -19,6 +20,7 @@ export function RequirePermission({
   const { currentUser, isAuthenticated } = useAuthStore()
   const location = useLocation()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
 
   const hasAccess =
     isAuthenticated &&
@@ -28,12 +30,12 @@ export function RequirePermission({
   useEffect(() => {
     if (isAuthenticated && !hasAccess) {
       toast({
-        title: 'Access Denied',
-        description: `You do not have permission to access ${resource}.`,
+        title: t('common.access_denied'),
+        description: t('common.access_denied_desc'),
         variant: 'destructive',
       })
     }
-  }, [hasAccess, isAuthenticated, resource, toast])
+  }, [hasAccess, isAuthenticated, resource, toast, t])
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />
@@ -71,12 +73,12 @@ export function RequirePermission({
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
-          <p className="mt-2 text-gray-600">
-            You do not have permission to view this page.
-          </p>
+          <h1 className="text-2xl font-bold text-red-600">
+            {t('common.access_denied')}
+          </h1>
+          <p className="mt-2 text-gray-600">{t('common.access_denied_desc')}</p>
           <p className="text-sm text-gray-500 mt-1">
-            Required Resource: {resource}
+            {t('common.resource')}: {resource}
           </p>
         </div>
       </div>
