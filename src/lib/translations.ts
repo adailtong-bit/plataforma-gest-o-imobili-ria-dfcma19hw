@@ -421,7 +421,7 @@ export const translations = {
       workflow_started: 'Workflow Iniciado',
       workflow_desc: 'Ação {action} iniciada para {name}.',
       renew_contract: 'Renovar Contrato',
-      properties_count: 'Propriedades',
+      properties_count: 'Propiedades',
       contact_details: 'Detalhes de Contato',
       base_title: 'Base de Dados',
       search_placeholder: 'Pesquisar...',
@@ -557,6 +557,7 @@ export const translations = {
         profit_internal: 'Lucro Interno',
         profit_market: 'Lucro Mercado',
         adr: 'Diária Média (ADR)',
+        privacy_mode: 'Modo de Privacidade',
       },
       sync: {
         title: 'Sincronização',
@@ -1532,6 +1533,7 @@ export const translations = {
       profitability_desc: 'Net profit comparison.',
       profit_internal: 'Profit Internal',
       profit_market: 'Profit Market',
+      adr: 'Avg Daily Rate (ADR)',
       marketing_tab: {
         portal_sync: 'Portal Sync',
         manage_listings: 'Manage external listings.',
@@ -1565,6 +1567,7 @@ export const translations = {
         profit_internal: 'Profit Internal',
         profit_market: 'Profit Market',
         adr: 'Avg Daily Rate (ADR)',
+        privacy_mode: 'Privacy Mode',
       },
       sync: {
         title: 'Synchronization',
@@ -1676,7 +1679,7 @@ export const translations = {
     },
     sidebar: {
       main_menu: 'Main Menu',
-      system: 'System',
+      system: 'Sistema',
       tenant_portal: 'Tenant Portal',
       owner_portal: 'Owner Portal',
       partner_portal: 'Partner Portal',
@@ -1692,7 +1695,7 @@ export const translations = {
     auth: {
       login_title: 'Welcome back',
       login_desc: 'Enter your email and password to access your account.',
-      demo_login: 'Demo Login',
+      demo_login: 'Login Demo',
       email_placeholder: 'name@example.com',
       forgot_password: 'Forgot password?',
       no_account: "Don't have an account?",
@@ -2581,6 +2584,7 @@ export const translations = {
         profit_internal: 'Beneficio Interno',
         profit_market: 'Beneficio Mercado',
         adr: 'Tarifa Media Diaria (ADR)',
+        privacy_mode: 'Modo de Privacidad',
       },
       sync: {
         title: 'Sincronización',

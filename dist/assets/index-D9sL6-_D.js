@@ -19458,6 +19458,24 @@ var ExternalLink = createLucideIcon("external-link", [
 		key: "a6xqqp"
 	}]
 ]);
+var EyeOff = createLucideIcon("eye-off", [
+	["path", {
+		d: "M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49",
+		key: "ct8e1f"
+	}],
+	["path", {
+		d: "M14.084 14.158a3 3 0 0 1-4.242-4.242",
+		key: "151rxh"
+	}],
+	["path", {
+		d: "M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143",
+		key: "13bj9a"
+	}],
+	["path", {
+		d: "m2 2 20 20",
+		key: "1ooewy"
+	}]
+]);
 var Eye = createLucideIcon("eye", [["path", {
 	d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
 	key: "1nclc0"
@@ -53959,7 +53977,7 @@ const translations = {
 			workflow_started: "Workflow Iniciado",
 			workflow_desc: "Ação {action} iniciada para {name}.",
 			renew_contract: "Renovar Contrato",
-			properties_count: "Propriedades",
+			properties_count: "Propiedades",
 			contact_details: "Detalhes de Contato",
 			base_title: "Base de Dados",
 			search_placeholder: "Pesquisar...",
@@ -54094,7 +54112,8 @@ const translations = {
 				profitability_desc: "Comparativo de lucro líquido.",
 				profit_internal: "Lucro Interno",
 				profit_market: "Lucro Mercado",
-				adr: "Diária Média (ADR)"
+				adr: "Diária Média (ADR)",
+				privacy_mode: "Modo de Privacidade"
 			},
 			sync: {
 				title: "Sincronização",
@@ -55068,6 +55087,7 @@ const translations = {
 			profitability_desc: "Net profit comparison.",
 			profit_internal: "Profit Internal",
 			profit_market: "Profit Market",
+			adr: "Avg Daily Rate (ADR)",
 			marketing_tab: {
 				portal_sync: "Portal Sync",
 				manage_listings: "Manage external listings.",
@@ -55100,7 +55120,8 @@ const translations = {
 				profitability_desc: "Net profit comparison.",
 				profit_internal: "Profit Internal",
 				profit_market: "Profit Market",
-				adr: "Avg Daily Rate (ADR)"
+				adr: "Avg Daily Rate (ADR)",
+				privacy_mode: "Privacy Mode"
 			},
 			sync: {
 				title: "Synchronization",
@@ -55212,7 +55233,7 @@ const translations = {
 		},
 		sidebar: {
 			main_menu: "Main Menu",
-			system: "System",
+			system: "Sistema",
 			tenant_portal: "Tenant Portal",
 			owner_portal: "Owner Portal",
 			partner_portal: "Partner Portal",
@@ -55228,7 +55249,7 @@ const translations = {
 		auth: {
 			login_title: "Welcome back",
 			login_desc: "Enter your email and password to access your account.",
-			demo_login: "Demo Login",
+			demo_login: "Login Demo",
 			email_placeholder: "name@example.com",
 			forgot_password: "Forgot password?",
 			no_account: "Don't have an account?",
@@ -56111,7 +56132,8 @@ const translations = {
 				profitability_desc: "Comparación de beneficio neto.",
 				profit_internal: "Beneficio Interno",
 				profit_market: "Beneficio Mercado",
-				adr: "Tarifa Media Diaria (ADR)"
+				adr: "Tarifa Media Diaria (ADR)",
+				privacy_mode: "Modo de Privacidad"
 			},
 			sync: {
 				title: "Sincronización",
@@ -58850,7 +58872,7 @@ var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => 
 Progress.displayName = Root$6.displayName;
 function DataMask({ children, className, blur }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-		className: cn("transition-all duration-300 ease-in-out inline-block align-baseline rounded px-1 -mx-1", blur ? "filter blur-[4px] hover:blur-0 cursor-pointer select-none hover:select-text bg-foreground/10 hover:bg-transparent" : "", className),
+		className: cn("transition-all duration-200 ease-in-out inline-block align-baseline", blur ? "filter blur-[5px] hover:blur-0 cursor-pointer select-none hover:select-text opacity-70 hover:opacity-100 transition-all" : "filter-none opacity-100", className),
 		"aria-label": blur ? "Sensitive data, hover to reveal" : void 0,
 		title: blur ? "Hover to reveal data" : void 0,
 		children
@@ -86772,6 +86794,7 @@ var comparativeDataRaw = [
 function Analytics() {
 	const { t, language } = useLanguageStore_default();
 	const [houseModel, setHouseModel] = (0, import_react.useState)("All");
+	const [privacyMode, setPrivacyMode] = (0, import_react.useState)(false);
 	const uniqueModels = Array.from(new Set(comparativeDataRaw.map((d) => d.model)));
 	const filteredData = (0, import_react.useMemo)(() => {
 		let data = comparativeDataRaw;
@@ -86842,7 +86865,7 @@ function Analytics() {
 		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "flex flex-col gap-8 pb-8",
+		className: "flex flex-col gap-8 pb-8 animate-fade-in",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
@@ -86853,29 +86876,47 @@ function Analytics() {
 					className: "text-muted-foreground mt-1",
 					children: t("common.analytics.benchmark_desc")
 				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex gap-3",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-						value: houseModel,
-						onValueChange: setHouseModel,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "w-[200px] shadow-sm",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.analytics.house_model") })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: "All",
-							children: t("common.all")
-						}), uniqueModels.map((m$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: m$1,
-							children: m$1
-						}, m$1))] })]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						variant: "outline",
-						className: "gap-2 shadow-sm",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" }),
-							" ",
-							t("common.export_data")
-						]
-					})]
+					className: "flex flex-col sm:flex-row gap-3 items-end sm:items-center",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center space-x-2 mr-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+								id: "privacy-mode",
+								checked: privacyMode,
+								onCheckedChange: setPrivacyMode
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+								htmlFor: "privacy-mode",
+								className: "flex items-center gap-2 cursor-pointer",
+								children: [privacyMode ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EyeOff, { className: "h-4 w-4 text-muted-foreground" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "text-sm font-medium",
+									children: t("common.analytics.privacy_mode")
+								})]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: houseModel,
+							onValueChange: setHouseModel,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+								className: "w-[200px] shadow-sm",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.analytics.house_model") })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "All",
+								children: t("common.all")
+							}), uniqueModels.map((m$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: m$1,
+								children: m$1
+							}, m$1))] })]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							variant: "outline",
+							className: "gap-2 shadow-sm",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" }),
+								" ",
+								t("common.export_data")
+							]
+						})
+					]
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -86892,7 +86933,7 @@ function Analytics() {
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-foreground",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								blur: true,
+								blur: privacyMode,
 								children: formatCurrency(kpis.revenue, language)
 							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
@@ -86903,7 +86944,7 @@ function Analytics() {
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 									className: "font-medium text-foreground",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-										blur: true,
+										blur: privacyMode,
 										children: formatCurrency(kpis.mktRevenue, language)
 									})
 								}),
@@ -86923,7 +86964,7 @@ function Analytics() {
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-green-600",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								blur: true,
+								blur: privacyMode,
 								children: formatCurrency(kpis.profit, language)
 							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
@@ -86934,7 +86975,7 @@ function Analytics() {
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 									className: "font-medium text-foreground",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-										blur: true,
+										blur: privacyMode,
 										children: formatCurrency(kpis.mktProfit, language)
 									})
 								}),
@@ -86954,7 +86995,7 @@ function Analytics() {
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-blue-600",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, {
-								blur: true,
+								blur: privacyMode,
 								children: [Math.round(kpis.occ), "%"]
 							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
@@ -86965,7 +87006,7 @@ function Analytics() {
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 									className: "font-medium text-foreground",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, {
-										blur: true,
+										blur: privacyMode,
 										children: [Math.round(kpis.mktOcc), "%"]
 									})
 								}),
@@ -86985,7 +87026,7 @@ function Analytics() {
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-foreground",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								blur: true,
+								blur: privacyMode,
 								children: formatCurrency(kpis.adr, language)
 							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
@@ -86996,7 +87037,7 @@ function Analytics() {
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 									className: "font-medium text-foreground",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-										blur: true,
+										blur: privacyMode,
 										children: formatCurrency(kpis.mktAdr, language)
 									})
 								}),
@@ -87025,94 +87066,98 @@ function Analytics() {
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 							config: chartConfig,
 							className: "h-full w-full",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(BarChart, {
-								data: filteredData,
-								margin: {
-									top: 20,
-									right: 30,
-									left: 20,
-									bottom: 5
-								},
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
-										strokeDasharray: "3 3",
-										vertical: false
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, {
-										dataKey: "month",
-										tickLine: false,
-										axisLine: false,
-										tickMargin: 10
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {
-										tickFormatter: (value) => formatCurrency(value, language).split(/[\s,.]/)[0],
-										axisLine: false,
-										tickLine: false
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: ({ active, payload, label }) => {
-										if (active && payload && payload.length) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "rounded-lg border bg-background p-2 shadow-sm min-w-[150px]",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "flex flex-col gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-													className: "text-[0.70rem] uppercase text-muted-foreground",
-													children: label
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-													className: "grid grid-cols-2 gap-2",
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-														className: "flex flex-col",
-														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-															className: "text-[0.70rem] uppercase text-muted-foreground",
-															children: t("common.revenue")
-														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-															className: "font-bold text-foreground",
-															children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-																blur: true,
-																children: formatCurrency(Number(payload[0].value), language)
-															})
-														})]
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ResponsiveContainer, {
+								width: "100%",
+								height: "100%",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(BarChart, {
+									data: filteredData,
+									margin: {
+										top: 20,
+										right: 30,
+										left: 20,
+										bottom: 5
+									},
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
+											strokeDasharray: "3 3",
+											vertical: false
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, {
+											dataKey: "month",
+											tickLine: false,
+											axisLine: false,
+											tickMargin: 10
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {
+											tickFormatter: (value) => formatCurrency(value, language).split(/[\s,.]/)[0],
+											axisLine: false,
+											tickLine: false
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: ({ active, payload, label }) => {
+											if (active && payload && payload.length) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+												className: "rounded-lg border bg-background p-2 shadow-sm min-w-[150px]",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "flex flex-col gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "text-[0.70rem] uppercase text-muted-foreground",
+														children: label
 													}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-														className: "flex flex-col",
-														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-															className: "text-[0.70rem] uppercase text-muted-foreground",
-															children: t("common.profit")
-														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-															className: "font-bold text-foreground",
-															children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-																blur: true,
-																children: formatCurrency(Number(payload[1].value), language)
-															})
+														className: "grid grid-cols-2 gap-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+															className: "flex flex-col",
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+																className: "text-[0.70rem] uppercase text-muted-foreground",
+																children: t("common.revenue")
+															}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+																className: "font-bold text-foreground",
+																children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+																	blur: privacyMode,
+																	children: formatCurrency(Number(payload[0].value), language)
+																})
+															})]
+														}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+															className: "flex flex-col",
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+																className: "text-[0.70rem] uppercase text-muted-foreground",
+																children: t("common.profit")
+															}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+																className: "font-bold text-foreground",
+																children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+																	blur: privacyMode,
+																	children: formatCurrency(Number(payload[1].value), language)
+																})
+															})]
 														})]
 													})]
-												})]
-											})
-										});
-										return null;
-									} }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartLegendContent, {}) }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
-										dataKey: "internalRevenue",
-										fill: "var(--color-internalRevenue)",
-										name: t("common.revenue"),
-										radius: [
-											4,
-											4,
-											0,
-											0
-										]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
-										dataKey: "internalProfit",
-										fill: "var(--color-internalProfit)",
-										name: t("common.profit"),
-										radius: [
-											4,
-											4,
-											0,
-											0
-										]
-									})
-								]
+												})
+											});
+											return null;
+										} }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartLegendContent, {}) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
+											dataKey: "internalRevenue",
+											fill: "var(--color-internalRevenue)",
+											name: t("common.revenue"),
+											radius: [
+												4,
+												4,
+												0,
+												0
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
+											dataKey: "internalProfit",
+											fill: "var(--color-internalProfit)",
+											name: t("common.profit"),
+											radius: [
+												4,
+												4,
+												0,
+												0
+											]
+										})
+									]
+								})
 							})
 						})
 					}) })]
@@ -87128,85 +87173,89 @@ function Analytics() {
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 							config: chartConfig,
 							className: "h-full w-full",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(LineChart, {
-								data: filteredData,
-								margin: {
-									top: 20,
-									right: 30,
-									left: 20,
-									bottom: 5
-								},
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
-										strokeDasharray: "3 3",
-										vertical: false
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, {
-										dataKey: "month",
-										tickLine: false,
-										axisLine: false,
-										tickMargin: 10
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {
-										unit: "%",
-										domain: [0, 100],
-										axisLine: false,
-										tickLine: false
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: ({ active, payload, label }) => {
-										if (active && payload && payload.length) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "rounded-lg border bg-background p-2 shadow-sm min-w-[150px]",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "flex flex-col gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-													className: "text-[0.70rem] uppercase text-muted-foreground",
-													children: label
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-													className: "flex flex-col gap-1",
-													children: payload.map((entry, index$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-														className: "flex justify-between items-center gap-2",
-														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-															className: "text-xs text-muted-foreground",
-															children: [entry.name, ":"]
-														}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-															className: "font-bold text-foreground",
-															children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, {
-																blur: true,
-																children: [entry.value, "%"]
-															})
-														})]
-													}, index$1))
-												})]
-											})
-										});
-										return null;
-									} }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartLegendContent, {}) }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Line, {
-										type: "monotone",
-										dataKey: "internalOcc",
-										stroke: "var(--color-internalOcc)",
-										strokeWidth: 3,
-										name: t("common.analytics.internal_perf"),
-										dot: {
-											r: 4,
-											fill: "var(--color-internalOcc)"
-										},
-										activeDot: { r: 6 }
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Line, {
-										type: "monotone",
-										dataKey: "marketOcc",
-										stroke: "var(--color-marketOcc)",
-										strokeWidth: 2,
-										strokeDasharray: "5 5",
-										name: t("common.analytics.market_avg"),
-										dot: {
-											r: 4,
-											fill: "var(--color-marketOcc)"
-										}
-									})
-								]
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ResponsiveContainer, {
+								width: "100%",
+								height: "100%",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(LineChart, {
+									data: filteredData,
+									margin: {
+										top: 20,
+										right: 30,
+										left: 20,
+										bottom: 5
+									},
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
+											strokeDasharray: "3 3",
+											vertical: false
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, {
+											dataKey: "month",
+											tickLine: false,
+											axisLine: false,
+											tickMargin: 10
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {
+											unit: "%",
+											domain: [0, 100],
+											axisLine: false,
+											tickLine: false
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: ({ active, payload, label }) => {
+											if (active && payload && payload.length) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+												className: "rounded-lg border bg-background p-2 shadow-sm min-w-[150px]",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "flex flex-col gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "text-[0.70rem] uppercase text-muted-foreground",
+														children: label
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+														className: "flex flex-col gap-1",
+														children: payload.map((entry, index$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+															className: "flex justify-between items-center gap-2",
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+																className: "text-xs text-muted-foreground",
+																children: [entry.name, ":"]
+															}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+																className: "font-bold text-foreground",
+																children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, {
+																	blur: privacyMode,
+																	children: [entry.value, "%"]
+																})
+															})]
+														}, index$1))
+													})]
+												})
+											});
+											return null;
+										} }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartLegendContent, {}) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Line, {
+											type: "monotone",
+											dataKey: "internalOcc",
+											stroke: "var(--color-internalOcc)",
+											strokeWidth: 3,
+											name: t("common.analytics.internal_perf"),
+											dot: {
+												r: 4,
+												fill: "var(--color-internalOcc)"
+											},
+											activeDot: { r: 6 }
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Line, {
+											type: "monotone",
+											dataKey: "marketOcc",
+											stroke: "var(--color-marketOcc)",
+											strokeWidth: 2,
+											strokeDasharray: "5 5",
+											name: t("common.analytics.market_avg"),
+											dot: {
+												r: 4,
+												fill: "var(--color-marketOcc)"
+											}
+										})
+									]
+								})
 							})
 						})
 					}) })]
@@ -91904,4 +91953,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-B7U0eIEB.js.map
+//# sourceMappingURL=index-D9sL6-_D.js.map

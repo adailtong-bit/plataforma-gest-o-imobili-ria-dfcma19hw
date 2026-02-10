@@ -16,6 +16,7 @@ import {
   Legend,
   LineChart,
   Line,
+  ResponsiveContainer,
 } from 'recharts'
 import {
   ChartContainer,
@@ -31,9 +32,11 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { Download } from 'lucide-react'
+import { Download, Eye, EyeOff } from 'lucide-react'
 import { DataMask } from '@/components/DataMask'
 import { formatCurrency } from '@/lib/utils'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 
 // Enhanced Mock Data including Revenue and Margin calculation base
 const comparativeDataRaw = [
@@ -132,6 +135,7 @@ const comparativeDataRaw = [
 export default function Analytics() {
   const { t, language } = useLanguageStore()
   const [houseModel, setHouseModel] = useState('All')
+  const [privacyMode, setPrivacyMode] = useState(false)
 
   const uniqueModels = Array.from(
     new Set(comparativeDataRaw.map((d) => d.model)),
@@ -239,7 +243,7 @@ export default function Analytics() {
   }
 
   return (
-    <div className="flex flex-col gap-8 pb-8">
+    <div className="flex flex-col gap-8 pb-8 animate-fade-in">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -250,7 +254,27 @@ export default function Analytics() {
             {t('common.analytics.benchmark_desc')}
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3 items-end sm:items-center">
+          <div className="flex items-center space-x-2 mr-2">
+            <Switch
+              id="privacy-mode"
+              checked={privacyMode}
+              onCheckedChange={setPrivacyMode}
+            />
+            <Label
+              htmlFor="privacy-mode"
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              {privacyMode ? (
+                <EyeOff className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <Eye className="h-4 w-4 text-muted-foreground" />
+              )}
+              <span className="text-sm font-medium">
+                {t('common.analytics.privacy_mode')}
+              </span>
+            </Label>
+          </div>
           <Select value={houseModel} onValueChange={setHouseModel}>
             <SelectTrigger className="w-[200px] shadow-sm">
               <SelectValue placeholder={t('common.analytics.house_model')} />
@@ -281,12 +305,14 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">
-              <DataMask blur>{formatCurrency(kpis.revenue, language)}</DataMask>
+              <DataMask blur={privacyMode}>
+                {formatCurrency(kpis.revenue, language)}
+              </DataMask>
             </div>
             <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
               vs{' '}
               <span className="font-medium text-foreground">
-                <DataMask blur>
+                <DataMask blur={privacyMode}>
                   {formatCurrency(kpis.mktRevenue, language)}
                 </DataMask>
               </span>{' '}
@@ -304,12 +330,14 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              <DataMask blur>{formatCurrency(kpis.profit, language)}</DataMask>
+              <DataMask blur={privacyMode}>
+                {formatCurrency(kpis.profit, language)}
+              </DataMask>
             </div>
             <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
               vs{' '}
               <span className="font-medium text-foreground">
-                <DataMask blur>
+                <DataMask blur={privacyMode}>
                   {formatCurrency(kpis.mktProfit, language)}
                 </DataMask>
               </span>{' '}
@@ -327,12 +355,14 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">
-              <DataMask blur>{Math.round(kpis.occ)}%</DataMask>
+              <DataMask blur={privacyMode}>{Math.round(kpis.occ)}%</DataMask>
             </div>
             <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
               vs{' '}
               <span className="font-medium text-foreground">
-                <DataMask blur>{Math.round(kpis.mktOcc)}%</DataMask>
+                <DataMask blur={privacyMode}>
+                  {Math.round(kpis.mktOcc)}%
+                </DataMask>
               </span>{' '}
               {t('common.analytics.market_avg')}
             </p>
@@ -348,12 +378,14 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">
-              <DataMask blur>{formatCurrency(kpis.adr, language)}</DataMask>
+              <DataMask blur={privacyMode}>
+                {formatCurrency(kpis.adr, language)}
+              </DataMask>
             </div>
             <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
               vs{' '}
               <span className="font-medium text-foreground">
-                <DataMask blur>
+                <DataMask blur={privacyMode}>
                   {formatCurrency(kpis.mktAdr, language)}
                 </DataMask>
               </span>{' '}
@@ -378,84 +410,85 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="h-[350px] w-full">
-              {/* DataMask removed from wrapper to keep axes visible */}
               <ChartContainer config={chartConfig} className="h-full w-full">
-                <BarChart
-                  data={filteredData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={10}
-                  />
-                  <YAxis
-                    tickFormatter={(value) =>
-                      formatCurrency(value, language).split(/[\s,.]/)[0]
-                    }
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    content={({ active, payload, label }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div className="rounded-lg border bg-background p-2 shadow-sm min-w-[150px]">
-                            <div className="flex flex-col gap-2">
-                              <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                {label}
-                              </span>
-                              <div className="grid grid-cols-2 gap-2">
-                                <div className="flex flex-col">
-                                  <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                    {t('common.revenue')}
-                                  </span>
-                                  <span className="font-bold text-foreground">
-                                    <DataMask blur>
-                                      {formatCurrency(
-                                        Number(payload[0].value),
-                                        language,
-                                      )}
-                                    </DataMask>
-                                  </span>
-                                </div>
-                                <div className="flex flex-col">
-                                  <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                    {t('common.profit')}
-                                  </span>
-                                  <span className="font-bold text-foreground">
-                                    <DataMask blur>
-                                      {formatCurrency(
-                                        Number(payload[1].value),
-                                        language,
-                                      )}
-                                    </DataMask>
-                                  </span>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={filteredData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      dataKey="month"
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={10}
+                    />
+                    <YAxis
+                      tickFormatter={(value) =>
+                        formatCurrency(value, language).split(/[\s,.]/)[0]
+                      }
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      content={({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="rounded-lg border bg-background p-2 shadow-sm min-w-[150px]">
+                              <div className="flex flex-col gap-2">
+                                <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                  {label}
+                                </span>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <div className="flex flex-col">
+                                    <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                      {t('common.revenue')}
+                                    </span>
+                                    <span className="font-bold text-foreground">
+                                      <DataMask blur={privacyMode}>
+                                        {formatCurrency(
+                                          Number(payload[0].value),
+                                          language,
+                                        )}
+                                      </DataMask>
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                      {t('common.profit')}
+                                    </span>
+                                    <span className="font-bold text-foreground">
+                                      <DataMask blur={privacyMode}>
+                                        {formatCurrency(
+                                          Number(payload[1].value),
+                                          language,
+                                        )}
+                                      </DataMask>
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        )
-                      }
-                      return null
-                    }}
-                  />
-                  <Legend content={<ChartLegendContent />} />
-                  <Bar
-                    dataKey="internalRevenue"
-                    fill="var(--color-internalRevenue)"
-                    name={t('common.revenue')}
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="internalProfit"
-                    fill="var(--color-internalProfit)"
-                    name={t('common.profit')}
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
+                          )
+                        }
+                        return null
+                      }}
+                    />
+                    <Legend content={<ChartLegendContent />} />
+                    <Bar
+                      dataKey="internalRevenue"
+                      fill="var(--color-internalRevenue)"
+                      name={t('common.revenue')}
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="internalProfit"
+                      fill="var(--color-internalProfit)"
+                      name={t('common.profit')}
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
               </ChartContainer>
             </div>
           </CardContent>
@@ -473,74 +506,78 @@ export default function Analytics() {
           <CardContent>
             <div className="h-[350px] w-full">
               <ChartContainer config={chartConfig} className="h-full w-full">
-                <LineChart
-                  data={filteredData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={10}
-                  />
-                  <YAxis
-                    unit="%"
-                    domain={[0, 100]}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    content={({ active, payload, label }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div className="rounded-lg border bg-background p-2 shadow-sm min-w-[150px]">
-                            <div className="flex flex-col gap-2">
-                              <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                {label}
-                              </span>
-                              <div className="flex flex-col gap-1">
-                                {payload.map((entry: any, index: number) => (
-                                  <div
-                                    key={index}
-                                    className="flex justify-between items-center gap-2"
-                                  >
-                                    <span className="text-xs text-muted-foreground">
-                                      {entry.name}:
-                                    </span>
-                                    <span className="font-bold text-foreground">
-                                      <DataMask blur>{entry.value}%</DataMask>
-                                    </span>
-                                  </div>
-                                ))}
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={filteredData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      dataKey="month"
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={10}
+                    />
+                    <YAxis
+                      unit="%"
+                      domain={[0, 100]}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      content={({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="rounded-lg border bg-background p-2 shadow-sm min-w-[150px]">
+                              <div className="flex flex-col gap-2">
+                                <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                  {label}
+                                </span>
+                                <div className="flex flex-col gap-1">
+                                  {payload.map((entry: any, index: number) => (
+                                    <div
+                                      key={index}
+                                      className="flex justify-between items-center gap-2"
+                                    >
+                                      <span className="text-xs text-muted-foreground">
+                                        {entry.name}:
+                                      </span>
+                                      <span className="font-bold text-foreground">
+                                        <DataMask blur={privacyMode}>
+                                          {entry.value}%
+                                        </DataMask>
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        )
-                      }
-                      return null
-                    }}
-                  />
-                  <Legend content={<ChartLegendContent />} />
-                  <Line
-                    type="monotone"
-                    dataKey="internalOcc"
-                    stroke="var(--color-internalOcc)"
-                    strokeWidth={3}
-                    name={t('common.analytics.internal_perf')}
-                    dot={{ r: 4, fill: 'var(--color-internalOcc)' }}
-                    activeDot={{ r: 6 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="marketOcc"
-                    stroke="var(--color-marketOcc)"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    name={t('common.analytics.market_avg')}
-                    dot={{ r: 4, fill: 'var(--color-marketOcc)' }}
-                  />
-                </LineChart>
+                          )
+                        }
+                        return null
+                      }}
+                    />
+                    <Legend content={<ChartLegendContent />} />
+                    <Line
+                      type="monotone"
+                      dataKey="internalOcc"
+                      stroke="var(--color-internalOcc)"
+                      strokeWidth={3}
+                      name={t('common.analytics.internal_perf')}
+                      dot={{ r: 4, fill: 'var(--color-internalOcc)' }}
+                      activeDot={{ r: 6 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="marketOcc"
+                      stroke="var(--color-marketOcc)"
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      name={t('common.analytics.market_avg')}
+                      dot={{ r: 4, fill: 'var(--color-marketOcc)' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </ChartContainer>
             </div>
           </CardContent>

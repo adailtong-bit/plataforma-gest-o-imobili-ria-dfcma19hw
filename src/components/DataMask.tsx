@@ -8,18 +8,17 @@ interface DataMaskProps {
 }
 
 export function DataMask({ children, className, blur }: DataMaskProps) {
-  // Enhanced component that applies a refined privacy mask
-  // The blur is lighter and contained, with a subtle background to indicate hidden content
-  // Removed heavy blur-[5px] in favor of a cleaner blur-[4px] with visual cues
-  // Smooth transition for hover state to instantly reveal data
+  // Enhanced component that provides privacy without compromising legibility when not blurred
+  // Default state (blur=false) is perfectly clear with no residual effects
+  // Blurred state provides protection with hover-to-reveal functionality
 
   return (
     <span
       className={cn(
-        'transition-all duration-300 ease-in-out inline-block align-baseline rounded px-1 -mx-1',
+        'transition-all duration-200 ease-in-out inline-block align-baseline',
         blur
-          ? 'filter blur-[4px] hover:blur-0 cursor-pointer select-none hover:select-text bg-foreground/10 hover:bg-transparent'
-          : '',
+          ? 'filter blur-[5px] hover:blur-0 cursor-pointer select-none hover:select-text opacity-70 hover:opacity-100 transition-all'
+          : 'filter-none opacity-100',
         className,
       )}
       // Add aria-label and title for accessibility and user feedback
