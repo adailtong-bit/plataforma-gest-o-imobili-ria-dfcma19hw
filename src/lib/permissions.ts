@@ -27,7 +27,7 @@ export const PERMISSIONS_MATRIX: Record<
     migration: ['view', 'create', 'edit', 'delete'],
     analytics: ['view'],
     automation: ['view', 'create', 'edit', 'delete'],
-    reports: ['view'],
+    reports: ['view'], // Explicitly allowed
     visits: ['view', 'create', 'edit', 'delete'],
     portal: ['view'],
     hotels: ['view', 'create', 'edit', 'delete'],
@@ -55,7 +55,7 @@ export const PERMISSIONS_MATRIX: Record<
     renewals: ['view', 'create', 'edit'],
     short_term: ['view', 'create', 'edit', 'delete'],
     analytics: ['view'],
-    reports: ['view'],
+    reports: ['view'], // Explicitly allowed
     visits: ['view', 'create', 'edit', 'delete'],
     migration: ['view', 'create'],
     automation: ['view', 'edit'],
@@ -77,24 +77,24 @@ export const PERMISSIONS_MATRIX: Record<
     messages: ['view', 'create'],
     short_term: ['view', 'create', 'edit'],
     renewals: ['view', 'edit'],
-    reports: ['view'],
+    reports: ['view'], // Explicitly allowed
     visits: ['view', 'create', 'edit'],
     hotels: ['view', 'create', 'edit'],
     users: ['view'],
     guest_services: ['view', 'edit'],
     pos: ['view', 'create'],
-    financial: ['view', 'create', 'edit'], // Added to allow access to /invoices
+    financial: ['view', 'create', 'edit'],
   },
   partner: {
     portal: ['view'],
     tasks: ['view', 'edit'],
     messages: ['view', 'create'],
     financial: ['view'],
-    properties: ['view'], // Ensure partner can view properties assigned to them
+    properties: ['view'],
   },
   property_owner: {
     portal: ['view'],
-    properties: ['view'], // Ensure owner can view their properties
+    properties: ['view'],
     financial: ['view'],
     messages: ['view', 'create'],
     short_term: ['view'],
@@ -105,13 +105,13 @@ export const PERMISSIONS_MATRIX: Record<
     portal: ['view'],
     messages: ['view', 'create'],
     financial: ['view'],
-    properties: ['view'], // Ensure tenant can view their property details
+    properties: ['view'],
   },
   partner_employee: {
     portal: ['view'],
     tasks: ['view', 'edit'],
     messages: ['view', 'create'],
-    properties: ['view'], // Ensure employee can view properties
+    properties: ['view'],
   },
 }
 
@@ -173,5 +173,3 @@ export const getRoleLabel = (
 ): string => {
   return t(`roles.${role}`)
 }
-
-

@@ -275,5 +275,3 @@ export default function MarketAnalysis() {
     </div>
   )
 }
-
-

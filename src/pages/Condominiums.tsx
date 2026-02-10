@@ -128,7 +128,7 @@ export default function Condominiums() {
     if (!formData.name?.trim() || !formData.address?.trim()) {
       toast({
         title: t('common.error'),
-        description: 'Nome e Endereço são obrigatórios',
+        description: `${t('common.name')} ${t('common.and')} ${t('common.address')} ${t('common.required')}`,
         variant: 'destructive',
       })
       return
@@ -140,7 +140,7 @@ export default function Condominiums() {
     ) {
       toast({
         title: t('common.error'),
-        description: 'Por favor, insira dados válidos para Nome e Endereço.',
+        description: t('common.validation_error'),
         variant: 'destructive',
       })
       return
@@ -149,7 +149,7 @@ export default function Condominiums() {
     if (formData.managerEmail && !isValidEmail(formData.managerEmail)) {
       toast({
         title: t('common.error'),
-        description: 'Email do gerente inválido',
+        description: t('common.email_invalid'),
         variant: 'destructive',
       })
       return
@@ -161,16 +161,7 @@ export default function Condominiums() {
     ) {
       toast({
         title: t('common.error'),
-        description: `Por favor, insira um número de telefone válido para ${selectedCountry}.`,
-        variant: 'destructive',
-      })
-      return
-    }
-
-    if (isGenericOrPlaceholder(formData.zipCode)) {
-      toast({
-        title: t('common.error'),
-        description: 'CEP inválido.',
+        description: `Invalid phone for ${selectedCountry}.`,
         variant: 'destructive',
       })
       return
@@ -193,7 +184,7 @@ export default function Condominiums() {
           ]
         : [],
     })
-    toast({ title: 'Condomínio adicionado com sucesso' })
+    toast({ title: t('common.success') })
     setOpen(false)
     resetForm()
   }
@@ -201,14 +192,14 @@ export default function Condominiums() {
   const handleDelete = (id: string) => {
     try {
       deleteCondominium(id)
-      toast({ title: 'Condomínio excluído' })
+      toast({ title: t('common.delete_success') })
     } catch (error: any) {
       toast({
         title: t('common.error'),
         description:
           error.message === 'error_linked_condo'
             ? t('common.delete_linked_error')
-            : 'Erro ao excluir.',
+            : t('common.error_delete'),
         variant: 'destructive',
       })
     }
@@ -254,14 +245,12 @@ export default function Condominiums() {
               <DialogTitle>{t('condominiums.add_title')}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              {/* Country Priority */}
               <div className="grid gap-2">
                 <Label>{t('common.country')}</Label>
                 <Select
                   value={selectedCountry}
                   onValueChange={(val: any) => {
                     setSelectedCountry(val)
-                    // Clear zip on country change to force re-entry/validation visually
                     setFormData((prev) => ({ ...prev, zipCode: '' }))
                   }}
                 >
@@ -288,7 +277,7 @@ export default function Condominiums() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Buscar Endereço</Label>
+                <Label>Search Address</Label>
                 <AddressInput onAddressSelect={handleAddressSelect} />
               </div>
               <div className="grid gap-2">
@@ -303,7 +292,7 @@ export default function Condominiums() {
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="grid gap-2">
-                  <Label>Cidade</Label>
+                  <Label>{t('properties.city_placeholder')}</Label>
                   <Input
                     value={formData.city}
                     onChange={(e) =>
@@ -313,7 +302,7 @@ export default function Condominiums() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Estado</Label>
+                  <Label>{t('properties.state_placeholder')}</Label>
                   <Input
                     value={formData.state}
                     onChange={(e) =>
@@ -323,7 +312,7 @@ export default function Condominiums() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>CEP / ZIP</Label>
+                  <Label>{t('properties.zip_code')}</Label>
                   <Input
                     value={formData.zipCode}
                     onChange={handleZipCodeChange}
@@ -385,7 +374,7 @@ export default function Condominiums() {
             <div className="relative w-64">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
               <Input
-                placeholder="Buscar por nome, endereço, gerente..."
+                placeholder={t('common.search')}
                 className="pl-8 text-black bg-white"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}

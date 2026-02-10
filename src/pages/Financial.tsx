@@ -39,7 +39,7 @@ export default function Financial() {
   if (!hasPermission(currentUser as User, 'financial', 'view')) {
     return (
       <div className="p-8 text-center text-black font-medium">
-        Acesso negado ao painel financeiro.
+        {t('common.access_denied_desc')}
       </div>
     )
   }
@@ -135,7 +135,7 @@ export default function Financial() {
                 <TableHeader>
                   <TableRow className="border-b border-slate-200 bg-white hover:bg-white">
                     <TableHead className="font-bold text-black">
-                      Arquivo
+                      {t('common.documents')}
                     </TableHead>
                     <TableHead className="font-bold text-black">
                       {t('common.date')}
@@ -144,7 +144,7 @@ export default function Financial() {
                       {t('common.status')}
                     </TableHead>
                     <TableHead className="font-bold text-black">
-                      Itens
+                      {t('reports.total_items')}
                     </TableHead>
                     <TableHead className="font-bold text-black">
                       {t('common.total')}
@@ -210,7 +210,7 @@ export default function Financial() {
                               variant="outline"
                               className="border-slate-300 text-black font-medium hover:bg-slate-100"
                             >
-                              Conciliar
+                              {t('financial.reconciliation')}
                             </Button>
                           )}
                         </TableCell>

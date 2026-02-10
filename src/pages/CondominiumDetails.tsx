@@ -366,7 +366,7 @@ export default function CondominiumDetails() {
               </div>
               <div className="grid gap-2">
                 <Label className="text-slate-900 font-bold">
-                  Buscar Endereço
+                  Search Address
                 </Label>
                 <AddressInput
                   onAddressSelect={handleAddressSelect}
@@ -421,7 +421,7 @@ export default function CondominiumDetails() {
               </div>
               <div className="grid gap-2">
                 <Label className="text-slate-900 font-bold">
-                  {t('common.manager')}
+                  {t('condominiums.manager')}
                 </Label>
                 {isEditing ? (
                   <Input
@@ -493,14 +493,14 @@ export default function CondominiumDetails() {
                 <Lock className="h-5 w-5" /> {t('common.access_credentials')}
               </CardTitle>
               <CardDescription className="text-slate-600">
-                Gerencie senhas, gates e QR codes.
+                Manage codes and QR access.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="text-slate-900 font-bold">
-                    Main Gate (Carros)
+                    Main Gate (Car)
                   </Label>
                   <Input
                     value={formData.accessCredentials?.mainGateCar || ''}
@@ -573,7 +573,7 @@ export default function CondominiumDetails() {
                     <Button
                       variant="outline"
                       size="icon"
-                      title="Gerar QR"
+                      title="Generate QR"
                       disabled={!isEditing}
                     >
                       <QrCode className="h-4 w-4" />
@@ -596,7 +596,7 @@ export default function CondominiumDetails() {
               {isEditing && (
                 <div className="flex flex-col gap-2 mb-6 border p-4 rounded-md bg-white">
                   <h4 className="font-bold text-sm text-slate-950">
-                    Novo Contato
+                    New Contact
                   </h4>
                   <div className="flex gap-2 items-end flex-wrap">
                     <div className="grid gap-2 w-full md:w-1/5">
@@ -610,7 +610,7 @@ export default function CondominiumDetails() {
                         }
                       >
                         <SelectTrigger className="text-black">
-                          <SelectValue placeholder="Selecione" />
+                          <SelectValue placeholder="Select" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="Manager">
@@ -620,9 +620,9 @@ export default function CondominiumDetails() {
                             Service Desk
                           </SelectItem>
                           <SelectItem value="Maintenance">
-                            Manutenção
+                            Maintenance
                           </SelectItem>
-                          <SelectItem value="Security">Segurança</SelectItem>
+                          <SelectItem value="Security">Security</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -733,13 +733,13 @@ export default function CondominiumDetails() {
                 <DollarSign className="h-5 w-5" /> {t('common.financial_hoa')}
               </CardTitle>
               <CardDescription className="text-slate-600">
-                Valores configurados aqui serão espelhados nas propriedades.
+                Mirror properties fee configuration.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label className="text-slate-900 font-bold">
-                  {t('properties.hoa_fee')} (Atual)
+                  {t('properties.hoa_fee')} (Current)
                 </Label>
                 <Input
                   type="number"
@@ -857,7 +857,7 @@ export default function CondominiumDetails() {
                           {fh.validFrom}
                         </TableCell>
                         <TableCell className="text-slate-950 font-medium">
-                          {fh.validTo || 'Atual'}
+                          {fh.validTo || 'Current'}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -868,7 +868,7 @@ export default function CondominiumDetails() {
                           colSpan={3}
                           className="text-center text-slate-500"
                         >
-                          Sem histórico.
+                          No history found.
                         </TableCell>
                       </TableRow>
                     )}

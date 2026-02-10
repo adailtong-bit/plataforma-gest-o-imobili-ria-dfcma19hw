@@ -66,7 +66,6 @@ export default function Invoices() {
   }
 
   const handleSendToPayer = (invoiceId: string, payerName: string) => {
-    // Logic to send email/notification would go here
     toast({
       title: t('invoices.sent_success'),
       description: `Invoice ${invoiceId} sent to ${payerName}.`,

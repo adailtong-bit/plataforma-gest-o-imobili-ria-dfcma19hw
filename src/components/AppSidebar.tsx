@@ -131,7 +131,7 @@ export function AppSidebar() {
       resource: 'renewals',
     },
     {
-      title: t('market_analysis.title'), // Corrected key usage
+      title: t('market_analysis.title'),
       url: '/market-analysis',
       icon: TrendingUp,
       resource: 'market_analysis',
@@ -487,5 +487,3 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
-
-

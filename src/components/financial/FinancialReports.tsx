@@ -243,9 +243,7 @@ export function FinancialReports() {
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
             <div className="space-y-2">
-              <Label className="text-sm font-medium">
-                {t('common.date')} Range
-              </Label>
+              <Label className="text-sm font-medium">{t('common.date')}</Label>
               <DatePickerWithRange date={dateRange} setDate={setDateRange} />
             </div>
             <div className="space-y-2">
@@ -306,7 +304,7 @@ export function FinancialReports() {
             <Card className="bg-green-50 border-green-200">
               <CardContent className="pt-6">
                 <div className="text-sm font-medium text-muted-foreground">
-                  Total Revenue
+                  {t('common.total_revenue')}
                 </div>
                 <div className="text-2xl font-bold text-green-700">
                   {formatCurrency(
@@ -365,7 +363,9 @@ export function FinancialReports() {
             <CardContent>
               <div className="h-[300px] w-full">
                 <ChartContainer
-                  config={{ revenue: { label: 'Revenue', color: '#8884d8' } }}
+                  config={{
+                    revenue: { label: t('common.revenue'), color: '#8884d8' },
+                  }}
                   className="h-full w-full"
                 >
                   <BarChart
@@ -381,7 +381,7 @@ export function FinancialReports() {
                       dataKey="value"
                       fill="#8884d8"
                       radius={[0, 4, 4, 0]}
-                      name="Revenue"
+                      name={t('common.revenue')}
                     />
                   </BarChart>
                 </ChartContainer>
@@ -401,7 +401,9 @@ export function FinancialReports() {
             <CardContent>
               <div className="h-[300px] w-full">
                 <ChartContainer
-                  config={{ value: { label: 'Value', color: '#82ca9d' } }}
+                  config={{
+                    value: { label: t('common.value'), color: '#82ca9d' },
+                  }}
                   className="h-full w-full"
                 >
                   <PieChart>

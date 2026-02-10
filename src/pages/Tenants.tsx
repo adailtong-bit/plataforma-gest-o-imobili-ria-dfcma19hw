@@ -114,7 +114,7 @@ export default function Tenants() {
     if (!isValidEmail(newTenant.email)) {
       toast({
         title: t('common.error'),
-        description: 'Invalid email format.',
+        description: t('common.email_invalid'),
         variant: 'destructive',
       })
       return
@@ -126,7 +126,7 @@ export default function Tenants() {
     ) {
       toast({
         title: t('common.error'),
-        description: `Número de telefone inválido para o país selecionado (${newTenant.country}). Certifique-se de que está completo.`,
+        description: `Invalid phone format for ${newTenant.country}.`,
         variant: 'destructive',
       })
       return
@@ -281,7 +281,9 @@ export default function Tenants() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Link Property (Available Only)</Label>
+                    <Label>
+                      {t('common.select')} {t('property.property')}
+                    </Label>
                     <Select
                       value={newTenant.propertyId}
                       onValueChange={(v) =>
@@ -289,7 +291,7 @@ export default function Tenants() {
                       }
                     >
                       <SelectTrigger className="text-black">
-                        <SelectValue placeholder="Select Property" />
+                        <SelectValue placeholder={t('common.select')} />
                       </SelectTrigger>
                       <SelectContent>
                         {availableProperties.map((p) => (
@@ -344,33 +346,6 @@ export default function Tenants() {
                     className="text-black"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Passport</Label>
-                    <Input
-                      placeholder="Passport Number"
-                      value={newTenant.passport}
-                      onChange={(e) =>
-                        setNewTenant({ ...newTenant, passport: e.target.value })
-                      }
-                      className="text-black"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>SSN (Optional)</Label>
-                    <Input
-                      placeholder="XXX-XX-XXXX"
-                      value={newTenant.socialSecurity}
-                      onChange={(e) =>
-                        setNewTenant({
-                          ...newTenant,
-                          socialSecurity: e.target.value,
-                        })
-                      }
-                      className="text-black"
-                    />
-                  </div>
-                </div>
                 <Button onClick={handleAddTenant} className="w-full">
                   {t('common.save')}
                 </Button>
@@ -419,93 +394,114 @@ export default function Tenants() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredTenants.map((tenant) => {
-                const prop = properties.find((p) => p.id === tenant.propertyId)
-                return (
-                  <TableRow
-                    key={tenant.id}
-                    className="bg-white hover:bg-slate-50 transition-colors"
+              {filteredTenants.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-8 text-muted-foreground"
                   >
-                    <TableCell className="font-medium">
-                      <div className="flex flex-col">
-                        <span className="text-black font-bold">
-                          <DataMask>{tenant.name}</DataMask>
-                        </span>
-                        <span className="text-xs text-black font-medium mt-0.5">
-                          <DataMask>{tenant.email}</DataMask>
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {prop ? (
-                        <Link
-                          to={`/properties/${prop.id}`}
-                          className="flex items-center gap-2 hover:text-blue-700 hover:underline text-black"
-                        >
-                          <Home className="h-4 w-4 text-black" />
-                          <DataMask>{prop.name}</DataMask>
-                        </Link>
-                      ) : (
-                        <span className="text-black">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2 text-sm text-black font-medium">
-                        <Calendar className="h-3 w-3 text-black" />
-                        <DataMask>
-                          {tenant.leaseStart
-                            ? format(new Date(tenant.leaseStart), 'dd/MM/yyyy')
-                            : 'N/A'}{' '}
-                          -{' '}
-                          {tenant.leaseEnd
-                            ? format(new Date(tenant.leaseEnd), 'dd/MM/yyyy')
-                            : 'N/A'}
-                        </DataMask>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className="text-black border-slate-400 font-medium"
-                      >
-                        {tenant.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleWhatsApp(tenant.phone)}
-                          className="text-green-700 hover:text-green-800"
-                          title={t('common.contact_via_whatsapp')}
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() =>
-                            navigate(`/messages?contactId=${tenant.id}`)
+                    {t('common.empty')}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredTenants.map((tenant) => {
+                  const prop = properties.find(
+                    (p) => p.id === tenant.propertyId,
+                  )
+                  return (
+                    <TableRow
+                      key={tenant.id}
+                      className="bg-white hover:bg-slate-50 transition-colors"
+                    >
+                      <TableCell className="font-medium">
+                        <div className="flex flex-col">
+                          <span className="text-black font-bold">
+                            <DataMask>{tenant.name}</DataMask>
+                          </span>
+                          <span className="text-xs text-black font-medium mt-0.5">
+                            <DataMask>{tenant.email}</DataMask>
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {prop ? (
+                          <Link
+                            to={`/properties/${prop.id}`}
+                            className="flex items-center gap-2 hover:text-blue-700 hover:underline text-black"
+                          >
+                            <Home className="h-4 w-4 text-black" />
+                            <DataMask>{prop.name}</DataMask>
+                          </Link>
+                        ) : (
+                          <span className="text-black">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2 text-sm text-black font-medium">
+                          <Calendar className="h-3 w-3 text-black" />
+                          <DataMask>
+                            {tenant.leaseStart
+                              ? format(
+                                  new Date(tenant.leaseStart),
+                                  'dd/MM/yyyy',
+                                )
+                              : 'N/A'}{' '}
+                            -{' '}
+                            {tenant.leaseEnd
+                              ? format(new Date(tenant.leaseEnd), 'dd/MM/yyyy')
+                              : 'N/A'}
+                          </DataMask>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={
+                            tenant.status === 'active'
+                              ? 'text-green-700 border-green-200 bg-green-50'
+                              : 'text-slate-600 border-slate-200'
                           }
-                          className="text-blue-700 hover:text-blue-800"
-                          title={t('tenants.send_message')}
                         >
-                          <MessageSquare className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => navigate(`/tenants/${tenant.id}`)}
-                          className="text-black hover:text-slate-700"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
+                          {t(`common.${tenant.status}`) || tenant.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleWhatsApp(tenant.phone)}
+                            className="text-green-700 hover:text-green-800"
+                            title={t('common.contact_via_whatsapp')}
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() =>
+                              navigate(`/messages?contactId=${tenant.id}`)
+                            }
+                            className="text-blue-700 hover:text-blue-800"
+                            title={t('tenants.send_message')}
+                          >
+                            <MessageSquare className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => navigate(`/tenants/${tenant.id}`)}
+                            className="text-black hover:text-slate-700"
+                            title={t('common.view_details')}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
+              )}
             </TableBody>
           </Table>
         </CardContent>
