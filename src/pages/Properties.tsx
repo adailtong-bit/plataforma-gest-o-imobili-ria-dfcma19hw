@@ -668,18 +668,16 @@ export default function Properties() {
           >
             <div className="relative h-48 w-full bg-slate-200">
               {property.image ? (
-                <DataMask className="w-full h-full block rounded-none">
-                  <img
-                    src={property.image}
-                    alt={property.name}
-                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
-                    crossOrigin="anonymous"
-                    onError={(e) => {
-                      e.currentTarget.src = '/placeholder.svg'
-                      e.currentTarget.onerror = null
-                    }}
-                  />
-                </DataMask>
+                <img
+                  src={property.image}
+                  alt={property.name}
+                  className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
+                  crossOrigin="anonymous"
+                  onError={(e) => {
+                    e.currentTarget.src = '/placeholder.svg'
+                    e.currentTarget.onerror = null
+                  }}
+                />
               ) : (
                 <div className="flex items-center justify-center h-full text-black font-medium">
                   {t('properties.no_image')}

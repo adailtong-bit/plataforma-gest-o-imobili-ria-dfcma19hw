@@ -58619,9 +58619,9 @@ var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => 
 	})
 }));
 Progress.displayName = Root$6.displayName;
-function DataMask({ children, className }) {
+function DataMask({ children, className, blur }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-		className: cn("inline-block align-middle transition-all duration-300", "blur-[4px] hover:blur-0 select-none hover:select-text cursor-default", className),
+		className: cn("inline-block align-middle transition-all duration-300", blur ? "blur-[4px] hover:blur-0 select-none hover:select-text cursor-default" : "", className),
 		children
 	});
 }
@@ -58789,7 +58789,10 @@ function DashboardContent() {
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-black",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(totalRevenue, language) })
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+								blur: true,
+								children: formatCurrency(totalRevenue, language)
+							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 							className: "text-xs text-black font-bold",
 							children: ["+20.1% ", t("dashboard.from_last_month")]
@@ -66484,18 +66487,15 @@ function Properties() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "relative h-48 w-full bg-slate-200",
 							children: [
-								property$2.image ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-									className: "w-full h-full block rounded-none",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-										src: property$2.image,
-										alt: property$2.name,
-										className: "w-full h-full object-cover transition-transform hover:scale-105 duration-500",
-										crossOrigin: "anonymous",
-										onError: (e) => {
-											e.currentTarget.src = "/placeholder.svg";
-											e.currentTarget.onerror = null;
-										}
-									})
+								property$2.image ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+									src: property$2.image,
+									alt: property$2.name,
+									className: "w-full h-full object-cover transition-transform hover:scale-105 duration-500",
+									crossOrigin: "anonymous",
+									onError: (e) => {
+										e.currentTarget.src = "/placeholder.svg";
+										e.currentTarget.onerror = null;
+									}
 								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 									className: "flex items-center justify-center h-full text-black font-medium",
 									children: t("properties.no_image")
@@ -91164,4 +91164,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BEnGBI3T.js.map
+//# sourceMappingURL=index-BRdDAKIP.js.map

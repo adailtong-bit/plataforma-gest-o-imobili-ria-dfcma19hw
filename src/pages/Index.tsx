@@ -10,13 +10,11 @@ import {
   DollarSign,
   Settings2,
   Trophy,
-  CalendarDays,
   Building,
-  Key,
   TrendingUp,
 } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
-import { useState, useContext, useMemo } from 'react'
+import { useState, useContext } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   ChartContainer,
@@ -37,7 +35,6 @@ import useTaskStore from '@/stores/useTaskStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import usePropertyStore from '@/stores/usePropertyStore'
-import useNotificationStore from '@/stores/useNotificationStore'
 import useVisitStore from '@/stores/useVisitStore'
 import useShortTermStore from '@/stores/useShortTermStore'
 import { AppContext } from '@/stores/AppContext'
@@ -260,7 +257,9 @@ function DashboardContent() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-black">
-                <DataMask>{formatCurrency(totalRevenue, language)}</DataMask>
+                <DataMask blur>
+                  {formatCurrency(totalRevenue, language)}
+                </DataMask>
               </div>
               <p className="text-xs text-black font-bold">
                 +20.1% {t('dashboard.from_last_month')}
