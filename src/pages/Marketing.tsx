@@ -40,7 +40,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { MarketingAutomation } from '@/components/marketing/MarketingAutomation'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { DataMask } from '@/components/DataMask'
-import { formatCurrency } from '@/lib/utils'
 
 export default function Marketing() {
   const {
@@ -86,7 +85,7 @@ export default function Marketing() {
     setPromoOpen(false)
     toast({
       title: t('common.success'),
-      description: 'Discount code created.',
+      description: t('marketing.new_code'),
     })
   }
 
@@ -107,19 +106,19 @@ export default function Marketing() {
         <h1 className="text-3xl font-bold tracking-tight text-navy">
           {t('sidebar.marketing')}
         </h1>
-        <p className="text-muted-foreground">{t('marketing_tab.leads')}</p>
+        <p className="text-muted-foreground">{t('marketing.leads')}</p>
       </div>
 
       <Tabs defaultValue="automation" className="space-y-4">
         <TabsList>
           <TabsTrigger value="automation">
-            <Workflow className="h-4 w-4 mr-2" /> {t('common.automation')}
+            <Workflow className="h-4 w-4 mr-2" /> {t('marketing.automation')}
           </TabsTrigger>
           <TabsTrigger value="promotions">
-            <Tag className="h-4 w-4 mr-2" /> Promotions
+            <Tag className="h-4 w-4 mr-2" /> {t('marketing.promotions')}
           </TabsTrigger>
           <TabsTrigger value="campaigns">
-            <Megaphone className="h-4 w-4 mr-2" /> Campaigns
+            <Megaphone className="h-4 w-4 mr-2" /> {t('marketing.campaigns')}
           </TabsTrigger>
         </TabsList>
 
@@ -132,16 +131,16 @@ export default function Marketing() {
             <Dialog open={promoOpen} onOpenChange={setPromoOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-trust-blue gap-2">
-                  <Plus className="h-4 w-4" /> {t('common.new')} Code
+                  <Plus className="h-4 w-4" /> {t('marketing.new_code')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Create Promotion Code</DialogTitle>
+                  <DialogTitle>{t('marketing.create_promo')}</DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
-                    <Label>Code</Label>
+                    <Label>{t('marketing.code')}</Label>
                     <Input
                       value={newPromo.code}
                       onChange={(e) =>
@@ -166,12 +165,8 @@ export default function Marketing() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="percentage">
-                            Percentage (%)
-                          </SelectItem>
-                          <SelectItem value="fixed_amount">
-                            Fixed Amount ($)
-                          </SelectItem>
+                          <SelectItem value="percentage">%</SelectItem>
+                          <SelectItem value="fixed_amount">$</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -239,10 +234,10 @@ export default function Marketing() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Discount</TableHead>
-                    <TableHead>Validity</TableHead>
-                    <TableHead>Usage</TableHead>
+                    <TableHead>{t('marketing.code')}</TableHead>
+                    <TableHead>{t('marketing.discount')}</TableHead>
+                    <TableHead>{t('marketing.validity')}</TableHead>
+                    <TableHead>{t('marketing.usage')}</TableHead>
                     <TableHead>{t('common.status')}</TableHead>
                     <TableHead className="text-right">
                       {t('common.actions')}
@@ -253,125 +248,11 @@ export default function Marketing() {
                   {promotions.map((p) => (
                     <TableRow key={p.id}>
                       <TableCell className="font-bold font-mono text-lg">
-                        <DataMask>{p.code}</DataMask>
+                        <DataMask blur={true}>{p.code}</DataMask>
                       </TableCell>
                       <TableCell>
-                        {p.value}
-                        {p.type === 'percentage' ? '%' : '$'}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col text-xs text-muted-foreground">
-                          <span>{p.startDate}</span>
-                          <span>{p.endDate}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{p.usageCount}</TableCell>
-                      <TableCell>
-                        <Badge variant={p.active ? 'default' : 'secondary'}>
-                          {p.active
-                            ? t('users.status_active')
-                            : t('common.inactive')}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => deletePromotion(p.id)}
-                        >
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                        <DataMask>
+                          {p.value}
+                          {p.type === 'percentage' ? '%' : '
 
-        <TabsContent value="campaigns">
-          <div className="flex justify-end mb-4">
-            <Dialog open={campOpen} onOpenChange={setCampOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-trust-blue gap-2">
-                  <Plus className="h-4 w-4" /> {t('common.new')} Campaign
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create Campaign</DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label>{t('common.name')}</Label>
-                    <Input
-                      value={newCamp.name}
-                      onChange={(e) =>
-                        setNewCamp({ ...newCamp, name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Target Audience</Label>
-                    <Select
-                      value={newCamp.targetAudience}
-                      onValueChange={(v: any) =>
-                        setNewCamp({ ...newCamp, targetAudience: v })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">{t('common.all')}</SelectItem>
-                        <SelectItem value="past_guests">Past Guests</SelectItem>
-                        <SelectItem value="leads">Leads</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button onClick={handleSaveCamp} className="bg-trust-blue">
-                    {t('common.save')}
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-
-          <div className="grid gap-4">
-            {campaigns.map((c) => (
-              <Card key={c.id}>
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between">
-                    <div>
-                      <CardTitle>{c.name}</CardTitle>
-                      <CardDescription>
-                        Target: {c.targetAudience}
-                      </CardDescription>
-                    </div>
-                    <Badge>{c.status}</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center text-sm text-muted-foreground">
-                    <div className="flex gap-2">
-                      <Calendar className="h-4 w-4" />
-                      {c.startDate || 'TBD'} - {c.endDate || 'TBD'}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteCampaign(c.id)}
-                    >
-                      {t('common.delete')}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
-  )
-}
+`src/pages/MarketAnalysis.tsx`
