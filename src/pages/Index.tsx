@@ -257,9 +257,7 @@ function DashboardContent() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-black">
-                <DataMask blur>
-                  {formatCurrency(totalRevenue, language)}
-                </DataMask>
+                {formatCurrency(totalRevenue, language)}
               </div>
               <p className="text-xs text-black font-bold">
                 +20.1% {t('dashboard.from_last_month')}

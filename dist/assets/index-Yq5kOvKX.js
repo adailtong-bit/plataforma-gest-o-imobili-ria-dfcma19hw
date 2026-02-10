@@ -58789,10 +58789,7 @@ function DashboardContent() {
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-black",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								blur: true,
-								children: formatCurrency(totalRevenue, language)
-							})
+							children: formatCurrency(totalRevenue, language)
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 							className: "text-xs text-black font-bold",
 							children: ["+20.1% ", t("dashboard.from_last_month")]
@@ -91164,4 +91161,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BRdDAKIP.js.map
+//# sourceMappingURL=index-Yq5kOvKX.js.map
