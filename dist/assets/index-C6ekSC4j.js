@@ -19150,6 +19150,24 @@ var Calendar = createLucideIcon("calendar", [
 		key: "8toen8"
 	}]
 ]);
+var ChartColumn = createLucideIcon("chart-column", [
+	["path", {
+		d: "M3 3v16a2 2 0 0 0 2 2h16",
+		key: "c24i48"
+	}],
+	["path", {
+		d: "M18 17V9",
+		key: "2bz60n"
+	}],
+	["path", {
+		d: "M13 17V5",
+		key: "1frdt8"
+	}],
+	["path", {
+		d: "M8 17v-3",
+		key: "17ska0"
+	}]
+]);
 var ChartNoAxesColumnIncreasing = createLucideIcon("chart-no-axes-column-increasing", [
 	["path", {
 		d: "M5 21v-6",
@@ -53583,6 +53601,8 @@ const translations = {
 		marketing: {
 			promotions: "Promoções",
 			campaigns: "Campanhas",
+			automation: "Automação",
+			leads: "Leads & Interessados",
 			new_code: "Novo Código",
 			create_promo: "Criar Código Promocional",
 			discount: "Desconto",
@@ -53591,22 +53611,89 @@ const translations = {
 			new_campaign: "Nova Campanha",
 			create_campaign: "Criar Campanha",
 			target_audience: "Público Alvo",
-			code: "Código"
+			code: "Código",
+			automated_workflows: "Fluxos Automatizados",
+			automated_desc: "Disparar emails baseados em eventos.",
+			email_templates: "Modelos de Email",
+			email_desc: "Conteúdo reutilizável com variáveis.",
+			trigger_event: "Evento Gatilho",
+			timing: "Timing",
+			template: "Modelo",
+			subject: "Assunto",
+			body: "Corpo",
+			placeholders: "Variáveis disponíveis",
+			active: "Ativo",
+			booking_confirmed: "Reserva Confirmada",
+			check_in: "Check-in",
+			check_out: "Check-out",
+			cancellation: "Cancelamento",
+			immediately: "Imediatamente",
+			hours: "horas",
+			before: "antes",
+			after: "depois"
 		},
 		market_analysis: {
+			title: "Análise de Mercado",
+			subtitle: "Benchmark de mercado e tendências.",
 			demand_index: "Índice de Demanda",
 			peak_season: "Alta temporada aproximando",
 			comp_set_rank: "Ranking Competitivo",
 			rank_desc: "De 12 hotéis locais",
 			competitor_pricing: "Preços da Concorrência",
 			demand_forecast: "Previsão de Demanda",
-			no_forecast: "Nenhuma previsão disponível."
+			no_forecast: "Nenhuma previsão disponível.",
+			avg_occupancy: "Ocupação Média",
+			avg_daily_rate: "Diária Média (ADR)",
+			spending_trends: "Tendências de Gastos",
+			high: "Alta",
+			medium: "Média",
+			low: "Baixa"
 		},
 		analytics_page: {
 			occupancy_comparison: "Comparação de Ocupação",
 			profitability_comparison: "Comparação de Rentabilidade",
 			internal_performance: "Performance Interna",
-			market_average: "Média de Mercado"
+			market_average: "Média de Mercado",
+			benchmark_desc: "Comparativo de desempenho com o mercado."
+		},
+		reports: {
+			title: "Relatórios Avançados",
+			subtitle: "Análise de inventário, manutenção e condições das propriedades.",
+			period: "Período",
+			property: "Propriedade",
+			apply_filters: "Aplicar Filtros",
+			maintenance_analytics: "Análise de Manutenção",
+			inventory_health: "Saúde do Inventário",
+			maintenance_efficiency: "Eficiência de Manutenção",
+			inventory_condition: "Condição do Inventário",
+			damage_by_property: "Danos por Propriedade",
+			total_items: "Total de Itens",
+			damaged_poor: "Danificado/Ruim",
+			total_spend: "Gasto Total",
+			total_tasks: "Total de Tarefas",
+			avg_resolution: "Resolução Média",
+			avg_cost_task: "Custo Médio/Tarefa",
+			cost_breakdown: "Detalhamento de Custos",
+			distribution_expenses: "Distribuição de Despesas",
+			monthly_expenditure: "Despesa Mensal",
+			spending_trends: "Tendências de Gastos",
+			reports: "Relatórios"
+		},
+		service_pricing: {
+			title: "Preços de Serviços",
+			subtitle: "Gerencie custos e preços de venda.",
+			catalog_tab: "Catálogo de Preços",
+			analytics_tab: "Relatórios",
+			new_rate: "Nova Taxa",
+			service_name: "Nome do Serviço",
+			partner_payment: "Pagamento Parceiro",
+			pm_value: "Valor PM",
+			product_price: "Preço Final",
+			valid_from: "Válido De",
+			valid_to: "Válido Até",
+			margin: "Margem",
+			distribution: "Distribuição",
+			profit_analysis: "Análise de Lucro"
 		},
 		common: {
 			dashboard: "Painel Imobiliário",
@@ -54391,10 +54478,6 @@ const translations = {
 			block_confirm: "Tem certeza que deseja bloquear este usuário?",
 			block_success: "Usuário bloqueado com sucesso."
 		},
-		service_pricing: {
-			title: "Preços de Serviços",
-			subtitle: "Gerencie custos e preços de venda."
-		},
 		workflows: {
 			title: "Workflows",
 			subtitle: "Automatize processos operacionais.",
@@ -54523,6 +54606,8 @@ const translations = {
 		marketing: {
 			promotions: "Promotions",
 			campaigns: "Campaigns",
+			automation: "Automation",
+			leads: "Leads & Inquiries",
 			new_code: "New Code",
 			create_promo: "Create Promotion Code",
 			discount: "Discount",
@@ -54531,22 +54616,89 @@ const translations = {
 			new_campaign: "New Campaign",
 			create_campaign: "Create Campaign",
 			target_audience: "Target Audience",
-			code: "Code"
+			code: "Code",
+			automated_workflows: "Automated Workflows",
+			automated_desc: "Trigger emails based on events.",
+			email_templates: "Email Templates",
+			email_desc: "Reusable content with placeholders.",
+			trigger_event: "Trigger Event",
+			timing: "Timing",
+			template: "Template",
+			subject: "Subject",
+			body: "Body",
+			placeholders: "Available placeholders",
+			active: "Active",
+			booking_confirmed: "Booking Confirmed",
+			check_in: "Check-in",
+			check_out: "Check-out",
+			cancellation: "Cancellation",
+			immediately: "Immediately",
+			hours: "hours",
+			before: "before",
+			after: "after"
 		},
 		market_analysis: {
+			title: "Market Analysis",
+			subtitle: "Market benchmark and trends.",
 			demand_index: "Demand Index",
 			peak_season: "Peak season approaching",
 			comp_set_rank: "Comp Set Rank",
 			rank_desc: "Out of 12 local hotels",
 			competitor_pricing: "Competitor Pricing",
 			demand_forecast: "Demand Forecast",
-			no_forecast: "No forecast data available."
+			no_forecast: "No forecast data available.",
+			avg_occupancy: "Avg Occupancy",
+			avg_daily_rate: "Avg Daily Rate (ADR)",
+			spending_trends: "Spending Trends",
+			high: "High",
+			medium: "Medium",
+			low: "Low"
 		},
 		analytics_page: {
 			occupancy_comparison: "Occupancy Comparison",
 			profitability_comparison: "Profitability Comparison",
 			internal_performance: "Internal Performance",
-			market_average: "Market Average"
+			market_average: "Market Average",
+			benchmark_desc: "Performance comparison with market data."
+		},
+		reports: {
+			title: "Advanced Reports",
+			subtitle: "Inventory, maintenance, and property condition analysis.",
+			period: "Period",
+			property: "Property",
+			apply_filters: "Apply Filters",
+			maintenance_analytics: "Maintenance Analytics",
+			inventory_health: "Inventory Health",
+			maintenance_efficiency: "Maintenance Efficiency",
+			inventory_condition: "Inventory Condition",
+			damage_by_property: "Damage by Property",
+			total_items: "Total Items",
+			damaged_poor: "Damaged/Poor",
+			total_spend: "Total Spend",
+			total_tasks: "Total Tasks",
+			avg_resolution: "Avg Resolution",
+			avg_cost_task: "Avg Cost/Task",
+			cost_breakdown: "Cost Breakdown",
+			distribution_expenses: "Distribution of Expenses",
+			monthly_expenditure: "Monthly Expenditure",
+			spending_trends: "Spending Trends",
+			reports: "Reports"
+		},
+		service_pricing: {
+			title: "Service Pricing",
+			subtitle: "Manage costs and selling prices.",
+			catalog_tab: "Price Catalog",
+			analytics_tab: "Analytics",
+			new_rate: "New Rate",
+			service_name: "Service Name",
+			partner_payment: "Partner Payment",
+			pm_value: "PM Value",
+			product_price: "Product Price",
+			valid_from: "Valid From",
+			valid_to: "Valid To",
+			margin: "Margin",
+			distribution: "Distribution",
+			profit_analysis: "Profit Analysis"
 		},
 		common: {
 			dashboard: "Real Estate Dashboard",
@@ -55463,6 +55615,8 @@ const translations = {
 		marketing: {
 			promotions: "Promociones",
 			campaigns: "Campañas",
+			automation: "Automatización",
+			leads: "Leads e Interesados",
 			new_code: "Nuevo Código",
 			create_promo: "Crear Código Promocional",
 			discount: "Descuento",
@@ -55471,22 +55625,89 @@ const translations = {
 			new_campaign: "Nueva Campaña",
 			create_campaign: "Crear Campaña",
 			target_audience: "Público Objetivo",
-			code: "Código"
+			code: "Código",
+			automated_workflows: "Flujos Automatizados",
+			automated_desc: "Activar correos basados en eventos.",
+			email_templates: "Plantillas de Correo",
+			email_desc: "Contenido reutilizable con variables.",
+			trigger_event: "Evento Disparador",
+			timing: "Tiempo",
+			template: "Plantilla",
+			subject: "Asunto",
+			body: "Cuerpo",
+			placeholders: "Variables disponibles",
+			active: "Activo",
+			booking_confirmed: "Reserva Confirmada",
+			check_in: "Check-in",
+			check_out: "Check-out",
+			cancellation: "Cancelación",
+			immediately: "Inmediatamente",
+			hours: "horas",
+			before: "antes",
+			after: "después"
 		},
 		market_analysis: {
+			title: "Análisis de Mercado",
+			subtitle: "Benchmark de mercado y tendencias.",
 			demand_index: "Índice de Demanda",
 			peak_season: "Temporada alta aproximándose",
 			comp_set_rank: "Ranking Competitivo",
 			rank_desc: "De 12 hoteles locales",
 			competitor_pricing: "Precios de la Competencia",
 			demand_forecast: "Pronóstico de Demanda",
-			no_forecast: "No hay datos de pronóstico disponibles."
+			no_forecast: "No hay datos de pronóstico disponibles.",
+			avg_occupancy: "Ocupación Media",
+			avg_daily_rate: "Tarifa Media Diaria (ADR)",
+			spending_trends: "Tendencias de Gasto",
+			high: "Alta",
+			medium: "Media",
+			low: "Baja"
 		},
 		analytics_page: {
 			occupancy_comparison: "Comparación de Ocupación",
 			profitability_comparison: "Comparación de Rentabilidad",
 			internal_performance: "Rendimiento Interno",
-			market_average: "Promedio del Mercado"
+			market_average: "Promedio del Mercado",
+			benchmark_desc: "Comparación de rendimiento con el mercado."
+		},
+		reports: {
+			title: "Informes Avanzados",
+			subtitle: "Análisis de inventario, mantenimiento y condiciones.",
+			period: "Período",
+			property: "Propiedad",
+			apply_filters: "Aplicar Filtros",
+			maintenance_analytics: "Análisis de Mantenimiento",
+			inventory_health: "Salud del Inventario",
+			maintenance_efficiency: "Eficiencia de Mantenimiento",
+			inventory_condition: "Condición del Inventario",
+			damage_by_property: "Daños por Propiedad",
+			total_items: "Total de Artículos",
+			damaged_poor: "Dañado/Malo",
+			total_spend: "Gasto Total",
+			total_tasks: "Total de Tareas",
+			avg_resolution: "Resolución Media",
+			avg_cost_task: "Costo Medio/Tarea",
+			cost_breakdown: "Desglose de Costos",
+			distribution_expenses: "Distribución de Gastos",
+			monthly_expenditure: "Gasto Mensual",
+			spending_trends: "Tendencias de Gasto",
+			reports: "Informes"
+		},
+		service_pricing: {
+			title: "Precios de Servicios",
+			subtitle: "Gestione costos y precios de venta.",
+			catalog_tab: "Catálogo de Precios",
+			analytics_tab: "Informes",
+			new_rate: "Nueva Tarifa",
+			service_name: "Nombre del Servicio",
+			partner_payment: "Pago al Socio",
+			pm_value: "Valor PM",
+			product_price: "Precio Final",
+			valid_from: "Válido Desde",
+			valid_to: "Válido Hasta",
+			margin: "Margen",
+			distribution: "Distribución",
+			profit_analysis: "Análisis de Beneficio"
 		},
 		common: {
 			dashboard: "Panel Inmobiliario",
@@ -56888,6 +57109,7 @@ var useFinancialStore = () => {
 		financialSettings: context.financialSettings,
 		bankStatements: context.bankStatements,
 		ledgerEntries: context.ledgerEntries,
+		genericServiceRates: context.genericServiceRates,
 		addInvoice: context.addInvoice,
 		updateInvoice: context.updateInvoice,
 		markPaymentAs: context.markPaymentAs,
@@ -56895,7 +57117,10 @@ var useFinancialStore = () => {
 		uploadBankStatement: context.uploadBankStatement,
 		addLedgerEntry: context.addLedgerEntry,
 		updateLedgerEntry: context.updateLedgerEntry,
-		deleteLedgerEntry: context.deleteLedgerEntry
+		deleteLedgerEntry: context.deleteLedgerEntry,
+		addGenericServiceRate: context.addGenericServiceRate,
+		updateGenericServiceRate: context.updateGenericServiceRate,
+		deleteGenericServiceRate: context.deleteGenericServiceRate
 	};
 };
 var useFinancialStore_default = useFinancialStore;
@@ -61196,7 +61421,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$77({ inst: {
+			cachedValue = useState$78({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -61233,7 +61458,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$65 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$77 = React$65.useState, useEffect$25 = React$65.useEffect, useLayoutEffect$2 = React$65.useLayoutEffect, useDebugValue = React$65.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$65 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$78 = React$65.useState, useEffect$25 = React$65.useEffect, useLayoutEffect$2 = React$65.useLayoutEffect, useDebugValue = React$65.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$65.useSyncExternalStore ? React$65.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -83638,10 +83863,227 @@ function Users() {
 	});
 }
 function ServiceCatalog() {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: "Service Catalog Placeholder" });
-}
-function ServiceAnalytics() {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: "Service Analytics Placeholder" });
+	const { genericServiceRates: genericServiceRates$1, addGenericServiceRate, updateGenericServiceRate, deleteGenericServiceRate } = useFinancialStore_default();
+	const { t, language } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isDialogOpen, setIsDialogOpen] = (0, import_react.useState)(false);
+	const [editingRate, setEditingRate] = (0, import_react.useState)({
+		serviceName: "",
+		partnerPayment: 0,
+		pmValue: 0,
+		productPrice: 0,
+		validFrom: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+	});
+	const handleSave = () => {
+		if (!editingRate.serviceName || editingRate.productPrice === void 0 || editingRate.productPrice < 0) {
+			toast$2({
+				title: t("common.error"),
+				description: t("common.validation_error_desc"),
+				variant: "destructive"
+			});
+			return;
+		}
+		const rate = {
+			...editingRate,
+			partnerPayment: Number(editingRate.partnerPayment),
+			pmValue: Number(editingRate.pmValue),
+			productPrice: Number(editingRate.productPrice)
+		};
+		if (rate.id) {
+			updateGenericServiceRate(rate);
+			toast$2({
+				title: t("common.success"),
+				description: t("common.config_saved_desc")
+			});
+		} else {
+			addGenericServiceRate({
+				...rate,
+				id: `sr-${Date.now()}`,
+				type: "generic"
+			});
+			toast$2({
+				title: t("common.success"),
+				description: t("common.success_desc")
+			});
+		}
+		setIsDialogOpen(false);
+		setEditingRate({
+			serviceName: "",
+			partnerPayment: 0,
+			pmValue: 0,
+			productPrice: 0,
+			validFrom: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+		});
+	};
+	const handleDelete = (id) => {
+		deleteGenericServiceRate(id);
+		toast$2({
+			title: t("common.success"),
+			description: t("common.delete_success")
+		});
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "space-y-4",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex justify-between items-center",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+					className: "text-lg font-medium",
+					children: t("service_pricing.catalog_tab")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: () => setIsDialogOpen(true),
+					className: "gap-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+						" ",
+						t("service_pricing.new_rate")
+					]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "rounded-md border bg-white",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("service_pricing.service_name") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("service_pricing.partner_payment") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("service_pricing.pm_value") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("service_pricing.product_price") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("service_pricing.margin") }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "text-right",
+						children: t("common.actions")
+					})
+				] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: genericServiceRates$1.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					colSpan: 6,
+					className: "text-center h-24 text-muted-foreground",
+					children: t("common.empty")
+				}) }) : genericServiceRates$1.map((rate) => {
+					const margin = rate.productPrice - (rate.partnerPayment + rate.pmValue);
+					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "font-medium",
+							children: rate.serviceName
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							blur: true,
+							children: formatCurrency(rate.partnerPayment, language)
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							blur: true,
+							children: formatCurrency(rate.pmValue, language)
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(rate.productPrice, language) }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							blur: true,
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: margin >= 0 ? "text-green-600" : "text-red-600",
+								children: formatCurrency(margin, language)
+							})
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "ghost",
+									size: "icon",
+									onClick: () => {
+										setEditingRate(rate);
+										setIsDialogOpen(true);
+									},
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-4 w-4" })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "ghost",
+									size: "icon",
+									className: "text-red-500 hover:text-red-700",
+									onClick: () => handleDelete(rate.id),
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+								})]
+							})
+						})
+					] }, rate.id);
+				}) })] })
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: isDialogOpen,
+				onOpenChange: setIsDialogOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRate.id ? t("common.edit") + " " + t("common.rate") : t("service_pricing.new_rate") }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-4 py-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("service_pricing.service_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: editingRate.serviceName,
+									onChange: (e) => setEditingRate({
+										...editingRate,
+										serviceName: e.target.value
+									})
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-3 gap-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("service_pricing.partner_payment") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "number",
+											value: editingRate.partnerPayment,
+											onChange: (e) => setEditingRate({
+												...editingRate,
+												partnerPayment: Number(e.target.value)
+											})
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("service_pricing.pm_value") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "number",
+											value: editingRate.pmValue,
+											onChange: (e) => setEditingRate({
+												...editingRate,
+												pmValue: Number(e.target.value)
+											})
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("service_pricing.product_price") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "number",
+											value: editingRate.productPrice,
+											onChange: (e) => setEditingRate({
+												...editingRate,
+												productPrice: Number(e.target.value)
+											})
+										})]
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("service_pricing.valid_from") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "date",
+									value: editingRate.validFrom,
+									onChange: (e) => setEditingRate({
+										...editingRate,
+										validFrom: e.target.value
+									})
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "outline",
+						onClick: () => setIsDialogOpen(false),
+						children: t("common.cancel")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleSave,
+						children: t("common.save")
+					})] })
+				] })
+			})
+		]
+	});
 }
 function ServicePricing() {
 	const { t } = useLanguageStore_default();
@@ -83660,23 +84102,26 @@ function ServicePricing() {
 			defaultValue: "catalog",
 			className: "w-full",
 			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
-					className: "mb-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-						value: "catalog",
-						children: t("common.service_pricing")
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-						value: "analytics",
-						children: t("reports.reports")
-					})]
-				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+					value: "catalog",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(List, { className: "h-4 w-4 mr-2" }), t("service_pricing.catalog_tab")]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+					value: "analytics",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartColumn, { className: "h-4 w-4 mr-2" }), t("service_pricing.analytics_tab")]
+				})] }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "catalog",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ServiceCatalog, {})
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+						className: "pt-6",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ServiceCatalog, {})
+					}) })
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "analytics",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ServiceAnalytics, {})
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("service_pricing.profit_analysis") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "h-[200px] flex items-center justify-center text-muted-foreground",
+						children: t("common.empty")
+					}) })] })
 				})
 			]
 		})]
@@ -86366,11 +86811,19 @@ function Analytics() {
 						className: "pb-2",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
 							className: "text-sm font-medium text-blue-800",
-							children: [t("analytics.internal_perf"), " (Avg Occ)"]
+							children: [
+								t("analytics.internal_perf"),
+								" (",
+								t("analytics.occupancy"),
+								")"
+							]
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 						className: "text-3xl font-bold text-blue-900",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [Math.round(filteredData.reduce((acc, curr) => acc + curr.internalOcc, 0) / filteredData.length), "%"] })
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, {
+							blur: true,
+							children: [Math.round(filteredData.reduce((acc, curr) => acc + curr.internalOcc, 0) / filteredData.length), "%"]
+						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 						className: "text-xs text-blue-600 font-medium mt-1",
 						children: [
@@ -86389,11 +86842,19 @@ function Analytics() {
 						className: "pb-2",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
 							className: "text-sm font-medium text-green-800",
-							children: [t("analytics.internal_perf"), " (Avg Profit)"]
+							children: [
+								t("analytics.internal_perf"),
+								" (",
+								t("common.profit"),
+								")"
+							]
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 						className: "text-3xl font-bold text-green-900",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", Math.round(filteredData.reduce((acc, curr) => acc + curr.internalProfit, 0) / filteredData.length).toLocaleString()] })
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, {
+							blur: true,
+							children: ["$", Math.round(filteredData.reduce((acc, curr) => acc + curr.internalProfit, 0) / filteredData.length).toLocaleString()]
+						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 						className: "text-xs text-green-600 font-medium mt-1",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [
@@ -86415,6 +86876,7 @@ function Analytics() {
 					className: "h-[300px] w-full",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
 						className: "w-full h-full block",
+						blur: true,
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 							config: {
 								internalOcc: {
@@ -86474,6 +86936,7 @@ function Analytics() {
 					className: "h-[300px] w-full",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
 						className: "w-full h-full block",
+						blur: true,
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 							config: {
 								internalProfit: {
@@ -87173,6 +87636,7 @@ function Reports() {
 	const { properties: properties$1 } = usePropertyStore_default();
 	const { tasks: tasks$1 } = useTaskStore_default();
 	const { toast: toast$2 } = useToast();
+	const { t } = useLanguageStore_default();
 	const [dateRange, setDateRange] = (0, import_react.useState)({
 		from: subDays(/* @__PURE__ */ new Date(), 90),
 		to: /* @__PURE__ */ new Date()
@@ -87180,9 +87644,9 @@ function Reports() {
 	const [selectedProperty, setSelectedProperty] = (0, import_react.useState)("all");
 	const filteredProperties = properties$1.filter((p$1) => selectedProperty === "all" ? true : p$1.id === selectedProperty);
 	const propertyIds = filteredProperties.map((p$1) => p$1.id);
-	const filteredTasks = tasks$1.filter((t) => {
-		const matchesProperty = propertyIds.includes(t.propertyId);
-		const matchesDate = dateRange?.from && dateRange?.to ? isWithinInterval(new Date(t.date), {
+	const filteredTasks = tasks$1.filter((t$1) => {
+		const matchesProperty = propertyIds.includes(t$1.propertyId);
+		const matchesDate = dateRange?.from && dateRange?.to ? isWithinInterval(new Date(t$1.date), {
 			start: dateRange.from,
 			end: dateRange.to
 		}) : true;
@@ -87228,19 +87692,25 @@ function Reports() {
 			"Date",
 			"Cost ($)",
 			"Description"
-		], filteredTasks.map((t) => [
-			t.propertyName,
-			t.title,
-			t.status,
-			t.date,
-			t.price || 0,
-			t.description || ""
+		], filteredTasks.map((t$1) => [
+			t$1.propertyName,
+			t$1.title,
+			t$1.status,
+			t$1.date,
+			t$1.price || 0,
+			t$1.description || ""
 		]));
 		toast$2({
-			title: "Export Successful",
-			description: "The report has been downloaded."
+			title: t("common.export_success_title"),
+			description: t("common.export_success")
 		});
 	};
+	const totalItems = filteredProperties.reduce((acc, p$1) => acc + (p$1.inventory?.length || 0), 0);
+	const totalDamaged = filteredProperties.reduce((acc, p$1) => acc + (p$1.inventory?.filter((i) => [
+		"Damaged",
+		"Poor",
+		"Broken"
+	].includes(i.condition)).length || 0), 0);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
 		children: [
@@ -87250,15 +87720,19 @@ function Reports() {
 					className: "flex flex-col gap-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 						className: "text-3xl font-bold tracking-tight text-navy",
-						children: "Relatórios Avançados"
+						children: t("reports.title")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 						className: "text-muted-foreground",
-						children: "Análise de inventário, manutenção e condições das propriedades."
+						children: t("reports.subtitle")
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 					onClick: handleExport,
 					className: "bg-trust-blue gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" }), " Export Data"]
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" }),
+						" ",
+						t("common.export_data")
+					]
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
@@ -87270,7 +87744,7 @@ function Reports() {
 							className: "grid gap-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 								className: "text-sm font-medium",
-								children: "Período"
+								children: t("reports.period")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DatePickerWithRange, {
 								date: dateRange,
 								setDate: setDateRange
@@ -87280,13 +87754,13 @@ function Reports() {
 							className: "grid gap-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 								className: "text-sm font-medium",
-								children: "Propriedade"
+								children: t("reports.property")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 								value: selectedProperty,
 								onValueChange: setSelectedProperty,
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Todas" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.all") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "all",
-									children: "Todas as Propriedades"
+									children: t("common.all")
 								}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: p$1.id,
 									children: p$1.name
@@ -87296,7 +87770,11 @@ function Reports() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							variant: "outline",
 							className: "gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Funnel, { className: "h-4 w-4" }), " Aplicar Filtros"]
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Funnel, { className: "h-4 w-4" }),
+								" ",
+								t("reports.apply_filters")
+							]
 						})
 					]
 				})
@@ -87307,16 +87785,16 @@ function Reports() {
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 						value: "maintenance",
-						children: "Maintenance & Efficiency"
+						children: t("reports.maintenance_analytics")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 						value: "inventory",
-						children: "Inventory Health"
+						children: t("reports.inventory_health")
 					})] }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 						value: "maintenance",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MaintenanceReport, {
 							tasks: filteredTasks,
-							title: "Maintenance Performance"
+							title: t("reports.maintenance_efficiency")
 						})
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
@@ -87324,7 +87802,7 @@ function Reports() {
 						className: "space-y-6",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid grid-cols-1 md:grid-cols-2 gap-6",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Condição do Inventário" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Distribuição de itens por estado de conservação" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("reports.inventory_condition") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("reports.inventory_condition") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 								className: "h-[300px]",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 									config: { value: {
@@ -87348,7 +87826,7 @@ function Reports() {
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, {})
 									] })
 								})
-							}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Danos por Propriedade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Propriedades com maior número de itens danificados" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("reports.damage_by_property") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("reports.damage_by_property") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 								className: "h-[300px]",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 									config: { count: {
@@ -87393,24 +87871,20 @@ function Reports() {
 								className: "pb-2",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
 									className: "text-sm font-medium",
-									children: "Total Items"
+									children: t("reports.total_items")
 								})
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 								className: "text-2xl font-bold",
-								children: filteredProperties.reduce((acc, p$1) => acc + (p$1.inventory?.length || 0), 0)
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: totalItems })
 							}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
 								className: "pb-2",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
 									className: "text-sm font-medium",
-									children: "Damaged/Poor"
+									children: t("reports.damaged_poor")
 								})
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 								className: "text-2xl font-bold text-red-600",
-								children: filteredProperties.reduce((acc, p$1) => acc + (p$1.inventory?.filter((i) => [
-									"Damaged",
-									"Poor",
-									"Broken"
-								].includes(i.condition)).length || 0), 0)
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: totalDamaged })
 							}) })] })]
 						})]
 					})
@@ -89925,6 +90399,7 @@ function PointOfSale() {
 function MarketingAutomation() {
 	const { marketingWorkflows: marketingWorkflows$1, emailTemplates: emailTemplates$1, addMarketingWorkflow, updateMarketingWorkflow, deleteMarketingWorkflow, addEmailTemplate, updateEmailTemplate, deleteEmailTemplate } = useManagementStore_default();
 	const { toast: toast$2 } = useToast();
+	const { t } = useLanguageStore_default();
 	const [workflowDialogOpen, setWorkflowDialogOpen] = (0, import_react.useState)(false);
 	const [templateDialogOpen, setTemplateDialogOpen] = (0, import_react.useState)(false);
 	const [editingWorkflow, setEditingWorkflow] = (0, import_react.useState)({
@@ -89941,8 +90416,8 @@ function MarketingAutomation() {
 	const handleSaveWorkflow = () => {
 		if (!editingWorkflow.name || !editingWorkflow.templateId) {
 			toast$2({
-				title: "Error",
-				description: "Name and Template are required.",
+				title: t("common.error"),
+				description: t("common.validation_error_desc"),
 				variant: "destructive"
 			});
 			return;
@@ -89960,15 +90435,18 @@ function MarketingAutomation() {
 			active: true
 		});
 		toast$2({
-			title: "Success",
-			description: "Workflow saved."
+			title: t("common.success"),
+			description: t("marketing.workflow_started", {
+				action: "save",
+				name: editingWorkflow.name
+			})
 		});
 	};
 	const handleSaveTemplate = () => {
 		if (!editingTemplate.name || !editingTemplate.subject || !editingTemplate.body) {
 			toast$2({
-				title: "Error",
-				description: "All fields are required.",
+				title: t("common.error"),
+				description: t("common.validation_error_desc"),
 				variant: "destructive"
 			});
 			return;
@@ -89985,8 +90463,8 @@ function MarketingAutomation() {
 			body: ""
 		});
 		toast$2({
-			title: "Success",
-			description: "Template saved."
+			title: t("common.success"),
+			description: t("common.save_success")
 		});
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -89994,20 +90472,24 @@ function MarketingAutomation() {
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 				className: "flex flex-row items-center justify-between",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Automated Workflows" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Trigger emails based on booking events." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("marketing.automated_workflows") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("marketing.automated_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 					onClick: () => setWorkflowDialogOpen(true),
 					className: "gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " New Workflow"]
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+						" ",
+						t("marketing.new_workflow")
+					]
 				})]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Name" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Trigger" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Timing" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Template" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.trigger_event") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.timing") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.template") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 					className: "text-right",
-					children: "Actions"
+					children: t("common.actions")
 				})
 			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: marketingWorkflows$1.map((wf) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -90018,11 +90500,11 @@ function MarketingAutomation() {
 					className: "capitalize",
 					children: wf.trigger.replace("_", " ")
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.offsetTime === 0 ? "Immediately" : `${Math.abs(wf.offsetTime)} hours ${wf.offsetTime > 0 ? "after" : "before"}` }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: emailTemplates$1.find((t) => t.id === wf.templateId)?.name || "Unknown" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.offsetTime === 0 ? t("marketing.immediately") : `${Math.abs(wf.offsetTime)} ${t("marketing.hours")} ${wf.offsetTime > 0 ? t("marketing.after") : t("marketing.before")}` }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: emailTemplates$1.find((t$1) => t$1.id === wf.templateId)?.name || "Unknown" }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 					variant: wf.active ? "default" : "secondary",
-					children: wf.active ? "Active" : "Inactive"
+					children: wf.active ? t("common.active") : t("common.inactive")
 				}) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 					className: "text-right",
@@ -90048,15 +90530,15 @@ function MarketingAutomation() {
 			] }, wf.id)) })] }) })] }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 				className: "flex flex-row items-center justify-between",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Email Templates" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [
-					"Reusable content with placeholders like ",
-					"{guest_name}",
-					"."
-				] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("marketing.email_templates") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("marketing.email_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 					onClick: () => setTemplateDialogOpen(true),
 					variant: "outline",
 					className: "gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, { className: "h-4 w-4" }), " New Template"]
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, { className: "h-4 w-4" }),
+						" ",
+						t("marketing.new_message")
+					]
 				})]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
@@ -90102,13 +90584,13 @@ function MarketingAutomation() {
 				open: workflowDialogOpen,
 				onOpenChange: setWorkflowDialogOpen,
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingWorkflow.id ? "Edit Workflow" : "New Workflow" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingWorkflow.id ? t("marketing.edit_workflow") : t("marketing.new_workflow") }) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-4 py-4",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									value: editingWorkflow.name,
 									onChange: (e) => setEditingWorkflow({
 										...editingWorkflow,
@@ -90118,7 +90600,7 @@ function MarketingAutomation() {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Trigger Event" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.trigger_event") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 									value: editingWorkflow.trigger,
 									onValueChange: (v) => setEditingWorkflow({
 										...editingWorkflow,
@@ -90127,19 +90609,19 @@ function MarketingAutomation() {
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "booking_confirmed",
-											children: "Booking Confirmed"
+											children: t("marketing.booking_confirmed")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "check_in",
-											children: "Check In"
+											children: t("marketing.check_in")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "check_out",
-											children: "Check Out"
+											children: t("marketing.check_out")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "cancellation",
-											children: "Cancellation"
+											children: t("marketing.cancellation")
 										})
 									] })]
 								})]
@@ -90147,7 +90629,12 @@ function MarketingAutomation() {
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
 								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Timing (Hours offset)" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+										t("marketing.timing"),
+										" (",
+										t("marketing.hours"),
+										" offset)"
+									] }),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										type: "number",
 										value: editingWorkflow.offsetTime,
@@ -90159,22 +90646,22 @@ function MarketingAutomation() {
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 										className: "text-xs text-muted-foreground",
-										children: "Negative for \"before event\", positive for \"after event\", 0 for \"immediate\"."
+										children: "Negative for \"before\", positive for \"after\", 0 for \"immediate\"."
 									})
 								]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email Template" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.template") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 									value: editingWorkflow.templateId,
 									onValueChange: (v) => setEditingWorkflow({
 										...editingWorkflow,
 										templateId: v
 									}),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select a template" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: emailTemplates$1.map((t) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: t.id,
-										children: t.name
-									}, t.id)) })]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: emailTemplates$1.map((t$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: t$1.id,
+										children: t$1.name
+									}, t$1.id)) })]
 								})]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -90185,13 +90672,13 @@ function MarketingAutomation() {
 										...editingWorkflow,
 										active: c$1
 									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Active" })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.active") })]
 							})
 						]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						onClick: handleSaveWorkflow,
-						children: "Save Workflow"
+						children: t("common.save")
 					}) })
 				] })
 			}),
@@ -90201,13 +90688,13 @@ function MarketingAutomation() {
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 					className: "max-w-lg",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingTemplate.id ? "Edit Template" : "New Template" }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingTemplate.id ? t("common.edit") + " " + t("marketing.template") : t("marketing.new_message") }) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-4 py-4",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Template Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.template") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: editingTemplate.name,
 										onChange: (e) => setEditingTemplate({
 											...editingTemplate,
@@ -90217,7 +90704,7 @@ function MarketingAutomation() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email Subject" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.subject") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: editingTemplate.subject,
 										onChange: (e) => setEditingTemplate({
 											...editingTemplate,
@@ -90228,7 +90715,7 @@ function MarketingAutomation() {
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
 									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email Body" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.body") }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
 											value: editingTemplate.body,
 											onChange: (e) => setEditingTemplate({
@@ -90240,12 +90727,13 @@ function MarketingAutomation() {
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 											className: "text-xs text-muted-foreground",
 											children: [
-												"Available placeholders: ",
+												t("marketing.placeholders"),
+												": ",
 												"{guest_name}",
-												", ",
-												"{property_name}",
 												",",
 												" ",
+												"{property_name}",
+												", ",
 												"{check_in}",
 												", ",
 												"{check_out}",
@@ -90258,7 +90746,7 @@ function MarketingAutomation() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							onClick: handleSaveTemplate,
-							children: "Save Template"
+							children: t("common.save")
 						}) })
 					]
 				})
@@ -90299,7 +90787,7 @@ function Marketing() {
 		setPromoOpen(false);
 		toast$2({
 			title: t("common.success"),
-			description: "Discount code created."
+			description: t("marketing.new_code")
 		});
 	};
 	const handleSaveCamp = () => {
@@ -90321,7 +90809,7 @@ function Marketing() {
 				children: t("sidebar.marketing")
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 				className: "text-muted-foreground",
-				children: t("marketing_tab.leads")
+				children: t("marketing.leads")
 			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
 			defaultValue: "automation",
@@ -90333,16 +90821,24 @@ function Marketing() {
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Workflow, { className: "h-4 w-4 mr-2" }),
 							" ",
-							t("common.automation")
+							t("marketing.automation")
 						]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 						value: "promotions",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tag, { className: "h-4 w-4 mr-2" }), " Promotions"]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tag, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t("marketing.promotions")
+						]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 						value: "campaigns",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Megaphone, { className: "h-4 w-4 mr-2" }), " Campaigns"]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Megaphone, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t("marketing.campaigns")
+						]
 					})
 				] }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
@@ -90363,16 +90859,15 @@ function Marketing() {
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
 										" ",
-										t("common.new"),
-										" Code"
+										t("marketing.new_code")
 									]
 								})
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Create Promotion Code" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("marketing.create_promo") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-4 py-4",
 								children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Code" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 											value: newPromo.code,
 											onChange: (e) => setNewPromo({
 												...newPromo,
@@ -90393,10 +90888,10 @@ function Marketing() {
 												}),
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 													value: "percentage",
-													children: "Percentage (%)"
+													children: "%"
 												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 													value: "fixed_amount",
-													children: "Fixed Amount ($)"
+													children: "$"
 												})] })]
 											})]
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -90456,10 +90951,10 @@ function Marketing() {
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 						className: "p-0",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Code" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Discount" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Validity" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Usage" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.code") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.discount") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.validity") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.usage") }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 								className: "text-right",
@@ -90468,25 +90963,29 @@ function Marketing() {
 						] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: promotions$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 								className: "font-bold font-mono text-lg",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: p$1.code })
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+									blur: true,
+									children: p$1.code
+								})
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: [p$1.value, p$1.type === "percentage" ? "%" : "$"] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [p$1.value, p$1.type === "percentage" ? "%" : "$"] }) }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex flex-col text-xs text-muted-foreground",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: p$1.startDate }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: p$1.endDate })]
 							}) }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: p$1.usageCount }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: p$1.usageCount }) }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: p$1.active ? "default" : "secondary",
-								children: p$1.active ? t("users.status_active") : t("common.inactive")
+								children: p$1.active ? t("common.active") : t("common.inactive")
 							}) }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 								className: "text-right",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 									variant: "ghost",
 									size: "icon",
+									className: "text-red-500 hover:text-red-700",
 									onClick: () => deletePromotion(p$1.id),
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 text-red-500" })
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
 								})
 							})
 						] }, p$1.id)) })] })
@@ -90506,11 +91005,10 @@ function Marketing() {
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
 										" ",
-										t("common.new"),
-										" Campaign"
+										t("marketing.new_campaign")
 									]
 								})
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Create Campaign" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("marketing.create_campaign") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-4 py-4",
 								children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -90525,7 +91023,7 @@ function Marketing() {
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Target Audience" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.target_audience") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 											value: newCamp.targetAudience,
 											onValueChange: (v) => setNewCamp({
 												...newCamp,
@@ -90547,6 +91045,30 @@ function Marketing() {
 											] })]
 										})]
 									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.start_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "date",
+												value: newCamp.startDate,
+												onChange: (e) => setNewCamp({
+													...newCamp,
+													startDate: e.target.value
+												})
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.end_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "date",
+												value: newCamp.endDate,
+												onChange: (e) => setNewCamp({
+													...newCamp,
+													endDate: e.target.value
+												})
+											})]
+										})]
+									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 										onClick: handleSaveCamp,
 										className: "bg-trust-blue",
@@ -90556,30 +91078,33 @@ function Marketing() {
 							})] })]
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "grid gap-4",
-						children: campaigns$1.map((c$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
-							className: "pb-2",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex justify-between",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: c$1.name }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: ["Target: ", c$1.targetAudience] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, { children: c$1.status })]
-							})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex justify-between items-center text-sm text-muted-foreground",
+						className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+						children: campaigns$1.map((c$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: c$1.name }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [
+							c$1.startDate,
+							" - ",
+							c$1.endDate
+						] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+							className: "flex flex-col gap-4",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex gap-2",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-4 w-4" }),
-									c$1.startDate || "TBD",
-									" - ",
-									c$1.endDate || "TBD"
-								]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								variant: "ghost",
-								size: "sm",
-								onClick: () => deleteCampaign(c$1.id),
-								children: t("common.delete")
+								className: "flex justify-between items-center",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+									variant: "outline",
+									children: c$1.targetAudience
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+									variant: c$1.status === "active" ? "default" : "secondary",
+									children: c$1.status
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "flex justify-end pt-4 border-t",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									variant: "ghost",
+									size: "sm",
+									className: "text-red-500",
+									onClick: () => deleteCampaign(c$1.id),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), t("common.delete")]
+								})
 							})]
-						}) })] }, c$1.id))
+						})] }, c$1.id))
 					})]
 				})
 			]
@@ -91161,4 +91686,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Yq5kOvKX.js.map
+//# sourceMappingURL=index-C6ekSC4j.js.map

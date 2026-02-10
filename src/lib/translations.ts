@@ -116,7 +116,8 @@ export const translations = {
     },
     reports: {
       title: 'Relatórios Avançados',
-      subtitle: 'Análise de inventário, manutenção e condições das propriedades.',
+      subtitle:
+        'Análise de inventário, manutenção e condições das propriedades.',
       period: 'Período',
       property: 'Propriedade',
       apply_filters: 'Aplicar Filtros',
@@ -882,7 +883,8 @@ export const translations = {
       days_before: 'Dias Antes',
       company_legal_name: 'Razão Social',
       automation_title: 'Automação',
-      automation_desc: 'Configure regras automáticas para tarefas e financeiro.',
+      automation_desc:
+        'Configure regras automáticas para tarefas e financeiro.',
     },
     calendar: {
       title: 'Calendário',
@@ -2468,10 +2470,12 @@ export const translations = {
       valid_to: 'Válido Hasta',
       config_saved: 'Configuración Guardada',
       config_saved_desc: 'Configuraciones de precios actualizadas.',
-      stale_alert: '{count} tarifas no se han actualizado en más de {days} días.',
+      stale_alert:
+        '{count} tarifas no se han actualizado en más de {days} días.',
       review_needed: 'Revisión Necesaria',
       review_period_config: 'Configuración Período Revisión',
-      review_period_desc: 'Establecer el límite de días para alertas de revisión.',
+      review_period_desc:
+        'Establecer el límite de días para alertas de revisión.',
       threshold_days: 'Días Límite',
       step_name: 'Nombre del Paso',
       step_role: 'Rol Responsable',
@@ -3032,4 +3036,3 @@ export const translations = {
     },
   },
 }
-

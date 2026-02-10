@@ -14,8 +14,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  LineChart,
-  Line,
 } from 'recharts'
 import {
   ChartContainer,
@@ -185,12 +183,12 @@ export default function Analytics() {
         <Card className="bg-blue-50/50 border-blue-100">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-blue-800">
-              {t('analytics.internal_perf')} (Avg Occ)
+              {t('analytics.internal_perf')} ({t('analytics.occupancy')})
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-900">
-              <DataMask>
+              <DataMask blur>
                 {Math.round(
                   filteredData.reduce(
                     (acc, curr) => acc + curr.internalOcc,
@@ -215,12 +213,12 @@ export default function Analytics() {
         <Card className="bg-green-50/50 border-green-100">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-green-800">
-              {t('analytics.internal_perf')} (Avg Profit)
+              {t('analytics.internal_perf')} ({t('common.profit')})
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-900">
-              <DataMask>
+              <DataMask blur>
                 $
                 {Math.round(
                   filteredData.reduce(
@@ -257,7 +255,7 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
-              <DataMask className="w-full h-full block">
+              <DataMask className="w-full h-full block" blur>
                 <ChartContainer
                   config={{
                     internalOcc: {
@@ -309,7 +307,7 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
-              <DataMask className="w-full h-full block">
+              <DataMask className="w-full h-full block" blur>
                 <ChartContainer
                   config={{
                     internalProfit: {

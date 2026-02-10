@@ -1,7 +1,8 @@
-import { ServiceCatalog } from '@/components/settings/ServiceCatalog'
-import { ServiceAnalytics } from '@/components/settings/ServiceAnalytics'
-import useLanguageStore from '@/stores/useLanguageStore'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ServiceCatalog } from '@/components/settings/ServiceCatalog'
+import useLanguageStore from '@/stores/useLanguageStore'
+import { BarChart3, List } from 'lucide-react'
 
 export default function ServicePricing() {
   const { t } = useLanguageStore()
@@ -16,17 +17,36 @@ export default function ServicePricing() {
       </div>
 
       <Tabs defaultValue="catalog" className="w-full">
-        <TabsList className="mb-4">
+        <TabsList>
           <TabsTrigger value="catalog">
-            {t('common.service_pricing')}
+            <List className="h-4 w-4 mr-2" />
+            {t('service_pricing.catalog_tab')}
           </TabsTrigger>
-          <TabsTrigger value="analytics">{t('reports.reports')}</TabsTrigger>
+          <TabsTrigger value="analytics">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            {t('service_pricing.analytics_tab')}
+          </TabsTrigger>
         </TabsList>
+
         <TabsContent value="catalog">
-          <ServiceCatalog />
+          <Card>
+            <CardContent className="pt-6">
+              <ServiceCatalog />
+            </CardContent>
+          </Card>
         </TabsContent>
+
         <TabsContent value="analytics">
-          <ServiceAnalytics />
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('service_pricing.profit_analysis')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+                {t('common.empty')}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

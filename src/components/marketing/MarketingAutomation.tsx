@@ -38,6 +38,7 @@ import { Plus, Trash2, Edit2, Mail, PlayCircle } from 'lucide-react'
 import useManagementStore from '@/stores/useManagementStore'
 import { useToast } from '@/hooks/use-toast'
 import { MarketingWorkflow, EmailTemplate } from '@/lib/types'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export function MarketingAutomation() {
   const {
@@ -51,6 +52,7 @@ export function MarketingAutomation() {
     deleteEmailTemplate,
   } = useManagementStore()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
 
   const [workflowDialogOpen, setWorkflowDialogOpen] = useState(false)
   const [templateDialogOpen, setTemplateDialogOpen] = useState(false)
@@ -73,8 +75,8 @@ export function MarketingAutomation() {
   const handleSaveWorkflow = () => {
     if (!editingWorkflow.name || !editingWorkflow.templateId) {
       toast({
-        title: 'Error',
-        description: 'Name and Template are required.',
+        title: t('common.error'),
+        description: t('common.validation_error_desc'),
         variant: 'destructive',
       })
       return
@@ -95,7 +97,13 @@ export function MarketingAutomation() {
       offsetTime: 0,
       active: true,
     })
-    toast({ title: 'Success', description: 'Workflow saved.' })
+    toast({
+      title: t('common.success'),
+      description: t('marketing.workflow_started', {
+        action: 'save',
+        name: editingWorkflow.name,
+      }),
+    })
   }
 
   const handleSaveTemplate = () => {
@@ -105,8 +113,8 @@ export function MarketingAutomation() {
       !editingTemplate.body
     ) {
       toast({
-        title: 'Error',
-        description: 'All fields are required.',
+        title: t('common.error'),
+        description: t('common.validation_error_desc'),
         variant: 'destructive',
       })
       return
@@ -122,7 +130,7 @@ export function MarketingAutomation() {
     }
     setTemplateDialogOpen(false)
     setEditingTemplate({ name: '', subject: '', body: '' })
-    toast({ title: 'Success', description: 'Template saved.' })
+    toast({ title: t('common.success'), description: t('common.save_success') })
   }
 
   return (
@@ -131,25 +139,25 @@ export function MarketingAutomation() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Automated Workflows</CardTitle>
-            <CardDescription>
-              Trigger emails based on booking events.
-            </CardDescription>
+            <CardTitle>{t('marketing.automated_workflows')}</CardTitle>
+            <CardDescription>{t('marketing.automated_desc')}</CardDescription>
           </div>
           <Button onClick={() => setWorkflowDialogOpen(true)} className="gap-2">
-            <Plus className="h-4 w-4" /> New Workflow
+            <Plus className="h-4 w-4" /> {t('marketing.new_workflow')}
           </Button>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Trigger</TableHead>
-                <TableHead>Timing</TableHead>
-                <TableHead>Template</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('common.name')}</TableHead>
+                <TableHead>{t('marketing.trigger_event')}</TableHead>
+                <TableHead>{t('marketing.timing')}</TableHead>
+                <TableHead>{t('marketing.template')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -161,8 +169,8 @@ export function MarketingAutomation() {
                   </TableCell>
                   <TableCell>
                     {wf.offsetTime === 0
-                      ? 'Immediately'
-                      : `${Math.abs(wf.offsetTime)} hours ${wf.offsetTime > 0 ? 'after' : 'before'}`}
+                      ? t('marketing.immediately')
+                      : `${Math.abs(wf.offsetTime)} ${t('marketing.hours')} ${wf.offsetTime > 0 ? t('marketing.after') : t('marketing.before')}`}
                   </TableCell>
                   <TableCell>
                     {emailTemplates.find((t) => t.id === wf.templateId)?.name ||
@@ -170,7 +178,7 @@ export function MarketingAutomation() {
                   </TableCell>
                   <TableCell>
                     <Badge variant={wf.active ? 'default' : 'secondary'}>
-                      {wf.active ? 'Active' : 'Inactive'}
+                      {wf.active ? t('common.active') : t('common.inactive')}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -206,17 +214,15 @@ export function MarketingAutomation() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Email Templates</CardTitle>
-            <CardDescription>
-              Reusable content with placeholders like {'{guest_name}'}.
-            </CardDescription>
+            <CardTitle>{t('marketing.email_templates')}</CardTitle>
+            <CardDescription>{t('marketing.email_desc')}</CardDescription>
           </div>
           <Button
             onClick={() => setTemplateDialogOpen(true)}
             variant="outline"
             className="gap-2"
           >
-            <Mail className="h-4 w-4" /> New Template
+            <Mail className="h-4 w-4" /> {t('marketing.new_message')}
           </Button>
         </CardHeader>
         <CardContent>
@@ -268,12 +274,14 @@ export function MarketingAutomation() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingWorkflow.id ? 'Edit Workflow' : 'New Workflow'}
+              {editingWorkflow.id
+                ? t('marketing.edit_workflow')
+                : t('marketing.new_workflow')}
             </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label>Name</Label>
+              <Label>{t('common.name')}</Label>
               <Input
                 value={editingWorkflow.name}
                 onChange={(e) =>
@@ -285,7 +293,7 @@ export function MarketingAutomation() {
               />
             </div>
             <div className="grid gap-2">
-              <Label>Trigger Event</Label>
+              <Label>{t('marketing.trigger_event')}</Label>
               <Select
                 value={editingWorkflow.trigger}
                 onValueChange={(v: any) =>
@@ -297,16 +305,24 @@ export function MarketingAutomation() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="booking_confirmed">
-                    Booking Confirmed
+                    {t('marketing.booking_confirmed')}
                   </SelectItem>
-                  <SelectItem value="check_in">Check In</SelectItem>
-                  <SelectItem value="check_out">Check Out</SelectItem>
-                  <SelectItem value="cancellation">Cancellation</SelectItem>
+                  <SelectItem value="check_in">
+                    {t('marketing.check_in')}
+                  </SelectItem>
+                  <SelectItem value="check_out">
+                    {t('marketing.check_out')}
+                  </SelectItem>
+                  <SelectItem value="cancellation">
+                    {t('marketing.cancellation')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label>Timing (Hours offset)</Label>
+              <Label>
+                {t('marketing.timing')} ({t('marketing.hours')} offset)
+              </Label>
               <Input
                 type="number"
                 value={editingWorkflow.offsetTime}
@@ -319,12 +335,11 @@ export function MarketingAutomation() {
                 placeholder="e.g. -24 for 1 day before"
               />
               <p className="text-xs text-muted-foreground">
-                Negative for "before event", positive for "after event", 0 for
-                "immediate".
+                Negative for "before", positive for "after", 0 for "immediate".
               </p>
             </div>
             <div className="grid gap-2">
-              <Label>Email Template</Label>
+              <Label>{t('marketing.template')}</Label>
               <Select
                 value={editingWorkflow.templateId}
                 onValueChange={(v) =>
@@ -332,7 +347,7 @@ export function MarketingAutomation() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a template" />
+                  <SelectValue placeholder={t('common.select')} />
                 </SelectTrigger>
                 <SelectContent>
                   {emailTemplates.map((t) => (
@@ -350,11 +365,11 @@ export function MarketingAutomation() {
                   setEditingWorkflow({ ...editingWorkflow, active: c })
                 }
               />
-              <Label>Active</Label>
+              <Label>{t('common.active')}</Label>
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleSaveWorkflow}>Save Workflow</Button>
+            <Button onClick={handleSaveWorkflow}>{t('common.save')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -364,12 +379,14 @@ export function MarketingAutomation() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {editingTemplate.id ? 'Edit Template' : 'New Template'}
+              {editingTemplate.id
+                ? t('common.edit') + ' ' + t('marketing.template')
+                : t('marketing.new_message')}
             </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label>Template Name</Label>
+              <Label>{t('marketing.template')}</Label>
               <Input
                 value={editingTemplate.name}
                 onChange={(e) =>
@@ -381,7 +398,7 @@ export function MarketingAutomation() {
               />
             </div>
             <div className="grid gap-2">
-              <Label>Email Subject</Label>
+              <Label>{t('marketing.subject')}</Label>
               <Input
                 value={editingTemplate.subject}
                 onChange={(e) =>
@@ -393,7 +410,7 @@ export function MarketingAutomation() {
               />
             </div>
             <div className="grid gap-2">
-              <Label>Email Body</Label>
+              <Label>{t('marketing.body')}</Label>
               <Textarea
                 value={editingTemplate.body}
                 onChange={(e) =>
@@ -405,13 +422,13 @@ export function MarketingAutomation() {
                 rows={6}
               />
               <p className="text-xs text-muted-foreground">
-                Available placeholders: {'{guest_name}'}, {'{property_name}'},{' '}
-                {'{check_in}'}, {'{check_out}'}.
+                {t('marketing.placeholders')}: {'{guest_name}'},{' '}
+                {'{property_name}'}, {'{check_in}'}, {'{check_out}'}.
               </p>
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleSaveTemplate}>Save Template</Button>
+            <Button onClick={handleSaveTemplate}>{t('common.save')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

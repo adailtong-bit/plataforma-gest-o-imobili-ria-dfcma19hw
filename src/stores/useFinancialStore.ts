@@ -11,14 +11,18 @@ const useFinancialStore = () => {
     financialSettings: context.financialSettings,
     bankStatements: context.bankStatements,
     ledgerEntries: context.ledgerEntries,
+    genericServiceRates: context.genericServiceRates, // Exposed
     addInvoice: context.addInvoice,
-    updateInvoice: context.updateInvoice, // Added export
+    updateInvoice: context.updateInvoice,
     markPaymentAs: context.markPaymentAs,
     updateFinancialSettings: context.updateFinancialSettings,
     uploadBankStatement: context.uploadBankStatement,
     addLedgerEntry: context.addLedgerEntry,
     updateLedgerEntry: context.updateLedgerEntry,
     deleteLedgerEntry: context.deleteLedgerEntry,
+    addGenericServiceRate: context.addGenericServiceRate, // Exposed
+    updateGenericServiceRate: context.updateGenericServiceRate, // Exposed
+    deleteGenericServiceRate: context.deleteGenericServiceRate, // Exposed
   }
 }
 

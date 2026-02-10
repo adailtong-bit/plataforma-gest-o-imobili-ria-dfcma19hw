@@ -253,6 +253,146 @@ export default function Marketing() {
                       <TableCell>
                         <DataMask>
                           {p.value}
-                          {p.type === 'percentage' ? '%' : '
+                          {p.type === 'percentage' ? '%' : '$'}
+                        </DataMask>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-col text-xs text-muted-foreground">
+                          <span>{p.startDate}</span>
+                          <span>{p.endDate}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <DataMask>{p.usageCount}</DataMask>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={p.active ? 'default' : 'secondary'}>
+                          {p.active ? t('common.active') : t('common.inactive')}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-red-500 hover:text-red-700"
+                          onClick={() => deletePromotion(p.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-`src/pages/MarketAnalysis.tsx`
+        <TabsContent value="campaigns">
+          <div className="flex justify-end mb-4">
+            <Dialog open={campOpen} onOpenChange={setCampOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-trust-blue gap-2">
+                  <Plus className="h-4 w-4" /> {t('marketing.new_campaign')}
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{t('marketing.create_campaign')}</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label>{t('common.name')}</Label>
+                    <Input
+                      value={newCamp.name}
+                      onChange={(e) =>
+                        setNewCamp({ ...newCamp, name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>{t('marketing.target_audience')}</Label>
+                    <Select
+                      value={newCamp.targetAudience}
+                      onValueChange={(v: any) =>
+                        setNewCamp({ ...newCamp, targetAudience: v })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('common.all')}</SelectItem>
+                        <SelectItem value="past_guests">Past Guests</SelectItem>
+                        <SelectItem value="leads">Leads</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>{t('common.start_date')}</Label>
+                      <Input
+                        type="date"
+                        value={newCamp.startDate}
+                        onChange={(e) =>
+                          setNewCamp({ ...newCamp, startDate: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>{t('common.end_date')}</Label>
+                      <Input
+                        type="date"
+                        value={newCamp.endDate}
+                        onChange={(e) =>
+                          setNewCamp({ ...newCamp, endDate: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <Button onClick={handleSaveCamp} className="bg-trust-blue">
+                    {t('common.save')}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {campaigns.map((c) => (
+              <Card key={c.id}>
+                <CardHeader>
+                  <CardTitle>{c.name}</CardTitle>
+                  <CardDescription>
+                    {c.startDate} - {c.endDate}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
+                  <div className="flex justify-between items-center">
+                    <Badge variant="outline">{c.targetAudience}</Badge>
+                    <Badge
+                      variant={c.status === 'active' ? 'default' : 'secondary'}
+                    >
+                      {c.status}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-end pt-4 border-t">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-500"
+                      onClick={() => deleteCampaign(c.id)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {t('common.delete')}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}

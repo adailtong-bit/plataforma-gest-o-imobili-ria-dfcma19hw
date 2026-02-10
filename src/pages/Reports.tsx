@@ -37,11 +37,14 @@ import { exportToCSV } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { MaintenanceReport } from '@/components/maintenance/MaintenanceReport'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import useLanguageStore from '@/stores/useLanguageStore'
+import { DataMask } from '@/components/DataMask'
 
 export default function Reports() {
   const { properties } = usePropertyStore()
   const { tasks } = useTaskStore()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 90),
@@ -121,24 +124,36 @@ export default function Reports() {
 
     exportToCSV('full_report', headers, rows)
     toast({
-      title: 'Export Successful',
-      description: 'The report has been downloaded.',
+      title: t('common.export_success_title'),
+      description: t('common.export_success'),
     })
   }
+
+  const totalItems = filteredProperties.reduce(
+    (acc, p) => acc + (p.inventory?.length || 0),
+    0,
+  )
+
+  const totalDamaged = filteredProperties.reduce(
+    (acc, p) =>
+      acc +
+      (p.inventory?.filter((i) =>
+        ['Damaged', 'Poor', 'Broken'].includes(i.condition),
+      ).length || 0),
+    0,
+  )
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-navy">
-            Relatórios Avançados
+            {t('reports.title')}
           </h1>
-          <p className="text-muted-foreground">
-            Análise de inventário, manutenção e condições das propriedades.
-          </p>
+          <p className="text-muted-foreground">{t('reports.subtitle')}</p>
         </div>
         <Button onClick={handleExport} className="bg-trust-blue gap-2">
-          <Download className="h-4 w-4" /> Export Data
+          <Download className="h-4 w-4" /> {t('common.export_data')}
         </Button>
       </div>
 
@@ -146,20 +161,20 @@ export default function Reports() {
       <Card className="bg-muted/30">
         <CardContent className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
           <div className="grid gap-2">
-            <span className="text-sm font-medium">Período</span>
+            <span className="text-sm font-medium">{t('reports.period')}</span>
             <DatePickerWithRange date={dateRange} setDate={setDateRange} />
           </div>
           <div className="grid gap-2">
-            <span className="text-sm font-medium">Propriedade</span>
+            <span className="text-sm font-medium">{t('reports.property')}</span>
             <Select
               value={selectedProperty}
               onValueChange={setSelectedProperty}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todas" />
+                <SelectValue placeholder={t('common.all')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas as Propriedades</SelectItem>
+                <SelectItem value="all">{t('common.all')}</SelectItem>
                 {properties.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.name}
@@ -169,7 +184,7 @@ export default function Reports() {
             </Select>
           </div>
           <Button variant="outline" className="gap-2">
-            <Filter className="h-4 w-4" /> Aplicar Filtros
+            <Filter className="h-4 w-4" /> {t('reports.apply_filters')}
           </Button>
         </CardContent>
       </Card>
@@ -177,15 +192,17 @@ export default function Reports() {
       <Tabs defaultValue="maintenance" className="w-full">
         <TabsList>
           <TabsTrigger value="maintenance">
-            Maintenance & Efficiency
+            {t('reports.maintenance_analytics')}
           </TabsTrigger>
-          <TabsTrigger value="inventory">Inventory Health</TabsTrigger>
+          <TabsTrigger value="inventory">
+            {t('reports.inventory_health')}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="maintenance">
           <MaintenanceReport
             tasks={filteredTasks}
-            title="Maintenance Performance"
+            title={t('reports.maintenance_efficiency')}
           />
         </TabsContent>
 
@@ -193,9 +210,9 @@ export default function Reports() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Condição do Inventário</CardTitle>
+                <CardTitle>{t('reports.inventory_condition')}</CardTitle>
                 <CardDescription>
-                  Distribuição de itens por estado de conservação
+                  {t('reports.inventory_condition')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -236,9 +253,9 @@ export default function Reports() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Danos por Propriedade</CardTitle>
+                <CardTitle>{t('reports.damage_by_property')}</CardTitle>
                 <CardDescription>
-                  Propriedades com maior número de itens danificados
+                  {t('reports.damage_by_property')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -275,34 +292,24 @@ export default function Reports() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Total Items
+                  {t('reports.total_items')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {filteredProperties.reduce(
-                    (acc, p) => acc + (p.inventory?.length || 0),
-                    0,
-                  )}
+                  <DataMask>{totalItems}</DataMask>
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Damaged/Poor
+                  {t('reports.damaged_poor')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-red-600">
-                  {filteredProperties.reduce(
-                    (acc, p) =>
-                      acc +
-                      (p.inventory?.filter((i) =>
-                        ['Damaged', 'Poor', 'Broken'].includes(i.condition),
-                      ).length || 0),
-                    0,
-                  )}
+                  <DataMask>{totalDamaged}</DataMask>
                 </div>
               </CardContent>
             </Card>
