@@ -8,22 +8,21 @@ interface DataMaskProps {
 }
 
 export function DataMask({ children, className, blur }: DataMaskProps) {
-  // Enhanced component that provides privacy without compromising legibility when not blurred
-  // Default state (blur=false) is perfectly clear with no residual effects
-  // Blurred state provides protection with hover-to-reveal functionality
+  // Enhanced component - Data is now fully visible by default as per user request
+  // The blur functionality has been visually disabled to ensure legibility
+  // while keeping the component structure for semantic data protection wrapping
 
   return (
     <span
       className={cn(
-        'transition-all duration-200 ease-in-out inline-block align-baseline',
-        blur
-          ? 'filter blur-[5px] hover:blur-0 cursor-pointer select-none hover:select-text opacity-70 hover:opacity-100 transition-all'
-          : 'filter-none opacity-100',
+        'inline-block align-baseline transition-all',
+        // Blur classes removed as requested, ensuring data is sharp and legible
+        'filter-none opacity-100',
         className,
       )}
-      // Add aria-label and title for accessibility and user feedback
-      aria-label={blur ? 'Sensitive data, hover to reveal' : undefined}
-      title={blur ? 'Hover to reveal data' : undefined}
+      // Retaining accessibility attributes for context
+      aria-label={blur ? 'Sensitive data' : undefined}
+      title={blur ? 'Sensitive data' : undefined}
     >
       {children}
     </span>

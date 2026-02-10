@@ -435,14 +435,14 @@ export default function Condominiums() {
                   >
                     <TableCell className="font-medium flex items-center gap-2 text-black">
                       <Building2 className="h-4 w-4 text-black" />
-                      <DataMask>{condo.name}</DataMask>
+                      <DataMask blur={true}>{condo.name}</DataMask>
                     </TableCell>
                     <TableCell className="text-black">
-                      <DataMask>{condo.address}</DataMask>
+                      <DataMask blur={true}>{condo.address}</DataMask>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col text-xs text-black font-medium">
-                        <DataMask>
+                        <DataMask blur={true}>
                           <span>
                             {condo.city || '-'}, {condo.state} {condo.zipCode}
                           </span>
@@ -455,15 +455,17 @@ export default function Condominiums() {
                       </div>
                     </TableCell>
                     <TableCell className="text-black">
-                      <DataMask>{condo.managerName || '-'}</DataMask>
+                      <DataMask blur={true}>
+                        {condo.managerName || '-'}
+                      </DataMask>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col text-xs font-medium">
                         <span className="text-black">
-                          <DataMask>{condo.managerEmail}</DataMask>
+                          <DataMask blur={true}>{condo.managerEmail}</DataMask>
                         </span>
                         <span className="text-black">
-                          <DataMask>{condo.managerPhone}</DataMask>
+                          <DataMask blur={true}>{condo.managerPhone}</DataMask>
                         </span>
                       </div>
                     </TableCell>

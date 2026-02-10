@@ -30,11 +30,11 @@ export default function MarketAnalysis() {
 
   const chartConfig = {
     occupancy: {
-      label: t('market.avg_occupancy'),
+      label: t('market_analysis.avg_occupancy'),
       color: 'hsl(var(--chart-1))',
     },
     rate: {
-      label: t('market.avg_daily_rate'),
+      label: t('market_analysis.avg_daily_rate'),
       color: 'hsl(var(--chart-2))',
     },
   }
@@ -58,10 +58,10 @@ export default function MarketAnalysis() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-950">
-          {t('common.market_analysis')}
+          {t('market_analysis.title')}
         </h1>
         <p className="text-slate-700 font-medium">
-          {t('analytics.benchmark_desc')}
+          {t('analytics_page.benchmark_desc')}
         </p>
       </div>
 
@@ -69,19 +69,21 @@ export default function MarketAnalysis() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('market.avg_occupancy')}
+              {t('market_analysis.avg_occupancy')}
             </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">78%</div>
-            <p className="text-xs text-muted-foreground">+5% from last month</p>
+            <p className="text-xs text-muted-foreground">
+              +5% {t('dashboard.from_last_month')}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('market.avg_daily_rate')}
+              {t('market_analysis.avg_daily_rate')}
             </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -92,25 +94,31 @@ export default function MarketAnalysis() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Demand Index</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('market_analysis.demand_index')}
+            </CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">High</div>
+            <div className="text-2xl font-bold">
+              {t('market_analysis.high')}
+            </div>
             <p className="text-xs text-muted-foreground">
-              Peak season approaching
+              {t('market_analysis.peak_season')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Comp Set Rank</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('market_analysis.comp_set_rank')}
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">#2</div>
             <p className="text-xs text-muted-foreground">
-              Out of 12 local hotels
+              {t('market_analysis.rank_desc')}
             </p>
           </CardContent>
         </Card>
@@ -119,9 +127,9 @@ export default function MarketAnalysis() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('common.spending_trends')}</CardTitle>
+            <CardTitle>{t('market_analysis.spending_trends')}</CardTitle>
             <CardDescription>
-              Historical view of market performance
+              {t('market_analysis.historical_view')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -156,7 +164,7 @@ export default function MarketAnalysis() {
                     dataKey="occupancy"
                     stroke="hsl(var(--chart-1))"
                     strokeWidth={2}
-                    name={t('market.avg_occupancy')}
+                    name={t('market_analysis.avg_occupancy')}
                     dot={false}
                   />
                   <Line
@@ -165,7 +173,7 @@ export default function MarketAnalysis() {
                     dataKey="rate"
                     stroke="hsl(var(--chart-2))"
                     strokeWidth={2}
-                    name={t('market.avg_daily_rate')}
+                    name={t('market_analysis.avg_daily_rate')}
                     dot={false}
                   />
                 </LineChart>
@@ -176,8 +184,10 @@ export default function MarketAnalysis() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Competitor Pricing</CardTitle>
-            <CardDescription>Average daily rate comparison</CardDescription>
+            <CardTitle>{t('market_analysis.competitor_pricing')}</CardTitle>
+            <CardDescription>
+              {t('market_analysis.avg_rate_comparison')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -204,7 +214,7 @@ export default function MarketAnalysis() {
                     dataKey="rate"
                     fill="hsl(var(--primary))"
                     radius={[0, 4, 4, 0]}
-                    name={t('market.avg_daily_rate')}
+                    name={t('market_analysis.avg_daily_rate')}
                     barSize={30}
                   />
                 </BarChart>
@@ -216,9 +226,9 @@ export default function MarketAnalysis() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Demand Forecast</CardTitle>
+          <CardTitle>{t('market_analysis.demand_forecast')}</CardTitle>
           <CardDescription>
-            Projected demand levels for upcoming dates
+            {t('market_analysis.projected_demand')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -246,13 +256,17 @@ export default function MarketAnalysis() {
                           : 'text-slate-600'
                     }`}
                   >
-                    {item.demand}
+                    {item.demand === 'High'
+                      ? t('market_analysis.high')
+                      : item.demand === 'Medium'
+                        ? t('market_analysis.medium')
+                        : t('market_analysis.low')}
                   </span>
                 </div>
               ))
             ) : (
               <div className="flex items-center justify-center w-full p-6 text-muted-foreground text-sm">
-                No forecast data available at the moment.
+                {t('market_analysis.no_forecast')}
               </div>
             )}
           </div>

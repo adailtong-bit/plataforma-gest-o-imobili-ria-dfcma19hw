@@ -276,9 +276,11 @@ export default function CondominiumDetails() {
           </Link>
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-slate-950">
-              {formData.name}
+              <DataMask blur={!isEditing}>{formData.name}</DataMask>
             </h1>
-            <p className="text-slate-950 font-medium">{formData.address}</p>
+            <p className="text-slate-950 font-medium">
+              <DataMask blur={!isEditing}>{formData.address}</DataMask>
+            </p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -311,14 +313,14 @@ export default function CondominiumDetails() {
         <TabsList>
           <TabsTrigger value="overview">{t('properties.overview')}</TabsTrigger>
           <TabsTrigger value="location">
-            <MapPin className="h-4 w-4 mr-2" /> Location Map
+            <MapPin className="h-4 w-4 mr-2" /> {t('common.location')}
           </TabsTrigger>
           <TabsTrigger value="access">
-            {t('condominiums.access_credentials')}
+            {t('common.access_credentials')}
           </TabsTrigger>
-          <TabsTrigger value="contacts">Contatos</TabsTrigger>
+          <TabsTrigger value="contacts">{t('common.contact')}</TabsTrigger>
           <TabsTrigger value="financial">
-            {t('condominiums.financial_hoa')}
+            {t('common.financial_hoa')}
           </TabsTrigger>
         </TabsList>
 
@@ -373,7 +375,9 @@ export default function CondominiumDetails() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label className="text-slate-900 font-bold">Endereço</Label>
+                <Label className="text-slate-900 font-bold">
+                  {t('common.address')}
+                </Label>
                 <Input
                   value={formData.address}
                   onChange={(e) => handleChange('address', e.target.value)}
@@ -382,7 +386,9 @@ export default function CondominiumDetails() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label className="text-slate-900 font-bold">Cidade</Label>
+                <Label className="text-slate-900 font-bold">
+                  {t('properties.city_placeholder')}
+                </Label>
                 <Input
                   value={formData.city || ''}
                   onChange={(e) => handleChange('city', e.target.value)}
@@ -391,7 +397,9 @@ export default function CondominiumDetails() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label className="text-slate-900 font-bold">Estado</Label>
+                <Label className="text-slate-900 font-bold">
+                  {t('properties.state_placeholder')}
+                </Label>
                 <Input
                   value={formData.state || ''}
                   onChange={(e) => handleChange('state', e.target.value)}
@@ -400,7 +408,9 @@ export default function CondominiumDetails() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label className="text-slate-900 font-bold">CEP / ZIP</Label>
+                <Label className="text-slate-900 font-bold">
+                  {t('properties.zip_code')}
+                </Label>
                 <Input
                   value={formData.zipCode || ''}
                   onChange={handleZipCodeChange}
@@ -411,14 +421,23 @@ export default function CondominiumDetails() {
               </div>
               <div className="grid gap-2">
                 <Label className="text-slate-900 font-bold">
-                  {t('condominiums.manager')}
+                  {t('common.manager')}
                 </Label>
-                <Input
-                  value={formData.managerName || ''}
-                  onChange={(e) => handleChange('managerName', e.target.value)}
-                  disabled={!isEditing}
-                  className="text-black font-medium"
-                />
+                {isEditing ? (
+                  <Input
+                    value={formData.managerName || ''}
+                    onChange={(e) =>
+                      handleChange('managerName', e.target.value)
+                    }
+                    className="text-black font-medium"
+                  />
+                ) : (
+                  <div className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm items-center">
+                    <DataMask blur={true}>
+                      {formData.managerName || '-'}
+                    </DataMask>
+                  </div>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label className="text-slate-900 font-bold">
@@ -435,9 +454,9 @@ export default function CondominiumDetails() {
                     onCountryChange={setSelectedCountry}
                   />
                 ) : (
-                  <div className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                  <div className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm items-center">
                     <span className="text-black font-medium">
-                      <DataMask>{formData.managerPhone}</DataMask>
+                      <DataMask blur={true}>{formData.managerPhone}</DataMask>
                     </span>
                   </div>
                 )}
@@ -471,7 +490,7 @@ export default function CondominiumDetails() {
           <Card className="bg-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-slate-950">
-                <Lock className="h-5 w-5" /> Credenciais de Acesso
+                <Lock className="h-5 w-5" /> {t('common.access_credentials')}
               </CardTitle>
               <CardDescription className="text-slate-600">
                 Gerencie senhas, gates e QR codes.
@@ -570,7 +589,7 @@ export default function CondominiumDetails() {
           <Card className="bg-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-slate-950">
-                <Users className="h-5 w-5" /> Contatos Importantes
+                <Users className="h-5 w-5" /> {t('common.contact')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -581,7 +600,9 @@ export default function CondominiumDetails() {
                   </h4>
                   <div className="flex gap-2 items-end flex-wrap">
                     <div className="grid gap-2 w-full md:w-1/5">
-                      <Label className="font-bold">Função</Label>
+                      <Label className="font-bold">
+                        {t('common.role_label')}
+                      </Label>
                       <Select
                         value={newContact.role}
                         onValueChange={(v) =>
@@ -606,7 +627,7 @@ export default function CondominiumDetails() {
                       </Select>
                     </div>
                     <div className="grid gap-2 w-full md:w-1/5">
-                      <Label className="font-bold">Nome</Label>
+                      <Label className="font-bold">{t('common.name')}</Label>
                       <Input
                         value={newContact.name}
                         onChange={(e) =>
@@ -616,7 +637,7 @@ export default function CondominiumDetails() {
                       />
                     </div>
                     <div className="grid gap-2 w-full md:w-1/4">
-                      <Label className="font-bold">Telefone</Label>
+                      <Label className="font-bold">{t('common.phone')}</Label>
                       <PhoneInput
                         value={newContact.phone || ''}
                         onChange={(e) =>
@@ -630,7 +651,7 @@ export default function CondominiumDetails() {
                       />
                     </div>
                     <div className="grid gap-2 w-full md:w-1/4">
-                      <Label className="font-bold">Email</Label>
+                      <Label className="font-bold">{t('common.email')}</Label>
                       <Input
                         value={newContact.email}
                         onChange={(e) =>
@@ -653,18 +674,20 @@ export default function CondominiumDetails() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="font-bold text-black">
-                      Função
-                    </TableHead>
-                    <TableHead className="font-bold text-black">Nome</TableHead>
-                    <TableHead className="font-bold text-black">
-                      Telefone
+                      {t('common.role_label')}
                     </TableHead>
                     <TableHead className="font-bold text-black">
-                      Email
+                      {t('common.name')}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {t('common.phone')}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {t('common.email')}
                     </TableHead>
                     {isEditing && (
                       <TableHead className="font-bold text-black">
-                        Ação
+                        {t('common.actions')}
                       </TableHead>
                     )}
                   </TableRow>
@@ -676,13 +699,13 @@ export default function CondominiumDetails() {
                         {c.role}
                       </TableCell>
                       <TableCell className="text-slate-950 font-medium">
-                        {c.name}
+                        <DataMask blur={!isEditing}>{c.name}</DataMask>
                       </TableCell>
                       <TableCell className="text-slate-950 font-medium">
-                        {c.phone}
+                        <DataMask blur={!isEditing}>{c.phone}</DataMask>
                       </TableCell>
                       <TableCell className="text-slate-950 font-medium">
-                        {c.email}
+                        <DataMask blur={!isEditing}>{c.email}</DataMask>
                       </TableCell>
                       {isEditing && (
                         <TableCell>
@@ -707,7 +730,7 @@ export default function CondominiumDetails() {
           <Card className="bg-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-slate-950">
-                <DollarSign className="h-5 w-5" /> Integração Financeira
+                <DollarSign className="h-5 w-5" /> {t('common.financial_hoa')}
               </CardTitle>
               <CardDescription className="text-slate-600">
                 Valores configurados aqui serão espelhados nas propriedades.
@@ -756,12 +779,14 @@ export default function CondominiumDetails() {
 
               <div className="col-span-2 pt-6">
                 <h3 className="font-bold mb-2 text-slate-950">
-                  Histórico de Ajustes
+                  {t('common.history_adjustments')}
                 </h3>
                 {isEditing && (
                   <div className="flex gap-2 items-end mb-4 border p-2 rounded bg-white">
                     <div className="grid gap-2">
-                      <Label className="font-bold">Valor ($)</Label>
+                      <Label className="font-bold">
+                        {t('common.value')} ($)
+                      </Label>
                       <Input
                         type="number"
                         value={newFee.amount}
@@ -775,7 +800,9 @@ export default function CondominiumDetails() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label className="font-bold">Válido De</Label>
+                      <Label className="font-bold">
+                        {t('service_pricing.valid_from')}
+                      </Label>
                       <Input
                         type="date"
                         value={newFee.validFrom}
@@ -786,7 +813,9 @@ export default function CondominiumDetails() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label className="font-bold">Válido Até</Label>
+                      <Label className="font-bold">
+                        {t('service_pricing.valid_to')}
+                      </Label>
                       <Input
                         type="date"
                         value={newFee.validTo || ''}
@@ -805,11 +834,13 @@ export default function CondominiumDetails() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="font-bold text-black">
-                        Valor
+                        {t('common.value')}
                       </TableHead>
-                      <TableHead className="font-bold text-black">De</TableHead>
                       <TableHead className="font-bold text-black">
-                        Até
+                        {t('service_pricing.valid_from')}
+                      </TableHead>
+                      <TableHead className="font-bold text-black">
+                        {t('service_pricing.valid_to')}
                       </TableHead>
                     </TableRow>
                   </TableHeader>
