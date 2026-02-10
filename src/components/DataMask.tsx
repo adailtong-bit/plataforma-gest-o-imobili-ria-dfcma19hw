@@ -7,24 +7,22 @@ interface DataMaskProps {
 }
 
 export function DataMask({ children, className, blur }: DataMaskProps) {
-  // Enhanced component that applies a blur effect to sensitive data
-  // The blur is removed on hover to reveal the data
-  // Using 'group' to allow parent hover to trigger unblur if needed,
-  // but primarily self-hover via 'hover:blur-0'
+  // Enhanced component that applies a refined privacy mask
+  // The blur is lighter and contained, with a subtle background to indicate hidden content
+  // Removed heavy blur-[5px] in favor of a cleaner blur-[4px] with visual cues
 
   return (
     <span
       className={cn(
-        'transition-all duration-300 ease-in-out inline-block align-baseline',
-        // If blur is enabled, apply filter and remove it on hover
-        // Changed from blur-[5px] to blur-sm (4px) for a more subtle effect
+        'transition-all duration-300 ease-in-out inline-block align-baseline rounded px-1 -mx-1',
         blur
-          ? 'filter blur-sm hover:blur-0 cursor-default select-none hover:select-text'
+          ? 'filter blur-[4px] hover:blur-0 cursor-pointer select-none hover:select-text bg-foreground/10 hover:bg-transparent'
           : '',
         className,
       )}
-      // Add aria-label for accessibility indicating hidden data
+      // Add aria-label and title for accessibility and user feedback
       aria-label={blur ? 'Sensitive data, hover to reveal' : undefined}
+      title={blur ? 'Hover to reveal data' : undefined}
     >
       {children}
     </span>

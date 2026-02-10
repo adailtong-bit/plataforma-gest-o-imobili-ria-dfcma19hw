@@ -343,7 +343,7 @@ export default function Analytics() {
         <Card className="shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-              {t('market_analysis.avg_daily_rate')}
+              {t('common.analytics.adr')}
             </CardTitle>
           </CardHeader>
           <CardContent>

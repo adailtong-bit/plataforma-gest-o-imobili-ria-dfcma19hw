@@ -54063,7 +54063,7 @@ const translations = {
 			profit_internal: "Lucro Interno",
 			profit_market: "Lucro Mercado",
 			marketing_tab: {
-				portal_sync: "Sincronização de Portais",
+				portal_sync: "Sincronização de Portales",
 				manage_listings: "Gerenciar listagens em sites externos.",
 				publish_btn: "Publicar Alterações",
 				publish_success: "Publicação iniciada com sucesso.",
@@ -54093,7 +54093,8 @@ const translations = {
 				profitability_title: "Rentabilidade",
 				profitability_desc: "Comparativo de lucro líquido.",
 				profit_internal: "Lucro Interno",
-				profit_market: "Lucro Mercado"
+				profit_market: "Lucro Mercado",
+				adr: "Diária Média (ADR)"
 			},
 			sync: {
 				title: "Sincronização",
@@ -54296,7 +54297,7 @@ const translations = {
 			no_image: "Sem Imagem",
 			view_details: "Ver Detalhes",
 			public_desc: "Descrição Pública",
-			monthly: "Mensal",
+			monthly: "Mensual",
 			quarterly: "Trimestral",
 			annually: "Anual",
 			hoa_freq: "Frequência HOA",
@@ -54309,7 +54310,7 @@ const translations = {
 				inventory: "Inventário",
 				features: "Características",
 				location: "Localização",
-				sync: "Sincronização",
+				sync: "Sincronización",
 				financial: "Financeiro",
 				marketing: "Marketing",
 				content: "Conteúdo",
@@ -55098,7 +55099,8 @@ const translations = {
 				profitability_title: "Profitability",
 				profitability_desc: "Net profit comparison.",
 				profit_internal: "Profit Internal",
-				profit_market: "Profit Market"
+				profit_market: "Profit Market",
+				adr: "Avg Daily Rate (ADR)"
 			},
 			sync: {
 				title: "Synchronization",
@@ -56076,6 +56078,7 @@ const translations = {
 			profitability_desc: "Comparación de beneficio neto.",
 			profit_internal: "Beneficio Interno",
 			profit_market: "Beneficio Mercado",
+			adr: "Tarifa Media Diaria (ADR)",
 			marketing_tab: {
 				portal_sync: "Sincronización de Portales",
 				manage_listings: "Gestionar listados externos.",
@@ -56107,7 +56110,8 @@ const translations = {
 				profitability_title: "Rentabilidad",
 				profitability_desc: "Comparación de beneficio neto.",
 				profit_internal: "Beneficio Interno",
-				profit_market: "Beneficio Mercado"
+				profit_market: "Beneficio Mercado",
+				adr: "Tarifa Media Diaria (ADR)"
 			},
 			sync: {
 				title: "Sincronización",
@@ -56474,7 +56478,7 @@ const translations = {
 			type_message: "Escriba su mensaje...",
 			online: "En línea",
 			new_chat_prompt: "Iniciar una nueva conversación",
-			select_prompt: "Seleccione un contacto para chatear.",
+			select_prompt: "Selecciona un contacto para chatear.",
 			start_chat_desc: "Iniciar Chat"
 		},
 		users: {
@@ -58846,8 +58850,9 @@ var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => 
 Progress.displayName = Root$6.displayName;
 function DataMask({ children, className, blur }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-		className: cn("transition-all duration-300 ease-in-out inline-block align-baseline", blur ? "filter blur-sm hover:blur-0 cursor-default select-none hover:select-text" : "", className),
+		className: cn("transition-all duration-300 ease-in-out inline-block align-baseline rounded px-1 -mx-1", blur ? "filter blur-[4px] hover:blur-0 cursor-pointer select-none hover:select-text bg-foreground/10 hover:bg-transparent" : "", className),
 		"aria-label": blur ? "Sensitive data, hover to reveal" : void 0,
+		title: blur ? "Hover to reveal data" : void 0,
 		children
 	});
 }
@@ -86975,7 +86980,7 @@ function Analytics() {
 							className: "pb-2 space-y-0",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
 								className: "text-sm font-medium text-muted-foreground uppercase tracking-wider",
-								children: t("market_analysis.avg_daily_rate")
+								children: t("common.analytics.adr")
 							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-foreground",
@@ -91899,4 +91904,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-DpvX8XAI.js.map
+//# sourceMappingURL=index-B7U0eIEB.js.map

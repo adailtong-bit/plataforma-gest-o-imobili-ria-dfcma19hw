@@ -525,7 +525,7 @@ export const translations = {
       profit_internal: 'Lucro Interno',
       profit_market: 'Lucro Mercado',
       marketing_tab: {
-        portal_sync: 'Sincronização de Portais',
+        portal_sync: 'Sincronização de Portales',
         manage_listings: 'Gerenciar listagens em sites externos.',
         publish_btn: 'Publicar Alterações',
         publish_success: 'Publicação iniciada com sucesso.',
@@ -556,6 +556,7 @@ export const translations = {
         profitability_desc: 'Comparativo de lucro líquido.',
         profit_internal: 'Lucro Interno',
         profit_market: 'Lucro Mercado',
+        adr: 'Diária Média (ADR)',
       },
       sync: {
         title: 'Sincronização',
@@ -758,7 +759,7 @@ export const translations = {
       no_image: 'Sem Imagem',
       view_details: 'Ver Detalhes',
       public_desc: 'Descrição Pública',
-      monthly: 'Mensal',
+      monthly: 'Mensual',
       quarterly: 'Trimestral',
       annually: 'Anual',
       hoa_freq: 'Frequência HOA',
@@ -771,7 +772,7 @@ export const translations = {
         inventory: 'Inventário',
         features: 'Características',
         location: 'Localização',
-        sync: 'Sincronização',
+        sync: 'Sincronización',
         financial: 'Financeiro',
         marketing: 'Marketing',
         content: 'Conteúdo',
@@ -1563,6 +1564,7 @@ export const translations = {
         profitability_desc: 'Net profit comparison.',
         profit_internal: 'Profit Internal',
         profit_market: 'Profit Market',
+        adr: 'Avg Daily Rate (ADR)',
       },
       sync: {
         title: 'Synchronization',
@@ -2545,6 +2547,7 @@ export const translations = {
       profitability_desc: 'Comparación de beneficio neto.',
       profit_internal: 'Beneficio Interno',
       profit_market: 'Beneficio Mercado',
+      adr: 'Tarifa Media Diaria (ADR)',
       marketing_tab: {
         portal_sync: 'Sincronización de Portales',
         manage_listings: 'Gestionar listados externos.',
@@ -2577,6 +2580,7 @@ export const translations = {
         profitability_desc: 'Comparación de beneficio neto.',
         profit_internal: 'Beneficio Interno',
         profit_market: 'Beneficio Mercado',
+        adr: 'Tarifa Media Diaria (ADR)',
       },
       sync: {
         title: 'Sincronización',
@@ -2943,7 +2947,7 @@ export const translations = {
       type_message: 'Escriba su mensaje...',
       online: 'En línea',
       new_chat_prompt: 'Iniciar una nueva conversación',
-      select_prompt: 'Seleccione un contacto para chatear.',
+      select_prompt: 'Selecciona un contacto para chatear.',
       start_chat_desc: 'Iniciar Chat',
     },
     users: {
