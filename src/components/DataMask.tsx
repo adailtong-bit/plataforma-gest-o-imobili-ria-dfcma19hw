@@ -1,7 +1,8 @@
 import { cn } from '@/lib/utils'
+import { ReactNode } from 'react'
 
 interface DataMaskProps {
-  children?: React.ReactNode
+  children?: ReactNode
   className?: string
   blur?: boolean
 }
@@ -10,6 +11,7 @@ export function DataMask({ children, className, blur }: DataMaskProps) {
   // Enhanced component that applies a refined privacy mask
   // The blur is lighter and contained, with a subtle background to indicate hidden content
   // Removed heavy blur-[5px] in favor of a cleaner blur-[4px] with visual cues
+  // Smooth transition for hover state to instantly reveal data
 
   return (
     <span
