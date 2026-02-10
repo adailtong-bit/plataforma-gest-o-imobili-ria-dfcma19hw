@@ -5,6 +5,8 @@ import { Resource, Action, User } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import { useEffect } from 'react'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { ShieldX } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface RequirePermissionProps {
   children: JSX.Element
@@ -57,33 +59,41 @@ export function RequirePermission({
             ? '/portal/partner'
             : '/portal/tenant'
 
-      // Check if current location IS NOT the portal path to prevent loops
-      // Also ensure we are not already in a sub-route of the portal
       if (!location.pathname.startsWith(portalPath)) {
         return <Navigate to={portalPath} replace />
       }
     } else {
-      // For Admin/Manager/Internal roles, redirect to root if not already there or allowed
-      if (location.pathname !== '/') {
-        return <Navigate to="/" replace />
-      }
+      // For Admin/Manager/Internal, don't force redirect if they are already on a potentially valid path, just show access denied.
+      // Or redirect to root if they are completely lost.
+      // To improve UX and avoid loops, we show the access denied screen instead of redirecting aggressively.
     }
 
-    // Fallback if redirects didn't happen or we are at a route we shouldn't be but no specific redirect
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600">
-            {t('common.access_denied')}
-          </h1>
-          <p className="mt-2 text-gray-600">{t('common.access_denied_desc')}</p>
-          <p className="text-sm text-gray-500 mt-1">
-            {t('common.resource')}: {resource}
-          </p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4">
+        <div className="bg-red-50 p-4 rounded-full mb-4">
+          <ShieldX className="h-12 w-12 text-red-600" />
         </div>
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">
+          {t('common.access_denied')}
+        </h1>
+        <p className="text-muted-foreground max-w-md mb-6">
+          {t('common.access_denied_desc')}
+        </p>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => window.history.back()}>
+            {t('common.back')}
+          </Button>
+          <Button className="bg-trust-blue" onClick={() => (window.location.href = '/')}>
+            {t('common.return_home')}
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground mt-8">
+          {t('common.resource')}: {resource} | {t('common.role')}: {t(`roles.${currentUser.role}`)}
+        </p>
       </div>
     )
   }
 
   return children
 }
+
