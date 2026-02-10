@@ -1,27 +1,25 @@
-import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { CreditCard, Loader2, CheckCircle2 } from 'lucide-react'
-import useFinancialStore from '@/stores/useFinancialStore'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { CreditCard, Banknote, Landmark } from 'lucide-react'
+import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 import { formatCurrency } from '@/lib/utils'
-import { Invoice } from '@/lib/types'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface PaymentModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   amount: number
   description: string
-  invoiceId?: string
   onSuccess: () => void
 }
 
@@ -30,72 +28,22 @@ export function PaymentModal({
   onOpenChange,
   amount,
   description,
-  invoiceId,
   onSuccess,
 }: PaymentModalProps) {
-  const { financialSettings, updateInvoice, financials } = useFinancialStore()
   const { toast } = useToast()
-  const [selectedGateway, setSelectedGateway] = useState<string>('')
+  const { language } = useLanguageStore()
   const [isProcessing, setIsProcessing] = useState(false)
-  const [paymentStep, setPaymentStep] = useState<
-    'select' | 'processing' | 'success'
-  >('select')
 
-  const availableGateways = [
-    {
-      id: 'stripe',
-      name: 'Stripe (Credit Card)',
-      enabled: financialSettings.gateways?.stripe?.enabled,
-    },
-    {
-      id: 'paypal',
-      name: 'PayPal',
-      enabled: financialSettings.gateways?.paypal?.enabled,
-    },
-    {
-      id: 'mercadoPago',
-      name: 'Mercado Pago',
-      enabled: financialSettings.gateways?.mercadoPago?.enabled,
-    },
-  ].filter((g) => g.enabled)
-
-  // Default fallback if no gateway configured
-  if (availableGateways.length === 0) {
-    availableGateways.push({
-      id: 'manual',
-      name: 'Manual Transfer / Cash',
-      enabled: true,
-    })
-  }
-
-  const handlePayment = () => {
-    if (!selectedGateway) return
-
-    setPaymentStep('processing')
+  const handlePay = () => {
     setIsProcessing(true)
-
-    // Simulate API call to gateway
     setTimeout(() => {
       setIsProcessing(false)
-      setPaymentStep('success')
-
-      if (invoiceId) {
-        const invoice = financials.invoices.find((i) => i.id === invoiceId)
-        if (invoice) {
-          updateInvoice({ ...invoice, status: 'paid' })
-        }
-      }
-
+      onSuccess()
+      onOpenChange(false)
       toast({
         title: 'Payment Successful',
-        description: `Transaction completed via ${selectedGateway}.`,
+        description: 'Transaction ID: 123456789',
       })
-
-      setTimeout(() => {
-        onSuccess()
-        onOpenChange(false)
-        setPaymentStep('select') // Reset for next time
-      }, 1500)
     }, 2000)
   }
 
@@ -103,68 +51,84 @@ export function PaymentModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Complete Payment</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogTitle>Secure Payment</DialogTitle>
+          <DialogDescription>
+            Complete payment for:{' '}
+            <span className="font-semibold">{description}</span>
+          </DialogDescription>
         </DialogHeader>
 
-        {paymentStep === 'select' && (
-          <div className="grid gap-4 py-4">
-            <div className="flex items-center justify-between font-bold text-lg border-b pb-2">
-              <span>Total to Pay:</span>
-              <span>{formatCurrency(amount)}</span>
+        <div className="py-4 text-center">
+          <p className="text-3xl font-bold text-green-600">
+            {formatCurrency(amount, language)}
+          </p>
+        </div>
+
+        <Tabs defaultValue="card" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="card">
+              <CreditCard className="h-4 w-4 mr-2" /> Card
+            </TabsTrigger>
+            <TabsTrigger value="bank">
+              <Landmark className="h-4 w-4 mr-2" /> Bank
+            </TabsTrigger>
+            <TabsTrigger value="cash">
+              <Banknote className="h-4 w-4 mr-2" /> Other
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="card" className="space-y-4 pt-4">
+            <div className="grid gap-2">
+              <Label>Card Number</Label>
+              <Input placeholder="0000 0000 0000 0000" />
             </div>
-
-            <div className="space-y-3">
-              <Label>Select Payment Method</Label>
-              <RadioGroup
-                value={selectedGateway}
-                onValueChange={setSelectedGateway}
-              >
-                {availableGateways.map((gateway) => (
-                  <div
-                    key={gateway.id}
-                    className="flex items-center space-x-2 border p-3 rounded-md hover:bg-muted/50 transition-colors cursor-pointer"
-                  >
-                    <RadioGroupItem value={gateway.id} id={gateway.id} />
-                    <Label
-                      htmlFor={gateway.id}
-                      className="flex-1 cursor-pointer flex items-center gap-2"
-                    >
-                      <CreditCard className="h-4 w-4 text-muted-foreground" />
-                      {gateway.name}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Expiry</Label>
+                <Input placeholder="MM/YY" />
+              </div>
+              <div className="grid gap-2">
+                <Label>CVC</Label>
+                <Input placeholder="123" />
+              </div>
             </div>
-          </div>
-        )}
-
-        {paymentStep === 'processing' && (
-          <div className="py-8 flex flex-col items-center justify-center space-y-4">
-            <Loader2 className="h-12 w-12 animate-spin text-trust-blue" />
-            <p className="text-muted-foreground">Processing payment...</p>
-          </div>
-        )}
-
-        {paymentStep === 'success' && (
-          <div className="py-8 flex flex-col items-center justify-center space-y-4">
-            <CheckCircle2 className="h-16 w-16 text-green-500 animate-in zoom-in" />
-            <p className="font-semibold text-lg">Payment Confirmed!</p>
-          </div>
-        )}
-
-        <DialogFooter>
-          {paymentStep === 'select' && (
             <Button
-              onClick={handlePayment}
-              disabled={!selectedGateway}
-              className="w-full bg-green-600 hover:bg-green-700"
+              className="w-full bg-trust-blue"
+              onClick={handlePay}
+              disabled={isProcessing}
             >
-              Pay {formatCurrency(amount)}
+              {isProcessing ? 'Processing...' : 'Pay Now'}
             </Button>
-          )}
-        </DialogFooter>
+          </TabsContent>
+
+          <TabsContent
+            value="bank"
+            className="pt-4 text-center text-sm text-muted-foreground"
+          >
+            Bank transfer details (ACH/Wire) would appear here.
+            <Button
+              className="w-full mt-4"
+              variant="outline"
+              onClick={handlePay}
+            >
+              Simulate Transfer
+            </Button>
+          </TabsContent>
+
+          <TabsContent
+            value="cash"
+            className="pt-4 text-center text-sm text-muted-foreground"
+          >
+            Record manual payment (Cash/Check).
+            <Button
+              className="w-full mt-4"
+              variant="outline"
+              onClick={handlePay}
+            >
+              Record Payment
+            </Button>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   )

@@ -1,34 +1,33 @@
 import * as React from 'react'
-import { X, Check, ChevronsUpDown } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { Check, ChevronsUpDown, X } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import {
   Command,
+  CommandEmpty,
   CommandGroup,
+  CommandInput,
   CommandItem,
   CommandList,
-  CommandEmpty,
-  CommandInput,
 } from '@/components/ui/command'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 
-export type Option = {
+export type OptionType = {
   label: string
   value: string
 }
 
 interface MultiSelectProps {
-  options: Option[]
+  options: OptionType[]
   selected: string[]
   onChange: (selected: string[]) => void
   placeholder?: string
   className?: string
-  disabled?: boolean
 }
 
 export function MultiSelect({
@@ -37,28 +36,11 @@ export function MultiSelect({
   onChange,
   placeholder = 'Select items...',
   className,
-  disabled = false,
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false)
 
   const handleUnselect = (item: string) => {
     onChange(selected.filter((i) => i !== item))
-  }
-
-  const handleSelect = (itemValue: string) => {
-    if (selected.includes(itemValue)) {
-      onChange(selected.filter((i) => i !== itemValue))
-    } else {
-      onChange([...selected, itemValue])
-    }
-  }
-
-  const handleSelectAll = () => {
-    if (selected.length === options.length) {
-      onChange([])
-    } else {
-      onChange(options.map((opt) => opt.value))
-    }
   }
 
   return (
@@ -69,104 +51,83 @@ export function MultiSelect({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            'w-full justify-between h-auto min-h-10 py-2',
+            'w-full justify-between h-auto min-h-10 hover:bg-background',
             className,
           )}
-          disabled={disabled}
         >
-          <div className="flex flex-wrap gap-1">
+          <div className="flex gap-1 flex-wrap">
             {selected.length === 0 && (
               <span className="text-muted-foreground font-normal">
                 {placeholder}
               </span>
             )}
-            {selected.length > 0 && selected.length <= 3
-              ? selected.map((itemValue) => {
-                  const option = options.find((o) => o.value === itemValue)
-                  return (
-                    <Badge
-                      variant="secondary"
-                      key={itemValue}
-                      className="mr-1 mb-1"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleUnselect(itemValue)
-                      }}
-                    >
-                      {option?.label || itemValue}
-                      <button
-                        className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleUnselect(itemValue)
-                          }
-                        }}
-                        onMouseDown={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          handleUnselect(itemValue)
-                        }}
-                      >
-                        <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                      </button>
-                    </Badge>
-                  )
-                })
-              : selected.length > 3 && (
-                  <Badge variant="secondary" className="mr-1 mb-1">
-                    {selected.length} selected
-                  </Badge>
-                )}
+            {selected.map((item) => (
+              <Badge
+                variant="secondary"
+                key={item}
+                className="mr-1 mb-1"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleUnselect(item)
+                }}
+              >
+                {options.find((opt) => opt.value === item)?.label || item}
+                <button
+                  className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleUnselect(item)
+                    }
+                  }}
+                  onMouseDown={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    handleUnselect(item)
+                  }}
+                >
+                  <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                </button>
+              </Badge>
+            ))}
           </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
-        <Command>
+      <PopoverContent className="w-full p-0">
+        <Command className="w-full">
           <CommandInput placeholder="Search..." />
-          <CommandList>
-            <CommandEmpty>No item found.</CommandEmpty>
-            <CommandGroup>
-              <CommandItem
-                onSelect={handleSelectAll}
-                className="font-medium border-b"
-              >
-                <div
-                  className={cn(
-                    'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
-                    selected.length === options.length
-                      ? 'bg-primary text-primary-foreground'
-                      : 'opacity-50 [&_svg]:invisible',
-                  )}
-                >
-                  <Check className={cn('h-4 w-4')} />
-                </div>
-                <span>Select All</span>
-              </CommandItem>
+          <CommandEmpty>No item found.</CommandEmpty>
+          <CommandGroup className="max-h-64 overflow-auto">
+            <CommandList>
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  onSelect={() => handleSelect(option.value)}
-                >
-                  <div
-                    className={cn(
-                      'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                  onSelect={() => {
+                    onChange(
                       selected.includes(option.value)
-                        ? 'bg-primary text-primary-foreground'
-                        : 'opacity-50 [&_svg]:invisible',
+                        ? selected.filter((item) => item !== option.value)
+                        : [...selected, option.value],
+                    )
+                    setOpen(true)
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      selected.includes(option.value)
+                        ? 'opacity-100'
+                        : 'opacity-0',
                     )}
-                  >
-                    <Check className={cn('h-4 w-4')} />
-                  </div>
-                  <span>{option.label}</span>
+                  />
+                  {option.label}
                 </CommandItem>
               ))}
-            </CommandGroup>
-          </CommandList>
+            </CommandList>
+          </CommandGroup>
         </Command>
       </PopoverContent>
     </Popover>

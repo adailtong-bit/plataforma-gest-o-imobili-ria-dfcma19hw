@@ -1,272 +1,125 @@
-import { useState, useMemo } from 'react'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { useToast } from '@/hooks/use-toast'
-import useTaskStore from '@/stores/useTaskStore'
-import useAuthStore from '@/stores/useAuthStore'
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { CurrencyInput } from '@/components/ui/currency-input'
+import { useState } from 'react'
 import useFinancialStore from '@/stores/useFinancialStore'
+import usePropertyStore from '@/stores/usePropertyStore'
+import useAuthStore from '@/stores/useAuthStore'
+import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Invoice } from '@/lib/types'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { formatCurrency, formatDate } from '@/lib/utils'
 
 interface TaskInvoiceDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  initialTask?: any
 }
 
 export function TaskInvoiceDialog({
   open,
   onOpenChange,
+  initialTask,
 }: TaskInvoiceDialogProps) {
-  const { tasks } = useTaskStore()
-  const { currentUser } = useAuthStore()
   const { addInvoice } = useFinancialStore()
+  const { properties } = usePropertyStore()
+  const { currentUser } = useAuthStore()
   const { toast } = useToast()
-  const { language } = useLanguageStore()
+  const { t } = useLanguageStore()
 
-  const [selectedTasks, setSelectedTasks] = useState<string[]>([])
-
-  // Determine user role and corresponding logic
-  const isTeamMember = currentUser.role === 'partner_employee'
-  const isPartner = currentUser.role === 'partner'
-  const isAdminOrPM = ['platform_owner', 'software_tenant'].includes(
-    currentUser.role,
+  const [description, setDescription] = useState(
+    initialTask ? `Invoice for ${initialTask.title}` : '',
   )
+  const [amount, setAmount] = useState(initialTask ? initialTask.price || 0 : 0)
+  const [propertyId, setPropertyId] = useState(
+    initialTask ? initialTask.propertyId : '',
+  )
+  const [billTo, setBillTo] = useState('')
 
-  // Filter tasks available for invoicing
-  const invoiceableTasks = useMemo(() => {
-    return tasks.filter((task) => {
-      // Must be completed
-      if (task.status !== 'completed') return false
-
-      if (isTeamMember) {
-        // Team member sees tasks assigned to them with a payout value
-        return (
-          task.partnerEmployeeId === currentUser.id &&
-          task.teamMemberPayout &&
-          task.teamMemberPayout > 0
-        )
-      }
-
-      if (isPartner) {
-        // Partner sees tasks assigned to them (company) with a price
-        return (
-          task.assigneeId === currentUser.id && task.price && task.price > 0
-        )
-      }
-
-      if (isAdminOrPM) {
-        // PM sees all completed tasks with price, can invoice on behalf of anyone
-        return task.price && task.price > 0
-      }
-
-      return false
-    })
-  }, [tasks, currentUser, isTeamMember, isPartner, isAdminOrPM])
-
-  // Calculate total
-  const totalAmount = useMemo(() => {
-    return selectedTasks.reduce((acc, taskId) => {
-      const task = tasks.find((t) => t.id === taskId)
-      if (!task) return acc
-
-      if (isTeamMember) return acc + (task.teamMemberPayout || 0)
-      return acc + (task.price || 0)
-    }, 0)
-  }, [selectedTasks, tasks, isTeamMember])
-
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedTasks(invoiceableTasks.map((t) => t.id))
-    } else {
-      setSelectedTasks([])
-    }
-  }
-
-  const handleSelectTask = (taskId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedTasks((prev) => [...prev, taskId])
-    } else {
-      setSelectedTasks((prev) => prev.filter((id) => id !== taskId))
-    }
-  }
-
-  const handleGenerateInvoice = () => {
-    if (selectedTasks.length === 0) return
-
-    let invoiceType: Invoice['type'] = 'generic'
-    let recipientId: string | undefined = undefined
-
-    // Workflow Rules:
-    // Team -> Partner
-    // Partner -> PM
-    if (isTeamMember) {
-      invoiceType = 'team_to_partner'
-      recipientId = currentUser.parentPartnerId // Auto-set recipient to Partner
-    } else if (isPartner) {
-      invoiceType = 'partner_to_pm'
-      // Recipient is the PM (Platform Owner or Software Tenant)
-      // Ideally we should find the PM associated, but usually this is the system admin or the one who invited.
-      // For simplicity in this logic, we assume it's the parent of the Partner or the Admin.
-      recipientId = currentUser.parentId
-    } else if (isAdminOrPM) {
-      invoiceType = 'admin_to_pm'
-      // PM creating invoice usually bills an Owner
+  const handleSave = () => {
+    if (!description || !amount || !propertyId) {
+      toast({
+        title: t('common.error'),
+        description: t('common.required'),
+        variant: 'destructive',
+      })
+      return
     }
 
-    // Determine description based on tasks
-    const firstTask = tasks.find((t) => t.id === selectedTasks[0])
-    const description =
-      selectedTasks.length === 1
-        ? `${firstTask?.title} at ${firstTask?.propertyName}`
-        : `Service Invoice for ${selectedTasks.length} tasks`
-
-    const invoice: Invoice = {
+    const newInvoice: Invoice = {
       id: `inv-${Date.now()}`,
-      description: description,
-      amount: totalAmount,
+      description,
+      amount,
       status: 'pending',
       date: new Date().toISOString(),
       fromId: currentUser.id,
-      toId: recipientId, // Automatically set based on hierarchy
-      propertyId: firstTask?.propertyId, // Associate with the first task's property
-      type: invoiceType,
+      toId: billTo || 'owner', // Default or selected
+      propertyId,
+      type: 'generic',
     }
 
-    addInvoice(invoice)
-
-    toast({
-      title: 'Invoice Generated',
-      description: `Invoice for ${formatCurrency(totalAmount, language)} created successfully.`,
-    })
-
+    addInvoice(newInvoice)
+    toast({ title: t('common.success'), description: 'Invoice created.' })
     onOpenChange(false)
-    setSelectedTasks([])
+    setDescription('')
+    setAmount(0)
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Generate Invoice</DialogTitle>
-          <DialogDescription>
-            Select completed tasks to include in this invoice. The generated
-            invoice will follow US Standards.
-            {isTeamMember && (
-              <span className="block mt-1 font-semibold text-blue-600">
-                Note: This invoice will be submitted to your Partner (Employer).
-              </span>
-            )}
-            {isPartner && (
-              <span className="block mt-1 font-semibold text-blue-600">
-                Note: This invoice will be submitted to the Property Manager.
-              </span>
-            )}
-          </DialogDescription>
+          <DialogTitle>{t('invoices.create_new')}</DialogTitle>
         </DialogHeader>
-
-        <div className="flex-1 overflow-hidden flex flex-col gap-4">
-          <div className="flex justify-between items-center p-2 bg-muted/30 rounded-md">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                checked={
-                  selectedTasks.length === invoiceableTasks.length &&
-                  invoiceableTasks.length > 0
-                }
-                onCheckedChange={(c) => handleSelectAll(c as boolean)}
-              />
-              <span className="text-sm font-medium">Select All</span>
-            </div>
-            <div className="text-sm">
-              Selected:{' '}
-              <span className="font-bold">{selectedTasks.length}</span>
-            </div>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label>{t('common.property')}</Label>
+            <Select value={propertyId} onValueChange={setPropertyId}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('common.select')} />
+              </SelectTrigger>
+              <SelectContent>
+                {properties.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-
-          <ScrollArea className="flex-1 border rounded-md h-[300px]">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[50px] table-text"></TableHead>
-                  <TableHead className="table-text">Date</TableHead>
-                  <TableHead className="table-text">Task</TableHead>
-                  <TableHead className="table-text">Property</TableHead>
-                  <TableHead className="text-right table-text">Value</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoiceableTasks.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      No invoiceable tasks found.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  invoiceableTasks.map((task) => (
-                    <TableRow key={task.id}>
-                      <TableCell>
-                        <Checkbox
-                          checked={selectedTasks.includes(task.id)}
-                          onCheckedChange={(c) =>
-                            handleSelectTask(task.id, c as boolean)
-                          }
-                        />
-                      </TableCell>
-                      <TableCell className="table-text">
-                        {formatDate(task.date, language)}
-                      </TableCell>
-                      <TableCell className="font-medium table-text">
-                        {task.title}
-                      </TableCell>
-                      <TableCell className="table-text">
-                        {task.propertyName}
-                      </TableCell>
-                      <TableCell className="text-right font-semibold table-text">
-                        {isTeamMember
-                          ? formatCurrency(task.teamMemberPayout || 0, language)
-                          : formatCurrency(task.price || 0, language)}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </ScrollArea>
+          <div className="grid gap-2">
+            <Label>{t('common.description')}</Label>
+            <Textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label>{t('common.value')}</Label>
+            <CurrencyInput value={amount} onChange={setAmount} />
+          </div>
+          <div className="grid gap-2">
+            <Label>{t('invoices.bill_to')}</Label>
+            <Input value={billTo} onChange={(e) => setBillTo(e.target.value)} />
+          </div>
         </div>
-
-        <DialogFooter className="flex justify-between items-center w-full">
-          <div className="text-lg font-bold">
-            Total: {formatCurrency(totalAmount, language)}
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button
-              onClick={handleGenerateInvoice}
-              disabled={selectedTasks.length === 0}
-              className="bg-trust-blue"
-            >
-              Generate Invoice
-            </Button>
-          </div>
+        <DialogFooter>
+          <Button onClick={handleSave}>{t('common.save')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

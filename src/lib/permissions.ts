@@ -89,10 +89,11 @@ export const PERMISSIONS_MATRIX: Record<
     tasks: ['view', 'edit'],
     messages: ['view', 'create'],
     financial: ['view'],
+    properties: ['view'], // Ensure partner can view properties assigned to them
   },
   property_owner: {
     portal: ['view'],
-    properties: ['view'],
+    properties: ['view'], // Ensure owner can view their properties
     financial: ['view'],
     messages: ['view', 'create'],
     short_term: ['view'],
@@ -103,11 +104,13 @@ export const PERMISSIONS_MATRIX: Record<
     portal: ['view'],
     messages: ['view', 'create'],
     financial: ['view'],
+    properties: ['view'], // Ensure tenant can view their property details
   },
   partner_employee: {
     portal: ['view'],
     tasks: ['view', 'edit'],
     messages: ['view', 'create'],
+    properties: ['view'], // Ensure employee can view properties
   },
 }
 

@@ -59,13 +59,12 @@ export function RequirePermission({
             ? '/portal/partner'
             : '/portal/tenant'
 
-      if (!location.pathname.startsWith(portalPath)) {
+      // Allow if trying to access properties via direct link but check if it's their property
+      // For now, if they are blocked from a resource, we show the denied screen or redirect to portal
+      // The PERMISSIONS_MATRIX update should prevent this for valid resources.
+      if (!location.pathname.startsWith(portalPath) && resource === 'portal') {
         return <Navigate to={portalPath} replace />
       }
-    } else {
-      // For Admin/Manager/Internal, don't force redirect if they are already on a potentially valid path, just show access denied.
-      // Or redirect to root if they are completely lost.
-      // To improve UX and avoid loops, we show the access denied screen instead of redirecting aggressively.
     }
 
     return (
@@ -83,12 +82,16 @@ export function RequirePermission({
           <Button variant="outline" onClick={() => window.history.back()}>
             {t('common.back')}
           </Button>
-          <Button className="bg-trust-blue" onClick={() => (window.location.href = '/')}>
+          <Button
+            className="bg-trust-blue"
+            onClick={() => (window.location.href = '/')}
+          >
             {t('common.return_home')}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-8">
-          {t('common.resource')}: {resource} | {t('common.role')}: {t(`roles.${currentUser.role}`)}
+          {t('common.resource')}: {resource} | {t('common.role')}:{' '}
+          {t(`roles.${currentUser.role}`)}
         </p>
       </div>
     )
@@ -96,4 +99,3 @@ export function RequirePermission({
 
   return children
 }
-

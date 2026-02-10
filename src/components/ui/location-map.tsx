@@ -1,58 +1,35 @@
-import { MapPin } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { MapPin } from 'lucide-react'
 
-interface LocationMapProps {
-  address: string
-  city?: string
-  state?: string
-  zipCode?: string
-  country?: string
-  className?: string
-}
-
+// Placeholder map component to satisfy imports without complex google maps logic
 export function LocationMap({
   address,
   city,
   state,
   zipCode,
   country,
-  className,
-}: LocationMapProps) {
-  const { t } = useLanguageStore()
-
-  // Construct a full address string for the map query
+}: {
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  country?: string
+}) {
   const fullAddress = [address, city, state, zipCode, country]
     .filter(Boolean)
     .join(', ')
-
-  const encodedAddress = encodeURIComponent(fullAddress)
-
   return (
-    <Card className={className}>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle>{t('properties.location.map_title')}</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <MapPin className="h-5 w-5" /> Location
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="w-full aspect-video bg-muted rounded-lg flex flex-col items-center justify-center relative overflow-hidden border">
-          {address && city ? (
-            <iframe
-              title="Location Map"
-              width="100%"
-              height="100%"
-              frameBorder="0"
-              style={{ border: 0 }}
-              src={`https://www.google.com/maps?q=${encodedAddress}&output=embed`}
-              allowFullScreen
-            ></iframe>
-          ) : (
-            <div className="flex flex-col items-center justify-center text-center p-4">
-              <MapPin className="h-10 w-10 text-muted-foreground mb-2" />
-              <p className="text-sm text-muted-foreground">
-                {t('properties.location.map_hint')}
-              </p>
-            </div>
-          )}
+      <CardContent className="h-[250px] bg-slate-100 flex items-center justify-center rounded-md">
+        <div className="text-center text-muted-foreground">
+          <MapPin className="h-10 w-10 mx-auto mb-2 opacity-20" />
+          <p className="font-semibold">Map View</p>
+          <p className="text-xs max-w-[200px] mx-auto">{fullAddress}</p>
         </div>
       </CardContent>
     </Card>

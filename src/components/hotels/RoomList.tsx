@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
   Table,
   TableBody,
@@ -7,42 +6,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
-  Plus,
-  Trash2,
-  Edit2,
-  Key,
-  Eye,
-  Filter,
-  Search,
-  BedDouble,
-  Users,
-} from 'lucide-react'
-import usePropertyStore from '@/stores/usePropertyStore'
-import { Property, PropertyStatus } from '@/lib/types'
-import { useToast } from '@/hooks/use-toast'
-import useLanguageStore from '@/stores/useLanguageStore'
-import { Link } from 'react-router-dom'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
+import usePropertyStore from '@/stores/usePropertyStore'
+import { Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { DataMask } from '@/components/DataMask'
 
 interface RoomListProps {
   hotelId: string
@@ -50,560 +18,63 @@ interface RoomListProps {
 }
 
 export function RoomList({ hotelId, towerId }: RoomListProps) {
-  const { properties, addProperty, updateProperty, deleteProperty } =
-    usePropertyStore()
-  const { t } = useLanguageStore()
-  const { toast } = useToast()
+  const { properties } = usePropertyStore()
 
-  const [open, setOpen] = useState(false)
-  const [editingRoom, setEditingRoom] = useState<Property | null>(null)
-
-  // Advanced Filters
-  const [filterRoomNumber, setFilterRoomNumber] = useState('')
-  const [filterStatus, setFilterStatus] = useState<string>('all')
-  const [filterOccupancy, setFilterOccupancy] = useState<string>('all')
-  const [filterService, setFilterService] = useState<string>('all')
-
-  const [formData, setFormData] = useState<Partial<Property>>({
-    name: '',
-    roomNumber: '',
-    bedrooms: 1,
-    bathrooms: 1,
-    guests: 2,
-    status: 'available',
-    listingPrice: 0,
-    roomCharacteristics: {
-      bedType: 'Queen',
-      view: 'Standard',
-      hasBalcony: false,
-      maxOccupancy: 2,
-      sizeSqFt: 0,
-    },
-    amenities: [],
-  })
-
-  // Filter Logic
-  const filteredRooms = properties
-    .filter((p) => {
-      // Basic context filtering
-      if (p.hotelId !== hotelId) return false
-      // If towerId is 'none', we show rooms without a towerId or explicitly linked to 'none' if that was a thing.
-      if (towerId !== 'none' && p.towerId !== towerId) return false
-      if (towerId === 'none' && p.towerId) return false // Only show direct rooms if no tower context
-
-      // Advanced filters
-      if (
-        filterRoomNumber &&
-        !p.roomNumber?.toLowerCase().includes(filterRoomNumber.toLowerCase())
-      )
-        return false
-      if (filterStatus !== 'all' && p.status !== filterStatus) return false
-
-      // Occupancy Filter (Mock logic: based on maxOccupancy)
-      if (filterOccupancy !== 'all') {
-        const capacity = p.roomCharacteristics?.maxOccupancy || 0
-        if (filterOccupancy === 'single' && capacity !== 1) return false
-        if (filterOccupancy === 'double' && capacity !== 2) return false
-        if (filterOccupancy === 'family' && capacity < 3) return false
-      }
-
-      // Service/Amenities Filter
-      if (filterService !== 'all') {
-        if (!p.amenities?.includes(filterService)) return false
-      }
-
-      return true
-    })
-    .sort((a, b) => (a.roomNumber || '').localeCompare(b.roomNumber || ''))
-
-  // Extract unique amenities for filter
-  const allAmenities = Array.from(
-    new Set(
-      properties
-        .filter((p) => p.hotelId === hotelId)
-        .flatMap((p) => p.amenities || []),
-    ),
+  const rooms = properties.filter(
+    (p) =>
+      p.hotelId === hotelId &&
+      (towerId === 'none' || p.towerId === towerId) &&
+      p.profileType === 'short_term',
   )
 
-  const handleSave = () => {
-    if (!formData.name || !formData.roomNumber) {
-      toast({
-        title: t('common.error'),
-        description: t('common.required'),
-        variant: 'destructive',
-      })
-      return
-    }
-
-    if (editingRoom) {
-      updateProperty({
-        ...editingRoom,
-        ...formData,
-      } as Property)
-      toast({ title: t('common.success') })
-    } else {
-      addProperty({
-        id: `room-${Date.now()}`,
-        ...formData,
-        hotelId,
-        towerId: towerId === 'none' ? undefined : towerId,
-        type: 'Hotel Room',
-        profileType: 'short_term',
-        ownerId: 'system',
-        image: 'https://img.usecurling.com/p/400/300?q=hotel%20room',
-        priceHistory: [],
-      } as Property)
-      toast({ title: t('common.success') })
-    }
-    setOpen(false)
-    setEditingRoom(null)
-    resetForm()
-  }
-
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      roomNumber: '',
-      bedrooms: 1,
-      bathrooms: 1,
-      guests: 2,
-      status: 'available',
-      listingPrice: 0,
-      roomCharacteristics: {
-        bedType: 'Queen',
-        view: 'Standard',
-        hasBalcony: false,
-        maxOccupancy: 2,
-        sizeSqFt: 0,
-      },
-      amenities: [],
-    })
-  }
-
-  const handleDelete = (id: string) => {
-    if (confirm(t('common.delete_title'))) {
-      deleteProperty(id)
-      toast({ title: t('common.success') })
-    }
-  }
-
-  const openEdit = (room: Property) => {
-    setEditingRoom(room)
-    setFormData({
-      name: room.name,
-      roomNumber: room.roomNumber,
-      bedrooms: room.bedrooms,
-      bathrooms: room.bathrooms,
-      guests: room.guests,
-      status: room.status,
-      listingPrice: room.listingPrice,
-      roomCharacteristics: room.roomCharacteristics || {
-        bedType: 'Queen',
-        view: 'Standard',
-        hasBalcony: false,
-        maxOccupancy: 2,
-        sizeSqFt: 0,
-      },
-      amenities: room.amenities || [],
-    })
-    setOpen(true)
-  }
-
-  const updateStatus = (room: Property, newStatus: PropertyStatus) => {
-    updateProperty({ ...room, status: newStatus })
-    toast({ title: 'Status Updated' })
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'occupied':
-      case 'rented':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300'
-      case 'maintenance':
-        return 'bg-red-100 text-red-800 border-red-300'
-      case 'cleaning':
-        return 'bg-blue-100 text-blue-800 border-blue-300'
-      case 'available':
-        return 'bg-green-100 text-green-800 border-green-300'
-      default:
-        return 'bg-gray-100 border-slate-300 text-slate-800'
-    }
-  }
-
   return (
-    <div className="flex flex-col h-full">
-      {/* Horizontal Filter Toolbar */}
-      <div className="p-4 border-b bg-slate-50/50 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 sticky top-0 z-10">
-        <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-          {/* Room Number Filter */}
-          <div className="relative w-full sm:w-auto">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-            <Input
-              placeholder="Search Room..."
-              value={filterRoomNumber}
-              onChange={(e) => setFilterRoomNumber(e.target.value)}
-              className="pl-9 w-full sm:w-[180px] bg-white border-slate-300 focus-visible:ring-blue-500"
-            />
-          </div>
-
-          {/* Status Filter */}
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-full sm:w-[150px] bg-white border-slate-300">
-              <div className="flex items-center gap-2">
-                <Filter className="h-3.5 w-3.5 text-slate-500" />
-                <SelectValue placeholder="Status" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="available">Ready</SelectItem>
-              <SelectItem value="occupied">Occupied</SelectItem>
-              <SelectItem value="maintenance">Maintenance</SelectItem>
-              <SelectItem value="cleaning">Cleaning</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {/* Capacity Filter */}
-          <Select value={filterOccupancy} onValueChange={setFilterOccupancy}>
-            <SelectTrigger className="w-full sm:w-[150px] bg-white border-slate-300">
-              <div className="flex items-center gap-2">
-                <Users className="h-3.5 w-3.5 text-slate-500" />
-                <SelectValue placeholder="Capacity" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Any Capacity</SelectItem>
-              <SelectItem value="single">Single (1)</SelectItem>
-              <SelectItem value="double">Double (2)</SelectItem>
-              <SelectItem value="family">Family (3+)</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {/* Service Filter */}
-          <Select value={filterService} onValueChange={setFilterService}>
-            <SelectTrigger className="w-full sm:w-[160px] bg-white border-slate-300">
-              <div className="flex items-center gap-2">
-                <BedDouble className="h-3.5 w-3.5 text-slate-500" />
-                <SelectValue placeholder="Amenities" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Services</SelectItem>
-              {allAmenities.map((am) => (
-                <SelectItem key={am} value={am}>
-                  {am}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="w-full xl:w-auto flex justify-end">
-          <Dialog
-            open={open}
-            onOpenChange={(v) => {
-              setOpen(v)
-              if (!v) {
-                setEditingRoom(null)
-                resetForm()
-              }
-            }}
-          >
-            <DialogTrigger asChild>
-              <Button
-                size="sm"
-                className="bg-trust-blue hover:bg-blue-700 text-white gap-2 font-bold w-full sm:w-auto"
-              >
-                <Plus className="h-4 w-4" /> {t('hotels.add_room')}
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Number</TableHead>
+          <TableHead>Type</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Price</TableHead>
+          <TableHead className="text-right">Action</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rooms.map((room) => (
+          <TableRow key={room.id}>
+            <TableCell className="font-bold">{room.roomNumber}</TableCell>
+            <TableCell>{room.name}</TableCell>
+            <TableCell>
+              <Badge variant="outline">{room.status}</Badge>
+            </TableCell>
+            <TableCell>
+              <DataMask>${room.listingPrice}</DataMask>
+            </TableCell>
+            <TableCell className="text-right">
+              <Button size="sm" variant="ghost" asChild>
+                <Link
+                  to={
+                    towerId !== 'none'
+                      ? `/hotels/${hotelId}/towers/${towerId}/rooms/${room.id}`
+                      : `/hotels/${hotelId}/rooms/${room.id}`
+                  }
+                >
+                  View
+                </Link>
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingRoom ? t('common.edit') : t('hotels.new_room')}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>{t('hotels.room_number')}</Label>
-                    <Input
-                      value={formData.roomNumber}
-                      onChange={(e) =>
-                        setFormData({ ...formData, roomNumber: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>{t('common.name')}</Label>
-                    <Input
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      placeholder="e.g. Deluxe Suite"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>{t('common.status')}</Label>
-                    <Select
-                      value={formData.status}
-                      onValueChange={(v) =>
-                        setFormData({
-                          ...formData,
-                          status: v as PropertyStatus,
-                        })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="available">Ready</SelectItem>
-                        <SelectItem value="occupied">Occupied</SelectItem>
-                        <SelectItem value="maintenance">Maintenance</SelectItem>
-                        <SelectItem value="cleaning">In Cleaning</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Nightly Rate ($)</Label>
-                    <Input
-                      type="number"
-                      value={formData.listingPrice}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          listingPrice: parseFloat(e.target.value),
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-
-                {/* Characteristics */}
-                <div className="border-t pt-4">
-                  <Label className="mb-2 block font-semibold">
-                    Characteristics
-                  </Label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label>Bed Type</Label>
-                      <Select
-                        value={formData.roomCharacteristics?.bedType}
-                        onValueChange={(v) =>
-                          setFormData({
-                            ...formData,
-                            roomCharacteristics: {
-                              ...formData.roomCharacteristics!,
-                              bedType: v,
-                            },
-                          })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="King">King</SelectItem>
-                          <SelectItem value="Queen">Queen</SelectItem>
-                          <SelectItem value="Double">Double</SelectItem>
-                          <SelectItem value="Twin">Twin</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Max Occupancy</Label>
-                      <Input
-                        type="number"
-                        value={formData.roomCharacteristics?.maxOccupancy}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            roomCharacteristics: {
-                              ...formData.roomCharacteristics!,
-                              maxOccupancy: parseInt(e.target.value),
-                            },
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="flex items-center space-x-2 mt-4">
-                      <Checkbox
-                        id="balcony"
-                        checked={formData.roomCharacteristics?.hasBalcony}
-                        onCheckedChange={(c) =>
-                          setFormData({
-                            ...formData,
-                            roomCharacteristics: {
-                              ...formData.roomCharacteristics!,
-                              hasBalcony: c as boolean,
-                            },
-                          })
-                        }
-                      />
-                      <Label htmlFor="balcony">Has Balcony</Label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button onClick={handleSave}>{t('common.save')}</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
-
-      {/* Expanded Room List Table */}
-      <div className="flex-1 overflow-auto">
-        <Table>
-          <TableHeader className="bg-slate-50 sticky top-0 z-0">
-            <TableRow>
-              <TableHead className="w-[120px] font-bold text-slate-700">
-                {t('hotels.room_number')}
-              </TableHead>
-              <TableHead className="font-bold text-slate-700">
-                {t('common.type')}
-              </TableHead>
-              <TableHead className="font-bold text-slate-700">
-                {t('common.status')}
-              </TableHead>
-              <TableHead className="font-bold text-slate-700">
-                Occupancy
-              </TableHead>
-              <TableHead className="font-bold text-slate-700">
-                Features
-              </TableHead>
-              <TableHead className="text-right font-bold text-slate-700">
-                {t('common.actions')}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredRooms.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center py-12 text-muted-foreground"
-                >
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <Key className="h-8 w-8 text-slate-300" />
-                    <p>No rooms found matching filters.</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredRooms.map((room) => (
-                <TableRow
-                  key={room.id}
-                  className="hover:bg-slate-50/80 transition-colors"
-                >
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <div className="p-1.5 bg-slate-100 rounded text-slate-600">
-                        <Key className="h-4 w-4" />
-                      </div>
-                      <span className="font-bold text-slate-900">
-                        {room.roomNumber}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium text-slate-700">
-                      {room.roomCharacteristics?.bedType}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {room.name}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      value={room.status}
-                      onValueChange={(v) =>
-                        updateStatus(room, v as PropertyStatus)
-                      }
-                    >
-                      <SelectTrigger
-                        className={`h-8 w-[140px] border-0 focus:ring-0 ${getStatusColor(room.status)} font-bold rounded-full`}
-                      >
-                        <SelectValue>{room.status}</SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="available">Ready</SelectItem>
-                        <SelectItem value="cleaning">In Cleaning</SelectItem>
-                        <SelectItem value="maintenance">Maintenance</SelectItem>
-                        <SelectItem value="occupied">Occupied</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="text-slate-600 border-slate-300"
-                    >
-                      {room.roomCharacteristics?.maxOccupancy || 2} Guests
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-1 flex-wrap">
-                      {room.roomCharacteristics?.hasBalcony && (
-                        <Badge variant="secondary" className="text-[10px] h-5">
-                          Balcony
-                        </Badge>
-                      )}
-                      {room.roomCharacteristics?.view && (
-                        <Badge variant="secondary" className="text-[10px] h-5">
-                          {room.roomCharacteristics.view}
-                        </Badge>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openEdit(room)}
-                        title="Quick Edit"
-                        className="text-slate-500 hover:text-slate-900"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Link
-                        to={
-                          towerId !== 'none'
-                            ? `/hotels/${hotelId}/towers/${towerId}/rooms/${room.id}`
-                            : `/hotels/${hotelId}/rooms/${room.id}`
-                        }
-                      >
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          title="View Detail"
-                          className="text-slate-500 hover:text-blue-600"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-slate-400 hover:text-red-600"
-                        onClick={() => handleDelete(room.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+            </TableCell>
+          </TableRow>
+        ))}
+        {rooms.length === 0 && (
+          <TableRow>
+            <TableCell
+              colSpan={5}
+              className="text-center py-4 text-muted-foreground"
+            >
+              No rooms found.
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
   )
 }

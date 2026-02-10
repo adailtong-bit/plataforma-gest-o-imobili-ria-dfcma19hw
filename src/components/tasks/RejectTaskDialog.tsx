@@ -1,18 +1,18 @@
-import { useState } from 'react'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { useState } from 'react'
 import useTaskStore from '@/stores/useTaskStore'
-import useLanguageStore from '@/stores/useLanguageStore'
-import { AlertTriangle } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
 
 interface RejectTaskDialogProps {
   taskId: string
@@ -26,73 +26,52 @@ export function RejectTaskDialog({
   onOpenChange,
 }: RejectTaskDialogProps) {
   const { rejectTask } = useTaskStore()
-  const { t } = useLanguageStore()
+  const { toast } = useToast()
   const [reason, setReason] = useState('')
-  const [error, setError] = useState(false)
 
   const handleConfirm = () => {
     if (!reason.trim()) {
-      setError(true)
+      toast({
+        title: 'Error',
+        description: 'Reason is required',
+        variant: 'destructive',
+      })
       return
     }
     rejectTask(taskId, reason)
-    setReason('')
-    setError(false)
+    toast({ title: 'Task Rejected' })
     onOpenChange(false)
-  }
-
-  const handleOpenChange = (isOpen: boolean) => {
-    if (!isOpen) {
-      setReason('')
-      setError(false)
-    }
-    onOpenChange(isOpen)
+    setReason('')
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-destructive">
-            <AlertTriangle className="h-5 w-5" />
-            Reject Task
-          </DialogTitle>
-          <DialogDescription>
-            This action will return the task to the requester for modification
-            or cancellation. Please provide a reason.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="py-4 space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="reason">Reason for Rejection *</Label>
-            <Textarea
-              id="reason"
-              placeholder="e.g. Cost is too high, details are missing..."
-              value={reason}
-              onChange={(e) => {
-                setReason(e.target.value)
-                if (error && e.target.value.trim()) setError(false)
-              }}
-              className={error ? 'border-destructive' : ''}
-            />
-            {error && (
-              <p className="text-xs text-destructive font-medium">
-                A reason is required to reject the task.
-              </p>
-            )}
-          </div>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Reject Task</AlertDialogTitle>
+          <AlertDialogDescription>
+            Please provide a reason for rejecting this task. This will be sent
+            to the requester.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div className="py-2">
+          <Label>Reason</Label>
+          <Textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Why is this being rejected?"
+          />
         </div>
-
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => handleOpenChange(false)}>
-            {t('common.cancel')}
-          </Button>
-          <Button variant="destructive" onClick={handleConfirm}>
-            Reject Task
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleConfirm}
+            className="bg-red-600 hover:bg-red-700"
+          >
+            Reject
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }
