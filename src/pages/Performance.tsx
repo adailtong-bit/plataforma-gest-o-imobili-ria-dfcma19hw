@@ -184,7 +184,7 @@ export default function Performance() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">
-                  {t('market.avg_occupancy')}
+                  {t('market_analysis.avg_occupancy')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -204,7 +204,7 @@ export default function Performance() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">
-                  {t('market.avg_daily_rate')}
+                  {t('market_analysis.avg_daily_rate')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -254,138 +254,13 @@ export default function Performance() {
                   <ChartContainer
                     config={{
                       occupancy: {
-                        label: t('market.avg_occupancy'),
+                        label: t('market_analysis.avg_occupancy'),
                         color: '#3b82f6',
                       },
                       adr: {
-                        label: t('market.avg_daily_rate'),
+                        label: t('market_analysis.avg_daily_rate'),
                         color: '#10b981',
                       },
-                      revPar: { label: 'RevPAR $', color: '#f59e0b' },
-                    }}
-                  >
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={metrics}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="date" />
-                        <YAxis yAxisId="left" />
-                        <YAxis yAxisId="right" orientation="right" unit="%" />
-                        <Tooltip content={<ChartTooltipContent />} />
-                        <Legend />
-                        <Line
-                          yAxisId="right"
-                          type="monotone"
-                          dataKey="occupancy"
-                          stroke="#3b82f6"
-                          name={t('market.avg_occupancy')}
-                          strokeWidth={2}
-                        />
-                        <Line
-                          yAxisId="left"
-                          type="monotone"
-                          dataKey="adr"
-                          stroke="#10b981"
-                          name={t('market.avg_daily_rate')}
-                          strokeWidth={2}
-                        />
-                        <Line
-                          yAxisId="left"
-                          type="monotone"
-                          dataKey="revPar"
-                          stroke="#f59e0b"
-                          name="RevPAR $"
-                          strokeWidth={2}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
-                </DataMask>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                      revPar: { label: 'RevPAR 
 
-        <TabsContent value="reviews">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <Card className="bg-yellow-50/50">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Average Rating
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center gap-2">
-                <div className="text-4xl font-bold text-yellow-600">
-                  {avgRating.toFixed(1)}
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`h-4 w-4 ${
-                          avgRating >= star
-                            ? 'fill-yellow-500 text-yellow-500'
-                            : 'text-slate-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-xs text-muted-foreground">
-                    Based on {reviews.length} reviews
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid gap-4">
-            {reviews.length === 0 ? (
-              <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
-                No reviews yet.
-              </div>
-            ) : (
-              reviews.map((rev) => (
-                <Card key={rev.id}>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold">
-                            <DataMask>{rev.guestName}</DataMask>
-                          </span>
-                          <div className="flex">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star
-                                key={star}
-                                className={`h-3 w-3 ${
-                                  rev.rating >= star
-                                    ? 'fill-yellow-500 text-yellow-500'
-                                    : 'text-slate-300'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {format(new Date(rev.date), 'PP')}
-                        </span>
-                      </div>
-                      <Badge variant="outline">{rev.status}</Badge>
-                    </div>
-                    <p className="mt-2 text-sm text-slate-700">{rev.comment}</p>
-                    {rev.response && (
-                      <div className="mt-3 bg-slate-50 p-2 rounded text-sm text-slate-600 border-l-2 border-blue-500">
-                        <span className="font-semibold">Response:</span>{' '}
-                        {rev.response}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
-  )
-}
+`src/pages/Condominiums.tsx`

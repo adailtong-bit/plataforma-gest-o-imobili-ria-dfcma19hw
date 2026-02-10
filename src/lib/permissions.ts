@@ -83,6 +83,7 @@ export const PERMISSIONS_MATRIX: Record<
     users: ['view'],
     guest_services: ['view', 'edit'],
     pos: ['view', 'create'],
+    financial: ['view', 'create', 'edit'], // Added to allow access to /invoices
   },
   partner: {
     portal: ['view'],
@@ -172,3 +173,5 @@ export const getRoleLabel = (
 ): string => {
   return t(`roles.${role}`)
 }
+
+

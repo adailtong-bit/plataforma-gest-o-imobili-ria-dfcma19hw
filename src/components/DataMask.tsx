@@ -17,10 +17,11 @@ export function DataMask({ children, className, blur }: DataMaskProps) {
       className={cn(
         'inline-block align-baseline transition-all',
         // Blur classes removed as requested, ensuring data is sharp and legible
+        // Using filter-none explicitly to override any potential lingering blur styles
         'filter-none opacity-100',
         className,
       )}
-      // Retaining accessibility attributes for context
+      // Retaining accessibility attributes for context if needed in future
       aria-label={blur ? 'Sensitive data' : undefined}
       title={blur ? 'Sensitive data' : undefined}
     >
@@ -28,3 +29,5 @@ export function DataMask({ children, className, blur }: DataMaskProps) {
     </span>
   )
 }
+
+

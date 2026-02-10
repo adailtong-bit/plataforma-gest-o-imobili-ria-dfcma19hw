@@ -77,7 +77,7 @@ export function AppSidebar() {
 
   const allMenuItems = [
     {
-      title: t('common.dashboard'),
+      title: t('sidebar.dashboard'),
       url: '/',
       icon: Home,
       resource: 'dashboard',
@@ -89,7 +89,7 @@ export function AppSidebar() {
       resource: 'performance',
     },
     {
-      title: t('common.properties'),
+      title: t('sidebar.units'),
       url: '/properties',
       icon: Building,
       resource: 'properties',
@@ -131,7 +131,7 @@ export function AppSidebar() {
       resource: 'renewals',
     },
     {
-      title: t('common.market_analysis'),
+      title: t('market_analysis.title'), // Corrected key usage
       url: '/market-analysis',
       icon: TrendingUp,
       resource: 'market_analysis',
@@ -143,25 +143,25 @@ export function AppSidebar() {
       resource: 'analytics',
     },
     {
-      title: t('common.reports'),
+      title: t('sidebar.reports'),
       url: '/reports',
       icon: PieChart,
       resource: 'reports',
     },
     {
-      title: t('common.condominiums'),
+      title: t('sidebar.condominiums'),
       url: '/condominiums',
       icon: Building2,
       resource: 'condominiums',
     },
     {
-      title: t('common.tenants'),
+      title: t('sidebar.tenants'),
       url: '/tenants',
       icon: Users,
       resource: 'tenants',
     },
     {
-      title: t('common.owners'),
+      title: t('sidebar.owners'),
       url: '/owners',
       icon: UserCheck,
       resource: 'owners',
@@ -209,7 +209,7 @@ export function AppSidebar() {
       resource: 'automation',
     },
     {
-      title: t('common.financial'),
+      title: t('sidebar.financial'),
       url: '/financial',
       icon: DollarSign,
       resource: 'financial',
@@ -428,12 +428,12 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive('/settings')}
-                    tooltip={t('common.settings')}
+                    tooltip={t('sidebar.settings')}
                     className="text-black font-medium hover:bg-slate-100"
                   >
                     <Link to="/settings" onClick={handleLinkClick}>
                       <Settings className="text-black" />
-                      <span>{t('common.settings')}</span>
+                      <span>{t('sidebar.settings')}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -487,3 +487,5 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
+
+
