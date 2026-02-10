@@ -1062,9 +1062,6 @@ video {
 .mt-24 {
   margin-top: 6rem;
 }
-.mt-3 {
-  margin-top: 0.75rem;
-}
 .mt-4 {
   margin-top: 1rem;
 }
@@ -1949,9 +1946,6 @@ video {
 .border-l {
   border-left-width: 1px;
 }
-.border-l-2 {
-  border-left-width: 2px;
-}
 .border-l-4 {
   border-left-width: 4px;
 }
@@ -2389,9 +2383,6 @@ video {
 }
 .bg-yellow-50\/30 {
   background-color: rgb(254 252 232 / 0.3);
-}
-.bg-yellow-50\/50 {
-  background-color: rgb(254 252 232 / 0.5);
 }
 .bg-yellow-500 {
   --tw-bg-opacity: 1;
