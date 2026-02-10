@@ -53617,8 +53617,55 @@ const tutorialModules = [
 ];
 const translations = {
 	pt: {
+		pos: {
+			title: "Ponto de Venda",
+			subtitle: "Gestão de produtos, vendas e estoque.",
+			new_product: "Novo Produto",
+			manage_products: "Gerenciar Produtos",
+			product_name: "Nome do Produto",
+			price: "Preço",
+			category: "Categoria",
+			validity_start: "Validade Inicial",
+			active: "Ativo",
+			inactive: "Inativo",
+			stock: "Estoque",
+			actions: "Ações",
+			create: "Criar",
+			edit: "Alterar",
+			inactivate: "Inativar",
+			delete: "Excluir",
+			confirm_delete: "Confirmar Exclusão",
+			delete_desc: "Tem certeza que deseja excluir este produto?",
+			save_success: "Produto salvo com sucesso.",
+			add_to_cart: "Adicionar ao Carrinho",
+			checkout: "Finalizar Venda",
+			charge_room: "Cobrar no Quarto",
+			out_of_stock: "Sem Estoque",
+			cart_empty: "Carrinho Vazio",
+			transaction_success: "Venda realizada com sucesso!"
+		},
+		guest_services: {
+			title: "Serviços ao Hóspede",
+			subtitle: "Catálogo de serviços e agendamentos.",
+			new_service: "Novo Serviço",
+			manage_services: "Gerenciar Serviços",
+			service_name: "Nome do Serviço",
+			description: "Descrição",
+			price: "Preço",
+			category: "Categoria",
+			validity_start: "Validade Inicial",
+			seasonal_pricing: "Preços por Temporada",
+			add_seasonal_price: "Adicionar Preço de Temporada",
+			start_date: "Data Início",
+			end_date: "Data Fim",
+			schedule: "Agendar",
+			schedule_for: "Agendar Para",
+			assign_service: "Atribuir Serviço",
+			service_assigned: "Serviço atribuído com sucesso.",
+			save_success: "Serviço salvo com sucesso."
+		},
 		common: {
-			dashboard: "Painel",
+			dashboard: "Painel Imobiliário",
 			properties: "Propriedades",
 			tenants: "Inquilinos",
 			owners: "Proprietários",
@@ -53919,8 +53966,55 @@ const translations = {
 		}
 	},
 	en: {
+		pos: {
+			title: "Point of Sale",
+			subtitle: "Manage products, sales, and inventory.",
+			new_product: "New Product",
+			manage_products: "Manage Products",
+			product_name: "Product Name",
+			price: "Price",
+			category: "Category",
+			validity_start: "Initial Validity",
+			active: "Active",
+			inactive: "Inactive",
+			stock: "Stock",
+			actions: "Actions",
+			create: "Create",
+			edit: "Edit",
+			inactivate: "Inactivate",
+			delete: "Delete",
+			confirm_delete: "Confirm Deletion",
+			delete_desc: "Are you sure you want to delete this product?",
+			save_success: "Product saved successfully.",
+			add_to_cart: "Add to Cart",
+			checkout: "Checkout",
+			charge_room: "Charge to Room",
+			out_of_stock: "Out of Stock",
+			cart_empty: "Cart Empty",
+			transaction_success: "Transaction successful!"
+		},
+		guest_services: {
+			title: "Guest Services",
+			subtitle: "Service catalog and scheduling.",
+			new_service: "New Service",
+			manage_services: "Manage Services",
+			service_name: "Service Name",
+			description: "Description",
+			price: "Price",
+			category: "Category",
+			validity_start: "Initial Validity",
+			seasonal_pricing: "Seasonal Prices",
+			add_seasonal_price: "Add Seasonal Price",
+			start_date: "Start Date",
+			end_date: "End Date",
+			schedule: "Schedule",
+			schedule_for: "Schedule For",
+			assign_service: "Assign Service",
+			service_assigned: "Service assigned successfully.",
+			save_success: "Service saved successfully."
+		},
 		common: {
-			dashboard: "Dashboard",
+			dashboard: "Real Estate Dashboard",
 			properties: "Properties",
 			tenants: "Tenants",
 			owners: "Owners",
@@ -54159,8 +54253,55 @@ const translations = {
 		}
 	},
 	es: {
+		pos: {
+			title: "Punto de Venta",
+			subtitle: "Gestión de productos, ventas e inventario.",
+			new_product: "Nuevo Producto",
+			manage_products: "Gestionar Productos",
+			product_name: "Nombre del Producto",
+			price: "Precio",
+			category: "Categoría",
+			validity_start: "Validez Inicial",
+			active: "Activo",
+			inactive: "Inactivo",
+			stock: "Inventario",
+			actions: "Acciones",
+			create: "Crear",
+			edit: "Editar",
+			inactivate: "Inactivar",
+			delete: "Eliminar",
+			confirm_delete: "Confirmar Eliminación",
+			delete_desc: "¿Está seguro de que desea eliminar este producto?",
+			save_success: "Producto guardado con éxito.",
+			add_to_cart: "Añadir al Carrito",
+			checkout: "Pagar",
+			charge_room: "Cargar a la Habitación",
+			out_of_stock: "Agotado",
+			cart_empty: "Carrito Vacío",
+			transaction_success: "¡Transacción exitosa!"
+		},
+		guest_services: {
+			title: "Servicios al Huésped",
+			subtitle: "Catálogo de servicios y programación.",
+			new_service: "Nuevo Servicio",
+			manage_services: "Gestionar Servicios",
+			service_name: "Nombre del Servicio",
+			description: "Descripción",
+			price: "Precio",
+			category: "Categoría",
+			validity_start: "Validez Inicial",
+			seasonal_pricing: "Precios por Temporada",
+			add_seasonal_price: "Añadir Precio de Temporada",
+			start_date: "Fecha de Inicio",
+			end_date: "Fecha de Fin",
+			schedule: "Programar",
+			schedule_for: "Programar Para",
+			assign_service: "Asignar Servicio",
+			service_assigned: "Servicio asignado con éxito.",
+			save_success: "Servicio guardado con éxito."
+		},
 		common: {
-			dashboard: "Panel",
+			dashboard: "Panel Inmobiliario",
 			properties: "Propiedades",
 			tenants: "Inquilinos",
 			owners: "Propietarios",
@@ -54988,6 +55129,61 @@ var useVisitStore = () => {
 	};
 };
 var useVisitStore_default = useVisitStore;
+var useShortTermStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("useShortTermStore must be used within AppProvider");
+	const performCheckIn = (bookingId, data) => {
+		const booking = context.bookings.find((b$1) => b$1.id === bookingId);
+		if (booking) context.updateBooking({
+			...booking,
+			status: "checked_in",
+			checkedInAt: (/* @__PURE__ */ new Date()).toISOString(),
+			guestSignature: data.signature,
+			estimatedArrival: data.arrivalTime
+		});
+	};
+	const performCheckOut = (bookingId) => {
+		const booking = context.bookings.find((b$1) => b$1.id === bookingId);
+		if (booking) {
+			context.updateBooking({
+				...booking,
+				status: "checked_out",
+				checkedOutAt: (/* @__PURE__ */ new Date()).toISOString()
+			});
+			const property$2 = context.properties.find((p$1) => p$1.id === booking.propertyId);
+			if (property$2) {
+				context.updateProperty({
+					...property$2,
+					status: "cleaning"
+				});
+				context.runWorkflows("after_checkout", {
+					booking,
+					property: property$2
+				});
+			}
+		}
+	};
+	return {
+		bookings: context.bookings,
+		calendarBlocks: context.calendarBlocks,
+		messageTemplates: context.messageTemplates,
+		feedbacks: context.feedbacks,
+		posTransactions: context.posTransactions,
+		addBooking: context.addBooking,
+		updateBooking: context.updateBooking,
+		deleteBooking: context.deleteBooking,
+		addCalendarBlock: context.addCalendarBlock,
+		deleteCalendarBlock: context.deleteCalendarBlock,
+		addMessageTemplate: context.addMessageTemplate,
+		updateMessageTemplate: context.updateMessageTemplate,
+		deleteMessageTemplate: context.deleteMessageTemplate,
+		addFeedback: context.addFeedback,
+		updateFeedback: context.updateFeedback,
+		performCheckIn,
+		performCheckOut
+	};
+};
+var useShortTermStore_default = useShortTermStore;
 var AUTOFOCUS_ON_MOUNT = "focusScope.autoFocusOnMount";
 var AUTOFOCUS_ON_UNMOUNT = "focusScope.autoFocusOnUnmount";
 var EVENT_OPTIONS$1 = {
@@ -56632,6 +56828,7 @@ function DashboardContent() {
 	const { ledgerEntries: ledgerEntries$1, financials: financials$1 } = useFinancialStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
 	const { visits: visits$1 } = useVisitStore_default();
+	const { bookings: bookings$1 } = useShortTermStore_default();
 	const { t: t$1, language } = useLanguageStore_default();
 	const selectedPropertyId = (0, import_react.useContext)(AppContext)?.selectedPropertyId || "all";
 	const [widgets, setWidgets] = (0, import_react.useState)({
@@ -56676,9 +56873,20 @@ function DashboardContent() {
 			color: "hsl(var(--chart-4))"
 		}
 	};
-	const totalProperties = properties$1.length;
-	const activeListings = properties$1.filter((p$1) => p$1.status === "available").length;
-	const pendingVisits = visits$1.filter((v) => v.status === "scheduled").length;
+	properties$1.length;
+	properties$1.filter((p$1) => p$1.status === "available").length;
+	visits$1.filter((v) => v.status === "scheduled").length;
+	const totalRooms = properties$1.filter((p$1) => p$1.profileType === "short_term").length;
+	const occupiedRooms = properties$1.filter((p$1) => p$1.profileType === "short_term" && p$1.status === "occupied").length;
+	const occupancyRate = totalRooms > 0 ? Math.round(occupiedRooms / totalRooms * 100) : 0;
+	const confirmedBookings = bookings$1.filter((b$1) => b$1.status !== "cancelled");
+	const totalBookingRevenue = confirmedBookings.reduce((acc, b$1) => acc + b$1.totalAmount, 0);
+	const totalNights = confirmedBookings.reduce((acc, b$1) => {
+		const nights = (new Date(b$1.checkOut).getTime() - new Date(b$1.checkIn).getTime()) / (1e3 * 60 * 60 * 24);
+		return acc + Math.max(1, nights);
+	}, 0);
+	const adr = totalNights > 0 ? totalBookingRevenue / totalNights : 0;
+	const revPar = totalRooms > 0 ? totalBookingRevenue / (totalRooms * 30) : 0;
 	const relevantProperties = selectedPropertyId === "all" ? properties$1 : properties$1.filter((p$1) => p$1.id === selectedPropertyId);
 	const avgHealthScore = relevantProperties.reduce((acc, p$1) => acc + (p$1.healthScore || 80), 0) / (relevantProperties.length || 1);
 	const toggleWidget = (key) => {
@@ -56771,54 +56979,6 @@ function DashboardContent() {
 							className: "flex flex-row items-center justify-between space-y-0 pb-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
 								className: "text-sm font-bold text-black",
-								children: t$1("dashboard.total_properties")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-black" })]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "text-2xl font-bold text-black",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: totalProperties })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-xs text-black font-bold",
-							children: t$1("dashboard.in_portfolio")
-						})] })]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-						className: "border-slate-200 shadow-sm bg-white",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-							className: "flex flex-row items-center justify-between space-y-0 pb-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-								className: "text-sm font-bold text-black",
-								children: t$1("common.active_listings")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-4 w-4 text-black" })]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "text-2xl font-bold text-black",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: activeListings })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-xs text-black font-bold",
-							children: t$1("status.available")
-						})] })]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-						className: "border-slate-200 shadow-sm bg-white",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-							className: "flex flex-row items-center justify-between space-y-0 pb-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-								className: "text-sm font-bold text-black",
-								children: t$1("common.pending_visits")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CalendarDays, { className: "h-4 w-4 text-black" })]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "text-2xl font-bold text-black",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: pendingVisits })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-xs text-black font-bold",
-							children: t$1("common.scheduled")
-						})] })]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-						className: "border-slate-200 shadow-sm bg-white",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-							className: "flex flex-row items-center justify-between space-y-0 pb-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-								className: "text-sm font-bold text-black",
 								children: t$1("common.total_revenue")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -56827,6 +56987,59 @@ function DashboardContent() {
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 							className: "text-xs text-black font-bold",
 							children: ["+20.1% ", t$1("dashboard.from_last_month")]
+						})] })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200 shadow-sm bg-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+							className: "flex flex-row items-center justify-between space-y-0 pb-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-sm font-bold text-black",
+								children: "Occupancy Rate"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-black" })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "text-2xl font-bold text-black",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [occupancyRate, "%"] })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+							className: "text-xs text-black font-bold",
+							children: [
+								occupiedRooms,
+								" / ",
+								totalRooms,
+								" rooms"
+							]
+						})] })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200 shadow-sm bg-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+							className: "flex flex-row items-center justify-between space-y-0 pb-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-sm font-bold text-black",
+								children: "ADR (Avg Rate)"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrendingUp, { className: "h-4 w-4 text-black" })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "text-2xl font-bold text-black",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(adr, language) })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-xs text-black font-bold",
+							children: "Average Daily Rate"
+						})] })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200 shadow-sm bg-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+							className: "flex flex-row items-center justify-between space-y-0 pb-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-sm font-bold text-black",
+								children: "RevPAR"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Activity, { className: "h-4 w-4 text-black" })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "text-2xl font-bold text-black",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(revPar, language) })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-xs text-black font-bold",
+							children: "Revenue Per Room"
 						})] })]
 					})
 				]
@@ -59177,7 +59390,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$100({ inst: {
+			cachedValue = useState$103({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -59191,7 +59404,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$28(function() {
+			useEffect$30(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -59214,7 +59427,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$66 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$100 = React$66.useState, useEffect$28 = React$66.useEffect, useLayoutEffect$2 = React$66.useLayoutEffect, useDebugValue = React$66.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$66 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$103 = React$66.useState, useEffect$30 = React$66.useEffect, useLayoutEffect$2 = React$66.useLayoutEffect, useDebugValue = React$66.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$66.useSyncExternalStore ? React$66.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -65239,61 +65452,6 @@ var TableCaption = import_react.forwardRef(({ className, ...props }, ref) => /* 
 	...props
 }));
 TableCaption.displayName = "TableCaption";
-var useShortTermStore = () => {
-	const context = (0, import_react.useContext)(AppContext);
-	if (!context) throw new Error("useShortTermStore must be used within AppProvider");
-	const performCheckIn = (bookingId, data) => {
-		const booking = context.bookings.find((b$1) => b$1.id === bookingId);
-		if (booking) context.updateBooking({
-			...booking,
-			status: "checked_in",
-			checkedInAt: (/* @__PURE__ */ new Date()).toISOString(),
-			guestSignature: data.signature,
-			estimatedArrival: data.arrivalTime
-		});
-	};
-	const performCheckOut = (bookingId) => {
-		const booking = context.bookings.find((b$1) => b$1.id === bookingId);
-		if (booking) {
-			context.updateBooking({
-				...booking,
-				status: "checked_out",
-				checkedOutAt: (/* @__PURE__ */ new Date()).toISOString()
-			});
-			const property$2 = context.properties.find((p$1) => p$1.id === booking.propertyId);
-			if (property$2) {
-				context.updateProperty({
-					...property$2,
-					status: "cleaning"
-				});
-				context.runWorkflows("after_checkout", {
-					booking,
-					property: property$2
-				});
-			}
-		}
-	};
-	return {
-		bookings: context.bookings,
-		calendarBlocks: context.calendarBlocks,
-		messageTemplates: context.messageTemplates,
-		feedbacks: context.feedbacks,
-		posTransactions: context.posTransactions,
-		addBooking: context.addBooking,
-		updateBooking: context.updateBooking,
-		deleteBooking: context.deleteBooking,
-		addCalendarBlock: context.addCalendarBlock,
-		deleteCalendarBlock: context.deleteCalendarBlock,
-		addMessageTemplate: context.addMessageTemplate,
-		updateMessageTemplate: context.updateMessageTemplate,
-		deleteMessageTemplate: context.deleteMessageTemplate,
-		addFeedback: context.addFeedback,
-		updateFeedback: context.updateFeedback,
-		performCheckIn,
-		performCheckOut
-	};
-};
-var useShortTermStore_default = useShortTermStore;
 var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
 		className: cn("flex min-h-[80px] w-full rounded-md border border-input bg-white px-3 py-2 text-base text-black ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-100 md:text-sm shadow-none", "disabled:text-black disabled:bg-white", className),
@@ -93237,6 +93395,15 @@ function MarketAnalysis() {
 	const trendsData = marketAnalysisData?.marketTrends || [];
 	const competitorsData = marketAnalysisData?.competitors || [];
 	const forecastData = marketAnalysisData?.demandForecast || [];
+	const safeTrendsData = trendsData.map((d) => ({
+		month: d?.month || "N/A",
+		occupancy: d?.occupancy || 0,
+		rate: d?.rate || 0
+	}));
+	const safeCompetitorsData = competitorsData.map((d) => ({
+		name: d?.name || "Unknown",
+		rate: d?.rate || 0
+	}));
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
 		children: [
@@ -93313,7 +93480,7 @@ function MarketAnalysis() {
 						width: "100%",
 						height: "100%",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(LineChart, {
-							data: trendsData,
+							data: safeTrendsData,
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
 									strokeDasharray: "3 3",
@@ -93365,7 +93532,7 @@ function MarketAnalysis() {
 						width: "100%",
 						height: "100%",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(BarChart, {
-							data: competitorsData,
+							data: safeCompetitorsData,
 							layout: "vertical",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CartesianGrid, {
@@ -101181,299 +101348,748 @@ function ServiceProfitabilityReport() {
 		] }, promo.id)) })] }) })] })]
 	});
 }
-function GuestServices() {
-	const { guestServices: guestServices$1, addGuestService, updateGuestService, deleteGuestService, addServiceOrder } = useManagementStore_default();
-	const { bookings: bookings$1 } = useShortTermStore_default();
+function ServiceDialog({ open, onOpenChange, onSave, service }) {
+	const { t: t$1, language } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
-	const [open, setOpen] = (0, import_react.useState)(false);
-	const [assignOpen, setAssignOpen] = (0, import_react.useState)(false);
-	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
-	const [currentService, setCurrentService] = (0, import_react.useState)({
+	const [formData, setFormData] = (0, import_react.useState)({
 		name: "",
 		description: "",
 		price: 0,
 		category: "other",
-		active: true
+		active: true,
+		validityStart: "",
+		seasonalPrices: []
 	});
-	const [selectedBooking, setSelectedBooking] = (0, import_react.useState)("");
-	const [serviceToAssign, setServiceToAssign] = (0, import_react.useState)("");
-	const activeBookings = bookings$1.filter((b$1) => b$1.status === "confirmed" || b$1.status === "checked_in");
-	const handleSave = () => {
-		if (!currentService.name || !currentService.price) return;
-		if (isEditing && currentService.id) {
-			updateGuestService(currentService);
-			toast$2({ title: "Service Updated" });
-		} else {
-			addGuestService({
-				...currentService,
-				id: `svc-${Date.now()}`,
-				active: true
-			});
-			toast$2({ title: "Service Created" });
-		}
-		setOpen(false);
-		setIsEditing(false);
-		setCurrentService({
+	const [newSeasonal, setNewSeasonal] = (0, import_react.useState)({
+		startDate: "",
+		endDate: "",
+		price: 0
+	});
+	(0, import_react.useEffect)(() => {
+		if (service) setFormData(service);
+		else setFormData({
 			name: "",
 			description: "",
 			price: 0,
 			category: "other",
-			active: true
+			active: true,
+			validityStart: "",
+			seasonalPrices: []
+		});
+	}, [service, open]);
+	const handleSave = () => {
+		if (!formData.name || !formData.price) {
+			toast$2({
+				title: t$1("common.error"),
+				description: t$1("guest_services.service_name") + " " + t$1("common.required"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (!formData.validityStart) {
+			toast$2({
+				title: t$1("common.error"),
+				description: t$1("guest_services.validity_start") + " " + t$1("common.required"),
+				variant: "destructive"
+			});
+			return;
+		}
+		onSave(formData);
+		onOpenChange(false);
+	};
+	const addSeasonalPrice = () => {
+		if (!newSeasonal.startDate || !newSeasonal.endDate || newSeasonal.price === void 0) return;
+		const price = {
+			id: `sp-${Date.now()}`,
+			startDate: newSeasonal.startDate,
+			endDate: newSeasonal.endDate,
+			price: Number(newSeasonal.price)
+		};
+		setFormData({
+			...formData,
+			seasonalPrices: [...formData.seasonalPrices || [], price]
+		});
+		setNewSeasonal({
+			startDate: "",
+			endDate: "",
+			price: 0
 		});
 	};
-	const handleEdit = (service) => {
-		setCurrentService(service);
-		setIsEditing(true);
-		setOpen(true);
+	const removeSeasonalPrice = (id) => {
+		setFormData({
+			...formData,
+			seasonalPrices: formData.seasonalPrices?.filter((sp) => sp.id !== id)
+		});
 	};
-	const handleDelete = (id) => {
-		if (confirm("Delete this service?")) {
-			deleteGuestService(id);
-			toast$2({ title: "Service Deleted" });
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+		open,
+		onOpenChange,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+			className: "sm:max-w-[600px] max-h-[90vh] overflow-y-auto",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: service ? t$1("pos.edit") : t$1("guest_services.new_service") }) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-4 py-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								htmlFor: "name",
+								children: t$1("guest_services.service_name")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								id: "name",
+								value: formData.name,
+								onChange: (e) => setFormData({
+									...formData,
+									name: e.target.value
+								})
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								htmlFor: "description",
+								children: t$1("guest_services.description")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								id: "description",
+								value: formData.description,
+								onChange: (e) => setFormData({
+									...formData,
+									description: e.target.value
+								})
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									htmlFor: "price",
+									children: t$1("guest_services.price")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									id: "price",
+									type: "number",
+									value: formData.price,
+									onChange: (e) => setFormData({
+										...formData,
+										price: Number(e.target.value)
+									})
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									htmlFor: "category",
+									children: t$1("guest_services.category")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: formData.category,
+									onValueChange: (v) => setFormData({
+										...formData,
+										category: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "spa",
+											children: "Spa"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "transport",
+											children: "Transporte"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "dining",
+											children: "Restaurante"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "other",
+											children: "Outro"
+										})
+									] })]
+								})]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								htmlFor: "validityStart",
+								children: t$1("guest_services.validity_start")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								id: "validityStart",
+								type: "date",
+								value: formData.validityStart || "",
+								onChange: (e) => setFormData({
+									...formData,
+									validityStart: e.target.value
+								})
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+								id: "active",
+								checked: formData.active,
+								onCheckedChange: (checked) => setFormData({
+									...formData,
+									active: checked
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								htmlFor: "active",
+								children: t$1("common.active")
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "border-t pt-4 mt-2",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									className: "mb-2 block font-bold",
+									children: t$1("guest_services.seasonal_pricing")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-3 gap-2 mb-2 items-end",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												className: "text-xs",
+												children: t$1("guest_services.start_date")
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "date",
+												value: newSeasonal.startDate,
+												onChange: (e) => setNewSeasonal({
+													...newSeasonal,
+													startDate: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												className: "text-xs",
+												children: t$1("guest_services.end_date")
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "date",
+												value: newSeasonal.endDate,
+												onChange: (e) => setNewSeasonal({
+													...newSeasonal,
+													endDate: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												className: "text-xs",
+												children: t$1("guest_services.price")
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													type: "number",
+													value: newSeasonal.price,
+													onChange: (e) => setNewSeasonal({
+														...newSeasonal,
+														price: Number(e.target.value)
+													})
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+													size: "icon",
+													onClick: addSeasonalPrice,
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" })
+												})]
+											})]
+										})
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("guest_services.start_date") }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("guest_services.end_date") }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("guest_services.price") }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {})
+								] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: formData.seasonalPrices?.map((sp) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: sp.startDate }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: sp.endDate }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatCurrency(sp.price, language) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: "ghost",
+										size: "icon",
+										onClick: () => removeSeasonalPrice(sp.id),
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 text-red-500" })
+									}) })
+								] }, sp.id)) })] })
+							]
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "outline",
+					onClick: () => onOpenChange(false),
+					children: t$1("common.cancel")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					onClick: handleSave,
+					className: "bg-trust-blue",
+					children: t$1("common.save")
+				})] })
+			]
+		})
+	});
+}
+function ScheduleServiceDialog({ open, onOpenChange, onSave, services, bookings: bookings$1 }) {
+	const { t: t$1, language } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [bookingId, setBookingId] = (0, import_react.useState)("");
+	const [serviceId, setServiceId] = (0, import_react.useState)("");
+	const [date$4, setDate$1] = (0, import_react.useState)("");
+	const [time$3, setTime] = (0, import_react.useState)("");
+	const activeBookings = (0, import_react.useMemo)(() => bookings$1.filter((b$1) => b$1.status === "confirmed" || b$1.status === "checked_in"), [bookings$1]);
+	const selectedService = (0, import_react.useMemo)(() => services.find((s$3) => s$3.id === serviceId), [services, serviceId]);
+	const calculatedPrice = (0, import_react.useMemo)(() => {
+		if (!selectedService || !date$4) return 0;
+		const seasonal = selectedService.seasonalPrices?.find((sp) => isWithinInterval(parseISO(date$4), {
+			start: parseISO(sp.startDate),
+			end: parseISO(sp.endDate)
+		}));
+		return seasonal ? seasonal.price : selectedService.price;
+	}, [selectedService, date$4]);
+	const handleSave = () => {
+		if (!bookingId || !serviceId || !date$4 || !time$3) {
+			toast$2({
+				title: t$1("common.error"),
+				description: t$1("common.required"),
+				variant: "destructive"
+			});
+			return;
 		}
-	};
-	const handleAssign = () => {
-		if (!selectedBooking || !serviceToAssign) return;
-		const service = guestServices$1.find((s$3) => s$3.id === serviceToAssign);
-		if (service) {
-			addServiceOrder({
+		if (selectedService) {
+			onSave({
 				id: `ord-${Date.now()}`,
-				bookingId: selectedBooking,
-				serviceId: service.id,
-				serviceName: service.name,
-				price: service.price,
+				bookingId,
+				serviceId: selectedService.id,
+				serviceName: selectedService.name,
+				price: calculatedPrice,
 				date: (/* @__PURE__ */ new Date()).toISOString(),
+				scheduledFor: `${date$4}T${time$3}`,
 				status: "pending"
 			});
-			toast$2({
-				title: "Service Assigned",
-				description: `Added ${service.name} to booking.`
-			});
-			setAssignOpen(false);
+			onOpenChange(false);
+			setBookingId("");
+			setServiceId("");
+			setDate$1("");
+			setTime("");
 		}
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+		open,
+		onOpenChange,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+			className: "sm:max-w-[425px]",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t$1("guest_services.schedule") }) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-4 py-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("short_term.guest") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: bookingId,
+								onValueChange: setBookingId,
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: activeBookings.map((b$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+									value: b$1.id,
+									children: [
+										b$1.guestName,
+										" - ",
+										b$1.propertyName
+									]
+								}, b$1.id)) })]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("guest_services.service_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: serviceId,
+								onValueChange: setServiceId,
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: services.filter((s$3) => s$3.active).map((s$3) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: s$3.id,
+									children: s$3.name
+								}, s$3.id)) })]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("common.date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "date",
+									value: date$4,
+									onChange: (e) => setDate$1(e.target.value)
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Time" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "time",
+									value: time$3,
+									onChange: (e) => setTime(e.target.value)
+								})]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "bg-slate-50 p-3 rounded-md border flex justify-between items-center",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-bold",
+								children: t$1("common.total")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "text-lg font-bold text-green-700",
+								children: formatCurrency(calculatedPrice, language)
+							})]
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "outline",
+					onClick: () => onOpenChange(false),
+					children: t$1("common.cancel")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					onClick: handleSave,
+					className: "bg-trust-blue",
+					children: t$1("common.confirm")
+				})] })
+			]
+		})
+	});
+}
+function GuestServices() {
+	const { guestServices: guestServices$1, addGuestService, updateGuestService, deleteGuestService, addServiceOrder } = useManagementStore_default();
+	const { bookings: bookings$1 } = useShortTermStore_default();
+	const { toast: toast$2 } = useToast();
+	const { t: t$1, language } = useLanguageStore_default();
+	const [serviceDialogOpen, setServiceDialogOpen] = (0, import_react.useState)(false);
+	const [editingService, setEditingService] = (0, import_react.useState)(null);
+	const [scheduleDialogOpen, setScheduleDialogOpen] = (0, import_react.useState)(false);
+	const handleSaveService = (service) => {
+		if (editingService) {
+			updateGuestService({
+				...editingService,
+				...service
+			});
+			toast$2({ title: t$1("guest_services.save_success") });
+		} else {
+			addGuestService({
+				...service,
+				id: `svc-${Date.now()}`,
+				active: true
+			});
+			toast$2({ title: t$1("guest_services.save_success") });
+		}
+		setEditingService(null);
+	};
+	const handleDeleteService = (id) => {
+		if (confirm(t$1("common.delete_title"))) {
+			deleteGuestService(id);
+			toast$2({ title: t$1("common.success") });
+		}
+	};
+	const handleScheduleService = (order) => {
+		addServiceOrder(order);
+		toast$2({
+			title: t$1("guest_services.service_assigned"),
+			description: `${order.serviceName} - ${t$1("common.scheduled")}`
+		});
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "flex justify-between items-center",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-navy",
-				children: "Guest Services"
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-muted-foreground",
-				children: "Manage additional services and amenities catalog."
-			})] })
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
-			defaultValue: "catalog",
-			className: "space-y-4",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-					value: "catalog",
-					children: "Service Catalog"
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
-					value: "financials",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumn, { className: "h-4 w-4 mr-2" }), " Financial Insights"]
-				})] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
-					value: "catalog",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex justify-end gap-2 mb-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-							open: assignOpen,
-							onOpenChange: setAssignOpen,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-								asChild: true,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-									variant: "outline",
-									className: "gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShoppingCart, { className: "h-4 w-4" }), " Assign Service"]
-								})
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Assign Service to Guest" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-4 py-4",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex justify-between items-center",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold tracking-tight text-navy",
+					children: t$1("guest_services.title")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-muted-foreground",
+					children: t$1("guest_services.subtitle")
+				})] })
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+				defaultValue: "catalog",
+				className: "space-y-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: "catalog",
+						children: t$1("guest_services.manage_services")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+						value: "financials",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumn, { className: "h-4 w-4 mr-2" }), " Financial Insights"]
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+						value: "catalog",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex justify-end gap-2 mb-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								variant: "outline",
+								className: "gap-2",
+								onClick: () => setScheduleDialogOpen(true),
 								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Select Booking" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-											value: selectedBooking,
-											onValueChange: setSelectedBooking,
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Guest/Room" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: activeBookings.map((b$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-												value: b$1.id,
-												children: [
-													b$1.guestName,
-													" (",
-													b$1.propertyName,
-													")"
-												]
-											}, b$1.id)) })]
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Select Service" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-											value: serviceToAssign,
-											onValueChange: setServiceToAssign,
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Service" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: guestServices$1.filter((s$3) => s$3.active).map((s$3) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-												value: s$3.id,
-												children: [
-													s$3.name,
-													" - $",
-													s$3.price
-												]
-											}, s$3.id)) })]
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-										onClick: handleAssign,
-										className: "bg-trust-blue",
-										children: "Confirm Assignment"
-									})
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShoppingCart, { className: "h-4 w-4" }),
+									" ",
+									t$1("guest_services.schedule")
 								]
-							})] })]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-							open,
-							onOpenChange: setOpen,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-								asChild: true,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-									className: "bg-trust-blue gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Add Service"]
-								})
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: isEditing ? "Edit Service" : "New Service" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-4 py-4",
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								className: "bg-trust-blue gap-2",
+								onClick: () => {
+									setEditingService(null);
+									setServiceDialogOpen(true);
+								},
 								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											value: currentService.name,
-											onChange: (e) => setCurrentService({
-												...currentService,
-												name: e.target.value
-											})
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Description" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											value: currentService.description,
-											onChange: (e) => setCurrentService({
-												...currentService,
-												description: e.target.value
-											})
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid grid-cols-2 gap-4",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Price ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												type: "number",
-												value: currentService.price,
-												onChange: (e) => setCurrentService({
-													...currentService,
-													price: Number(e.target.value)
-												})
-											})]
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Category" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-												value: currentService.category,
-												onValueChange: (v) => setCurrentService({
-													...currentService,
-													category: v
-												}),
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "spa",
-														children: "Spa"
-													}),
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "transport",
-														children: "Transport"
-													}),
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "dining",
-														children: "Dining"
-													}),
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "other",
-														children: "Other"
-													})
-												] })]
-											})]
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-										onClick: handleSave,
-										className: "bg-trust-blue",
-										children: "Save"
-									})
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+									" ",
+									t$1("guest_services.new_service")
 								]
-							})] })]
-						})]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-						className: "p-0",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Service Name" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Category" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Price" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-								className: "text-right",
-								children: "Actions"
-							})
-						] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: guestServices$1.map((service) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-								className: "font-medium",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: service.name }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "text-xs text-muted-foreground",
-									children: service.description
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-								className: "capitalize",
-								children: service.category
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatCurrency(service.price) }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
-								variant: service.active ? "default" : "secondary",
-								children: service.active ? "Active" : "Inactive"
-							}) }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-								className: "text-right",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex justify-end gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-										variant: "ghost",
-										size: "icon",
-										onClick: () => handleEdit(service),
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-										variant: "ghost",
-										size: "icon",
-										className: "text-red-500",
-										onClick: () => handleDelete(service.id),
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+							className: "p-0",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("guest_services.service_name") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("guest_services.category") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("guest_services.price") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("guest_services.validity_start") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("guest_services.seasonal_pricing") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+									className: "text-right",
+									children: t$1("common.actions")
+								})
+							] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: guestServices$1.map((service) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+									className: "font-medium",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: service.name }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "text-xs text-muted-foreground",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: service.description })
 									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "capitalize",
+									children: service.category
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(service.price, language) }) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: service.validityStart || "-" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: service.seasonalPrices && service.seasonalPrices.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+									variant: "outline",
+									className: "gap-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-3 w-3" }), service.seasonalPrices.length]
+								}) : "-" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+									variant: service.active ? "default" : "secondary",
+									className: service.active ? "bg-green-600" : "",
+									children: service.active ? t$1("common.active") : t$1("common.inactive")
+								}) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-right",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex justify-end gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											variant: "ghost",
+											size: "icon",
+											onClick: () => {
+												setEditingService(service);
+												setServiceDialogOpen(true);
+											},
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											variant: "ghost",
+											size: "icon",
+											className: "text-red-500 hover:text-red-700",
+											onClick: () => handleDeleteService(service.id),
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+										})]
+									})
 								})
-							})
-						] }, service.id)) })] })
-					}) })]
+							] }, service.id)) })] })
+						}) })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+						value: "financials",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ServiceProfitabilityReport, {})
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ServiceDialog, {
+				open: serviceDialogOpen,
+				onOpenChange: setServiceDialogOpen,
+				onSave: handleSaveService,
+				service: editingService
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScheduleServiceDialog, {
+				open: scheduleDialogOpen,
+				onOpenChange: setScheduleDialogOpen,
+				onSave: handleScheduleService,
+				services: guestServices$1,
+				bookings: bookings$1
+			})
+		]
+	});
+}
+function ProductDialog({ open, onOpenChange, onSave, product }) {
+	const { t: t$1 } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [formData, setFormData] = (0, import_react.useState)({
+		name: "",
+		price: 0,
+		category: "minibar",
+		active: true,
+		validityStart: ""
+	});
+	(0, import_react.useEffect)(() => {
+		if (product) setFormData(product);
+		else setFormData({
+			name: "",
+			price: 0,
+			category: "minibar",
+			active: true,
+			validityStart: ""
+		});
+	}, [product, open]);
+	const handleSave = () => {
+		if (!formData.name || !formData.price) {
+			toast$2({
+				title: t$1("common.error"),
+				description: t$1("pos.product_name") + " " + t$1("common.required"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (!formData.validityStart) {
+			toast$2({
+				title: t$1("common.error"),
+				description: t$1("pos.validity_start") + " " + t$1("common.required"),
+				variant: "destructive"
+			});
+			return;
+		}
+		onSave(formData);
+		onOpenChange(false);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+		open,
+		onOpenChange,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+			className: "sm:max-w-[425px]",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: product ? t$1("pos.edit") : t$1("pos.new_product") }) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-4 py-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								htmlFor: "name",
+								children: t$1("pos.product_name")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								id: "name",
+								value: formData.name,
+								onChange: (e) => setFormData({
+									...formData,
+									name: e.target.value
+								})
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									htmlFor: "price",
+									children: t$1("pos.price")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									id: "price",
+									type: "number",
+									value: formData.price,
+									onChange: (e) => setFormData({
+										...formData,
+										price: Number(e.target.value)
+									})
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									htmlFor: "category",
+									children: t$1("pos.category")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: formData.category,
+									onValueChange: (v) => setFormData({
+										...formData,
+										category: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "minibar",
+											children: "Minibar"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "restaurant",
+											children: "Restaurante"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "laundry",
+											children: "Lavanderia"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "shop",
+											children: "Loja"
+										})
+									] })]
+								})]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								htmlFor: "validityStart",
+								children: t$1("pos.validity_start")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								id: "validityStart",
+								type: "date",
+								value: formData.validityStart || "",
+								onChange: (e) => setFormData({
+									...formData,
+									validityStart: e.target.value
+								})
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+								id: "active",
+								checked: formData.active,
+								onCheckedChange: (checked) => setFormData({
+									...formData,
+									active: checked
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								htmlFor: "active",
+								children: t$1("pos.active")
+							})]
+						})
+					]
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
-					value: "financials",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ServiceProfitabilityReport, {})
-				})
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "outline",
+					onClick: () => onOpenChange(false),
+					children: t$1("common.cancel")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					onClick: handleSave,
+					className: "bg-trust-blue",
+					children: t$1("common.save")
+				})] })
 			]
-		})]
+		})
 	});
 }
 function PointOfSale() {
-	const { posItems: posItems$1, addPosTransaction } = useManagementStore_default();
+	const { posItems: posItems$1, addPosTransaction, addPosItem, updatePosItem, deletePosItem } = useManagementStore_default();
 	const { bookings: bookings$1 } = useShortTermStore_default();
 	const { properties: properties$1, updateProperty } = usePropertyStore_default();
 	const { toast: toast$2 } = useToast();
+	const { t: t$1, language } = useLanguageStore_default();
 	const [selectedBooking, setSelectedBooking] = (0, import_react.useState)("");
 	const [cart, setCart] = (0, import_react.useState)([]);
+	const [activeTab, setActiveTab] = (0, import_react.useState)("pos");
+	const [productDialogOpen, setProductDialogOpen] = (0, import_react.useState)(false);
+	const [editingProduct, setEditingProduct] = (0, import_react.useState)(null);
 	const activeBookings = bookings$1.filter((b$1) => b$1.status === "confirmed" || b$1.status === "checked_in");
 	const globalStock = properties$1.find((p$1) => p$1.id === "stock_main");
 	const addToCart = (itemId) => {
@@ -101483,7 +102099,7 @@ function PointOfSale() {
 		const currentInCart = cart.find((c$1) => c$1.item.id === itemId)?.quantity || 0;
 		if (stockItem && stockItem.quantity <= currentInCart) {
 			toast$2({
-				title: "Out of Stock",
+				title: t$1("pos.out_of_stock"),
 				description: `Only ${stockItem.quantity} units of ${item.name} available.`,
 				variant: "destructive"
 			});
@@ -101505,16 +102121,16 @@ function PointOfSale() {
 	const handleCheckout = () => {
 		if (!selectedBooking) {
 			toast$2({
-				title: "Error",
-				description: "Please select a guest/room.",
+				title: t$1("common.error"),
+				description: t$1("common.required"),
 				variant: "destructive"
 			});
 			return;
 		}
 		if (cart.length === 0) {
 			toast$2({
-				title: "Error",
-				description: "Cart is empty.",
+				title: t$1("common.error"),
+				description: t$1("pos.cart_empty"),
 				variant: "destructive"
 			});
 			return;
@@ -101550,155 +102166,312 @@ function PointOfSale() {
 		setCart([]);
 		setSelectedBooking("");
 		toast$2({
-			title: "Transaction Successful",
-			description: `Charged ${formatCurrency(totalAmount)} to folio. Inventory updated.`
+			title: t$1("pos.transaction_success"),
+			description: `${t$1("pos.charge_room")}: ${formatCurrency(totalAmount, language)}`
 		});
 	};
+	const handleSaveProduct = (product) => {
+		if (editingProduct) {
+			updatePosItem({
+				...editingProduct,
+				...product
+			});
+			toast$2({ title: t$1("pos.save_success") });
+		} else {
+			addPosItem({
+				...product,
+				id: `pos-item-${Date.now()}`,
+				active: true
+			});
+			toast$2({ title: t$1("pos.save_success") });
+		}
+		setProductDialogOpen(false);
+		setEditingProduct(null);
+	};
+	const handleDeleteProduct = (id) => {
+		if (confirm(t$1("pos.delete_desc"))) {
+			deletePosItem(id);
+			toast$2({ title: t$1("common.success") });
+		}
+	};
+	const handleInactivateProduct = (item) => {
+		updatePosItem({
+			...item,
+			active: !item.active
+		});
+		toast$2({ title: t$1("common.success") });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "lg:col-span-2 flex flex-col gap-6",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex justify-between items-start",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+		className: "flex flex-col gap-6",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex justify-between items-center",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 					className: "text-3xl font-bold tracking-tight text-navy",
-					children: "Point of Sale"
+					children: t$1("pos.title")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-muted-foreground",
-					children: "Internal POS for Minibar, Restaurant, and Services."
-				})] }), globalStock && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
-					variant: "outline",
-					className: "bg-slate-50 text-slate-700",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Package, { className: "h-3 w-3 mr-1" }), " Stock Connected"]
-				})]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "grid grid-cols-2 md:grid-cols-3 gap-4",
-				children: posItems$1.map((item) => {
-					const stockItem = globalStock?.inventory?.find((inv) => inv.name.toLowerCase() === item.name.toLowerCase());
-					const inStock = stockItem ? stockItem.quantity : 999;
-					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-						className: "cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden",
-						onClick: () => {
-							if (inStock > 0) addToCart(item.id);
-						},
-						children: [
-							inStock === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "absolute inset-0 bg-white/80 z-10 flex items-center justify-center font-bold text-red-600",
-								children: "Out of Stock"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-								className: "p-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex justify-between items-start",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-										className: "text-base",
-										children: item.name
-									}), stockItem && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
-										variant: "secondary",
-										className: inStock < 10 ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800",
-										children: [inStock, " left"]
-									})]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
-									className: "capitalize",
-									children: item.category
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-								className: "p-4 pt-0",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "text-lg font-bold text-green-700",
-									children: formatCurrency(item.price)
-								})
-							})
-						]
-					}, item.id);
-				})
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "lg:col-span-1",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "h-full flex flex-col border-l-4 border-l-trust-blue",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-					className: "flex items-center gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShoppingCart, { className: "h-5 w-5" }), " Current Order"]
-				}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-					className: "flex-1 flex flex-col gap-4",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Select Guest / Room" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-								value: selectedBooking,
-								onValueChange: setSelectedBooking,
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Search active booking..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: activeBookings.map((b$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-									value: b$1.id,
-									children: [
-										b$1.guestName,
-										" - ",
-										b$1.propertyName
-									]
-								}, b$1.id)) })]
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "flex-1 overflow-auto border rounded-md p-2 bg-slate-50 min-h-[200px]",
-							children: cart.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "text-center text-sm text-muted-foreground py-8 flex flex-col items-center",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShoppingCart, { className: "h-8 w-8 opacity-20 mb-2" }), "Cart is empty"]
-							}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "space-y-2",
-								children: cart.map((c$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex justify-between items-center bg-white p-2 rounded border shadow-sm",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "text-sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "font-bold",
-											children: c$1.item.name
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "text-xs text-muted-foreground",
-											children: [
-												c$1.quantity,
-												" x ",
-												formatCurrency(c$1.item.price)
-											]
-										})]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex items-center gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "font-bold",
-											children: formatCurrency(c$1.item.price * c$1.quantity)
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-											variant: "ghost",
-											size: "icon",
-											className: "h-6 w-6 text-red-500 hover:bg-red-50",
-											onClick: (e) => {
-												e.stopPropagation();
-												removeFromCart(c$1.item.id);
-											},
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-3 w-3" })
-										})]
-									})]
-								}, c$1.item.id))
-							})
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "border-t pt-4",
+					children: t$1("pos.subtitle")
+				})] })
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+				value: activeTab,
+				onValueChange: setActiveTab,
+				className: "w-full",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: "pos",
+						children: t$1("pos.title")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: "management",
+						children: t$1("pos.manage_products")
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+						value: "pos",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex justify-between items-center text-lg font-bold mb-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Total" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "text-trust-blue",
-									children: formatCurrency(totalAmount)
+								className: "lg:col-span-2 flex flex-col gap-6",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "flex justify-between items-start",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "flex items-center gap-2",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+											variant: "outline",
+											className: "bg-slate-50 text-slate-700",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Package, { className: "h-3 w-3 mr-1" }),
+												" ",
+												t$1("pos.stock"),
+												" ",
+												"Connected"
+											]
+										})
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "grid grid-cols-2 md:grid-cols-3 gap-4",
+									children: posItems$1.filter((i$2) => i$2.active).map((item) => {
+										const stockItem = globalStock?.inventory?.find((inv) => inv.name.toLowerCase() === item.name.toLowerCase());
+										const inStock = stockItem ? stockItem.quantity : 999;
+										return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+											className: "cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden",
+											onClick: () => {
+												if (inStock > 0) addToCart(item.id);
+											},
+											children: [
+												inStock === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+													className: "absolute inset-0 bg-white/80 z-10 flex items-center justify-center font-bold text-red-600",
+													children: t$1("pos.out_of_stock")
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+													className: "p-4",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "flex justify-between items-start",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+															className: "text-base font-bold",
+															children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: item.name })
+														}), stockItem && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+															variant: "secondary",
+															className: inStock < 10 ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800",
+															children: [inStock, " left"]
+														})]
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+														className: "capitalize",
+														children: item.category
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+													className: "p-4 pt-0",
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+														className: "text-lg font-bold text-green-700",
+														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(item.price, language) })
+													})
+												})
+											]
+										}, item.id);
+									})
 								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-								className: "w-full bg-trust-blue h-12 text-lg hover:bg-blue-800",
-								onClick: handleCheckout,
-								disabled: cart.length === 0,
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "mr-2 h-5 w-5" }), " Charge to Room"]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "lg:col-span-1",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+									className: "h-full flex flex-col border-l-4 border-l-trust-blue sticky top-6",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+										className: "flex items-center gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShoppingCart, { className: "h-5 w-5" }), " Carrinho"]
+									}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+										className: "flex-1 flex flex-col gap-4",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t$1("short_term.guest") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+													value: selectedBooking,
+													onValueChange: setSelectedBooking,
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t$1("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: activeBookings.map((b$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: b$1.id,
+														children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [
+															b$1.guestName,
+															" - ",
+															b$1.propertyName
+														] })
+													}, b$1.id)) })]
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+												className: "flex-1 overflow-auto border rounded-md p-2 bg-slate-50 min-h-[200px]",
+												children: cart.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "text-center text-sm text-muted-foreground py-8 flex flex-col items-center",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShoppingCart, { className: "h-8 w-8 opacity-20 mb-2" }), t$1("pos.cart_empty")]
+												}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+													className: "space-y-2",
+													children: cart.map((c$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "flex justify-between items-center bg-white p-2 rounded border shadow-sm",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+															className: "text-sm",
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+																className: "font-bold",
+																children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: c$1.item.name })
+															}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																className: "text-xs text-muted-foreground",
+																children: [
+																	c$1.quantity,
+																	" x",
+																	" ",
+																	formatCurrency(c$1.item.price, language)
+																]
+															})]
+														}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+															className: "flex items-center gap-2",
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+																className: "font-bold",
+																children: formatCurrency(c$1.item.price * c$1.quantity, language)
+															}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+																variant: "ghost",
+																size: "icon",
+																className: "h-6 w-6 text-red-500 hover:bg-red-50",
+																onClick: (e) => {
+																	e.stopPropagation();
+																	removeFromCart(c$1.item.id);
+																},
+																children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-3 w-3" })
+															})]
+														})]
+													}, c$1.item.id))
+												})
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "border-t pt-4",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "flex justify-between items-center text-lg font-bold mb-4",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t$1("common.total") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "text-trust-blue",
+														children: formatCurrency(totalAmount, language)
+													})]
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+													className: "w-full bg-trust-blue h-12 text-lg hover:bg-blue-800",
+													onClick: handleCheckout,
+													disabled: cart.length === 0,
+													children: [
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "mr-2 h-5 w-5" }),
+														" ",
+														t$1("pos.charge_room")
+													]
+												})]
+											})
+										]
+									})]
+								})
 							})]
 						})
-					]
-				})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+						value: "management",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "flex justify-end mb-4",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								className: "bg-trust-blue gap-2",
+								onClick: () => {
+									setEditingProduct(null);
+									setProductDialogOpen(true);
+								},
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+									" ",
+									t$1("pos.new_product")
+								]
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+							className: "p-0",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("pos.product_name") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("pos.category") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("pos.price") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("pos.validity_start") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t$1("common.status") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+									className: "text-right",
+									children: t$1("pos.actions")
+								})
+							] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: posItems$1.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "font-medium",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: item.name })
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "capitalize",
+									children: item.category
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(item.price, language) }) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: item.validityStart || "-" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+									variant: item.active ? "default" : "secondary",
+									className: item.active ? "bg-green-600" : "",
+									children: item.active ? t$1("pos.active") : t$1("pos.inactive")
+								}) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-right",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex justify-end gap-2",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+												variant: "ghost",
+												size: "icon",
+												onClick: () => {
+													setEditingProduct(item);
+													setProductDialogOpen(true);
+												},
+												title: t$1("pos.edit"),
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+												variant: "ghost",
+												size: "icon",
+												onClick: () => handleInactivateProduct(item),
+												title: item.active ? t$1("pos.inactivate") : t$1("pos.active"),
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ban, { className: `h-4 w-4 ${item.active ? "text-orange-500" : "text-green-500"}` })
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+												variant: "ghost",
+												size: "icon",
+												onClick: () => handleDeleteProduct(item.id),
+												title: t$1("pos.delete"),
+												className: "text-red-500 hover:text-red-700",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+											})
+										]
+									})
+								})
+							] }, item.id)) })] })
+						}) })]
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ProductDialog, {
+				open: productDialogOpen,
+				onOpenChange: setProductDialogOpen,
+				onSave: handleSaveProduct,
+				product: editingProduct
 			})
-		})]
+		]
 	});
 }
 function MarketingAutomation() {
@@ -102581,8 +103354,8 @@ var App = () => {
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/",
 								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
-									resource: "hotels",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hotels, {})
+									resource: "dashboard",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Index, {})
 								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
@@ -102904,4 +103677,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BtO0vZPS.js.map
+//# sourceMappingURL=index-C5uUMbqD.js.map

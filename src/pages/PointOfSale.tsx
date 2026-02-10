@@ -80,8 +80,7 @@ export default function PointOfSale() {
       (inv) => inv.name.toLowerCase() === item.name.toLowerCase(),
     )
 
-    const currentInCart =
-      cart.find((c) => c.item.id === itemId)?.quantity || 0
+    const currentInCart = cart.find((c) => c.item.id === itemId)?.quantity || 0
 
     if (stockItem && stockItem.quantity <= currentInCart) {
       toast({
@@ -461,7 +460,9 @@ export default function PointOfSale() {
                             size="icon"
                             onClick={() => handleInactivateProduct(item)}
                             title={
-                              item.active ? t('pos.inactivate') : t('pos.active')
+                              item.active
+                                ? t('pos.inactivate')
+                                : t('pos.active')
                             }
                           >
                             <Ban

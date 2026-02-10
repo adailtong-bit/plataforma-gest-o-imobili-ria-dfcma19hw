@@ -146,8 +146,9 @@ function DashboardContent() {
   const pendingVisits = visits.filter((v) => v.status === 'scheduled').length
 
   // Hotel Specific Metrics
-  const totalRooms = properties.filter((p) => p.profileType === 'short_term')
-    .length
+  const totalRooms = properties.filter(
+    (p) => p.profileType === 'short_term',
+  ).length
   const occupiedRooms = properties.filter(
     (p) => p.profileType === 'short_term' && p.status === 'occupied',
   ).length

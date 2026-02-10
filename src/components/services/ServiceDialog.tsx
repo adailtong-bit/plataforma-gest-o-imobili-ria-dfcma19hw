@@ -84,7 +84,8 @@ export function ServiceDialog({
     if (!formData.name || !formData.price) {
       toast({
         title: t('common.error'),
-        description: t('guest_services.service_name') + ' ' + t('common.required'),
+        description:
+          t('guest_services.service_name') + ' ' + t('common.required'),
         variant: 'destructive',
       })
       return
@@ -154,7 +155,9 @@ export function ServiceDialog({
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="description">{t('guest_services.description')}</Label>
+            <Label htmlFor="description">
+              {t('guest_services.description')}
+            </Label>
             <Input
               id="description"
               value={formData.description}
@@ -240,7 +243,9 @@ export function ServiceDialog({
                 />
               </div>
               <div className="grid gap-1">
-                <Label className="text-xs">{t('guest_services.end_date')}</Label>
+                <Label className="text-xs">
+                  {t('guest_services.end_date')}
+                </Label>
                 <Input
                   type="date"
                   value={newSeasonal.endDate}
@@ -283,9 +288,7 @@ export function ServiceDialog({
                   <TableRow key={sp.id}>
                     <TableCell>{sp.startDate}</TableCell>
                     <TableCell>{sp.endDate}</TableCell>
-                    <TableCell>
-                      {formatCurrency(sp.price, language)}
-                    </TableCell>
+                    <TableCell>{formatCurrency(sp.price, language)}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"

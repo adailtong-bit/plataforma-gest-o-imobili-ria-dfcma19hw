@@ -129,14 +129,10 @@ export default function GuestServices() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>
-                      {t('guest_services.service_name')}
-                    </TableHead>
+                    <TableHead>{t('guest_services.service_name')}</TableHead>
                     <TableHead>{t('guest_services.category')}</TableHead>
                     <TableHead>{t('guest_services.price')}</TableHead>
-                    <TableHead>
-                      {t('guest_services.validity_start')}
-                    </TableHead>
+                    <TableHead>{t('guest_services.validity_start')}</TableHead>
                     <TableHead>
                       {t('guest_services.seasonal_pricing')}
                     </TableHead>

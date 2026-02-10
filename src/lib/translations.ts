@@ -51,7 +51,7 @@ export const translations = {
       save_success: 'Serviço salvo com sucesso.',
     },
     common: {
-      dashboard: 'Painel',
+      dashboard: 'Painel Imobiliário',
       properties: 'Propriedades',
       tenants: 'Inquilinos',
       owners: 'Proprietários',
@@ -405,7 +405,7 @@ export const translations = {
       save_success: 'Service saved successfully.',
     },
     common: {
-      dashboard: 'Dashboard',
+      dashboard: 'Real Estate Dashboard',
       properties: 'Properties',
       tenants: 'Tenants',
       owners: 'Owners',
@@ -695,7 +695,7 @@ export const translations = {
       save_success: 'Servicio guardado con éxito.',
     },
     common: {
-      dashboard: 'Panel',
+      dashboard: 'Panel Inmobiliario',
       properties: 'Propiedades',
       tenants: 'Inquilinos',
       owners: 'Propietarios',

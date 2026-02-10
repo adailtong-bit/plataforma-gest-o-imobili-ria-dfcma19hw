@@ -89,16 +89,16 @@ const App = () => {
 
               {/* Protected Routes */}
               <Route element={<DashboardLayout />}>
-                {/* Hotel Management Dashboard as Main Route */}
+                {/* Real Estate Dashboard as Main Route */}
                 <Route
                   path="/"
                   element={
-                    <RequirePermission resource="hotels">
-                      <Hotels />
+                    <RequirePermission resource="dashboard">
+                      <Index />
                     </RequirePermission>
                   }
                 />
-                {/* Legacy Dashboard Route */}
+                {/* Dashboard Alias */}
                 <Route
                   path="/dashboard"
                   element={
