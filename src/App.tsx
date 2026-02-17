@@ -413,14 +413,7 @@ const App = () => {
                     </RequirePermission>
                   }
                 />
-                <Route
-                  path="/admin/automation"
-                  element={
-                    <RequirePermission resource="automation">
-                      <Automation />
-                    </RequirePermission>
-                  }
-                />
+                <Route path="/admin/automation" element={<Automation />} />
 
                 {/* Portals - Also protected by RequirePermission internally or here */}
                 <Route

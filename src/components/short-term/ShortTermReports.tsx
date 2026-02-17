@@ -16,7 +16,7 @@ export function ShortTermReports() {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>{t('analytics.occupancy')}</CardTitle>
+          <CardTitle>{t('common.analytics.occupancy')}</CardTitle>
         </CardHeader>
         <CardContent className="text-2xl font-bold text-blue-600">
           85%

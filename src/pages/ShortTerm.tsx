@@ -76,7 +76,7 @@ export default function ShortTerm() {
     if (isGenericOrPlaceholder(newBooking.guestName)) {
       toast({
         title: t('common.error'),
-        description: 'Please enter a valid guest name.',
+        description: t('common.name_required'),
         variant: 'destructive',
       })
       return
@@ -85,7 +85,7 @@ export default function ShortTerm() {
     if (newBooking.guestEmail && !isValidEmail(newBooking.guestEmail)) {
       toast({
         title: t('common.error'),
-        description: 'Invalid email format.',
+        description: t('common.email_invalid'),
         variant: 'destructive',
       })
       return
@@ -174,7 +174,9 @@ export default function ShortTerm() {
                       <SelectItem value="airbnb">Airbnb</SelectItem>
                       <SelectItem value="vrbo">Vrbo</SelectItem>
                       <SelectItem value="booking.com">Booking.com</SelectItem>
-                      <SelectItem value="direct">Direct / Manual</SelectItem>
+                      <SelectItem value="direct">
+                        {t('short_term.direct_booking')}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -190,7 +192,7 @@ export default function ShortTerm() {
                         guestName: e.target.value,
                       })
                     }
-                    placeholder="Full Name"
+                    placeholder={t('short_term.full_name_placeholder')}
                   />
                 </div>
                 <div className="grid gap-2">
@@ -203,7 +205,7 @@ export default function ShortTerm() {
                         guestEmail: e.target.value,
                       })
                     }
-                    placeholder="email@guest.com"
+                    placeholder={t('short_term.email_placeholder')}
                   />
                 </div>
               </div>

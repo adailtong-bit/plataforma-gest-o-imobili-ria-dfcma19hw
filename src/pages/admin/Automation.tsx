@@ -49,7 +49,7 @@ export default function Automation() {
       updateAutomationRule({ ...rule, enabled })
       toast({
         title: t('common.success'),
-        description: `Rule ${enabled ? 'enabled' : 'disabled'} successfully.`,
+        description: `${t('automation.rule_enabled')}: ${enabled ? t('common.yes') : t('common.no')}`,
       })
     }
   }
@@ -79,7 +79,7 @@ export default function Automation() {
     setIsExporting(true)
     toast({
       title: t('automation.export_success_title'),
-      description: `Exporting data scope: ${exportScope}`,
+      description: `${t('automation.triggering')} ${exportScope}`,
     })
 
     // Mock export generation
@@ -182,12 +182,14 @@ export default function Automation() {
                 className="bg-green-700 hover:bg-green-800"
               >
                 <Download className="mr-2 h-4 w-4" />
-                {isExporting ? 'Exporting...' : t('automation.export_csv')}
+                {isExporting
+                  ? t('automation.triggering')
+                  : t('automation.export_csv')}
               </Button>
             </div>
             {!isPM && (
               <p className="text-xs text-red-500 mt-2">
-                Restricted to Property Managers only.
+                {t('common.access_denied_desc')}
               </p>
             )}
           </CardContent>
@@ -223,7 +225,7 @@ export default function Automation() {
             </div>
             {autoApproveRule?.enabled && (
               <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg">
-                <Label>Max Cost Threshold ($)</Label>
+                <Label>{t('automation.max_cost_threshold')} ($)</Label>
                 <Input
                   type="number"
                   className="w-32"
@@ -235,7 +237,7 @@ export default function Automation() {
                   }
                 />
                 <span className="text-sm text-muted-foreground">
-                  Tasks below this amount will be approved instantly.
+                  {t('automation.tasks_below_threshold')}
                 </span>
               </div>
             )}
@@ -272,18 +274,19 @@ export default function Automation() {
             </div>
             {autoInvoiceRule?.enabled && (
               <div className="p-4 bg-muted/30 rounded-lg">
-                <p className="text-sm font-medium mb-2">Trigger Event:</p>
+                <p className="text-sm font-medium mb-2">
+                  {t('automation.trigger_event')}:
+                </p>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     className="bg-white border-blue-500 text-blue-700"
                   >
-                    Task Completion
+                    {t('common.completed')}
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Invoices will be drafted when a task status changes to
-                  "Completed".
+                  {t('automation.trigger_desc')}
                 </p>
               </div>
             )}
@@ -332,7 +335,7 @@ export default function Automation() {
                   }
                 />
                 <span className="text-sm text-muted-foreground">
-                  Automatic email/SMS will be sent.
+                  {t('automation.auto_sms_desc')}
                 </span>
               </div>
             )}
@@ -343,21 +346,27 @@ export default function Automation() {
       <Dialog open={exportScopeOpen} onOpenChange={setExportScopeOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Select Export Scope</DialogTitle>
+            <DialogTitle>{t('automation.select_export_scope')}</DialogTitle>
             <DialogDescription>
-              Choose the data range for the QuickBooks export.
+              {t('automation.choose_data_range')}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <Label>Data Scope</Label>
+            <Label>{t('automation.data_scope')}</Label>
             <Select value={exportScope} onValueChange={setExportScope}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="general">General Activities</SelectItem>
-                <SelectItem value="owner">By Owner</SelectItem>
-                <SelectItem value="partner">By Partner</SelectItem>
+                <SelectItem value="general">
+                  {t('automation.general_activities')}
+                </SelectItem>
+                <SelectItem value="owner">
+                  {t('automation.by_owner')}
+                </SelectItem>
+                <SelectItem value="partner">
+                  {t('automation.by_partner')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -365,7 +374,9 @@ export default function Automation() {
             <Button variant="outline" onClick={() => setExportScopeOpen(false)}>
               {t('common.cancel')}
             </Button>
-            <Button onClick={handleQuickBooksExport}>Confirm Export</Button>
+            <Button onClick={handleQuickBooksExport}>
+              {t('automation.confirm_export')}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

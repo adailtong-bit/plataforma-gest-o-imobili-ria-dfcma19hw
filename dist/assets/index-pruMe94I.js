@@ -54711,6 +54711,31 @@ const tutorialModules = [
 ];
 const translations = {
 	pt: {
+		short_term: {
+			title: "Aluguel Temporada",
+			subtitle: "Gestão de reservas de curto prazo.",
+			new_booking: "Nova Reserva",
+			guest: "Hóspede",
+			check_in: "Check-in",
+			check_out: "Check-out",
+			total: "Total",
+			platform: "Plataforma",
+			reports: "Relatórios",
+			calendar: "Calendário",
+			bookings: "Reservas",
+			communication: "Comunicação",
+			revenue: "Receita",
+			occupancy: "Ocupação",
+			auto_replies: "Respostas Automáticas",
+			send_welcome: "Enviar Mensagem de Boas-vindas",
+			send_checkout_instr: "Enviar Instruções de Check-out",
+			template_name: "Nome do Modelo",
+			delay_minutes: "Atraso (minutos)",
+			amount: "Valor",
+			direct_booking: "Direto / Manual",
+			full_name_placeholder: "Nome Completo",
+			email_placeholder: "email@hospede.com"
+		},
 		sidebar: {
 			dashboard: "Painel",
 			units: "Propriedades",
@@ -55441,22 +55466,6 @@ const translations = {
 			tenant: "Inquilino",
 			partner_employee: "Funcionário Parceiro"
 		},
-		short_term: {
-			title: "Aluguel Temporada",
-			subtitle: "Gestão de reservas de curto prazo.",
-			new_booking: "Nova Reserva",
-			guest: "Hóspede",
-			check_in: "Check-in",
-			check_out: "Check-out",
-			total: "Total",
-			platform: "Plataforma",
-			reports: "Relatórios",
-			calendar: "Calendário",
-			bookings: "Reservas",
-			communication: "Comunicação",
-			revenue: "Receita",
-			occupancy: "Ocupação"
-		},
 		marketing_tab: { portal_sync: "Sincronização de Portais" },
 		automation: {
 			title: "Automação",
@@ -55472,10 +55481,51 @@ const translations = {
 			billing_automation_desc: "Gerar faturas automaticamente com base em eventos.",
 			auto_generate_invoices: "Gerar Faturas Automaticamente",
 			rent_reminders_desc: "Enviar lembretes automáticos para inquilinos.",
-			enable_reminders: "Ativar Lembretes"
+			enable_reminders: "Ativar Lembretes",
+			rule_enabled: "Regra habilitada",
+			max_cost_threshold: "Limite Máximo de Custo",
+			tasks_below_threshold: "Tarefas abaixo deste valor serão aprovadas instantaneamente.",
+			trigger_event: "Evento Gatilho",
+			confirm_export: "Confirmar Exportação",
+			triggering: "Disparando",
+			action: "Ação",
+			status: "Status da Automação",
+			trigger_desc: "Faturas serão geradas quando o status da tarefa mudar para \"Concluído\".",
+			auto_sms_desc: "Email/SMS automático será enviado.",
+			select_export_scope: "Selecione o Escopo de Exportação",
+			choose_data_range: "Escolha o intervalo de dados para a exportação QuickBooks.",
+			data_scope: "Escopo de Dados",
+			general_activities: "Atividades Gerais",
+			by_owner: "Por Proprietário",
+			by_partner: "Por Parceiro"
 		}
 	},
 	en: {
+		short_term: {
+			title: "Short Term Rental",
+			subtitle: "Manage short-term bookings.",
+			new_booking: "New Booking",
+			guest: "Guest",
+			check_in: "Check-in",
+			check_out: "Check-out",
+			total: "Total",
+			platform: "Platform",
+			reports: "Reports",
+			calendar: "Calendar",
+			bookings: "Bookings",
+			communication: "Communication",
+			revenue: "Revenue",
+			occupancy: "Occupancy",
+			auto_replies: "Auto-Replies",
+			send_welcome: "Send Welcome Message",
+			send_checkout_instr: "Send Check-out Instructions",
+			template_name: "Template Name",
+			delay_minutes: "Delay (minutes)",
+			amount: "Amount",
+			direct_booking: "Direct / Manual",
+			full_name_placeholder: "Full Name",
+			email_placeholder: "guest@email.com"
+		},
 		sidebar: {
 			dashboard: "Dashboard",
 			units: "Properties",
@@ -56066,162 +56116,6 @@ const translations = {
 			error_delete: "Error deleting.",
 			delete_linked_error: "Cannot delete because there are linked records."
 		},
-		dashboard: {
-			unread: "unread",
-			from_last_month: "from last month",
-			customize: "Customize",
-			customize_view: "Customize View",
-			customize_desc: "Select widgets to display.",
-			kpi_indicators: "KPI Indicators",
-			revenue_chart: "Revenue Chart",
-			revenue_vs_expenses: "Revenue vs Expenses",
-			revenue_overview: "Financial overview of recent months.",
-			quick_calendar: "Quick Calendar",
-			todays_activity: "Today's activity.",
-			pending_approvals: "Pending Approvals",
-			pending_desc: "Items requiring attention.",
-			review: "Review",
-			approve: "Approve",
-			expense_distribution: "Expense Distribution",
-			expense_desc: "Spending breakdown by category.",
-			subtitle: "Welcome back! Here is your operations summary."
-		},
-		gamification: {
-			health_score: "Health Score",
-			portfolio_health: "Portfolio Health",
-			desc: "Score based on occupancy, maintenance, and reviews.",
-			level: "Level",
-			expert: "Expert",
-			target: "Target"
-		},
-		properties: {
-			title: "Properties",
-			subtitle: "Manage your real estate portfolio.",
-			new_property: "New Property",
-			add_title: "Add Property",
-			add_description: "Fill in the form to create a new property.",
-			rental_type: "Rental Type",
-			profile_short: "Short Term",
-			profile_long: "Long Term",
-			search_placeholder: "Search property...",
-			address_placeholder: "Property address",
-			zip_code: "Zip Code",
-			zip_required: "Zip Code is required",
-			info_label: "Add. Info",
-			city_placeholder: "City",
-			state_placeholder: "State",
-			property_value: "Property Value",
-			hoa_fee: "HOA Fee",
-			hoa_auto_hint: "Automatic monthly calculation",
-			cover_image: "Cover Image",
-			no_image_selected: "No image selected",
-			no_image: "No Image",
-			view_details: "View Details",
-			property_added: "Property Added",
-			validation_error: "Validation Error",
-			name_required: "Name is required",
-			address_required: "Address is required",
-			city_state_required: "City and State are required",
-			profile_required: "Profile Type is required",
-			delete_success: "Property deleted successfully.",
-			error_delete: "Error deleting property.",
-			all_profiles: "All Profiles",
-			profile_filter: "Profile Filter",
-			monthly: "Monthly",
-			quarterly: "Quarterly",
-			annually: "Annually",
-			hoa_freq: "HOA Frequency",
-			overview: "Overview",
-			tabs: {
-				overview: "Overview",
-				analytics: "Analytics",
-				reports: "Reports",
-				maintenance: "Maintenance",
-				contracts: "Contracts",
-				inventory: "Inventory",
-				features: "Features",
-				location: "Location",
-				sync: "Sync",
-				financial: "Financial",
-				marketing: "Marketing",
-				content: "Content",
-				documents: "Documents",
-				logs: "Logs"
-			}
-		},
-		auth: {
-			login_title: "Login",
-			login_desc: "Sign in to your account to continue",
-			email_placeholder: "example@company.com",
-			forgot_password: "Forgot password?",
-			no_account: "Don't have an account?",
-			demo_login: "Demo Login",
-			register_title: "Create Account",
-			register_desc: "Start managing your properties today",
-			name_placeholder: "Your full name",
-			company_details: "Company Details",
-			company_placeholder: "Your company name",
-			tax_id_placeholder: "Tax ID / EIN",
-			address_placeholder: "Business address",
-			already_have_account: "Already have an account?"
-		},
-		settings: {
-			title: "Settings",
-			subtitle: "Manage account and system settings.",
-			personal_info: "Personal Info",
-			update_info: "Update your information.",
-			change_photo: "Change Photo",
-			full_name: "Full Name",
-			save_changes: "Save Changes",
-			integrations: "Integrations",
-			billing_payment: "Billing & Payment",
-			billing_gateways_title: "Payment Gateways",
-			billing_gateways_desc: "Configure accepted payment methods.",
-			payment_gateways: "Payment Gateways",
-			system_alerts: "System Alerts",
-			system_alerts_desc: "Configure automated notifications.",
-			automation_title: "Automation",
-			automation_desc: "Configure automatic rules.",
-			rent_reminder: "Rent Reminder",
-			days_before: "Days Before",
-			company_legal_name: "Legal Name"
-		},
-		status: {
-			rented: "Rented",
-			available: "Available",
-			sold: "Sold",
-			occupied: "Occupied",
-			vacant: "Vacant",
-			suspended: "Suspended",
-			maintenance: "Maintenance",
-			reserved: "Reserved",
-			rescheduled: "Rescheduled"
-		},
-		roles: {
-			platform_owner: "Admin",
-			software_tenant: "Manager",
-			internal_user: "Staff",
-			partner: "Partner",
-			property_owner: "Owner",
-			tenant: "Tenant",
-			partner_employee: "Partner Employee"
-		},
-		short_term: {
-			title: "Short Term Rental",
-			subtitle: "Manage short-term bookings.",
-			new_booking: "New Booking",
-			guest: "Guest",
-			check_in: "Check-in",
-			check_out: "Check-out",
-			total: "Total",
-			platform: "Platform",
-			reports: "Reports",
-			calendar: "Calendar",
-			bookings: "Bookings",
-			communication: "Communication",
-			revenue: "Revenue",
-			occupancy: "Occupancy"
-		},
 		marketing_tab: { portal_sync: "Portal Sync" },
 		automation: {
 			title: "Automation",
@@ -56237,10 +56131,51 @@ const translations = {
 			billing_automation_desc: "Generate invoices automatically based on events.",
 			auto_generate_invoices: "Auto-Generate Invoices",
 			rent_reminders_desc: "Send automated reminders to tenants.",
-			enable_reminders: "Enable Reminders"
+			enable_reminders: "Enable Reminders",
+			rule_enabled: "Rule enabled",
+			max_cost_threshold: "Max Cost Threshold",
+			tasks_below_threshold: "Tasks below this amount will be approved instantly.",
+			trigger_event: "Trigger Event",
+			confirm_export: "Confirm Export",
+			triggering: "Triggering",
+			action: "Action",
+			status: "Automation Status",
+			trigger_desc: "Invoices will be drafted when a task status changes to \"Completed\".",
+			auto_sms_desc: "Automatic email/SMS will be sent.",
+			select_export_scope: "Select Export Scope",
+			choose_data_range: "Choose the data range for the QuickBooks export.",
+			data_scope: "Data Scope",
+			general_activities: "General Activities",
+			by_owner: "By Owner",
+			by_partner: "By Partner"
 		}
 	},
 	es: {
+		short_term: {
+			title: "Alquiler Temporal",
+			subtitle: "Gestión de reservas a corto plazo.",
+			new_booking: "Nueva Reserva",
+			guest: "Huésped",
+			check_in: "Check-in",
+			check_out: "Check-out",
+			total: "Total",
+			platform: "Plataforma",
+			reports: "Informes",
+			calendar: "Calendario",
+			bookings: "Reservas",
+			communication: "Comunicación",
+			revenue: "Ingresos",
+			occupancy: "Ocupación",
+			auto_replies: "Respuestas Automáticas",
+			send_welcome: "Enviar Mensaje de Bienvenida",
+			send_checkout_instr: "Enviar Instrucciones de Salida",
+			template_name: "Nombre de Plantilla",
+			delay_minutes: "Retraso (minutos)",
+			amount: "Importe",
+			direct_booking: "Directo / Manual",
+			full_name_placeholder: "Nombre Completo",
+			email_placeholder: "huesped@email.com"
+		},
 		sidebar: {
 			dashboard: "Panel",
 			units: "Propiedades",
@@ -56302,7 +56237,7 @@ const translations = {
 		},
 		pos: {
 			title: "Punto de Venta",
-			subtitle: "Gestión de productos, ventas y stock.",
+			subtitle: "Gestión de productos, vendas y stock.",
 			new_product: "Nuevo Producto",
 			manage_products: "Gestionar Productos",
 			product_name: "Nombre del Producto",
@@ -56494,7 +56429,7 @@ const translations = {
 			company_name: "Nombre de Empresa",
 			category: "Categoría",
 			agent: "Agente",
-			cleaning: "Limpieza",
+			cleaning: "Limpeza",
 			maintenance: "Mantenimiento",
 			bank_info: "Datos Bancarios",
 			bank_name: "Banco",
@@ -56662,7 +56597,6 @@ const translations = {
 			messages: "Mensajes",
 			settings: "Configuración",
 			service_pricing: "Catálogo de Precios",
-			service_desc: "Gestione servicios, tarifas y precios de socios.",
 			search: "Buscar...",
 			filter: "Filtrar",
 			status: "Estado",
@@ -56734,9 +56668,9 @@ const translations = {
 			renewals: "Renovación de Contrato",
 			short_term: "Alquiler Temporal",
 			market_analysis: "Análisis de Mercado",
-			user_analysis: "Análisis de Usuario",
+			advanced_analytics: "Análisis Avanzado",
+			automation_rules: "Reglas de Automatización",
 			workflows: "Flujos de Trabajo",
-			audit_logs: "Registros de Auditoría",
 			portal: "Portal",
 			publicity: "Publicidad",
 			login: "Entrar",
@@ -56759,8 +56693,6 @@ const translations = {
 			done: "Hecho",
 			taxes: "Impuestos",
 			utilities: "Utilidades",
-			advanced_analytics: "Análisis Avanzado",
-			automation_rules: "Reglas de Automatización",
 			inventory: "Inventario",
 			history: "Historial",
 			activity_log: "Registro de Actividad",
@@ -56779,7 +56711,6 @@ const translations = {
 			add_owner: "Añadir Propietario",
 			no_active_tenant: "Sin Inquilino Activo",
 			export: "Exportar",
-			frequency: "Frecuencia",
 			visits: "Visitas",
 			schedule_visit: "Programar Visita",
 			client_name: "Nombre del Cliente",
@@ -56787,12 +56718,9 @@ const translations = {
 			visit_status: "Estado de Visita",
 			scheduled: "Programada",
 			canceled: "Cancelada",
-			real_estate_dashboard: "Panel Inmobiliario",
 			visit_scheduling: "Programación de Visitas",
 			visits_list: "Lista de Visitas",
-			pending_visits: "Visitas Pendientes",
 			total_revenue: "Ingresos Totales",
-			active_listings: "Listados Activos",
 			sold: "Vendido",
 			sale_pending: "Venta Pendiente",
 			category: "Categoría",
@@ -56807,299 +56735,28 @@ const translations = {
 				market_avg: "Promedio Mercado",
 				occupancy: "Ocupación",
 				profitability_title: "Rentabilidad",
-				profitability_desc: "Comparación de beneficio neto.",
 				profit: "Beneficio",
 				revenue: "Ingresos",
 				adr: "Tarifa Media Diaria (ADR)",
 				privacy_mode: "Modo de Privacidad",
 				house_model: "Modelo de Casa"
 			},
-			resource: "Recurso",
-			migration: "Migración",
-			hotels: "Hoteles",
 			help_hub: "Centro de Ayuda",
-			list: "Lista",
-			calendar_view: "Calendario",
-			previous: "Anterior",
-			next: "Siguiente",
+			hotels: "Hoteles",
+			location: "Ubicación",
+			access_credentials: "Credenciales de Acceso",
+			manager: "Gerente",
+			contact: "Contacto",
+			history_adjustments: "Historial de Ajustes",
+			name_required: "El nombre es obligatorio",
+			email_invalid: "Email inválido",
+			error_404_title: "404",
+			error_404_desc: "¡Ups! Página no encontrada.",
+			return_home: "Volver al Inicio",
 			access_denied: "Acceso Denegado",
 			access_denied_desc: "No tiene permiso para ver esta página.",
-			no_image: "Sin Imagen",
-			view_details: "Ver Detalles",
-			delete_success: "Registro eliminado con éxito.",
-			error_delete: "Error al eliminar registro.",
-			property_added: "Propiedad Añadida",
-			zip_required: "Código Postal es obligatorio",
-			city_state_required: "Ciudad y Estado son obligatorios",
-			profile_required: "Tipo de Perfil es obligatorio",
-			no_image_selected: "Ninguna imagen seleccionada",
-			house: "Casa",
-			condo: "Condominio",
-			townhouse: "Adosado",
-			rental_type: "Tipo de Alquiler",
-			profile_short: "Corto Plazo",
-			profile_long: "Largo Plazo",
-			zip_code: "Código Postal",
-			info_label: "Info Adicional",
-			city_placeholder: "Ciudad",
-			state_placeholder: "Estado",
-			property_value: "Valor de Propiedad",
-			hoa_fee: "Cuota de Condominio",
-			hoa_auto_hint: "Cálculo automático mensual",
-			cover_image: "Imagen de Portada",
-			upload_image: "Subir Imagen",
-			publish_portals: "Publicar en Portales",
-			house_rules: "Reglas de la Casa",
-			public_desc: "Descripción Pública",
-			auto_translate: "Traducción Automática",
-			copy_from: "Copiar de",
-			start_checkin: "Iniciar Check-in",
-			finish: "Finalizar",
-			details_evidence: "Detalles y Evidencias",
-			evidence_upload: "Subir Evidencias",
-			evidence_photo: "Foto de Evidencia",
-			send: "Enviar",
-			photos_ref: "Fotos de Referencia",
-			detailed_desc: "Descripción Detallada",
-			desc_placeholder: "Instrucciones...",
-			create_btn: "Crear",
-			task_title: "Título de Tarea",
-			assignee: "Responsable",
-			scheduled_date: "Fecha Programada",
-			service_type: "Tipo de Servicio",
-			change_status: "Cambiar Estado",
-			b2b_label: "Back to Back (B2B)",
-			arrival: "Llegada",
-			photos: "Fotos",
-			total_spend: "Gasto Total",
-			total_tasks: "Total Tareas",
-			avg_resolution: "Resolución Media",
-			avg_cost_task: "Costo Medio/Tarea",
-			cost_breakdown: "Desglose de Costos",
-			distribution_expenses: "Distribución de Gastos",
-			monthly_expenditure: "Gasto Mensual",
-			spending_trends: "Tendencias de Gasto",
-			no_activities: "Ninguna actividad registrada.",
-			integrated_view: "Visión Integrada",
-			no_contacts: "Sin contactos.",
-			search_contact: "Buscar contacto...",
-			no_conv: "Ninguna conversación encontrada.",
-			new_message: "Nuevo Mensaje",
-			select_user: "Seleccione un Usuario",
-			group_team: "Equipo",
-			group_tenants: "Inquilinos",
-			group_owners: "Propietarios",
-			group_partners: "Socios",
-			type_message: "Escriba su mensaje...",
-			online: "En línea",
-			new_chat_prompt: "Iniciar una nueva conversación",
-			select_prompt: "Seleccione un contacto para comenzar a chatear.",
-			start_chat_desc: "Iniciar Chat",
-			permission_required: "Permiso Necesario",
-			contact_name: "Nombre de Contacto",
-			company_name: "Nombre de Empresa",
-			bank_info: "Datos Bancarios",
-			bank_name: "Banco",
-			routing: "Agencia/Routing",
-			account: "Cuenta",
-			no_partners: "Ningún socio registrado.",
-			register_title: "Registro",
-			new_partner: "Nuevo Socio",
-			new_owner: "Nuevo Propietario",
-			new_tenant: "Nuevo Inquilino",
-			new_condo: "Nuevo Condominio",
-			success_desc: "Operación realizada con éxito.",
-			workflow_started: "Flujo Iniciado",
-			workflow_desc: "Acción {action} iniciada para {name}.",
-			renew_contract: "Renovar Contrato",
-			properties_count: "Propiedades",
-			contact_details: "Detalles de Contacto",
-			base_title: "Base de Datos",
-			search_placeholder: "Buscar...",
-			list_title: "Lista de Registros",
-			send_message: "Enviar Mensaje",
-			role_label: "Función",
-			registered: "Registrados",
-			registered_desc: "usuarios registrados en el sistema.",
-			permissions: "Permisos",
-			block_title: "Bloquear Usuario",
-			block_confirm: "¿Está seguro de que desea bloquear a este usuario?",
-			block_success: "Usuario bloqueado con éxito.",
-			approve_success: "Usuario aprobado con éxito.",
-			status_active: "Activo",
-			status_pending: "Pendiente",
-			status_blocked: "Bloqueado",
-			manage_categories: "Gestionar Categorías",
-			add_service: "Añadir Servicio",
-			edit_service: "Editar Servicio",
-			partner_vendor: "Socio / Proveedor",
-			generic: "Genérico",
-			service_price: "Precio del Servicio",
-			partner_payment: "Pago Socio",
-			pm_value: "Valor PM",
-			product_price: "Precio Producto",
-			valid_from: "Válido Desde",
-			valid_to: "Válido Hasta",
-			config_saved: "Configuración Guardada",
-			config_saved_desc: "Configuraciones de precio actualizadas.",
-			stale_alert: "{count} tarifas no actualizadas hace más de {days} días.",
-			review_needed: "Necesita Revisión",
-			review_period_config: "Configuración de Período de Revisión",
-			review_period_desc: "Defina el límite de días para revisión de precios.",
-			threshold_days: "Días Límite",
-			step_name: "Nombre del Paso",
-			step_role: "Función Responsable",
-			add_step: "Añadir Paso",
-			active_status: "Estado Activo",
-			run_manual: "Ejecutar Manualmente",
-			config_workflow: "Configurar Flujo",
-			edit_workflow: "Editar Flujo",
-			new_workflow: "Nuevo Flujo",
-			billing_gateways_title: "Pasarelas de Pago",
-			billing_gateways_desc: "Configure los métodos de pago aceptados.",
-			payment_gateways: "Pasarelas de Pago",
-			system_alerts: "Alertas del Sistema",
-			system_alerts_desc: "Configure las notificaciones automáticas.",
-			rent_reminder: "Recordatorio de Alquiler",
-			days_before: "Días Antes",
-			personal_info: "Información Personal",
-			update_info: "Actualice su información.",
-			change_photo: "Cambiar Foto",
-			save_changes: "Guardar Cambios",
-			integrations: "Integraciones",
-			billing_payment: "Facturación y Pago",
-			upload_statement: "Subir Extracto",
-			upload_desc: "Suba extractos bancarios para conciliación.",
-			statements: "Extractos",
-			no_statements: "Ningún extracto subido.",
-			reconciled: "Conciliado",
-			pending_reconciliation: "Pendiente Conciliación",
-			reconciliation: "Conciliación",
-			invoice_id: "ID Factura",
-			amount: "Importe",
-			no_invoices: "Ninguna factura encontrada.",
-			send_to_payer: "Enviar al Pagador",
-			sent_success: "Enviado con Éxito",
-			status_paid: "Pagado",
-			status_approved: "Aprobado",
-			create_new: "Crear Nueva",
-			pay_now: "Pagar Ahora",
-			invoice_no: "Factura Nº",
-			bill_to: "Facturar A",
-			quantity: "Cant.",
-			rate: "Precio Un.",
-			subtotal: "Subtotal",
-			notes: "Notas",
-			terms: "Términos",
-			thank_you: "¡Gracias por su preferencia!",
-			report_headers: {
-				date: "Fecha",
-				property: "Propiedad",
-				type: "Tipo",
-				category: "Categoría",
-				description: "Descripción",
-				amount: "Importe",
-				status: "Estado"
-			},
-			export_success_title: "Exportación Iniciada",
-			export_csv: "Exportar CSV",
-			quickbooks_export: "Exportar para QuickBooks",
-			quickbooks_desc: "Descargue transacciones compatibles con QB.",
-			benchmark_title: "Benchmark de Mercado",
-			benchmark_desc: "Comparativa de rendimiento con el mercado.",
-			house_model: "Modelo de Casa",
-			internal_perf: "Rendimiento Interno",
-			market_avg: "Promedio Mercado",
-			occupancy: "Ocupación",
-			profitability_title: "Rentabilidad",
-			profitability_desc: "Comparativa de beneficio neto.",
-			profit_internal: "Beneficio Interno",
-			profit_market: "Beneficio Mercado",
-			adr: "Tarifa Media Diaria (ADR)",
-			privacy_mode: "Modo de Privacidad",
-			portal_sync: "Sincronización de Portales",
-			manage_listings: "Gestionar listados en sitios externos.",
-			publish_btn: "Publicar Cambios",
-			publish_success: "Publicación iniciada con éxito.",
-			leads: "Leads & Interesados",
-			inquiries_desc: "Gestión de contactos e interesados.",
-			contact_info: "Contacto",
-			source: "Fuente",
-			inquiry_date: "Fecha",
-			sync: {
-				title: "Sincronización",
-				sync_desc: "Gestione enlaces de calendario externos.",
-				sync_success: "Sincronización iniciada.",
-				platform: "Plataforma",
-				ical_url: "URL del iCal",
-				add_link: "Añadir Enlace",
-				last_sync: "Última Sync",
-				no_links: "Ningún enlace configurado.",
-				sync_now: "Sincronizar Ahora",
-				export_calendar: "Exportar Calendario",
-				copy_link: "Copiar Enlace"
-			},
-			current_value: "Valor Actual",
-			revenue: "Ingresos",
-			profit: "Beneficio",
-			new_booking: "Nueva Reserva",
-			guest: "Huésped",
-			check_in: "Check-in",
-			check_out: "Check-out",
-			platform: "Plataforma",
-			daily_metrics: "Métricas Diarias",
-			promotions: "Promociones",
-			campaigns: "Campañas",
-			access_credentials: "Credenciales de Acceso",
-			financial_hoa: "Financiero HOA",
-			hotel_details: "Detalles del Hotel",
-			rooms: "Habitaciones",
-			towers: "Torres",
-			add_tower: "Añadir Torre",
-			new_tower: "Nueva Torre",
-			floors: "Pisos",
-			no_condos: "Ningún condominio encontrado.",
-			new_condo: "Nuevo Condominio",
-			new_owner: "Nuevo Propietario",
-			base_title: "Base de Propietarios",
-			new_task: "Nueva Tarea",
-			create_title: "Crear Tarea",
-			create_desc: "Complete los detalles para programar un servicio.",
-			negotiation_started: "Negociación Iniciada",
-			close_negotiation: "Cerrar Negociación",
-			new_value: "Nuevo Valor",
-			new_start_date: "Nueva Fecha Inicio",
-			new_end_date: "Nueva Fecha Fin",
-			contract_upload: "Subida de Contrato",
-			invoice_viewer: {
-				title: "Visor de Factura",
-				invoice_no: "Factura Nº",
-				date: "Fecha",
-				due_date: "Vencimiento",
-				bill_to: "Facturar A",
-				description: "Descripción",
-				quantity: "Cant.",
-				rate: "Precio Un.",
-				amount: "Importe",
-				subtotal: "Subtotal",
-				total: "Total",
-				notes: "Notas",
-				thank_you: "¡Gracias por su preferencia!",
-				terms: "Términos",
-				close: "Cerrar",
-				download: "Descargar",
-				print: "Imprimir"
-			},
-			location: "Ubicación",
-			history_adjustments: "Historial de Ajustes",
-			auto_approval: "Auto-Aprobación",
-			auto_approval_desc: "Aprobar automáticamente tareas de mantenimiento por debajo de un costo determinado.",
-			enable_auto_approval: "Activar Auto-Aprobación",
-			billing_automation: "Automatización de Facturación",
-			billing_automation_desc: "Generar facturas automáticamente basadas en eventos.",
-			auto_generate_invoices: "Generar Facturas Automáticamente",
-			rent_reminders_desc: "Enviar recordatorios automáticos a los inquilinos.",
-			enable_reminders: "Activar Recordatorios",
+			list: "Lista",
+			calendar_view: "Calendario",
 			start_date: "Fecha Inicio",
 			end_date: "Fecha Fin",
 			and: "y",
@@ -57108,6 +56765,39 @@ const translations = {
 			delete_success: "Eliminado con éxito.",
 			error_delete: "Error al eliminar.",
 			delete_linked_error: "No se puede eliminar porque hay registros vinculados."
+		},
+		marketing_tab: { portal_sync: "Sincronización de Portales" },
+		automation: {
+			title: "Automatización",
+			quickbooks_export: "Exportar a QuickBooks",
+			quickbooks_desc: "Descargar transacciones compatibles con QB.",
+			export_csv: "Exportar CSV",
+			export_success_title: "Exportación Iniciada",
+			auto_generate_invoice: "Generar Factura Automática",
+			auto_approval: "Auto-Aprobación",
+			auto_approval_desc: "Aprobar automáticamente tareas de mantenimiento por debajo de un costo determinado.",
+			enable_auto_approval: "Activar Auto-Aprobación",
+			billing_automation: "Automatización de Facturación",
+			billing_automation_desc: "Generar facturas automáticamente basadas en eventos.",
+			auto_generate_invoices: "Generar Facturas Automáticamente",
+			rent_reminders_desc: "Enviar recordatorios automáticos a los inquilinos.",
+			enable_reminders: "Activar Recordatorios",
+			rule_enabled: "Regla habilitada",
+			max_cost_threshold: "Umbral de Costo Máximo",
+			tasks_below_threshold: "Las tareas por debajo de este monto se aprobarán instantáneamente.",
+			trigger_event: "Evento Desencadenante",
+			confirm_export: "Confirmar Exportación",
+			triggering: "Disparando",
+			action: "Acción",
+			status: "Estado de Automatización",
+			trigger_desc: "Las facturas se generarán cuando el estado de la tarea cambie a \"Completado\".",
+			auto_sms_desc: "Se enviará un correo electrónico/SMS automático.",
+			select_export_scope: "Seleccionar Alcance de Exportación",
+			choose_data_range: "Elija el rango de datos para la exportación de QuickBooks.",
+			data_scope: "Alcance de Datos",
+			general_activities: "Actividades Generales",
+			by_owner: "Por Propietario",
+			by_partner: "Por Socio"
 		}
 	}
 };
@@ -87879,7 +87569,7 @@ function Automation() {
 			});
 			toast$2({
 				title: t("common.success"),
-				description: `Rule ${enabled ? "enabled" : "disabled"} successfully.`
+				description: `${t("automation.rule_enabled")}: ${enabled ? t("common.yes") : t("common.no")}`
 			});
 		}
 	};
@@ -87909,7 +87599,7 @@ function Automation() {
 		setIsExporting(true);
 		toast$2({
 			title: t("automation.export_success_title"),
-			description: `Exporting data scope: ${exportScope}`
+			description: `${t("automation.triggering")} ${exportScope}`
 		});
 		setTimeout(() => {
 			const csvContent = [
@@ -87991,11 +87681,11 @@ function Automation() {
 								onClick: initiateExport,
 								disabled: isExporting || !isPM,
 								className: "bg-green-700 hover:bg-green-800",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "mr-2 h-4 w-4" }), isExporting ? "Exporting..." : t("automation.export_csv")]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "mr-2 h-4 w-4" }), isExporting ? t("automation.triggering") : t("automation.export_csv")]
 							})
 						}), !isPM && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-xs text-red-500 mt-2",
-							children: "Restricted to Property Managers only."
+							children: t("common.access_denied_desc")
 						})] })]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -88019,7 +87709,7 @@ function Automation() {
 						}), autoApproveRule?.enabled && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center gap-4 p-4 bg-muted/30 rounded-lg",
 							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Max Cost Threshold ($)" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t("automation.max_cost_threshold"), " ($)"] }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									type: "number",
 									className: "w-32",
@@ -88028,7 +87718,7 @@ function Automation() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 									className: "text-sm text-muted-foreground",
-									children: "Tasks below this amount will be approved instantly."
+									children: t("automation.tasks_below_threshold")
 								})
 							]
 						})]
@@ -88054,21 +87744,21 @@ function Automation() {
 						}), autoInvoiceRule?.enabled && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "p-4 bg-muted/30 rounded-lg",
 							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 									className: "text-sm font-medium mb-2",
-									children: "Trigger Event:"
+									children: [t("automation.trigger_event"), ":"]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 									className: "flex gap-2",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 										variant: "outline",
 										className: "bg-white border-blue-500 text-blue-700",
-										children: "Task Completion"
+										children: t("common.completed")
 									})
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "text-xs text-muted-foreground mt-2",
-									children: "Invoices will be drafted when a task status changes to \"Completed\"."
+									children: t("automation.trigger_desc")
 								})
 							]
 						})]
@@ -88103,7 +87793,7 @@ function Automation() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 									className: "text-sm text-muted-foreground",
-									children: "Automatic email/SMS will be sent."
+									children: t("automation.auto_sms_desc")
 								})
 							]
 						})]
@@ -88114,24 +87804,24 @@ function Automation() {
 				open: exportScopeOpen,
 				onOpenChange: setExportScopeOpen,
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Select Export Scope" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "Choose the data range for the QuickBooks export." })] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("automation.select_export_scope") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: t("automation.choose_data_range") })] }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "py-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Data Scope" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("automation.data_scope") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 							value: exportScope,
 							onValueChange: setExportScope,
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "general",
-									children: "General Activities"
+									children: t("automation.general_activities")
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "owner",
-									children: "By Owner"
+									children: t("automation.by_owner")
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "partner",
-									children: "By Partner"
+									children: t("automation.by_partner")
 								})
 							] })]
 						})]
@@ -88142,7 +87832,7 @@ function Automation() {
 						children: t("common.cancel")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						onClick: handleQuickBooksExport,
-						children: "Confirm Export"
+						children: t("automation.confirm_export")
 					})] })
 				] })
 			})
@@ -88156,7 +87846,7 @@ function ShortTermReports() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("common.revenue") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 			className: "text-2xl font-bold text-green-600",
 			children: "$12,450"
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("analytics.occupancy") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("common.analytics.occupancy") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 			className: "text-2xl font-bold text-blue-600",
 			children: "85%"
 		})] })]
@@ -88164,39 +87854,47 @@ function ShortTermReports() {
 }
 function ShortTermCalendar() {
 	const [date$1, setDate$1] = (0, import_react.useState)(/* @__PURE__ */ new Date());
+	const { language } = useLanguageStore_default();
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "flex justify-center border rounded-md p-4 bg-white",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, {
 			mode: "single",
 			selected: date$1,
 			onSelect: setDate$1,
-			className: "rounded-md border"
+			className: "rounded-md border",
+			locale: {
+				pt: ptBR,
+				es,
+				en: enUS
+			}[language]
 		})
 	});
 }
 function CommunicationSettings() {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Auto-Replies" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+	const { t } = useLanguageStore_default();
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("short_term.auto_replies") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 		className: "space-y-4",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex items-center justify-between",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Send Welcome Message" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {})]
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("short_term.send_welcome") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex items-center justify-between",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Send Check-out Instructions" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {})]
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("short_term.send_checkout_instr") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {})]
 		})]
 	})] });
 }
 function ShortTermBookings() {
 	const { bookings: bookings$1 } = useShortTermStore_default();
+	const { t } = useLanguageStore_default();
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "border rounded-md",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Guest" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Property" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Check-In" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Check-Out" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Amount" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" })
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("short_term.guest") }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.property") }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("short_term.check_in") }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("short_term.check_out") }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("short_term.amount") }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") })
 		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: bookings$1.map((booking) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: booking.guestName }) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: booking.propertyName || "Unknown" }) }),
@@ -88237,7 +87935,7 @@ function ShortTerm() {
 		if (isGenericOrPlaceholder(newBooking.guestName)) {
 			toast$2({
 				title: t("common.error"),
-				description: "Please enter a valid guest name.",
+				description: t("common.name_required"),
 				variant: "destructive"
 			});
 			return;
@@ -88245,7 +87943,7 @@ function ShortTerm() {
 		if (newBooking.guestEmail && !isValidEmail(newBooking.guestEmail)) {
 			toast$2({
 				title: t("common.error"),
-				description: "Invalid email format.",
+				description: t("common.email_invalid"),
 				variant: "destructive"
 			});
 			return;
@@ -88339,7 +88037,7 @@ function ShortTerm() {
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 												value: "direct",
-												children: "Direct / Manual"
+												children: t("short_term.direct_booking")
 											})
 										] })]
 									})]
@@ -88355,7 +88053,7 @@ function ShortTerm() {
 											...newBooking,
 											guestName: e.target.value
 										}),
-										placeholder: "Full Name"
+										placeholder: t("short_term.full_name_placeholder")
 									})]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
@@ -88365,7 +88063,7 @@ function ShortTerm() {
 											...newBooking,
 											guestEmail: e.target.value
 										}),
-										placeholder: "email@guest.com"
+										placeholder: t("short_term.email_placeholder")
 									})]
 								})]
 							}),
@@ -92420,10 +92118,7 @@ var App = () => {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/admin/automation",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
-									resource: "automation",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Automation, {})
-								})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Automation, {})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/portal/tenant",
@@ -92460,4 +92155,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Cf-Oy8Wi.js.map
+//# sourceMappingURL=index-pruMe94I.js.map

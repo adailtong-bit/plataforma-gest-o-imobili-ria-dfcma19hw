@@ -11,21 +11,23 @@ import useShortTermStore from '@/stores/useShortTermStore'
 import { formatCurrency } from '@/lib/utils'
 import { format } from 'date-fns'
 import { DataMask } from '@/components/DataMask'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export function ShortTermBookings() {
   const { bookings } = useShortTermStore()
+  const { t } = useLanguageStore()
 
   return (
     <div className="border rounded-md">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Guest</TableHead>
-            <TableHead>Property</TableHead>
-            <TableHead>Check-In</TableHead>
-            <TableHead>Check-Out</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead>{t('short_term.guest')}</TableHead>
+            <TableHead>{t('common.property')}</TableHead>
+            <TableHead>{t('short_term.check_in')}</TableHead>
+            <TableHead>{t('short_term.check_out')}</TableHead>
+            <TableHead>{t('short_term.amount')}</TableHead>
+            <TableHead>{t('common.status')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
