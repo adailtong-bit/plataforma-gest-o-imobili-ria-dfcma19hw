@@ -10,15 +10,7 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import {
-  Zap,
-  FileCheck,
-  FileText,
-  Bell,
-  Download,
-  Database,
-  Lock,
-} from 'lucide-react'
+import { Zap, FileCheck, Bell, Download, Database, Lock } from 'lucide-react'
 import useAutomationStore from '@/stores/useAutomationStore'
 import { useToast } from '@/hooks/use-toast'
 import { AutomationRule } from '@/lib/types'
@@ -131,8 +123,7 @@ export default function Automation() {
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
       const link = document.createElement('a')
       const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      const url = URL.createObjectURL(blob)
+
       link.setAttribute('href', url)
       link.setAttribute(
         'download',

@@ -54822,7 +54822,11 @@ const translations = {
 			average_rating: "Avaliação Média",
 			based_on_reviews: "Baseado em {count} avaliações",
 			response: "Resposta",
-			no_reviews: "Nenhuma avaliação ainda."
+			no_reviews: "Nenhuma avaliação ainda.",
+			rating_reviews_trend: "Tendência de Avaliações e Comentários",
+			guest_satisfaction_evolution: "Evolução da satisfação dos hóspedes ao longo do tempo.",
+			financial_performance: "Desempenho Financeiro (RevPAR)",
+			revpar_trends: "Tendências de Receita por Quarto Disponível."
 		},
 		marketing: {
 			promotions: "Promoções",
@@ -54856,7 +54860,9 @@ const translations = {
 			immediately: "Imediatamente",
 			hours: "horas",
 			before: "antes",
-			after: "depois"
+			after: "depois",
+			new_message: "Nova Mensagem",
+			new_workflow: "Novo Workflow"
 		},
 		analytics_page: {
 			occupancy_comparison: "Comparação de Ocupação",
@@ -55216,6 +55222,8 @@ const translations = {
 			category: "Categoria",
 			quantity: "Quantidade",
 			condition: "Condição",
+			revenue: "Receita",
+			profit: "Lucro",
 			analytics: {
 				benchmark_title: "Benchmark de Mercado",
 				benchmark_desc: "Comparativo de desempenho com o mercado.",
@@ -55399,7 +55407,15 @@ const translations = {
 			quickbooks_desc: "Baixe transações compatíveis com QB.",
 			export_csv: "Exportar CSV",
 			export_success_title: "Exportação Iniciada",
-			auto_generate_invoice: "Gerar Fatura Automática"
+			auto_generate_invoice: "Gerar Fatura Automática",
+			auto_approval: "Auto-Aprovação",
+			auto_approval_desc: "Aprovar automaticamente tarefas de manutenção abaixo de um determinado custo.",
+			enable_auto_approval: "Ativar Auto-Aprovação",
+			billing_automation: "Automação de Faturamento",
+			billing_automation_desc: "Gerar faturas automaticamente com base em eventos.",
+			auto_generate_invoices: "Gerar Faturas Automáticamente",
+			rent_reminders_desc: "Enviar lembretes automáticos para inquilinos.",
+			enable_reminders: "Ativar Lembretes"
 		}
 	},
 	en: {
@@ -55514,7 +55530,11 @@ const translations = {
 			average_rating: "Average Rating",
 			based_on_reviews: "Based on {count} reviews",
 			response: "Response",
-			no_reviews: "No reviews yet."
+			no_reviews: "No reviews yet.",
+			rating_reviews_trend: "Rating & Reviews Trend",
+			guest_satisfaction_evolution: "Evolution of guest satisfaction over time.",
+			financial_performance: "Financial Performance (RevPAR)",
+			revpar_trends: "Revenue per Available Room trends."
 		},
 		marketing: {
 			promotions: "Promotions",
@@ -55548,7 +55568,9 @@ const translations = {
 			immediately: "Immediately",
 			hours: "hours",
 			before: "before",
-			after: "after"
+			after: "after",
+			new_message: "New Message",
+			new_workflow: "New Workflow"
 		},
 		analytics_page: {
 			occupancy_comparison: "Occupancy Comparison",
@@ -55908,6 +55930,8 @@ const translations = {
 			category: "Category",
 			quantity: "Quantity",
 			condition: "Condition",
+			revenue: "Revenue",
+			profit: "Profit",
 			analytics: {
 				benchmark_title: "Market Benchmark",
 				benchmark_desc: "Performance comparison with market data.",
@@ -56091,7 +56115,15 @@ const translations = {
 			quickbooks_desc: "Download QB compatible transactions.",
 			export_csv: "Export CSV",
 			export_success_title: "Export Started",
-			auto_generate_invoice: "Auto Generate Invoice"
+			auto_generate_invoice: "Auto Generate Invoice",
+			auto_approval: "Auto-Approval",
+			auto_approval_desc: "Automatically approve maintenance tasks below a certain cost.",
+			enable_auto_approval: "Enable Auto-Approval",
+			billing_automation: "Billing Automation",
+			billing_automation_desc: "Generate invoices automatically based on events.",
+			auto_generate_invoices: "Auto-Generate Invoices",
+			rent_reminders_desc: "Send automated reminders to tenants.",
+			enable_reminders: "Enable Reminders"
 		}
 	},
 	es: {
@@ -56206,7 +56238,11 @@ const translations = {
 			average_rating: "Calificación Promedio",
 			based_on_reviews: "Basado en {count} reseñas",
 			response: "Respuesta",
-			no_reviews: "No hay reseñas todavía."
+			no_reviews: "No hay reseñas todavía.",
+			rating_reviews_trend: "Tendencia de Calificaciones y Reseñas",
+			guest_satisfaction_evolution: "Evolución de la satisfacción de los huéspedes a lo largo del tiempo.",
+			financial_performance: "Rendimiento Financiero (RevPAR)",
+			revpar_trends: "Tendencias de Ingresos por Habitación Disponible."
 		},
 		marketing: {
 			promotions: "Promociones",
@@ -56240,7 +56276,9 @@ const translations = {
 			immediately: "Inmediatamente",
 			hours: "horas",
 			before: "antes",
-			after: "después"
+			after: "después",
+			new_message: "Nuevo Mensaje",
+			new_workflow: "Nuevo Flujo"
 		},
 		analytics_page: {
 			occupancy_comparison: "Comparación de Ocupación",
@@ -56607,6 +56645,8 @@ const translations = {
 			category: "Categoría",
 			quantity: "Cantidad",
 			condition: "Condición",
+			revenue: "Ingresos",
+			profit: "Beneficio",
 			analytics: {
 				benchmark_title: "Benchmark de Mercado",
 				benchmark_desc: "Comparación de rendimiento con el mercado.",
@@ -56898,7 +56938,15 @@ const translations = {
 				print: "Imprimir"
 			},
 			location: "Ubicación",
-			history_adjustments: "Historial de Ajustes"
+			history_adjustments: "Historial de Ajustes",
+			auto_approval: "Auto-Aprobación",
+			auto_approval_desc: "Aprobar automáticamente tareas de mantenimiento por debajo de un costo determinado.",
+			enable_auto_approval: "Activar Auto-Aprobación",
+			billing_automation: "Automatización de Facturación",
+			billing_automation_desc: "Generar facturas automáticamente basadas en eventos.",
+			auto_generate_invoices: "Generar Facturas Automáticamente",
+			rent_reminders_desc: "Enviar recordatorios automáticos a los inquilinos.",
+			enable_reminders: "Activar Recordatorios"
 		}
 	}
 };
@@ -87761,14 +87809,14 @@ function Automation() {
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "p-2 bg-blue-100 rounded-full",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileCheck, { className: "h-5 w-5 text-blue-600" })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Task Auto-Approval" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Automatically approve maintenance tasks below a certain cost." })] })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("automation.auto_approval") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("automation.auto_approval_desc") })] })]
 					}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 						className: "grid gap-4",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center justify-between",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 								htmlFor: "auto-approve",
-								children: "Enable Auto-Approval"
+								children: t("automation.enable_auto_approval")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
 								id: "auto-approve",
 								checked: autoApproveRule?.enabled || false,
@@ -87796,14 +87844,14 @@ function Automation() {
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "p-2 bg-yellow-100 rounded-full",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Zap, { className: "h-5 w-5 text-yellow-600" })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Billing Automation" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Generate invoices automatically based on events." })] })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("automation.billing_automation") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("automation.billing_automation_desc") })] })]
 					}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 						className: "grid gap-4",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center justify-between",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 								htmlFor: "auto-invoice",
-								children: "Auto-Generate Invoices"
+								children: t("automation.auto_generate_invoices")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
 								id: "auto-invoice",
 								checked: autoInvoiceRule?.enabled || false,
@@ -87836,14 +87884,14 @@ function Automation() {
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "p-2 bg-purple-100 rounded-full",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, { className: "h-5 w-5 text-purple-600" })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("settings.rent_reminder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Send automated reminders to tenants." })] })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("settings.rent_reminder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("automation.rent_reminders_desc") })] })]
 					}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 						className: "grid gap-4",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center justify-between",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 								htmlFor: "rent-reminder",
-								children: "Enable Reminders"
+								children: t("automation.enable_reminders")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
 								id: "rent-reminder",
 								checked: rentReminderRule?.enabled || false,
@@ -89936,7 +89984,7 @@ function Performance() {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid grid-cols-1 md:grid-cols-2 gap-6",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Rating & Reviews Trend" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Evolution of guest satisfaction over time." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("performance.rating_reviews_trend") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("performance.guest_satisfaction_evolution") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 					config: chartConfig,
 					className: "min-h-[300px] w-full",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ResponsiveContainer, {
@@ -89993,7 +90041,7 @@ function Performance() {
 							]
 						})
 					})
-				}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Financial Performance (RevPAR)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Revenue per Available Room trends." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
+				}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("performance.financial_performance") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("performance.revpar_trends") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 					config: chartConfig,
 					className: "min-h-[300px] w-full",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ResponsiveContainer, {
@@ -92195,4 +92243,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Bn7t8hME.js.map
+//# sourceMappingURL=index-EjxxzLeB.js.map
