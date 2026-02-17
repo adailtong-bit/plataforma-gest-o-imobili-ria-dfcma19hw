@@ -31,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { DataMask } from '@/components/DataMask'
 
 export default function Automation() {
   const { automationRules, updateAutomationRule } = useAutomationStore()
@@ -58,7 +59,7 @@ export default function Automation() {
     const rule = automationRules.find((r) => r.id === id)
     if (rule) {
       updateAutomationRule({ ...rule, ...updates })
-      toast({ title: t('common.config_saved') })
+      toast({ title: t('common.save') })
     }
   }
 

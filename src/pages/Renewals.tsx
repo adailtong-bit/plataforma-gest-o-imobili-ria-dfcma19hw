@@ -61,6 +61,7 @@ import {
 } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import useAuthStore from '@/stores/useAuthStore'
+import { DataMask } from '@/components/DataMask'
 
 // Optimized Row Component
 const RenewalRow = memo(
@@ -73,6 +74,7 @@ const RenewalRow = memo(
     onCloseNegotiation,
     showFinancials,
     language,
+    t,
   }: {
     data: any
     isSelected: boolean
@@ -82,6 +84,7 @@ const RenewalRow = memo(
     onCloseNegotiation: (id: string) => void
     showFinancials: boolean
     language: any
+    t: (key: string) => string
   }) => {
     const {
       tenant,
@@ -107,7 +110,7 @@ const RenewalRow = memo(
               className="flex items-center gap-2 hover:text-blue-700 hover:underline font-bold text-slate-900"
             >
               <Building className="h-4 w-4 text-slate-600" />
-              {property.name}
+              <DataMask>{property.name}</DataMask>
             </Link>
           ) : (
             'N/A'
@@ -117,28 +120,34 @@ const RenewalRow = memo(
           {owner ? (
             <div className="flex items-center gap-2 text-slate-900 font-medium">
               <User className="h-3 w-3 text-slate-600" />
-              <span>{owner.name}</span>
+              <span>
+                <DataMask>{owner.name}</DataMask>
+              </span>
             </div>
           ) : (
             '-'
           )}
         </TableCell>
         <TableCell className="text-slate-900 font-medium">
-          {tenant.name}
+          <DataMask>{tenant.name}</DataMask>
         </TableCell>
         <TableCell>
-          <BadgeStatus status={negotiationStatus} />
+          <BadgeStatus status={negotiationStatus} t={t} />
         </TableCell>
         {showFinancials && (
           <TableCell className="text-slate-900 font-medium">
-            {tenant.suggestedRenewalPrice
-              ? formatCurrency(tenant.suggestedRenewalPrice, language)
-              : '-'}
+            <DataMask>
+              {tenant.suggestedRenewalPrice
+                ? formatCurrency(tenant.suggestedRenewalPrice, language)
+                : '-'}
+            </DataMask>
           </TableCell>
         )}
         {showFinancials && (
           <TableCell className="text-slate-900 font-medium">
-            {formatCurrency(tenant.rentValue ?? 0, language)}
+            <DataMask>
+              {formatCurrency(tenant.rentValue ?? 0, language)}
+            </DataMask>
           </TableCell>
         )}
         <TableCell>
@@ -154,10 +163,10 @@ const RenewalRow = memo(
             </span>
             <span className="text-xs text-slate-700 font-medium">
               {displayStatus === 'renewed'
-                ? 'Renovado'
+                ? t('common.renewals')
                 : daysLeft > 0
-                  ? `${daysLeft} dias restantes`
-                  : 'Vencido'}
+                  ? `${daysLeft} days left`
+                  : t('common.overdue')}
             </span>
           </div>
         </TableCell>
@@ -175,7 +184,7 @@ const RenewalRow = memo(
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Unified Negotiation Details & Chat</p>
+                <p>{t('common.details')}</p>
               </TooltipContent>
             </Tooltip>
 
@@ -183,7 +192,7 @@ const RenewalRow = memo(
               variant="outline"
               size="sm"
               onClick={() => onStartNegotiation(tenant.id)}
-              title="Negotiate"
+              title={t('renewals.negotiation_started')}
               className="text-slate-900 font-medium border-slate-300"
             >
               <MessageSquare className="h-4 w-4 mr-2" />
@@ -195,9 +204,9 @@ const RenewalRow = memo(
                 size="sm"
                 className="bg-trust-blue text-white font-bold"
                 onClick={() => onCloseNegotiation(tenant.id)}
-                title="Close Negotiation"
+                title={t('renewals.close_negotiation')}
               >
-                <FileText className="h-4 w-4 mr-2" /> Fechar
+                <FileText className="h-4 w-4 mr-2" /> {t('common.close')}
               </Button>
             )}
           </div>
@@ -207,7 +216,13 @@ const RenewalRow = memo(
   },
 )
 
-const BadgeStatus = ({ status }: { status: string }) => {
+const BadgeStatus = ({
+  status,
+  t,
+}: {
+  status: string
+  t: (key: string) => string
+}) => {
   switch (status) {
     case 'negotiating':
       return (
@@ -215,7 +230,7 @@ const BadgeStatus = ({ status }: { status: string }) => {
           variant="outline"
           className="bg-yellow-50 text-yellow-800 border-yellow-300 font-bold"
         >
-          Em Negociação
+          {t('status.negotiating') || 'Negotiating'}
         </Badge>
       )
     case 'owner_contacted':
@@ -224,7 +239,7 @@ const BadgeStatus = ({ status }: { status: string }) => {
           variant="outline"
           className="bg-blue-50 text-blue-800 border-blue-300 font-bold"
         >
-          Proprietário Contatado
+          {t('status.owner_contacted') || 'Owner Contacted'}
         </Badge>
       )
     case 'tenant_contacted':
@@ -233,18 +248,20 @@ const BadgeStatus = ({ status }: { status: string }) => {
           variant="outline"
           className="bg-purple-50 text-purple-800 border-purple-300 font-bold"
         >
-          Inquilino Contatado
+          {t('status.tenant_contacted') || 'Tenant Contacted'}
         </Badge>
       )
     case 'vacating':
       return (
         <Badge variant="destructive" className="font-bold">
-          Inquilino vai desocupar
+          {t('status.vacating') || 'Vacating'}
         </Badge>
       )
     case 'closed':
       return (
-        <Badge className="bg-green-600 font-bold text-white">Fechado</Badge>
+        <Badge className="bg-green-600 font-bold text-white">
+          {t('common.completed')}
+        </Badge>
       )
     default:
       return (
@@ -252,7 +269,7 @@ const BadgeStatus = ({ status }: { status: string }) => {
           variant="secondary"
           className="font-bold text-slate-800 border-slate-300"
         >
-          Pendente
+          {t('common.pending')}
         </Badge>
       )
   }
@@ -420,8 +437,8 @@ export default function Renewals() {
     if (selectedIds.size === 0) return
     const count = selectedIds.size
     toast({
-      title: 'Exporting...',
-      description: `Exporting ${count} renewal records to CSV.`,
+      title: t('common.export_success_title'),
+      description: `${t('common.export_data')} (${count})`,
     })
     // Mock export
   }
@@ -521,9 +538,9 @@ export default function Renewals() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('renewals.all_status')}</SelectItem>
-            <SelectItem value="critical">Crítico (&lt;30d)</SelectItem>
-            <SelectItem value="upcoming">Próximo (&lt;90d)</SelectItem>
-            <SelectItem value="renewed">Renovados</SelectItem>
+            <SelectItem value="critical">Critical (&lt;30d)</SelectItem>
+            <SelectItem value="upcoming">Upcoming (&lt;90d)</SelectItem>
+            <SelectItem value="renewed">Renewed</SelectItem>
           </SelectContent>
         </Select>
 
@@ -566,7 +583,8 @@ export default function Renewals() {
             onClick={handleBulkExport}
             className="border-slate-300 text-slate-900"
           >
-            <Download className="h-4 w-4 mr-2" /> Export ({selectedIds.size})
+            <Download className="h-4 w-4 mr-2" /> {t('common.export')} (
+            {selectedIds.size})
           </Button>
         )}
       </div>
@@ -638,6 +656,7 @@ export default function Renewals() {
                       onCloseNegotiation={handleOpenCloseDialog}
                       showFinancials={showFinancials}
                       language={language}
+                      t={t}
                     />
                   ))
                 )}
@@ -664,7 +683,7 @@ export default function Renewals() {
                 onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
                 className="border-slate-300 text-slate-900"
               >
-                Próximo
+                {t('common.continue')}
               </Button>
             </div>
           </div>
@@ -704,7 +723,7 @@ export default function Renewals() {
                       onClick={() => handleOpenSheet(ev.tenant.id)}
                       title={ev.property?.name}
                     >
-                      {ev.property?.name}
+                      <DataMask>{ev.property?.name}</DataMask>
                     </div>
                   ))}
                 </div>

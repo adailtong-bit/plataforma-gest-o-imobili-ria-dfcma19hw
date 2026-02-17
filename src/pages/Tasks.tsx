@@ -140,7 +140,7 @@ export default function Tasks() {
       case 'completed':
         return t('common.completed')
       case 'rejected':
-        return 'Rejected'
+        return t('common.rejected')
       case 'pending_approval':
         return approvalStatus === 'owner_pending'
           ? t('tasks.status_wait_owner')
@@ -251,7 +251,9 @@ export default function Tasks() {
               <SelectItem value="maintenance">
                 {t('partners.maintenance')}
               </SelectItem>
-              <SelectItem value="inspection">Inspeção</SelectItem>
+              <SelectItem value="inspection">
+                {t('partners.inspection')}
+              </SelectItem>
             </SelectContent>
           </Select>
 
@@ -263,7 +265,7 @@ export default function Tasks() {
               onClick={() => setInvoiceDialogOpen(true)}
             >
               <FileText className="h-4 w-4" />{' '}
-              {t('automation.auto_generate_invoice') || 'Generate Invoice'}
+              {t('automation.generate_invoice')}
             </Button>
           )}
           <CreateTaskDialog />

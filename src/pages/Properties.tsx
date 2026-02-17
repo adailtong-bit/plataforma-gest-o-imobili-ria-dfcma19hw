@@ -245,7 +245,7 @@ export default function Properties() {
       profileType: newProp.profileType,
       community: selectedCondo
         ? selectedCondo.name
-        : newProp.community || 'Independent',
+        : newProp.community || t('properties.independent_community'),
       condominiumId: newProp.condominiumId,
       status: 'available',
       // Ensure default image does not use 'seed' param for /p/ endpoint to prevent errors
@@ -443,7 +443,9 @@ export default function Properties() {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label className="text-black font-bold">Search Address</Label>
+                  <Label className="text-black font-bold">
+                    {t('common.search_address')}
+                  </Label>
                   <AddressInput onAddressSelect={handleAddressSelect} />
                 </div>
 
@@ -489,7 +491,7 @@ export default function Properties() {
                           additionalInfo: e.target.value,
                         })
                       }
-                      placeholder="Apto, Bloco, etc."
+                      placeholder={t('properties.additional_info_placeholder')}
                       className="text-black"
                     />
                   </div>
@@ -632,9 +634,9 @@ export default function Properties() {
             <SelectItem value="all">{t('common.all')}</SelectItem>
             <SelectItem value="rented">{t('status.rented')}</SelectItem>
             <SelectItem value="available">{t('status.available')}</SelectItem>
-            <SelectItem value="sold">{t('common.sold')}</SelectItem>
+            <SelectItem value="sold">{t('status.sold')}</SelectItem>
             <SelectItem value="sale_pending">
-              {t('common.sale_pending')}
+              {t('status.sale_pending')}
             </SelectItem>
           </SelectContent>
         </Select>

@@ -35,7 +35,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { Plus, Settings, Play, Trash2, Building } from 'lucide-react'
+import { Plus, Settings, Play, Trash2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import useWorkflowStore from '@/stores/useWorkflowStore'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -43,6 +43,7 @@ import usePropertyStore from '@/stores/usePropertyStore'
 import { Workflow, WorkflowStep, UserRole } from '@/lib/types'
 import { MultiSelect } from '@/components/ui/multi-select'
 import { useNavigate } from 'react-router-dom'
+import { DataMask } from '@/components/DataMask'
 
 const initialWorkflowState: Omit<Workflow, 'id'> = {
   name: '',
@@ -58,27 +59,6 @@ const initialStepState: WorkflowStep = {
   name: '',
   role: 'platform_owner',
   actionType: 'task',
-}
-
-const getRoleName = (role: UserRole) => {
-  switch (role) {
-    case 'platform_owner':
-      return 'Admin'
-    case 'software_tenant':
-      return 'Manager'
-    case 'internal_user':
-      return 'Staff'
-    case 'partner':
-      return 'Partner'
-    case 'partner_employee':
-      return 'Partner Employee'
-    case 'property_owner':
-      return 'Owner'
-    case 'tenant':
-      return 'Tenant'
-    default:
-      return 'Unknown'
-  }
 }
 
 export default function Workflows() {
@@ -115,6 +95,10 @@ export default function Workflows() {
     value: p.id,
   }))
 
+  const getRoleName = (role: UserRole) => {
+    return t(`roles.${role}`)
+  }
+
   const handleRunClick = (wf: Workflow) => {
     setSelectedWorkflow(wf)
     // If workflow has configured properties, default to them. Else, empty.
@@ -130,7 +114,7 @@ export default function Workflows() {
     if (selectedRunPropertyIds.length === 0) {
       toast({
         title: t('common.error'),
-        description: 'Please select at least one property.',
+        description: t('common.required'),
         variant: 'destructive',
       })
       return
@@ -230,9 +214,7 @@ export default function Workflows() {
       <Card>
         <CardHeader>
           <CardTitle>{t('workflows.title')}</CardTitle>
-          <CardDescription>
-            {workflows.length} workflows configurados.
-          </CardDescription>
+          <CardDescription>{workflows.length} workflows.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -255,7 +237,7 @@ export default function Workflows() {
                     colSpan={6}
                     className="text-center py-8 text-muted-foreground"
                   >
-                    No workflows found.
+                    {t('common.empty')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -263,9 +245,9 @@ export default function Workflows() {
                   <TableRow key={wf.id}>
                     <TableCell className="font-medium">
                       <div className="flex flex-col">
-                        <span>{wf.name}</span>
+                        <DataMask>{wf.name}</DataMask>
                         <span className="text-xs text-muted-foreground">
-                          {wf.description}
+                          <DataMask>{wf.description}</DataMask>
                         </span>
                       </div>
                     </TableCell>
@@ -275,8 +257,8 @@ export default function Workflows() {
                     <TableCell>
                       <Badge variant="secondary">
                         {wf.propertyIds && wf.propertyIds.length > 0
-                          ? `${wf.propertyIds.length} properties`
-                          : 'All / Unbound'}
+                          ? `${wf.propertyIds.length} ${t('common.properties').toLowerCase()}`
+                          : t('common.all')}
                       </Badge>
                     </TableCell>
                     <TableCell>{wf.steps.length}</TableCell>
@@ -331,38 +313,37 @@ export default function Workflows() {
       <Dialog open={runDialogOpen} onOpenChange={setRunDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Run Workflow</DialogTitle>
+            <DialogTitle>{t('workflows.run_workflow')}</DialogTitle>
             <DialogDescription>
-              Select properties to execute the workflow "
-              {selectedWorkflow?.name}".
+              {t('workflows.select_properties')} "{selectedWorkflow?.name}".
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label>Select Properties</Label>
+              <Label>{t('workflows.select_properties')}</Label>
               <MultiSelect
                 options={propertyOptions}
                 selected={selectedRunPropertyIds}
                 onChange={setSelectedRunPropertyIds}
-                placeholder="Select properties..."
+                placeholder={t('common.select')}
               />
               <p className="text-xs text-muted-foreground">
-                Tasks will be generated for each selected property.
+                {t('workflows.tasks_generated_desc')}
               </p>
             </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setRunDialogOpen(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               onClick={handleExecute}
               className="bg-trust-blue"
               disabled={selectedRunPropertyIds.length === 0}
             >
-              <Play className="h-4 w-4 mr-2" /> Run Workflow
+              <Play className="h-4 w-4 mr-2" /> {t('workflows.run_workflow')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -407,10 +388,10 @@ export default function Workflows() {
                   <SelectContent>
                     <SelectItem value="manual">Manual</SelectItem>
                     <SelectItem value="before_checkin">
-                      Before Check-in
+                      {t('marketing.before')} {t('marketing.check_in')}
                     </SelectItem>
                     <SelectItem value="after_checkout">
-                      After Check-out
+                      {t('marketing.after')} {t('marketing.check_out')}
                     </SelectItem>
                     <SelectItem value="lease_start">Lease Start</SelectItem>
                     <SelectItem value="lease_end">Lease End</SelectItem>
@@ -433,11 +414,10 @@ export default function Workflows() {
                     propertyIds: selected,
                   })
                 }
-                placeholder="Select applicable properties (leave empty for all)"
+                placeholder={t('common.select')}
               />
               <p className="text-xs text-muted-foreground">
-                Select which properties this workflow applies to. If empty, it
-                may be considered global or selected at runtime.
+                {t('workflows.tasks_generated_desc')}
               </p>
             </div>
 
@@ -504,7 +484,7 @@ export default function Workflows() {
                       onChange={(e) =>
                         setNewStep({ ...newStep, name: e.target.value })
                       }
-                      placeholder="Step Name"
+                      placeholder={t('workflows.step_name')}
                     />
                   </div>
                   <div className="grid gap-1">
@@ -521,10 +501,18 @@ export default function Workflows() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="platform_owner">Admin</SelectItem>
-                        <SelectItem value="software_tenant">Manager</SelectItem>
-                        <SelectItem value="partner">Partner</SelectItem>
-                        <SelectItem value="internal_user">Staff</SelectItem>
+                        <SelectItem value="platform_owner">
+                          {t('roles.platform_owner')}
+                        </SelectItem>
+                        <SelectItem value="software_tenant">
+                          {t('roles.software_tenant')}
+                        </SelectItem>
+                        <SelectItem value="partner">
+                          {t('roles.partner')}
+                        </SelectItem>
+                        <SelectItem value="internal_user">
+                          {t('roles.internal_user')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

@@ -267,7 +267,7 @@ function DashboardContent() {
           <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-bold text-black">
-                Occupancy Rate
+                {t('common.analytics.occupancy')}
               </CardTitle>
               <Building className="h-4 w-4 text-black" />
             </CardHeader>
@@ -276,14 +276,14 @@ function DashboardContent() {
                 <DataMask>{occupancyRate}%</DataMask>
               </div>
               <p className="text-xs text-black font-bold">
-                {occupiedRooms} / {totalRooms} rooms
+                {occupiedRooms} / {totalRooms} {t('hotels.rooms')}
               </p>
             </CardContent>
           </Card>
           <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-bold text-black">
-                ADR (Avg Rate)
+                {t('common.analytics.adr')}
               </CardTitle>
               <TrendingUp className="h-4 w-4 text-black" />
             </CardHeader>
@@ -291,7 +291,9 @@ function DashboardContent() {
               <div className="text-2xl font-bold text-black">
                 <DataMask>{formatCurrency(adr, language)}</DataMask>
               </div>
-              <p className="text-xs text-black font-bold">Average Daily Rate</p>
+              <p className="text-xs text-black font-bold">
+                {t('market_analysis.avg_daily_rate')}
+              </p>
             </CardContent>
           </Card>
           <Card className="border-slate-200 shadow-sm bg-white">
@@ -305,7 +307,9 @@ function DashboardContent() {
               <div className="text-2xl font-bold text-black">
                 <DataMask>{formatCurrency(revPar, language)}</DataMask>
               </div>
-              <p className="text-xs text-black font-bold">Revenue Per Room</p>
+              <p className="text-xs text-black font-bold">
+                {t('performance.financial_performance')}
+              </p>
             </CardContent>
           </Card>
         </div>

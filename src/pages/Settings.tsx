@@ -31,6 +31,7 @@ import {
 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
+import { DataMask } from '@/components/DataMask'
 
 export default function Settings() {
   const { t } = useLanguageStore()
@@ -73,8 +74,8 @@ export default function Settings() {
   const handleFinancialSave = () => {
     if (!canManageSystem) {
       toast({
-        title: 'Access Denied',
-        description: 'You do not have permission to modify financial settings.',
+        title: t('common.access_denied'),
+        description: t('common.access_denied_desc'),
         variant: 'destructive',
       })
       return

@@ -54711,31 +54711,6 @@ const tutorialModules = [
 ];
 const translations = {
 	pt: {
-		short_term: {
-			title: "Aluguel Temporada",
-			subtitle: "Gestão de reservas de curto prazo.",
-			new_booking: "Nova Reserva",
-			guest: "Hóspede",
-			check_in: "Check-in",
-			check_out: "Check-out",
-			total: "Total",
-			platform: "Plataforma",
-			reports: "Relatórios",
-			calendar: "Calendário",
-			bookings: "Reservas",
-			communication: "Comunicação",
-			revenue: "Receita",
-			occupancy: "Ocupação",
-			auto_replies: "Respostas Automáticas",
-			send_welcome: "Enviar Mensagem de Boas-vindas",
-			send_checkout_instr: "Enviar Instruções de Check-out",
-			template_name: "Nome do Modelo",
-			delay_minutes: "Atraso (minutos)",
-			amount: "Valor",
-			direct_booking: "Direto / Manual",
-			full_name_placeholder: "Nome Completo",
-			email_placeholder: "email@hospede.com"
-		},
 		sidebar: {
 			dashboard: "Painel",
 			units: "Propriedades",
@@ -54772,7 +54747,7 @@ const translations = {
 			no_hotels: "Nenhum hotel encontrado."
 		},
 		header: {
-			demo_profiles: "Perfiles Demo",
+			demo_profiles: "Perfis Demo",
 			other_users: "Outros Usuários"
 		},
 		market_analysis: {
@@ -54996,7 +54971,8 @@ const translations = {
 			routing: "Agência/Routing",
 			account: "Conta",
 			payment_history: "Histórico de Pagamentos",
-			financial_report: "Relatório Financeiro"
+			financial_report: "Relatório Financeiro",
+			inspection: "Inspeção"
 		},
 		invoices: {
 			title: "Faturas",
@@ -55124,7 +55100,10 @@ const translations = {
 			active_status: "Status Ativo",
 			step_name: "Nome do Passo",
 			step_role: "Função Responsável",
-			add_step: "Adicionar Passo"
+			add_step: "Adicionar Passo",
+			run_workflow: "Executar Workflow",
+			select_properties: "Selecionar Propriedades",
+			tasks_generated_desc: "Tarefas serão geradas para cada propriedade selecionada."
 		},
 		renewals: {
 			title: "Renovações",
@@ -55141,6 +55120,31 @@ const translations = {
 			new_start_date: "Nova Data Início",
 			new_end_date: "Nova Data Fim",
 			close_negotiation: "Fechar Negociação"
+		},
+		short_term: {
+			title: "Aluguel Temporada",
+			subtitle: "Gestão de reservas de curto prazo.",
+			new_booking: "Nova Reserva",
+			guest: "Hóspede",
+			check_in: "Check-in",
+			check_out: "Check-out",
+			total: "Total",
+			platform: "Plataforma",
+			reports: "Relatórios",
+			calendar: "Calendário",
+			bookings: "Reservas",
+			communication: "Comunicação",
+			revenue: "Receita",
+			occupancy: "Ocupação",
+			auto_replies: "Respostas Automáticas",
+			send_welcome: "Enviar Mensagem de Boas-vindas",
+			send_checkout_instr: "Enviar Instruções de Check-out",
+			template_name: "Nome do Modelo",
+			delay_minutes: "Atraso (minutos)",
+			amount: "Valor",
+			direct_booking: "Direto / Manual",
+			full_name_placeholder: "Nome Completo",
+			email_placeholder: "email@hospede.com"
 		},
 		common: {
 			dashboard: "Painel Imobiliário",
@@ -55321,10 +55325,13 @@ const translations = {
 			end_date: "Data Fim",
 			and: "e",
 			validation_error: "Erro de Validação",
-			name_required: "Nome é obrigatório",
 			delete_success: "Excluído com sucesso.",
 			error_delete: "Erro ao excluir.",
-			delete_linked_error: "Não é possível excluir pois existem registros vinculados."
+			delete_linked_error: "Não é possível excluir pois existem registros vinculados.",
+			new_task: "Nova Tarefa",
+			create_title: "Criar Tarefa",
+			rejected: "Rejeitado",
+			search_address: "Buscar Endereço"
 		},
 		dashboard: {
 			unread: "não lidas",
@@ -55392,6 +55399,14 @@ const translations = {
 			annually: "Anual",
 			hoa_freq: "Frequência HOA",
 			overview: "Visão Geral",
+			house: "Casa",
+			condo: "Condomínio",
+			townhouse: "Sobrado",
+			marketing: "Marketing",
+			publish_portals: "Publicar nos Portais",
+			upload_image: "Carregar Imagem",
+			independent_community: "Independente",
+			additional_info_placeholder: "Apto, Bloco, etc.",
 			tabs: {
 				overview: "Visão Geral",
 				analytics: "Análises",
@@ -55455,7 +55470,10 @@ const translations = {
 			suspended: "Suspenso",
 			maintenance: "Manutenção",
 			reserved: "Reservado",
-			rescheduled: "Reagendado"
+			rescheduled: "Reagendado",
+			released: "Liberado",
+			in_registration: "Em Cadastro",
+			interested: "Interessado"
 		},
 		roles: {
 			platform_owner: "Admin",
@@ -55474,6 +55492,7 @@ const translations = {
 			export_csv: "Exportar CSV",
 			export_success_title: "Exportação Iniciada",
 			auto_generate_invoice: "Gerar Fatura Automática",
+			generate_invoice: "Gerar Fatura",
 			auto_approval: "Auto-Aprovação",
 			auto_approval_desc: "Aprovar automaticamente tarefas de manutenção abaixo de um determinado custo.",
 			enable_auto_approval: "Ativar Auto-Aprovação",
@@ -55497,35 +55516,14 @@ const translations = {
 			data_scope: "Escopo de Dados",
 			general_activities: "Atividades Gerais",
 			by_owner: "Por Proprietário",
-			by_partner: "Por Parceiro"
+			by_partner: "Por Parceiro",
+			task_automation: "Automação de Tarefas",
+			financial_automation: "Automação Financeira",
+			communication_automation: "Automação de Comunicação",
+			quickbooks_integration: "Integração QuickBooks"
 		}
 	},
 	en: {
-		short_term: {
-			title: "Short Term Rental",
-			subtitle: "Manage short-term bookings.",
-			new_booking: "New Booking",
-			guest: "Guest",
-			check_in: "Check-in",
-			check_out: "Check-out",
-			total: "Total",
-			platform: "Platform",
-			reports: "Reports",
-			calendar: "Calendar",
-			bookings: "Bookings",
-			communication: "Communication",
-			revenue: "Revenue",
-			occupancy: "Occupancy",
-			auto_replies: "Auto-Replies",
-			send_welcome: "Send Welcome Message",
-			send_checkout_instr: "Send Check-out Instructions",
-			template_name: "Template Name",
-			delay_minutes: "Delay (minutes)",
-			amount: "Amount",
-			direct_booking: "Direct / Manual",
-			full_name_placeholder: "Full Name",
-			email_placeholder: "guest@email.com"
-		},
 		sidebar: {
 			dashboard: "Dashboard",
 			units: "Properties",
@@ -55786,7 +55784,8 @@ const translations = {
 			routing: "Routing",
 			account: "Account",
 			payment_history: "Payment History",
-			financial_report: "Financial Report"
+			financial_report: "Financial Report",
+			inspection: "Inspection"
 		},
 		invoices: {
 			title: "Invoices",
@@ -55914,7 +55913,10 @@ const translations = {
 			active_status: "Active Status",
 			step_name: "Step Name",
 			step_role: "Responsible Role",
-			add_step: "Add Step"
+			add_step: "Add Step",
+			run_workflow: "Run Workflow",
+			select_properties: "Select Properties",
+			tasks_generated_desc: "Tasks will be generated for each selected property."
 		},
 		renewals: {
 			title: "Renewals",
@@ -55931,6 +55933,31 @@ const translations = {
 			new_start_date: "New Start Date",
 			new_end_date: "New End Date",
 			close_negotiation: "Close Negotiation"
+		},
+		short_term: {
+			title: "Short Term Rental",
+			subtitle: "Manage short-term bookings.",
+			new_booking: "New Booking",
+			guest: "Guest",
+			check_in: "Check-in",
+			check_out: "Check-out",
+			total: "Total",
+			platform: "Platform",
+			reports: "Reports",
+			calendar: "Calendar",
+			bookings: "Bookings",
+			communication: "Communication",
+			revenue: "Revenue",
+			occupancy: "Occupancy",
+			auto_replies: "Auto-Replies",
+			send_welcome: "Send Welcome Message",
+			send_checkout_instr: "Send Check-out Instructions",
+			template_name: "Template Name",
+			delay_minutes: "Delay (minutes)",
+			amount: "Amount",
+			direct_booking: "Direct / Manual",
+			full_name_placeholder: "Full Name",
+			email_placeholder: "guest@email.com"
 		},
 		common: {
 			dashboard: "Real Estate Dashboard",
@@ -56111,10 +56138,164 @@ const translations = {
 			end_date: "End Date",
 			and: "and",
 			validation_error: "Validation Error",
-			name_required: "Name is required",
 			delete_success: "Deleted successfully.",
 			error_delete: "Error deleting.",
-			delete_linked_error: "Cannot delete because there are linked records."
+			delete_linked_error: "Cannot delete because there are linked records.",
+			new_task: "New Task",
+			create_title: "Create Task",
+			rejected: "Rejected",
+			search_address: "Search Address"
+		},
+		dashboard: {
+			unread: "unread",
+			from_last_month: "from last month",
+			customize: "Customize",
+			customize_view: "Customize View",
+			customize_desc: "Select widgets to display.",
+			kpi_indicators: "KPI Indicators",
+			revenue_chart: "Revenue Chart",
+			revenue_vs_expenses: "Revenue vs Expenses",
+			revenue_overview: "Financial overview for recent months.",
+			quick_calendar: "Quick Calendar",
+			todays_activity: "Today's activities.",
+			pending_approvals: "Pending Approvals",
+			pending_desc: "Items requiring your attention.",
+			review: "Review",
+			approve: "Approve",
+			expense_distribution: "Expense Distribution",
+			expense_desc: "Breakdown of expenses by category.",
+			subtitle: "Welcome back! Here is your operations summary."
+		},
+		gamification: {
+			health_score: "Health Score",
+			portfolio_health: "Portfolio Health",
+			desc: "Score based on occupancy, maintenance, and reviews.",
+			level: "Level",
+			expert: "Expert",
+			target: "Target"
+		},
+		properties: {
+			title: "Properties",
+			subtitle: "Manage your real estate portfolio.",
+			new_property: "New Property",
+			add_title: "Add Property",
+			add_description: "Fill out the form to create a new property.",
+			rental_type: "Rental Type",
+			profile_short: "Short Term",
+			profile_long: "Long Term",
+			search_placeholder: "Search property...",
+			address_placeholder: "Property address",
+			zip_code: "Zip Code",
+			zip_required: "Zip Code is required",
+			info_label: "Additional Info",
+			city_placeholder: "City",
+			state_placeholder: "State",
+			property_value: "Property Value",
+			hoa_fee: "HOA Fee",
+			hoa_auto_hint: "Monthly auto-calculation",
+			cover_image: "Cover Image",
+			no_image_selected: "No image selected",
+			no_image: "No Image",
+			view_details: "View Details",
+			property_added: "Property Added",
+			validation_error: "Validation Error",
+			name_required: "Name is required",
+			address_required: "Address is required",
+			city_state_required: "City and State are required",
+			profile_required: "Profile Type is required",
+			delete_success: "Property deleted successfully.",
+			error_delete: "Error deleting property.",
+			all_profiles: "All Profiles",
+			profile_filter: "Profile Filter",
+			monthly: "Monthly",
+			quarterly: "Quarterly",
+			annually: "Annually",
+			hoa_freq: "HOA Frequency",
+			overview: "Overview",
+			house: "House",
+			condo: "Condo",
+			townhouse: "Townhouse",
+			marketing: "Marketing",
+			publish_portals: "Publish to Portals",
+			upload_image: "Upload Image",
+			independent_community: "Independent",
+			additional_info_placeholder: "Apt, Block, etc.",
+			tabs: {
+				overview: "Overview",
+				analytics: "Analytics",
+				reports: "Reports",
+				maintenance: "Maintenance",
+				contracts: "Contracts",
+				inventory: "Inventory",
+				features: "Features",
+				location: "Location",
+				sync: "Sync",
+				financial: "Financial",
+				marketing: "Marketing",
+				content: "Content",
+				documents: "Documents",
+				logs: "Logs"
+			}
+		},
+		auth: {
+			login_title: "Login",
+			login_desc: "Sign in to your account to continue",
+			email_placeholder: "example@company.com",
+			forgot_password: "Forgot password?",
+			no_account: "No account?",
+			demo_login: "Demo Login",
+			register_title: "Create Account",
+			register_desc: "Start managing your properties today",
+			name_placeholder: "Your full name",
+			company_details: "Company Details",
+			company_placeholder: "Your company name",
+			tax_id_placeholder: "Tax ID / VAT",
+			address_placeholder: "Business address",
+			already_have_account: "Already have an account?"
+		},
+		settings: {
+			title: "Settings",
+			subtitle: "Manage your account and system settings.",
+			personal_info: "Personal Info",
+			update_info: "Update your information.",
+			change_photo: "Change Photo",
+			full_name: "Full Name",
+			save_changes: "Save Changes",
+			integrations: "Integrations",
+			billing_payment: "Billing and Payment",
+			billing_gateways_title: "Payment Gateways",
+			billing_gateways_desc: "Configure accepted payment methods.",
+			payment_gateways: "Payment Gateways",
+			system_alerts: "System Alerts",
+			system_alerts_desc: "Configure automated notifications.",
+			automation_title: "Automation Rules",
+			automation_desc: "Manage and configure automation rules for tasks, finance, and communication.",
+			rent_reminder: "Rent Reminder",
+			days_before: "Days Before",
+			company_legal_name: "Legal Name"
+		},
+		status: {
+			rented: "Rented",
+			available: "Available",
+			sold: "Sold",
+			occupied: "Occupied",
+			vacant: "Vacant",
+			suspended: "Suspended",
+			maintenance: "Maintenance",
+			reserved: "Reserved",
+			rescheduled: "Rescheduled",
+			released: "Released",
+			in_registration: "In Registration",
+			interested: "Interested"
+		},
+		roles: {
+			platform_owner: "Admin",
+			software_tenant: "Manager",
+			internal_user: "Staff",
+			partner: "Partner",
+			property_owner: "Owner",
+			tenant: "Tenant",
+			partner_employee: "Partner Employee"
 		},
 		marketing_tab: { portal_sync: "Portal Sync" },
 		automation: {
@@ -56124,6 +56305,7 @@ const translations = {
 			export_csv: "Export CSV",
 			export_success_title: "Export Started",
 			auto_generate_invoice: "Auto Generate Invoice",
+			generate_invoice: "Generate Invoice",
 			auto_approval: "Auto-Approval",
 			auto_approval_desc: "Automatically approve maintenance tasks below a certain cost.",
 			enable_auto_approval: "Enable Auto-Approval",
@@ -56147,704 +56329,16 @@ const translations = {
 			data_scope: "Data Scope",
 			general_activities: "General Activities",
 			by_owner: "By Owner",
-			by_partner: "By Partner"
-		},
-		settings: {
-			title: "Settings",
-			subtitle: "Manage your account and system settings.",
-			personal_info: "Personal Info",
-			update_info: "Update your information.",
-			change_photo: "Change Photo",
-			full_name: "Full Name",
-			save_changes: "Save Changes",
-			integrations: "Integrations",
-			billing_payment: "Billing and Payment",
-			billing_gateways_title: "Payment Gateways",
-			billing_gateways_desc: "Configure accepted payment methods.",
-			payment_gateways: "Payment Gateways",
-			system_alerts: "System Alerts",
-			system_alerts_desc: "Configure automatic notifications.",
-			automation_title: "Automation Rules",
-			automation_desc: "Manage and configure automation rules for tasks, finance, and communication.",
-			rent_reminder: "Rent Reminder",
-			days_before: "Days Before",
-			company_legal_name: "Legal Name"
-		}
-	},
-	es: {
-		short_term: {
-			title: "Alquiler Temporal",
-			subtitle: "Gestión de reservas a corto plazo.",
-			new_booking: "Nueva Reserva",
-			guest: "Huésped",
-			check_in: "Check-in",
-			check_out: "Check-out",
-			total: "Total",
-			platform: "Plataforma",
-			reports: "Informes",
-			calendar: "Calendario",
-			bookings: "Reservas",
-			communication: "Comunicación",
-			revenue: "Ingresos",
-			occupancy: "Ocupación",
-			auto_replies: "Respuestas Automáticas",
-			send_welcome: "Enviar Mensaje de Bienvenida",
-			send_checkout_instr: "Enviar Instrucciones de Salida",
-			template_name: "Nombre de Plantilla",
-			delay_minutes: "Retraso (minutos)",
-			amount: "Importe",
-			direct_booking: "Directo / Manual",
-			full_name_placeholder: "Nombre Completo",
-			email_placeholder: "huesped@email.com"
-		},
-		sidebar: {
-			dashboard: "Panel",
-			units: "Propiedades",
-			condominiums: "Condominios",
-			owners: "Propietarios",
-			tenants: "Inquilinos",
-			financial: "Financiero",
-			marketing: "Marketing",
-			reports: "Informes",
-			settings: "Configuración",
-			performance: "Rendimiento",
-			guest_services: "Servicios Huésped",
-			pos: "Punto de Venta",
-			main_menu: "Menú Principal",
-			system: "Sistema",
-			migration_hub: "Migración",
-			publicity_admin: "Publicidad",
-			users: "Usuarios",
-			tenant_portal: "Portal Inquilino",
-			owner_portal: "Portal Propietario",
-			partner_portal: "Portal Socio"
-		},
-		hotels: {
-			title: "Hoteles",
-			subtitle: "Gestión de hoteles y habitaciones.",
-			add_title: "Añadir Hotel",
-			new_hotel: "Nuevo Hotel",
-			towers: "Torres",
-			rooms: "Habitaciones",
-			floors: "Pisos",
-			add_tower: "Añadir Torre",
-			new_tower: "Nueva Torre",
-			hotel_details: "Detalles del Hotel",
-			no_hotels: "No se encontraron hoteles."
-		},
-		header: {
-			demo_profiles: "Perfiles Demo",
-			other_users: "Otros Usuarios"
-		},
-		market_analysis: {
-			title: "Análisis de Mercado",
-			subtitle: "Benchmark de mercado y tendencias.",
-			demand_index: "Índice de Demanda",
-			peak_season: "Temporada alta aproximándose",
-			comp_set_rank: "Clasificación del Set Competitivo",
-			rank_desc: "De 12 hoteles locales",
-			competitor_pricing: "Precios de la Competencia",
-			demand_forecast: "Pronóstico de Demanda",
-			no_forecast: "No hay datos de pronóstico disponibles.",
-			avg_occupancy: "Ocupación Media",
-			avg_daily_rate: "Tarifa Media Diaria (ADR)",
-			spending_trends: "Tendencias de Gasto",
-			high: "Alta",
-			medium: "Media",
-			low: "Baja",
-			historical_view: "Visión histórica del rendimiento del mercado",
-			avg_rate_comparison: "Comparación de tarifa media diaria",
-			projected_demand: "Niveles de demanda proyectados para fechas futuras"
-		},
-		pos: {
-			title: "Punto de Venta",
-			subtitle: "Gestión de productos, vendas y stock.",
-			new_product: "Nuevo Producto",
-			manage_products: "Gestionar Productos",
-			product_name: "Nombre del Producto",
-			price: "Precio",
-			category: "Categoría",
-			validity_start: "Válido Desde",
-			active: "Activo",
-			inactive: "Inactivo",
-			stock: "Stock",
-			actions: "Acciones",
-			create: "Crear",
-			edit: "Editar",
-			inactivate: "Inactivar",
-			delete: "Eliminar",
-			confirm_delete: "Confirmar Eliminación",
-			delete_desc: "¿Está seguro de que desea eliminar este producto?",
-			save_success: "Producto guardado con éxito.",
-			add_to_cart: "Añadir al Carrito",
-			checkout: "Finalizar Compra",
-			charge_room: "Cargar a la Habitación",
-			out_of_stock: "Sin Stock",
-			cart_empty: "Carrito Vacío",
-			transaction_success: "¡Transacción exitosa!",
-			laundry_service: "Servicio de Lavandería",
-			laundry: "Lavandería",
-			club_sandwich: "Club Sandwich",
-			restaurant: "Restaurante",
-			minibar: "Minibar",
-			cola: "Refresco",
-			chips: "Patatas Fritas",
-			guest: "Huésped",
-			select: "Seleccione"
-		},
-		guest_services: {
-			title: "Servicios al Huésped",
-			subtitle: "Catálogo de servicios y programación.",
-			new_service: "Nuevo Servicio",
-			manage_services: "Gestionar Servicios",
-			financial_insights: "Insights Financieros",
-			service_name: "Nombre del Servicio",
-			description: "Descripción",
-			price: "Precio",
-			category: "Categoría",
-			validity_start: "Válido Desde",
-			seasonal_pricing: "Precios por Temporada",
-			add_seasonal_price: "Añadir Precio de Temporada",
-			start_date: "Fecha Inicio",
-			end_date: "Fecha Fin",
-			schedule: "Programar",
-			schedule_for: "Programar Para",
-			assign_service: "Asignar Servicio",
-			service_assigned: "Servicio asignado con éxito.",
-			save_success: "Servicio guardado con éxito."
-		},
-		performance: {
-			guest_reviews: "Reseñas de Huéspedes",
-			average_rating: "Calificación Promedio",
-			based_on_reviews: "Basado en {count} reseñas",
-			response: "Respuesta",
-			no_reviews: "No hay reseñas todavía.",
-			rating_reviews_trend: "Tendencia de Calificaciones y Reseñas",
-			guest_satisfaction_evolution: "Evolución de la satisfacción de los huéspedes a lo largo del tiempo.",
-			financial_performance: "Rendimiento Financiero (RevPAR)",
-			revpar_trends: "Tendencias de Ingresos por Habitación Disponible."
-		},
-		marketing: {
-			promotions: "Promociones",
-			campaigns: "Campañas",
-			automation: "Automatización",
-			leads: "Leads & Prospectos",
-			new_code: "Nuevo Código",
-			create_promo: "Crear Código Promocional",
-			discount: "Descuento",
-			validity: "Validez",
-			usage: "Uso",
-			new_campaign: "Nueva Campaña",
-			create_campaign: "Crear Campaña",
-			target_audience: "Público Objetivo",
-			code: "Código",
-			automated_workflows: "Flujos Automatizados",
-			automated_desc: "Disparar correos basados en eventos.",
-			email_templates: "Plantillas de Correo",
-			email_desc: "Contenido reutilizable con variables.",
-			trigger_event: "Evento Desencadenante",
-			timing: "Timing",
-			template: "Plantilla",
-			subject: "Asunto",
-			body: "Cuerpo",
-			placeholders: "Variables disponibles",
-			active: "Activo",
-			booking_confirmed: "Reserva Confirmada",
-			check_in: "Check-in",
-			check_out: "Check-out",
-			cancellation: "Cancelación",
-			immediately: "Inmediatamente",
-			hours: "horas",
-			before: "antes",
-			after: "después",
-			new_message: "Nuevo Mensaje",
-			new_workflow: "Nuevo Flujo"
-		},
-		analytics_page: {
-			occupancy_comparison: "Comparación de Ocupación",
-			profitability_comparison: "Comparación de Rentabilidad",
-			internal_performance: "Rendimiento Interno",
-			market_average: "Promedio de Mercado",
-			benchmark_desc: "Comparación de rendimiento con el mercado."
-		},
-		reports: {
-			title: "Informes Avanzados",
-			subtitle: "Análisis de inventario, mantenimiento y condiciones de propiedad.",
-			period: "Período",
-			property: "Propiedad",
-			apply_filters: "Aplicar Filtros",
-			maintenance_analytics: "Análisis de Mantenimiento",
-			inventory_health: "Salud del Inventario",
-			maintenance_efficiency: "Eficiencia de Mantenimiento",
-			inventory_condition: "Condición del Inventario",
-			damage_by_property: "Daños por Propiedad",
-			total_items: "Total Ítems",
-			damaged_poor: "Dañado/Malo",
-			total_spend: "Gasto Total",
-			total_tasks: "Total Tareas",
-			avg_resolution: "Resolución Media",
-			avg_cost_task: "Costo Medio/Tarea",
-			cost_breakdown: "Desglose de Costos",
-			distribution_expenses: "Distribución de Gastos",
-			monthly_expenditure: "Gasto Mensual",
-			spending_trends: "Tendencias de Gasto",
-			reports: "Informes"
-		},
-		service_pricing: {
-			title: "Precios de Servicios",
-			subtitle: "Gestione costos e precios de venta.",
-			catalog_tab: "Catálogo de Precios",
-			analytics_tab: "Informes",
-			new_rate: "Nueva Tarifa",
-			service_name: "Nombre del Servicio",
-			partner_payment: "Pago Socio",
-			pm_value: "Valor PM",
-			product_price: "Precio Final",
-			valid_from: "Válido Desde",
-			valid_to: "Válido Hasta",
-			margin: "Margen",
-			distribution: "Distribución",
-			profit_analysis: "Análisis de Beneficio"
-		},
-		condominiums: {
-			title: "Condominios",
-			subtitle: "Gestión de condominios y asociaciones.",
-			new_condo: "Nuevo Condominio",
-			add_title: "Añadir Condominio",
-			manager: "Gerente",
-			contact: "Contacto",
-			no_condos: "No se encontraron condominios."
-		},
-		owners: {
-			title: "Propietarios",
-			subtitle: "Base de propietarios e inversores.",
-			new_owner: "Nuevo Propietario",
-			register_title: "Registro de Propietario",
-			base_title: "Base de Propietarios",
-			search_placeholder: "Buscar propietario...",
-			contact_details: "Detalles de Contacto",
-			properties_count: "Propiedades",
-			workflow_started: "Flujo Iniciado",
-			workflow_desc: "Acción {action} iniciada para {name}.",
-			renew_contract: "Renovar Contrato",
-			success_desc: "Propietario registrado con éxito."
-		},
-		tenants: {
-			title: "Inquilinos",
-			subtitle: "Gestión de contratos e inquilinos.",
-			new_tenant: "Nuevo Inquilino",
-			register_title: "Registro de Inquilino",
-			list_title: "Lista de Inquilinos",
-			search_placeholder: "Buscar inquilino...",
-			property: "Propiedad",
-			send_message: "Enviar Mensaje"
-		},
-		partners: {
-			title: "Socios",
-			subtitle: "Proveedores y prestadores de servicios.",
-			new_partner: "Nuevo Socio",
-			register_title: "Registro de Socio",
-			no_partners: "No se encontraron socios.",
-			search_placeholder: "Buscar socio...",
-			contact_name: "Nombre de Contacto",
-			company_name: "Nombre de Empresa",
-			category: "Categoría",
-			agent: "Agente",
-			cleaning: "Limpeza",
-			maintenance: "Mantenimiento",
-			bank_info: "Datos Bancarios",
-			bank_name: "Banco",
-			routing: "Agencia/Routing",
-			account: "Cuenta",
-			payment_history: "Historial de Pagos",
-			financial_report: "Informe Financiero"
-		},
-		invoices: {
-			title: "Facturas",
-			subtitle: "Gestión de cobros y pagos.",
-			create_new: "Crear Nueva",
-			invoice_id: "ID Factura",
-			amount: "Importe",
-			bill_to: "Facturar A",
-			status_paid: "Pagado",
-			status_pending: "Pendiente",
-			status_approved: "Aprobado",
-			no_invoices: "No se encontraron facturas.",
-			send_to_payer: "Enviar al Pagador",
-			sent_success: "Factura enviada con éxito.",
-			view: "Ver",
-			invoice_viewer: {
-				title: "Visor de Factura",
-				invoice_no: "Factura Nº",
-				date: "Fecha",
-				bill_to: "Facturar A",
-				description: "Descripción",
-				quantity: "Cant.",
-				amount: "Importe",
-				subtotal: "Subtotal",
-				total: "Total",
-				thank_you: "¡Gracias por su preferencia!",
-				print: "Imprimir",
-				download: "Descargar"
-			}
-		},
-		financial: {
-			title: "Financiero",
-			subtitle: "Visión general financiera y conciliación.",
-			reconciliation: "Conciliación",
-			upload_statement: "Subir Extracto",
-			upload_desc: "Suba extractos bancarios para conciliación.",
-			statements: "Extractos",
-			no_statements: "Ningún extracto subido.",
-			reconciled: "Conciliado",
-			pending_reconciliation: "Pendiente Conciliación",
-			overview_pnl: "Visión General y P&G",
-			tower_breakdown: "Desglose por Torre",
-			channel_analytics: "Análisis de Canales",
-			projected_cash_flow: "Flujo de Caja Proyectado",
-			total_expenses: "Gastos Totales",
-			net_income: "Ingreso Neto"
-		},
-		tasks: {
-			title: "Tareas",
-			subtitle: "Gestión de mantenimiento y servicios.",
-			board: "Tablero",
-			list: "Lista",
-			in_progress: "En Progreso",
-			approval: "Aprobación",
-			status_wait_owner: "Esperando Propietario",
-			status_wait_pm: "Esperando Gerente",
-			task_title: "Título de Tarea",
-			assignee: "Responsable",
-			scheduled_date: "Fecha Programada",
-			service_type: "Tipo de Servicio",
-			change_status: "Cambiar Estado",
-			location: "Ubicación"
-		},
-		visits: {
-			schedule_visit: "Programar Visita",
-			enter_details: "Ingrese los detalles de la visita a continuación.",
-			assign_team: "Asignar Miembro del Equipo / Socio",
-			time: "Hora",
-			reason: "Motivo de la Visita",
-			showing: "Mostrando",
-			inspection: "Inspección",
-			client_prefs: "Preferencias del cliente, códigos de acceso, etc.",
-			list_title: "Lista de Visitas",
-			upcoming_past: "Visitas próximas y pasadas.",
-			no_visits: "No hay visitas programadas."
-		},
-		calendar: {
-			title: "Calendario",
-			subtitle: "Visión integrada de eventos y tareas.",
-			integrated_view: "Visión Integrada",
-			no_activities: "No hay actividades programadas para hoy."
-		},
-		messages: {
-			title: "Mensajes",
-			subtitle: "Centro de comunicación unificado.",
-			new_message: "Nuevo Mensaje",
-			select_user: "Seleccione un Usuario",
-			group_team: "Equipo",
-			group_tenants: "Inquilinos",
-			group_owners: "Propietarios",
-			group_partners: "Socios",
-			type_message: "Escriba su mensaje...",
-			online: "En línea",
-			no_contacts: "Sin contactos.",
-			search_contact: "Buscar contacto...",
-			no_conv: "No se encontraron conversaciones.",
-			new_chat_prompt: "Iniciar una nueva conversación",
-			select_prompt: "Seleccione un contacto para empezar a chatear.",
-			start_chat_desc: "Iniciar Chat"
-		},
-		users: {
-			title: "Usuarios",
-			subtitle: "Gestión de usuarios y permisos del sistema.",
-			role_label: "Rol",
-			registered: "Registrados",
-			registered_desc: "usuarios registrados en el sistema.",
-			permissions: "Permisos",
-			status_active: "Activo",
-			status_pending: "Pendiente",
-			status_blocked: "Bloqueado",
-			approve_success: "Usuario aprobado con éxito.",
-			block_title: "Bloquear Usuario",
-			block_confirm: "¿Está seguro de que desea bloquear a este usuario?",
-			block_success: "Usuario bloqueado con éxito."
-		},
-		workflows: {
-			title: "Flujos de Trabajo",
-			subtitle: "Automatización de procesos y tareas.",
-			new_workflow: "Nuevo Flujo",
-			trigger: "Disparador",
-			steps: "Pasos",
-			run_manual: "Ejecutar Manualmente",
-			config_workflow: "Configurar Flujo",
-			edit_workflow: "Editar Flujo",
-			active_status: "Estado Activo",
-			step_name: "Nombre del Paso",
-			step_role: "Rol Responsable",
-			add_step: "Añadir Paso"
-		},
-		renewals: {
-			title: "Renovaciones",
-			subtitle: "Gestión de vencimiento de contratos.",
-			negotiation_started: "Negociación Iniciada",
-			search_placeholder: "Buscar renovación...",
-			current_value: "Valor Actual",
-			suggestion: "Sugerencia ($)",
-			all_status: "Todos los Estados",
-			filter_date: "Filtrar por Fecha",
-			no_results: "No se encontraron renovaciones coincidentes.",
-			contract_upload: "Subida de Contrato",
-			new_value: "Nuevo Valor",
-			new_start_date: "Nueva Fecha Inicio",
-			new_end_date: "Nueva Fecha Fin",
-			close_negotiation: "Cerrar Negociación"
-		},
-		common: {
-			dashboard: "Panel Inmobiliario",
-			real_estate_dashboard: "Panel Inmobiliario",
-			properties: "Propiedades",
-			tenants: "Inquilinos",
-			owners: "Propietarios",
-			partners: "Socios",
-			calendar: "Calendario",
-			tasks: "Tareas",
-			financial: "Financiero",
-			financial_hoa: "Financiero HOA",
-			invoices: "Facturas",
-			messages: "Mensajes",
-			settings: "Configuración",
-			service_pricing: "Catálogo de Precios",
-			search: "Buscar...",
-			filter: "Filtrar",
-			status: "Estado",
-			actions: "Acciones",
-			save: "Guardar",
-			cancel: "Cancelar",
-			edit: "Editar",
-			delete: "Eliminar",
-			new: "Nuevo",
-			back: "Volver",
-			view: "Ver",
-			details: "Detalles",
-			name: "Nombre",
-			email: "Email",
-			phone: "Teléfono",
-			address: "Dirección",
-			type: "Tipo",
-			role: "Rol",
-			role_label: "Función",
-			logout: "Cerrar Sesión",
-			profile: "Perfil",
-			notifications: "Notificaciones",
-			team: "Equipo",
-			automation: "Automatización",
-			all: "Todos",
-			pending: "Pendiente",
-			approved: "Aprobado",
-			completed: "Completado",
-			paid: "Pagado",
-			overdue: "Atrasado",
-			active: "Activo",
-			inactive: "Inactivo",
-			occupied: "Ocupado",
-			vacant: "Vacante",
-			maintenance: "Mantenimiento",
-			cleaning: "Limpieza",
-			confirm: "Confirmar",
-			upload: "Subir",
-			description: "Descripción",
-			date: "Fecha",
-			due_date: "Vencimiento",
-			value: "Valor",
-			priority: "Prioridad",
-			yes: "Sí",
-			no: "No",
-			none: "Ninguno",
-			error: "Error",
-			condominiums: "Condominios",
-			continue: "Continuar",
-			password: "Contraseña",
-			confirm_password: "Confirmar Contraseña",
-			add_title: "Añadir",
-			documents: "Documentos",
-			contact_via_whatsapp: "WhatsApp",
-			contact_via_email: "Email",
-			tax_id: "NIF / Tax ID",
-			system_activity: "Actividad del Sistema",
-			approve: "Aprobar",
-			reject: "Rejeitar",
-			block: "Bloquear",
-			pending_approval: "Pendiente Aprobación",
-			pending_activation: "Pendiente Activación",
-			blocked: "Bloqueado",
-			country: "País",
-			select_country: "Seleccione País",
-			export_data: "Exportar Datos",
-			export_success: "Datos exportados con éxito.",
-			export_success_title: "Exportación Iniciada",
-			renewals: "Renovación de Contrato",
-			short_term: "Alquiler Temporal",
-			market_analysis: "Análisis de Mercado",
-			advanced_analytics: "Análisis Avanzado",
-			automation_rules: "Reglas de Automatización",
-			workflows: "Flujos de Trabajo",
-			portal: "Portal",
-			publicity: "Publicidad",
-			login: "Entrar",
-			register: "Registrarse",
-			welcome: "Bienvenido",
-			full_name: "Nombre Completo",
-			property: "Propiedad",
-			reports: "Informes",
-			delete_title: "¿Está seguro?",
-			delete_desc: "Esta acción no se puede deshacer.",
-			start_now: "Empezar Ahora",
-			download: "Descargar",
-			print: "Imprimir",
-			close: "Cerrar",
-			delete_active_tenant_error: "No es posible eliminar propiedad con inquilino activo.",
-			confirm_delete: "Confirmar Eliminación",
-			operations: "Operaciones",
-			contracts: "Contratos",
-			total: "Total",
-			done: "Hecho",
-			taxes: "Impuestos",
-			utilities: "Utilidades",
-			inventory: "Inventario",
-			history: "Historial",
-			activity_log: "Registro de Actividad",
-			created_at: "Creado el",
-			updated_at: "Actualizado el",
-			select: "Seleccione",
-			required: "Obligatorio",
-			success: "Éxito",
-			removed: "Eliminado",
-			copied: "Copiado",
-			empty: "Vacío",
-			relationships: "Relaciones",
-			relationship_owner: "Propietario",
-			relationship_tenant: "Inquilino",
-			no_owner: "Sin Propietario",
-			add_owner: "Añadir Propietario",
-			no_active_tenant: "Sin Inquilino Activo",
-			export: "Exportar",
-			visits: "Visitas",
-			schedule_visit: "Programar Visita",
-			client_name: "Nombre del Cliente",
-			visit_date: "Fecha de Visita",
-			visit_status: "Estado de Visita",
-			scheduled: "Programada",
-			canceled: "Cancelada",
-			visit_scheduling: "Programación de Visitas",
-			visits_list: "Lista de Visitas",
-			total_revenue: "Ingresos Totales",
-			sold: "Vendido",
-			sale_pending: "Venta Pendiente",
-			category: "Categoría",
-			quantity: "Cantidad",
-			condition: "Condición",
-			revenue: "Ingresos",
-			profit: "Beneficio",
-			analytics: {
-				benchmark_title: "Benchmark de Mercado",
-				benchmark_desc: "Comparación de rendimiento con el mercado.",
-				internal_perf: "Rend. Interno",
-				market_avg: "Promedio Mercado",
-				occupancy: "Ocupación",
-				profitability_title: "Rentabilidad",
-				profit: "Beneficio",
-				revenue: "Ingresos",
-				adr: "Tarifa Media Diaria (ADR)",
-				privacy_mode: "Modo de Privacidad",
-				house_model: "Modelo de Casa"
-			},
-			help_hub: "Centro de Ayuda",
-			hotels: "Hoteles",
-			location: "Ubicación",
-			access_credentials: "Credenciales de Acceso",
-			manager: "Gerente",
-			contact: "Contacto",
-			history_adjustments: "Historial de Ajustes",
-			name_required: "El nombre es obligatorio",
-			email_invalid: "Email inválido",
-			error_404_title: "404",
-			error_404_desc: "¡Ups! Página no encontrada.",
-			return_home: "Volver al Inicio",
-			access_denied: "Acceso Denegado",
-			access_denied_desc: "No tiene permiso para ver esta página.",
-			list: "Lista",
-			calendar_view: "Calendario",
-			start_date: "Fecha Inicio",
-			end_date: "Fecha Fin",
-			and: "y",
-			validation_error: "Error de Validación",
-			name_required: "El nombre es obligatorio",
-			delete_success: "Eliminado con éxito.",
-			error_delete: "Error al eliminar.",
-			delete_linked_error: "No se puede eliminar porque hay registros vinculados."
-		},
-		marketing_tab: { portal_sync: "Sincronización de Portales" },
-		automation: {
-			title: "Automatización",
-			quickbooks_export: "Exportar a QuickBooks",
-			quickbooks_desc: "Descargar transacciones compatibles con QB.",
-			export_csv: "Exportar CSV",
-			export_success_title: "Exportación Iniciada",
-			auto_generate_invoice: "Generar Factura Automática",
-			auto_approval: "Auto-Aprobación",
-			auto_approval_desc: "Aprovar automáticamente tareas de mantenimiento por debajo de un costo determinado.",
-			enable_auto_approval: "Activar Auto-Aprobación",
-			billing_automation: "Automatización de Facturación",
-			billing_automation_desc: "Generar facturas automáticamente basadas en eventos.",
-			auto_generate_invoices: "Generar Facturas Automáticamente",
-			rent_reminders_desc: "Enviar recordatorios automáticos a los inquilinos.",
-			enable_reminders: "Activar Recordatorios",
-			rule_enabled: "Regla habilitada",
-			max_cost_threshold: "Umbral de Costo Máximo",
-			tasks_below_threshold: "Las tareas por debajo de este monto se aprobarán instantáneamente.",
-			trigger_event: "Evento Desencadenante",
-			confirm_export: "Confirmar Exportación",
-			triggering: "Disparando",
-			action: "Acción",
-			status: "Estado de Automatización",
-			trigger_desc: "Las facturas se generarán cuando el estado de la tarea cambie a \"Completado\".",
-			auto_sms_desc: "Se enviará un correo electrónico/SMS automático.",
-			select_export_scope: "Seleccionar Alcance de Exportación",
-			choose_data_range: "Elija el rango de datos para la exportación de QuickBooks.",
-			data_scope: "Alcance de Datos",
-			general_activities: "Actividades Generales",
-			by_owner: "Por Propietario",
-			by_partner: "Por Socio"
-		},
-		settings: {
-			title: "Configuración",
-			subtitle: "Gestione las configuraciones de su cuenta y sistema.",
-			personal_info: "Información Personal",
-			update_info: "Actualice su información.",
-			change_photo: "Cambiar Foto",
-			full_name: "Nombre Completo",
-			save_changes: "Guardar Cambios",
-			integrations: "Integraciones",
-			billing_payment: "Facturación y Pago",
-			billing_gateways_title: "Pasarelas de Pago",
-			billing_gateways_desc: "Configure los métodos de pago aceptados.",
-			payment_gateways: "Pasarelas de Pago",
-			system_alerts: "Alertas del Sistema",
-			system_alerts_desc: "Configure las notificaciones automáticas.",
-			automation_title: "Reglas de Automatización",
-			automation_desc: "Gestione y configure reglas de automatización para tareas, finanzas y comunicación.",
-			rent_reminder: "Recordatorio de Alquiler",
-			days_before: "Días Antes",
-			company_legal_name: "Razón Social"
+			by_partner: "By Partner",
+			task_automation: "Task Automation",
+			financial_automation: "Financial Automation",
+			communication_automation: "Communication Automation",
+			quickbooks_integration: "QuickBooks Integration"
 		}
 	}
 };
 const AppContext = (0, import_react.createContext)(void 0);
-var getRoleName$1 = (role) => {
+var getRoleName = (role) => {
 	switch (role) {
 		case "platform_owner": return "Admin";
 		case "software_tenant": return "Manager";
@@ -57120,7 +56614,7 @@ const AppProvider = ({ children }) => {
 			if (!property$2) return;
 			workflow.steps.forEach((step, index$1) => {
 				if (step.actionType === "task") {
-					let assigneeName = getRoleName$1(step.role);
+					let assigneeName = getRoleName(step.role);
 					let assigneeId = void 0;
 					let assignedRole = step.role;
 					const linkedPartner = partners$1.find((p$1) => p$1.linkedPropertyIds?.includes(propertyId) && (step.name.toLowerCase().includes("clean") ? p$1.type === "cleaning" : p$1.type === "maintenance"));
@@ -59304,7 +58798,7 @@ function DashboardContent() {
 							className: "flex flex-row items-center justify-between space-y-0 pb-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
 								className: "text-sm font-bold text-black",
-								children: "Occupancy Rate"
+								children: t("common.analytics.occupancy")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-black",
@@ -59315,7 +58809,8 @@ function DashboardContent() {
 								occupiedRooms,
 								" / ",
 								totalRooms,
-								" rooms"
+								" ",
+								t("hotels.rooms")
 							]
 						})] })]
 					}),
@@ -59325,14 +58820,14 @@ function DashboardContent() {
 							className: "flex flex-row items-center justify-between space-y-0 pb-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
 								className: "text-sm font-bold text-black",
-								children: "ADR (Avg Rate)"
+								children: t("common.analytics.adr")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrendingUp, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-black",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(adr, language) })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-xs text-black font-bold",
-							children: "Average Daily Rate"
+							children: t("market_analysis.avg_daily_rate")
 						})] })]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
@@ -59348,7 +58843,7 @@ function DashboardContent() {
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(revPar, language) })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-xs text-black font-bold",
-							children: "Revenue Per Room"
+							children: t("performance.financial_performance")
 						})] })]
 					})
 				]
@@ -66541,7 +66036,7 @@ function Properties() {
 			neighborhood: newProp.neighborhood || "",
 			type: newProp.type || "House",
 			profileType: newProp.profileType,
-			community: selectedCondo ? selectedCondo.name : newProp.community || "Independent",
+			community: selectedCondo ? selectedCondo.name : newProp.community || t("properties.independent_community"),
 			condominiumId: newProp.condominiumId,
 			status: "available",
 			image: newProp.image || "https://img.usecurling.com/p/400/300?q=house",
@@ -66755,7 +66250,7 @@ function Properties() {
 									className: "grid gap-2",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 										className: "text-black font-bold",
-										children: "Search Address"
+										children: t("common.search_address")
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddressInput, { onAddressSelect: handleAddressSelect })]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -66811,7 +66306,7 @@ function Properties() {
 												...newProp,
 												additionalInfo: e.target.value
 											}),
-											placeholder: "Apto, Bloco, etc.",
+											placeholder: t("properties.additional_info_placeholder"),
 											className: "text-black"
 										})]
 									})]
@@ -66962,11 +66457,11 @@ function Properties() {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "sold",
-								children: t("common.sold")
+								children: t("status.sold")
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "sale_pending",
-								children: t("common.sale_pending")
+								children: t("status.sale_pending")
 							})
 						] })]
 					}),
@@ -72387,7 +71882,7 @@ function Tasks() {
 			case "pending": return t("common.pending");
 			case "in_progress": return t("tasks.in_progress");
 			case "completed": return t("common.completed");
-			case "rejected": return "Rejected";
+			case "rejected": return t("common.rejected");
 			case "pending_approval": return approvalStatus === "owner_pending" ? t("tasks.status_wait_owner") : t("tasks.status_wait_pm");
 			default: return status;
 		}
@@ -72495,7 +71990,7 @@ function Tasks() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "inspection",
-									children: "Inspeção"
+									children: t("partners.inspection")
 								})
 							] })]
 						}),
@@ -72507,7 +72002,7 @@ function Tasks() {
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4" }),
 								" ",
-								t("automation.auto_generate_invoice") || "Generate Invoice"
+								t("automation.generate_invoice")
 							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CreateTaskDialog, {})
@@ -74367,8 +73862,8 @@ function Settings() {
 	const handleFinancialSave = () => {
 		if (!canManageSystem) {
 			toast$2({
-				title: "Access Denied",
-				description: "You do not have permission to modify financial settings.",
+				title: t("common.access_denied"),
+				description: t("common.access_denied_desc"),
 				variant: "destructive"
 			});
 			return;
@@ -85434,18 +84929,6 @@ var initialStepState = {
 	role: "platform_owner",
 	actionType: "task"
 };
-var getRoleName = (role) => {
-	switch (role) {
-		case "platform_owner": return "Admin";
-		case "software_tenant": return "Manager";
-		case "internal_user": return "Staff";
-		case "partner": return "Partner";
-		case "partner_employee": return "Partner Employee";
-		case "property_owner": return "Owner";
-		case "tenant": return "Tenant";
-		default: return "Unknown";
-	}
-};
 function Workflows() {
 	const { workflows: workflows$1, addWorkflow, updateWorkflow, deleteWorkflow, executeWorkflow } = useWorkflowStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
@@ -85463,6 +84946,9 @@ function Workflows() {
 		label: p$1.name,
 		value: p$1.id
 	}));
+	const getRoleName$1 = (role) => {
+		return t(`roles.${role}`);
+	};
 	const handleRunClick = (wf) => {
 		setSelectedWorkflow(wf);
 		setSelectedRunPropertyIds(wf.propertyIds && wf.propertyIds.length > 0 ? wf.propertyIds : []);
@@ -85473,7 +84959,7 @@ function Workflows() {
 		if (selectedRunPropertyIds.length === 0) {
 			toast$2({
 				title: t("common.error"),
-				description: "Please select at least one property.",
+				description: t("common.required"),
 				variant: "destructive"
 			});
 			return;
@@ -85576,7 +85062,7 @@ function Workflows() {
 					]
 				})]
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("workflows.title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [workflows$1.length, " workflows configurados."] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("workflows.title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [workflows$1.length, " workflows."] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("workflows.trigger") }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("properties.title") }),
@@ -85589,15 +85075,15 @@ function Workflows() {
 			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: workflows$1.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				colSpan: 6,
 				className: "text-center py-8 text-muted-foreground",
-				children: "No workflows found."
+				children: t("common.empty")
 			}) }) : workflows$1.map((wf) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 					className: "font-medium",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex flex-col",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: wf.name }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: wf.name }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "text-xs text-muted-foreground",
-							children: wf.description
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: wf.description })
 						})]
 					})
 				}),
@@ -85607,7 +85093,7 @@ function Workflows() {
 				}) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 					variant: "secondary",
-					children: wf.propertyIds && wf.propertyIds.length > 0 ? `${wf.propertyIds.length} properties` : "All / Unbound"
+					children: wf.propertyIds && wf.propertyIds.length > 0 ? `${wf.propertyIds.length} ${t("common.properties").toLowerCase()}` : t("common.all")
 				}) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.steps.length }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
@@ -85652,8 +85138,9 @@ function Workflows() {
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 					className: "sm:max-w-md",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Run Workflow" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogDescription, { children: [
-							"Select properties to execute the workflow \"",
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("workflows.run_workflow") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogDescription, { children: [
+							t("workflows.select_properties"),
+							" \"",
 							selectedWorkflow?.name,
 							"\"."
 						] })] }),
@@ -85662,16 +85149,16 @@ function Workflows() {
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
 								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Select Properties" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("workflows.select_properties") }),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MultiSelect, {
 										options: propertyOptions,
 										selected: selectedRunPropertyIds,
 										onChange: setSelectedRunPropertyIds,
-										placeholder: "Select properties..."
+										placeholder: t("common.select")
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 										className: "text-xs text-muted-foreground",
-										children: "Tasks will be generated for each selected property."
+										children: t("workflows.tasks_generated_desc")
 									})
 								]
 							})
@@ -85679,12 +85166,16 @@ function Workflows() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "outline",
 							onClick: () => setRunDialogOpen(false),
-							children: "Cancel"
+							children: t("common.cancel")
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							onClick: handleExecute,
 							className: "bg-trust-blue",
 							disabled: selectedRunPropertyIds.length === 0,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { className: "h-4 w-4 mr-2" }), " Run Workflow"]
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { className: "h-4 w-4 mr-2" }),
+								" ",
+								t("workflows.run_workflow")
+							]
 						})] })
 					]
 				})
@@ -85723,13 +85214,21 @@ function Workflows() {
 													value: "manual",
 													children: "Manual"
 												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
 													value: "before_checkin",
-													children: "Before Check-in"
+													children: [
+														t("marketing.before"),
+														" ",
+														t("marketing.check_in")
+													]
 												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
 													value: "after_checkout",
-													children: "After Check-out"
+													children: [
+														t("marketing.after"),
+														" ",
+														t("marketing.check_out")
+													]
 												}),
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 													value: "lease_start",
@@ -85758,11 +85257,11 @@ function Workflows() {
 												...currentWorkflow,
 												propertyIds: selected
 											}),
-											placeholder: "Select applicable properties (leave empty for all)"
+											placeholder: t("common.select")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 											className: "text-xs text-muted-foreground",
-											children: "Select which properties this workflow applies to. If empty, it may be considered global or selected at runtime."
+											children: t("workflows.tasks_generated_desc")
 										})
 									]
 								}),
@@ -85810,7 +85309,7 @@ function Workflows() {
 												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 													className: "text-xs text-muted-foreground",
 													children: [
-														getRoleName(step.role),
+														getRoleName$1(step.role),
 														" - ",
 														step.actionType
 													]
@@ -85835,7 +85334,7 @@ function Workflows() {
 															...newStep,
 															name: e.target.value
 														}),
-														placeholder: "Step Name"
+														placeholder: t("workflows.step_name")
 													})]
 												}),
 												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -85852,19 +85351,19 @@ function Workflows() {
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "platform_owner",
-																children: "Admin"
+																children: t("roles.platform_owner")
 															}),
 															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "software_tenant",
-																children: "Manager"
+																children: t("roles.software_tenant")
 															}),
 															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "partner",
-																children: "Partner"
+																children: t("roles.partner")
 															}),
 															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "internal_user",
-																children: "Staff"
+																children: t("roles.internal_user")
 															})
 														] })]
 													})]
@@ -86398,7 +85897,7 @@ function BadgeStatus$1({ status }) {
 		children: status
 	});
 }
-var RenewalRow = (0, import_react.memo)(({ data, isSelected, onSelect, onOpenSheet, onStartNegotiation, onCloseNegotiation, showFinancials, language }) => {
+var RenewalRow = (0, import_react.memo)(({ data, isSelected, onSelect, onOpenSheet, onStartNegotiation, onCloseNegotiation, showFinancials, language, t }) => {
 	const { tenant, property: property$2, owner, daysLeft, displayStatus, negotiationStatus } = data;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
 		className: displayStatus === "critical" ? "bg-red-50/30" : "",
@@ -86410,24 +85909,27 @@ var RenewalRow = (0, import_react.memo)(({ data, isSelected, onSelect, onOpenShe
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: property$2 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 				to: `/properties/${property$2.id}`,
 				className: "flex items-center gap-2 hover:text-blue-700 hover:underline font-bold text-slate-900",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-slate-600" }), property$2.name]
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-slate-600" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: property$2.name })]
 			}) : "N/A" }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: owner ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex items-center gap-2 text-slate-900 font-medium",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 text-slate-600" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: owner.name })]
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 text-slate-600" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name }) })]
 			}) : "-" }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				className: "text-slate-900 font-medium",
-				children: tenant.name
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.name })
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BadgeStatus, { status: negotiationStatus }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BadgeStatus, {
+				status: negotiationStatus,
+				t
+			}) }),
 			showFinancials && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				className: "text-slate-900 font-medium",
-				children: tenant.suggestedRenewalPrice ? formatCurrency(tenant.suggestedRenewalPrice, language) : "-"
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.suggestedRenewalPrice ? formatCurrency(tenant.suggestedRenewalPrice, language) : "-" })
 			}),
 			showFinancials && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				className: "text-slate-900 font-medium",
-				children: formatCurrency(tenant.rentValue ?? 0, language)
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(tenant.rentValue ?? 0, language) })
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col",
@@ -86436,7 +85938,7 @@ var RenewalRow = (0, import_react.memo)(({ data, isSelected, onSelect, onOpenShe
 					children: tenant.leaseEnd ? formatDate(tenant.leaseEnd, language) : "N/A"
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 					className: "text-xs text-slate-700 font-medium",
-					children: displayStatus === "renewed" ? "Renovado" : daysLeft > 0 ? `${daysLeft} dias restantes` : "Vencido"
+					children: displayStatus === "renewed" ? t("common.renewals") : daysLeft > 0 ? `${daysLeft} days left` : t("common.overdue")
 				})]
 			}) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
@@ -86453,12 +85955,12 @@ var RenewalRow = (0, import_react.memo)(({ data, isSelected, onSelect, onOpenShe
 								className: "text-blue-700 hover:text-blue-800 hover:bg-blue-50",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ClipboardList, { className: "h-4 w-4" })
 							})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Unified Negotiation Details & Chat" }) })] }),
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: t("common.details") }) })] }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							variant: "outline",
 							size: "sm",
 							onClick: () => onStartNegotiation(tenant.id),
-							title: "Negotiate",
+							title: t("renewals.negotiation_started"),
 							className: "text-slate-900 font-medium border-slate-300",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4 mr-2" }), "Chat"]
 						}),
@@ -86466,8 +85968,12 @@ var RenewalRow = (0, import_react.memo)(({ data, isSelected, onSelect, onOpenShe
 							size: "sm",
 							className: "bg-trust-blue text-white font-bold",
 							onClick: () => onCloseNegotiation(tenant.id),
-							title: "Close Negotiation",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4 mr-2" }), " Fechar"]
+							title: t("renewals.close_negotiation"),
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4 mr-2" }),
+								" ",
+								t("common.close")
+							]
 						})
 					]
 				})
@@ -86475,36 +85981,36 @@ var RenewalRow = (0, import_react.memo)(({ data, isSelected, onSelect, onOpenShe
 		]
 	});
 });
-var BadgeStatus = ({ status }) => {
+var BadgeStatus = ({ status, t }) => {
 	switch (status) {
 		case "negotiating": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 			variant: "outline",
 			className: "bg-yellow-50 text-yellow-800 border-yellow-300 font-bold",
-			children: "Em Negociação"
+			children: t("status.negotiating") || "Negotiating"
 		});
 		case "owner_contacted": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 			variant: "outline",
 			className: "bg-blue-50 text-blue-800 border-blue-300 font-bold",
-			children: "Proprietário Contatado"
+			children: t("status.owner_contacted") || "Owner Contacted"
 		});
 		case "tenant_contacted": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 			variant: "outline",
 			className: "bg-purple-50 text-purple-800 border-purple-300 font-bold",
-			children: "Inquilino Contatado"
+			children: t("status.tenant_contacted") || "Tenant Contacted"
 		});
 		case "vacating": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 			variant: "destructive",
 			className: "font-bold",
-			children: "Inquilino vai desocupar"
+			children: t("status.vacating") || "Vacating"
 		});
 		case "closed": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 			className: "bg-green-600 font-bold text-white",
-			children: "Fechado"
+			children: t("common.completed")
 		});
 		default: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 			variant: "secondary",
 			className: "font-bold text-slate-800 border-slate-300",
-			children: "Pendente"
+			children: t("common.pending")
 		});
 	}
 };
@@ -86618,8 +86124,8 @@ function Renewals() {
 		if (selectedIds.size === 0) return;
 		const count$3 = selectedIds.size;
 		toast$2({
-			title: "Exporting...",
-			description: `Exporting ${count$3} renewal records to CSV.`
+			title: t("common.export_success_title"),
+			description: `${t("common.export_data")} (${count$3})`
 		});
 	};
 	const handleCloseNegotiation = (data) => {
@@ -86705,15 +86211,15 @@ function Renewals() {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "critical",
-								children: "Crítico (<30d)"
+								children: "Critical (<30d)"
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "upcoming",
-								children: "Próximo (<90d)"
+								children: "Upcoming (<90d)"
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "renewed",
-								children: "Renovados"
+								children: "Renewed"
 							})
 						] })]
 					}),
@@ -86747,7 +86253,9 @@ function Renewals() {
 						className: "border-slate-300 text-slate-900",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4 mr-2" }),
-							" Export (",
+							" ",
+							t("common.export"),
+							" (",
 							selectedIds.size,
 							")"
 						]
@@ -86808,7 +86316,8 @@ function Renewals() {
 					onStartNegotiation: handleStartNegotiation,
 					onCloseNegotiation: handleOpenCloseDialog,
 					showFinancials,
-					language
+					language,
+					t
 				}, item.tenant.id)) })] })
 			}) }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col gap-4",
@@ -86828,7 +86337,7 @@ function Renewals() {
 							variant: "outline",
 							onClick: () => setCurrentMonth(addMonths(currentMonth, 1)),
 							className: "border-slate-300 text-slate-900",
-							children: "Próximo"
+							children: t("common.continue")
 						})]
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -86855,7 +86364,7 @@ function Renewals() {
 								className: cn("text-[10px] p-1 rounded truncate cursor-pointer hover:opacity-80 font-bold", ev.displayStatus === "critical" ? "bg-red-100 text-red-800" : ev.displayStatus === "renewed" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"),
 								onClick: () => handleOpenSheet(ev.tenant.id),
 								title: ev.property?.name,
-								children: ev.property?.name
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: ev.property?.name })
 							}, ev.tenant.id))]
 						}, day.toISOString());
 					})]
@@ -87622,7 +87131,7 @@ function Automation() {
 				...rule,
 				...updates
 			});
-			toast$2({ title: t("common.config_saved") });
+			toast$2({ title: t("common.save") });
 		}
 	};
 	const initiateExport = () => {
@@ -92197,4 +91706,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-D3Y_EXZN.js.map
+//# sourceMappingURL=index-Dd7mv-T3.js.map
