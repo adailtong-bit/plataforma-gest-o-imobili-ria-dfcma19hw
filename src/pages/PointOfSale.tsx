@@ -28,6 +28,7 @@ import useManagementStore from '@/stores/useManagementStore'
 import useShortTermStore from '@/stores/useShortTermStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
 import { PosItem, PosTransaction } from '@/lib/types'
 import { formatCurrency } from '@/lib/utils'
@@ -55,7 +56,8 @@ export default function PointOfSale() {
   const { bookings } = useShortTermStore()
   const { properties, updateProperty } = usePropertyStore()
   const { toast } = useToast()
-  const { t, language } = useLanguageStore()
+  const { t } = useLanguageStore()
+  const { currency } = useFinancialStore()
 
   const [selectedBooking, setSelectedBooking] = useState('')
   const [cart, setCart] = useState<{ item: PosItem; quantity: number }[]>([])
@@ -169,7 +171,7 @@ export default function PointOfSale() {
     setSelectedBooking('')
     toast({
       title: t('pos.transaction_success'),
-      description: `${t('pos.charge_room')}: ${formatCurrency(totalAmount, language)}`,
+      description: `${t('pos.charge_room')}: ${formatCurrency(totalAmount, currency)}`,
     })
   }
 
@@ -299,7 +301,7 @@ export default function PointOfSale() {
                         <CardContent className="p-4 pt-0">
                           <div className="text-lg font-bold text-green-700">
                             <DataMask>
-                              {formatCurrency(item.price, language)}
+                              {formatCurrency(item.price, currency)}
                             </DataMask>
                           </div>
                         </CardContent>
@@ -357,14 +359,14 @@ export default function PointOfSale() {
                               </div>
                               <div className="text-xs text-muted-foreground">
                                 {c.quantity} x{' '}
-                                {formatCurrency(c.item.price, language)}
+                                {formatCurrency(c.item.price, currency)}
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="font-bold">
                                 {formatCurrency(
                                   c.item.price * c.quantity,
-                                  language,
+                                  currency,
                                 )}
                               </span>
                               <Button
@@ -389,7 +391,7 @@ export default function PointOfSale() {
                     <div className="flex justify-between items-center text-lg font-bold mb-4">
                       <span>{t('common.total')}</span>
                       <span className="text-trust-blue">
-                        {formatCurrency(totalAmount, language)}
+                        {formatCurrency(totalAmount, currency)}
                       </span>
                     </div>
                     <Button
@@ -449,7 +451,7 @@ export default function PointOfSale() {
                       </TableCell>
                       <TableCell>
                         <DataMask>
-                          {formatCurrency(item.price, language)}
+                          {formatCurrency(item.price, currency)}
                         </DataMask>
                       </TableCell>
                       <TableCell>{item.validityStart || '-'}</TableCell>

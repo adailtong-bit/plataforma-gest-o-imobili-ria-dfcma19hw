@@ -24847,22 +24847,18 @@ const exportToCSV = (filename, headers, rows) => {
 	link.click();
 	document.body.removeChild(link);
 };
-const formatCurrency = (value, language = "en", currency = "USD") => {
-	let locale$2 = "en-US";
-	let currencyCode = currency;
-	if (language === "pt") {
-		locale$2 = "pt-BR";
-		currencyCode = "BRL";
-	} else if (language === "es") {
-		locale$2 = "es-ES";
-		currencyCode = "EUR";
-	} else {
-		locale$2 = "en-US";
-		currencyCode = "USD";
-	}
+const getCurrencyLocale = (currency) => {
+	return {
+		USD: "en-US",
+		BRL: "pt-BR",
+		EUR: "de-DE"
+	}[currency] || "en-US";
+};
+const formatCurrency = (value, currency = "USD") => {
+	const locale$2 = getCurrencyLocale(currency);
 	return new Intl.NumberFormat(locale$2, {
 		style: "currency",
-		currency: currencyCode
+		currency
 	}).format(value);
 };
 const formatDate = (date$1, language = "en") => {
@@ -54370,7 +54366,8 @@ const defaultFinancialSettings = {
 		paypal: { enabled: false },
 		mercadoPago: { enabled: false }
 	},
-	isProduction: false
+	isProduction: false,
+	globalCurrency: "USD"
 };
 const mockBankStatements = [];
 const ledgerEntries = [
@@ -57219,6 +57216,10 @@ const AppProvider = ({ children }) => {
 	const [language, setLanguageState] = (0, import_react.useState)(() => {
 		return localStorage.getItem("app_language") || "en";
 	});
+	const [currency, setCurrency] = (0, import_react.useState)(financialSettings.globalCurrency);
+	(0, import_react.useEffect)(() => {
+		setCurrency(financialSettings.globalCurrency);
+	}, [financialSettings.globalCurrency]);
 	const [guestServices$1, setGuestServices] = (0, import_react.useState)(guestServices);
 	const [posItems$1, setPosItems] = (0, import_react.useState)(posItems);
 	const [posTransactions$1, setPosTransactions] = (0, import_react.useState)(posTransactions);
@@ -57256,6 +57257,9 @@ const AppProvider = ({ children }) => {
 		});
 		return text;
 	}, [language]);
+	const formatAppCurrency = (0, import_react.useCallback)((value) => {
+		return formatCurrency(value, currency);
+	}, [currency]);
 	const login = (email) => {
 		const user = allUsers.find((u$1) => u$1.email.toLowerCase() === email.toLowerCase());
 		if (user) {
@@ -57534,6 +57538,7 @@ const AppProvider = ({ children }) => {
 			advertisers,
 			adPricing,
 			language,
+			currency,
 			typingStatus,
 			selectedPropertyId,
 			visits: visits$1,
@@ -57556,6 +57561,7 @@ const AppProvider = ({ children }) => {
 			setLanguage,
 			setSelectedPropertyId,
 			t,
+			formatAppCurrency,
 			login,
 			logout,
 			addProperty,
@@ -57701,6 +57707,8 @@ var useFinancialStore = () => {
 		bankStatements: context.bankStatements,
 		ledgerEntries: context.ledgerEntries,
 		genericServiceRates: context.genericServiceRates,
+		currency: context.currency,
+		formatCurrency: context.formatAppCurrency,
 		addInvoice: context.addInvoice,
 		updateInvoice: context.updateInvoice,
 		markPaymentAs: context.markPaymentAs,
@@ -59449,7 +59457,7 @@ function Index() {
 function DashboardContent() {
 	const [date$1, setDate$1] = (0, import_react.useState)(/* @__PURE__ */ new Date());
 	const { tasks: tasks$1 } = useTaskStore_default();
-	const { ledgerEntries: ledgerEntries$1, financials: financials$1 } = useFinancialStore_default();
+	const { ledgerEntries: ledgerEntries$1, financials: financials$1, formatCurrency: formatCurrency$1 } = useFinancialStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
 	const { visits: visits$1 } = useVisitStore_default();
 	const { bookings: bookings$1 } = useShortTermStore_default();
@@ -59607,7 +59615,7 @@ function DashboardContent() {
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-black",
-							children: formatCurrency(totalRevenue, language)
+							children: formatCurrency$1(totalRevenue)
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 							className: "text-xs text-black font-bold",
 							children: ["+20.1% ", t("dashboard.from_last_month")]
@@ -59645,7 +59653,7 @@ function DashboardContent() {
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrendingUp, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-black",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(adr, language) })
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency$1(adr) })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-xs text-black font-bold",
 							children: t("market_analysis.avg_daily_rate")
@@ -59661,7 +59669,7 @@ function DashboardContent() {
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Activity, { className: "h-4 w-4 text-black" })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-2xl font-bold text-black",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(revPar, language) })
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency$1(revPar) })
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-xs text-black font-bold",
 							children: t("performance.financial_performance")
@@ -59808,7 +59816,7 @@ function DashboardContent() {
 								className: "flex items-center gap-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 									className: "font-bold text-sm text-black",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(invoice.amount, language) })
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency$1(invoice.amount) })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 									size: "sm",
 									variant: "outline",
@@ -62029,7 +62037,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$25(function() {
+			useEffect$26(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -62052,7 +62060,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$77 = React$67.useState, useEffect$25 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$77 = React$67.useState, useEffect$26 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -75003,6 +75011,46 @@ function Settings() {
 							className: "space-y-6",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "border border-slate-200 rounded-md p-4 bg-white",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+										className: "text-base font-bold text-black mb-2 flex items-center gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Wallet, { className: "h-4 w-4 text-green-600" }), "Global Currency"]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-2",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												className: "text-black font-bold",
+												children: "Main Currency"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												className: "text-xs text-muted-foreground mb-1",
+												children: "Set the base currency for all monetary values in the platform."
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+												value: financialData.globalCurrency || "USD",
+												onValueChange: (val) => handleFinancialChange("globalCurrency", val),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+													className: "w-[200px] text-black",
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Currency" })
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "USD",
+														children: "USD - Dólar Americano"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "BRL",
+														children: "BRL - Real Brasileiro"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "EUR",
+														children: "EUR - Euro"
+													})
+												] })]
+											})
+										]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "border border-yellow-200 rounded-md p-4 bg-yellow-50/30",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
 										className: "text-base font-bold text-black mb-2 flex items-center gap-2",
@@ -75012,7 +75060,7 @@ function Settings() {
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 												className: "text-black font-bold",
-												children: "Direct Approval Threshold ($)"
+												children: "Direct Approval Threshold"
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 												className: "text-xs text-muted-foreground mb-1",
@@ -90803,6 +90851,8 @@ function GuestServices() {
 }
 function ProductDialog({ open, onOpenChange, onSave, product }) {
 	const [data, setData] = (0, import_react.useState)({});
+	const { currency } = useFinancialStore_default();
+	const locale$2 = getCurrencyLocale(currency);
 	(0, import_react.useEffect)(() => {
 		setData(product || {
 			name: "",
@@ -90828,13 +90878,18 @@ function ProductDialog({ open, onOpenChange, onSave, product }) {
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Price" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-						type: "number",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+						"Price (",
+						currency,
+						")"
+					] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
 						value: data.price,
-						onChange: (e) => setData({
+						onChange: (val) => setData({
 							...data,
-							price: Number(e.target.value)
-						})
+							price: val
+						}),
+						currency,
+						locale: locale$2
 					})]
 				})]
 			}),
@@ -90850,7 +90905,8 @@ function PointOfSale() {
 	const { bookings: bookings$1 } = useShortTermStore_default();
 	const { properties: properties$1, updateProperty } = usePropertyStore_default();
 	const { toast: toast$2 } = useToast();
-	const { t, language } = useLanguageStore_default();
+	const { t } = useLanguageStore_default();
+	const { currency } = useFinancialStore_default();
 	const [selectedBooking, setSelectedBooking] = (0, import_react.useState)("");
 	const [cart, setCart] = (0, import_react.useState)([]);
 	const [activeTab, setActiveTab] = (0, import_react.useState)("pos");
@@ -90933,7 +90989,7 @@ function PointOfSale() {
 		setSelectedBooking("");
 		toast$2({
 			title: t("pos.transaction_success"),
-			description: `${t("pos.charge_room")}: ${formatCurrency(totalAmount, language)}`
+			description: `${t("pos.charge_room")}: ${formatCurrency(totalAmount, currency)}`
 		});
 	};
 	const handleSaveProduct = (product) => {
@@ -91053,7 +91109,7 @@ function PointOfSale() {
 													className: "p-4 pt-0",
 													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 														className: "text-lg font-bold text-green-700",
-														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(item.price, language) })
+														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(item.price, currency) })
 													})
 												})
 											]
@@ -91105,14 +91161,14 @@ function PointOfSale() {
 																	c$1.quantity,
 																	" x",
 																	" ",
-																	formatCurrency(c$1.item.price, language)
+																	formatCurrency(c$1.item.price, currency)
 																]
 															})]
 														}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 															className: "flex items-center gap-2",
 															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 																className: "font-bold",
-																children: formatCurrency(c$1.item.price * c$1.quantity, language)
+																children: formatCurrency(c$1.item.price * c$1.quantity, currency)
 															}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 																variant: "ghost",
 																size: "icon",
@@ -91133,7 +91189,7 @@ function PointOfSale() {
 													className: "flex justify-between items-center text-lg font-bold mb-4",
 													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("common.total") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 														className: "text-trust-blue",
-														children: formatCurrency(totalAmount, language)
+														children: formatCurrency(totalAmount, currency)
 													})]
 												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 													className: "w-full bg-trust-blue h-12 text-lg hover:bg-blue-800",
@@ -91189,7 +91245,7 @@ function PointOfSale() {
 									className: "capitalize",
 									children: t(`pos.${item.category.toLowerCase()}`) !== `pos.${item.category.toLowerCase()}` ? t(`pos.${item.category.toLowerCase()}`) : item.category
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(item.price, language) }) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(item.price, currency) }) }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: item.validityStart || "-" }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 									variant: item.active ? "default" : "secondary",
@@ -92524,4 +92580,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-DjJuhroi.js.map
+//# sourceMappingURL=index-GtwfCyNZ.js.map

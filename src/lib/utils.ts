@@ -203,5 +203,3 @@ export const formatDate = (
 
   return format(d, 'MM/dd/yyyy', { locale: enUS })
 }
-
-

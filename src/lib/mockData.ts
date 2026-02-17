@@ -587,5 +587,3 @@ export const emailTemplates: EmailTemplate[] = [
     body: 'Hi {guest_name}, thank you for booking {property_name}. See you soon!',
   },
 ]
-
-

@@ -29,5 +29,3 @@ const useFinancialStore = () => {
 }
 
 export default useFinancialStore
-
-

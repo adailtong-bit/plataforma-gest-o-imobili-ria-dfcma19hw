@@ -1120,4 +1120,3 @@ export interface NightAudit {
     noShows: number
   }
 }
-
