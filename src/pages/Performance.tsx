@@ -129,9 +129,9 @@ export default function Performance() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Rating & Reviews Trend</CardTitle>
+            <CardTitle>{t('performance.rating_reviews_trend')}</CardTitle>
             <CardDescription>
-              Evolution of guest satisfaction over time.
+              {t('performance.guest_satisfaction_evolution')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -178,10 +178,8 @@ export default function Performance() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Financial Performance (RevPAR)</CardTitle>
-            <CardDescription>
-              Revenue per Available Room trends.
-            </CardDescription>
+            <CardTitle>{t('performance.financial_performance')}</CardTitle>
+            <CardDescription>{t('performance.revpar_trends')}</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer

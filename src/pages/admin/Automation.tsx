@@ -131,6 +131,8 @@ export default function Automation() {
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
       const link = document.createElement('a')
       const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      const url = URL.createObjectURL(blob)
       link.setAttribute('href', url)
       link.setAttribute(
         'download',
@@ -208,16 +210,18 @@ export default function Automation() {
                 <FileCheck className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <CardTitle>Task Auto-Approval</CardTitle>
+                <CardTitle>{t('automation.auto_approval')}</CardTitle>
                 <CardDescription>
-                  Automatically approve maintenance tasks below a certain cost.
+                  {t('automation.auto_approval_desc')}
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="flex items-center justify-between">
-              <Label htmlFor="auto-approve">Enable Auto-Approval</Label>
+              <Label htmlFor="auto-approve">
+                {t('automation.enable_auto_approval')}
+              </Label>
               <Switch
                 id="auto-approve"
                 checked={autoApproveRule?.enabled || false}
@@ -255,16 +259,18 @@ export default function Automation() {
                 <Zap className="h-5 w-5 text-yellow-600" />
               </div>
               <div>
-                <CardTitle>Billing Automation</CardTitle>
+                <CardTitle>{t('automation.billing_automation')}</CardTitle>
                 <CardDescription>
-                  Generate invoices automatically based on events.
+                  {t('automation.billing_automation_desc')}
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="flex items-center justify-between">
-              <Label htmlFor="auto-invoice">Auto-Generate Invoices</Label>
+              <Label htmlFor="auto-invoice">
+                {t('automation.auto_generate_invoices')}
+              </Label>
               <Switch
                 id="auto-invoice"
                 checked={autoInvoiceRule?.enabled || false}
@@ -303,14 +309,16 @@ export default function Automation() {
               <div>
                 <CardTitle>{t('settings.rent_reminder')}</CardTitle>
                 <CardDescription>
-                  Send automated reminders to tenants.
+                  {t('automation.rent_reminders_desc')}
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="flex items-center justify-between">
-              <Label htmlFor="rent-reminder">Enable Reminders</Label>
+              <Label htmlFor="rent-reminder">
+                {t('automation.enable_reminders')}
+              </Label>
               <Switch
                 id="rent-reminder"
                 checked={rentReminderRule?.enabled || false}

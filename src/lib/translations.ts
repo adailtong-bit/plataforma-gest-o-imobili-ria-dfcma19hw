@@ -114,6 +114,11 @@ export const translations = {
       based_on_reviews: 'Baseado em {count} avaliações',
       response: 'Resposta',
       no_reviews: 'Nenhuma avaliação ainda.',
+      rating_reviews_trend: 'Tendência de Avaliações e Comentários',
+      guest_satisfaction_evolution:
+        'Evolução da satisfação dos hóspedes ao longo do tempo.',
+      financial_performance: 'Desempenho Financeiro (RevPAR)',
+      revpar_trends: 'Tendências de Receita por Quarto Disponível.',
     },
     marketing: {
       promotions: 'Promoções',
@@ -148,6 +153,8 @@ export const translations = {
       hours: 'horas',
       before: 'antes',
       after: 'depois',
+      new_message: 'Nova Mensagem',
+      new_workflow: 'Novo Workflow',
     },
     analytics_page: {
       occupancy_comparison: 'Comparação de Ocupação',
@@ -509,6 +516,8 @@ export const translations = {
       category: 'Categoria',
       quantity: 'Quantidade',
       condition: 'Condição',
+      revenue: 'Receita',
+      profit: 'Lucro',
       analytics: {
         benchmark_title: 'Benchmark de Mercado',
         benchmark_desc: 'Comparativo de desempenho com o mercado.',
@@ -695,6 +704,16 @@ export const translations = {
       export_csv: 'Exportar CSV',
       export_success_title: 'Exportação Iniciada',
       auto_generate_invoice: 'Gerar Fatura Automática',
+      auto_approval: 'Auto-Aprovação',
+      auto_approval_desc:
+        'Aprovar automaticamente tarefas de manutenção abaixo de um determinado custo.',
+      enable_auto_approval: 'Ativar Auto-Aprovação',
+      billing_automation: 'Automação de Faturamento',
+      billing_automation_desc:
+        'Gerar faturas automaticamente com base em eventos.',
+      auto_generate_invoices: 'Gerar Faturas Automáticamente',
+      rent_reminders_desc: 'Enviar lembretes automáticos para inquilinos.',
+      enable_reminders: 'Ativar Lembretes',
     },
   },
   en: {
@@ -810,6 +829,11 @@ export const translations = {
       based_on_reviews: 'Based on {count} reviews',
       response: 'Response',
       no_reviews: 'No reviews yet.',
+      rating_reviews_trend: 'Rating & Reviews Trend',
+      guest_satisfaction_evolution:
+        'Evolution of guest satisfaction over time.',
+      financial_performance: 'Financial Performance (RevPAR)',
+      revpar_trends: 'Revenue per Available Room trends.',
     },
     marketing: {
       promotions: 'Promotions',
@@ -844,6 +868,8 @@ export const translations = {
       hours: 'hours',
       before: 'before',
       after: 'after',
+      new_message: 'New Message',
+      new_workflow: 'New Workflow',
     },
     analytics_page: {
       occupancy_comparison: 'Occupancy Comparison',
@@ -1204,6 +1230,8 @@ export const translations = {
       category: 'Category',
       quantity: 'Quantity',
       condition: 'Condition',
+      revenue: 'Revenue',
+      profit: 'Profit',
       analytics: {
         benchmark_title: 'Market Benchmark',
         benchmark_desc: 'Performance comparison with market data.',
@@ -1390,6 +1418,16 @@ export const translations = {
       export_csv: 'Export CSV',
       export_success_title: 'Export Started',
       auto_generate_invoice: 'Auto Generate Invoice',
+      auto_approval: 'Auto-Approval',
+      auto_approval_desc:
+        'Automatically approve maintenance tasks below a certain cost.',
+      enable_auto_approval: 'Enable Auto-Approval',
+      billing_automation: 'Billing Automation',
+      billing_automation_desc:
+        'Generate invoices automatically based on events.',
+      auto_generate_invoices: 'Auto-Generate Invoices',
+      rent_reminders_desc: 'Send automated reminders to tenants.',
+      enable_reminders: 'Enable Reminders',
     },
   },
   es: {
@@ -1505,6 +1543,11 @@ export const translations = {
       based_on_reviews: 'Basado en {count} reseñas',
       response: 'Respuesta',
       no_reviews: 'No hay reseñas todavía.',
+      rating_reviews_trend: 'Tendencia de Calificaciones y Reseñas',
+      guest_satisfaction_evolution:
+        'Evolución de la satisfacción de los huéspedes a lo largo del tiempo.',
+      financial_performance: 'Rendimiento Financiero (RevPAR)',
+      revpar_trends: 'Tendencias de Ingresos por Habitación Disponible.',
     },
     marketing: {
       promotions: 'Promociones',
@@ -1539,6 +1582,8 @@ export const translations = {
       hours: 'horas',
       before: 'antes',
       after: 'después',
+      new_message: 'Nuevo Mensaje',
+      new_workflow: 'Nuevo Flujo',
     },
     analytics_page: {
       occupancy_comparison: 'Comparación de Ocupación',
@@ -1907,6 +1952,8 @@ export const translations = {
       category: 'Categoría',
       quantity: 'Cantidad',
       condition: 'Condición',
+      revenue: 'Ingresos',
+      profit: 'Beneficio',
       analytics: {
         benchmark_title: 'Benchmark de Mercado',
         benchmark_desc: 'Comparación de rendimiento con el mercado.',
@@ -2199,6 +2246,16 @@ export const translations = {
       },
       location: 'Ubicación',
       history_adjustments: 'Historial de Ajustes',
+      auto_approval: 'Auto-Aprobación',
+      auto_approval_desc:
+        'Aprobar automáticamente tareas de mantenimiento por debajo de un costo determinado.',
+      enable_auto_approval: 'Activar Auto-Aprobación',
+      billing_automation: 'Automatización de Facturación',
+      billing_automation_desc:
+        'Generar facturas automáticamente basadas en eventos.',
+      auto_generate_invoices: 'Generar Facturas Automáticamente',
+      rent_reminders_desc: 'Enviar recordatorios automáticos a los inquilinos.',
+      enable_reminders: 'Activar Recordatorios',
     },
   },
 }
