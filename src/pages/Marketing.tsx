@@ -32,7 +32,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Tag, Megaphone, Trash2, Calendar, Workflow } from 'lucide-react'
+import { Plus, Tag, Megaphone, Trash2, Workflow } from 'lucide-react'
 import useManagementStore from '@/stores/useManagementStore'
 import { useToast } from '@/hooks/use-toast'
 import { Promotion, Campaign } from '@/lib/types'

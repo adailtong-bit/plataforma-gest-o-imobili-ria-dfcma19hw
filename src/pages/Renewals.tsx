@@ -486,7 +486,7 @@ export default function Renewals() {
                 : 'text-slate-900 border-slate-300'
             }
           >
-            <ListIcon className="h-4 w-4 mr-2" /> List
+            <ListIcon className="h-4 w-4 mr-2" /> {t('common.list')}
           </Button>
           <Button
             variant={viewMode === 'calendar' ? 'default' : 'outline'}
@@ -498,7 +498,8 @@ export default function Renewals() {
                 : 'text-slate-900 border-slate-300'
             }
           >
-            <CalendarIcon className="h-4 w-4 mr-2" /> Calendar
+            <CalendarIcon className="h-4 w-4 mr-2" />{' '}
+            {t('common.calendar_view')}
           </Button>
         </div>
       </div>
@@ -519,7 +520,7 @@ export default function Renewals() {
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos Status</SelectItem>
+            <SelectItem value="all">{t('renewals.all_status')}</SelectItem>
             <SelectItem value="critical">Crítico (&lt;30d)</SelectItem>
             <SelectItem value="upcoming">Próximo (&lt;90d)</SelectItem>
             <SelectItem value="renewed">Renovados</SelectItem>
@@ -543,7 +544,7 @@ export default function Renewals() {
                   format(dateRange.from, 'LLL dd, y')
                 )
               ) : (
-                <span>Filtrar por Data</span>
+                <span>{t('renewals.filter_date')}</span>
               )}
             </Button>
           </PopoverTrigger>
@@ -595,11 +596,11 @@ export default function Renewals() {
                     {t('tenants.new_tenant')}
                   </TableHead>
                   <TableHead className="font-bold text-slate-950">
-                    Status
+                    {t('common.status')}
                   </TableHead>
                   {showFinancials && (
                     <TableHead className="font-bold text-slate-950">
-                      Sugestão ($)
+                      {t('renewals.suggestion')}
                     </TableHead>
                   )}
                   {showFinancials && (
@@ -622,7 +623,7 @@ export default function Renewals() {
                       colSpan={9}
                       className="text-center py-8 text-slate-600 font-medium"
                     >
-                      Nenhuma renovação correspondente aos filtros.
+                      {t('renewals.no_results')}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -656,7 +657,7 @@ export default function Renewals() {
                 onClick={() => setCurrentMonth(addMonths(currentMonth, -1))}
                 className="border-slate-300 text-slate-900"
               >
-                Anterior
+                {t('common.back')}
               </Button>
               <Button
                 variant="outline"

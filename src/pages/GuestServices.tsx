@@ -98,7 +98,8 @@ export default function GuestServices() {
             {t('guest_services.manage_services')}
           </TabsTrigger>
           <TabsTrigger value="financials">
-            <BarChart2 className="h-4 w-4 mr-2" /> Financial Insights
+            <BarChart2 className="h-4 w-4 mr-2" />{' '}
+            {t('guest_services.financial_insights')}
           </TabsTrigger>
         </TabsList>
 

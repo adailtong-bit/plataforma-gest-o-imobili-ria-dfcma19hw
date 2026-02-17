@@ -54802,6 +54802,7 @@ const translations = {
 			subtitle: "Catálogo de serviços e agendamentos.",
 			new_service: "Novo Serviço",
 			manage_services: "Gerenciar Serviços",
+			financial_insights: "Insights Financeiros",
 			service_name: "Nome do Serviço",
 			description: "Descrição",
 			price: "Preço",
@@ -55001,7 +55002,13 @@ const translations = {
 			statements: "Extratos",
 			no_statements: "Nenhum extrato carregado.",
 			reconciled: "Conciliado",
-			pending_reconciliation: "Pendente Conciliação"
+			pending_reconciliation: "Pendente Conciliação",
+			overview_pnl: "Visão Geral & DRE",
+			tower_breakdown: "Detalhamento por Torre",
+			channel_analytics: "Análise de Canais",
+			projected_cash_flow: "Fluxo de Caixa Projetado",
+			total_expenses: "Despesas Totais",
+			net_income: "Lucro Líquido"
 		},
 		tasks: {
 			title: "Tarefas",
@@ -55018,6 +55025,19 @@ const translations = {
 			service_type: "Tipo de Serviço",
 			change_status: "Mudar Status",
 			location: "Localização"
+		},
+		visits: {
+			schedule_visit: "Agendar Visita",
+			enter_details: "Insira os detalhes da visita abaixo.",
+			assign_team: "Atribuir Membro da Equipe / Parceiro",
+			time: "Hora",
+			reason: "Motivo da Visita",
+			showing: "Apresentação",
+			inspection: "Inspeção",
+			client_prefs: "Preferências do cliente, códigos de acesso, etc.",
+			list_title: "Lista de Visitas",
+			upcoming_past: "Visitas futuras e passadas.",
+			no_visits: "Nenhuma visita agendada."
 		},
 		calendar: {
 			title: "Calendário",
@@ -55077,7 +55097,16 @@ const translations = {
 			subtitle: "Gestão de vencimento de contratos.",
 			negotiation_started: "Negociação Iniciada",
 			search_placeholder: "Buscar renovação...",
-			current_value: "Valor Atual"
+			current_value: "Valor Atual",
+			suggestion: "Sugestão ($)",
+			all_status: "Todos Status",
+			filter_date: "Filtrar por Data",
+			no_results: "Nenhuma renovação correspondente aos filtros.",
+			contract_upload: "Upload de Contrato",
+			new_value: "Novo Valor",
+			new_start_date: "Nova Data Início",
+			new_end_date: "Nova Data Fim",
+			close_negotiation: "Fechar Negociação"
 		},
 		common: {
 			dashboard: "Painel Imobiliário",
@@ -55251,7 +55280,11 @@ const translations = {
 			return_home: "Voltar para o Início",
 			access_denied: "Acesso Negado",
 			access_denied_desc: "Você não tem permissão para visualizar esta página.",
-			export_success_title: "Exportação Iniciada"
+			export_success_title: "Exportação Iniciada",
+			list: "Lista",
+			calendar_view: "Calendário",
+			start_date: "Data Início",
+			end_date: "Data Fim"
 		},
 		dashboard: {
 			unread: "não lidas",
@@ -55399,7 +55432,11 @@ const translations = {
 			check_in: "Check-in",
 			check_out: "Check-out",
 			total: "Total",
-			platform: "Plataforma"
+			platform: "Plataforma",
+			reports: "Relatórios",
+			calendar: "Calendário",
+			bookings: "Reservas",
+			communication: "Comunicação"
 		},
 		marketing_tab: { portal_sync: "Sincronização de Portais" },
 		automation: {
@@ -55510,6 +55547,7 @@ const translations = {
 			subtitle: "Service catalog and scheduling.",
 			new_service: "New Service",
 			manage_services: "Manage Services",
+			financial_insights: "Financial Insights",
 			service_name: "Service Name",
 			description: "Description",
 			price: "Price",
@@ -55709,7 +55747,13 @@ const translations = {
 			statements: "Statements",
 			no_statements: "No statements uploaded.",
 			reconciled: "Reconciled",
-			pending_reconciliation: "Pending Reconciliation"
+			pending_reconciliation: "Pending Reconciliation",
+			overview_pnl: "Overview & P&L",
+			tower_breakdown: "Tower Breakdown",
+			channel_analytics: "Channel Analytics",
+			projected_cash_flow: "Projected Cash Flow",
+			total_expenses: "Total Expenses",
+			net_income: "Net Income"
 		},
 		tasks: {
 			title: "Tasks",
@@ -55726,6 +55770,19 @@ const translations = {
 			service_type: "Service Type",
 			change_status: "Change Status",
 			location: "Location"
+		},
+		visits: {
+			schedule_visit: "Schedule Visit",
+			enter_details: "Enter visit details below.",
+			assign_team: "Assign Team Member / Partner",
+			time: "Time",
+			reason: "Reason for Visit",
+			showing: "Showing",
+			inspection: "Inspection",
+			client_prefs: "Client preferences, access codes, etc.",
+			list_title: "Visits List",
+			upcoming_past: "Upcoming and past visits.",
+			no_visits: "No visits scheduled."
 		},
 		calendar: {
 			title: "Calendar",
@@ -55785,7 +55842,16 @@ const translations = {
 			subtitle: "Contract expiration management.",
 			negotiation_started: "Negotiation Started",
 			search_placeholder: "Search renewal...",
-			current_value: "Current Value"
+			current_value: "Current Value",
+			suggestion: "Suggestion ($)",
+			all_status: "All Status",
+			filter_date: "Filter by Date",
+			no_results: "No renewals found matching filters.",
+			contract_upload: "Contract Upload",
+			new_value: "New Value",
+			new_start_date: "New Start Date",
+			new_end_date: "New End Date",
+			close_negotiation: "Close Negotiation"
 		},
 		common: {
 			dashboard: "Real Estate Dashboard",
@@ -55959,7 +56025,11 @@ const translations = {
 			return_home: "Return Home",
 			access_denied: "Access Denied",
 			access_denied_desc: "You do not have permission to view this page.",
-			export_success_title: "Export Started"
+			export_success_title: "Export Started",
+			list: "List",
+			calendar_view: "Calendar",
+			start_date: "Start Date",
+			end_date: "End Date"
 		},
 		dashboard: {
 			unread: "unread",
@@ -56107,7 +56177,11 @@ const translations = {
 			check_in: "Check-in",
 			check_out: "Check-out",
 			total: "Total",
-			platform: "Platform"
+			platform: "Platform",
+			reports: "Reports",
+			calendar: "Calendar",
+			bookings: "Bookings",
+			communication: "Communication"
 		},
 		marketing_tab: { portal_sync: "Portal Sync" },
 		automation: {
@@ -56218,6 +56292,7 @@ const translations = {
 			subtitle: "Catálogo de servicios y programación.",
 			new_service: "Nuevo Servicio",
 			manage_services: "Gestionar Servicios",
+			financial_insights: "Insights Financieros",
 			service_name: "Nombre del Servicio",
 			description: "Descripción",
 			price: "Precio",
@@ -56417,7 +56492,13 @@ const translations = {
 			statements: "Extractos",
 			no_statements: "Ningún extracto subido.",
 			reconciled: "Conciliado",
-			pending_reconciliation: "Pendiente Conciliación"
+			pending_reconciliation: "Pendiente Conciliación",
+			overview_pnl: "Visión General y P&G",
+			tower_breakdown: "Desglose por Torre",
+			channel_analytics: "Análisis de Canales",
+			projected_cash_flow: "Flujo de Caja Proyectado",
+			total_expenses: "Gastos Totales",
+			net_income: "Ingreso Neto"
 		},
 		tasks: {
 			title: "Tareas",
@@ -56434,6 +56515,19 @@ const translations = {
 			service_type: "Tipo de Servicio",
 			change_status: "Cambiar Estado",
 			location: "Ubicación"
+		},
+		visits: {
+			schedule_visit: "Programar Visita",
+			enter_details: "Ingrese los detalles de la visita a continuación.",
+			assign_team: "Asignar Miembro del Equipo / Socio",
+			time: "Hora",
+			reason: "Motivo de la Visita",
+			showing: "Mostrando",
+			inspection: "Inspección",
+			client_prefs: "Preferencias del cliente, códigos de acceso, etc.",
+			list_title: "Lista de Visitas",
+			upcoming_past: "Visitas próximas y pasadas.",
+			no_visits: "No hay visitas programadas."
 		},
 		calendar: {
 			title: "Calendario",
@@ -56493,7 +56587,16 @@ const translations = {
 			subtitle: "Gestión de vencimiento de contratos.",
 			negotiation_started: "Negociación Iniciada",
 			search_placeholder: "Buscar renovación...",
-			current_value: "Valor Actual"
+			current_value: "Valor Actual",
+			suggestion: "Sugerencia ($)",
+			all_status: "Todos los Estados",
+			filter_date: "Filtrar por Fecha",
+			no_results: "No se encontraron renovaciones coincidentes.",
+			contract_upload: "Subida de Contrato",
+			new_value: "Nuevo Valor",
+			new_start_date: "Nueva Fecha Inicio",
+			new_end_date: "Nueva Fecha Fin",
+			close_negotiation: "Cerrar Negociación"
 		},
 		common: {
 			dashboard: "Panel Inmobiliario",
@@ -56946,7 +57049,9 @@ const translations = {
 			billing_automation_desc: "Generar facturas automáticamente basadas en eventos.",
 			auto_generate_invoices: "Generar Facturas Automáticamente",
 			rent_reminders_desc: "Enviar recordatorios automáticos a los inquilinos.",
-			enable_reminders: "Activar Recordatorios"
+			enable_reminders: "Activar Recordatorios",
+			start_date: "Fecha Inicio",
+			end_date: "Fecha Fin"
 		}
 	}
 };
@@ -73094,19 +73199,35 @@ function FinancialReports() {
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, { children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 						value: "overview",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumn, { className: "h-4 w-4 mr-2" }), " Overview & P&L"]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumn, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t("financial.overview_pnl")
+						]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 						value: "towers",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-4 w-4 mr-2" }), " Tower Breakdown"]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t("financial.tower_breakdown")
+						]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 						value: "channels",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-4 w-4 mr-2" }), " Channel Analytics"]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t("financial.channel_analytics")
+						]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 						value: "projection",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrendingUp, { className: "h-4 w-4 mr-2" }), " Projected Cash Flow"]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrendingUp, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t("financial.projected_cash_flow")
+						]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 						value: "category",
@@ -73138,7 +73259,7 @@ function FinancialReports() {
 									className: "pt-6",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 										className: "text-sm font-medium text-muted-foreground",
-										children: "Total Expenses"
+										children: t("financial.total_expenses")
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 										className: "text-2xl font-bold text-red-700",
 										children: formatCurrency(filteredEntries.filter((e) => e.type === "expense").reduce((acc, curr) => acc + curr.amount, 0), language)
@@ -73151,7 +73272,7 @@ function FinancialReports() {
 									className: "pt-6",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 										className: "text-sm font-medium text-muted-foreground",
-										children: "Net Income"
+										children: t("financial.net_income")
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 										className: "text-2xl font-bold text-blue-700",
 										children: formatCurrency(filteredEntries.filter((e) => e.type === "income").reduce((acc, curr) => acc + curr.amount, 0) - filteredEntries.filter((e) => e.type === "expense").reduce((acc, curr) => acc + curr.amount, 0), language)
@@ -73163,7 +73284,7 @@ function FinancialReports() {
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "towers",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Revenue by Tower" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Financial performance split by building towers." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("financial.tower_breakdown") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Financial performance split by building towers." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 						className: "h-[300px] w-full",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 							config: { revenue: {
@@ -73233,7 +73354,7 @@ function FinancialReports() {
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "projection",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Projected Cash Flow (6 Months)" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, { children: [t("financial.projected_cash_flow"), " (6 Months)"] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 						className: "h-[400px] w-full",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 							config: {
@@ -86744,13 +86865,21 @@ function Renewals() {
 						size: "sm",
 						onClick: () => setViewMode("list"),
 						className: viewMode === "list" ? "bg-trust-blue text-white" : "text-slate-900 border-slate-300",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(List, { className: "h-4 w-4 mr-2" }), " List"]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(List, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t("common.list")
+						]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						variant: viewMode === "calendar" ? "default" : "outline",
 						size: "sm",
 						onClick: () => setViewMode("calendar"),
 						className: viewMode === "calendar" ? "bg-trust-blue text-white" : "text-slate-900 border-slate-300",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-4 w-4 mr-2" }), " Calendar"]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t("common.calendar_view")
+						]
 					})]
 				})]
 			}),
@@ -86775,7 +86904,7 @@ function Renewals() {
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "all",
-								children: "Todos Status"
+								children: t("renewals.all_status")
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "critical",
@@ -86801,7 +86930,7 @@ function Renewals() {
 								" -",
 								" ",
 								format(dateRange.to, "LLL dd, y")
-							] }) : format(dateRange.from, "LLL dd, y") : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Filtrar por Data" })]
+							] }) : format(dateRange.from, "LLL dd, y") : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("renewals.filter_date") })]
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContent, {
 						className: "w-auto p-0",
@@ -86852,11 +86981,11 @@ function Renewals() {
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 						className: "font-bold text-slate-950",
-						children: "Status"
+						children: t("common.status")
 					}),
 					showFinancials && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 						className: "font-bold text-slate-950",
-						children: "Sugestão ($)"
+						children: t("renewals.suggestion")
 					}),
 					showFinancials && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 						className: "font-bold text-slate-950",
@@ -86873,7 +87002,7 @@ function Renewals() {
 				] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredData.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 					colSpan: 9,
 					className: "text-center py-8 text-slate-600 font-medium",
-					children: "Nenhuma renovação correspondente aos filtros."
+					children: t("renewals.no_results")
 				}) }) : filteredData.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RenewalRow, {
 					data: item,
 					isSelected: selectedIds.has(item.tenant.id),
@@ -86897,7 +87026,7 @@ function Renewals() {
 							variant: "outline",
 							onClick: () => setCurrentMonth(addMonths(currentMonth, -1)),
 							className: "border-slate-300 text-slate-900",
-							children: "Anterior"
+							children: t("common.back")
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "outline",
 							onClick: () => setCurrentMonth(addMonths(currentMonth, 1)),
@@ -88253,7 +88382,7 @@ function ShortTerm() {
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutDashboard, { className: "h-4 w-4 mr-2" }),
 							" ",
-							t("common.reports")
+							t("short_term.reports")
 						]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
@@ -88261,16 +88390,24 @@ function ShortTerm() {
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CalendarDays, { className: "h-4 w-4 mr-2" }),
 							" ",
-							t("common.calendar")
+							t("short_term.calendar")
 						]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 						value: "bookings",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(List, { className: "h-4 w-4 mr-2" }), " Reservas"]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(List, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t("short_term.bookings")
+						]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 						value: "communication",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4 mr-2" }), " Comunicação"]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t("short_term.communication")
+						]
 					})
 				] }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
@@ -88600,7 +88737,7 @@ function Visits() {
 			reason
 		});
 		toast$2({
-			title: "Visit Scheduled",
+			title: t("visits.schedule_visit"),
 			description: `Visit for ${clientName} scheduled successfully.`
 		});
 		setClientName("");
@@ -88636,7 +88773,7 @@ function Visits() {
 				status
 			});
 			toast$2({
-				title: "Status Updated",
+				title: t("common.status") + " Updated",
 				description: `Visit marked as ${status}.`
 			});
 			setConfirmOpen(false);
@@ -88644,9 +88781,9 @@ function Visits() {
 		}
 	};
 	const handleDelete = (id) => {
-		if (confirm("Are you sure you want to delete this visit?")) {
+		if (confirm(t("common.delete_title"))) {
 			deleteVisit(id);
-			toast$2({ title: "Visit Deleted" });
+			toast$2({ title: t("common.success") });
 		}
 	};
 	const openEdit = (visit) => {
@@ -88666,7 +88803,7 @@ function Visits() {
 		});
 		setIsEditOpen(false);
 		setEditingVisit(null);
-		toast$2({ title: "Visit Updated" });
+		toast$2({ title: t("common.success") });
 	};
 	const getStatusBadge = (status) => {
 		switch (status) {
@@ -88686,12 +88823,12 @@ function Visits() {
 			case "suspended": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 				variant: "outline",
 				className: "bg-yellow-100 text-yellow-800 border-yellow-200",
-				children: "Suspended"
+				children: t("status.suspended")
 			});
 			case "rescheduled": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 				variant: "outline",
 				className: "bg-purple-100 text-purple-800 border-purple-200",
-				children: "Rescheduled"
+				children: t("status.rescheduled") || "Rescheduled"
 			});
 			default: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 				variant: "secondary",
@@ -88715,14 +88852,14 @@ function Visits() {
 					children: t("common.visit_scheduling")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-muted-foreground",
-					children: "Manage property visits and client appointments."
+					children: t("visits.upcoming_past")
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 					className: "lg:col-span-1",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("common.schedule_visit") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Enter visit details below." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("common.schedule_visit") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("visits.enter_details") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 						className: "space-y-4",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -88746,10 +88883,10 @@ function Visits() {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Assign Team Member / Partner" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("visits.assign_team") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 									value: assignedTo,
 									onValueChange: setAssignedTo,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Assignee" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: assignableUsers.map((u$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: assignableUsers.map((u$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
 										value: u$1.id,
 										children: [
 											u$1.name,
@@ -88782,7 +88919,7 @@ function Visits() {
 									})] })]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "space-y-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Time" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("visits.time") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										type: "time",
 										value: time$1,
 										onChange: (e) => setTime(e.target.value)
@@ -88791,16 +88928,29 @@ function Visits() {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Reason for Visit" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									placeholder: "Showing, Inspection, etc.",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("visits.reason") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 									value: reason,
-									onChange: (e) => setReason(e.target.value)
+									onValueChange: setReason,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "showing",
+											children: t("visits.showing")
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "inspection",
+											children: t("visits.inspection")
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "other",
+											children: t("common.none")
+										})
+									] })]
 								})]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "space-y-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t("common.description"), " / Notes"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
-									placeholder: "Client preferences, access codes, etc.",
+									placeholder: t("visits.client_prefs"),
 									value: notes,
 									onChange: (e) => setNotes(e.target.value)
 								})]
@@ -88818,11 +88968,11 @@ function Visits() {
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 					className: "lg:col-span-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("common.visits_list") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Upcoming and past visits." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("visits.list_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("visits.upcoming_past") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.date") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.property") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.client_name") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Assigned To" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("tasks.assignee") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
@@ -88831,7 +88981,7 @@ function Visits() {
 					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: sortedVisits.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 						colSpan: 6,
 						className: "text-center py-8 text-muted-foreground",
-						children: "No visits scheduled."
+						children: t("visits.no_visits")
 					}) }) : sortedVisits.map((visit) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex flex-col",
@@ -88863,7 +89013,7 @@ function Visits() {
 										size: "icon",
 										variant: "ghost",
 										onClick: () => openEdit(visit),
-										title: "Edit Details",
+										title: t("common.edit"),
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
 									}),
 									visit.status !== "completed" && visit.status !== "canceled" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -88871,14 +89021,14 @@ function Visits() {
 										variant: "ghost",
 										className: "h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50",
 										onClick: () => initiateStatusChange(visit, "completed"),
-										title: "Complete (Assigned User Only)",
+										title: t("common.completed"),
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheckBig, { className: "h-4 w-4" })
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 										size: "icon",
 										variant: "ghost",
 										className: "h-8 w-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50",
 										onClick: () => initiateStatusChange(visit, "suspended"),
-										title: "Suspend",
+										title: t("status.suspended"),
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "h-4 w-4" })
 									})] }),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -88886,7 +89036,7 @@ function Visits() {
 										variant: "ghost",
 										className: "h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50",
 										onClick: () => initiateStatusChange(visit, "canceled"),
-										title: "Cancel",
+										title: t("common.cancel"),
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ban, { className: "h-4 w-4" })
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -88894,7 +89044,7 @@ function Visits() {
 										variant: "ghost",
 										className: "h-8 w-8 text-muted-foreground hover:text-foreground",
 										onClick: () => handleDelete(visit.id),
-										title: "Delete Record",
+										title: t("common.delete"),
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
 									})
 								]
@@ -88909,7 +89059,7 @@ function Visits() {
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 					className: "max-w-lg",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Edit Visit Details" }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("common.edit") }) }),
 						editingVisit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-4 py-4",
 							children: [
@@ -88925,7 +89075,7 @@ function Visits() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Client Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.client_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: editingVisit.clientName,
 										onChange: (e) => setEditingVisit({
 											...editingVisit,
@@ -88935,13 +89085,13 @@ function Visits() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Assigned To" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("tasks.assignee") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 										value: editingVisit.assignedTo || "",
 										onValueChange: (val) => setEditingVisit({
 											...editingVisit,
 											assignedTo: val
 										}),
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Unassigned" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: assignableUsers.map((u$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: assignableUsers.map((u$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
 											value: u$1.id,
 											children: [
 												u$1.name,
@@ -88954,25 +89104,22 @@ function Visits() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Date & Time" }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "datetime-local",
-											value: format(new Date(editingVisit.date), "yyyy-MM-dd'T'HH:mm"),
-											onChange: (e) => setEditingVisit({
-												...editingVisit,
-												date: new Date(e.target.value).toISOString()
-											})
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "text-xs text-muted-foreground",
-											children: "Changing date will automatically set status to 'Rescheduled'."
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+										t("common.date"),
+										" & ",
+										t("visits.time")
+									] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										type: "datetime-local",
+										value: format(new Date(editingVisit.date), "yyyy-MM-dd'T'HH:mm"),
+										onChange: (e) => setEditingVisit({
+											...editingVisit,
+											date: new Date(e.target.value).toISOString()
 										})
-									]
+									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Reason for Visit" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("visits.reason") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: editingVisit.reason || "",
 										onChange: (e) => setEditingVisit({
 											...editingVisit,
@@ -88982,7 +89129,7 @@ function Visits() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Notes" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
 										value: editingVisit.notes || "",
 										onChange: (e) => setEditingVisit({
 											...editingVisit,
@@ -88994,7 +89141,7 @@ function Visits() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							onClick: handleUpdateVisit,
-							children: "Save Changes"
+							children: t("common.save")
 						}) })
 					]
 				})
@@ -89002,14 +89149,14 @@ function Visits() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialog, {
 				open: confirmOpen,
 				onOpenChange: setConfirmOpen,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Confirm Status Change" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogDescription, { children: [
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogDescription, { children: [
 					"Are you sure you want to change the status to",
 					" ",
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: pendingStatusChange?.status }),
 					"?"
-				] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+				] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
 					onClick: confirmStatusChange,
-					children: "Confirm"
+					children: t("common.confirm")
 				})] })] })
 			})
 		]
@@ -90404,7 +90551,11 @@ function GuestServices() {
 						children: t("guest_services.manage_services")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 						value: "financials",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumn, { className: "h-4 w-4 mr-2" }), " Financial Insights"]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumn, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t("guest_services.financial_insights")
+						]
 					})] }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
 						value: "catalog",
@@ -92243,4 +92394,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-EjxxzLeB.js.map
+//# sourceMappingURL=index-C4v89euF.js.map

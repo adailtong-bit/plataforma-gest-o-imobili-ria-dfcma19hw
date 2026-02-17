@@ -283,16 +283,19 @@ export function FinancialReports() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">
-            <BarChart2 className="h-4 w-4 mr-2" /> Overview & P&L
+            <BarChart2 className="h-4 w-4 mr-2" /> {t('financial.overview_pnl')}
           </TabsTrigger>
           <TabsTrigger value="towers">
-            <Building2 className="h-4 w-4 mr-2" /> Tower Breakdown
+            <Building2 className="h-4 w-4 mr-2" />{' '}
+            {t('financial.tower_breakdown')}
           </TabsTrigger>
           <TabsTrigger value="channels">
-            <Globe className="h-4 w-4 mr-2" /> Channel Analytics
+            <Globe className="h-4 w-4 mr-2" />{' '}
+            {t('financial.channel_analytics')}
           </TabsTrigger>
           <TabsTrigger value="projection">
-            <TrendingUp className="h-4 w-4 mr-2" /> Projected Cash Flow
+            <TrendingUp className="h-4 w-4 mr-2" />{' '}
+            {t('financial.projected_cash_flow')}
           </TabsTrigger>
           <TabsTrigger value="category">
             <PieChartIcon className="h-4 w-4 mr-2" /> Profitability by Category
@@ -319,7 +322,7 @@ export function FinancialReports() {
             <Card className="bg-red-50 border-red-200">
               <CardContent className="pt-6">
                 <div className="text-sm font-medium text-muted-foreground">
-                  Total Expenses
+                  {t('financial.total_expenses')}
                 </div>
                 <div className="text-2xl font-bold text-red-700">
                   {formatCurrency(
@@ -334,7 +337,7 @@ export function FinancialReports() {
             <Card className="bg-blue-50 border-blue-200">
               <CardContent className="pt-6">
                 <div className="text-sm font-medium text-muted-foreground">
-                  Net Income
+                  {t('financial.net_income')}
                 </div>
                 <div className="text-2xl font-bold text-blue-700">
                   {formatCurrency(
@@ -355,7 +358,7 @@ export function FinancialReports() {
         <TabsContent value="towers">
           <Card>
             <CardHeader>
-              <CardTitle>Revenue by Tower</CardTitle>
+              <CardTitle>{t('financial.tower_breakdown')}</CardTitle>
               <CardDescription>
                 Financial performance split by building towers.
               </CardDescription>
@@ -436,7 +439,9 @@ export function FinancialReports() {
         <TabsContent value="projection">
           <Card>
             <CardHeader>
-              <CardTitle>Projected Cash Flow (6 Months)</CardTitle>
+              <CardTitle>
+                {t('financial.projected_cash_flow')} (6 Months)
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[400px] w-full">

@@ -135,7 +135,7 @@ export default function Visits() {
 
     addVisit(newVisit)
     toast({
-      title: 'Visit Scheduled',
+      title: t('visits.schedule_visit'),
       description: `Visit for ${clientName} scheduled successfully.`,
     })
 
@@ -175,7 +175,7 @@ export default function Visits() {
       const { visit, status } = pendingStatusChange
       updateVisit({ ...visit, status })
       toast({
-        title: 'Status Updated',
+        title: t('common.status') + ' Updated',
         description: `Visit marked as ${status}.`,
       })
       setConfirmOpen(false)
@@ -184,9 +184,9 @@ export default function Visits() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this visit?')) {
+    if (confirm(t('common.delete_title'))) {
       deleteVisit(id)
-      toast({ title: 'Visit Deleted' })
+      toast({ title: t('common.success') })
     }
   }
 
@@ -215,7 +215,7 @@ export default function Visits() {
     })
     setIsEditOpen(false)
     setEditingVisit(null)
-    toast({ title: 'Visit Updated' })
+    toast({ title: t('common.success') })
   }
 
   const getStatusBadge = (status: string) => {
@@ -243,7 +243,7 @@ export default function Visits() {
             variant="outline"
             className="bg-yellow-100 text-yellow-800 border-yellow-200"
           >
-            Suspended
+            {t('status.suspended')}
           </Badge>
         )
       case 'rescheduled':
@@ -252,7 +252,7 @@ export default function Visits() {
             variant="outline"
             className="bg-purple-100 text-purple-800 border-purple-200"
           >
-            Rescheduled
+            {t('status.rescheduled') || 'Rescheduled'}
           </Badge>
         )
       default:
@@ -277,9 +277,7 @@ export default function Visits() {
         <h1 className="text-3xl font-bold tracking-tight text-navy">
           {t('common.visit_scheduling')}
         </h1>
-        <p className="text-muted-foreground">
-          Manage property visits and client appointments.
-        </p>
+        <p className="text-muted-foreground">{t('visits.upcoming_past')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -287,7 +285,7 @@ export default function Visits() {
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle>{t('common.schedule_visit')}</CardTitle>
-            <CardDescription>Enter visit details below.</CardDescription>
+            <CardDescription>{t('visits.enter_details')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -316,10 +314,10 @@ export default function Visits() {
             </div>
 
             <div className="space-y-2">
-              <Label>Assign Team Member / Partner</Label>
+              <Label>{t('visits.assign_team')}</Label>
               <Select value={assignedTo} onValueChange={setAssignedTo}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select Assignee" />
+                  <SelectValue placeholder={t('common.select')} />
                 </SelectTrigger>
                 <SelectContent>
                   {assignableUsers.map((u) => (
@@ -358,7 +356,7 @@ export default function Visits() {
                 </Popover>
               </div>
               <div className="space-y-2">
-                <Label>Time</Label>
+                <Label>{t('visits.time')}</Label>
                 <Input
                   type="time"
                   value={time}
@@ -368,18 +366,25 @@ export default function Visits() {
             </div>
 
             <div className="space-y-2">
-              <Label>Reason for Visit</Label>
-              <Input
-                placeholder="Showing, Inspection, etc."
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-              />
+              <Label>{t('visits.reason')}</Label>
+              <Select value={reason} onValueChange={setReason}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('common.select')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="showing">{t('visits.showing')}</SelectItem>
+                  <SelectItem value="inspection">
+                    {t('visits.inspection')}
+                  </SelectItem>
+                  <SelectItem value="other">{t('common.none')}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
               <Label>{t('common.description')} / Notes</Label>
               <Textarea
-                placeholder="Client preferences, access codes, etc."
+                placeholder={t('visits.client_prefs')}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               />
@@ -394,8 +399,8 @@ export default function Visits() {
         {/* Visits List */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>{t('common.visits_list')}</CardTitle>
-            <CardDescription>Upcoming and past visits.</CardDescription>
+            <CardTitle>{t('visits.list_title')}</CardTitle>
+            <CardDescription>{t('visits.upcoming_past')}</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -404,7 +409,7 @@ export default function Visits() {
                   <TableHead>{t('common.date')}</TableHead>
                   <TableHead>{t('common.property')}</TableHead>
                   <TableHead>{t('common.client_name')}</TableHead>
-                  <TableHead>Assigned To</TableHead>
+                  <TableHead>{t('tasks.assignee')}</TableHead>
                   <TableHead>{t('common.status')}</TableHead>
                   <TableHead className="text-right">
                     {t('common.actions')}
@@ -418,7 +423,7 @@ export default function Visits() {
                       colSpan={6}
                       className="text-center py-8 text-muted-foreground"
                     >
-                      No visits scheduled.
+                      {t('visits.no_visits')}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -454,7 +459,7 @@ export default function Visits() {
                             size="icon"
                             variant="ghost"
                             onClick={() => openEdit(visit)}
-                            title="Edit Details"
+                            title={t('common.edit')}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -469,7 +474,7 @@ export default function Visits() {
                                   onClick={() =>
                                     initiateStatusChange(visit, 'completed')
                                   }
-                                  title="Complete (Assigned User Only)"
+                                  title={t('common.completed')}
                                 >
                                   <CheckCircle className="h-4 w-4" />
                                 </Button>
@@ -480,7 +485,7 @@ export default function Visits() {
                                   onClick={() =>
                                     initiateStatusChange(visit, 'suspended')
                                   }
-                                  title="Suspend"
+                                  title={t('status.suspended')}
                                 >
                                   <Clock className="h-4 w-4" />
                                 </Button>
@@ -493,7 +498,7 @@ export default function Visits() {
                             onClick={() =>
                               initiateStatusChange(visit, 'canceled')
                             }
-                            title="Cancel"
+                            title={t('common.cancel')}
                           >
                             <Ban className="h-4 w-4" />
                           </Button>
@@ -503,7 +508,7 @@ export default function Visits() {
                             variant="ghost"
                             className="h-8 w-8 text-muted-foreground hover:text-foreground"
                             onClick={() => handleDelete(visit.id)}
-                            title="Delete Record"
+                            title={t('common.delete')}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -522,7 +527,7 @@ export default function Visits() {
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Edit Visit Details</DialogTitle>
+            <DialogTitle>{t('common.edit')}</DialogTitle>
           </DialogHeader>
           {editingVisit && (
             <div className="grid gap-4 py-4">
@@ -543,7 +548,7 @@ export default function Visits() {
               </div>
 
               <div className="grid gap-2">
-                <Label>Client Name</Label>
+                <Label>{t('common.client_name')}</Label>
                 <Input
                   value={editingVisit.clientName}
                   onChange={(e) =>
@@ -556,7 +561,7 @@ export default function Visits() {
               </div>
 
               <div className="grid gap-2">
-                <Label>Assigned To</Label>
+                <Label>{t('tasks.assignee')}</Label>
                 <Select
                   value={editingVisit.assignedTo || ''}
                   onValueChange={(val) =>
@@ -564,7 +569,7 @@ export default function Visits() {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Unassigned" />
+                    <SelectValue placeholder={t('common.select')} />
                   </SelectTrigger>
                   <SelectContent>
                     {assignableUsers.map((u) => (
@@ -577,7 +582,9 @@ export default function Visits() {
               </div>
 
               <div className="grid gap-2">
-                <Label>Date & Time</Label>
+                <Label>
+                  {t('common.date')} & {t('visits.time')}
+                </Label>
                 <Input
                   type="datetime-local"
                   value={format(
@@ -591,13 +598,10 @@ export default function Visits() {
                     })
                   }
                 />
-                <p className="text-xs text-muted-foreground">
-                  Changing date will automatically set status to 'Rescheduled'.
-                </p>
               </div>
 
               <div className="grid gap-2">
-                <Label>Reason for Visit</Label>
+                <Label>{t('visits.reason')}</Label>
                 <Input
                   value={editingVisit.reason || ''}
                   onChange={(e) =>
@@ -607,7 +611,7 @@ export default function Visits() {
               </div>
 
               <div className="grid gap-2">
-                <Label>Notes</Label>
+                <Label>{t('common.description')}</Label>
                 <Textarea
                   value={editingVisit.notes || ''}
                   onChange={(e) =>
@@ -618,7 +622,7 @@ export default function Visits() {
             </div>
           )}
           <DialogFooter>
-            <Button onClick={handleUpdateVisit}>Save Changes</Button>
+            <Button onClick={handleUpdateVisit}>{t('common.save')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -627,16 +631,16 @@ export default function Visits() {
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Status Change</AlertDialogTitle>
+            <AlertDialogTitle>{t('common.confirm')}</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to change the status to{' '}
               <strong>{pendingStatusChange?.status}</strong>?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmStatusChange}>
-              Confirm
+              {t('common.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

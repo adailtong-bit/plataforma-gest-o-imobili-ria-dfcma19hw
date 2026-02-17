@@ -278,16 +278,18 @@ export default function ShortTerm() {
       <Tabs defaultValue="reports" className="space-y-4">
         <TabsList>
           <TabsTrigger value="reports">
-            <LayoutDashboard className="h-4 w-4 mr-2" /> {t('common.reports')}
+            <LayoutDashboard className="h-4 w-4 mr-2" />{' '}
+            {t('short_term.reports')}
           </TabsTrigger>
           <TabsTrigger value="calendar">
-            <CalendarDays className="h-4 w-4 mr-2" /> {t('common.calendar')}
+            <CalendarDays className="h-4 w-4 mr-2" /> {t('short_term.calendar')}
           </TabsTrigger>
           <TabsTrigger value="bookings">
-            <List className="h-4 w-4 mr-2" /> Reservas
+            <List className="h-4 w-4 mr-2" /> {t('short_term.bookings')}
           </TabsTrigger>
           <TabsTrigger value="communication">
-            <MessageSquare className="h-4 w-4 mr-2" /> Comunicação
+            <MessageSquare className="h-4 w-4 mr-2" />{' '}
+            {t('short_term.communication')}
           </TabsTrigger>
         </TabsList>
 
