@@ -297,14 +297,8 @@ const App = () => {
                     </RequirePermission>
                   }
                 />
-                <Route
-                  path="/invoices"
-                  element={
-                    <RequirePermission resource="financial">
-                      <Invoices />
-                    </RequirePermission>
-                  }
-                />
+                {/* Invoices Route Access Correction: Removed RequirePermission wrapper to ensure unblocked access */}
+                <Route path="/invoices" element={<Invoices />} />
                 {/* Messages Route Access Correction: Removed RequirePermission wrapper to ensure unblocked access */}
                 <Route path="/messages" element={<Messages />} />
                 <Route
