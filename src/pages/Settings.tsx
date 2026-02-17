@@ -31,7 +31,13 @@ import {
 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
-import { DataMask } from '@/components/DataMask'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export default function Settings() {
   const { t } = useLanguageStore()
@@ -396,6 +402,42 @@ export default function Settings() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Global Currency Setting */}
+                <div className="border border-slate-200 rounded-md p-4 bg-white">
+                  <h3 className="text-base font-bold text-black mb-2 flex items-center gap-2">
+                    <Wallet className="h-4 w-4 text-green-600" />
+                    Global Currency
+                  </h3>
+                  <div className="space-y-2">
+                    <Label className="text-black font-bold">
+                      Main Currency
+                    </Label>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Set the base currency for all monetary values in the
+                      platform.
+                    </p>
+                    <Select
+                      value={financialData.globalCurrency || 'USD'}
+                      onValueChange={(val) =>
+                        handleFinancialChange('globalCurrency', val)
+                      }
+                    >
+                      <SelectTrigger className="w-[200px] text-black">
+                        <SelectValue placeholder="Select Currency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="USD">
+                          USD - Dólar Americano
+                        </SelectItem>
+                        <SelectItem value="BRL">
+                          BRL - Real Brasileiro
+                        </SelectItem>
+                        <SelectItem value="EUR">EUR - Euro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
                 {/* Approval Threshold Configuration */}
                 <div className="border border-yellow-200 rounded-md p-4 bg-yellow-50/30">
                   <h3 className="text-base font-bold text-black mb-2 flex items-center gap-2">
@@ -404,7 +446,7 @@ export default function Settings() {
                   </h3>
                   <div className="space-y-2">
                     <Label className="text-black font-bold">
-                      Direct Approval Threshold ($)
+                      Direct Approval Threshold
                     </Label>
                     <p className="text-xs text-muted-foreground mb-1">
                       Maintenance tasks below this amount require only PM
@@ -630,3 +672,5 @@ export default function Settings() {
     </div>
   )
 }
+
+

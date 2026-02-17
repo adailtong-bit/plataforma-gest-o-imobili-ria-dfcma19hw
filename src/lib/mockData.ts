@@ -35,6 +35,7 @@ import {
   ChannelMapping,
   MarketingWorkflow,
   EmailTemplate,
+  FinancialSettings,
 } from '@/lib/types'
 
 // Mock Data for the Application
@@ -296,19 +297,20 @@ export const defaultPaymentIntegrations = {
   paypal: { enabled: false },
   bill_com: { enabled: false },
 }
-export const defaultFinancialSettings = {
+export const defaultFinancialSettings: FinancialSettings = {
   companyName: 'COREPM',
   ein: '',
   bankName: '',
   routingNumber: '',
   accountNumber: '',
-  gatewayProvider: 'stripe' as const,
+  gatewayProvider: 'stripe',
   gateways: {
     stripe: { enabled: true },
     paypal: { enabled: false },
     mercadoPago: { enabled: false },
   },
   isProduction: false,
+  globalCurrency: 'USD',
 }
 export const mockBankStatements: BankStatement[] = []
 export const ledgerEntries: LedgerEntry[] = [
@@ -585,3 +587,5 @@ export const emailTemplates: EmailTemplate[] = [
     body: 'Hi {guest_name}, thank you for booking {property_name}. See you soon!',
   },
 ]
+
+

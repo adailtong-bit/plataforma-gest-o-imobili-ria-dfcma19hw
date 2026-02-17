@@ -168,28 +168,21 @@ export const exportToCSV = (
   document.body.removeChild(link)
 }
 
-export const formatCurrency = (
-  value: number,
-  language: Language = 'en',
-  currency: string = 'USD',
-) => {
-  let locale = 'en-US'
-  let currencyCode = currency
-
-  if (language === 'pt') {
-    locale = 'pt-BR'
-    currencyCode = 'BRL'
-  } else if (language === 'es') {
-    locale = 'es-ES'
-    currencyCode = 'EUR'
-  } else {
-    locale = 'en-US'
-    currencyCode = 'USD'
+export const getCurrencyLocale = (currency: string) => {
+  const currencyLocales: Record<string, string> = {
+    USD: 'en-US',
+    BRL: 'pt-BR',
+    EUR: 'de-DE', // Standard Euro formatting
   }
+  return currencyLocales[currency] || 'en-US'
+}
+
+export const formatCurrency = (value: number, currency: string = 'USD') => {
+  const locale = getCurrencyLocale(currency)
 
   return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: currencyCode,
+    currency: currency,
   }).format(value)
 }
 
@@ -210,3 +203,5 @@ export const formatDate = (
 
   return format(d, 'MM/dd/yyyy', { locale: enUS })
 }
+
+

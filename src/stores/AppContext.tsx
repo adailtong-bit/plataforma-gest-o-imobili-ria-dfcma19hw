@@ -1,4 +1,3 @@
-// ... existing imports
 import React, {
   createContext,
   useState,
@@ -103,6 +102,7 @@ import { tutorialModules as initialTutorialModules } from '@/lib/tutorials'
 import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
 import { isSameDay, parseISO } from 'date-fns'
+import { formatCurrency as formatCurrencyUtil } from '@/lib/utils'
 
 interface AppContextType {
   // Existing props
@@ -154,6 +154,9 @@ interface AppContextType {
   marketingWorkflows: MarketingWorkflow[]
   emailTemplates: EmailTemplate[]
 
+  // Currency
+  currency: string
+
   // Tour Props
   isTourOpen: boolean
   currentStepIndex: number
@@ -165,6 +168,7 @@ interface AppContextType {
   setLanguage: (lang: Language) => void
   setSelectedPropertyId: (id: string) => void
   t: (key: string, params?: Record<string, string>) => string
+  formatAppCurrency: (value: number) => string
   login: (email: string) => boolean
   logout: () => void
   addProperty: (property: Property) => void
@@ -390,6 +394,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return (saved as Language) || 'en'
   })
 
+  // Global Currency State derived from settings
+  const [currency, setCurrency] = useState<string>(
+    financialSettings.globalCurrency,
+  )
+
+  useEffect(() => {
+    setCurrency(financialSettings.globalCurrency)
+  }, [financialSettings.globalCurrency])
+
   // New State
   const [guestServices, setGuestServices] =
     useState<GuestService[]>(initialGuestServices)
@@ -454,6 +467,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       return text
     },
     [language],
+  )
+
+  const formatAppCurrency = useCallback(
+    (value: number) => {
+      return formatCurrencyUtil(value, currency)
+    },
+    [currency],
   )
 
   const login = (email: string) => {
@@ -862,6 +882,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         advertisers,
         adPricing,
         language,
+        currency,
         typingStatus,
         selectedPropertyId,
         visits,
@@ -884,6 +905,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setLanguage,
         setSelectedPropertyId,
         t,
+        formatAppCurrency,
         login,
         logout,
         addProperty,
@@ -1005,3 +1027,5 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     </AppContext.Provider>
   )
 }
+
+

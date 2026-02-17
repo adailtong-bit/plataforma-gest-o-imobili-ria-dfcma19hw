@@ -50,7 +50,6 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { formatCurrency } from '@/lib/utils'
 import { DataMask } from '@/components/DataMask'
 
 export default function Index() {
@@ -60,7 +59,7 @@ export default function Index() {
 function DashboardContent() {
   const [date, setDate] = useState<Date | undefined>(new Date())
   const { tasks } = useTaskStore()
-  const { ledgerEntries, financials } = useFinancialStore()
+  const { ledgerEntries, financials, formatCurrency } = useFinancialStore()
   const { properties } = usePropertyStore()
   const { visits } = useVisitStore()
   const { bookings } = useShortTermStore()
@@ -257,7 +256,7 @@ function DashboardContent() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-black">
-                {formatCurrency(totalRevenue, language)}
+                {formatCurrency(totalRevenue)}
               </div>
               <p className="text-xs text-black font-bold">
                 +20.1% {t('dashboard.from_last_month')}
@@ -289,7 +288,7 @@ function DashboardContent() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-black">
-                <DataMask>{formatCurrency(adr, language)}</DataMask>
+                <DataMask>{formatCurrency(adr)}</DataMask>
               </div>
               <p className="text-xs text-black font-bold">
                 {t('market_analysis.avg_daily_rate')}
@@ -305,7 +304,7 @@ function DashboardContent() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-black">
-                <DataMask>{formatCurrency(revPar, language)}</DataMask>
+                <DataMask>{formatCurrency(revPar)}</DataMask>
               </div>
               <p className="text-xs text-black font-bold">
                 {t('performance.financial_performance')}
@@ -461,9 +460,7 @@ function DashboardContent() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-sm text-black">
-                          <DataMask>
-                            {formatCurrency(invoice.amount, language)}
-                          </DataMask>
+                          <DataMask>{formatCurrency(invoice.amount)}</DataMask>
                         </span>
                         <Button
                           size="sm"
@@ -560,3 +557,5 @@ function DashboardContent() {
     </div>
   )
 }
+
+

@@ -212,6 +212,7 @@ export interface FinancialSettings {
   billComEnvironment?: 'sandbox' | 'production'
   priceReviewThresholdDays?: number
   alertPreferences?: AlertConfig[]
+  globalCurrency: 'USD' | 'BRL' | 'EUR'
 }
 
 export interface BankStatement {
@@ -1119,3 +1120,4 @@ export interface NightAudit {
     noShows: number
   }
 }
+

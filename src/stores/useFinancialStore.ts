@@ -12,6 +12,8 @@ const useFinancialStore = () => {
     bankStatements: context.bankStatements,
     ledgerEntries: context.ledgerEntries,
     genericServiceRates: context.genericServiceRates, // Exposed
+    currency: context.currency,
+    formatCurrency: context.formatAppCurrency,
     addInvoice: context.addInvoice,
     updateInvoice: context.updateInvoice,
     markPaymentAs: context.markPaymentAs,
@@ -27,3 +29,5 @@ const useFinancialStore = () => {
 }
 
 export default useFinancialStore
+
+
