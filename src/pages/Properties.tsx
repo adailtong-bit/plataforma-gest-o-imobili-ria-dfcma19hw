@@ -178,7 +178,7 @@ export default function Properties() {
     if (isGenericOrPlaceholder(newProp.name)) {
       toast({
         title: t('properties.validation_error'),
-        description: 'Invalid Name.',
+        description: t('common.name_required'),
         variant: 'destructive',
       })
       return
@@ -204,7 +204,7 @@ export default function Properties() {
     if (isGenericOrPlaceholder(newProp.zipCode)) {
       toast({
         title: t('properties.validation_error'),
-        description: 'Invalid Zip Code.',
+        description: t('properties.zip_required'),
         variant: 'destructive',
       })
       return
@@ -270,7 +270,7 @@ export default function Properties() {
 
     toast({
       title: t('properties.property_added'),
-      description: `${newProp.name} ${t('common.completed').toLowerCase()}.`,
+      description: `${newProp.name} ${t('common.done').toLowerCase()}.`,
     })
     setOpen(false)
     setNewProp({
@@ -352,10 +352,7 @@ export default function Properties() {
                 <DialogTitle>{t('properties.add_title')}</DialogTitle>
                 <DialogDescription>
                   <VisuallyHidden>
-                    {t(
-                      'properties.add_description',
-                      'Fill in the form to create a new property.',
-                    )}
+                    {t('properties.add_description')}
                   </VisuallyHidden>
                 </DialogDescription>
               </DialogHeader>

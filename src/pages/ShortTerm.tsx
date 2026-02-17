@@ -261,8 +261,12 @@ export default function ShortTerm() {
                       <SelectItem value="confirmed">
                         {t('common.active')}
                       </SelectItem>
-                      <SelectItem value="checked_in">Checked In</SelectItem>
-                      <SelectItem value="checked_out">Checked Out</SelectItem>
+                      <SelectItem value="checked_in">
+                        {t('short_term.check_in')}
+                      </SelectItem>
+                      <SelectItem value="checked_out">
+                        {t('short_term.check_out')}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

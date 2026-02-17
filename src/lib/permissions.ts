@@ -27,7 +27,7 @@ export const PERMISSIONS_MATRIX: Record<
     migration: ['view', 'create', 'edit', 'delete'],
     analytics: ['view'],
     automation: ['view', 'create', 'edit', 'delete'],
-    reports: ['view'], // Explicitly allowed
+    reports: ['view'],
     visits: ['view', 'create', 'edit', 'delete'],
     portal: ['view'],
     hotels: ['view', 'create', 'edit', 'delete'],
@@ -55,7 +55,7 @@ export const PERMISSIONS_MATRIX: Record<
     renewals: ['view', 'create', 'edit'],
     short_term: ['view', 'create', 'edit', 'delete'],
     analytics: ['view'],
-    reports: ['view'], // Explicitly allowed
+    reports: ['view'],
     visits: ['view', 'create', 'edit', 'delete'],
     migration: ['view', 'create'],
     automation: ['view', 'edit'],
@@ -77,22 +77,26 @@ export const PERMISSIONS_MATRIX: Record<
     messages: ['view', 'create'],
     short_term: ['view', 'create', 'edit'],
     renewals: ['view', 'edit'],
-    reports: ['view'], // Explicitly allowed
+    reports: ['view'],
     visits: ['view', 'create', 'edit'],
     hotels: ['view', 'create', 'edit'],
     users: ['view'],
     guest_services: ['view', 'edit'],
     pos: ['view', 'create'],
     financial: ['view', 'create', 'edit'],
+    automation: ['view'], // Ensure access to automation tab
   },
   partner: {
+    dashboard: ['view'], // Grant dashboard access
     portal: ['view'],
     tasks: ['view', 'edit'],
     messages: ['view', 'create'],
     financial: ['view'],
     properties: ['view'],
+    automation: ['view'], // Ensure access if needed
   },
   property_owner: {
+    dashboard: ['view'], // Grant dashboard access
     portal: ['view'],
     properties: ['view'],
     financial: ['view'],
@@ -100,18 +104,23 @@ export const PERMISSIONS_MATRIX: Record<
     short_term: ['view'],
     tasks: ['view', 'create', 'edit'],
     users: ['view'],
+    automation: ['view'], // Ensure access if needed
   },
   tenant: {
+    dashboard: ['view'], // Grant dashboard access
     portal: ['view'],
     messages: ['view', 'create'],
     financial: ['view'],
     properties: ['view'],
+    automation: ['view'], // Ensure access if needed
   },
   partner_employee: {
+    dashboard: ['view'], // Grant dashboard access
     portal: ['view'],
     tasks: ['view', 'edit'],
     messages: ['view', 'create'],
     properties: ['view'],
+    automation: ['view'], // Ensure access if needed
   },
 }
 

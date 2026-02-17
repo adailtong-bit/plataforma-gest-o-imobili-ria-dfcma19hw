@@ -34,7 +34,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Trash2, Edit2, Mail, PlayCircle } from 'lucide-react'
+import { Plus, Trash2, Edit2, Mail } from 'lucide-react'
 import useManagementStore from '@/stores/useManagementStore'
 import { useToast } from '@/hooks/use-toast'
 import { MarketingWorkflow, EmailTemplate } from '@/lib/types'
@@ -76,7 +76,7 @@ export function MarketingAutomation() {
     if (!editingWorkflow.name || !editingWorkflow.templateId) {
       toast({
         title: t('common.error'),
-        description: t('common.validation_error_desc'),
+        description: t('common.validation_error'),
         variant: 'destructive',
       })
       return
@@ -114,7 +114,7 @@ export function MarketingAutomation() {
     ) {
       toast({
         title: t('common.error'),
-        description: t('common.validation_error_desc'),
+        description: t('common.validation_error'),
         variant: 'destructive',
       })
       return
@@ -130,7 +130,7 @@ export function MarketingAutomation() {
     }
     setTemplateDialogOpen(false)
     setEditingTemplate({ name: '', subject: '', body: '' })
-    toast({ title: t('common.success'), description: t('common.save_success') })
+    toast({ title: t('common.success'), description: t('common.save') })
   }
 
   return (
@@ -165,7 +165,7 @@ export function MarketingAutomation() {
                 <TableRow key={wf.id}>
                   <TableCell className="font-medium">{wf.name}</TableCell>
                   <TableCell className="capitalize">
-                    {wf.trigger.replace('_', ' ')}
+                    {t(`marketing.${wf.trigger}`) || wf.trigger}
                   </TableCell>
                   <TableCell>
                     {wf.offsetTime === 0
@@ -275,7 +275,7 @@ export function MarketingAutomation() {
           <DialogHeader>
             <DialogTitle>
               {editingWorkflow.id
-                ? t('marketing.edit_workflow')
+                ? t('common.edit') + ' ' + t('marketing.new_workflow')
                 : t('marketing.new_workflow')}
             </DialogTitle>
           </DialogHeader>

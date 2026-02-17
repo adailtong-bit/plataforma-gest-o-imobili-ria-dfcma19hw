@@ -48,7 +48,7 @@ export default function Automation() {
     if (rule) {
       updateAutomationRule({ ...rule, enabled })
       toast({
-        title: 'Automation Updated',
+        title: t('common.success'),
         description: `Rule ${enabled ? 'enabled' : 'disabled'} successfully.`,
       })
     }
@@ -58,15 +58,15 @@ export default function Automation() {
     const rule = automationRules.find((r) => r.id === id)
     if (rule) {
       updateAutomationRule({ ...rule, ...updates })
-      toast({ title: 'Configuration Saved' })
+      toast({ title: t('common.config_saved') })
     }
   }
 
   const initiateExport = () => {
     if (!isPM) {
       toast({
-        title: 'Access Denied',
-        description: 'Only Property Managers can export to QuickBooks.',
+        title: t('common.access_denied'),
+        description: t('common.access_denied_desc'),
         variant: 'destructive',
       })
       return
@@ -363,7 +363,7 @@ export default function Automation() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setExportScopeOpen(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button onClick={handleQuickBooksExport}>Confirm Export</Button>
           </DialogFooter>

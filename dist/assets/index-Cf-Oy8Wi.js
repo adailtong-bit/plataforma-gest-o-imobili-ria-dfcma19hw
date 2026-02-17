@@ -54747,7 +54747,7 @@ const translations = {
 			no_hotels: "Nenhum hotel encontrado."
 		},
 		header: {
-			demo_profiles: "Perfis Demo",
+			demo_profiles: "Perfiles Demo",
 			other_users: "Outros Usuários"
 		},
 		market_analysis: {
@@ -54761,7 +54761,7 @@ const translations = {
 			demand_forecast: "Previsão de Demanda",
 			no_forecast: "Nenhuma previsão disponível.",
 			avg_occupancy: "Taxa de Ocupação Média",
-			avg_daily_rate: "Diária Média (ADR)",
+			avg_daily_rate: "Tarifa Média Diária (ADR)",
 			spending_trends: "Tendências de Gastos",
 			high: "Alta",
 			medium: "Média",
@@ -54802,7 +54802,9 @@ const translations = {
 			restaurant: "Restaurante",
 			minibar: "Minibar",
 			cola: "Refrigerante",
-			chips: "Batata Chips"
+			chips: "Batata Chips",
+			guest: "Hóspede",
+			select: "Selecione"
 		},
 		guest_services: {
 			title: "Serviços ao Hóspede",
@@ -54964,7 +54966,7 @@ const translations = {
 			agent: "Agente",
 			cleaning: "Limpeza",
 			maintenance: "Manutenção",
-			bank_info: "Dados Bancários",
+			bank_info: "Dados Bancarios",
 			bank_name: "Banco",
 			routing: "Agência/Routing",
 			account: "Conta",
@@ -55451,7 +55453,9 @@ const translations = {
 			reports: "Relatórios",
 			calendar: "Calendário",
 			bookings: "Reservas",
-			communication: "Comunicação"
+			communication: "Comunicação",
+			revenue: "Receita",
+			occupancy: "Ocupação"
 		},
 		marketing_tab: { portal_sync: "Sincronização de Portais" },
 		automation: {
@@ -55563,7 +55567,9 @@ const translations = {
 			restaurant: "Restaurant",
 			minibar: "Minibar",
 			cola: "Cola",
-			chips: "Chips"
+			chips: "Chips",
+			guest: "Guest",
+			select: "Select"
 		},
 		guest_services: {
 			title: "Guest Services",
@@ -56212,7 +56218,9 @@ const translations = {
 			reports: "Reports",
 			calendar: "Calendar",
 			bookings: "Bookings",
-			communication: "Communication"
+			communication: "Communication",
+			revenue: "Revenue",
+			occupancy: "Occupancy"
 		},
 		marketing_tab: { portal_sync: "Portal Sync" },
 		automation: {
@@ -56324,7 +56332,9 @@ const translations = {
 			restaurant: "Restaurante",
 			minibar: "Minibar",
 			cola: "Refresco",
-			chips: "Patatas Fritas"
+			chips: "Patatas Fritas",
+			guest: "Huésped",
+			select: "Seleccione"
 		},
 		guest_services: {
 			title: "Servicios al Huésped",
@@ -56711,7 +56721,7 @@ const translations = {
 			tax_id: "NIF / Tax ID",
 			system_activity: "Actividad del Sistema",
 			approve: "Aprobar",
-			reject: "Rechazar",
+			reject: "Rejeitar",
 			block: "Bloquear",
 			pending_approval: "Pendiente Aprobación",
 			pending_activation: "Pendiente Activación",
@@ -62455,16 +62465,20 @@ const PERMISSIONS_MATRIX = {
 			"view",
 			"create",
 			"edit"
-		]
+		],
+		automation: ["view"]
 	},
 	partner: {
+		dashboard: ["view"],
 		portal: ["view"],
 		tasks: ["view", "edit"],
 		messages: ["view", "create"],
 		financial: ["view"],
-		properties: ["view"]
+		properties: ["view"],
+		automation: ["view"]
 	},
 	property_owner: {
+		dashboard: ["view"],
 		portal: ["view"],
 		properties: ["view"],
 		financial: ["view"],
@@ -62475,19 +62489,24 @@ const PERMISSIONS_MATRIX = {
 			"create",
 			"edit"
 		],
-		users: ["view"]
+		users: ["view"],
+		automation: ["view"]
 	},
 	tenant: {
+		dashboard: ["view"],
 		portal: ["view"],
 		messages: ["view", "create"],
 		financial: ["view"],
-		properties: ["view"]
+		properties: ["view"],
+		automation: ["view"]
 	},
 	partner_employee: {
+		dashboard: ["view"],
 		portal: ["view"],
 		tasks: ["view", "edit"],
 		messages: ["view", "create"],
-		properties: ["view"]
+		properties: ["view"],
+		automation: ["view"]
 	}
 };
 const hasPermission = (user, resource, action) => {
@@ -66732,7 +66751,7 @@ function Properties() {
 		if (isGenericOrPlaceholder(newProp.name)) {
 			toast$2({
 				title: t("properties.validation_error"),
-				description: "Invalid Name.",
+				description: t("common.name_required"),
 				variant: "destructive"
 			});
 			return;
@@ -66756,7 +66775,7 @@ function Properties() {
 		if (isGenericOrPlaceholder(newProp.zipCode)) {
 			toast$2({
 				title: t("properties.validation_error"),
-				description: "Invalid Zip Code.",
+				description: t("properties.zip_required"),
 				variant: "destructive"
 			});
 			return;
@@ -66821,7 +66840,7 @@ function Properties() {
 		});
 		toast$2({
 			title: t("properties.property_added"),
-			description: `${newProp.name} ${t("common.completed").toLowerCase()}.`
+			description: `${newProp.name} ${t("common.done").toLowerCase()}.`
 		});
 		setOpen(false);
 		setNewProp({
@@ -66898,7 +66917,7 @@ function Properties() {
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 						className: "max-h-[90vh] overflow-y-auto sm:max-w-[600px]",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("properties.add_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VisuallyHidden, { children: t("properties.add_description", "Fill in the form to create a new property.") }) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("properties.add_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VisuallyHidden, { children: t("properties.add_description") }) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-4 py-4",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -87859,7 +87878,7 @@ function Automation() {
 				enabled
 			});
 			toast$2({
-				title: "Automation Updated",
+				title: t("common.success"),
 				description: `Rule ${enabled ? "enabled" : "disabled"} successfully.`
 			});
 		}
@@ -87871,14 +87890,14 @@ function Automation() {
 				...rule,
 				...updates
 			});
-			toast$2({ title: "Configuration Saved" });
+			toast$2({ title: t("common.config_saved") });
 		}
 	};
 	const initiateExport = () => {
 		if (!isPM) {
 			toast$2({
-				title: "Access Denied",
-				description: "Only Property Managers can export to QuickBooks.",
+				title: t("common.access_denied"),
+				description: t("common.access_denied_desc"),
 				variant: "destructive"
 			});
 			return;
@@ -88120,7 +88139,7 @@ function Automation() {
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						variant: "outline",
 						onClick: () => setExportScopeOpen(false),
-						children: "Cancel"
+						children: t("common.cancel")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						onClick: handleQuickBooksExport,
 						children: "Confirm Export"
@@ -88401,11 +88420,11 @@ function ShortTerm() {
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 												value: "checked_in",
-												children: "Checked In"
+												children: t("short_term.check_in")
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 												value: "checked_out",
-												children: "Checked Out"
+												children: t("short_term.check_out")
 											})
 										] })]
 									})]
@@ -90777,7 +90796,7 @@ function PointOfSale() {
 		if (stockItem && stockItem.quantity <= currentInCart) {
 			toast$2({
 				title: t("pos.out_of_stock"),
-				description: `Only ${stockItem.quantity} units of ${item.name} available.`,
+				description: `${t("common.only")} ${stockItem.quantity} units of ${item.name} ${t("status.available")}.`,
 				variant: "destructive"
 			});
 			return;
@@ -90919,9 +90938,7 @@ function PointOfSale() {
 											children: [
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Package, { className: "h-3 w-3 mr-1" }),
 												" ",
-												t("pos.stock"),
-												" ",
-												"Connected"
+												t("pos.stock")
 											]
 										})
 									})
@@ -90932,6 +90949,9 @@ function PointOfSale() {
 										const inStock = stockItem ? stockItem.quantity : 999;
 										const translatedCategory = t(`pos.${item.category.toLowerCase()}`);
 										const displayCategory = translatedCategory === `pos.${item.category.toLowerCase()}` ? item.category : translatedCategory;
+										const nameKey = `pos.${item.name.toLowerCase().replace(" ", "_")}`;
+										const translatedName = t(nameKey);
+										const displayName = translatedName === nameKey ? item.name : translatedName;
 										return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 											className: "cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden",
 											onClick: () => {
@@ -90948,7 +90968,7 @@ function PointOfSale() {
 														className: "flex justify-between items-start",
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
 															className: "text-base font-bold",
-															children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: item.name })
+															children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: displayName })
 														}), stockItem && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
 															variant: "secondary",
 															className: inStock < 10 ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800",
@@ -90982,10 +91002,10 @@ function PointOfSale() {
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("short_term.guest") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("pos.guest") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 													value: selectedBooking,
 													onValueChange: setSelectedBooking,
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: activeBookings.map((b$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("pos.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: activeBookings.map((b$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 														value: b$1.id,
 														children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [
 															b$1.guestName,
@@ -91174,7 +91194,7 @@ function MarketingAutomation() {
 		if (!editingWorkflow.name || !editingWorkflow.templateId) {
 			toast$2({
 				title: t("common.error"),
-				description: t("common.validation_error_desc"),
+				description: t("common.validation_error"),
 				variant: "destructive"
 			});
 			return;
@@ -91203,7 +91223,7 @@ function MarketingAutomation() {
 		if (!editingTemplate.name || !editingTemplate.subject || !editingTemplate.body) {
 			toast$2({
 				title: t("common.error"),
-				description: t("common.validation_error_desc"),
+				description: t("common.validation_error"),
 				variant: "destructive"
 			});
 			return;
@@ -91221,7 +91241,7 @@ function MarketingAutomation() {
 		});
 		toast$2({
 			title: t("common.success"),
-			description: t("common.save_success")
+			description: t("common.save")
 		});
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -91255,7 +91275,7 @@ function MarketingAutomation() {
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 					className: "capitalize",
-					children: wf.trigger.replace("_", " ")
+					children: t(`marketing.${wf.trigger}`) || wf.trigger
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.offsetTime === 0 ? t("marketing.immediately") : `${Math.abs(wf.offsetTime)} ${t("marketing.hours")} ${wf.offsetTime > 0 ? t("marketing.after") : t("marketing.before")}` }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: emailTemplates$1.find((t$1) => t$1.id === wf.templateId)?.name || "Unknown" }),
@@ -91341,7 +91361,7 @@ function MarketingAutomation() {
 				open: workflowDialogOpen,
 				onOpenChange: setWorkflowDialogOpen,
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingWorkflow.id ? t("marketing.edit_workflow") : t("marketing.new_workflow") }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingWorkflow.id ? t("common.edit") + " " + t("marketing.new_workflow") : t("marketing.new_workflow") }) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-4 py-4",
 						children: [
@@ -92440,4 +92460,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-DTcSPoxu.js.map
+//# sourceMappingURL=index-Cf-Oy8Wi.js.map

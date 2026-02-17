@@ -38,7 +38,7 @@ export const translations = {
       no_hotels: 'Nenhum hotel encontrado.',
     },
     header: {
-      demo_profiles: 'Perfis Demo',
+      demo_profiles: 'Perfiles Demo',
       other_users: 'Outros Usuários',
     },
     market_analysis: {
@@ -52,7 +52,7 @@ export const translations = {
       demand_forecast: 'Previsão de Demanda',
       no_forecast: 'Nenhuma previsão disponível.',
       avg_occupancy: 'Taxa de Ocupação Média',
-      avg_daily_rate: 'Diária Média (ADR)',
+      avg_daily_rate: 'Tarifa Média Diária (ADR)',
       spending_trends: 'Tendências de Gastos',
       high: 'Alta',
       medium: 'Média',
@@ -94,6 +94,8 @@ export const translations = {
       minibar: 'Minibar',
       cola: 'Refrigerante',
       chips: 'Batata Chips',
+      guest: 'Hóspede',
+      select: 'Selecione',
     },
     guest_services: {
       title: 'Serviços ao Hóspede',
@@ -257,7 +259,7 @@ export const translations = {
       agent: 'Agente',
       cleaning: 'Limpeza',
       maintenance: 'Manutenção',
-      bank_info: 'Dados Bancários',
+      bank_info: 'Dados Bancarios',
       bank_name: 'Banco',
       routing: 'Agência/Routing',
       account: 'Conta',
@@ -747,6 +749,8 @@ export const translations = {
       calendar: 'Calendário',
       bookings: 'Reservas',
       communication: 'Comunicação',
+      revenue: 'Receita',
+      occupancy: 'Ocupação',
     },
     marketing_tab: {
       portal_sync: 'Sincronização de Portais',
@@ -863,6 +867,8 @@ export const translations = {
       minibar: 'Minibar',
       cola: 'Cola',
       chips: 'Chips',
+      guest: 'Guest',
+      select: 'Select',
     },
     guest_services: {
       title: 'Guest Services',
@@ -1514,6 +1520,8 @@ export const translations = {
       calendar: 'Calendar',
       bookings: 'Bookings',
       communication: 'Communication',
+      revenue: 'Revenue',
+      occupancy: 'Occupancy',
     },
     marketing_tab: {
       portal_sync: 'Portal Sync',
@@ -1630,6 +1638,8 @@ export const translations = {
       minibar: 'Minibar',
       cola: 'Refresco',
       chips: 'Patatas Fritas',
+      guest: 'Huésped',
+      select: 'Seleccione',
     },
     guest_services: {
       title: 'Servicios al Huésped',
@@ -2018,7 +2028,7 @@ export const translations = {
       tax_id: 'NIF / Tax ID',
       system_activity: 'Actividad del Sistema',
       approve: 'Aprobar',
-      reject: 'Rechazar',
+      reject: 'Rejeitar',
       block: 'Bloquear',
       pending_approval: 'Pendiente Aprobación',
       pending_activation: 'Pendiente Activación',

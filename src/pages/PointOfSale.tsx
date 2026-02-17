@@ -85,7 +85,7 @@ export default function PointOfSale() {
     if (stockItem && stockItem.quantity <= currentInCart) {
       toast({
         title: t('pos.out_of_stock'),
-        description: `Only ${stockItem.quantity} units of ${item.name} available.`,
+        description: `${t('common.only')} ${stockItem.quantity} units of ${item.name} ${t('status.available')}.`,
         variant: 'destructive',
       })
       return
@@ -229,8 +229,7 @@ export default function PointOfSale() {
                     variant="outline"
                     className="bg-slate-50 text-slate-700"
                   >
-                    <Package className="h-3 w-3 mr-1" /> {t('pos.stock')}{' '}
-                    Connected
+                    <Package className="h-3 w-3 mr-1" /> {t('pos.stock')}
                   </Badge>
                 </div>
               </div>
@@ -245,16 +244,22 @@ export default function PointOfSale() {
                     )
                     const inStock = stockItem ? stockItem.quantity : 999 // Fallback high if no stock track
 
-                    // Try to translate category and name
+                    // Dynamic translation lookup
                     const translatedCategory = t(
                       `pos.${item.category.toLowerCase()}`,
                     )
-                    // If translation key not found, fallback to original string (simple check if returned key equals input)
+                    // If no translation key found, it returns the key, so use original if it looks like a key
                     const displayCategory =
                       translatedCategory ===
                       `pos.${item.category.toLowerCase()}`
                         ? item.category
                         : translatedCategory
+
+                    // Translate specific item names if key exists, else original
+                    const nameKey = `pos.${item.name.toLowerCase().replace(' ', '_')}`
+                    const translatedName = t(nameKey)
+                    const displayName =
+                      translatedName === nameKey ? item.name : translatedName
 
                     return (
                       <Card
@@ -272,7 +277,7 @@ export default function PointOfSale() {
                         <CardHeader className="p-4">
                           <div className="flex justify-between items-start">
                             <CardTitle className="text-base font-bold">
-                              <DataMask>{item.name}</DataMask>
+                              <DataMask>{displayName}</DataMask>
                             </CardTitle>
                             {stockItem && (
                               <Badge
@@ -313,13 +318,13 @@ export default function PointOfSale() {
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col gap-4">
                   <div className="grid gap-2">
-                    <Label>{t('short_term.guest')}</Label>
+                    <Label>{t('pos.guest')}</Label>
                     <Select
                       value={selectedBooking}
                       onValueChange={setSelectedBooking}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder={t('common.select')} />
+                        <SelectValue placeholder={t('pos.select')} />
                       </SelectTrigger>
                       <SelectContent>
                         {activeBookings.map((b) => (
