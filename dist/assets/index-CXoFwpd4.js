@@ -71794,7 +71794,7 @@ function PropertyDetails() {
 			className: "space-y-4",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
-					className: "w-full justify-start overflow-x-auto bg-slate-100 border border-slate-200",
+					className: "w-full justify-start overflow-x-auto overflow-y-hidden bg-slate-100 border border-slate-200 h-auto",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "overview",
@@ -92594,4 +92594,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-86_Gw7hp.js.map
+//# sourceMappingURL=index-CXoFwpd4.js.map

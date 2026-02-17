@@ -344,7 +344,7 @@ export default function PropertyDetails() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="w-full justify-start overflow-x-auto bg-slate-100 border border-slate-200">
+        <TabsList className="w-full justify-start overflow-x-auto overflow-y-hidden bg-slate-100 border border-slate-200 h-auto">
           <TabsTrigger
             value="overview"
             className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
