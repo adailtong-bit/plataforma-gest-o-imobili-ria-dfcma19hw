@@ -178,12 +178,28 @@ export const getCurrencyLocale = (currency: string) => {
 }
 
 export const formatCurrency = (value: number, currency: string = 'USD') => {
-  const locale = getCurrencyLocale(currency)
+  let code = currency
+  // Validation for currency code to prevent RangeError with locale strings or empty values
+  if (!code || typeof code !== 'string' || code.length !== 3) {
+    code = 'USD'
+  }
+  // Ensure it is uppercase
+  code = code.toUpperCase()
 
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: currency,
-  }).format(value)
+  const locale = getCurrencyLocale(code)
+
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: code,
+    }).format(value)
+  } catch (error) {
+    // Fallback if formatting fails
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(value)
+  }
 }
 
 export const formatDate = (

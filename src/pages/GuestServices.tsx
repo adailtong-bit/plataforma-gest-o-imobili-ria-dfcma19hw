@@ -28,6 +28,7 @@ import { ServiceProfitabilityReport } from '@/components/financial/ServiceProfit
 import { ServiceDialog } from '@/components/services/ServiceDialog'
 import { ScheduleServiceDialog } from '@/components/services/ScheduleServiceDialog'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 import { DataMask } from '@/components/DataMask'
 
 export default function GuestServices() {
@@ -40,7 +41,8 @@ export default function GuestServices() {
   } = useManagementStore()
   const { bookings } = useShortTermStore()
   const { toast } = useToast()
-  const { t, language } = useLanguageStore()
+  const { t } = useLanguageStore()
+  const { currency } = useFinancialStore()
 
   // State
   const [serviceDialogOpen, setServiceDialogOpen] = useState(false)
@@ -159,7 +161,7 @@ export default function GuestServices() {
                       </TableCell>
                       <TableCell>
                         <DataMask>
-                          {formatCurrency(service.price, language)}
+                          {formatCurrency(service.price, currency)}
                         </DataMask>
                       </TableCell>
                       <TableCell>{service.validityStart || '-'}</TableCell>

@@ -24855,11 +24855,21 @@ const getCurrencyLocale = (currency) => {
 	}[currency] || "en-US";
 };
 const formatCurrency = (value, currency = "USD") => {
-	const locale$2 = getCurrencyLocale(currency);
-	return new Intl.NumberFormat(locale$2, {
-		style: "currency",
-		currency
-	}).format(value);
+	let code = currency;
+	if (!code || typeof code !== "string" || code.length !== 3) code = "USD";
+	code = code.toUpperCase();
+	const locale$2 = getCurrencyLocale(code);
+	try {
+		return new Intl.NumberFormat(locale$2, {
+			style: "currency",
+			currency: code
+		}).format(value);
+	} catch (error) {
+		return new Intl.NumberFormat("en-US", {
+			style: "currency",
+			currency: "USD"
+		}).format(value);
+	}
 };
 const formatDate = (date$1, language = "en") => {
 	if (!date$1) return "";
@@ -90454,7 +90464,7 @@ var useManagementStore = () => {
 var useManagementStore_default = useManagementStore;
 function ServiceProfitabilityReport() {
 	const { serviceOrders: serviceOrders$1, guestServices: guestServices$1 } = useManagementStore_default();
-	const { language } = useLanguageStore_default();
+	const { currency } = useFinancialStore_default();
 	const data = guestServices$1.map((service) => {
 		const revenue = serviceOrders$1.filter((o) => o.serviceId === service.id && o.status === "delivered").reduce((sum, o) => sum + o.price, 0);
 		const cost = revenue * .3;
@@ -90493,7 +90503,10 @@ function ServiceProfitabilityReport() {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(XAxis, { dataKey: "name" }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, {
+								content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}),
+								formatter: (value) => formatCurrency(value, currency)
+							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, {}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bar, {
 								dataKey: "revenue",
@@ -90679,7 +90692,8 @@ function GuestServices() {
 	const { guestServices: guestServices$1, addGuestService, updateGuestService, deleteGuestService, addServiceOrder } = useManagementStore_default();
 	const { bookings: bookings$1 } = useShortTermStore_default();
 	const { toast: toast$2 } = useToast();
-	const { t, language } = useLanguageStore_default();
+	const { t } = useLanguageStore_default();
+	const { currency } = useFinancialStore_default();
 	const [serviceDialogOpen, setServiceDialogOpen] = (0, import_react.useState)(false);
 	const [editingService, setEditingService] = (0, import_react.useState)(null);
 	const [scheduleDialogOpen, setScheduleDialogOpen] = (0, import_react.useState)(false);
@@ -90791,7 +90805,7 @@ function GuestServices() {
 									className: "capitalize",
 									children: service.category
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(service.price, language) }) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(service.price, currency) }) }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: service.validityStart || "-" }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: service.seasonalPrices && service.seasonalPrices.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
 									variant: "outline",
@@ -92580,4 +92594,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-GtwfCyNZ.js.map
+//# sourceMappingURL=index-86_Gw7hp.js.map

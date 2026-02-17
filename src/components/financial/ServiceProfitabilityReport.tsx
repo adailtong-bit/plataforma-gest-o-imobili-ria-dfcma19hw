@@ -17,12 +17,12 @@ import {
 } from 'recharts'
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 import useManagementStore from '@/stores/useManagementStore'
-import useLanguageStore from '@/stores/useLanguageStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 import { formatCurrency } from '@/lib/utils'
 
 export function ServiceProfitabilityReport() {
   const { serviceOrders, guestServices } = useManagementStore()
-  const { language } = useLanguageStore()
+  const { currency } = useFinancialStore()
 
   // Aggregate data
   const data = guestServices
@@ -65,7 +65,12 @@ export function ServiceProfitabilityReport() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" />
                   <YAxis />
-                  <Tooltip content={<ChartTooltipContent />} />
+                  <Tooltip
+                    content={<ChartTooltipContent />}
+                    formatter={(value: number) =>
+                      formatCurrency(value, currency)
+                    }
+                  />
                   <Legend />
                   <Bar
                     dataKey="revenue"
