@@ -245,6 +245,17 @@ export default function PointOfSale() {
                     )
                     const inStock = stockItem ? stockItem.quantity : 999 // Fallback high if no stock track
 
+                    // Try to translate category and name
+                    const translatedCategory = t(
+                      `pos.${item.category.toLowerCase()}`,
+                    )
+                    // If translation key not found, fallback to original string (simple check if returned key equals input)
+                    const displayCategory =
+                      translatedCategory ===
+                      `pos.${item.category.toLowerCase()}`
+                        ? item.category
+                        : translatedCategory
+
                     return (
                       <Card
                         key={item.id}
@@ -277,7 +288,7 @@ export default function PointOfSale() {
                             )}
                           </div>
                           <CardDescription className="capitalize">
-                            {item.category}
+                            {displayCategory}
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="p-4 pt-0">
@@ -426,7 +437,10 @@ export default function PointOfSale() {
                         <DataMask>{item.name}</DataMask>
                       </TableCell>
                       <TableCell className="capitalize">
-                        {item.category}
+                        {t(`pos.${item.category.toLowerCase()}`) !==
+                        `pos.${item.category.toLowerCase()}`
+                          ? t(`pos.${item.category.toLowerCase()}`)
+                          : item.category}
                       </TableCell>
                       <TableCell>
                         <DataMask>

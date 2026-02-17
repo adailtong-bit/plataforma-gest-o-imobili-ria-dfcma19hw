@@ -305,14 +305,8 @@ const App = () => {
                     </RequirePermission>
                   }
                 />
-                <Route
-                  path="/messages"
-                  element={
-                    <RequirePermission resource="messages">
-                      <Messages />
-                    </RequirePermission>
-                  }
-                />
+                {/* Messages Route Access Correction: Removed RequirePermission wrapper to ensure unblocked access */}
+                <Route path="/messages" element={<Messages />} />
                 <Route
                   path="/settings"
                   element={

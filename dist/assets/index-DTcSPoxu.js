@@ -54761,7 +54761,7 @@ const translations = {
 			demand_forecast: "Previsão de Demanda",
 			no_forecast: "Nenhuma previsão disponível.",
 			avg_occupancy: "Taxa de Ocupação Média",
-			avg_daily_rate: "Diária Média",
+			avg_daily_rate: "Diária Média (ADR)",
 			spending_trends: "Tendências de Gastos",
 			high: "Alta",
 			medium: "Média",
@@ -54795,7 +54795,14 @@ const translations = {
 			charge_room: "Cobrar no Quarto",
 			out_of_stock: "Sem Estoque",
 			cart_empty: "Carrinho Vazio",
-			transaction_success: "Venda realizada com sucesso!"
+			transaction_success: "Venda realizada com sucesso!",
+			laundry_service: "Serviço de Lavanderia",
+			laundry: "Lavanderia",
+			club_sandwich: "Club Sandwich",
+			restaurant: "Restaurante",
+			minibar: "Minibar",
+			cola: "Refrigerante",
+			chips: "Batata Chips"
 		},
 		guest_services: {
 			title: "Serviços ao Hóspede",
@@ -55190,6 +55197,7 @@ const translations = {
 			select_country: "Selecione o País",
 			export_data: "Exportar Dados",
 			export_success: "Dados exportados com sucesso.",
+			export_success_title: "Exportação Iniciada",
 			renewals: "Renovação de Contrato",
 			short_term: "Aluguel Temporada",
 			market_analysis: "Análise de Mercado",
@@ -55280,11 +55288,16 @@ const translations = {
 			return_home: "Voltar para o Início",
 			access_denied: "Acesso Negado",
 			access_denied_desc: "Você não tem permissão para visualizar esta página.",
-			export_success_title: "Exportação Iniciada",
 			list: "Lista",
 			calendar_view: "Calendário",
 			start_date: "Data Início",
-			end_date: "Data Fim"
+			end_date: "Data Fim",
+			and: "e",
+			validation_error: "Erro de Validação",
+			name_required: "Nome é obrigatório",
+			delete_success: "Excluído com sucesso.",
+			error_delete: "Erro ao excluir.",
+			delete_linked_error: "Não é possível excluir pois existem registros vinculados."
 		},
 		dashboard: {
 			unread: "não lidas",
@@ -55413,7 +55426,9 @@ const translations = {
 			occupied: "Ocupado",
 			vacant: "Vago",
 			suspended: "Suspenso",
-			maintenance: "Manutenção"
+			maintenance: "Manutenção",
+			reserved: "Reservado",
+			rescheduled: "Reagendado"
 		},
 		roles: {
 			platform_owner: "Admin",
@@ -55440,6 +55455,7 @@ const translations = {
 		},
 		marketing_tab: { portal_sync: "Sincronização de Portais" },
 		automation: {
+			title: "Automação",
 			quickbooks_export: "Exportar para QuickBooks",
 			quickbooks_desc: "Baixe transações compatíveis com QB.",
 			export_csv: "Exportar CSV",
@@ -55450,7 +55466,7 @@ const translations = {
 			enable_auto_approval: "Ativar Auto-Aprovação",
 			billing_automation: "Automação de Faturamento",
 			billing_automation_desc: "Gerar faturas automaticamente com base em eventos.",
-			auto_generate_invoices: "Gerar Faturas Automáticamente",
+			auto_generate_invoices: "Gerar Faturas Automaticamente",
 			rent_reminders_desc: "Enviar lembretes automáticos para inquilinos.",
 			enable_reminders: "Ativar Lembretes"
 		}
@@ -55540,7 +55556,14 @@ const translations = {
 			charge_room: "Charge Room",
 			out_of_stock: "Out of Stock",
 			cart_empty: "Cart Empty",
-			transaction_success: "Transaction successful!"
+			transaction_success: "Transaction successful!",
+			laundry_service: "Laundry Service",
+			laundry: "Laundry",
+			club_sandwich: "Club Sandwich",
+			restaurant: "Restaurant",
+			minibar: "Minibar",
+			cola: "Cola",
+			chips: "Chips"
 		},
 		guest_services: {
 			title: "Guest Services",
@@ -55935,6 +55958,7 @@ const translations = {
 			select_country: "Select Country",
 			export_data: "Export Data",
 			export_success: "Data exported successfully.",
+			export_success_title: "Export Started",
 			renewals: "Contract Renewals",
 			short_term: "Short Term Rental",
 			market_analysis: "Market Analysis",
@@ -56025,11 +56049,16 @@ const translations = {
 			return_home: "Return Home",
 			access_denied: "Access Denied",
 			access_denied_desc: "You do not have permission to view this page.",
-			export_success_title: "Export Started",
 			list: "List",
 			calendar_view: "Calendar",
 			start_date: "Start Date",
-			end_date: "End Date"
+			end_date: "End Date",
+			and: "and",
+			validation_error: "Validation Error",
+			name_required: "Name is required",
+			delete_success: "Deleted successfully.",
+			error_delete: "Error deleting.",
+			delete_linked_error: "Cannot delete because there are linked records."
 		},
 		dashboard: {
 			unread: "unread",
@@ -56158,7 +56187,9 @@ const translations = {
 			occupied: "Occupied",
 			vacant: "Vacant",
 			suspended: "Suspended",
-			maintenance: "Maintenance"
+			maintenance: "Maintenance",
+			reserved: "Reserved",
+			rescheduled: "Rescheduled"
 		},
 		roles: {
 			platform_owner: "Admin",
@@ -56185,6 +56216,7 @@ const translations = {
 		},
 		marketing_tab: { portal_sync: "Portal Sync" },
 		automation: {
+			title: "Automation",
 			quickbooks_export: "Export to QuickBooks",
 			quickbooks_desc: "Download QB compatible transactions.",
 			export_csv: "Export CSV",
@@ -56285,7 +56317,14 @@ const translations = {
 			charge_room: "Cargar a la Habitación",
 			out_of_stock: "Sin Stock",
 			cart_empty: "Carrito Vacío",
-			transaction_success: "¡Transacción exitosa!"
+			transaction_success: "¡Transacción exitosa!",
+			laundry_service: "Servicio de Lavandería",
+			laundry: "Lavandería",
+			club_sandwich: "Club Sandwich",
+			restaurant: "Restaurante",
+			minibar: "Minibar",
+			cola: "Refresco",
+			chips: "Patatas Fritas"
 		},
 		guest_services: {
 			title: "Servicios al Huésped",
@@ -56681,6 +56720,7 @@ const translations = {
 			select_country: "Seleccione País",
 			export_data: "Exportar Datos",
 			export_success: "Datos exportados con éxito.",
+			export_success_title: "Exportación Iniciada",
 			renewals: "Renovación de Contrato",
 			short_term: "Alquiler Temporal",
 			market_analysis: "Análisis de Mercado",
@@ -57051,7 +57091,13 @@ const translations = {
 			rent_reminders_desc: "Enviar recordatorios automáticos a los inquilinos.",
 			enable_reminders: "Activar Recordatorios",
 			start_date: "Fecha Inicio",
-			end_date: "Fecha Fin"
+			end_date: "Fecha Fin",
+			and: "y",
+			validation_error: "Error de Validación",
+			name_required: "El nombre es obligatorio",
+			delete_success: "Eliminado con éxito.",
+			error_delete: "Error al eliminar.",
+			delete_linked_error: "No se puede eliminar porque hay registros vinculados."
 		}
 	}
 };
@@ -88085,12 +88131,13 @@ function Automation() {
 	});
 }
 function ShortTermReports() {
+	const { t } = useLanguageStore_default();
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "grid gap-4 md:grid-cols-2",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Revenue" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("common.revenue") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 			className: "text-2xl font-bold text-green-600",
 			children: "$12,450"
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Occupancy" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("analytics.occupancy") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 			className: "text-2xl font-bold text-blue-600",
 			children: "85%"
 		})] })]
@@ -90883,6 +90930,8 @@ function PointOfSale() {
 									children: posItems$1.filter((i) => i.active).map((item) => {
 										const stockItem = globalStock?.inventory?.find((inv) => inv.name.toLowerCase() === item.name.toLowerCase());
 										const inStock = stockItem ? stockItem.quantity : 999;
+										const translatedCategory = t(`pos.${item.category.toLowerCase()}`);
+										const displayCategory = translatedCategory === `pos.${item.category.toLowerCase()}` ? item.category : translatedCategory;
 										return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 											className: "cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden",
 											onClick: () => {
@@ -90907,7 +90956,7 @@ function PointOfSale() {
 														})]
 													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
 														className: "capitalize",
-														children: item.category
+														children: displayCategory
 													})]
 												}),
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
@@ -91048,7 +91097,7 @@ function PointOfSale() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 									className: "capitalize",
-									children: item.category
+									children: t(`pos.${item.category.toLowerCase()}`) !== `pos.${item.category.toLowerCase()}` ? t(`pos.${item.category.toLowerCase()}`) : item.category
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(item.price, language) }) }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: item.validityStart || "-" }),
@@ -92256,10 +92305,7 @@ var App = () => {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/messages",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
-									resource: "messages",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Messages, {})
-								})
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Messages, {})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/settings",
@@ -92394,4 +92440,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-C4v89euF.js.map
+//# sourceMappingURL=index-DTcSPoxu.js.map
