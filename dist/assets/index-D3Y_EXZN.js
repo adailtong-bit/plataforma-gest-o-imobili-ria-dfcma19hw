@@ -55188,7 +55188,7 @@ const translations = {
 			paid: "Pago",
 			overdue: "Atrasado",
 			active: "Ativo",
-			inactive: "Inativo",
+			inactive: "Inactivo",
 			occupied: "Ocupado",
 			vacant: "Vago",
 			maintenance: "Manutenção",
@@ -55440,8 +55440,8 @@ const translations = {
 			payment_gateways: "Gateways de Pagamento",
 			system_alerts: "Alertas do Sistema",
 			system_alerts_desc: "Configure as notificações automáticas.",
-			automation_title: "Automação",
-			automation_desc: "Configure regras automáticas.",
+			automation_title: "Regras de Automação",
+			automation_desc: "Gerencie e configure regras de automação para tarefas, finanças e comunicação.",
 			rent_reminder: "Lembrete de Aluguel",
 			days_before: "Dias Antes",
 			company_legal_name: "Razão Social"
@@ -56148,6 +56148,27 @@ const translations = {
 			general_activities: "General Activities",
 			by_owner: "By Owner",
 			by_partner: "By Partner"
+		},
+		settings: {
+			title: "Settings",
+			subtitle: "Manage your account and system settings.",
+			personal_info: "Personal Info",
+			update_info: "Update your information.",
+			change_photo: "Change Photo",
+			full_name: "Full Name",
+			save_changes: "Save Changes",
+			integrations: "Integrations",
+			billing_payment: "Billing and Payment",
+			billing_gateways_title: "Payment Gateways",
+			billing_gateways_desc: "Configure accepted payment methods.",
+			payment_gateways: "Payment Gateways",
+			system_alerts: "System Alerts",
+			system_alerts_desc: "Configure automatic notifications.",
+			automation_title: "Automation Rules",
+			automation_desc: "Manage and configure automation rules for tasks, finance, and communication.",
+			rent_reminder: "Rent Reminder",
+			days_before: "Days Before",
+			company_legal_name: "Legal Name"
 		}
 	},
 	es: {
@@ -56371,7 +56392,7 @@ const translations = {
 		},
 		service_pricing: {
 			title: "Precios de Servicios",
-			subtitle: "Gestione costos y precios de venta.",
+			subtitle: "Gestione costos e precios de venta.",
 			catalog_tab: "Catálogo de Precios",
 			analytics_tab: "Informes",
 			new_rate: "Nueva Tarifa",
@@ -56775,7 +56796,7 @@ const translations = {
 			export_success_title: "Exportación Iniciada",
 			auto_generate_invoice: "Generar Factura Automática",
 			auto_approval: "Auto-Aprobación",
-			auto_approval_desc: "Aprobar automáticamente tareas de mantenimiento por debajo de un costo determinado.",
+			auto_approval_desc: "Aprovar automáticamente tareas de mantenimiento por debajo de un costo determinado.",
 			enable_auto_approval: "Activar Auto-Aprobación",
 			billing_automation: "Automatización de Facturación",
 			billing_automation_desc: "Generar facturas automáticamente basadas en eventos.",
@@ -56798,6 +56819,27 @@ const translations = {
 			general_activities: "Actividades Generales",
 			by_owner: "Por Propietario",
 			by_partner: "Por Socio"
+		},
+		settings: {
+			title: "Configuración",
+			subtitle: "Gestione las configuraciones de su cuenta y sistema.",
+			personal_info: "Información Personal",
+			update_info: "Actualice su información.",
+			change_photo: "Cambiar Foto",
+			full_name: "Nombre Completo",
+			save_changes: "Guardar Cambios",
+			integrations: "Integraciones",
+			billing_payment: "Facturación y Pago",
+			billing_gateways_title: "Pasarelas de Pago",
+			billing_gateways_desc: "Configure los métodos de pago aceptados.",
+			payment_gateways: "Pasarelas de Pago",
+			system_alerts: "Alertas del Sistema",
+			system_alerts_desc: "Configure las notificaciones automáticas.",
+			automation_title: "Reglas de Automatización",
+			automation_desc: "Gestione y configure reglas de automatización para tareas, finanzas y comunicación.",
+			rent_reminder: "Recordatorio de Alquiler",
+			days_before: "Días Antes",
+			company_legal_name: "Razón Social"
 		}
 	}
 };
@@ -92155,4 +92197,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-pruMe94I.js.map
+//# sourceMappingURL=index-D3Y_EXZN.js.map
