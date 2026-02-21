@@ -1220,6 +1220,9 @@ video {
 .h-\[calc\(100vh-10rem\)\] {
   height: calc(100vh - 10rem);
 }
+.h-\[calc\(100vh-6rem\)\] {
+  height: calc(100vh - 6rem);
+}
 .h-\[var\(--radix-navigation-menu-viewport-height\)\] {
   height: var(--radix-navigation-menu-viewport-height);
 }
@@ -1271,9 +1274,6 @@ video {
 }
 .max-h-\[90vh\] {
   max-height: 90vh;
-}
-.max-h-\[calc\(100vh-280px\)\] {
-  max-height: calc(100vh - 280px);
 }
 .max-h-\[var\(--radix-dropdown-menu-content-available-height\)\] {
   max-height: var(--radix-dropdown-menu-content-available-height);
@@ -1352,9 +1352,6 @@ video {
 }
 .w-20 {
   width: 5rem;
-}
-.w-24 {
-  width: 6rem;
 }
 .w-3 {
   width: 0.75rem;
@@ -1795,6 +1792,11 @@ video {
   --tw-space-y-reverse: 0;
   margin-top: calc(0px * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(0px * var(--tw-space-y-reverse));
+}
+.space-y-0\.5 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.125rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.125rem * var(--tw-space-y-reverse));
 }
 .space-y-1 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-y-reverse: 0;
@@ -2330,10 +2332,6 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(220 38 38 / var(--tw-bg-opacity, 1));
 }
-.bg-rose-50 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 241 242 / var(--tw-bg-opacity, 1));
-}
 .bg-secondary {
   background-color: hsl(var(--secondary));
 }
@@ -2397,9 +2395,6 @@ video {
 .bg-yellow-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 252 232 / var(--tw-bg-opacity, 1));
-}
-.bg-yellow-50\/30 {
-  background-color: rgb(254 252 232 / 0.3);
 }
 .bg-yellow-500 {
   --tw-bg-opacity: 1;
@@ -4952,10 +4947,6 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
     grid-column: span 3 / span 3;
   }
 
-  .md\:col-start-4 {
-    grid-column-start: 4;
-  }
-
   .md\:block {
     display: block;
   }
@@ -5026,6 +5017,10 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 
   .md\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .md\:grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .md\:flex-row {

@@ -6,9 +6,6 @@ import {
   Users,
   Link as LinkIcon,
   Database,
-  CheckSquare,
-  Bell,
-  FileText,
   ClipboardList,
 } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -32,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 import { AuditLogList } from '@/components/audit/AuditLogList'
 
 export default function Settings() {
