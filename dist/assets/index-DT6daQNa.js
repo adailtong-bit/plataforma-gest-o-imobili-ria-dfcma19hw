@@ -55984,6 +55984,7 @@ const translations = {
 			export: "Exportar",
 			visits: "Visitas",
 			schedule_visit: "Agendar Visita",
+			schedule_maintenance: "Agendar Manutenção",
 			client_name: "Nome do Cliente",
 			visit_date: "Data da Visita",
 			visit_status: "Status da Visita",
@@ -56969,6 +56970,7 @@ const translations = {
 			export: "Export",
 			visits: "Visits",
 			schedule_visit: "Schedule Visit",
+			schedule_maintenance: "Schedule Maintenance",
 			client_name: "Client Name",
 			visit_date: "Visit Date",
 			visit_status: "Visit Status",
@@ -57381,7 +57383,7 @@ const translations = {
 				label_monthly: "Tarifa Mensual",
 				title_modifiers: "Modificadores de Posicionamiento",
 				desc_modifiers: "Costos adicionales para posicionamientos premium.",
-				tooltip_modifiers: "Estos valores representan adiciones fijas a la tarifa base de duración dependiendo de dónde se coloque el anuncio.",
+				tooltip_modifiers: "Estos valores representam adiciones fijas a la tarifa base de duración dependiendo de dónde se coloque el anuncio.",
 				save_btn: "Guardar Configuración",
 				save_success_title: "Configuración de Precios Guardada",
 				save_success_desc: "Tus tarifas de anuncios han sido actualizadas con éxito."
@@ -57954,6 +57956,7 @@ const translations = {
 			export: "Exportar",
 			visits: "Visitas",
 			schedule_visit: "Programar Visita",
+			schedule_maintenance: "Programar Mantenimiento",
 			client_name: "Nombre del Cliente",
 			visit_date: "Fecha de la Visita",
 			visit_status: "Estado de la Visita",
@@ -95194,4 +95197,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BxU3UikM.js.map
+//# sourceMappingURL=index-DT6daQNa.js.map
