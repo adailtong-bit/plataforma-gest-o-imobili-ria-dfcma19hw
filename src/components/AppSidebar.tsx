@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import {
   Sidebar,
   SidebarContent,
@@ -56,6 +57,7 @@ import logo from '@/assets/logo-estilizado.jpg'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { DataMask } from '@/components/DataMask'
+import { useAdRotation } from '@/hooks/useAdRotation'
 
 export function AppSidebar() {
   const location = useLocation()
@@ -77,10 +79,12 @@ export function AppSidebar() {
     0,
   )
 
-  const sidebarAds = advertisements.filter(
-    (a) => a.active && a.placement === 'sidebar',
+  const sidebarAds = useMemo(
+    () => advertisements.filter((a) => a.active && a.placement === 'sidebar'),
+    [advertisements],
   )
-  const adToShow = sidebarAds.length > 0 ? sidebarAds[0] : null
+  const visibleSidebarAds = useAdRotation(sidebarAds, 1, 15)
+  const adToShow = visibleSidebarAds.length > 0 ? visibleSidebarAds[0] : null
 
   const allMenuItems = [
     {
@@ -464,15 +468,20 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter className="bg-white">
         {adToShow && (
-          <div className="p-3 mx-2 mb-2 bg-slate-50 rounded-lg border group-data-[collapsible=icon]:hidden">
+          <div
+            key={adToShow.id}
+            className="p-3 mx-2 mb-2 bg-slate-50 rounded-lg border group-data-[collapsible=icon]:hidden relative overflow-hidden group animate-in fade-in duration-500"
+          >
             <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">
               Sponsored
             </p>
-            <img
-              src={adToShow.imageUrl}
-              alt={adToShow.title}
-              className="w-full h-24 rounded-md object-cover mb-2"
-            />
+            <div className="relative h-24 mb-2 rounded-md overflow-hidden">
+              <img
+                src={adToShow.imageUrl}
+                alt={adToShow.title}
+                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+              />
+            </div>
             <p className="text-xs font-bold text-slate-900 line-clamp-1">
               {adToShow.title}
             </p>

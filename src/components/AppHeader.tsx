@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   Bell,
   Search,
@@ -55,6 +55,7 @@ import useTaskStore from '@/stores/useTaskStore'
 import { ThemeCustomizer } from '@/components/ThemeCustomizer'
 import logo from '@/assets/logo-estilizado.jpg'
 import { DataMask } from '@/components/DataMask'
+import { useAdRotation } from '@/hooks/useAdRotation'
 
 export function AppHeader() {
   const { currentUser, setCurrentUser, allUsers, logout } = useAuthStore()
@@ -82,10 +83,12 @@ export function AppHeader() {
   const unreadCount = notifications.filter((n) => !n.read).length
 
   // Header Ad Logic
-  const headerAds = advertisements.filter(
-    (a) => a.active && a.placement === 'header',
+  const headerAds = useMemo(
+    () => advertisements.filter((a) => a.active && a.placement === 'header'),
+    [advertisements],
   )
-  const adToShow = headerAds.length > 0 ? headerAds[0] : null
+  const visibleHeaderAds = useAdRotation(headerAds, 1, 10)
+  const adToShow = visibleHeaderAds.length > 0 ? visibleHeaderAds[0] : null
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -131,7 +134,10 @@ export function AppHeader() {
   return (
     <header className="flex flex-col w-full sticky top-0 z-50 shadow-sm bg-white">
       {adToShow && (
-        <div className="bg-slate-900 text-white px-4 py-2 flex items-center justify-center text-xs sm:text-sm text-center relative overflow-hidden h-10 shrink-0">
+        <div
+          key={adToShow.id}
+          className="bg-slate-900 text-white px-4 py-2 flex items-center justify-center text-xs sm:text-sm text-center relative overflow-hidden h-10 shrink-0 animate-in fade-in duration-500"
+        >
           <a
             href={adToShow.linkUrl}
             target="_blank"

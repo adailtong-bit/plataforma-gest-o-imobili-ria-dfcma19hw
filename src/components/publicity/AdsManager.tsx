@@ -138,11 +138,17 @@ export function AdsManager() {
       case 'tenant_page':
         return t('publicity.ads_manager.placements.tenant_page')
       case 'pm_login':
-        return t('publicity.ads_manager.placements.pm_login')
+        return t('publicity.ads_manager.placements.pm_login') || 'PM Login'
       case 'sidebar':
-        return t('publicity.ads_manager.placements.sidebar')
+        return t('publicity.ads_manager.placements.sidebar') || 'Sidebar'
       case 'footer':
-        return t('publicity.ads_manager.placements.footer')
+        return t('publicity.ads_manager.placements.footer') || 'Footer'
+      case 'header':
+        return t('publicity.ads_manager.placements.header') || 'Header'
+      case 'performance':
+        return (
+          t('publicity.ads_manager.placements.performance') || 'Performance'
+        )
       default:
         return placement.replace('_', ' ')
     }
@@ -351,13 +357,24 @@ export function AdsManager() {
                         {t('publicity.ads_manager.placements.tenant_page')}
                       </SelectItem>
                       <SelectItem value="pm_login">
-                        {t('publicity.ads_manager.placements.pm_login')}
+                        {t('publicity.ads_manager.placements.pm_login') ||
+                          'PM Login'}
                       </SelectItem>
                       <SelectItem value="sidebar">
-                        {t('publicity.ads_manager.placements.sidebar')}
+                        {t('publicity.ads_manager.placements.sidebar') ||
+                          'Sidebar'}
                       </SelectItem>
                       <SelectItem value="footer">
-                        {t('publicity.ads_manager.placements.footer')}
+                        {t('publicity.ads_manager.placements.footer') ||
+                          'Footer'}
+                      </SelectItem>
+                      <SelectItem value="header">
+                        {t('publicity.ads_manager.placements.header') ||
+                          'Header'}
+                      </SelectItem>
+                      <SelectItem value="performance">
+                        {t('publicity.ads_manager.placements.performance') ||
+                          'Performance'}
                       </SelectItem>
                     </SelectContent>
                   </Select>

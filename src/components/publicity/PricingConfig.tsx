@@ -37,6 +37,10 @@ export function PricingConfig() {
       partner_page: 0,
       tenant_page: 0,
       pm_login: 0,
+      sidebar: 0,
+      footer: 0,
+      header: 0,
+      performance: 0,
     },
   })
 
@@ -52,6 +56,10 @@ export function PricingConfig() {
           partner_page: adPricing.placementModifiers?.partner_page || 0,
           tenant_page: adPricing.placementModifiers?.tenant_page || 0,
           pm_login: adPricing.placementModifiers?.pm_login || 0,
+          sidebar: adPricing.placementModifiers?.sidebar || 0,
+          footer: adPricing.placementModifiers?.footer || 0,
+          header: adPricing.placementModifiers?.header || 0,
+          performance: adPricing.placementModifiers?.performance || 0,
         },
       })
     }
@@ -187,12 +195,61 @@ export function PricingConfig() {
             </div>
             <div className="grid grid-cols-3 items-center gap-4">
               <Label className="col-span-1 text-right text-muted-foreground">
-                {t('publicity.ads_manager.placements.pm_login')}
+                {t('publicity.ads_manager.placements.pm_login') || 'PM Login'}
               </Label>
               <div className="col-span-2">
                 <CurrencyInput
                   value={formData.placementModifiers.pm_login}
                   onChange={(v) => updateModifier('pm_login', v)}
+                  currency={currency}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Label className="col-span-1 text-right text-muted-foreground">
+                {t('publicity.ads_manager.placements.sidebar') || 'Sidebar'}
+              </Label>
+              <div className="col-span-2">
+                <CurrencyInput
+                  value={formData.placementModifiers.sidebar}
+                  onChange={(v) => updateModifier('sidebar', v)}
+                  currency={currency}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Label className="col-span-1 text-right text-muted-foreground">
+                {t('publicity.ads_manager.placements.footer') || 'Footer'}
+              </Label>
+              <div className="col-span-2">
+                <CurrencyInput
+                  value={formData.placementModifiers.footer}
+                  onChange={(v) => updateModifier('footer', v)}
+                  currency={currency}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Label className="col-span-1 text-right text-muted-foreground">
+                {t('publicity.ads_manager.placements.header') || 'Header'}
+              </Label>
+              <div className="col-span-2">
+                <CurrencyInput
+                  value={formData.placementModifiers.header}
+                  onChange={(v) => updateModifier('header', v)}
+                  currency={currency}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Label className="col-span-1 text-right text-muted-foreground">
+                {t('publicity.ads_manager.placements.performance') ||
+                  'Performance'}
+              </Label>
+              <div className="col-span-2">
+                <CurrencyInput
+                  value={formData.placementModifiers.performance}
+                  onChange={(v) => updateModifier('performance', v)}
                   currency={currency}
                 />
               </div>

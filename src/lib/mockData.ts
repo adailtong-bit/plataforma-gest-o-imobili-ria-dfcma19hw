@@ -996,46 +996,108 @@ for (let i = 0; i < 30; i++) {
         'sidebar',
         'header',
         'footer',
+        'performance',
       ]),
     })
   }
 }
 
+// Explicitly add specific ads to ensure rotation works across all designated areas
 if (mockAdvertisers.length > 0) {
   const advId = mockAdvertisers[0].id
-  advertisements.push({
-    id: 'ad_guaranteed_header',
-    title: 'Premium Management Services',
-    description: 'Upgrade your plan today and get 20% off!',
-    imageUrl: 'https://img.usecurling.com/p/1200/100?q=banner&color=blue',
-    linkUrl: '#',
-    active: true,
-    createdAt: new Date().toISOString(),
-    advertiserId: advId,
-    placement: 'header',
-  })
-  advertisements.push({
-    id: 'ad_guaranteed_footer',
-    title: 'Partner with the best real estate agents',
-    description: 'Find top-rated agents in your area.',
-    imageUrl: 'https://img.usecurling.com/p/400/200?q=realestate&color=gray',
-    linkUrl: '#',
-    active: true,
-    createdAt: new Date().toISOString(),
-    advertiserId: advId,
-    placement: 'footer',
-  })
-  advertisements.push({
-    id: 'ad_guaranteed_sidebar',
-    title: 'Smart Home Integration',
-    description: 'Control your properties remotely.',
-    imageUrl: 'https://img.usecurling.com/p/300/300?q=smarthome&color=cyan',
-    linkUrl: '#',
-    active: true,
-    createdAt: new Date().toISOString(),
-    advertiserId: advId,
-    placement: 'sidebar',
-  })
+
+  // Header ads (limit 1)
+  advertisements.push(
+    {
+      id: 'ad_header_1',
+      title: 'Premium Management',
+      description: 'Upgrade your plan today and get 20% off!',
+      imageUrl: 'https://img.usecurling.com/p/1200/100?q=banner&color=blue',
+      linkUrl: '#',
+      active: true,
+      createdAt: new Date().toISOString(),
+      advertiserId: advId,
+      placement: 'header',
+    },
+    {
+      id: 'ad_header_2',
+      title: 'Winter Discount',
+      description: 'Special seasonal pricing on all features.',
+      imageUrl: 'https://img.usecurling.com/p/1200/100?q=snow&color=cyan',
+      linkUrl: '#',
+      active: true,
+      createdAt: new Date().toISOString(),
+      advertiserId: advId,
+      placement: 'header',
+    },
+  )
+
+  // Footer ads (limit 3, add 6 to test rotation)
+  for (let k = 1; k <= 6; k++) {
+    advertisements.push({
+      id: `ad_footer_${k}`,
+      title: `Footer Partner ${k}`,
+      description: `Find top-rated services in area ${k}`,
+      imageUrl: `https://img.usecurling.com/p/400/200?q=realestate&seed=${k}`,
+      linkUrl: '#',
+      active: true,
+      createdAt: new Date().toISOString(),
+      advertiserId: advId,
+      placement: 'footer',
+    })
+  }
+
+  // Sidebar ads (limit 1, add 3 to test rotation)
+  advertisements.push(
+    {
+      id: 'ad_sidebar_1',
+      title: 'Smart Home Integration',
+      description: 'Control properties remotely',
+      imageUrl: 'https://img.usecurling.com/p/300/300?q=smarthome&color=green',
+      linkUrl: '#',
+      active: true,
+      createdAt: new Date().toISOString(),
+      advertiserId: advId,
+      placement: 'sidebar',
+    },
+    {
+      id: 'ad_sidebar_2',
+      title: 'Property Insurance',
+      description: 'Protect your assets with our partners',
+      imageUrl: 'https://img.usecurling.com/p/300/300?q=insurance&color=blue',
+      linkUrl: '#',
+      active: true,
+      createdAt: new Date().toISOString(),
+      advertiserId: advId,
+      placement: 'sidebar',
+    },
+    {
+      id: 'ad_sidebar_3',
+      title: 'Legal Services',
+      description: 'Get compliant fast',
+      imageUrl: 'https://img.usecurling.com/p/300/300?q=law&color=gray',
+      linkUrl: '#',
+      active: true,
+      createdAt: new Date().toISOString(),
+      advertiserId: advId,
+      placement: 'sidebar',
+    },
+  )
+
+  // Performance Page ads (limit 2, add 5 to test rotation and side-by-side)
+  for (let k = 1; k <= 5; k++) {
+    advertisements.push({
+      id: `ad_perf_${k}`,
+      title: `Analytics Boost ${k}`,
+      description: `Supercharge your data with tool ${k}`,
+      imageUrl: `https://img.usecurling.com/p/600/200?q=analytics&seed=${k}`,
+      linkUrl: '#',
+      active: true,
+      createdAt: new Date().toISOString(),
+      advertiserId: advId,
+      placement: 'performance',
+    })
+  }
 }
 
 // Generate Chats (50)

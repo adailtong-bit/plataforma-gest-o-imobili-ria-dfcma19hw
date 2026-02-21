@@ -1046,6 +1046,10 @@ export interface AdPricing {
     partner_page: number
     tenant_page: number
     pm_login?: number
+    sidebar?: number
+    footer?: number
+    header?: number
+    performance?: number
   }
 }
 
@@ -1065,6 +1069,7 @@ export interface Advertisement {
     | 'footer'
     | 'sidebar'
     | 'header'
+    | 'performance'
   placementType?: 'header' | 'footer'
   targetPages?: string[]
   advertiserId?: string

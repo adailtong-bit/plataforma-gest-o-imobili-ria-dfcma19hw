@@ -1,28 +1,42 @@
+import { useMemo } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import usePublicityStore from '@/stores/usePublicityStore'
 import { Button } from '@/components/ui/button'
 import { ExternalLink } from 'lucide-react'
+import { useAdRotation } from '@/hooks/useAdRotation'
+import { cn } from '@/lib/utils'
 
 export function PublicityFooter() {
   const { advertisements } = usePublicityStore()
 
-  // Filter active ads and those explicitly meant for footer
-  const activeAds = advertisements.filter(
-    (ad) => ad.active && ad.placement === 'footer',
+  const activeAds = useMemo(
+    () => advertisements.filter((ad) => ad.active && ad.placement === 'footer'),
+    [advertisements],
   )
 
-  if (activeAds.length === 0) return null
+  const visibleAds = useAdRotation(activeAds, 3, 12)
+
+  if (visibleAds.length === 0) return null
 
   return (
     <div className="mt-8 mb-4 border-t pt-6 shrink-0">
       <h3 className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wider px-1">
         Sponsored
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {activeAds.map((ad) => (
+      <div
+        className={cn(
+          'grid grid-cols-1 gap-4',
+          visibleAds.length === 1
+            ? 'md:grid-cols-1'
+            : visibleAds.length === 2
+              ? 'md:grid-cols-2'
+              : 'md:grid-cols-3',
+        )}
+      >
+        {visibleAds.map((ad, idx) => (
           <Card
-            key={ad.id}
-            className="overflow-hidden hover:shadow-md transition-all group"
+            key={`${ad.id}-${idx}`}
+            className="overflow-hidden hover:shadow-md transition-all group animate-in fade-in duration-500"
           >
             <div className="flex h-24">
               <div className="w-1/3 relative bg-muted">

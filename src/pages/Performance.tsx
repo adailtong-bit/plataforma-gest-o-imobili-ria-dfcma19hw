@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import {
   Card,
   CardContent,
@@ -29,9 +30,20 @@ import {
   Activity,
 } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { useAdRotation } from '@/hooks/useAdRotation'
+import usePublicityStore from '@/stores/usePublicityStore'
+import { cn } from '@/lib/utils'
 
 export default function Performance() {
   const { t } = useLanguageStore()
+  const { advertisements } = usePublicityStore()
+
+  const performanceAds = useMemo(
+    () =>
+      advertisements.filter((a) => a.active && a.placement === 'performance'),
+    [advertisements],
+  )
+  const visibleAds = useAdRotation(performanceAds, 2, 8)
 
   // Mock data
   const performanceData = [
@@ -64,6 +76,44 @@ export default function Performance() {
 
   return (
     <div className="flex flex-col gap-6">
+      {visibleAds.length > 0 && (
+        <div
+          className={cn(
+            'grid grid-cols-1 gap-4',
+            visibleAds.length >= 2 ? 'md:grid-cols-2' : '',
+          )}
+        >
+          {visibleAds.map((ad, idx) => (
+            <a
+              key={`${ad.id}-${idx}`}
+              href={ad.linkUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="block relative h-24 rounded-lg overflow-hidden border bg-muted group animate-in fade-in duration-500"
+            >
+              <img
+                src={ad.imageUrl}
+                alt={ad.title}
+                className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-black/50 p-4 flex flex-col justify-center">
+                <span className="text-white text-[10px] font-bold uppercase tracking-wider mb-1 bg-black/60 w-fit px-1.5 py-0.5 rounded">
+                  Sponsored
+                </span>
+                <h4 className="text-white font-bold truncate text-sm">
+                  {ad.title}
+                </h4>
+                {ad.description && (
+                  <p className="text-white/80 text-xs truncate mt-0.5">
+                    {ad.description}
+                  </p>
+                )}
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-950">
           {t('sidebar.performance')}
@@ -198,7 +248,7 @@ export default function Performance() {
                   <YAxis
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => `${value}`}
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Legend />

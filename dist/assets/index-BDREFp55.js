@@ -55092,15 +55092,16 @@ for (let i = 0; i < 30; i++) {
 			"partner_page",
 			"sidebar",
 			"header",
-			"footer"
+			"footer",
+			"performance"
 		])
 	});
 }
 if (mockAdvertisers.length > 0) {
 	const advId = mockAdvertisers[0].id;
 	advertisements.push({
-		id: "ad_guaranteed_header",
-		title: "Premium Management Services",
+		id: "ad_header_1",
+		title: "Premium Management",
 		description: "Upgrade your plan today and get 20% off!",
 		imageUrl: "https://img.usecurling.com/p/1200/100?q=banner&color=blue",
 		linkUrl: "#",
@@ -55108,12 +55109,22 @@ if (mockAdvertisers.length > 0) {
 		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
 		advertiserId: advId,
 		placement: "header"
+	}, {
+		id: "ad_header_2",
+		title: "Winter Discount",
+		description: "Special seasonal pricing on all features.",
+		imageUrl: "https://img.usecurling.com/p/1200/100?q=snow&color=cyan",
+		linkUrl: "#",
+		active: true,
+		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+		advertiserId: advId,
+		placement: "header"
 	});
-	advertisements.push({
-		id: "ad_guaranteed_footer",
-		title: "Partner with the best real estate agents",
-		description: "Find top-rated agents in your area.",
-		imageUrl: "https://img.usecurling.com/p/400/200?q=realestate&color=gray",
+	for (let k$3 = 1; k$3 <= 6; k$3++) advertisements.push({
+		id: `ad_footer_${k$3}`,
+		title: `Footer Partner ${k$3}`,
+		description: `Find top-rated services in area ${k$3}`,
+		imageUrl: `https://img.usecurling.com/p/400/200?q=realestate&seed=${k$3}`,
 		linkUrl: "#",
 		active: true,
 		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
@@ -55121,15 +55132,46 @@ if (mockAdvertisers.length > 0) {
 		placement: "footer"
 	});
 	advertisements.push({
-		id: "ad_guaranteed_sidebar",
+		id: "ad_sidebar_1",
 		title: "Smart Home Integration",
-		description: "Control your properties remotely.",
-		imageUrl: "https://img.usecurling.com/p/300/300?q=smarthome&color=cyan",
+		description: "Control properties remotely",
+		imageUrl: "https://img.usecurling.com/p/300/300?q=smarthome&color=green",
 		linkUrl: "#",
 		active: true,
 		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
 		advertiserId: advId,
 		placement: "sidebar"
+	}, {
+		id: "ad_sidebar_2",
+		title: "Property Insurance",
+		description: "Protect your assets with our partners",
+		imageUrl: "https://img.usecurling.com/p/300/300?q=insurance&color=blue",
+		linkUrl: "#",
+		active: true,
+		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+		advertiserId: advId,
+		placement: "sidebar"
+	}, {
+		id: "ad_sidebar_3",
+		title: "Legal Services",
+		description: "Get compliant fast",
+		imageUrl: "https://img.usecurling.com/p/300/300?q=law&color=gray",
+		linkUrl: "#",
+		active: true,
+		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+		advertiserId: advId,
+		placement: "sidebar"
+	});
+	for (let k$3 = 1; k$3 <= 5; k$3++) advertisements.push({
+		id: `ad_perf_${k$3}`,
+		title: `Analytics Boost ${k$3}`,
+		description: `Supercharge your data with tool ${k$3}`,
+		imageUrl: `https://img.usecurling.com/p/600/200?q=analytics&seed=${k$3}`,
+		linkUrl: "#",
+		active: true,
+		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+		advertiserId: advId,
+		placement: "performance"
 	});
 }
 for (let i = 0; i < 50; i++) {
@@ -62843,7 +62885,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$80({ inst: {
+			cachedValue = useState$81({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -62857,7 +62899,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$28(function() {
+			useEffect$29(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -62880,7 +62922,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$80 = React$67.useState, useEffect$28 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$81 = React$67.useState, useEffect$29 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -63431,6 +63473,28 @@ const canChat = (initiator, target) => {
 	if (initiatorRole === "partner_employee" && targetRole === "partner") return initiator.parentPartnerId === target.id;
 	return false;
 };
+function useAdRotation(ads, limit = 1, intervalSeconds = 8) {
+	const [currentIndex, setCurrentIndex] = (0, import_react.useState)(0);
+	(0, import_react.useEffect)(() => {
+		if (!ads || ads.length <= limit) {
+			setCurrentIndex(0);
+			return;
+		}
+		const timer = setInterval(() => {
+			setCurrentIndex((prev) => (prev + limit) % ads.length);
+		}, intervalSeconds * 1e3);
+		return () => clearInterval(timer);
+	}, [
+		ads,
+		limit,
+		intervalSeconds
+	]);
+	if (!ads || ads.length === 0) return [];
+	if (ads.length <= limit) return ads;
+	const visibleAds = [];
+	for (let i = 0; i < limit; i++) visibleAds.push(ads[(currentIndex + i) % ads.length]);
+	return visibleAds;
+}
 function AppSidebar() {
 	const pathname = useLocation().pathname;
 	const { t } = useLanguageStore_default();
@@ -63442,8 +63506,8 @@ function AppSidebar() {
 		if (isMobile) setOpenMobile(false);
 	};
 	const unreadMessagesCount = messages$1.reduce((acc, msg) => acc + (msg.unread || 0), 0);
-	const sidebarAds = advertisements$1.filter((a$1) => a$1.active && a$1.placement === "sidebar");
-	const adToShow = sidebarAds.length > 0 ? sidebarAds[0] : null;
+	const visibleSidebarAds = useAdRotation((0, import_react.useMemo)(() => advertisements$1.filter((a$1) => a$1.active && a$1.placement === "sidebar"), [advertisements$1]), 1, 15);
+	const adToShow = visibleSidebarAds.length > 0 ? visibleSidebarAds[0] : null;
 	const visibleMenuItems = [
 		{
 			title: t("sidebar.dashboard"),
@@ -63758,16 +63822,19 @@ function AppSidebar() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarFooter, {
 				className: "bg-white",
 				children: [adToShow && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "p-3 mx-2 mb-2 bg-slate-50 rounded-lg border group-data-[collapsible=icon]:hidden",
+					className: "p-3 mx-2 mb-2 bg-slate-50 rounded-lg border group-data-[collapsible=icon]:hidden relative overflow-hidden group animate-in fade-in duration-500",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-[10px] text-muted-foreground uppercase font-bold mb-1",
 							children: "Sponsored"
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-							src: adToShow.imageUrl,
-							alt: adToShow.title,
-							className: "w-full h-24 rounded-md object-cover mb-2"
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "relative h-24 mb-2 rounded-md overflow-hidden",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+								src: adToShow.imageUrl,
+								alt: adToShow.title,
+								className: "w-full h-full object-cover transition-transform group-hover:scale-105"
+							})
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-xs font-bold text-slate-900 line-clamp-1",
@@ -63781,7 +63848,7 @@ function AppSidebar() {
 							children: "Learn more"
 						})
 					]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenu, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				}, adToShow.id), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenu, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-2 p-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
 						className: "h-8 w-8 border border-slate-200",
@@ -66635,8 +66702,8 @@ function AppHeader() {
 	const demoUsers = allUsers.filter((u$1) => u$1.isDemo);
 	const otherDemoUsers = allUsers.filter((u$1) => u$1.id !== currentUser?.id && !u$1.isDemo).slice(0, 4);
 	const unreadCount = notifications$1.filter((n) => !n.read).length;
-	const headerAds = advertisements$1.filter((a$1) => a$1.active && a$1.placement === "header");
-	const adToShow = headerAds.length > 0 ? headerAds[0] : null;
+	const visibleHeaderAds = useAdRotation((0, import_react.useMemo)(() => advertisements$1.filter((a$1) => a$1.active && a$1.placement === "header"), [advertisements$1]), 1, 10);
+	const adToShow = visibleHeaderAds.length > 0 ? visibleHeaderAds[0] : null;
 	(0, import_react.useEffect)(() => {
 		const down = (e) => {
 			if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -66677,7 +66744,7 @@ function AppHeader() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
 		className: "flex flex-col w-full sticky top-0 z-50 shadow-sm bg-white",
 		children: [adToShow && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "bg-slate-900 text-white px-4 py-2 flex items-center justify-center text-xs sm:text-sm text-center relative overflow-hidden h-10 shrink-0",
+			className: "bg-slate-900 text-white px-4 py-2 flex items-center justify-center text-xs sm:text-sm text-center relative overflow-hidden h-10 shrink-0 animate-in fade-in duration-500",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
 				href: adToShow.linkUrl,
 				target: "_blank",
@@ -66699,7 +66766,7 @@ function AppHeader() {
 				alt: "",
 				className: "absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
 			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		}, adToShow.id), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex h-16 items-center gap-4 border-b px-6 w-full justify-between shrink-0",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -66997,17 +67064,17 @@ function AppHeader() {
 }
 function PublicityFooter() {
 	const { advertisements: advertisements$1 } = usePublicityStore_default();
-	const activeAds = advertisements$1.filter((ad) => ad.active && ad.placement === "footer");
-	if (activeAds.length === 0) return null;
+	const visibleAds = useAdRotation((0, import_react.useMemo)(() => advertisements$1.filter((ad) => ad.active && ad.placement === "footer"), [advertisements$1]), 3, 12);
+	if (visibleAds.length === 0) return null;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "mt-8 mb-4 border-t pt-6 shrink-0",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
 			className: "text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wider px-1",
 			children: "Sponsored"
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "grid grid-cols-1 md:grid-cols-3 gap-4",
-			children: activeAds.map((ad) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-				className: "overflow-hidden hover:shadow-md transition-all group",
+			className: cn("grid grid-cols-1 gap-4", visibleAds.length === 1 ? "md:grid-cols-1" : visibleAds.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"),
+			children: visibleAds.map((ad, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+				className: "overflow-hidden hover:shadow-md transition-all group animate-in fade-in duration-500",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex h-24",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -67042,7 +67109,7 @@ function PublicityFooter() {
 						]
 					})]
 				})
-			}, ad.id))
+			}, `${ad.id}-${idx}`))
 		})]
 	});
 }
@@ -88330,9 +88397,11 @@ function AdsManager() {
 			case "home_bottom": return t("publicity.ads_manager.placements.home_bottom");
 			case "partner_page": return t("publicity.ads_manager.placements.partner_page");
 			case "tenant_page": return t("publicity.ads_manager.placements.tenant_page");
-			case "pm_login": return t("publicity.ads_manager.placements.pm_login");
-			case "sidebar": return t("publicity.ads_manager.placements.sidebar");
-			case "footer": return t("publicity.ads_manager.placements.footer");
+			case "pm_login": return t("publicity.ads_manager.placements.pm_login") || "PM Login";
+			case "sidebar": return t("publicity.ads_manager.placements.sidebar") || "Sidebar";
+			case "footer": return t("publicity.ads_manager.placements.footer") || "Footer";
+			case "header": return t("publicity.ads_manager.placements.header") || "Header";
+			case "performance": return t("publicity.ads_manager.placements.performance") || "Performance";
 			default: return placement.replace("_", " ");
 		}
 	};
@@ -88510,15 +88579,23 @@ function AdsManager() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "pm_login",
-											children: t("publicity.ads_manager.placements.pm_login")
+											children: t("publicity.ads_manager.placements.pm_login") || "PM Login"
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "sidebar",
-											children: t("publicity.ads_manager.placements.sidebar")
+											children: t("publicity.ads_manager.placements.sidebar") || "Sidebar"
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "footer",
-											children: t("publicity.ads_manager.placements.footer")
+											children: t("publicity.ads_manager.placements.footer") || "Footer"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "header",
+											children: t("publicity.ads_manager.placements.header") || "Header"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "performance",
+											children: t("publicity.ads_manager.placements.performance") || "Performance"
 										})
 									] })]
 								})]
@@ -88639,7 +88716,11 @@ function PricingConfig() {
 			home_bottom: 0,
 			partner_page: 0,
 			tenant_page: 0,
-			pm_login: 0
+			pm_login: 0,
+			sidebar: 0,
+			footer: 0,
+			header: 0,
+			performance: 0
 		}
 	});
 	(0, import_react.useEffect)(() => {
@@ -88652,7 +88733,11 @@ function PricingConfig() {
 				home_bottom: adPricing.placementModifiers?.home_bottom || 0,
 				partner_page: adPricing.placementModifiers?.partner_page || 0,
 				tenant_page: adPricing.placementModifiers?.tenant_page || 0,
-				pm_login: adPricing.placementModifiers?.pm_login || 0
+				pm_login: adPricing.placementModifiers?.pm_login || 0,
+				sidebar: adPricing.placementModifiers?.sidebar || 0,
+				footer: adPricing.placementModifiers?.footer || 0,
+				header: adPricing.placementModifiers?.header || 0,
+				performance: adPricing.placementModifiers?.performance || 0
 			}
 		});
 	}, [adPricing]);
@@ -88791,12 +88876,68 @@ function PricingConfig() {
 						className: "grid grid-cols-3 items-center gap-4",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 							className: "col-span-1 text-right text-muted-foreground",
-							children: t("publicity.ads_manager.placements.pm_login")
+							children: t("publicity.ads_manager.placements.pm_login") || "PM Login"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "col-span-2",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
 								value: formData.placementModifiers.pm_login,
 								onChange: (v) => updateModifier("pm_login", v),
+								currency
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.sidebar") || "Sidebar"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.sidebar,
+								onChange: (v) => updateModifier("sidebar", v),
+								currency
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.footer") || "Footer"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.footer,
+								onChange: (v) => updateModifier("footer", v),
+								currency
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.header") || "Header"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.header,
+								onChange: (v) => updateModifier("header", v),
+								currency
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.performance") || "Performance"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.performance,
+								onChange: (v) => updateModifier("performance", v),
 								currency
 							})
 						})]
@@ -91958,6 +92099,8 @@ function NightAudit() {
 }
 function Performance() {
 	const { t } = useLanguageStore_default();
+	const { advertisements: advertisements$1 } = usePublicityStore_default();
+	const visibleAds = useAdRotation((0, import_react.useMemo)(() => advertisements$1.filter((a$1) => a$1.active && a$1.placement === "performance"), [advertisements$1]), 2, 8);
 	const performanceData = [
 		{
 			month: "Jan",
@@ -92023,6 +92166,36 @@ function Performance() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
 		children: [
+			visibleAds.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: cn("grid grid-cols-1 gap-4", visibleAds.length >= 2 ? "md:grid-cols-2" : ""),
+				children: visibleAds.map((ad, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
+					href: ad.linkUrl,
+					target: "_blank",
+					rel: "noreferrer",
+					className: "block relative h-24 rounded-lg overflow-hidden border bg-muted group animate-in fade-in duration-500",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+						src: ad.imageUrl,
+						alt: ad.title,
+						className: "absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "absolute inset-0 bg-black/50 p-4 flex flex-col justify-center",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "text-white text-[10px] font-bold uppercase tracking-wider mb-1 bg-black/60 w-fit px-1.5 py-0.5 rounded",
+								children: "Sponsored"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+								className: "text-white font-bold truncate text-sm",
+								children: ad.title
+							}),
+							ad.description && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-white/80 text-xs truncate mt-0.5",
+								children: ad.description
+							})
+						]
+					})]
+				}, `${ad.id}-${idx}`))
+			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 				className: "text-3xl font-bold tracking-tight text-slate-950",
 				children: t("sidebar.performance")
@@ -92168,7 +92341,7 @@ function Performance() {
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(YAxis, {
 									tickLine: false,
 									axisLine: false,
-									tickFormatter: (value) => `$${value}`
+									tickFormatter: (value) => `${value}`
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltip, { content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartTooltipContent, {}) }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Legend, {}),
@@ -94358,4 +94531,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-6V9sStxT.js.map
+//# sourceMappingURL=index-BDREFp55.js.map
