@@ -33,13 +33,22 @@ import {
   PieChart,
   Pie,
   Cell,
+  LineChart,
+  Line,
+  ResponsiveContainer,
 } from 'recharts'
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
+import {
+  ChartContainer,
+  ChartTooltipContent,
+  ChartTooltip,
+} from '@/components/ui/chart'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import useFinancialStore from '@/stores/useFinancialStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useShortTermStore from '@/stores/useShortTermStore'
+import useCondominiumStore from '@/stores/useCondominiumStore'
+import useOwnerStore from '@/stores/useOwnerStore'
 import useHotelStore from '@/stores/useHotelStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { AppContext } from '@/stores/AppContext'
@@ -62,6 +71,8 @@ import { Label } from '@/components/ui/label'
 export function FinancialReports() {
   const { ledgerEntries } = useFinancialStore()
   const { properties } = usePropertyStore()
+  const { condominiums } = useCondominiumStore()
+  const { owners } = useOwnerStore()
   const { tenants } = useTenantStore()
   const { bookings } = useShortTermStore()
   const { towers } = useHotelStore()
@@ -74,6 +85,9 @@ export function FinancialReports() {
 
   const [selectedPropertyId, setSelectedPropertyId] =
     useState<string>(globalPropertyId)
+  const [selectedOwnerId, setSelectedOwnerId] = useState<string>('all')
+  const [selectedCondoId, setSelectedCondoId] = useState<string>('all')
+
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subMonths(new Date(), 12),
     to: new Date(),
@@ -97,9 +111,23 @@ export function FinancialReports() {
 
       const propertyValid =
         selectedPropertyId === 'all' || e.propertyId === selectedPropertyId
-      return dateValid && propertyValid
+
+      const prop = properties.find((p) => p.id === e.propertyId)
+      const ownerValid =
+        selectedOwnerId === 'all' || prop?.ownerId === selectedOwnerId
+      const condoValid =
+        selectedCondoId === 'all' || prop?.condominiumId === selectedCondoId
+
+      return dateValid && propertyValid && ownerValid && condoValid
     })
-  }, [ledgerEntries, dateRange, selectedPropertyId])
+  }, [
+    ledgerEntries,
+    dateRange,
+    selectedPropertyId,
+    selectedOwnerId,
+    selectedCondoId,
+    properties,
+  ])
 
   // --- Breakdown by Category (Room, F&B, Services) ---
   const revenueByCategory = useMemo(() => {
@@ -206,6 +234,18 @@ export function FinancialReports() {
     })
   }, [tenants, bookings, properties, selectedPropertyId])
 
+  // --- Channel Analytics (Simulated Traffic Data) ---
+  const channelData = useMemo(() => {
+    return [
+      { month: 'Jan', airbnb: 4000, booking: 2400, vrbo: 2400, direct: 1000 },
+      { month: 'Feb', airbnb: 3000, booking: 1398, vrbo: 2210, direct: 1200 },
+      { month: 'Mar', airbnb: 2000, booking: 9800, vrbo: 2290, direct: 1100 },
+      { month: 'Apr', airbnb: 2780, booking: 3908, vrbo: 2000, direct: 1500 },
+      { month: 'May', airbnb: 1890, booking: 4800, vrbo: 2181, direct: 1700 },
+      { month: 'Jun', airbnb: 2390, booking: 3800, vrbo: 2500, direct: 2000 },
+    ]
+  }, [])
+
   const handleExport = () => {
     const headers = [
       'Date',
@@ -241,7 +281,7 @@ export function FinancialReports() {
     <div className="space-y-6">
       <Card>
         <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
             <div className="space-y-2">
               <Label className="text-sm font-medium">{t('common.date')}</Label>
               <DatePickerWithRange date={dateRange} setDate={setDateRange} />
@@ -267,7 +307,45 @@ export function FinancialReports() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="md:col-start-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Owner</Label>
+              <Select
+                value={selectedOwnerId}
+                onValueChange={setSelectedOwnerId}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All Owners" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Owners</SelectItem>
+                  {owners.map((o) => (
+                    <SelectItem key={o.id} value={o.id}>
+                      {o.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Condominium</Label>
+              <Select
+                value={selectedCondoId}
+                onValueChange={setSelectedCondoId}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All Condos" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Condos</SelectItem>
+                  {condominiums.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
               <Button
                 variant="outline"
                 onClick={handleExport}
@@ -387,6 +465,68 @@ export function FinancialReports() {
                       name={t('common.revenue')}
                     />
                   </BarChart>
+                </ChartContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="channels">
+          <Card>
+            <CardHeader>
+              <CardTitle>Channel Analysis (Traffic & Performance)</CardTitle>
+              <CardDescription>
+                Simulated traffic and conversion data from external OTAs.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px] w-full">
+                <ChartContainer
+                  config={{
+                    airbnb: { label: 'Airbnb', color: '#ff5a5f' },
+                    booking: { label: 'Booking.com', color: '#003580' },
+                    vrbo: { label: 'VRBO', color: '#00619b' },
+                    direct: { label: 'Direct', color: '#10b981' },
+                  }}
+                  className="h-full w-full"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={channelData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Legend />
+                      <Line
+                        type="monotone"
+                        dataKey="airbnb"
+                        stroke="#ff5a5f"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="booking"
+                        stroke="#003580"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="vrbo"
+                        stroke="#00619b"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="direct"
+                        stroke="#10b981"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
                 </ChartContainer>
               </div>
             </CardContent>

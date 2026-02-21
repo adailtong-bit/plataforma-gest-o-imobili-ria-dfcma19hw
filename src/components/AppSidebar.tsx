@@ -49,6 +49,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
 import useMessageStore from '@/stores/useMessageStore'
+import usePublicityStore from '@/stores/usePublicityStore'
 import { hasPermission } from '@/lib/permissions'
 import { User, Resource } from '@/lib/types'
 import logo from '@/assets/logo-estilizado.jpg'
@@ -62,6 +63,7 @@ export function AppSidebar() {
   const { t } = useLanguageStore()
   const { currentUser } = useAuthStore()
   const { messages } = useMessageStore()
+  const { advertisements } = usePublicityStore()
   const { setOpenMobile, isMobile } = useSidebar()
 
   const handleLinkClick = () => {
@@ -74,6 +76,11 @@ export function AppSidebar() {
     (acc, msg) => acc + (msg.unread || 0),
     0,
   )
+
+  const sidebarAds = advertisements.filter(
+    (a) => a.active && a.placement === 'sidebar',
+  )
+  const adToShow = sidebarAds.length > 0 ? sidebarAds[0] : null
 
   const allMenuItems = [
     {
@@ -456,6 +463,29 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="bg-white">
+        {adToShow && (
+          <div className="p-3 mx-2 mb-2 bg-slate-50 rounded-lg border group-data-[collapsible=icon]:hidden">
+            <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">
+              Sponsored
+            </p>
+            <img
+              src={adToShow.imageUrl}
+              alt={adToShow.title}
+              className="w-full h-24 rounded-md object-cover mb-2"
+            />
+            <p className="text-xs font-bold text-slate-900 line-clamp-1">
+              {adToShow.title}
+            </p>
+            <a
+              href={adToShow.linkUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs text-blue-600 hover:underline mt-1 block"
+            >
+              Learn more
+            </a>
+          </div>
+        )}
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center gap-2 p-2">

@@ -189,7 +189,7 @@ export default function Tasks() {
   }
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-6 h-[calc(100vh-6rem)] min-h-0">
       {/* Dialogs for List View Actions */}
       {selectedTask && (
         <>
@@ -214,7 +214,7 @@ export default function Tasks() {
         />
       )}
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-black">
             {t('tasks.title')}
@@ -277,8 +277,11 @@ export default function Tasks() {
         onOpenChange={setInvoiceDialogOpen}
       />
 
-      <Tabs defaultValue="board" className="space-y-4 flex-1 flex flex-col">
-        <div className="flex justify-between items-center">
+      <Tabs
+        defaultValue="board"
+        className="space-y-4 flex-1 flex flex-col min-h-0"
+      >
+        <div className="flex justify-between items-center shrink-0">
           <TabsList className="bg-slate-100 border border-slate-200">
             <TabsTrigger
               value="board"
@@ -299,7 +302,7 @@ export default function Tasks() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
             {/* Approval Column */}
             <div className="bg-orange-50 p-4 rounded-lg flex flex-col gap-4 border border-orange-100 h-full">
-              <div className="flex items-center justify-between pb-2 border-b border-orange-200">
+              <div className="flex items-center justify-between pb-2 border-b border-orange-200 shrink-0">
                 <h3 className="font-bold text-sm uppercase text-orange-900">
                   {t('tasks.approval')}
                 </h3>
@@ -307,7 +310,7 @@ export default function Tasks() {
                   <DataMask>{approvalTasks.length}</DataMask>
                 </Badge>
               </div>
-              <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-280px)] pr-1 custom-scrollbar">
+              <div className="flex flex-col gap-3 overflow-y-auto pr-1 custom-scrollbar flex-1 min-h-0">
                 {approvalTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -324,7 +327,7 @@ export default function Tasks() {
 
             {/* Pending Column */}
             <div className="bg-slate-50 p-4 rounded-lg flex flex-col gap-4 border border-slate-200 h-full">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 shrink-0">
                 <h3 className="font-bold text-sm uppercase text-black">
                   {t('common.pending')} (Ready)
                 </h3>
@@ -335,7 +338,7 @@ export default function Tasks() {
                   <DataMask>{pendingTasks.length}</DataMask>
                 </Badge>
               </div>
-              <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-280px)] pr-1 custom-scrollbar">
+              <div className="flex flex-col gap-3 overflow-y-auto pr-1 custom-scrollbar flex-1 min-h-0">
                 {pendingTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -352,7 +355,7 @@ export default function Tasks() {
 
             {/* In Progress Column */}
             <div className="bg-blue-50 p-4 rounded-lg flex flex-col gap-4 border border-blue-100 h-full">
-              <div className="flex items-center justify-between pb-2 border-b border-blue-200">
+              <div className="flex items-center justify-between pb-2 border-b border-blue-200 shrink-0">
                 <h3 className="font-bold text-sm uppercase text-blue-900">
                   {t('tasks.in_progress')}
                 </h3>
@@ -360,7 +363,7 @@ export default function Tasks() {
                   <DataMask>{inProgressTasks.length}</DataMask>
                 </Badge>
               </div>
-              <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-280px)] pr-1 custom-scrollbar">
+              <div className="flex flex-col gap-3 overflow-y-auto pr-1 custom-scrollbar flex-1 min-h-0">
                 {inProgressTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -378,7 +381,7 @@ export default function Tasks() {
 
             {/* Completed Column */}
             <div className="bg-green-50 p-4 rounded-lg flex flex-col gap-4 border border-green-100 h-full">
-              <div className="flex items-center justify-between pb-2 border-b border-green-200">
+              <div className="flex items-center justify-between pb-2 border-b border-green-200 shrink-0">
                 <h3 className="font-bold text-sm uppercase text-green-900">
                   {t('common.completed')}
                 </h3>
@@ -386,7 +389,7 @@ export default function Tasks() {
                   <DataMask>{completedTasks.length}</DataMask>
                 </Badge>
               </div>
-              <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-280px)] pr-1 custom-scrollbar">
+              <div className="flex flex-col gap-3 overflow-y-auto pr-1 custom-scrollbar flex-1 min-h-0">
                 {completedTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -403,11 +406,11 @@ export default function Tasks() {
           </div>
         </TabsContent>
 
-        <TabsContent value="list" className="flex-1 min-h-0">
+        <TabsContent value="list" className="flex-1 min-h-0 flex flex-col">
           <Card className="bg-white border-slate-200 h-full overflow-hidden flex flex-col">
-            <CardContent className="p-0 flex-1 overflow-auto">
+            <CardContent className="p-0 flex-1 overflow-auto custom-scrollbar">
               <Table>
-                <TableHeader className="bg-slate-50 sticky top-0 z-10">
+                <TableHeader className="bg-slate-50 sticky top-0 z-10 shadow-sm">
                   <TableRow>
                     <TableHead>{t('tasks.task_title')}</TableHead>
                     <TableHead>{t('properties.title')}</TableHead>

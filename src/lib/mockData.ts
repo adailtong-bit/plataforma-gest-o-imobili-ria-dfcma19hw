@@ -624,6 +624,22 @@ export const messages: Message[] = []
 
 // --- MASSIVE DATA GENERATION ---
 
+// Generate Condominiums (5)
+for (let i = 0; i < 5; i++) {
+  condominiums.push({
+    id: `condo_gen_${i}`,
+    name: `Condominium ${i + 1} (${rndItem(_cities)})`,
+    address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
+    city: rndItem(_cities),
+    state: 'FL',
+    zipCode: `33${rnd(100, 999)}`,
+    country: 'US',
+    managerName: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
+    managerPhone: `(555) ${rnd(100, 999)}-${rnd(1000, 9999)}`,
+    managerEmail: `mgr_${i}@condo.com`,
+  })
+}
+
 // Generate additional Owners (100)
 for (let i = 0; i < 100; i++) {
   owners.push({
@@ -644,8 +660,9 @@ for (let i = 0; i < 100; i++) {
 
 // Generate additional Partners (50)
 for (let i = 0; i < 50; i++) {
+  const pId = `partner_gen_${i}`
   partners.push({
-    id: `partner_gen_${i}`,
+    id: pId,
     name: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
     type: rndItem(['cleaning', 'maintenance', 'agent']),
     companyName: `${rndItem(_lastNames)} Services LLC`,
@@ -655,6 +672,18 @@ for (let i = 0; i < 50; i++) {
     status: 'active',
     role: 'partner',
     avatar: `https://img.usecurling.com/ppl/medium?gender=${rndItem(['male', 'female'])}&seed=${i + 150}`,
+    linkedPropertyIds: [], // We will assign this after properties are generated
+    serviceRates: [
+      {
+        id: `sr_${i}`,
+        serviceName: 'Standard Service',
+        servicePrice: rnd(100, 300),
+        partnerPayment: rnd(50, 200),
+        pmValue: 50,
+        productPrice: rnd(100, 300),
+        validFrom: '2024-01-01',
+      },
+    ],
   })
 }
 
@@ -707,6 +736,7 @@ for (let i = 0; i < 300; i++) {
     'maintenance',
     'cleaning',
   ])
+  const condoId = typeRand === 1 ? rndItem(condominiums)?.id : undefined
 
   let hotelId
   let towerId
@@ -734,6 +764,7 @@ for (let i = 0; i < 300; i++) {
       pType === 'Hotel Room'
         ? 'Hotel Resort'
         : rndItem(['Sunny Isles', 'Brickell Village', 'Coral Way']),
+    condominiumId: condoId,
     hotelId,
     towerId,
     roomNumber: pType === 'Hotel Room' ? `${rnd(100, 999)}` : undefined,
@@ -748,10 +779,36 @@ for (let i = 0; i < 300; i++) {
   })
 }
 
+// Assign linkedPropertyIds to partners now that properties exist
+partners.forEach((p) => {
+  p.linkedPropertyIds = [
+    rndItem(properties)?.id || '',
+    rndItem(properties)?.id || '',
+  ]
+})
+
 // Generate Tenants (150)
 const ltProps = properties.filter((p) => p.profileType === 'long_term')
 for (let i = 0; i < 150; i++) {
   const prop = ltProps[i % ltProps.length]
+
+  const leaseEndOptions = [
+    new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Expired
+    new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // < 30 days
+    new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // < 60 days
+    new Date(Date.now() + 75 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // < 90 days
+    new Date(Date.now() + 200 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split('T')[0], // Safe
+  ]
+  const leaseEnd = leaseEndOptions[i % leaseEndOptions.length]
+
+  let negStatus = 'closed'
+  if (i % 5 === 0) negStatus = 'vacating'
+  else if (i % 5 === 1) negStatus = rndItem(['negotiating', 'tenant_contacted'])
+  else if (i % 5 === 2) negStatus = 'owner_contacted'
+  else if (i % 5 === 3) negStatus = 'negotiating'
+
   tenants.push({
     id: `tenant_gen_${i}`,
     name: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
@@ -761,10 +818,21 @@ for (let i = 0; i < 150; i++) {
     propertyId: prop.id,
     rentValue: prop.listingPrice || rnd(1000, 5000),
     leaseStart: rndDateStr(new Date(2023, 0, 1), new Date(2024, 0, 1)),
-    leaseEnd: rndDateStr(new Date(2024, 6, 1), new Date(2025, 11, 31)),
+    leaseEnd: leaseEnd,
     status: rndItem(['active', 'past']),
     role: 'tenant',
     avatar: `https://img.usecurling.com/ppl/medium?gender=${rndItem(['male', 'female'])}&seed=${i + 250}`,
+    negotiationStatus: negStatus as any,
+    suggestedRenewalPrice: (prop.listingPrice || rnd(1000, 5000)) * 1.1,
+    negotiationLogs: [
+      {
+        id: `log_${i}`,
+        date: new Date().toISOString(),
+        action: 'Status Update',
+        note: `System auto-flagged for renewal negotiation`,
+        user: 'System',
+      },
+    ],
   })
 }
 
@@ -797,18 +865,103 @@ for (let i = 0; i < 500; i++) {
 const stProps = properties.filter((p) => p.profileType === 'short_term')
 for (let i = 0; i < 300; i++) {
   const prop = rndItem(stProps)
+  const cIn = rndDateStr(new Date(2024, 0, 1), new Date(2024, 11, 1))
+  const cOut = rndDateStr(new Date(2024, 11, 2), new Date(2024, 11, 31))
+
   bookings.push({
     id: `booking_gen_${i}`,
     propertyId: prop.id,
     propertyName: prop.name,
     guestName: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
     guestEmail: `guest_${i}@demo.com`,
-    checkIn: rndDateStr(new Date(2024, 0, 1), new Date(2024, 11, 1)),
-    checkOut: rndDateStr(new Date(2024, 11, 2), new Date(2024, 11, 31)),
+    checkIn: cIn,
+    checkOut: cOut,
     status: rndItem(['confirmed', 'checked_in', 'checked_out', 'cancelled']),
     totalAmount: rnd(200, 2000),
     paid: rnd(0, 1) === 1,
     platform: rndItem(['airbnb', 'vrbo', 'direct', 'booking.com']),
+  })
+
+  calendarBlocks.push({
+    id: `block_bk_${i}`,
+    propertyId: prop.id,
+    startDate: cIn,
+    endDate: cOut,
+    type: 'external_sync',
+    notes: `Booking Sync`,
+  })
+}
+
+// Add Invoices (50)
+for (let i = 0; i < 50; i++) {
+  financials.invoices.push({
+    id: `inv_gen_${i}`,
+    description: `Service Invoice ${i}`,
+    amount: rnd(100, 1000),
+    status: rndItem(['paid', 'pending', 'approved']),
+    date: new Date(Date.now() - rnd(0, 10000000000)).toISOString(),
+    fromId: 'u1',
+    toId: rndItem(owners)?.id,
+    propertyId: rndItem(properties)?.id,
+    type: 'generic',
+  })
+}
+
+// Add Automation Rules
+automationRules.push(
+  { id: 'ar1', type: 'auto_approve_task', enabled: true, threshold: 500 },
+  {
+    id: 'ar2',
+    type: 'auto_generate_invoice',
+    enabled: true,
+    event: 'task_completion',
+  },
+  { id: 'ar3', type: 'rent_reminder', enabled: true, daysBefore: 5 },
+)
+
+// Add Workflows
+workflows.push({
+  id: 'wf_demo_1',
+  name: 'Standard Checkout Cleaning',
+  description: 'Auto assign cleaning when guest checks out',
+  trigger: 'after_checkout',
+  active: true,
+  steps: [
+    {
+      id: 'step1',
+      name: 'Clean Property',
+      role: 'partner',
+      actionType: 'task',
+    },
+  ],
+})
+
+// Add Audit Logs
+for (let i = 0; i < 50; i++) {
+  auditLogs.push({
+    id: `al_${i}`,
+    timestamp: new Date(Date.now() - rnd(0, 10000000000)).toISOString(),
+    userId: 'u1',
+    userName: 'Admin User',
+    action: rndItem(['update', 'create', 'approve', 'login']) as any,
+    entity: rndItem(['Task', 'Booking', 'Tenant', 'Property']),
+    details: `Simulated action ${i} on system record`,
+  })
+}
+
+// Add Visits
+for (let i = 0; i < 20; i++) {
+  visits.push({
+    id: `vis_${i}`,
+    propertyId: properties[i]?.id || '',
+    propertyName: properties[i]?.name || '',
+    clientName: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
+    date: new Date(Date.now() + rnd(-1000000000, 1000000000)).toISOString(),
+    status: rndItem(['scheduled', 'completed', 'canceled']) as any,
+    registeredBy: 'u1',
+    assignedTo: 'u1',
+    assignedRole: 'platform_owner',
+    reason: rndItem(['showing', 'inspection']),
   })
 }
 
@@ -836,7 +989,12 @@ for (let i = 0; i < 30; i++) {
       active: true,
       createdAt: new Date().toISOString(),
       advertiserId: advId,
-      placement: rndItem(['home_top', 'tenant_page', 'partner_page']),
+      placement: rndItem([
+        'home_top',
+        'tenant_page',
+        'partner_page',
+        'sidebar',
+      ]),
     })
   }
 }
