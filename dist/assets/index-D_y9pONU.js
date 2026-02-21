@@ -4363,30 +4363,30 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 		function pingEngtangledActionScope() {
 			if (0 === --currentEntangledPendingCount && (-1 < transitionUpdateTime || (transitionStartTime = -1.1), null !== currentEntangledListeners)) {
 				null !== currentEntangledActionThenable && (currentEntangledActionThenable.status = "fulfilled");
-				var listeners$1 = currentEntangledListeners;
+				var listeners$2 = currentEntangledListeners;
 				currentEntangledListeners = null;
 				currentEntangledLane = 0;
 				currentEntangledActionThenable = null;
-				for (var i = 0; i < listeners$1.length; i++) (0, listeners$1[i])();
+				for (var i = 0; i < listeners$2.length; i++) (0, listeners$2[i])();
 			}
 		}
 		function chainThenableValue(thenable, result) {
-			var listeners$1 = [], thenableWithOverride = {
+			var listeners$2 = [], thenableWithOverride = {
 				status: "pending",
 				value: null,
 				reason: null,
 				then: function(resolve) {
-					listeners$1.push(resolve);
+					listeners$2.push(resolve);
 				}
 			};
 			thenable.then(function() {
 				thenableWithOverride.status = "fulfilled";
 				thenableWithOverride.value = result;
-				for (var i = 0; i < listeners$1.length; i++) (0, listeners$1[i])(result);
+				for (var i = 0; i < listeners$2.length; i++) (0, listeners$2[i])(result);
 			}, function(error) {
 				thenableWithOverride.status = "rejected";
 				thenableWithOverride.reason = error;
-				for (error = 0; error < listeners$1.length; error++) (0, listeners$1[error])(void 0);
+				for (error = 0; error < listeners$2.length; error++) (0, listeners$2[error])(void 0);
 			});
 			return thenableWithOverride;
 		}
@@ -10449,11 +10449,11 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			};
 		}
 		function accumulateTwoPhaseListeners(targetFiber, reactName) {
-			for (var captureName = reactName + "Capture", listeners$1 = []; null !== targetFiber;) {
+			for (var captureName = reactName + "Capture", listeners$2 = []; null !== targetFiber;) {
 				var _instance3 = targetFiber, stateNode = _instance3.stateNode;
 				_instance3 = _instance3.tag;
-				5 !== _instance3 && 26 !== _instance3 && 27 !== _instance3 || null === stateNode || (_instance3 = getListener(targetFiber, captureName), null != _instance3 && listeners$1.unshift(createDispatchListener(targetFiber, _instance3, stateNode)), _instance3 = getListener(targetFiber, reactName), null != _instance3 && listeners$1.push(createDispatchListener(targetFiber, _instance3, stateNode)));
-				if (3 === targetFiber.tag) return listeners$1;
+				5 !== _instance3 && 26 !== _instance3 && 27 !== _instance3 || null === stateNode || (_instance3 = getListener(targetFiber, captureName), null != _instance3 && listeners$2.unshift(createDispatchListener(targetFiber, _instance3, stateNode)), _instance3 = getListener(targetFiber, reactName), null != _instance3 && listeners$2.push(createDispatchListener(targetFiber, _instance3, stateNode)));
+				if (3 === targetFiber.tag) return listeners$2;
 				targetFiber = targetFiber.return;
 			}
 			return [];
@@ -10466,16 +10466,16 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			return inst ? inst : null;
 		}
 		function accumulateEnterLeaveListenersForEvent(dispatchQueue, event, target, common, inCapturePhase) {
-			for (var registrationName = event._reactName, listeners$1 = []; null !== target && target !== common;) {
+			for (var registrationName = event._reactName, listeners$2 = []; null !== target && target !== common;) {
 				var _instance4 = target, alternate = _instance4.alternate, stateNode = _instance4.stateNode;
 				_instance4 = _instance4.tag;
 				if (null !== alternate && alternate === common) break;
-				5 !== _instance4 && 26 !== _instance4 && 27 !== _instance4 || null === stateNode || (alternate = stateNode, inCapturePhase ? (stateNode = getListener(target, registrationName), null != stateNode && listeners$1.unshift(createDispatchListener(target, stateNode, alternate))) : inCapturePhase || (stateNode = getListener(target, registrationName), null != stateNode && listeners$1.push(createDispatchListener(target, stateNode, alternate))));
+				5 !== _instance4 && 26 !== _instance4 && 27 !== _instance4 || null === stateNode || (alternate = stateNode, inCapturePhase ? (stateNode = getListener(target, registrationName), null != stateNode && listeners$2.unshift(createDispatchListener(target, stateNode, alternate))) : inCapturePhase || (stateNode = getListener(target, registrationName), null != stateNode && listeners$2.push(createDispatchListener(target, stateNode, alternate))));
 				target = target.return;
 			}
-			0 !== listeners$1.length && dispatchQueue.push({
+			0 !== listeners$2.length && dispatchQueue.push({
 				event,
-				listeners: listeners$1
+				listeners: listeners$2
 			});
 		}
 		function validatePropertiesInDevelopment(type, props) {
@@ -13729,15 +13729,15 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 		var rendererCursorDEV = createCursor(null);
 		var rendererSigil = {};
 		var currentlyRenderingFiber$1 = null, lastContextDependency = null, isDisallowedContextReadInDEV = !1, AbortControllerLocal = "undefined" !== typeof AbortController ? AbortController : function() {
-			var listeners$1 = [], signal = this.signal = {
+			var listeners$2 = [], signal = this.signal = {
 				aborted: !1,
 				addEventListener: function(type, listener) {
-					listeners$1.push(listener);
+					listeners$2.push(listener);
 				}
 			};
 			this.abort = function() {
 				signal.aborted = !0;
-				listeners$1.forEach(function(listener) {
+				listeners$2.forEach(function(listener) {
 					return listener();
 				});
 			};
@@ -17309,11 +17309,11 @@ const reducer = (state, action) => {
 			};
 	}
 };
-var listeners = [];
+var listeners$1 = [];
 var memoryState = { toasts: [] };
 function dispatch(action) {
 	memoryState = reducer(memoryState, action);
-	listeners.forEach((listener) => {
+	listeners$1.forEach((listener) => {
 		listener(memoryState);
 	});
 }
@@ -17350,10 +17350,10 @@ function toast$1({ ...props }) {
 function useToast() {
 	const [state, setState] = import_react.useState(memoryState);
 	import_react.useEffect(() => {
-		listeners.push(setState);
+		listeners$1.push(setState);
 		return () => {
-			const index$1 = listeners.indexOf(setState);
-			if (index$1 > -1) listeners.splice(index$1, 1);
+			const index$1 = listeners$1.indexOf(setState);
+			if (index$1 > -1) listeners$1.splice(index$1, 1);
 		};
 	}, [state]);
 	return {
@@ -51979,7 +51979,7 @@ var eventCenter = new (/* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((
 		if (Object.getOwnPropertySymbols) return names.concat(Object.getOwnPropertySymbols(events));
 		return names;
 	};
-	EventEmitter$1.prototype.listeners = function listeners$1(event) {
+	EventEmitter$1.prototype.listeners = function listeners$2(event) {
 		var evt = prefix ? prefix + event : event, handlers = this._events[evt];
 		if (!handlers) return [];
 		if (handlers.fn) return [handlers.fn];
@@ -51987,47 +51987,47 @@ var eventCenter = new (/* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((
 		return ee$1;
 	};
 	EventEmitter$1.prototype.listenerCount = function listenerCount(event) {
-		var evt = prefix ? prefix + event : event, listeners$1 = this._events[evt];
-		if (!listeners$1) return 0;
-		if (listeners$1.fn) return 1;
-		return listeners$1.length;
+		var evt = prefix ? prefix + event : event, listeners$2 = this._events[evt];
+		if (!listeners$2) return 0;
+		if (listeners$2.fn) return 1;
+		return listeners$2.length;
 	};
 	EventEmitter$1.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
 		var evt = prefix ? prefix + event : event;
 		if (!this._events[evt]) return false;
-		var listeners$1 = this._events[evt], len = arguments.length, args, i;
-		if (listeners$1.fn) {
-			if (listeners$1.once) this.removeListener(event, listeners$1.fn, void 0, true);
+		var listeners$2 = this._events[evt], len = arguments.length, args, i;
+		if (listeners$2.fn) {
+			if (listeners$2.once) this.removeListener(event, listeners$2.fn, void 0, true);
 			switch (len) {
-				case 1: return listeners$1.fn.call(listeners$1.context), true;
-				case 2: return listeners$1.fn.call(listeners$1.context, a1), true;
-				case 3: return listeners$1.fn.call(listeners$1.context, a1, a2), true;
-				case 4: return listeners$1.fn.call(listeners$1.context, a1, a2, a3), true;
-				case 5: return listeners$1.fn.call(listeners$1.context, a1, a2, a3, a4), true;
-				case 6: return listeners$1.fn.call(listeners$1.context, a1, a2, a3, a4, a5), true;
+				case 1: return listeners$2.fn.call(listeners$2.context), true;
+				case 2: return listeners$2.fn.call(listeners$2.context, a1), true;
+				case 3: return listeners$2.fn.call(listeners$2.context, a1, a2), true;
+				case 4: return listeners$2.fn.call(listeners$2.context, a1, a2, a3), true;
+				case 5: return listeners$2.fn.call(listeners$2.context, a1, a2, a3, a4), true;
+				case 6: return listeners$2.fn.call(listeners$2.context, a1, a2, a3, a4, a5), true;
 			}
 			for (i = 1, args = new Array(len - 1); i < len; i++) args[i - 1] = arguments[i];
-			listeners$1.fn.apply(listeners$1.context, args);
+			listeners$2.fn.apply(listeners$2.context, args);
 		} else {
-			var length = listeners$1.length, j;
+			var length = listeners$2.length, j;
 			for (i = 0; i < length; i++) {
-				if (listeners$1[i].once) this.removeListener(event, listeners$1[i].fn, void 0, true);
+				if (listeners$2[i].once) this.removeListener(event, listeners$2[i].fn, void 0, true);
 				switch (len) {
 					case 1:
-						listeners$1[i].fn.call(listeners$1[i].context);
+						listeners$2[i].fn.call(listeners$2[i].context);
 						break;
 					case 2:
-						listeners$1[i].fn.call(listeners$1[i].context, a1);
+						listeners$2[i].fn.call(listeners$2[i].context, a1);
 						break;
 					case 3:
-						listeners$1[i].fn.call(listeners$1[i].context, a1, a2);
+						listeners$2[i].fn.call(listeners$2[i].context, a1, a2);
 						break;
 					case 4:
-						listeners$1[i].fn.call(listeners$1[i].context, a1, a2, a3);
+						listeners$2[i].fn.call(listeners$2[i].context, a1, a2, a3);
 						break;
 					default:
 						if (!args) for (j = 1, args = new Array(len - 1); j < len; j++) args[j - 1] = arguments[j];
-						listeners$1[i].fn.apply(listeners$1[i].context, args);
+						listeners$2[i].fn.apply(listeners$2[i].context, args);
 				}
 			}
 		}
@@ -52046,11 +52046,11 @@ var eventCenter = new (/* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((
 			clearEvent(this, evt);
 			return this;
 		}
-		var listeners$1 = this._events[evt];
-		if (listeners$1.fn) {
-			if (listeners$1.fn === fn && (!once || listeners$1.once) && (!context || listeners$1.context === context)) clearEvent(this, evt);
+		var listeners$2 = this._events[evt];
+		if (listeners$2.fn) {
+			if (listeners$2.fn === fn && (!once || listeners$2.once) && (!context || listeners$2.context === context)) clearEvent(this, evt);
 		} else {
-			for (var i = 0, events = [], length = listeners$1.length; i < length; i++) if (listeners$1[i].fn !== fn || once && !listeners$1[i].once || context && listeners$1[i].context !== context) events.push(listeners$1[i]);
+			for (var i = 0, events = [], length = listeners$2.length; i < length; i++) if (listeners$2[i].fn !== fn || once && !listeners$2[i].once || context && listeners$2[i].context !== context) events.push(listeners$2[i]);
 			if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;
 			else clearEvent(this, evt);
 		}
@@ -56111,6 +56111,39 @@ const translations = {
 				content: "Conteúdo",
 				documents: "Documentos",
 				logs: "Logs"
+			},
+			location: {
+				address: "Endereço",
+				neighborhood: "Bairro",
+				community: "Condomínio / Comunidade",
+				linked_condo: "Condomínio Vinculado",
+				complement_placeholder: "Apto, Bloco, Referência",
+				country_us: "Estados Unidos (EUA)",
+				country_br: "Brasil",
+				country_es: "Espanha"
+			},
+			contacts: {
+				new_contact: "Novo Contato",
+				role_concierge: "Concierge",
+				role_maintenance: "Manutenção",
+				role_emergency: "Emergência",
+				role_local_agent: "Agente Local"
+			},
+			content: {
+				house_rules: "Regras do Imóvel",
+				auto_translate: "Tradução Automática",
+				copy_from: "Copiar de",
+				desc_pt_placeholder: "Descrição completa em Português...",
+				desc_en_placeholder: "Descrição completa em Inglês...",
+				desc_es_placeholder: "Descrição completa em Espanhol...",
+				rules_pt_placeholder: "Regras do condomínio em Português...",
+				rules_en_placeholder: "Regras do condomínio em Inglês...",
+				rules_es_placeholder: "Regras do condomínio em Espanhol..."
+			},
+			financial: {
+				name_placeholder: "Ex: Internet",
+				provider_placeholder: "Ex: Duke Energy",
+				account_placeholder: "ID da Conta"
 			}
 		},
 		auth: {
@@ -57013,6 +57046,39 @@ const translations = {
 				content: "Content",
 				documents: "Documents",
 				logs: "Logs"
+			},
+			location: {
+				address: "Address",
+				neighborhood: "Neighborhood",
+				community: "Community",
+				linked_condo: "Linked Condominium",
+				complement_placeholder: "Apt, Block, Reference",
+				country_us: "United States (USA)",
+				country_br: "Brazil",
+				country_es: "Spain"
+			},
+			contacts: {
+				new_contact: "New Contact",
+				role_concierge: "Concierge",
+				role_maintenance: "Maintenance",
+				role_emergency: "Emergency",
+				role_local_agent: "Local Agent"
+			},
+			content: {
+				house_rules: "House Rules",
+				auto_translate: "Auto-Translate",
+				copy_from: "Copy from",
+				desc_pt_placeholder: "Full description in Portuguese...",
+				desc_en_placeholder: "Full description in English...",
+				desc_es_placeholder: "Full description in Spanish...",
+				rules_pt_placeholder: "HOA Rules in Portuguese...",
+				rules_en_placeholder: "HOA Rules...",
+				rules_es_placeholder: "HOA Rules in Spanish..."
+			},
+			financial: {
+				name_placeholder: "e.g. Internet",
+				provider_placeholder: "e.g. Duke Energy",
+				account_placeholder: "Account ID"
 			}
 		},
 		auth: {
@@ -57332,7 +57398,7 @@ const translations = {
 			revpar_trends: "Tendencias de Ingresos por Habitación Disponible."
 		},
 		marketing: {
-			promotions: "Promociones",
+			promotions: "Promotions",
 			campaigns: "Campañas",
 			automation: "Automatización",
 			leads: "Leads e Interesados",
@@ -57499,7 +57565,7 @@ const translations = {
 		financial: {
 			title: "Financiero",
 			subtitle: "Visión general financiera y conciliación.",
-			reconciliation: "Conciliación",
+			reconciliation: "Conciliação",
 			upload_statement: "Cargar Extracto",
 			upload_desc: "Suba extractos bancarios para conciliación.",
 			statements: "Extractos",
@@ -57569,7 +57635,7 @@ const translations = {
 		users: {
 			title: "Usuarios",
 			subtitle: "Gestión de usuarios y permisos del sistema.",
-			role_label: "Función",
+			role_label: "Função",
 			registered: "Registrados",
 			registered_desc: "usuarios registrados en el sistema.",
 			permissions: "Permisos",
@@ -57838,7 +57904,7 @@ const translations = {
 			revenue_overview: "Visión general financiera de los últimos meses.",
 			quick_calendar: "Calendario Rápido",
 			todays_activity: "Actividades de hoy.",
-			pending_approvals: "Aprobaciones Pendientes",
+			pending_approvals: "Aprobaciones Pendentes",
 			pending_desc: "Ítems que requieren su atención.",
 			review: "Revisar",
 			approve: "Aprobar",
@@ -57909,12 +57975,45 @@ const translations = {
 				inventory: "Inventario",
 				features: "Características",
 				location: "Ubicación",
-				sync: "Sincronización",
+				sync: "Sincronização",
 				financial: "Financiero",
 				marketing: "Marketing",
 				content: "Contenido",
 				documents: "Documentos",
 				logs: "Registros"
+			},
+			location: {
+				address: "Dirección",
+				neighborhood: "Barrio",
+				community: "Comunidad",
+				linked_condo: "Condominio Vinculado",
+				complement_placeholder: "Apto, Bloque, Referencia",
+				country_us: "Estados Unidos (EE.UU.)",
+				country_br: "Brasil",
+				country_es: "España"
+			},
+			contacts: {
+				new_contact: "Nuevo Contacto",
+				role_concierge: "Conserje",
+				role_maintenance: "Mantenimiento",
+				role_emergency: "Emergencia",
+				role_local_agent: "Agente Local"
+			},
+			content: {
+				house_rules: "Reglas de la Casa",
+				auto_translate: "Traducción Automática",
+				copy_from: "Copiar de",
+				desc_pt_placeholder: "Descripción completa en Portugués...",
+				desc_en_placeholder: "Descripción completa en Inglés...",
+				desc_es_placeholder: "Descripción completa en Español...",
+				rules_pt_placeholder: "Reglas del condominio en Portugués...",
+				rules_en_placeholder: "Reglas del condominio en Inglés...",
+				rules_es_placeholder: "Reglas del condominio en Español..."
+			},
+			financial: {
+				name_placeholder: "Ej: Internet",
+				provider_placeholder: "Ej: Duke Energy",
+				account_placeholder: "ID de Cuenta"
 			}
 		},
 		auth: {
@@ -57934,7 +58033,7 @@ const translations = {
 			already_have_account: "¿Ya tiene una cuenta?"
 		},
 		settings: {
-			title: "Configuraciones",
+			title: "Configurações",
 			subtitle: "Gestione la configuración de su cuenta y sistema.",
 			personal_info: "Información Personal",
 			update_info: "Actualice su información.",
@@ -60305,11 +60404,37 @@ var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => 
 	})
 }));
 Progress.displayName = Root$6.displayName;
+var privacyEnabled = false;
+var listeners = /* @__PURE__ */ new Set();
+const togglePrivacy = () => {
+	privacyEnabled = !privacyEnabled;
+	listeners.forEach((l) => l(privacyEnabled));
+};
+const setPrivacy = (val) => {
+	privacyEnabled = val;
+	listeners.forEach((l) => l(privacyEnabled));
+};
+const usePrivacyStore = () => {
+	const [isPrivate, setIsPrivate] = (0, import_react.useState)(privacyEnabled);
+	(0, import_react.useEffect)(() => {
+		listeners.add(setIsPrivate);
+		return () => {
+			listeners.delete(setIsPrivate);
+		};
+	}, []);
+	return {
+		isPrivate,
+		togglePrivacy,
+		setPrivacy
+	};
+};
 function DataMask({ children, className, blur }) {
+	const { isPrivate } = usePrivacyStore();
+	const shouldBlur = blur !== void 0 ? blur : isPrivate;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-		className: cn("inline-block align-baseline transition-all duration-300", blur ? "blur-sm select-none opacity-80 hover:blur-none hover:opacity-100 cursor-help" : "filter-none opacity-100", className),
-		"aria-label": blur ? "Sensitive data" : void 0,
-		title: blur ? "Sensitive data" : void 0,
+		className: cn("inline-block align-baseline transition-all duration-300", shouldBlur ? "blur-sm select-none opacity-80 hover:blur-none hover:opacity-100 cursor-help" : "filter-none opacity-100", className),
+		"aria-label": shouldBlur ? "Sensitive data" : void 0,
+		title: shouldBlur ? "Sensitive data" : void 0,
 		children
 	});
 }
@@ -63047,7 +63172,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$83({ inst: {
+			cachedValue = useState$84({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -63061,7 +63186,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$29(function() {
+			useEffect$30(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -63084,7 +63209,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$83 = React$67.useState, useEffect$29 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$84 = React$67.useState, useEffect$30 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -68824,12 +68949,15 @@ function PropertyOverview({ data, onChange, canEdit }) {
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-						value: data.name,
-						onChange: (e) => onChange("name", e.target.value),
-						disabled: !canEdit,
-						placeholder: t("properties.search_placeholder"),
-						className: "text-black bg-white border-slate-300"
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+						className: "w-full block",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: data.name,
+							onChange: (e) => onChange("name", e.target.value),
+							disabled: !canEdit,
+							placeholder: t("properties.search_placeholder"),
+							className: "text-black bg-white border-slate-300"
+						})
 					})]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -69044,15 +69172,15 @@ function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "US",
-								children: "United States (USA)"
+								children: t("properties.location.country_us")
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "BR",
-								children: "Brazil (Brasil)"
+								children: t("properties.location.country_br")
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "ES",
-								children: "Spain (España)"
+								children: t("properties.location.country_es")
 							})
 						] })]
 					})]
@@ -69066,11 +69194,14 @@ function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$
 							className: "text-red-500",
 							children: "*"
 						})
-					] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-						value: data.address,
-						onChange: (e) => onChange("address", e.target.value),
-						disabled: !canEdit,
-						placeholder: t("properties.search_placeholder")
+					] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+						className: "w-full block",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: data.address,
+							onChange: (e) => onChange("address", e.target.value),
+							disabled: !canEdit,
+							placeholder: t("properties.search_placeholder")
+						})
 					})]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -69084,21 +69215,27 @@ function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$
 								className: "text-red-500",
 								children: "*"
 							})
-						] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: data.zipCode || "",
-							onChange: handleZipChange,
-							disabled: !canEdit,
-							required: true,
-							className: isZipInvalid ? "border-red-300" : "",
-							placeholder: selectedCountry === "BR" ? "00000-000" : "00000"
+						] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.zipCode || "",
+								onChange: handleZipChange,
+								disabled: !canEdit,
+								required: true,
+								className: isZipInvalid ? "border-red-300" : "",
+								placeholder: selectedCountry === "BR" ? "00000-000" : "00000"
+							})
 						})]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.info_label") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: data.additionalInfo || "",
-							onChange: (e) => onChange("additionalInfo", e.target.value),
-							disabled: !canEdit,
-							placeholder: "Apto, Bloco, Referência"
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.info_label") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.additionalInfo || "",
+								onChange: (e) => onChange("additionalInfo", e.target.value),
+								disabled: !canEdit,
+								placeholder: t("properties.location.complement_placeholder")
+							})
 						})]
 					})]
 				}),
@@ -69106,17 +69243,23 @@ function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$
 					className: "grid grid-cols-2 gap-4",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.location.neighborhood") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: data.neighborhood || "",
-							onChange: (e) => onChange("neighborhood", e.target.value),
-							disabled: !canEdit
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.location.neighborhood") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.neighborhood || "",
+								onChange: (e) => onChange("neighborhood", e.target.value),
+								disabled: !canEdit
+							})
 						})]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.location.community") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: data.community,
-							onChange: (e) => onChange("community", e.target.value),
-							disabled: !canEdit
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.location.community") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.community,
+								onChange: (e) => onChange("community", e.target.value),
+								disabled: !canEdit
+							})
 						})]
 					})]
 				}),
@@ -69124,17 +69267,23 @@ function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$
 					className: "grid grid-cols-2 gap-4",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.city_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: data.city || "",
-							onChange: (e) => onChange("city", e.target.value),
-							disabled: !canEdit
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.city_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.city || "",
+								onChange: (e) => onChange("city", e.target.value),
+								disabled: !canEdit
+							})
 						})]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.state_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: data.state || "",
-							onChange: (e) => onChange("state", e.target.value),
-							disabled: !canEdit
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.state_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.state || "",
+								onChange: (e) => onChange("state", e.target.value),
+								disabled: !canEdit
+							})
 						})]
 					})]
 				}),
@@ -69583,7 +69732,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 					className: "font-medium",
 					children: expense.name
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: expense.provider || "-" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: expense.provider || "-" }) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: expense.contractEndDate ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 					className: "text-xs",
 					children: formatDate(expense.contractEndDate, language)
@@ -69627,7 +69776,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 					className: "max-w-xl",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: actionType === "add" ? t("common.new") : t("common.edit") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "Configure details." })] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: actionType === "add" ? t("common.new") : t("common.edit") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: t("common.details") })] }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-4 py-4",
 							children: [
@@ -69646,7 +69795,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 											...formData,
 											name: e.target.value
 										}),
-										placeholder: "Ex: Internet"
+										placeholder: t("properties.financial.name_placeholder")
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -69660,23 +69809,29 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 												className: "text-red-500",
 												children: "*"
 											})
-										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											value: formData.provider,
-											onChange: (e) => setFormData({
-												...formData,
-												provider: e.target.value
-											}),
-											placeholder: "Ex: Duke Energy"
+										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+											className: "w-full block",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: formData.provider,
+												onChange: (e) => setFormData({
+													...formData,
+													provider: e.target.value
+												}),
+												placeholder: t("properties.financial.provider_placeholder")
+											})
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.account_number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											value: formData.accountNumber,
-											onChange: (e) => setFormData({
-												...formData,
-												accountNumber: e.target.value
-											}),
-											placeholder: "ID"
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.account_number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+											className: "w-full block",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: formData.accountNumber,
+												onChange: (e) => setFormData({
+													...formData,
+													accountNumber: e.target.value
+												}),
+												placeholder: t("properties.financial.account_placeholder")
+											})
 										})]
 									})]
 								}),
@@ -69787,7 +69942,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 										}),
 										actionType === "add" && formData.receiptUrl && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "bg-green-50 text-green-700 p-2 rounded text-xs flex items-center gap-2 border border-green-200",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileCheck, { className: "h-4 w-4" }), "Attached receipt will mark this as PAID."]
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileCheck, { className: "h-4 w-4" }), t("common.success")]
 										})
 									]
 								})
@@ -69808,7 +69963,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialog, {
 				open: confirmActionOpen,
 				onOpenChange: setConfirmActionOpen,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Changing this expense will update future pending entries." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, {
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.confirm") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, {
 					onClick: () => setConfirmActionOpen(false),
 					children: t("common.cancel")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
@@ -70146,7 +70301,7 @@ function PropertyContent({ data, onChange, onNestedChange, canEdit }) {
 		className: "space-y-6",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
 			className: "flex items-center gap-2",
-			children: [t("properties.public_desc"), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			children: [t("common.description"), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "text-xs font-normal text-muted-foreground bg-secondary px-2 py-1 rounded-full flex items-center gap-1",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(WandSparkles, { className: "h-3 w-3" }),
@@ -70180,7 +70335,7 @@ function PropertyContent({ data, onChange, onNestedChange, canEdit }) {
 							onChange: (e) => handleDescriptionChange("pt", e.target.value),
 							disabled: !canEdit,
 							rows: 6,
-							placeholder: "Descrição completa em Português..."
+							placeholder: t("properties.content.desc_pt_placeholder")
 						})]
 					})
 				}),
@@ -70206,7 +70361,7 @@ function PropertyContent({ data, onChange, onNestedChange, canEdit }) {
 							onChange: (e) => handleDescriptionChange("en", e.target.value),
 							disabled: !canEdit,
 							rows: 6,
-							placeholder: "Full description in English..."
+							placeholder: t("properties.content.desc_en_placeholder")
 						})]
 					})
 				}),
@@ -70232,7 +70387,7 @@ function PropertyContent({ data, onChange, onNestedChange, canEdit }) {
 							onChange: (e) => handleDescriptionChange("es", e.target.value),
 							disabled: !canEdit,
 							rows: 6,
-							placeholder: "Descripción completa en Español..."
+							placeholder: t("properties.content.desc_es_placeholder")
 						})]
 					})
 				})
@@ -70263,7 +70418,7 @@ function PropertyContent({ data, onChange, onNestedChange, canEdit }) {
 							onChange: (e) => onNestedChange("hoaRules", "pt", e.target.value),
 							disabled: !canEdit,
 							rows: 6,
-							placeholder: "Regras do condomínio..."
+							placeholder: t("properties.content.rules_pt_placeholder")
 						})]
 					})
 				}),
@@ -70289,7 +70444,7 @@ function PropertyContent({ data, onChange, onNestedChange, canEdit }) {
 							onChange: (e) => onNestedChange("hoaRules", "en", e.target.value),
 							disabled: !canEdit,
 							rows: 6,
-							placeholder: "HOA Rules..."
+							placeholder: t("properties.content.rules_en_placeholder")
 						})]
 					})
 				}),
@@ -70315,7 +70470,7 @@ function PropertyContent({ data, onChange, onNestedChange, canEdit }) {
 							onChange: (e) => onNestedChange("hoaRules", "es", e.target.value),
 							disabled: !canEdit,
 							rows: 6,
-							placeholder: "Reglas del condominio..."
+							placeholder: t("properties.content.rules_es_placeholder")
 						})]
 					})
 				})
@@ -72769,7 +72924,7 @@ function PropertyContacts({ data, onChange, canEdit }) {
 			className: "flex flex-col gap-2 mb-6 border p-4 rounded-md bg-white",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
 				className: "font-bold text-sm text-slate-950",
-				children: "Novo Contato"
+				children: t("properties.contacts.new_contact")
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex gap-2 items-end flex-wrap",
 				children: [
@@ -72790,19 +72945,19 @@ function PropertyContacts({ data, onChange, canEdit }) {
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "Concierge",
-									children: "Concierge"
+									children: t("properties.contacts.role_concierge")
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "Maintenance",
-									children: "Manutenção"
+									children: t("properties.contacts.role_maintenance")
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "Emergency",
-									children: "Emergência"
+									children: t("properties.contacts.role_emergency")
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "Local Agent",
-									children: "Agente Local"
+									children: t("properties.contacts.role_local_agent")
 								})
 							] })]
 						})]
@@ -72812,13 +72967,16 @@ function PropertyContacts({ data, onChange, canEdit }) {
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 							className: "font-bold",
 							children: t("common.name")
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: newContact.name,
-							onChange: (e) => setNewContact({
-								...newContact,
-								name: e.target.value
-							}),
-							className: "text-black border-slate-300"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: newContact.name,
+								onChange: (e) => setNewContact({
+									...newContact,
+									name: e.target.value
+								}),
+								className: "text-black border-slate-300"
+							})
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -72826,14 +72984,17 @@ function PropertyContacts({ data, onChange, canEdit }) {
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 							className: "font-bold",
 							children: t("common.phone")
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
-							value: newContact.phone || "",
-							onChange: (e) => setNewContact({
-								...newContact,
-								phone: e.target.value
-							}),
-							country: newContactCountry,
-							onCountryChange: setNewContactCountry
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+								value: newContact.phone || "",
+								onChange: (e) => setNewContact({
+									...newContact,
+									phone: e.target.value
+								}),
+								country: newContactCountry,
+								onCountryChange: setNewContactCountry
+							})
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -72841,13 +73002,16 @@ function PropertyContacts({ data, onChange, canEdit }) {
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 							className: "font-bold",
 							children: t("common.email")
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: newContact.email,
-							onChange: (e) => setNewContact({
-								...newContact,
-								email: e.target.value
-							}),
-							className: "text-black border-slate-300"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: newContact.email,
+								onChange: (e) => setNewContact({
+									...newContact,
+									email: e.target.value
+								}),
+								className: "text-black border-slate-300"
+							})
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -72889,24 +73053,15 @@ function PropertyContacts({ data, onChange, canEdit }) {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				className: "text-slate-950 font-medium",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-					blur: !canEdit,
-					children: c$1.name
-				})
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: c$1.name })
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				className: "text-slate-950 font-medium",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-					blur: !canEdit,
-					children: c$1.phone
-				})
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: c$1.phone })
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				className: "text-slate-950 font-medium",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-					blur: !canEdit,
-					children: c$1.email
-				})
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: c$1.email })
 			}),
 			canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				className: "text-right",
@@ -83321,7 +83476,7 @@ function Alignment(align, viewSize) {
 	return { measure };
 }
 function EventStore() {
-	let listeners$1 = [];
+	let listeners$2 = [];
 	function add(node, type, handler, options$1 = { passive: true }) {
 		let removeListener;
 		if ("addEventListener" in node) {
@@ -83332,11 +83487,11 @@ function EventStore() {
 			legacyMediaQueryList.addListener(handler);
 			removeListener = () => legacyMediaQueryList.removeListener(handler);
 		}
-		listeners$1.push(removeListener);
+		listeners$2.push(removeListener);
 		return self$1;
 	}
 	function clear() {
-		listeners$1 = listeners$1.filter((remove) => remove());
+		listeners$2 = listeners$2.filter((remove) => remove());
 	}
 	const self$1 = {
 		add,
@@ -84386,28 +84541,28 @@ function Engine(root$3, container, slides, ownerDocument, ownerWindow, options$1
 	return engine;
 }
 function EventHandler() {
-	let listeners$1 = {};
+	let listeners$2 = {};
 	let api;
 	function init(emblaApi) {
 		api = emblaApi;
 	}
 	function getListeners(evt) {
-		return listeners$1[evt] || [];
+		return listeners$2[evt] || [];
 	}
 	function emit(evt) {
 		getListeners(evt).forEach((e) => e(api, evt));
 		return self$1;
 	}
 	function on(evt, cb) {
-		listeners$1[evt] = getListeners(evt).concat([cb]);
+		listeners$2[evt] = getListeners(evt).concat([cb]);
 		return self$1;
 	}
 	function off(evt, cb) {
-		listeners$1[evt] = getListeners(evt).filter((e) => e !== cb);
+		listeners$2[evt] = getListeners(evt).filter((e) => e !== cb);
 		return self$1;
 	}
 	function clear() {
-		listeners$1 = {};
+		listeners$2 = {};
 	}
 	const self$1 = {
 		init,
@@ -94857,4 +95012,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Dt0uII_E.js.map
+//# sourceMappingURL=index-D_y9pONU.js.map
