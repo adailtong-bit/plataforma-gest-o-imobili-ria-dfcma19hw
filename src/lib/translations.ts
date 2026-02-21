@@ -809,6 +809,39 @@ export const translations = {
         documents: 'Documentos',
         logs: 'Logs',
       },
+      location: {
+        address: "Endereço",
+        neighborhood: "Bairro",
+        community: "Condomínio / Comunidade",
+        linked_condo: "Condomínio Vinculado",
+        complement_placeholder: "Apto, Bloco, Referência",
+        country_us: "Estados Unidos (EUA)",
+        country_br: "Brasil",
+        country_es: "Espanha"
+      },
+      contacts: {
+        new_contact: "Novo Contato",
+        role_concierge: "Concierge",
+        role_maintenance: "Manutenção",
+        role_emergency: "Emergência",
+        role_local_agent: "Agente Local"
+      },
+      content: {
+        house_rules: "Regras do Imóvel",
+        auto_translate: "Tradução Automática",
+        copy_from: "Copiar de",
+        desc_pt_placeholder: "Descrição completa em Português...",
+        desc_en_placeholder: "Descrição completa em Inglês...",
+        desc_es_placeholder": "Descrição completa em Espanhol...",
+        rules_pt_placeholder: "Regras do condomínio em Português...",
+        rules_en_placeholder: "Regras do condomínio em Inglês...",
+        rules_es_placeholder": "Regras do condomínio em Espanhol..."
+      },
+      financial: {
+        name_placeholder: "Ex: Internet",
+        provider_placeholder: "Ex: Duke Energy",
+        account_placeholder: "ID da Conta"
+      }
     },
     auth: {
       login_title: 'Login',
@@ -1724,6 +1757,39 @@ export const translations = {
         documents: 'Documents',
         logs: 'Logs',
       },
+      location: {
+        address: "Address",
+        neighborhood: "Neighborhood",
+        community: "Community",
+        linked_condo: "Linked Condominium",
+        complement_placeholder: "Apt, Block, Reference",
+        country_us: "United States (USA)",
+        country_br: "Brazil",
+        country_es: "Spain"
+      },
+      contacts: {
+        new_contact: "New Contact",
+        role_concierge: "Concierge",
+        role_maintenance: "Maintenance",
+        role_emergency: "Emergency",
+        role_local_agent: "Local Agent"
+      },
+      content: {
+        house_rules: "House Rules",
+        auto_translate: "Auto-Translate",
+        copy_from: "Copy from",
+        desc_pt_placeholder: "Full description in Portuguese...",
+        desc_en_placeholder: "Full description in English...",
+        desc_es_placeholder": "Full description in Spanish...",
+        rules_pt_placeholder: "HOA Rules in Portuguese...",
+        rules_en_placeholder: "HOA Rules...",
+        rules_es_placeholder": "HOA Rules in Spanish..."
+      },
+      financial: {
+        name_placeholder: "e.g. Internet",
+        provider_placeholder: "e.g. Duke Energy",
+        account_placeholder: "Account ID"
+      }
     },
     auth: {
       login_title: 'Login',
@@ -2056,7 +2122,7 @@ export const translations = {
       revpar_trends: 'Tendencias de Ingresos por Habitación Disponible.',
     },
     marketing: {
-      promotions: 'Promociones',
+      promotions: 'Promotions',
       campaigns: 'Campañas',
       automation: 'Automatización',
       leads: 'Leads e Interesados',
@@ -2566,7 +2632,7 @@ export const translations = {
       revenue_overview: 'Visión general financiera de los últimos meses.',
       quick_calendar: 'Calendario Rápido',
       todays_activity: 'Actividades de hoy.',
-      pending_approvals: 'Aprobaciones Pendientes',
+      pending_approvals: 'Aprobaciones Pendentes',
       pending_desc: 'Ítems que requieren su atención.',
       review: 'Revisar',
       approve: 'Aprobar',
@@ -2645,6 +2711,39 @@ export const translations = {
         documents: 'Documentos',
         logs: 'Registros',
       },
+      location: {
+        address: "Dirección",
+        neighborhood: "Barrio",
+        community: "Comunidad",
+        linked_condo: "Condominio Vinculado",
+        complement_placeholder: "Apto, Bloque, Referencia",
+        country_us: "Estados Unidos (EE.UU.)",
+        country_br: "Brasil",
+        country_es: "España"
+      },
+      contacts: {
+        new_contact: "Nuevo Contacto",
+        role_concierge: "Conserje",
+        role_maintenance: "Mantenimiento",
+        role_emergency: "Emergencia",
+        role_local_agent: "Agente Local"
+      },
+      content: {
+        house_rules: "Reglas de la Casa",
+        auto_translate: "Traducción Automática",
+        copy_from: "Copiar de",
+        desc_pt_placeholder: "Descripción completa en Portugués...",
+        desc_en_placeholder: "Descripción completa en Inglés...",
+        desc_es_placeholder": "Descripción completa en Español...",
+        rules_pt_placeholder: "Reglas del condominio en Portugués...",
+        rules_en_placeholder: "Reglas del condominio en Inglés...",
+        rules_es_placeholder": "Reglas del condominio en Español..."
+      },
+      financial: {
+        name_placeholder: "Ej: Internet",
+        provider_placeholder: "Ej: Duke Energy",
+        account_placeholder: "ID de Cuenta"
+      }
     },
     auth: {
       login_title: 'Iniciar Sesión',
@@ -2663,7 +2762,7 @@ export const translations = {
       already_have_account: '¿Ya tiene una cuenta?',
     },
     settings: {
-      title: 'Configuraciones',
+      title: 'Configurações',
       subtitle: 'Gestione la configuración de su cuenta y sistema.',
       personal_info: 'Información Personal',
       update_info: 'Actualice su información.',
@@ -2754,3 +2853,4 @@ export const translations = {
     },
   },
 }
+

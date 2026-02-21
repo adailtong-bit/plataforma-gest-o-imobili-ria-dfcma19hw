@@ -83,7 +83,7 @@ export function PropertyContent({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            {t('properties.public_desc')}
+            {t('common.description')}
             {canEdit && (
               <div className="text-xs font-normal text-muted-foreground bg-secondary px-2 py-1 rounded-full flex items-center gap-1">
                 <Wand2 className="h-3 w-3" />{' '}
@@ -109,7 +109,7 @@ export function PropertyContent({
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="Descrição completa em Português..."
+                  placeholder={t('properties.content.desc_pt_placeholder')}
                 />
               </div>
             </TabsContent>
@@ -135,7 +135,7 @@ export function PropertyContent({
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="Full description in English..."
+                  placeholder={t('properties.content.desc_en_placeholder')}
                 />
               </div>
             </TabsContent>
@@ -161,7 +161,7 @@ export function PropertyContent({
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="Descripción completa en Español..."
+                  placeholder={t('properties.content.desc_es_placeholder')}
                 />
               </div>
             </TabsContent>
@@ -190,7 +190,7 @@ export function PropertyContent({
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="Regras do condomínio..."
+                  placeholder={t('properties.content.rules_pt_placeholder')}
                 />
               </div>
             </TabsContent>
@@ -216,7 +216,7 @@ export function PropertyContent({
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="HOA Rules..."
+                  placeholder={t('properties.content.rules_en_placeholder')}
                 />
               </div>
             </TabsContent>
@@ -242,7 +242,7 @@ export function PropertyContent({
                   }
                   disabled={!canEdit}
                   rows={6}
-                  placeholder="Reglas del condominio..."
+                  placeholder={t('properties.content.rules_es_placeholder')}
                 />
               </div>
             </TabsContent>

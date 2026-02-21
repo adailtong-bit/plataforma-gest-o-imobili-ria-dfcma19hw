@@ -12,6 +12,7 @@ import {
 import useLanguageStore from '@/stores/useLanguageStore'
 import { applyZipCodeMask, isGenericOrPlaceholder } from '@/lib/utils'
 import { LocationMap } from '@/components/ui/location-map'
+import { DataMask } from '@/components/DataMask'
 
 interface PropertyLocationProps {
   data: Property
@@ -79,9 +80,15 @@ export function PropertyLocation({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="US">United States (USA)</SelectItem>
-                <SelectItem value="BR">Brazil (Brasil)</SelectItem>
-                <SelectItem value="ES">Spain (España)</SelectItem>
+                <SelectItem value="US">
+                  {t('properties.location.country_us')}
+                </SelectItem>
+                <SelectItem value="BR">
+                  {t('properties.location.country_br')}
+                </SelectItem>
+                <SelectItem value="ES">
+                  {t('properties.location.country_es')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -91,12 +98,14 @@ export function PropertyLocation({
               {t('properties.location.address')}{' '}
               <span className="text-red-500">*</span>
             </Label>
-            <Input
-              value={data.address}
-              onChange={(e) => onChange('address', e.target.value)}
-              disabled={!canEdit}
-              placeholder={t('properties.search_placeholder')}
-            />
+            <DataMask className="w-full block">
+              <Input
+                value={data.address}
+                onChange={(e) => onChange('address', e.target.value)}
+                disabled={!canEdit}
+                placeholder={t('properties.search_placeholder')}
+              />
+            </DataMask>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
@@ -104,59 +113,71 @@ export function PropertyLocation({
                 {t('properties.zip_code')}{' '}
                 <span className="text-red-500">*</span>
               </Label>
-              <Input
-                value={data.zipCode || ''}
-                onChange={handleZipChange}
-                disabled={!canEdit}
-                required
-                className={isZipInvalid ? 'border-red-300' : ''}
-                placeholder={selectedCountry === 'BR' ? '00000-000' : '00000'}
-              />
+              <DataMask className="w-full block">
+                <Input
+                  value={data.zipCode || ''}
+                  onChange={handleZipChange}
+                  disabled={!canEdit}
+                  required
+                  className={isZipInvalid ? 'border-red-300' : ''}
+                  placeholder={selectedCountry === 'BR' ? '00000-000' : '00000'}
+                />
+              </DataMask>
             </div>
             <div className="grid gap-2">
               <Label>{t('properties.info_label')}</Label>
-              <Input
-                value={data.additionalInfo || ''}
-                onChange={(e) => onChange('additionalInfo', e.target.value)}
-                disabled={!canEdit}
-                placeholder="Apto, Bloco, Referência"
-              />
+              <DataMask className="w-full block">
+                <Input
+                  value={data.additionalInfo || ''}
+                  onChange={(e) => onChange('additionalInfo', e.target.value)}
+                  disabled={!canEdit}
+                  placeholder={t('properties.location.complement_placeholder')}
+                />
+              </DataMask>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>{t('properties.location.neighborhood')}</Label>
-              <Input
-                value={data.neighborhood || ''}
-                onChange={(e) => onChange('neighborhood', e.target.value)}
-                disabled={!canEdit}
-              />
+              <DataMask className="w-full block">
+                <Input
+                  value={data.neighborhood || ''}
+                  onChange={(e) => onChange('neighborhood', e.target.value)}
+                  disabled={!canEdit}
+                />
+              </DataMask>
             </div>
             <div className="grid gap-2">
               <Label>{t('properties.location.community')}</Label>
-              <Input
-                value={data.community}
-                onChange={(e) => onChange('community', e.target.value)}
-                disabled={!canEdit}
-              />
+              <DataMask className="w-full block">
+                <Input
+                  value={data.community}
+                  onChange={(e) => onChange('community', e.target.value)}
+                  disabled={!canEdit}
+                />
+              </DataMask>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>{t('properties.city_placeholder')}</Label>
-              <Input
-                value={data.city || ''}
-                onChange={(e) => onChange('city', e.target.value)}
-                disabled={!canEdit}
-              />
+              <DataMask className="w-full block">
+                <Input
+                  value={data.city || ''}
+                  onChange={(e) => onChange('city', e.target.value)}
+                  disabled={!canEdit}
+                />
+              </DataMask>
             </div>
             <div className="grid gap-2">
               <Label>{t('properties.state_placeholder')}</Label>
-              <Input
-                value={data.state || ''}
-                onChange={(e) => onChange('state', e.target.value)}
-                disabled={!canEdit}
-              />
+              <DataMask className="w-full block">
+                <Input
+                  value={data.state || ''}
+                  onChange={(e) => onChange('state', e.target.value)}
+                  disabled={!canEdit}
+                />
+              </DataMask>
             </div>
           </div>
           <div className="grid gap-2">

@@ -54,6 +54,7 @@ import { setDate, getDaysInMonth, parseISO, addMonths } from 'date-fns'
 import { FileUpload } from '@/components/ui/file-upload'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { DataMask } from '@/components/DataMask'
 
 interface PropertyFinancialsProps {
   data: Property
@@ -440,7 +441,9 @@ export function PropertyFinancials({
               {currentProperty.fixedExpenses?.map((expense) => (
                 <TableRow key={expense.id}>
                   <TableCell className="font-medium">{expense.name}</TableCell>
-                  <TableCell>{expense.provider || '-'}</TableCell>
+                  <TableCell>
+                    <DataMask>{expense.provider || '-'}</DataMask>
+                  </TableCell>
                   <TableCell>
                     {expense.contractEndDate ? (
                       <span className="text-xs">
@@ -515,7 +518,7 @@ export function PropertyFinancials({
             <DialogTitle>
               {actionType === 'add' ? t('common.new') : t('common.edit')}
             </DialogTitle>
-            <DialogDescription>Configure details.</DialogDescription>
+            <DialogDescription>{t('common.details')}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
@@ -527,7 +530,7 @@ export function PropertyFinancials({
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                placeholder="Ex: Internet"
+                placeholder={t('properties.financial.name_placeholder')}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -535,23 +538,30 @@ export function PropertyFinancials({
                 <Label>
                   {t('common.provider')} <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  value={formData.provider}
-                  onChange={(e) =>
-                    setFormData({ ...formData, provider: e.target.value })
-                  }
-                  placeholder="Ex: Duke Energy"
-                />
+                <DataMask className="w-full block">
+                  <Input
+                    value={formData.provider}
+                    onChange={(e) =>
+                      setFormData({ ...formData, provider: e.target.value })
+                    }
+                    placeholder={t('properties.financial.provider_placeholder')}
+                  />
+                </DataMask>
               </div>
               <div className="grid gap-2">
                 <Label>{t('common.account_number')}</Label>
-                <Input
-                  value={formData.accountNumber}
-                  onChange={(e) =>
-                    setFormData({ ...formData, accountNumber: e.target.value })
-                  }
-                  placeholder="ID"
-                />
+                <DataMask className="w-full block">
+                  <Input
+                    value={formData.accountNumber}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        accountNumber: e.target.value,
+                      })
+                    }
+                    placeholder={t('properties.financial.account_placeholder')}
+                  />
+                </DataMask>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -658,7 +668,7 @@ export function PropertyFinancials({
               {actionType === 'add' && formData.receiptUrl && (
                 <div className="bg-green-50 text-green-700 p-2 rounded text-xs flex items-center gap-2 border border-green-200">
                   <FileCheck className="h-4 w-4" />
-                  Attached receipt will mark this as PAID.
+                  {t('common.success')}
                 </div>
               )}
             </div>
@@ -679,7 +689,7 @@ export function PropertyFinancials({
           <AlertDialogHeader>
             <AlertDialogTitle>{t('common.confirm')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Changing this expense will update future pending entries.
+              {t('common.confirm')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

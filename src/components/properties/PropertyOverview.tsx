@@ -13,6 +13,7 @@ import { FileUpload } from '@/components/ui/file-upload'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Badge } from '@/components/ui/badge'
 import { Trophy } from 'lucide-react'
+import { DataMask } from '@/components/DataMask'
 
 interface PropertyOverviewProps {
   data: Property
@@ -50,13 +51,15 @@ export function PropertyOverview({
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid gap-2">
           <Label>{t('common.name')}</Label>
-          <Input
-            value={data.name}
-            onChange={(e) => onChange('name', e.target.value)}
-            disabled={!canEdit}
-            placeholder={t('properties.search_placeholder')}
-            className="text-black bg-white border-slate-300"
-          />
+          <DataMask className="w-full block">
+            <Input
+              value={data.name}
+              onChange={(e) => onChange('name', e.target.value)}
+              disabled={!canEdit}
+              placeholder={t('properties.search_placeholder')}
+              className="text-black bg-white border-slate-300"
+            />
+          </DataMask>
         </div>
         <div className="grid gap-2">
           <Label>{t('properties.profile_filter')}</Label>

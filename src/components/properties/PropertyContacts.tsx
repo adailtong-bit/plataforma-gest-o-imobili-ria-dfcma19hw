@@ -108,7 +108,9 @@ export function PropertyContacts({
       <CardContent>
         {canEdit && (
           <div className="flex flex-col gap-2 mb-6 border p-4 rounded-md bg-white">
-            <h4 className="font-bold text-sm text-slate-950">Novo Contato</h4>
+            <h4 className="font-bold text-sm text-slate-950">
+              {t('properties.contacts.new_contact')}
+            </h4>
             <div className="flex gap-2 items-end flex-wrap">
               <div className="grid gap-2 w-full md:w-1/5">
                 <Label className="font-bold">{t('common.role_label')}</Label>
@@ -122,43 +124,57 @@ export function PropertyContacts({
                     <SelectValue placeholder={t('common.select')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Concierge">Concierge</SelectItem>
-                    <SelectItem value="Maintenance">Manutenção</SelectItem>
-                    <SelectItem value="Emergency">Emergência</SelectItem>
-                    <SelectItem value="Local Agent">Agente Local</SelectItem>
+                    <SelectItem value="Concierge">
+                      {t('properties.contacts.role_concierge')}
+                    </SelectItem>
+                    <SelectItem value="Maintenance">
+                      {t('properties.contacts.role_maintenance')}
+                    </SelectItem>
+                    <SelectItem value="Emergency">
+                      {t('properties.contacts.role_emergency')}
+                    </SelectItem>
+                    <SelectItem value="Local Agent">
+                      {t('properties.contacts.role_local_agent')}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid gap-2 w-full md:w-1/5">
                 <Label className="font-bold">{t('common.name')}</Label>
-                <Input
-                  value={newContact.name}
-                  onChange={(e) =>
-                    setNewContact({ ...newContact, name: e.target.value })
-                  }
-                  className="text-black border-slate-300"
-                />
+                <DataMask className="w-full block">
+                  <Input
+                    value={newContact.name}
+                    onChange={(e) =>
+                      setNewContact({ ...newContact, name: e.target.value })
+                    }
+                    className="text-black border-slate-300"
+                  />
+                </DataMask>
               </div>
               <div className="grid gap-2 w-full md:w-1/4">
                 <Label className="font-bold">{t('common.phone')}</Label>
-                <PhoneInput
-                  value={newContact.phone || ''}
-                  onChange={(e) =>
-                    setNewContact({ ...newContact, phone: e.target.value })
-                  }
-                  country={newContactCountry}
-                  onCountryChange={setNewContactCountry}
-                />
+                <DataMask className="w-full block">
+                  <PhoneInput
+                    value={newContact.phone || ''}
+                    onChange={(e) =>
+                      setNewContact({ ...newContact, phone: e.target.value })
+                    }
+                    country={newContactCountry}
+                    onCountryChange={setNewContactCountry}
+                  />
+                </DataMask>
               </div>
               <div className="grid gap-2 w-full md:w-1/4">
                 <Label className="font-bold">{t('common.email')}</Label>
-                <Input
-                  value={newContact.email}
-                  onChange={(e) =>
-                    setNewContact({ ...newContact, email: e.target.value })
-                  }
-                  className="text-black border-slate-300"
-                />
+                <DataMask className="w-full block">
+                  <Input
+                    value={newContact.email}
+                    onChange={(e) =>
+                      setNewContact({ ...newContact, email: e.target.value })
+                    }
+                    className="text-black border-slate-300"
+                  />
+                </DataMask>
               </div>
               <Button onClick={addContact} className="bg-trust-blue text-white">
                 <Plus className="h-4 w-4" />
@@ -206,13 +222,13 @@ export function PropertyContacts({
                     {c.role}
                   </TableCell>
                   <TableCell className="text-slate-950 font-medium">
-                    <DataMask blur={!canEdit}>{c.name}</DataMask>
+                    <DataMask>{c.name}</DataMask>
                   </TableCell>
                   <TableCell className="text-slate-950 font-medium">
-                    <DataMask blur={!canEdit}>{c.phone}</DataMask>
+                    <DataMask>{c.phone}</DataMask>
                   </TableCell>
                   <TableCell className="text-slate-950 font-medium">
-                    <DataMask blur={!canEdit}>{c.email}</DataMask>
+                    <DataMask>{c.email}</DataMask>
                   </TableCell>
                   {canEdit && (
                     <TableCell className="text-right">
