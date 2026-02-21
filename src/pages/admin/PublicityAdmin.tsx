@@ -17,14 +17,14 @@ export default function PublicityAdmin() {
       </div>
 
       <Tabs defaultValue="ads" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="ads">
+        <TabsList className="w-full justify-start overflow-x-auto h-auto">
+          <TabsTrigger value="ads" className="whitespace-nowrap">
             <Megaphone className="h-4 w-4 mr-2" /> Advertisements
           </TabsTrigger>
-          <TabsTrigger value="advertisers">
+          <TabsTrigger value="advertisers" className="whitespace-nowrap">
             <Users className="h-4 w-4 mr-2" /> Advertisers
           </TabsTrigger>
-          <TabsTrigger value="pricing">
+          <TabsTrigger value="pricing" className="whitespace-nowrap">
             <DollarSign className="h-4 w-4 mr-2" /> Pricing Config
           </TabsTrigger>
         </TabsList>
