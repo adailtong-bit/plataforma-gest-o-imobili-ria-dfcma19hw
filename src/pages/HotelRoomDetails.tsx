@@ -15,6 +15,7 @@ import { ArrowLeft, Save, Upload, Image as ImageIcon } from 'lucide-react'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useHotelStore from '@/stores/useHotelStore'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
 import { DataMask } from '@/components/DataMask'
 import { Property, PropertyStatus } from '@/lib/types'
@@ -28,12 +29,14 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
+import { CurrencyInput } from '@/components/ui/currency-input'
 
 export default function HotelRoomDetails() {
   const { hotelId, towerId, roomId } = useParams()
   const { properties, updateProperty } = usePropertyStore()
   const { hotels, towers } = useHotelStore()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
+  const { currency } = useFinancialStore()
   const { toast } = useToast()
 
   const room = properties.find((p) => p.id === roomId)
@@ -170,12 +173,17 @@ export default function HotelRoomDetails() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Nightly Rate ($)</Label>
-                <Input
-                  type="number"
-                  value={formData.listingPrice}
-                  onChange={(e) =>
-                    handleChange('listingPrice', parseFloat(e.target.value))
+                <Label>Nightly Rate</Label>
+                <CurrencyInput
+                  value={formData.listingPrice || 0}
+                  onChange={(val) => handleChange('listingPrice', val)}
+                  currency={currency}
+                  locale={
+                    language === 'pt'
+                      ? 'pt-BR'
+                      : language === 'es'
+                        ? 'es-ES'
+                        : 'en-US'
                   }
                 />
               </div>

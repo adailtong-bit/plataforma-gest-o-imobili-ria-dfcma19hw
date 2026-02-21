@@ -60307,7 +60307,7 @@ var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => 
 Progress.displayName = Root$6.displayName;
 function DataMask({ children, className, blur }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-		className: cn("inline-block align-baseline transition-all", "filter-none opacity-100", className),
+		className: cn("inline-block align-baseline transition-all duration-300", blur ? "blur-sm select-none opacity-80 hover:blur-none hover:opacity-100 cursor-help" : "filter-none opacity-100", className),
 		"aria-label": blur ? "Sensitive data" : void 0,
 		title: blur ? "Sensitive data" : void 0,
 		children
@@ -63047,7 +63047,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$81({ inst: {
+			cachedValue = useState$83({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -63084,7 +63084,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$81 = React$67.useState, useEffect$29 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$83 = React$67.useState, useEffect$29 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -69303,7 +69303,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 	const { toast: toast$2 } = useToast();
 	const { t, language } = useLanguageStore_default();
 	const { properties: properties$1, updateProperty } = usePropertyStore_default();
-	const { ledgerEntries: ledgerEntries$1, addLedgerEntry, updateLedgerEntry, deleteLedgerEntry } = useFinancialStore_default();
+	const { ledgerEntries: ledgerEntries$1, addLedgerEntry, updateLedgerEntry, deleteLedgerEntry, currency } = useFinancialStore_default();
 	const [openExpense, setOpenExpense] = (0, import_react.useState)(false);
 	const [confirmActionOpen, setConfirmActionOpen] = (0, import_react.useState)(false);
 	const [actionType, setActionType] = (0, import_react.useState)("add");
@@ -69313,7 +69313,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 		provider: "",
 		accountNumber: "",
 		amount: 0,
-		paymentDate: "",
+		paymentDate: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
 		receiptUrl: "",
 		contractStartDate: "",
 		contractEndDate: "",
@@ -69521,6 +69521,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 							value: data.hoaValue || 0,
 							onChange: (val) => onChange("hoaValue", val),
 							disabled: !canEdit,
+							currency,
 							locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US"
 						})]
 					}),
@@ -69587,7 +69588,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 					className: "text-xs",
 					children: formatDate(expense.contractEndDate, language)
 				}) : "-" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatCurrency(expense.amount, language) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatCurrency(expense.amount, currency) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: expense.dueDay }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 					className: "text-right",
@@ -69697,6 +69698,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 												amount: val,
 												recurringValue: val
 											}),
+											currency,
 											locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US"
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -69756,6 +69758,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 														...formData,
 														recurringValue: val
 													}),
+													currency,
 													locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US"
 												})]
 											})
@@ -72700,6 +72703,223 @@ function RatePlanManager({ property: property$2 }) {
 		]
 	});
 }
+function PropertyContacts({ data, onChange, canEdit }) {
+	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [newContactCountry, setNewContactCountry] = (0, import_react.useState)("US");
+	const [newContact, setNewContact] = (0, import_react.useState)({
+		role: "",
+		name: "",
+		phone: "",
+		email: ""
+	});
+	const addContact = () => {
+		if (!newContact.name || !newContact.role) {
+			toast$2({
+				title: t("common.error"),
+				description: t("common.required"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (newContact.email && !isValidEmail(newContact.email)) {
+			toast$2({
+				title: t("common.error"),
+				description: t("common.email_invalid"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (newContact.phone && !isPhoneValid(newContact.phone, newContactCountry)) {
+			toast$2({
+				title: t("common.error"),
+				description: `Invalid phone format`,
+				variant: "destructive"
+			});
+			return;
+		}
+		const contact = {
+			id: `pc-${Date.now()}`,
+			name: newContact.name,
+			role: newContact.role,
+			phone: newContact.phone || "",
+			email: newContact.email || ""
+		};
+		onChange("contacts", [...data.contacts || [], contact]);
+		setNewContact({
+			role: "",
+			name: "",
+			phone: "",
+			email: ""
+		});
+	};
+	const removeContact = (id) => {
+		onChange("contacts", (data.contacts || []).filter((c$1) => c$1.id !== id));
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+		className: "bg-white border-slate-200 shadow-sm",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+			className: "flex items-center gap-2 text-slate-950",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-5 w-5" }),
+				" ",
+				t("common.contact")
+			]
+		}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex flex-col gap-2 mb-6 border p-4 rounded-md bg-white",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+				className: "font-bold text-sm text-slate-950",
+				children: "Novo Contato"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex gap-2 items-end flex-wrap",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2 w-full md:w-1/5",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "font-bold",
+							children: t("common.role_label")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: newContact.role,
+							onValueChange: (v) => setNewContact({
+								...newContact,
+								role: v
+							}),
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+								className: "text-black border-slate-300",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Concierge",
+									children: "Concierge"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Maintenance",
+									children: "Manutenção"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Emergency",
+									children: "Emergência"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Local Agent",
+									children: "Agente Local"
+								})
+							] })]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2 w-full md:w-1/5",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "font-bold",
+							children: t("common.name")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: newContact.name,
+							onChange: (e) => setNewContact({
+								...newContact,
+								name: e.target.value
+							}),
+							className: "text-black border-slate-300"
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2 w-full md:w-1/4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "font-bold",
+							children: t("common.phone")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+							value: newContact.phone || "",
+							onChange: (e) => setNewContact({
+								...newContact,
+								phone: e.target.value
+							}),
+							country: newContactCountry,
+							onCountryChange: setNewContactCountry
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2 w-full md:w-1/4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "font-bold",
+							children: t("common.email")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: newContact.email,
+							onChange: (e) => setNewContact({
+								...newContact,
+								email: e.target.value
+							}),
+							className: "text-black border-slate-300"
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: addContact,
+						className: "bg-trust-blue text-white",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" })
+					})
+				]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-black",
+				children: t("common.role_label")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-black",
+				children: t("common.name")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-black",
+				children: t("common.phone")
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-black",
+				children: t("common.email")
+			}),
+			canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+				className: "font-bold text-black text-right",
+				children: t("common.actions")
+			})
+		] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: !data.contacts || data.contacts.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+			colSpan: canEdit ? 5 : 4,
+			className: "text-center py-6 text-muted-foreground",
+			children: t("common.empty")
+		}) }) : data.contacts.map((c$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "font-bold text-slate-950",
+				children: c$1.role
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-slate-950 font-medium",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+					blur: !canEdit,
+					children: c$1.name
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-slate-950 font-medium",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+					blur: !canEdit,
+					children: c$1.phone
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-slate-950 font-medium",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+					blur: !canEdit,
+					children: c$1.email
+				})
+			}),
+			canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-right",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "ghost",
+					size: "icon",
+					onClick: () => removeContact(c$1.id),
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 text-red-500" })
+				})
+			})
+		] }, c$1.id)) })] })] })]
+	});
+}
 function PropertyDetails() {
 	const { id } = useParams();
 	const navigate = useNavigate();
@@ -72960,7 +73180,7 @@ function PropertyDetails() {
 			className: "space-y-4",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
-					className: "w-full justify-start overflow-x-auto overflow-y-hidden bg-slate-100 border border-slate-200 h-auto",
+					className: "w-full justify-start overflow-x-auto overflow-y-hidden bg-slate-100 border border-slate-200 h-auto flex-wrap gap-1",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "overview",
@@ -73029,6 +73249,15 @@ function PropertyDetails() {
 							value: "location",
 							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
 							children: t("properties.tabs.location")
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+							value: "contacts",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-4 w-4 mr-2" }),
+								" ",
+								t("common.contact")
+							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "sync",
@@ -73137,6 +73366,14 @@ function PropertyDetails() {
 						onChange: handleChange,
 						canEdit: isEditing,
 						condominiums: condominiums$1
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "contacts",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyContacts, {
+						data: formData,
+						onChange: handleChange,
+						canEdit: isEditing
 					})
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
@@ -84548,7 +84785,8 @@ function HotelRoomDetails() {
 	const { hotelId, towerId, roomId } = useParams();
 	const { properties: properties$1, updateProperty } = usePropertyStore_default();
 	const { hotels: hotels$1, towers: towers$1 } = useHotelStore_default();
-	const { t } = useLanguageStore_default();
+	const { t, language } = useLanguageStore_default();
+	const { currency } = useFinancialStore_default();
 	const { toast: toast$2 } = useToast();
 	const room = properties$1.find((p$1) => p$1.id === roomId);
 	const hotel = hotels$1.find((h) => h.id === hotelId);
@@ -84695,10 +84933,11 @@ function HotelRoomDetails() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "space-y-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nightly Rate ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-										type: "number",
-										value: formData.listingPrice,
-										onChange: (e) => handleChange("listingPrice", parseFloat(e.target.value))
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nightly Rate" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+										value: formData.listingPrice || 0,
+										onChange: (val) => handleChange("listingPrice", val),
+										currency,
+										locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US"
 									})]
 								})
 							]
@@ -92124,8 +92363,10 @@ function NightAudit() {
 	});
 }
 function Performance() {
-	const { t } = useLanguageStore_default();
+	const { t, language } = useLanguageStore_default();
 	const { advertisements: advertisements$1 } = usePublicityStore_default();
+	const { feedbacks: feedbacks$1 } = (0, import_react.useContext)(AppContext) || { feedbacks: [] };
+	const [reviewsOpen, setReviewsOpen] = (0, import_react.useState)(false);
 	const visibleAds = useAdRotation((0, import_react.useMemo)(() => advertisements$1.filter((a$1) => a$1.active && a$1.placement === "performance"), [advertisements$1]), 2, 8);
 	const performanceData = [
 		{
@@ -92189,6 +92430,8 @@ function Performance() {
 			color: "hsl(var(--chart-4))"
 		}
 	};
+	const viewAllText = language === "pt" ? "Ver Todas as Avaliações" : language === "es" ? "Ver Todas las Reseñas" : "View All Reviews";
+	const reviewsTitleText = language === "pt" ? "Avaliações dos Hóspedes" : language === "es" ? "Reseñas de Huéspedes" : "Guest Reviews";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
 		children: [
@@ -92243,7 +92486,7 @@ function Performance() {
 						children: "4.7"
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 						className: "text-xs text-muted-foreground",
-						children: t("performance.based_on_reviews", { count: 328 })
+						children: t("performance.based_on_reviews", { count: "328" })
 					})] })] }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 						className: "flex flex-row items-center justify-between space-y-0 pb-2",
@@ -92271,19 +92514,37 @@ function Performance() {
 						className: "text-xs text-muted-foreground",
 						children: "+12% vs last year"
 					})] })] }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-						className: "flex flex-row items-center justify-between space-y-0 pb-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-							className: "text-sm font-medium",
-							children: t("performance.guest_reviews")
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4 text-purple-500" })]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "text-2xl font-bold",
-						children: "328"
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-xs text-muted-foreground",
-						children: "+28 new this month"
-					})] })] })
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "flex flex-col",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+								className: "flex flex-row items-center justify-between space-y-0 pb-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+									className: "text-sm font-medium",
+									children: t("performance.guest_reviews")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4 text-purple-500" })]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+								className: "flex-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "text-2xl font-bold",
+									children: "328"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-xs text-muted-foreground",
+									children: "+28 new this month"
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
+								className: "pt-0 pb-4",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "outline",
+									className: "w-full font-medium text-slate-800",
+									onClick: () => setReviewsOpen(true),
+									children: viewAllText
+								})
+							})
+						]
+					})
 				]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -92386,6 +92647,45 @@ function Performance() {
 						})
 					})
 				}) })] })]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: reviewsOpen,
+				onOpenChange: setReviewsOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "max-w-2xl max-h-[80vh] overflow-y-auto",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, {
+						className: "text-xl font-bold",
+						children: reviewsTitleText
+					}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "space-y-4 py-4",
+						children: feedbacks$1 && feedbacks$1.length > 0 ? feedbacks$1.map((fb) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "p-4 border border-slate-200 rounded-lg bg-slate-50 shadow-sm",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex justify-between items-start mb-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "font-bold text-slate-900",
+										children: fb.guestName
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-xs font-medium text-slate-500",
+										children: format(new Date(fb.date), "PPP")
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "flex items-center mb-2",
+									children: Array.from({ length: 5 }).map((_$1, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: `h-4 w-4 ${i < fb.rating ? "text-yellow-500 fill-yellow-500" : "text-slate-300"}` }, i))
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-slate-700 font-medium",
+									children: fb.comment
+								})
+							]
+						}, fb.id)) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-muted-foreground text-center py-4",
+							children: "No reviews found."
+						})
+					})]
+				})
 			})
 		]
 	});
@@ -94557,4 +94857,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-CQ5C-isl.js.map
+//# sourceMappingURL=index-Dt0uII_E.js.map

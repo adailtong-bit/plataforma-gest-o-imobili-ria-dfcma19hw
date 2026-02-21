@@ -17,6 +17,7 @@ import {
   BarChart,
   PieChart,
   TrendingUp,
+  Users as UsersIcon,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -56,7 +57,8 @@ import { PropertyInventory } from '@/components/properties/PropertyInventory'
 import { PropertyContracts } from '@/components/properties/PropertyContracts'
 import { MaintenanceReport } from '@/components/maintenance/MaintenanceReport'
 import { PropertyAnalytics } from '@/components/properties/PropertyAnalytics'
-import { RatePlanManager } from '@/components/pricing/RatePlanManager' // Imported RatePlanManager
+import { RatePlanManager } from '@/components/pricing/RatePlanManager'
+import { PropertyContacts } from '@/components/properties/PropertyContacts'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -125,7 +127,7 @@ export default function PropertyDetails() {
       description: t('properties.property_added').replace(
         'Adicionada',
         'Atualizada',
-      ), // Reuse or generic success
+      ),
     })
   }
 
@@ -344,7 +346,7 @@ export default function PropertyDetails() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="w-full justify-start overflow-x-auto overflow-y-hidden bg-slate-100 border border-slate-200 h-auto">
+        <TabsList className="w-full justify-start overflow-x-auto overflow-y-hidden bg-slate-100 border border-slate-200 h-auto flex-wrap gap-1">
           <TabsTrigger
             value="overview"
             className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
@@ -404,6 +406,12 @@ export default function PropertyDetails() {
             className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
             {t('properties.tabs.location')}
+          </TabsTrigger>
+          <TabsTrigger
+            value="contacts"
+            className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
+          >
+            <UsersIcon className="h-4 w-4 mr-2" /> {t('common.contact')}
           </TabsTrigger>
           <TabsTrigger
             value="sync"
@@ -501,6 +509,14 @@ export default function PropertyDetails() {
             onChange={handleChange}
             canEdit={isEditing}
             condominiums={condominiums}
+          />
+        </TabsContent>
+
+        <TabsContent value="contacts">
+          <PropertyContacts
+            data={formData}
+            onChange={handleChange}
+            canEdit={isEditing}
           />
         </TabsContent>
 

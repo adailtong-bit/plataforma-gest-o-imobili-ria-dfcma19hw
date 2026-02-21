@@ -1,6 +1,5 @@
 import { type ClassValue } from 'clsx'
 
-// Re-exporting previous types plus new ones
 export type UserRole =
   | 'platform_owner'
   | 'software_tenant'
@@ -48,7 +47,6 @@ export interface Permission {
   actions: Action[]
 }
 
-// New Types for Advanced Management
 export interface SeasonalPrice {
   id: string
   startDate: string
@@ -74,7 +72,7 @@ export interface ServiceOrder {
   serviceName: string
   price: number
   date: string
-  scheduledFor?: string // Scheduled Date & Time
+  scheduledFor?: string
   status: 'pending' | 'delivered' | 'cancelled'
   notes?: string
 }
@@ -124,7 +122,7 @@ export interface Campaign {
   status: 'draft' | 'active' | 'completed'
   startDate: string
   endDate: string
-  promotions: string[] // IDs of promotions
+  promotions: string[]
   targetAudience?: 'all' | 'past_guests' | 'leads'
   description?: string
 }
@@ -156,7 +154,7 @@ export interface MarketingWorkflow {
   id: string
   name: string
   trigger: 'booking_confirmed' | 'check_in' | 'check_out' | 'cancellation'
-  offsetTime: number // hours, can be negative for 'before'
+  offsetTime: number
   templateId: string
   active: boolean
 }
@@ -167,8 +165,6 @@ export interface EmailTemplate {
   subject: string
   body: string
 }
-
-// --- Existing Types (Consolidated) ---
 
 export interface AlertConfig {
   id: string
@@ -547,6 +543,14 @@ export interface RatePlan {
   active: boolean
 }
 
+export interface PropertyContact {
+  id: string
+  role: string
+  name: string
+  phone: string
+  email: string
+}
+
 export interface Property {
   id: string
   name: string
@@ -604,6 +608,7 @@ export interface Property {
   priceHistory?: PriceHistory[]
   amenities?: string[]
   channelMappings?: ChannelMapping[]
+  contacts?: PropertyContact[]
 }
 
 export interface Tenant {
@@ -968,7 +973,7 @@ export interface Workflow {
     | 'after_checkout'
   steps: WorkflowStep[]
   active: boolean
-  propertyIds?: string[] // Added propertyIds for multi-property selection
+  propertyIds?: string[]
 }
 
 export interface MarketData {

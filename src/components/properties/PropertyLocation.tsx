@@ -42,6 +42,23 @@ export function PropertyLocation({
     onChange('zipCode', val)
   }
 
+  const handleAddressSelect = (addr: any) => {
+    const mappedCountry =
+      addr.country === 'Brazil'
+        ? 'BR'
+        : addr.country === 'Spain'
+          ? 'ES'
+          : addr.country === 'USA'
+            ? 'US'
+            : selectedCountry
+
+    onChange('country', mappedCountry)
+    onChange('address', addr.street)
+    onChange('city', addr.city)
+    onChange('state', addr.state)
+    onChange('zipCode', applyZipCodeMask(addr.zipCode, mappedCountry))
+  }
+
   const isZipInvalid = !data.zipCode || isGenericOrPlaceholder(data.zipCode)
 
   return (

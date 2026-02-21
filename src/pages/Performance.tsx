@@ -1,10 +1,11 @@
-import { useMemo } from 'react'
+import { useMemo, useContext, useState } from 'react'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card'
 import {
   BarChart,
@@ -32,11 +33,22 @@ import {
 import useLanguageStore from '@/stores/useLanguageStore'
 import { useAdRotation } from '@/hooks/useAdRotation'
 import usePublicityStore from '@/stores/usePublicityStore'
+import { AppContext } from '@/stores/AppContext'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { format } from 'date-fns'
 
 export default function Performance() {
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const { advertisements } = usePublicityStore()
+  const { feedbacks } = useContext(AppContext) || { feedbacks: [] }
+  const [reviewsOpen, setReviewsOpen] = useState(false)
 
   const performanceAds = useMemo(
     () =>
@@ -73,6 +85,20 @@ export default function Performance() {
       color: 'hsl(var(--chart-4))',
     },
   }
+
+  const viewAllText =
+    language === 'pt'
+      ? 'Ver Todas as Avaliações'
+      : language === 'es'
+        ? 'Ver Todas las Reseñas'
+        : 'View All Reviews'
+
+  const reviewsTitleText =
+    language === 'pt'
+      ? 'Avaliações dos Hóspedes'
+      : language === 'es'
+        ? 'Reseñas de Huéspedes'
+        : 'Guest Reviews'
 
   return (
     <div className="flex flex-col gap-6">
@@ -134,7 +160,7 @@ export default function Performance() {
           <CardContent>
             <div className="text-2xl font-bold">4.7</div>
             <p className="text-xs text-muted-foreground">
-              {t('performance.based_on_reviews', { count: 328 })}
+              {t('performance.based_on_reviews', { count: '328' })}
             </p>
           </CardContent>
         </Card>
@@ -162,17 +188,26 @@ export default function Performance() {
             <p className="text-xs text-muted-foreground">+12% vs last year</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {t('performance.guest_reviews')}
             </CardTitle>
             <MessageSquare className="h-4 w-4 text-purple-500" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1">
             <div className="text-2xl font-bold">328</div>
             <p className="text-xs text-muted-foreground">+28 new this month</p>
           </CardContent>
+          <CardFooter className="pt-0 pb-4">
+            <Button
+              variant="outline"
+              className="w-full font-medium text-slate-800"
+              onClick={() => setReviewsOpen(true)}
+            >
+              {viewAllText}
+            </Button>
+          </CardFooter>
         </Card>
       </div>
 
@@ -264,6 +299,50 @@ export default function Performance() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={reviewsOpen} onOpenChange={setReviewsOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">
+              {reviewsTitleText}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {feedbacks && feedbacks.length > 0 ? (
+              feedbacks.map((fb) => (
+                <div
+                  key={fb.id}
+                  className="p-4 border border-slate-200 rounded-lg bg-slate-50 shadow-sm"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="font-bold text-slate-900">
+                      {fb.guestName}
+                    </span>
+                    <span className="text-xs font-medium text-slate-500">
+                      {format(new Date(fb.date), 'PPP')}
+                    </span>
+                  </div>
+                  <div className="flex items-center mb-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${i < fb.rating ? 'text-yellow-500 fill-yellow-500' : 'text-slate-300'}`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-sm text-slate-700 font-medium">
+                    {fb.comment}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-muted-foreground text-center py-4">
+                No reviews found.
+              </p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -78,6 +78,7 @@ export function PropertyFinancials({
     addLedgerEntry,
     updateLedgerEntry,
     deleteLedgerEntry,
+    currency,
   } = useFinancialStore()
 
   // Local state for Fixed Expense Dialog
@@ -92,7 +93,7 @@ export function PropertyFinancials({
     provider: '',
     accountNumber: '',
     amount: 0,
-    paymentDate: '',
+    paymentDate: new Date().toISOString().split('T')[0],
     receiptUrl: '',
     contractStartDate: '',
     contractEndDate: '',
@@ -364,6 +365,7 @@ export function PropertyFinancials({
               value={data.hoaValue || 0}
               onChange={(val) => onChange('hoaValue', val)}
               disabled={!canEdit}
+              currency={currency}
               locale={
                 language === 'pt'
                   ? 'pt-BR'
@@ -449,7 +451,7 @@ export function PropertyFinancials({
                     )}
                   </TableCell>
                   <TableCell>
-                    {formatCurrency(expense.amount, language)}
+                    {formatCurrency(expense.amount, currency)}
                   </TableCell>
                   <TableCell>{expense.dueDay}</TableCell>
                   <TableCell className="text-right">
@@ -566,6 +568,7 @@ export function PropertyFinancials({
                       recurringValue: val,
                     })
                   }
+                  currency={currency}
                   locale={
                     language === 'pt'
                       ? 'pt-BR'
@@ -627,6 +630,7 @@ export function PropertyFinancials({
                     onChange={(val) =>
                       setFormData({ ...formData, recurringValue: val })
                     }
+                    currency={currency}
                     locale={
                       language === 'pt'
                         ? 'pt-BR'
