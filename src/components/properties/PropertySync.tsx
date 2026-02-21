@@ -106,8 +106,8 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
       {/* Basic iCal Sync */}
       <Card>
         <CardHeader>
-          <CardTitle>Basic iCal Synchronization</CardTitle>
-          <CardDescription>Simple calendar syncing via URL.</CardDescription>
+          <CardTitle>{t('sync.title')}</CardTitle>
+          <CardDescription>{t('sync.sync_desc')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex gap-4 items-end">
@@ -122,12 +122,12 @@ export function PropertySync({ data, onChange, canEdit }: PropertySyncProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="airbnb">Airbnb (iCal)</SelectItem>
+                  <SelectItem value="airbnb">{t('sync.airbnb')}</SelectItem>
                   <SelectItem value="booking.com">
-                    Booking.com (iCal)
+                    {t('sync.booking')}
                   </SelectItem>
-                  <SelectItem value="vrbo">Vrbo (iCal)</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="vrbo">{t('sync.vrbo')}</SelectItem>
+                  <SelectItem value="other">{t('common.other')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -55315,6 +55315,23 @@ const tutorialModules = [
 ];
 const translations = {
 	pt: {
+		sync: {
+			title: "Sincronização Básica iCal",
+			sync_desc: "Sincronização simples de calendário via URL.",
+			platform: "Plataforma",
+			ical_url: "URL iCal",
+			add_link: "Adicionar Link",
+			status: "Status",
+			last_sync: "Última Sincronização",
+			no_links: "Nenhum link configurado.",
+			sync_now: "Sincronizar Agora",
+			sync_success: "Sincronização Iniciada",
+			export_calendar: "Exportar Calendário",
+			copy_link: "Copiar Link",
+			airbnb: "Airbnb (iCal)",
+			booking: "Booking.com (iCal)",
+			vrbo: "Vrbo (iCal)"
+		},
 		publicity: {
 			title: "Administração de Publicidade",
 			subtitle: "Gerencie anunciantes, campanhas e configurações de monetização.",
@@ -55896,6 +55913,7 @@ const translations = {
 			yes: "Sim",
 			no: "Não",
 			none: "Nenhum",
+			other: "Outro",
 			error: "Erro",
 			condominiums: "Condomínios",
 			continue: "Continuar",
@@ -56110,7 +56128,8 @@ const translations = {
 				marketing: "Marketing",
 				content: "Conteúdo",
 				documents: "Documentos",
-				logs: "Logs"
+				logs: "Logs",
+				pricing: "Preços"
 			},
 			location: {
 				address: "Endereço",
@@ -56140,7 +56159,8 @@ const translations = {
 				rules_en_placeholder: "Regras do condomínio em Inglês...",
 				rules_es_placeholder: "Regras do condomínio em Espanhol..."
 			},
-			financial: {
+			financial: "Financeiro",
+			financial_fields: {
 				name_placeholder: "Ex: Internet",
 				provider_placeholder: "Ex: Duke Energy",
 				account_placeholder: "ID da Conta"
@@ -56250,6 +56270,23 @@ const translations = {
 		}
 	},
 	en: {
+		sync: {
+			title: "Basic iCal Synchronization",
+			sync_desc: "Simple calendar syncing via URL.",
+			platform: "Platform",
+			ical_url: "iCal URL",
+			add_link: "Add Link",
+			status: "Status",
+			last_sync: "Last Sync",
+			no_links: "No links configured.",
+			sync_now: "Sync Now",
+			sync_success: "Sync Started",
+			export_calendar: "Export Calendar",
+			copy_link: "Copy Link",
+			airbnb: "Airbnb (iCal)",
+			booking: "Booking.com (iCal)",
+			vrbo: "Vrbo (iCal)"
+		},
 		publicity: {
 			title: "Publicity Administration",
 			subtitle: "Manage advertisers, campaigns, and monetization settings.",
@@ -56831,6 +56868,7 @@ const translations = {
 			yes: "Yes",
 			no: "No",
 			none: "None",
+			other: "Other",
 			error: "Error",
 			condominiums: "Condominiums",
 			continue: "Continue",
@@ -57045,7 +57083,8 @@ const translations = {
 				marketing: "Marketing",
 				content: "Content",
 				documents: "Documents",
-				logs: "Logs"
+				logs: "Logs",
+				pricing: "Pricing"
 			},
 			location: {
 				address: "Address",
@@ -57075,7 +57114,8 @@ const translations = {
 				rules_en_placeholder: "HOA Rules...",
 				rules_es_placeholder: "HOA Rules in Spanish..."
 			},
-			financial: {
+			financial: "Financial",
+			financial_fields: {
 				name_placeholder: "e.g. Internet",
 				provider_placeholder: "e.g. Duke Energy",
 				account_placeholder: "Account ID"
@@ -57185,6 +57225,23 @@ const translations = {
 		}
 	},
 	es: {
+		sync: {
+			title: "Sincronización Básica iCal",
+			sync_desc: "Sincronización simple de calendario vía URL.",
+			platform: "Plataforma",
+			ical_url: "URL iCal",
+			add_link: "Añadir Enlace",
+			status: "Estado",
+			last_sync: "Última Sincronización",
+			no_links: "Ningún enlace configurado.",
+			sync_now: "Sincronizar Ahora",
+			sync_success: "Sincronización Iniciada",
+			export_calendar: "Exportar Calendario",
+			copy_link: "Copiar Enlace",
+			airbnb: "Airbnb (iCal)",
+			booking: "Booking.com (iCal)",
+			vrbo: "Vrbo (iCal)"
+		},
 		publicity: {
 			title: "Administración de Publicidad",
 			subtitle: "Gestione anunciantes, campañas y configuraciones de monetización.",
@@ -57466,7 +57523,7 @@ const translations = {
 		service_pricing: {
 			title: "Precios de Servicios",
 			subtitle: "Gestione costos y precios de venta.",
-			catalog_tab: "Catálogo de Precios",
+			catalog_tab: "Catálogo de Preços",
 			analytics_tab: "Informes",
 			new_rate: "Nueva Tarifa",
 			service_name: "Nombre del Servicio",
@@ -57766,6 +57823,7 @@ const translations = {
 			yes: "Sí",
 			no: "No",
 			none: "Ninguno",
+			other: "Otro",
 			error: "Error",
 			condominiums: "Condominios",
 			continue: "Continuar",
@@ -57980,7 +58038,8 @@ const translations = {
 				marketing: "Marketing",
 				content: "Contenido",
 				documents: "Documentos",
-				logs: "Registros"
+				logs: "Registros",
+				pricing: "Precios"
 			},
 			location: {
 				address: "Dirección",
@@ -58010,7 +58069,8 @@ const translations = {
 				rules_en_placeholder: "Reglas del condominio en Inglés...",
 				rules_es_placeholder: "Reglas del condominio en Español..."
 			},
-			financial: {
+			financial: "Financiero",
+			financial_fields: {
 				name_placeholder: "Ej: Internet",
 				provider_placeholder: "Ej: Duke Energy",
 				account_placeholder: "ID de Cuenta"
@@ -71447,7 +71507,7 @@ function PropertySync({ data, onChange, canEdit }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "space-y-6",
 		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Basic iCal Synchronization" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Simple calendar syncing via URL." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("sync.title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("sync.sync_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 				className: "space-y-6",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -71462,19 +71522,19 @@ function PropertySync({ data, onChange, canEdit }) {
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "airbnb",
-											children: "Airbnb (iCal)"
+											children: t("sync.airbnb")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "booking.com",
-											children: "Booking.com (iCal)"
+											children: t("sync.booking")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "vrbo",
-											children: "Vrbo (iCal)"
+											children: t("sync.vrbo")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "other",
-											children: "Other"
+											children: t("common.other")
 										})
 									] })]
 								})]
@@ -73263,10 +73323,10 @@ function PropertyDetails() {
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 						className: "text-3xl font-bold tracking-tight text-black",
-						children: formData.name
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formData.name })
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 						className: "text-black font-medium",
-						children: formData.address
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formData.address })
 					})] })]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "flex gap-2",
@@ -73345,7 +73405,11 @@ function PropertyDetails() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "pricing",
 							className: "data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrendingUp, { className: "h-4 w-4 mr-2" }), " Pricing"]
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrendingUp, { className: "h-4 w-4 mr-2" }),
+								" ",
+								t("properties.tabs.pricing")
+							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "analytics",
@@ -95012,4 +95076,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-D_y9pONU.js.map
+//# sourceMappingURL=index-Xh3xx79r.js.map

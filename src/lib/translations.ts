@@ -2,6 +2,23 @@ export type Language = 'pt' | 'en' | 'es'
 
 export const translations = {
   pt: {
+    sync: {
+      title: 'Sincronização Básica iCal',
+      sync_desc: 'Sincronização simples de calendário via URL.',
+      platform: 'Plataforma',
+      ical_url: 'URL iCal',
+      add_link: 'Adicionar Link',
+      status: 'Status',
+      last_sync: 'Última Sincronização',
+      no_links: 'Nenhum link configurado.',
+      sync_now: 'Sincronizar Agora',
+      sync_success: 'Sincronização Iniciada',
+      export_calendar: 'Exportar Calendário',
+      copy_link: 'Copiar Link',
+      airbnb: 'Airbnb (iCal)',
+      booking: 'Booking.com (iCal)',
+      vrbo: 'Vrbo (iCal)',
+    },
     publicity: {
       title: 'Administração de Publicidade',
       subtitle:
@@ -591,6 +608,7 @@ export const translations = {
       yes: 'Sim',
       no: 'Não',
       none: 'Nenhum',
+      other: 'Outro',
       error: 'Erro',
       condominiums: 'Condomínios',
       continue: 'Continuar',
@@ -808,6 +826,7 @@ export const translations = {
         content: 'Conteúdo',
         documents: 'Documentos',
         logs: 'Logs',
+        pricing: 'Preços',
       },
       location: {
         address: 'Endereço',
@@ -837,7 +856,8 @@ export const translations = {
         rules_en_placeholder: 'Regras do condomínio em Inglês...',
         rules_es_placeholder: 'Regras do condomínio em Espanhol...',
       },
-      financial: {
+      financial: 'Financeiro',
+      financial_fields: {
         name_placeholder: 'Ex: Internet',
         provider_placeholder: 'Ex: Duke Energy',
         account_placeholder: 'ID da Conta',
@@ -955,6 +975,23 @@ export const translations = {
     },
   },
   en: {
+    sync: {
+      title: 'Basic iCal Synchronization',
+      sync_desc: 'Simple calendar syncing via URL.',
+      platform: 'Platform',
+      ical_url: 'iCal URL',
+      add_link: 'Add Link',
+      status: 'Status',
+      last_sync: 'Last Sync',
+      no_links: 'No links configured.',
+      sync_now: 'Sync Now',
+      sync_success: 'Sync Started',
+      export_calendar: 'Export Calendar',
+      copy_link: 'Copy Link',
+      airbnb: 'Airbnb (iCal)',
+      booking: 'Booking.com (iCal)',
+      vrbo: 'Vrbo (iCal)',
+    },
     publicity: {
       title: 'Publicity Administration',
       subtitle: 'Manage advertisers, campaigns, and monetization settings.',
@@ -1540,6 +1577,7 @@ export const translations = {
       yes: 'Yes',
       no: 'No',
       none: 'None',
+      other: 'Other',
       error: 'Error',
       condominiums: 'Condominiums',
       continue: 'Continue',
@@ -1756,6 +1794,7 @@ export const translations = {
         content: 'Content',
         documents: 'Documents',
         logs: 'Logs',
+        pricing: 'Pricing',
       },
       location: {
         address: 'Address',
@@ -1785,7 +1824,8 @@ export const translations = {
         rules_en_placeholder: 'HOA Rules...',
         rules_es_placeholder: 'HOA Rules in Spanish...',
       },
-      financial: {
+      financial: 'Financial',
+      financial_fields: {
         name_placeholder: 'e.g. Internet',
         provider_placeholder: 'e.g. Duke Energy',
         account_placeholder: 'Account ID',
@@ -1902,6 +1942,23 @@ export const translations = {
     },
   },
   es: {
+    sync: {
+      title: 'Sincronización Básica iCal',
+      sync_desc: 'Sincronización simple de calendario vía URL.',
+      platform: 'Plataforma',
+      ical_url: 'URL iCal',
+      add_link: 'Añadir Enlace',
+      status: 'Estado',
+      last_sync: 'Última Sincronización',
+      no_links: 'Ningún enlace configurado.',
+      sync_now: 'Sincronizar Ahora',
+      sync_success: 'Sincronización Iniciada',
+      export_calendar: 'Exportar Calendario',
+      copy_link: 'Copiar Enlace',
+      airbnb: 'Airbnb (iCal)',
+      booking: 'Booking.com (iCal)',
+      vrbo: 'Vrbo (iCal)',
+    },
     publicity: {
       title: 'Administración de Publicidad',
       subtitle:
@@ -2191,7 +2248,7 @@ export const translations = {
     service_pricing: {
       title: 'Precios de Servicios',
       subtitle: 'Gestione costos y precios de venta.',
-      catalog_tab: 'Catálogo de Precios',
+      catalog_tab: 'Catálogo de Preços',
       analytics_tab: 'Informes',
       new_rate: 'Nueva Tarifa',
       service_name: 'Nombre del Servicio',
@@ -2492,6 +2549,7 @@ export const translations = {
       yes: 'Sí',
       no: 'No',
       none: 'Ninguno',
+      other: 'Otro',
       error: 'Error',
       condominiums: 'Condominios',
       continue: 'Continuar',
@@ -2710,6 +2768,7 @@ export const translations = {
         content: 'Contenido',
         documents: 'Documentos',
         logs: 'Registros',
+        pricing: 'Precios',
       },
       location: {
         address: 'Dirección',
@@ -2739,7 +2798,8 @@ export const translations = {
         rules_en_placeholder: 'Reglas del condominio en Inglés...',
         rules_es_placeholder: 'Reglas del condominio en Español...',
       },
-      financial: {
+      financial: 'Financiero',
+      financial_fields: {
         name_placeholder: 'Ej: Internet',
         provider_placeholder: 'Ej: Duke Energy',
         account_placeholder: 'ID de Cuenta',

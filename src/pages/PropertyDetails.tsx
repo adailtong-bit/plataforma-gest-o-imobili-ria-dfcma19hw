@@ -59,6 +59,7 @@ import { MaintenanceReport } from '@/components/maintenance/MaintenanceReport'
 import { PropertyAnalytics } from '@/components/properties/PropertyAnalytics'
 import { RatePlanManager } from '@/components/pricing/RatePlanManager'
 import { PropertyContacts } from '@/components/properties/PropertyContacts'
+import { DataMask } from '@/components/DataMask'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -267,9 +268,11 @@ export default function PropertyDetails() {
             </Link>
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-black">
-                {formData.name}
+                <DataMask>{formData.name}</DataMask>
               </h1>
-              <p className="text-black font-medium">{formData.address}</p>
+              <p className="text-black font-medium">
+                <DataMask>{formData.address}</DataMask>
+              </p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -357,7 +360,8 @@ export default function PropertyDetails() {
             value="pricing"
             className="data-[state=active]:bg-white data-[state=active]:text-black font-bold text-slate-700"
           >
-            <TrendingUp className="h-4 w-4 mr-2" /> Pricing
+            <TrendingUp className="h-4 w-4 mr-2" />{' '}
+            {t('properties.tabs.pricing')}
           </TabsTrigger>
           <TabsTrigger
             value="analytics"
