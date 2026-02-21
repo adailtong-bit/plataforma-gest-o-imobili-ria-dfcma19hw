@@ -51,6 +51,9 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { DataMask } from '@/components/DataMask'
+import { InvoiceViewer } from '@/components/financial/InvoiceViewer'
+import { Invoice } from '@/lib/types'
+import { useToast } from '@/hooks/use-toast'
 
 export default function Index() {
   return <DashboardContent />
@@ -58,7 +61,7 @@ export default function Index() {
 
 function DashboardContent() {
   const [date, setDate] = useState<Date | undefined>(new Date())
-  const { tasks } = useTaskStore()
+  const { tasks, approveTask } = useTaskStore()
   const { ledgerEntries, financials, formatCurrency } = useFinancialStore()
   const { properties } = usePropertyStore()
   const { visits } = useVisitStore()
@@ -66,6 +69,10 @@ function DashboardContent() {
   const { t, language } = useLanguageStore()
   const context = useContext(AppContext)
   const selectedPropertyId = context?.selectedPropertyId || 'all'
+  const { toast } = useToast()
+
+  const [viewInvoiceOpen, setViewInvoiceOpen] = useState(false)
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
 
   // Dashboard Widget State
   const [widgets, setWidgets] = useState({
@@ -466,6 +473,10 @@ function DashboardContent() {
                           size="sm"
                           variant="outline"
                           className="border-slate-300 text-black font-bold"
+                          onClick={() => {
+                            setSelectedInvoice(invoice)
+                            setViewInvoiceOpen(true)
+                          }}
                         >
                           {t('dashboard.review')}
                         </Button>
@@ -473,7 +484,7 @@ function DashboardContent() {
                     </div>
                   ))}
                 {filteredTasks
-                  .filter((t) => t.status === 'pending')
+                  .filter((t) => t.status === 'pending_approval')
                   .map((task) => (
                     <div
                       key={task.id}
@@ -498,18 +509,33 @@ function DashboardContent() {
                           variant="secondary"
                           className="text-black border border-slate-300 font-bold"
                         >
-                          {t('common.pending')}
+                          {t('tasks.approval')}
                         </Badge>
                         <Button
                           size="sm"
                           variant="default"
                           className="bg-trust-blue text-white font-bold"
+                          onClick={() => {
+                            approveTask(task.id)
+                            toast({
+                              title: t('common.success'),
+                              description: 'Task approved successfully.',
+                            })
+                          }}
                         >
                           {t('dashboard.approve')}
                         </Button>
                       </div>
                     </div>
                   ))}
+                {financials.invoices.filter((i) => i.status === 'pending')
+                  .length === 0 &&
+                  filteredTasks.filter((t) => t.status === 'pending_approval')
+                    .length === 0 && (
+                    <div className="text-center text-sm text-slate-500 py-4">
+                      {t('common.empty')}
+                    </div>
+                  )}
               </div>
             </CardContent>
           </Card>
@@ -554,6 +580,14 @@ function DashboardContent() {
           </Card>
         )}
       </div>
+
+      {viewInvoiceOpen && (
+        <InvoiceViewer
+          open={viewInvoiceOpen}
+          onOpenChange={setViewInvoiceOpen}
+          invoice={selectedInvoice}
+        />
+      )}
     </div>
   )
 }

@@ -60313,18 +60313,188 @@ function DataMask({ children, className, blur }) {
 		children
 	});
 }
+var NAME = "Separator";
+var DEFAULT_ORIENTATION = "horizontal";
+var ORIENTATIONS = ["horizontal", "vertical"];
+var Separator$3 = import_react.forwardRef((props, forwardedRef) => {
+	const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
+	const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
+	const ariaOrientation = orientation === "vertical" ? orientation : void 0;
+	const semanticProps = decorative ? { role: "none" } : {
+		"aria-orientation": ariaOrientation,
+		role: "separator"
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
+		"data-orientation": orientation,
+		...semanticProps,
+		...domProps,
+		ref: forwardedRef
+	});
+});
+Separator$3.displayName = NAME;
+function isValidOrientation(orientation) {
+	return ORIENTATIONS.includes(orientation);
+}
+var Root$5 = Separator$3;
+var Separator = import_react.forwardRef(({ className, orientation = "horizontal", decorative = true, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$5, {
+	ref,
+	decorative,
+	orientation,
+	className: cn("shrink-0 bg-border", orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]", className),
+	...props
+}));
+Separator.displayName = Root$5.displayName;
+function InvoiceViewer({ open, onOpenChange, invoice }) {
+	const { t, language } = useLanguageStore_default();
+	if (!invoice) return null;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+		open,
+		onOpenChange,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+			className: "max-w-2xl bg-white text-black",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("invoices.invoice_viewer.title") }) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "p-6 border rounded-md shadow-sm bg-white",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex justify-between mb-8",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+								className: "text-2xl font-bold tracking-tight text-navy",
+								children: "INVOICE"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-sm text-slate-500 font-medium",
+								children: "COREPM Inc."
+							})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "text-right",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-sm text-slate-500",
+										children: t("invoices.invoice_viewer.invoice_no")
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "font-bold text-lg",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["#", invoice.id.slice(-6).toUpperCase()] })
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+										className: "text-sm text-slate-500 mt-1",
+										children: [
+											t("invoices.invoice_viewer.date"),
+											":",
+											" ",
+											formatDate(invoice.date, language)
+										]
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "mb-8",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+								className: "text-sm text-slate-500 mb-1",
+								children: [t("invoices.invoice_viewer.bill_to"), ":"]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "font-bold text-lg",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: "Client / Owner" })
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "border-t border-b py-4 mb-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-4 font-bold text-sm mb-2 text-slate-900",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "col-span-2",
+										children: t("invoices.invoice_viewer.description")
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "text-right",
+										children: t("invoices.invoice_viewer.quantity")
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "text-right",
+										children: t("invoices.invoice_viewer.amount")
+									})
+								]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-4 text-sm text-slate-700",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "col-span-2",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: invoice.description })
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "text-right",
+										children: "1"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "text-right font-medium",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(invoice.amount, language) })
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "flex justify-end",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "w-1/2 space-y-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex justify-between text-sm",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("invoices.invoice_viewer.subtotal") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(invoice.amount, language) }) })]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex justify-between font-bold text-lg text-slate-900",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("invoices.invoice_viewer.total") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(invoice.amount, language) }) })]
+									})
+								]
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "mt-8 pt-4 border-t text-center text-sm text-slate-500",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "font-medium",
+								children: t("invoices.invoice_viewer.thank_you")
+							})
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					variant: "outline",
+					onClick: () => window.print(),
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Printer, { className: "h-4 w-4 mr-2" }),
+						" ",
+						t("invoices.invoice_viewer.print")
+					]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					className: "bg-trust-blue",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4 mr-2" }),
+						" ",
+						t("invoices.invoice_viewer.download")
+					]
+				})] })
+			]
+		})
+	});
+}
 function Index() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DashboardContent, {});
 }
 function DashboardContent() {
 	const [date$1, setDate$1] = (0, import_react.useState)(/* @__PURE__ */ new Date());
-	const { tasks: tasks$1 } = useTaskStore_default();
+	const { tasks: tasks$1, approveTask } = useTaskStore_default();
 	const { ledgerEntries: ledgerEntries$1, financials: financials$1, formatCurrency: formatCurrency$1 } = useFinancialStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
 	const { visits: visits$1 } = useVisitStore_default();
 	const { bookings: bookings$1 } = useShortTermStore_default();
 	const { t, language } = useLanguageStore_default();
 	const selectedPropertyId = (0, import_react.useContext)(AppContext)?.selectedPropertyId || "all";
+	const { toast: toast$2 } = useToast();
+	const [viewInvoiceOpen, setViewInvoiceOpen] = (0, import_react.useState)(false);
+	const [selectedInvoice, setSelectedInvoice] = (0, import_react.useState)(null);
 	const [widgets, setWidgets] = (0, import_react.useState)({
 		kpi: true,
 		revenueChart: true,
@@ -60656,69 +60826,87 @@ function DashboardContent() {
 						children: t("dashboard.pending_desc")
 					})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "space-y-4",
-						children: [financials$1.invoices.filter((i) => i.status === "pending").filter((i) => selectedPropertyId === "all" ? true : i.propertyId === selectedPropertyId).map((invoice) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center justify-between border-b pb-4 last:border-0 last:pb-0",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "bg-orange-100 p-2 rounded-full",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Activity, { className: "h-5 w-5 text-orange-700" })
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "font-bold text-sm text-black",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: invoice.description })
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-									className: "text-xs text-black font-bold",
-									children: [
-										invoice.date,
-										" • ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: invoice.id })
-									]
-								})] })]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "font-bold text-sm text-black",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency$1(invoice.amount) })
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									size: "sm",
-									variant: "outline",
-									className: "border-slate-300 text-black font-bold",
-									children: t("dashboard.review")
+						children: [
+							financials$1.invoices.filter((i) => i.status === "pending").filter((i) => selectedPropertyId === "all" ? true : i.propertyId === selectedPropertyId).map((invoice) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center justify-between border-b pb-4 last:border-0 last:pb-0",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "bg-orange-100 p-2 rounded-full",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Activity, { className: "h-5 w-5 text-orange-700" })
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "font-bold text-sm text-black",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: invoice.description })
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+										className: "text-xs text-black font-bold",
+										children: [
+											invoice.date,
+											" • ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: invoice.id })
+										]
+									})] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "font-bold text-sm text-black",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency$1(invoice.amount) })
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										size: "sm",
+										variant: "outline",
+										className: "border-slate-300 text-black font-bold",
+										onClick: () => {
+											setSelectedInvoice(invoice);
+											setViewInvoiceOpen(true);
+										},
+										children: t("dashboard.review")
+									})]
 								})]
-							})]
-						}, invoice.id)), filteredTasks.filter((t$1) => t$1.status === "pending").map((task) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center justify-between border-b pb-4 last:border-0 last:pb-0",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "bg-blue-100 p-2 rounded-full",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Activity, { className: "h-5 w-5 text-blue-700" })
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "font-bold text-sm text-black",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-									className: "text-xs text-black font-bold",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyName }),
-										" •",
-										" ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.assignee })
-									]
-								})] })]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-									variant: "secondary",
-									className: "text-black border border-slate-300 font-bold",
-									children: t("common.pending")
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									size: "sm",
-									variant: "default",
-									className: "bg-trust-blue text-white font-bold",
-									children: t("dashboard.approve")
+							}, invoice.id)),
+							filteredTasks.filter((t$1) => t$1.status === "pending_approval").map((task) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center justify-between border-b pb-4 last:border-0 last:pb-0",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "bg-blue-100 p-2 rounded-full",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Activity, { className: "h-5 w-5 text-blue-700" })
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "font-bold text-sm text-black",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+										className: "text-xs text-black font-bold",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyName }),
+											" •",
+											" ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.assignee })
+										]
+									})] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+										variant: "secondary",
+										className: "text-black border border-slate-300 font-bold",
+										children: t("tasks.approval")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										size: "sm",
+										variant: "default",
+										className: "bg-trust-blue text-white font-bold",
+										onClick: () => {
+											approveTask(task.id);
+											toast$2({
+												title: t("common.success"),
+												description: "Task approved successfully."
+											});
+										},
+										children: t("dashboard.approve")
+									})]
 								})]
-							})]
-						}, task.id))]
+							}, task.id)),
+							financials$1.invoices.filter((i) => i.status === "pending").length === 0 && filteredTasks.filter((t$1) => t$1.status === "pending_approval").length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "text-center text-sm text-slate-500 py-4",
+								children: t("common.empty")
+							})
+						]
 					}) })]
 				}), widgets.expenseChart && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 					className: `${widgets.pending ? "col-span-3" : "col-span-7"} animate-in fade-in slide-in-from-right-4 duration-500 delay-300 border-slate-200 shadow-sm bg-white`,
@@ -60744,6 +60932,11 @@ function DashboardContent() {
 						})
 					}) })]
 				})]
+			}),
+			viewInvoiceOpen && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(InvoiceViewer, {
+				open: viewInvoiceOpen,
+				onOpenChange: setViewInvoiceOpen,
+				invoice: selectedInvoice
 			})
 		]
 	});
@@ -60973,37 +61166,6 @@ var useUserStore = () => {
 	};
 };
 var useUserStore_default = useUserStore;
-var NAME = "Separator";
-var DEFAULT_ORIENTATION = "horizontal";
-var ORIENTATIONS = ["horizontal", "vertical"];
-var Separator$3 = import_react.forwardRef((props, forwardedRef) => {
-	const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
-	const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
-	const ariaOrientation = orientation === "vertical" ? orientation : void 0;
-	const semanticProps = decorative ? { role: "none" } : {
-		"aria-orientation": ariaOrientation,
-		role: "separator"
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
-		"data-orientation": orientation,
-		...semanticProps,
-		...domProps,
-		ref: forwardedRef
-	});
-});
-Separator$3.displayName = NAME;
-function isValidOrientation(orientation) {
-	return ORIENTATIONS.includes(orientation);
-}
-var Root$5 = Separator$3;
-var Separator = import_react.forwardRef(({ className, orientation = "horizontal", decorative = true, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$5, {
-	ref,
-	decorative,
-	orientation,
-	className: cn("shrink-0 bg-border", orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]", className),
-	...props
-}));
-Separator.displayName = Root$5.displayName;
 function clamp(value, [min$5, max$6]) {
 	return Math.min(max$6, Math.max(min$5, value));
 }
@@ -74872,142 +75034,6 @@ function Financial() {
 				})
 			]
 		})]
-	});
-}
-function InvoiceViewer({ open, onOpenChange, invoice }) {
-	const { t, language } = useLanguageStore_default();
-	if (!invoice) return null;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
-		open,
-		onOpenChange,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-			className: "max-w-2xl bg-white text-black",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("invoices.invoice_viewer.title") }) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "p-6 border rounded-md shadow-sm bg-white",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex justify-between mb-8",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
-								className: "text-2xl font-bold tracking-tight text-navy",
-								children: "INVOICE"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "text-sm text-slate-500 font-medium",
-								children: "COREPM Inc."
-							})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "text-right",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-										className: "text-sm text-slate-500",
-										children: t("invoices.invoice_viewer.invoice_no")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-										className: "font-bold text-lg",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["#", invoice.id.slice(-6).toUpperCase()] })
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-										className: "text-sm text-slate-500 mt-1",
-										children: [
-											t("invoices.invoice_viewer.date"),
-											":",
-											" ",
-											formatDate(invoice.date, language)
-										]
-									})
-								]
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "mb-8",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-								className: "text-sm text-slate-500 mb-1",
-								children: [t("invoices.invoice_viewer.bill_to"), ":"]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "font-bold text-lg",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: "Client / Owner" })
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "border-t border-b py-4 mb-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid grid-cols-4 font-bold text-sm mb-2 text-slate-900",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "col-span-2",
-										children: t("invoices.invoice_viewer.description")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "text-right",
-										children: t("invoices.invoice_viewer.quantity")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "text-right",
-										children: t("invoices.invoice_viewer.amount")
-									})
-								]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid grid-cols-4 text-sm text-slate-700",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "col-span-2",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: invoice.description })
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "text-right",
-										children: "1"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "text-right font-medium",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(invoice.amount, language) })
-									})
-								]
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "flex justify-end",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "w-1/2 space-y-2",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex justify-between text-sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("invoices.invoice_viewer.subtotal") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(invoice.amount, language) }) })]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex justify-between font-bold text-lg text-slate-900",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("invoices.invoice_viewer.total") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(invoice.amount, language) }) })]
-									})
-								]
-							})
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "mt-8 pt-4 border-t text-center text-sm text-slate-500",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "font-medium",
-								children: t("invoices.invoice_viewer.thank_you")
-							})
-						})
-					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-					variant: "outline",
-					onClick: () => window.print(),
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Printer, { className: "h-4 w-4 mr-2" }),
-						" ",
-						t("invoices.invoice_viewer.print")
-					]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-					className: "bg-trust-blue",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4 mr-2" }),
-						" ",
-						t("invoices.invoice_viewer.download")
-					]
-				})] })
-			]
-		})
 	});
 }
 function Invoices() {
@@ -94531,4 +94557,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BDREFp55.js.map
+//# sourceMappingURL=index-CQ5C-isl.js.map
