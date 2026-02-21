@@ -38,7 +38,97 @@ import {
   FinancialSettings,
 } from '@/lib/types'
 
-// Mock Data for the Application
+// Setup pseudo-random generator to ensure consistent massive data load
+function seedRandom(seed: number) {
+  let current = seed
+  return function () {
+    current = (current * 9301 + 49297) % 233280
+    return current / 233280
+  }
+}
+const rng = seedRandom(42)
+const rnd = (min: number, max: number) =>
+  Math.floor(rng() * (max - min + 1)) + min
+const rndItem = <T>(arr: T[]): T => arr[rnd(0, arr.length - 1)]
+const rndDateStr = (start: Date, end: Date) =>
+  new Date(start.getTime() + rng() * (end.getTime() - start.getTime()))
+    .toISOString()
+    .split('T')[0]
+const rndDateTimeStr = (start: Date, end: Date) =>
+  new Date(
+    start.getTime() + rng() * (end.getTime() - start.getTime()),
+  ).toISOString()
+
+const _firstNames = [
+  'James',
+  'Mary',
+  'John',
+  'Patricia',
+  'Robert',
+  'Jennifer',
+  'Michael',
+  'Linda',
+  'William',
+  'Elizabeth',
+  'David',
+  'Barbara',
+  'Richard',
+  'Susan',
+  'Joseph',
+  'Jessica',
+  'Thomas',
+  'Sarah',
+  'Charles',
+  'Karen',
+]
+const _lastNames = [
+  'Smith',
+  'Johnson',
+  'Williams',
+  'Brown',
+  'Jones',
+  'Garcia',
+  'Miller',
+  'Davis',
+  'Rodriguez',
+  'Martinez',
+  'Hernandez',
+  'Lopez',
+  'Gonzalez',
+  'Wilson',
+  'Anderson',
+  'Thomas',
+  'Taylor',
+  'Moore',
+  'Jackson',
+  'Martin',
+]
+const _cities = [
+  'Miami',
+  'Orlando',
+  'Tampa',
+  'Fort Lauderdale',
+  'Jacksonville',
+  'Boca Raton',
+  'West Palm Beach',
+  'Naples',
+  'Sarasota',
+  'Clearwater',
+]
+const _streets = [
+  'Ocean Drive',
+  'Collins Ave',
+  'Lincoln Road',
+  'Brickell Ave',
+  'Las Olas Blvd',
+  'Biscayne Blvd',
+  'Washington Ave',
+  'Ponce de Leon Blvd',
+  'Miracle Mile',
+  'Worth Ave',
+]
+
+// --- Base Static Mock Data ---
 
 export const systemUsers: User[] = [
   {
@@ -164,7 +254,6 @@ export const towers: Tower[] = [
   },
 ]
 
-// Separate property for Global Stock
 export const globalStockProperty: Property = {
   id: 'stock_main',
   name: 'Grand Heritage Storage',
@@ -245,10 +334,6 @@ export const properties: Property[] = [
       maxOccupancy: 2,
       sizeSqFt: 500,
     },
-    priceHistory: [],
-    gallery: [],
-    channelMappings: [],
-    inventory: [],
   },
   {
     id: 'p2',
@@ -275,23 +360,16 @@ export const properties: Property[] = [
       maxOccupancy: 2,
       sizeSqFt: 450,
     },
-    priceHistory: [],
-    gallery: [],
-    channelMappings: [],
-    inventory: [],
   },
 ]
 
-export const tasks: Task[] = []
 export const financials: Financials = {
   revenue: [],
   expenses: [],
   invoices: [],
   payments: [],
 }
-export const messages: Message[] = []
-export const automationRules: any[] = []
-export const condominiums: Condominium[] = []
+
 export const defaultPaymentIntegrations = {
   stripe: { enabled: true },
   paypal: { enabled: false },
@@ -312,6 +390,8 @@ export const defaultFinancialSettings: FinancialSettings = {
   isProduction: false,
   globalCurrency: 'USD',
 }
+
+export const condominiums: Condominium[] = []
 export const mockBankStatements: BankStatement[] = []
 export const ledgerEntries: LedgerEntry[] = [
   {
@@ -401,8 +481,8 @@ export const serviceCategories: ServiceCategory[] = [
 ]
 export const visits: Visit[] = []
 export const workflows: Workflow[] = []
+export const automationRules: any[] = []
 export const tourSteps = []
-
 export const guestServices: GuestService[] = [
   {
     id: 's1',
@@ -420,39 +500,10 @@ export const guestServices: GuestService[] = [
     category: 'dining',
     active: true,
   },
-  {
-    id: 's3',
-    name: 'Spa Package',
-    description: '60 min massage',
-    price: 120,
-    category: 'spa',
-    active: true,
-  },
-  {
-    id: 's4',
-    name: 'Room Service',
-    description: 'In-room dining service',
-    price: 15,
-    category: 'dining',
-    active: true,
-  },
 ]
-
 export const posItems: PosItem[] = [
-  {
-    id: 'pos1',
-    name: 'Cola',
-    price: 5,
-    category: 'minibar',
-    active: true,
-  },
-  {
-    id: 'pos2',
-    name: 'Chips',
-    price: 4,
-    category: 'minibar',
-    active: true,
-  },
+  { id: 'pos1', name: 'Cola', price: 5, category: 'minibar', active: true },
+  { id: 'pos2', name: 'Chips', price: 4, category: 'minibar', active: true },
   {
     id: 'pos3',
     name: 'Laundry Service',
@@ -460,18 +511,9 @@ export const posItems: PosItem[] = [
     category: 'laundry',
     active: true,
   },
-  {
-    id: 'pos4',
-    name: 'Club Sandwich',
-    price: 18,
-    category: 'restaurant',
-    active: true,
-  },
 ]
-
 export const posTransactions: PosTransaction[] = []
 export const serviceOrders: ServiceOrder[] = []
-
 export const promotions: Promotion[] = [
   {
     id: 'promo1',
@@ -498,7 +540,6 @@ export const promotions: Promotion[] = [
     description: 'Early bird special',
   },
 ]
-
 export const campaigns: Campaign[] = [
   {
     id: 'camp1',
@@ -510,7 +551,6 @@ export const campaigns: Campaign[] = [
     targetAudience: 'all',
   },
 ]
-
 export const marketData: MarketData[] = [
   {
     region: 'South Beach',
@@ -527,7 +567,6 @@ export const marketData: MarketData[] = [
     hoaAvg: 600,
   },
 ]
-
 export const marketAnalysisData = {
   marketTrends: [
     { month: 'Jan', occupancy: 74, rate: 138 },
@@ -542,17 +581,13 @@ export const marketAnalysisData = {
     { name: 'Ocean View', rate: 145 },
     { name: 'Our Property', rate: 142 },
     { name: 'City Inn', rate: 130 },
-    { name: 'Beach Stay', rate: 160 },
   ],
   demandForecast: [
     { date: '2024-07-01', demand: 'High' },
     { date: '2024-07-02', demand: 'High' },
     { date: '2024-07-03', demand: 'Medium' },
-    { date: '2024-07-04', demand: 'High' },
-    { date: '2024-07-05', demand: 'Low' },
   ],
 }
-
 export const feedbacks: Feedback[] = [
   {
     id: 'f1',
@@ -565,9 +600,7 @@ export const feedbacks: Feedback[] = [
     status: 'new',
   },
 ]
-
 export const channelMappings: ChannelMapping[] = []
-
 export const marketingWorkflows: MarketingWorkflow[] = [
   {
     id: 'mw1',
@@ -578,7 +611,6 @@ export const marketingWorkflows: MarketingWorkflow[] = [
     active: true,
   },
 ]
-
 export const emailTemplates: EmailTemplate[] = [
   {
     id: 'et1',
@@ -587,3 +619,325 @@ export const emailTemplates: EmailTemplate[] = [
     body: 'Hi {guest_name}, thank you for booking {property_name}. See you soon!',
   },
 ]
+export const tasks: Task[] = []
+export const messages: Message[] = []
+
+// --- MASSIVE DATA GENERATION ---
+
+// Generate additional Owners (100)
+for (let i = 0; i < 100; i++) {
+  owners.push({
+    id: `owner_gen_${i}`,
+    name: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
+    email: `owner_gen_${i}@demo.com`,
+    phone: `(555) ${rnd(100, 999)}-${rnd(1000, 9999)}`,
+    country: 'US',
+    status: 'active',
+    role: 'property_owner',
+    avatar: `https://img.usecurling.com/ppl/medium?gender=${rndItem(['male', 'female'])}&seed=${i + 10}`,
+    address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
+    city: rndItem(_cities),
+    state: 'FL',
+    zipCode: `33${rnd(100, 999)}`,
+  })
+}
+
+// Generate additional Partners (50)
+for (let i = 0; i < 50; i++) {
+  partners.push({
+    id: `partner_gen_${i}`,
+    name: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
+    type: rndItem(['cleaning', 'maintenance', 'agent']),
+    companyName: `${rndItem(_lastNames)} Services LLC`,
+    email: `partner_gen_${i}@demo.com`,
+    phone: `(555) ${rnd(100, 999)}-${rnd(1000, 9999)}`,
+    country: 'US',
+    status: 'active',
+    role: 'partner',
+    avatar: `https://img.usecurling.com/ppl/medium?gender=${rndItem(['male', 'female'])}&seed=${i + 150}`,
+  })
+}
+
+// Generate Hotels & Towers (20 hotels, 40 towers)
+for (let i = 0; i < 20; i++) {
+  const hId = `hotel_gen_${i}`
+  hotels.push({
+    id: hId,
+    name: `${rndItem(['Grand', 'Royal', 'Ocean', 'Sunset'])} ${rndItem(_lastNames)} Resort`,
+    address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
+    city: rndItem(_cities),
+    state: 'FL',
+    country: 'US',
+    zipCode: `33${rnd(100, 999)}`,
+    description: 'Luxury resort with premium amenities.',
+    managerName: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
+    managerEmail: `mgr_${i}@hotel.com`,
+    managerPhone: `(555) ${rnd(100, 999)}-${rnd(1000, 9999)}`,
+    amenities: ['Pool', 'Spa', 'Gym', 'Restaurant'],
+    policies: ['Check-in 3PM', 'No Smoking'],
+    contacts: [],
+    towers: [`tower_gen_${i}_1`, `tower_gen_${i}_2`],
+  })
+  towers.push({
+    id: `tower_gen_${i}_1`,
+    hotelId: hId,
+    name: 'North Tower',
+    floors: rnd(5, 20),
+  })
+  towers.push({
+    id: `tower_gen_${i}_2`,
+    hotelId: hId,
+    name: 'South Tower',
+    floors: rnd(5, 20),
+  })
+}
+
+// Generate Properties (300)
+for (let i = 0; i < 300; i++) {
+  const typeRand = rnd(1, 3)
+  const ownerId = rndItem(owners).id
+  const pId = `prop_gen_${i}`
+  const pType =
+    typeRand === 1 ? 'House' : typeRand === 2 ? 'Hotel Room' : 'Apartment'
+  const profile = typeRand === 1 ? 'long_term' : 'short_term'
+  const status = rndItem([
+    'available',
+    'rented',
+    'occupied',
+    'maintenance',
+    'cleaning',
+  ])
+
+  let hotelId
+  let towerId
+  if (pType === 'Hotel Room') {
+    const h = rndItem(hotels)
+    hotelId = h.id
+    const hTowers = towers.filter((t) => t.hotelId === h.id)
+    if (hTowers.length > 0) towerId = rndItem(hTowers).id
+  }
+
+  properties.push({
+    id: pId,
+    name:
+      pType === 'Hotel Room'
+        ? `Room ${rnd(100, 999)}`
+        : `${rnd(1, 5)}BR ${pType} in ${rndItem(_cities)}`,
+    address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
+    city: rndItem(_cities),
+    state: 'FL',
+    zipCode: `33${rnd(100, 999)}`,
+    country: 'US',
+    type: pType,
+    profileType: profile as any,
+    community:
+      pType === 'Hotel Room'
+        ? 'Hotel Resort'
+        : rndItem(['Sunny Isles', 'Brickell Village', 'Coral Way']),
+    hotelId,
+    towerId,
+    roomNumber: pType === 'Hotel Room' ? `${rnd(100, 999)}` : undefined,
+    status: status as any,
+    listingPrice: rnd(100, 5000),
+    bedrooms: rnd(1, 5),
+    bathrooms: rnd(1, 4),
+    guests: rnd(2, 10),
+    image: `https://img.usecurling.com/p/400/300?q=${pType === 'Hotel Room' ? 'hotel%20room' : 'house'}`,
+    ownerId,
+    gallery: [],
+  })
+}
+
+// Generate Tenants (150)
+const ltProps = properties.filter((p) => p.profileType === 'long_term')
+for (let i = 0; i < 150; i++) {
+  const prop = ltProps[i % ltProps.length]
+  tenants.push({
+    id: `tenant_gen_${i}`,
+    name: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
+    email: `tenant_gen_${i}@demo.com`,
+    phone: `(555) ${rnd(100, 999)}-${rnd(1000, 9999)}`,
+    country: 'US',
+    propertyId: prop.id,
+    rentValue: prop.listingPrice || rnd(1000, 5000),
+    leaseStart: rndDateStr(new Date(2023, 0, 1), new Date(2024, 0, 1)),
+    leaseEnd: rndDateStr(new Date(2024, 6, 1), new Date(2025, 11, 31)),
+    status: rndItem(['active', 'past']),
+    role: 'tenant',
+    avatar: `https://img.usecurling.com/ppl/medium?gender=${rndItem(['male', 'female'])}&seed=${i + 250}`,
+  })
+}
+
+// Generate Tasks (500)
+for (let i = 0; i < 500; i++) {
+  const prop = rndItem(properties)
+  const partner = rndItem(partners)
+  tasks.push({
+    id: `task_gen_${i}`,
+    title: `${rndItem(['Fix', 'Clean', 'Inspect', 'Replace'])} ${rndItem(['AC', 'Plumbing', 'Window', 'Floor'])}`,
+    propertyId: prop.id,
+    propertyName: prop.name,
+    status: rndItem([
+      'pending',
+      'in_progress',
+      'completed',
+      'pending_approval',
+    ]),
+    type: rndItem(['cleaning', 'maintenance', 'inspection']),
+    assignee: partner.name,
+    assigneeId: partner.id,
+    date: rndDateTimeStr(new Date(2024, 0, 1), new Date(2024, 11, 31)),
+    priority: rndItem(['low', 'medium', 'high', 'critical']),
+    price: rnd(50, 500),
+    createdBy: 'u1',
+  })
+}
+
+// Generate Bookings (300)
+const stProps = properties.filter((p) => p.profileType === 'short_term')
+for (let i = 0; i < 300; i++) {
+  const prop = rndItem(stProps)
+  bookings.push({
+    id: `booking_gen_${i}`,
+    propertyId: prop.id,
+    propertyName: prop.name,
+    guestName: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
+    guestEmail: `guest_${i}@demo.com`,
+    checkIn: rndDateStr(new Date(2024, 0, 1), new Date(2024, 11, 1)),
+    checkOut: rndDateStr(new Date(2024, 11, 2), new Date(2024, 11, 31)),
+    status: rndItem(['confirmed', 'checked_in', 'checked_out', 'cancelled']),
+    totalAmount: rnd(200, 2000),
+    paid: rnd(0, 1) === 1,
+    platform: rndItem(['airbnb', 'vrbo', 'direct', 'booking.com']),
+  })
+}
+
+// Generate Advertisers (30) & Ads (50)
+for (let i = 0; i < 30; i++) {
+  const advId = `adv_gen_${i}`
+  mockAdvertisers.push({
+    id: advId,
+    name: `${rndItem(_lastNames)} Marketing`,
+    email: `ads_${i}@marketing.com`,
+    phone: `(555) ${rnd(100, 999)}-${rnd(1000, 9999)}`,
+    address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
+    city: rndItem(_cities),
+    state: 'FL',
+    country: 'US',
+    createdAt: new Date().toISOString(),
+  })
+
+  for (let j = 0; j < 2; j++) {
+    advertisements.push({
+      id: `ad_gen_${i}_${j}`,
+      title: `Special Offer ${i}-${j}`,
+      imageUrl: `https://img.usecurling.com/p/600/200?q=sale`,
+      linkUrl: `https://example.com/offer/${i}`,
+      active: true,
+      createdAt: new Date().toISOString(),
+      advertiserId: advId,
+      placement: rndItem(['home_top', 'tenant_page', 'partner_page']),
+    })
+  }
+}
+
+// Generate Chats (50)
+for (let i = 0; i < 50; i++) {
+  const tenant = rndItem(tenants)
+  messages.push({
+    id: `msg_thread_${i}`,
+    contact: tenant.name,
+    contactId: tenant.id,
+    ownerId: 'u1',
+    lastMessage: 'Sure, I will check the property soon.',
+    time: rndDateTimeStr(new Date(2024, 0, 1), new Date()),
+    unread: rnd(0, 3),
+    avatar: tenant.avatar || '',
+    history: [
+      {
+        id: `hist_${i}_1`,
+        text: 'Hello, is the maintenance scheduled?',
+        senderId: tenant.id,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: `hist_${i}_2`,
+        text: 'Yes, our partner is coming tomorrow.',
+        senderId: 'u1',
+        timestamp: new Date().toISOString(),
+        read: true,
+      },
+    ],
+  })
+}
+
+// Generate Ledger Entries (1000)
+for (let i = 0; i < 1000; i++) {
+  ledgerEntries.push({
+    id: `le_gen_${i}`,
+    propertyId: rndItem(properties).id,
+    date: rndDateStr(new Date(2024, 0, 1), new Date()),
+    type: rndItem(['income', 'expense']),
+    category: rndItem(['Room', 'Maintenance', 'Cleaning', 'F&B', 'Services']),
+    amount: rnd(50, 2000),
+    description: `Auto generated entry ${i}`,
+    status: rndItem(['cleared', 'pending']),
+  })
+}
+
+// Generate POS Transactions (300)
+for (let i = 0; i < 300; i++) {
+  const item = rndItem(posItems)
+  const qty = rnd(1, 5)
+  const total = item.price * qty
+  posTransactions.push({
+    id: `pos_gen_${i}`,
+    bookingId: rndItem(bookings).id,
+    items: [
+      { itemId: item.id, name: item.name, quantity: qty, price: item.price },
+    ],
+    totalAmount: total,
+    timestamp: rndDateTimeStr(new Date(2024, 0, 1), new Date()),
+    status: rndItem(['charged', 'paid']),
+  })
+}
+
+// Generate Calendar Blocks (100)
+for (let i = 0; i < 100; i++) {
+  calendarBlocks.push({
+    id: `block_gen_${i}`,
+    propertyId: rndItem(properties).id,
+    startDate: rndDateStr(new Date(2024, 0, 1), new Date(2024, 11, 1)),
+    endDate: rndDateStr(new Date(2024, 11, 2), new Date(2024, 11, 31)),
+    type: rndItem(['manual_block', 'maintenance']),
+    notes: 'Generated block for testing',
+  })
+}
+
+// Generate Campaigns (20)
+for (let i = 0; i < 20; i++) {
+  campaigns.push({
+    id: `camp_gen_${i}`,
+    name: `Marketing Campaign ${i}`,
+    status: rndItem(['active', 'completed', 'draft']),
+    startDate: rndDateStr(new Date(2024, 0, 1), new Date(2024, 6, 1)),
+    endDate: rndDateStr(new Date(2024, 6, 2), new Date(2025, 0, 1)),
+    promotions: [rndItem(promotions).id],
+    targetAudience: rndItem(['all', 'past_guests', 'leads']),
+  })
+}
+
+// Generate Promotions (30)
+for (let i = 0; i < 30; i++) {
+  promotions.push({
+    id: `promo_gen_${i}`,
+    code: `PROMO${i}${rnd(100, 999)}`,
+    type: rndItem(['percentage', 'fixed_amount']),
+    value: rnd(10, 50),
+    startDate: rndDateStr(new Date(2024, 0, 1), new Date(2024, 6, 1)),
+    endDate: rndDateStr(new Date(2024, 6, 2), new Date(2025, 0, 1)),
+    active: true,
+    usageCount: rnd(0, 100),
+    description: `Generated promotion ${i}`,
+  })
+}

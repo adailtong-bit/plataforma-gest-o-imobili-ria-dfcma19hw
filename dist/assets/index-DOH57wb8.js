@@ -19672,6 +19672,16 @@ var Image = createLucideIcon("image", [
 		key: "1xmnt7"
 	}]
 ]);
+var KeyRound = createLucideIcon("key-round", [["path", {
+	d: "M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z",
+	key: "1s6t7t"
+}], ["circle", {
+	cx: "16.5",
+	cy: "7.5",
+	r: ".5",
+	fill: "currentColor",
+	key: "w0ekpg"
+}]]);
 var Key = createLucideIcon("key", [
 	["path", {
 		d: "m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4",
@@ -54109,6 +54119,86 @@ function Badge({ className, variant, ...props }) {
 		...props
 	});
 }
+function seedRandom(seed) {
+	let current = seed;
+	return function() {
+		current = (current * 9301 + 49297) % 233280;
+		return current / 233280;
+	};
+}
+var rng = seedRandom(42);
+var rnd = (min$5, max$6) => Math.floor(rng() * (max$6 - min$5 + 1)) + min$5;
+var rndItem = (arr) => arr[rnd(0, arr.length - 1)];
+var rndDateStr = (start, end) => new Date(start.getTime() + rng() * (end.getTime() - start.getTime())).toISOString().split("T")[0];
+var rndDateTimeStr = (start, end) => new Date(start.getTime() + rng() * (end.getTime() - start.getTime())).toISOString();
+var _firstNames = [
+	"James",
+	"Mary",
+	"John",
+	"Patricia",
+	"Robert",
+	"Jennifer",
+	"Michael",
+	"Linda",
+	"William",
+	"Elizabeth",
+	"David",
+	"Barbara",
+	"Richard",
+	"Susan",
+	"Joseph",
+	"Jessica",
+	"Thomas",
+	"Sarah",
+	"Charles",
+	"Karen"
+];
+var _lastNames = [
+	"Smith",
+	"Johnson",
+	"Williams",
+	"Brown",
+	"Jones",
+	"Garcia",
+	"Miller",
+	"Davis",
+	"Rodriguez",
+	"Martinez",
+	"Hernandez",
+	"Lopez",
+	"Gonzalez",
+	"Wilson",
+	"Anderson",
+	"Thomas",
+	"Taylor",
+	"Moore",
+	"Jackson",
+	"Martin"
+];
+var _cities = [
+	"Miami",
+	"Orlando",
+	"Tampa",
+	"Fort Lauderdale",
+	"Jacksonville",
+	"Boca Raton",
+	"West Palm Beach",
+	"Naples",
+	"Sarasota",
+	"Clearwater"
+];
+var _streets = [
+	"Ocean Drive",
+	"Collins Ave",
+	"Lincoln Road",
+	"Brickell Ave",
+	"Las Olas Blvd",
+	"Biscayne Blvd",
+	"Washington Ave",
+	"Ponce de Leon Blvd",
+	"Miracle Mile",
+	"Worth Ave"
+];
 const systemUsers = [
 	{
 		id: "u1",
@@ -54307,11 +54397,7 @@ const properties = [
 			hasBalcony: true,
 			maxOccupancy: 2,
 			sizeSqFt: 500
-		},
-		priceHistory: [],
-		gallery: [],
-		channelMappings: [],
-		inventory: []
+		}
 	},
 	{
 		id: "p2",
@@ -54342,23 +54428,15 @@ const properties = [
 			hasBalcony: false,
 			maxOccupancy: 2,
 			sizeSqFt: 450
-		},
-		priceHistory: [],
-		gallery: [],
-		channelMappings: [],
-		inventory: []
+		}
 	}
 ];
-const tasks = [];
 const financials = {
 	revenue: [],
 	expenses: [],
 	invoices: [],
 	payments: []
 };
-const messages = [];
-const automationRules = [];
-const condominiums = [];
 const defaultPaymentIntegrations = {
 	stripe: { enabled: true },
 	paypal: { enabled: false },
@@ -54379,6 +54457,7 @@ const defaultFinancialSettings = {
 	isProduction: false,
 	globalCurrency: "USD"
 };
+const condominiums = [];
 const mockBankStatements = [];
 const ledgerEntries = [
 	{
@@ -54470,41 +54549,23 @@ const serviceCategories = [{
 }];
 const visits = [];
 const workflows = [];
+const automationRules = [];
 const tourSteps = [];
-const guestServices = [
-	{
-		id: "s1",
-		name: "Airport Transfer",
-		description: "Luxury van pickup from MIA airport",
-		price: 80,
-		category: "transport",
-		active: true
-	},
-	{
-		id: "s2",
-		name: "Breakfast Buffet",
-		description: "Daily buffet breakfast",
-		price: 25,
-		category: "dining",
-		active: true
-	},
-	{
-		id: "s3",
-		name: "Spa Package",
-		description: "60 min massage",
-		price: 120,
-		category: "spa",
-		active: true
-	},
-	{
-		id: "s4",
-		name: "Room Service",
-		description: "In-room dining service",
-		price: 15,
-		category: "dining",
-		active: true
-	}
-];
+const guestServices = [{
+	id: "s1",
+	name: "Airport Transfer",
+	description: "Luxury van pickup from MIA airport",
+	price: 80,
+	category: "transport",
+	active: true
+}, {
+	id: "s2",
+	name: "Breakfast Buffet",
+	description: "Daily buffet breakfast",
+	price: 25,
+	category: "dining",
+	active: true
+}];
 const posItems = [
 	{
 		id: "pos1",
@@ -54525,13 +54586,6 @@ const posItems = [
 		name: "Laundry Service",
 		price: 30,
 		category: "laundry",
-		active: true
-	},
-	{
-		id: "pos4",
-		name: "Club Sandwich",
-		price: 18,
-		category: "restaurant",
 		active: true
 	}
 ];
@@ -54618,10 +54672,6 @@ const marketAnalysisData = {
 		{
 			name: "City Inn",
 			rate: 130
-		},
-		{
-			name: "Beach Stay",
-			rate: 160
 		}
 	],
 	demandForecast: [
@@ -54636,14 +54686,6 @@ const marketAnalysisData = {
 		{
 			date: "2024-07-03",
 			demand: "Medium"
-		},
-		{
-			date: "2024-07-04",
-			demand: "High"
-		},
-		{
-			date: "2024-07-05",
-			demand: "Low"
 		}
 	]
 };
@@ -54672,6 +54714,339 @@ const emailTemplates = [{
 	subject: "Booking Confirmed!",
 	body: "Hi {guest_name}, thank you for booking {property_name}. See you soon!"
 }];
+const tasks = [];
+const messages = [];
+for (let i = 0; i < 100; i++) owners.push({
+	id: `owner_gen_${i}`,
+	name: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
+	email: `owner_gen_${i}@demo.com`,
+	phone: `(555) ${rnd(100, 999)}-${rnd(1e3, 9999)}`,
+	country: "US",
+	status: "active",
+	role: "property_owner",
+	avatar: `https://img.usecurling.com/ppl/medium?gender=${rndItem(["male", "female"])}&seed=${i + 10}`,
+	address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
+	city: rndItem(_cities),
+	state: "FL",
+	zipCode: `33${rnd(100, 999)}`
+});
+for (let i = 0; i < 50; i++) partners.push({
+	id: `partner_gen_${i}`,
+	name: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
+	type: rndItem([
+		"cleaning",
+		"maintenance",
+		"agent"
+	]),
+	companyName: `${rndItem(_lastNames)} Services LLC`,
+	email: `partner_gen_${i}@demo.com`,
+	phone: `(555) ${rnd(100, 999)}-${rnd(1e3, 9999)}`,
+	country: "US",
+	status: "active",
+	role: "partner",
+	avatar: `https://img.usecurling.com/ppl/medium?gender=${rndItem(["male", "female"])}&seed=${i + 150}`
+});
+for (let i = 0; i < 20; i++) {
+	const hId = `hotel_gen_${i}`;
+	hotels.push({
+		id: hId,
+		name: `${rndItem([
+			"Grand",
+			"Royal",
+			"Ocean",
+			"Sunset"
+		])} ${rndItem(_lastNames)} Resort`,
+		address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
+		city: rndItem(_cities),
+		state: "FL",
+		country: "US",
+		zipCode: `33${rnd(100, 999)}`,
+		description: "Luxury resort with premium amenities.",
+		managerName: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
+		managerEmail: `mgr_${i}@hotel.com`,
+		managerPhone: `(555) ${rnd(100, 999)}-${rnd(1e3, 9999)}`,
+		amenities: [
+			"Pool",
+			"Spa",
+			"Gym",
+			"Restaurant"
+		],
+		policies: ["Check-in 3PM", "No Smoking"],
+		contacts: [],
+		towers: [`tower_gen_${i}_1`, `tower_gen_${i}_2`]
+	});
+	towers.push({
+		id: `tower_gen_${i}_1`,
+		hotelId: hId,
+		name: "North Tower",
+		floors: rnd(5, 20)
+	});
+	towers.push({
+		id: `tower_gen_${i}_2`,
+		hotelId: hId,
+		name: "South Tower",
+		floors: rnd(5, 20)
+	});
+}
+for (let i = 0; i < 300; i++) {
+	const typeRand = rnd(1, 3);
+	const ownerId = rndItem(owners).id;
+	const pId = `prop_gen_${i}`;
+	const pType = typeRand === 1 ? "House" : typeRand === 2 ? "Hotel Room" : "Apartment";
+	const profile = typeRand === 1 ? "long_term" : "short_term";
+	const status = rndItem([
+		"available",
+		"rented",
+		"occupied",
+		"maintenance",
+		"cleaning"
+	]);
+	let hotelId;
+	let towerId;
+	if (pType === "Hotel Room") {
+		const h = rndItem(hotels);
+		hotelId = h.id;
+		const hTowers = towers.filter((t) => t.hotelId === h.id);
+		if (hTowers.length > 0) towerId = rndItem(hTowers).id;
+	}
+	properties.push({
+		id: pId,
+		name: pType === "Hotel Room" ? `Room ${rnd(100, 999)}` : `${rnd(1, 5)}BR ${pType} in ${rndItem(_cities)}`,
+		address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
+		city: rndItem(_cities),
+		state: "FL",
+		zipCode: `33${rnd(100, 999)}`,
+		country: "US",
+		type: pType,
+		profileType: profile,
+		community: pType === "Hotel Room" ? "Hotel Resort" : rndItem([
+			"Sunny Isles",
+			"Brickell Village",
+			"Coral Way"
+		]),
+		hotelId,
+		towerId,
+		roomNumber: pType === "Hotel Room" ? `${rnd(100, 999)}` : void 0,
+		status,
+		listingPrice: rnd(100, 5e3),
+		bedrooms: rnd(1, 5),
+		bathrooms: rnd(1, 4),
+		guests: rnd(2, 10),
+		image: `https://img.usecurling.com/p/400/300?q=${pType === "Hotel Room" ? "hotel%20room" : "house"}`,
+		ownerId,
+		gallery: []
+	});
+}
+var ltProps = properties.filter((p$1) => p$1.profileType === "long_term");
+for (let i = 0; i < 150; i++) {
+	const prop = ltProps[i % ltProps.length];
+	tenants.push({
+		id: `tenant_gen_${i}`,
+		name: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
+		email: `tenant_gen_${i}@demo.com`,
+		phone: `(555) ${rnd(100, 999)}-${rnd(1e3, 9999)}`,
+		country: "US",
+		propertyId: prop.id,
+		rentValue: prop.listingPrice || rnd(1e3, 5e3),
+		leaseStart: rndDateStr(new Date(2023, 0, 1), new Date(2024, 0, 1)),
+		leaseEnd: rndDateStr(new Date(2024, 6, 1), new Date(2025, 11, 31)),
+		status: rndItem(["active", "past"]),
+		role: "tenant",
+		avatar: `https://img.usecurling.com/ppl/medium?gender=${rndItem(["male", "female"])}&seed=${i + 250}`
+	});
+}
+for (let i = 0; i < 500; i++) {
+	const prop = rndItem(properties);
+	const partner = rndItem(partners);
+	tasks.push({
+		id: `task_gen_${i}`,
+		title: `${rndItem([
+			"Fix",
+			"Clean",
+			"Inspect",
+			"Replace"
+		])} ${rndItem([
+			"AC",
+			"Plumbing",
+			"Window",
+			"Floor"
+		])}`,
+		propertyId: prop.id,
+		propertyName: prop.name,
+		status: rndItem([
+			"pending",
+			"in_progress",
+			"completed",
+			"pending_approval"
+		]),
+		type: rndItem([
+			"cleaning",
+			"maintenance",
+			"inspection"
+		]),
+		assignee: partner.name,
+		assigneeId: partner.id,
+		date: rndDateTimeStr(new Date(2024, 0, 1), new Date(2024, 11, 31)),
+		priority: rndItem([
+			"low",
+			"medium",
+			"high",
+			"critical"
+		]),
+		price: rnd(50, 500),
+		createdBy: "u1"
+	});
+}
+var stProps = properties.filter((p$1) => p$1.profileType === "short_term");
+for (let i = 0; i < 300; i++) {
+	const prop = rndItem(stProps);
+	bookings.push({
+		id: `booking_gen_${i}`,
+		propertyId: prop.id,
+		propertyName: prop.name,
+		guestName: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
+		guestEmail: `guest_${i}@demo.com`,
+		checkIn: rndDateStr(new Date(2024, 0, 1), new Date(2024, 11, 1)),
+		checkOut: rndDateStr(new Date(2024, 11, 2), new Date(2024, 11, 31)),
+		status: rndItem([
+			"confirmed",
+			"checked_in",
+			"checked_out",
+			"cancelled"
+		]),
+		totalAmount: rnd(200, 2e3),
+		paid: rnd(0, 1) === 1,
+		platform: rndItem([
+			"airbnb",
+			"vrbo",
+			"direct",
+			"booking.com"
+		])
+	});
+}
+for (let i = 0; i < 30; i++) {
+	const advId = `adv_gen_${i}`;
+	mockAdvertisers.push({
+		id: advId,
+		name: `${rndItem(_lastNames)} Marketing`,
+		email: `ads_${i}@marketing.com`,
+		phone: `(555) ${rnd(100, 999)}-${rnd(1e3, 9999)}`,
+		address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
+		city: rndItem(_cities),
+		state: "FL",
+		country: "US",
+		createdAt: (/* @__PURE__ */ new Date()).toISOString()
+	});
+	for (let j = 0; j < 2; j++) advertisements.push({
+		id: `ad_gen_${i}_${j}`,
+		title: `Special Offer ${i}-${j}`,
+		imageUrl: `https://img.usecurling.com/p/600/200?q=sale`,
+		linkUrl: `https://example.com/offer/${i}`,
+		active: true,
+		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+		advertiserId: advId,
+		placement: rndItem([
+			"home_top",
+			"tenant_page",
+			"partner_page"
+		])
+	});
+}
+for (let i = 0; i < 50; i++) {
+	const tenant = rndItem(tenants);
+	messages.push({
+		id: `msg_thread_${i}`,
+		contact: tenant.name,
+		contactId: tenant.id,
+		ownerId: "u1",
+		lastMessage: "Sure, I will check the property soon.",
+		time: rndDateTimeStr(new Date(2024, 0, 1), /* @__PURE__ */ new Date()),
+		unread: rnd(0, 3),
+		avatar: tenant.avatar || "",
+		history: [{
+			id: `hist_${i}_1`,
+			text: "Hello, is the maintenance scheduled?",
+			senderId: tenant.id,
+			timestamp: (/* @__PURE__ */ new Date()).toISOString()
+		}, {
+			id: `hist_${i}_2`,
+			text: "Yes, our partner is coming tomorrow.",
+			senderId: "u1",
+			timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+			read: true
+		}]
+	});
+}
+for (let i = 0; i < 1e3; i++) ledgerEntries.push({
+	id: `le_gen_${i}`,
+	propertyId: rndItem(properties).id,
+	date: rndDateStr(new Date(2024, 0, 1), /* @__PURE__ */ new Date()),
+	type: rndItem(["income", "expense"]),
+	category: rndItem([
+		"Room",
+		"Maintenance",
+		"Cleaning",
+		"F&B",
+		"Services"
+	]),
+	amount: rnd(50, 2e3),
+	description: `Auto generated entry ${i}`,
+	status: rndItem(["cleared", "pending"])
+});
+for (let i = 0; i < 300; i++) {
+	const item = rndItem(posItems);
+	const qty = rnd(1, 5);
+	const total = item.price * qty;
+	posTransactions.push({
+		id: `pos_gen_${i}`,
+		bookingId: rndItem(bookings).id,
+		items: [{
+			itemId: item.id,
+			name: item.name,
+			quantity: qty,
+			price: item.price
+		}],
+		totalAmount: total,
+		timestamp: rndDateTimeStr(new Date(2024, 0, 1), /* @__PURE__ */ new Date()),
+		status: rndItem(["charged", "paid"])
+	});
+}
+for (let i = 0; i < 100; i++) calendarBlocks.push({
+	id: `block_gen_${i}`,
+	propertyId: rndItem(properties).id,
+	startDate: rndDateStr(new Date(2024, 0, 1), new Date(2024, 11, 1)),
+	endDate: rndDateStr(new Date(2024, 11, 2), new Date(2024, 11, 31)),
+	type: rndItem(["manual_block", "maintenance"]),
+	notes: "Generated block for testing"
+});
+for (let i = 0; i < 20; i++) campaigns.push({
+	id: `camp_gen_${i}`,
+	name: `Marketing Campaign ${i}`,
+	status: rndItem([
+		"active",
+		"completed",
+		"draft"
+	]),
+	startDate: rndDateStr(new Date(2024, 0, 1), new Date(2024, 6, 1)),
+	endDate: rndDateStr(new Date(2024, 6, 2), new Date(2025, 0, 1)),
+	promotions: [rndItem(promotions).id],
+	targetAudience: rndItem([
+		"all",
+		"past_guests",
+		"leads"
+	])
+});
+for (let i = 0; i < 30; i++) promotions.push({
+	id: `promo_gen_${i}`,
+	code: `PROMO${i}${rnd(100, 999)}`,
+	type: rndItem(["percentage", "fixed_amount"]),
+	value: rnd(10, 50),
+	startDate: rndDateStr(new Date(2024, 0, 1), new Date(2024, 6, 1)),
+	endDate: rndDateStr(new Date(2024, 6, 2), new Date(2025, 0, 1)),
+	active: true,
+	usageCount: rnd(0, 100),
+	description: `Generated promotion ${i}`
+});
 const tutorialModules = [
 	{
 		key: "dashboard-overview",
@@ -88355,6 +88730,14 @@ function MigrationHub() {
 	const { auditLogs: auditLogs$1 } = useAuditStore_default();
 	const importHistory = auditLogs$1.filter((l) => l.action === "import");
 	const [logOpen, setLogOpen] = (0, import_react.useState)(false);
+	const { toast: toast$2 } = useToast();
+	const copyToClipboard = (text) => {
+		navigator.clipboard.writeText(text);
+		toast$2({
+			title: "Copied to clipboard",
+			description: `Copied ${text}`
+		});
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
 		children: [
@@ -88413,6 +88796,198 @@ function MigrationHub() {
 					})] })]
 				})]
 			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "border-blue-200 shadow-sm animate-fade-in",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+					className: "bg-blue-50/50",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+						className: "flex items-center gap-2 text-slate-900",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(KeyRound, { className: "h-5 w-5 text-blue-600" }), "Multi-Role Access Dashboard"]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, { children: [
+						"Use these credentials on the login screen to test different permission levels and views. The system is populated with thousands of records. Password for all is",
+						" ",
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
+							className: "font-mono text-slate-800",
+							children: "demo123"
+						}),
+						"."
+					] })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+					className: "p-0",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+						className: "bg-white",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "font-bold text-slate-900",
+								children: "Role"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "font-bold text-slate-900",
+								children: "Description"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "font-bold text-slate-900",
+								children: "Login Email"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "text-right font-bold text-slate-900",
+								children: "Action"
+							})
+						] })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+							className: "bg-white hover:bg-slate-50",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "font-bold",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+										className: "bg-purple-100 text-purple-800 border-purple-200",
+										children: "Admin (Platform Owner)"
+									})
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-sm text-muted-foreground",
+									children: "Full system access, all properties and settings."
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "font-mono text-sm font-semibold",
+									children: "admin@corepm.com"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-right",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										size: "sm",
+										variant: "outline",
+										onClick: () => copyToClipboard("admin@corepm.com"),
+										className: "gap-2 border-slate-300",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Copy, { className: "h-3 w-3" }), " Copy"]
+									})
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+							className: "bg-white hover:bg-slate-50",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "font-bold",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+										className: "bg-blue-100 text-blue-800 border-blue-200",
+										children: "Manager (PM)"
+									})
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-sm text-muted-foreground",
+									children: "Software tenant managing operations."
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "font-mono text-sm font-semibold",
+									children: "pm@corepm.com"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-right",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										size: "sm",
+										variant: "outline",
+										onClick: () => copyToClipboard("pm@corepm.com"),
+										className: "gap-2 border-slate-300",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Copy, { className: "h-3 w-3" }), " Copy"]
+									})
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+							className: "bg-white hover:bg-slate-50",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "font-bold",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+										className: "bg-green-100 text-green-800 border-green-200",
+										children: "Tenant"
+									})
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-sm text-muted-foreground",
+									children: "Renter viewing their lease, payments, and tickets."
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "font-mono text-sm font-semibold",
+									children: "tenant@demo.com"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-right",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										size: "sm",
+										variant: "outline",
+										onClick: () => copyToClipboard("tenant@demo.com"),
+										className: "gap-2 border-slate-300",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Copy, { className: "h-3 w-3" }), " Copy"]
+									})
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+							className: "bg-white hover:bg-slate-50",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "font-bold",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+										className: "bg-orange-100 text-orange-800 border-orange-200",
+										children: "Owner"
+									})
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-sm text-muted-foreground",
+									children: "Property owner checking statements and approvals."
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "font-mono text-sm font-semibold",
+									children: "owner@demo.com"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-right",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										size: "sm",
+										variant: "outline",
+										onClick: () => copyToClipboard("owner@demo.com"),
+										className: "gap-2 border-slate-300",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Copy, { className: "h-3 w-3" }), " Copy"]
+									})
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+							className: "bg-white hover:bg-slate-50",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "font-bold",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+										className: "bg-teal-100 text-teal-800 border-teal-200",
+										children: "Partner / Supplier"
+									})
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-sm text-muted-foreground",
+									children: "Service provider managing tasks and invoices."
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "font-mono text-sm font-semibold",
+									children: "partner@demo.com"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-right",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										size: "sm",
+										variant: "outline",
+										onClick: () => copyToClipboard("partner@demo.com"),
+										className: "gap-2 border-slate-300",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Copy, { className: "h-3 w-3" }), " Copy"]
+									})
+								})
+							]
+						})
+					] })] })
+				})]
+			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MigrationWizard, {}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 				className: "max-w-3xl mx-auto w-full mt-6 bg-blue-50/30 border-blue-100",
@@ -88420,16 +88995,16 @@ function MigrationHub() {
 					className: "p-6 flex items-center justify-between",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "space-y-1",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-							className: "font-semibold text-blue-900",
-							children: "Need help migrating?"
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+							className: "font-semibold text-blue-900 flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShieldCheck, { className: "h-4 w-4" }), " Need help migrating?"]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-sm text-blue-700",
 							children: "Check our documentation for CSV formatting and API limits."
 						})]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						variant: "link",
-						className: "text-blue-600",
+						className: "text-blue-600 font-bold",
 						children: ["View Docs ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronRight, { className: "h-4 w-4 ml-1" })]
 					})]
 				})
@@ -93624,4 +94199,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-4Fq9Sxni.js.map
+//# sourceMappingURL=index-DOH57wb8.js.map
