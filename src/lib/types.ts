@@ -1064,6 +1064,7 @@ export interface Advertisement {
     | 'tenant_page'
     | 'footer'
     | 'sidebar'
+    | 'header'
   placementType?: 'header' | 'footer'
   targetPages?: string[]
   advertiserId?: string

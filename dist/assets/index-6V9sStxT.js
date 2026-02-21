@@ -55090,8 +55090,46 @@ for (let i = 0; i < 30; i++) {
 			"home_top",
 			"tenant_page",
 			"partner_page",
-			"sidebar"
+			"sidebar",
+			"header",
+			"footer"
 		])
+	});
+}
+if (mockAdvertisers.length > 0) {
+	const advId = mockAdvertisers[0].id;
+	advertisements.push({
+		id: "ad_guaranteed_header",
+		title: "Premium Management Services",
+		description: "Upgrade your plan today and get 20% off!",
+		imageUrl: "https://img.usecurling.com/p/1200/100?q=banner&color=blue",
+		linkUrl: "#",
+		active: true,
+		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+		advertiserId: advId,
+		placement: "header"
+	});
+	advertisements.push({
+		id: "ad_guaranteed_footer",
+		title: "Partner with the best real estate agents",
+		description: "Find top-rated agents in your area.",
+		imageUrl: "https://img.usecurling.com/p/400/200?q=realestate&color=gray",
+		linkUrl: "#",
+		active: true,
+		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+		advertiserId: advId,
+		placement: "footer"
+	});
+	advertisements.push({
+		id: "ad_guaranteed_sidebar",
+		title: "Smart Home Integration",
+		description: "Control your properties remotely.",
+		imageUrl: "https://img.usecurling.com/p/300/300?q=smarthome&color=cyan",
+		linkUrl: "#",
+		active: true,
+		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+		advertiserId: advId,
+		placement: "sidebar"
 	});
 }
 for (let i = 0; i < 50; i++) {
@@ -66592,10 +66630,13 @@ function AppHeader() {
 	const { tenants: tenants$1 } = useTenantStore_default();
 	const { owners: owners$1 } = useOwnerStore_default();
 	const { tasks: tasks$1 } = useTaskStore_default();
+	const { advertisements: advertisements$1 } = usePublicityStore_default();
 	const [openSearch, setOpenSearch] = (0, import_react.useState)(false);
 	const demoUsers = allUsers.filter((u$1) => u$1.isDemo);
 	const otherDemoUsers = allUsers.filter((u$1) => u$1.id !== currentUser?.id && !u$1.isDemo).slice(0, 4);
 	const unreadCount = notifications$1.filter((n) => !n.read).length;
+	const headerAds = advertisements$1.filter((a$1) => a$1.active && a$1.placement === "header");
+	const adToShow = headerAds.length > 0 ? headerAds[0] : null;
 	(0, import_react.useEffect)(() => {
 		const down = (e) => {
 			if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -66634,306 +66675,386 @@ function AppHeader() {
 		navigate("/");
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
-		className: "flex h-16 items-center gap-4 border-b bg-white px-6 sticky top-0 z-50 shadow-sm w-full justify-between",
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarTrigger, {
-					className: "-ml-2 text-black",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Menu, { className: "h-5 w-5" })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
-					to: "/",
-					className: "flex items-center gap-2 hover:opacity-80 transition-opacity",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-						src: logo_estilizado_default,
-						alt: "COREPM Logo",
-						className: "h-8 w-8 rounded-md shrink-0 object-contain"
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
-						className: "text-lg font-bold md:text-xl text-black font-display tracking-tight hidden sm:block",
-						children: "COREPM"
-					})]
-				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "relative hidden md:flex flex-1 max-w-md mx-4",
-				id: "global-actions",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-					variant: "outline",
-					className: "relative w-full justify-start text-sm text-black border-slate-300 font-medium",
-					onClick: () => setOpenSearch(true),
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "mr-2 h-4 w-4" }),
-						t("common.search"),
-						"...",
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("kbd", {
-							className: "pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-slate-100 px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex text-black",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-xs",
-								children: "⌘"
-							}), "K"]
-						})
-					]
-				})
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandDialog, {
-				open: openSearch,
-				onOpenChange: setOpenSearch,
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandInput, { placeholder: "Type to search..." }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandList, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandEmpty, { children: "No results found." }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
-						heading: "System",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
-							onSelect: () => handleSearchSelect("help", ""),
-							className: "text-black",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "mr-2 h-4 w-4" }), t("common.help_hub")]
-						})
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandSeparator, {}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
-						heading: t("properties.title"),
-						children: properties$1.slice(0, 5).map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
-							onSelect: () => handleSearchSelect("property", p$1.id),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "mr-2 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: p$1.name })]
-						}, p$1.id))
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandSeparator, {}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
-						heading: t("common.tenants"),
-						children: tenants$1.slice(0, 5).map((t$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
-							onSelect: () => handleSearchSelect("tenant", t$1.id),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "mr-2 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t$1.name })]
-						}, t$1.id))
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandSeparator, {}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
-						heading: t("common.owners"),
-						children: owners$1.slice(0, 5).map((o) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
-							onSelect: () => handleSearchSelect("owner", o.id),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "mr-2 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: o.name })]
-						}, o.id))
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandSeparator, {}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
-						heading: t("common.tasks"),
-						children: tasks$1.slice(0, 5).map((task) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
-							onSelect: () => handleSearchSelect("task", task.id),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquareCheckBig, { className: "mr-2 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })]
-						}, task.id))
-					})
-				] })]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-2",
+		className: "flex flex-col w-full sticky top-0 z-50 shadow-sm bg-white",
+		children: [adToShow && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "bg-slate-900 text-white px-4 py-2 flex items-center justify-center text-xs sm:text-sm text-center relative overflow-hidden h-10 shrink-0",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
+				href: adToShow.linkUrl,
+				target: "_blank",
+				rel: "noreferrer",
+				className: "flex items-center gap-2 hover:underline z-10 relative",
 				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						size: "icon",
-						className: "md:hidden text-black",
-						onClick: () => setOpenSearch(true),
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "h-5 w-5" })
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "font-bold bg-white/20 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider",
+						children: "Sponsored"
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThemeCustomizer, {}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tooltip$1, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipTrigger, {
-						asChild: true,
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "ghost",
-							size: "icon",
-							className: "text-black hover:bg-slate-100",
-							onClick: () => navigate("/help"),
-							title: t("common.help_hub"),
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "h-5 w-5" })
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: t("common.help_hub") }) })] }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
-						asChild: true,
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "ghost",
-							size: "icon",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-5 w-5 text-black" })
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
-						align: "end",
-						className: "bg-white",
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: adToShow.title }),
+					adToShow.description && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+						className: "hidden sm:inline text-slate-300",
+						children: ["- ", adToShow.description]
+					})
+				]
+			}), adToShow.imageUrl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+				src: adToShow.imageUrl,
+				alt: "",
+				className: "absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex h-16 items-center gap-4 border-b px-6 w-full justify-between shrink-0",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarTrigger, {
+						className: "-ml-2 text-black",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Menu, { className: "h-5 w-5" })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+						to: "/",
+						className: "flex items-center gap-2 hover:opacity-80 transition-opacity",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+							src: logo_estilizado_default,
+							alt: "COREPM Logo",
+							className: "h-8 w-8 rounded-md shrink-0 object-contain"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+							className: "text-lg font-bold md:text-xl text-black font-display tracking-tight hidden sm:block",
+							children: "COREPM"
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "relative hidden md:flex flex-1 max-w-md mx-4",
+					id: "global-actions",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						variant: "outline",
+						className: "relative w-full justify-start text-sm text-black border-slate-300 font-medium",
+						onClick: () => setOpenSearch(true),
 						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-								onClick: () => setLanguage("pt"),
-								className: language === "pt" ? "bg-slate-100 font-bold" : "",
-								children: "🇵🇹 Português"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-								onClick: () => setLanguage("en"),
-								className: language === "en" ? "bg-slate-100 font-bold" : "",
-								children: "🇺🇸 English"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-								onClick: () => setLanguage("es"),
-								className: language === "es" ? "bg-slate-100 font-bold" : "",
-								children: "🇪🇸 Español"
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "mr-2 h-4 w-4" }),
+							t("common.search"),
+							"...",
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("kbd", {
+								className: "pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-slate-100 px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex text-black",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "text-xs",
+									children: "⌘"
+								}), "K"]
 							})
 						]
-					})] }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
-						asChild: true,
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandDialog, {
+					open: openSearch,
+					onOpenChange: setOpenSearch,
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandInput, { placeholder: "Type to search..." }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandList, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandEmpty, { children: "No results found." }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
+							heading: "System",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
+								onSelect: () => handleSearchSelect("help", ""),
+								className: "text-black",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "mr-2 h-4 w-4" }), t("common.help_hub")]
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandSeparator, {}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
+							heading: t("properties.title"),
+							children: properties$1.slice(0, 5).map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
+								onSelect: () => handleSearchSelect("property", p$1.id),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "mr-2 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: p$1.name })]
+							}, p$1.id))
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandSeparator, {}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
+							heading: t("common.tenants"),
+							children: tenants$1.slice(0, 5).map((t$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
+								onSelect: () => handleSearchSelect("tenant", t$1.id),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "mr-2 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t$1.name })]
+							}, t$1.id))
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandSeparator, {}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
+							heading: t("common.owners"),
+							children: owners$1.slice(0, 5).map((o) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
+								onSelect: () => handleSearchSelect("owner", o.id),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "mr-2 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: o.name })]
+							}, o.id))
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandSeparator, {}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
+							heading: t("common.tasks"),
+							children: tasks$1.slice(0, 5).map((task) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
+								onSelect: () => handleSearchSelect("task", task.id),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquareCheckBig, { className: "mr-2 h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })]
+							}, task.id))
+						})
+					] })]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "ghost",
 							size: "icon",
-							className: "relative text-black",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, { className: "h-5 w-5" }), unreadCount > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600 animate-pulse ring-2 ring-white" })]
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PopoverContent, {
-						className: "w-80 p-0 bg-white",
-						align: "end",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center justify-between p-4 border-b",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
-								className: "font-bold leading-none text-black",
-								children: t("common.notifications")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
-								variant: "secondary",
-								className: "text-black bg-slate-100 font-bold",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: unreadCount }),
-									" ",
-									t("dashboard.unread")
-								]
+							className: "md:hidden text-black",
+							onClick: () => setOpenSearch(true),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "h-5 w-5" })
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThemeCustomizer, {}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tooltip$1, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipTrigger, {
+							asChild: true,
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								className: "text-black hover:bg-slate-100",
+								onClick: () => navigate("/help"),
+								title: t("common.help_hub"),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "h-5 w-5" })
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: t("common.help_hub") }) })] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
+							asChild: true,
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-5 w-5 text-black" })
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
+							align: "end",
+							className: "bg-white",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+									onClick: () => setLanguage("pt"),
+									className: language === "pt" ? "bg-slate-100 font-bold" : "",
+									children: "🇵🇹 Português"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+									onClick: () => setLanguage("en"),
+									className: language === "en" ? "bg-slate-100 font-bold" : "",
+									children: "🇺🇸 English"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+									onClick: () => setLanguage("es"),
+									className: language === "es" ? "bg-slate-100 font-bold" : "",
+									children: "🇪🇸 Español"
+								})
+							]
+						})] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
+							asChild: true,
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								variant: "ghost",
+								size: "icon",
+								className: "relative text-black",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, { className: "h-5 w-5" }), unreadCount > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600 animate-pulse ring-2 ring-white" })]
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PopoverContent, {
+							className: "w-80 p-0 bg-white",
+							align: "end",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center justify-between p-4 border-b",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+									className: "font-bold leading-none text-black",
+									children: t("common.notifications")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+									variant: "secondary",
+									className: "text-black bg-slate-100 font-bold",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: unreadCount }),
+										" ",
+										t("dashboard.unread")
+									]
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
+								className: "h-[300px]",
+								children: notifications$1.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "p-8 text-center text-sm text-black font-medium",
+									children: "Nenhuma notificação."
+								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "flex flex-col",
+									children: notifications$1.map((notif) => {
+										const notifDate = new Date(notif.timestamp);
+										const dateDisplay = isValid(notifDate) ? format(notifDate, "dd/MM HH:mm") : "";
+										return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+											className: `flex flex-col items-start gap-1 p-4 text-left hover:bg-slate-50 transition-colors border-b last:border-0 ${!notif.read ? "bg-blue-50" : ""}`,
+											onClick: () => handleNotificationClick(notif.id),
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "flex items-center justify-between w-full",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: `text-sm text-black ${!notif.read ? "font-bold" : "font-medium"}`,
+														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: notif.title })
+													}), !notif.read && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Circle, { className: "h-2 w-2 fill-blue-600 text-blue-600" })]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "text-xs text-black font-medium line-clamp-2",
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: notif.message })
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "text-[10px] text-black font-bold mt-1",
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: dateDisplay })
+												})
+											]
+										}, notif.id);
+									})
+								})
 							})]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
-							className: "h-[300px]",
-							children: notifications$1.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "p-8 text-center text-sm text-black font-medium",
-								children: "Nenhuma notificação."
-							}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "flex flex-col",
-								children: notifications$1.map((notif) => {
-									const notifDate = new Date(notif.timestamp);
-									const dateDisplay = isValid(notifDate) ? format(notifDate, "dd/MM HH:mm") : "";
-									return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-										className: `flex flex-col items-start gap-1 p-4 text-left hover:bg-slate-50 transition-colors border-b last:border-0 ${!notif.read ? "bg-blue-50" : ""}`,
-										onClick: () => handleNotificationClick(notif.id),
+						})] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
+							asChild: true,
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								className: "relative h-10 w-10 rounded-full",
+								id: "user-profile",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
+									className: "h-10 w-10 border border-slate-200",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, {
+										src: currentUser?.avatar,
+										alt: currentUser?.name
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
+										className: "bg-slate-100 text-black font-bold",
+										children: currentUser?.name?.charAt(0)
+									})]
+								})
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
+							className: "w-56 bg-white",
+							align: "end",
+							forceMount: true,
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
+									className: "font-normal",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex flex-col space-y-1",
 										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "flex items-center justify-between w-full",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-													className: `text-sm text-black ${!notif.read ? "font-bold" : "font-medium"}`,
-													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: notif.title })
-												}), !notif.read && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Circle, { className: "h-2 w-2 fill-blue-600 text-blue-600" })]
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												className: "text-sm font-bold leading-none text-black",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: currentUser?.name })
 											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-xs text-black font-medium line-clamp-2",
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: notif.message })
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												className: "text-xs leading-none text-black font-medium",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: currentUser?.email })
 											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-[10px] text-black font-bold mt-1",
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: dateDisplay })
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+												className: "mt-2 w-fit bg-black hover:bg-black/90 text-white font-bold",
+												variant: "secondary",
+												children: t(`roles.${currentUser?.role}`)
 											})
 										]
-									}, notif.id);
-								})
-							})
-						})]
-					})] }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
-						asChild: true,
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "ghost",
-							className: "relative h-10 w-10 rounded-full",
-							id: "user-profile",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
-								className: "h-10 w-10 border border-slate-200",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, {
-									src: currentUser?.avatar,
-									alt: currentUser?.name
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
-									className: "bg-slate-100 text-black font-bold",
-									children: currentUser?.name?.charAt(0)
-								})]
-							})
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
-						className: "w-56 bg-white",
-						align: "end",
-						forceMount: true,
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
-								className: "font-normal",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex flex-col space-y-1",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "text-sm font-bold leading-none text-black",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: currentUser?.name })
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "text-xs leading-none text-black font-medium",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: currentUser?.email })
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-											className: "mt-2 w-fit bg-black hover:bg-black/90 text-white font-bold",
-											variant: "secondary",
-											children: t(`roles.${currentUser?.role}`)
-										})
-									]
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
-							demoUsers.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
-									className: "text-xs font-bold text-blue-700",
-									children: t("header.demo_profiles")
+									})
 								}),
-								demoUsers.map((user) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
+								demoUsers.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
+										className: "text-xs font-bold text-blue-700",
+										children: t("header.demo_profiles")
+									}),
+									demoUsers.map((user) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+										onClick: () => setCurrentUser(user.id),
+										className: "cursor-pointer bg-blue-50 hover:bg-blue-100",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex flex-col w-full",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "font-bold text-black",
+												children: user.name
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-[10px] text-black font-medium capitalize",
+												children: t(`roles.${user.role}`)
+											})]
+										})
+									}, user.id)),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {})
+								] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
+									className: "font-bold text-black",
+									children: t("header.other_users")
+								}),
+								otherDemoUsers.map((user) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
 									onClick: () => setCurrentUser(user.id),
-									className: "cursor-pointer bg-blue-50 hover:bg-blue-100",
+									className: "hover:bg-slate-50",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex flex-col w-full",
+										className: "flex flex-col",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "font-bold text-black",
+											className: "font-medium text-black",
 											children: user.name
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-[10px] text-black font-medium capitalize",
+											className: "text-[10px] text-black font-medium",
 											children: t(`roles.${user.role}`)
 										})]
 									})
 								}, user.id)),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {})
-							] }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
-								className: "font-bold text-black",
-								children: t("header.other_users")
-							}),
-							otherDemoUsers.map((user) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-								onClick: () => setCurrentUser(user.id),
-								className: "hover:bg-slate-50",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex flex-col",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "font-medium text-black",
-										children: user.name
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "text-[10px] text-black font-medium",
-										children: t(`roles.${user.role}`)
-									})]
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+									onClick: handleLogout,
+									className: "font-medium text-black hover:bg-slate-50",
+									children: t("common.logout")
 								})
-							}, user.id)),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-								onClick: handleLogout,
-								className: "font-medium text-black hover:bg-slate-50",
-								children: t("common.logout")
+							]
+						})] })
+					]
+				})
+			]
+		})]
+	});
+}
+function PublicityFooter() {
+	const { advertisements: advertisements$1 } = usePublicityStore_default();
+	const activeAds = advertisements$1.filter((ad) => ad.active && ad.placement === "footer");
+	if (activeAds.length === 0) return null;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "mt-8 mb-4 border-t pt-6 shrink-0",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+			className: "text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wider px-1",
+			children: "Sponsored"
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "grid grid-cols-1 md:grid-cols-3 gap-4",
+			children: activeAds.map((ad) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+				className: "overflow-hidden hover:shadow-md transition-all group",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex h-24",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "w-1/3 relative bg-muted",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+							src: ad.imageUrl,
+							alt: ad.title,
+							className: "absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+						className: "w-2/3 p-3 flex flex-col justify-center",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+								className: "font-semibold text-sm line-clamp-1",
+								children: ad.title
+							}),
+							ad.description && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-xs text-muted-foreground line-clamp-2 mt-1 mb-2",
+								children: ad.description
+							}),
+							ad.linkUrl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "link",
+								className: "h-auto p-0 text-xs text-blue-600 self-start flex items-center gap-1",
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
+									href: ad.linkUrl,
+									target: "_blank",
+									rel: "noopener noreferrer",
+									children: ["Learn More ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "h-3 w-3" })]
+								})
 							})
 						]
-					})] })
-				]
-			})
-		]
+					})]
+				})
+			}, ad.id))
+		})]
 	});
 }
 function DashboardLayout() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarProvider, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppSidebar, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarInset, {
 		className: "flex flex-col flex-1 w-full min-h-screen transition-all duration-300 overflow-hidden bg-white",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppHeader, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("main", {
-			className: "flex-1 p-6 md:p-8 bg-white overflow-x-hidden",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {})
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppHeader, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", {
+			className: "flex-1 flex flex-col p-6 md:p-8 bg-white overflow-x-hidden min-h-0",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex-1",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {})
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PublicityFooter, {})]
 		})]
 	})] });
 }
@@ -94237,4 +94358,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Bwq6iEWH.js.map
+//# sourceMappingURL=index-6V9sStxT.js.map

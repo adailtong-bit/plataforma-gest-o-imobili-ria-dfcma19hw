@@ -994,9 +994,48 @@ for (let i = 0; i < 30; i++) {
         'tenant_page',
         'partner_page',
         'sidebar',
+        'header',
+        'footer',
       ]),
     })
   }
+}
+
+if (mockAdvertisers.length > 0) {
+  const advId = mockAdvertisers[0].id
+  advertisements.push({
+    id: 'ad_guaranteed_header',
+    title: 'Premium Management Services',
+    description: 'Upgrade your plan today and get 20% off!',
+    imageUrl: 'https://img.usecurling.com/p/1200/100?q=banner&color=blue',
+    linkUrl: '#',
+    active: true,
+    createdAt: new Date().toISOString(),
+    advertiserId: advId,
+    placement: 'header',
+  })
+  advertisements.push({
+    id: 'ad_guaranteed_footer',
+    title: 'Partner with the best real estate agents',
+    description: 'Find top-rated agents in your area.',
+    imageUrl: 'https://img.usecurling.com/p/400/200?q=realestate&color=gray',
+    linkUrl: '#',
+    active: true,
+    createdAt: new Date().toISOString(),
+    advertiserId: advId,
+    placement: 'footer',
+  })
+  advertisements.push({
+    id: 'ad_guaranteed_sidebar',
+    title: 'Smart Home Integration',
+    description: 'Control your properties remotely.',
+    imageUrl: 'https://img.usecurling.com/p/300/300?q=smarthome&color=cyan',
+    linkUrl: '#',
+    active: true,
+    createdAt: new Date().toISOString(),
+    advertiserId: advId,
+    placement: 'sidebar',
+  })
 }
 
 // Generate Chats (50)

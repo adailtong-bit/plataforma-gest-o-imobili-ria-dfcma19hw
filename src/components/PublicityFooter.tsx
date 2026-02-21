@@ -6,17 +6,17 @@ import { ExternalLink } from 'lucide-react'
 export function PublicityFooter() {
   const { advertisements } = usePublicityStore()
 
-  // Filter active ads and those meant for footer
+  // Filter active ads and those explicitly meant for footer
   const activeAds = advertisements.filter(
-    (ad) => ad.active && (!ad.placement || ad.placement === 'footer'),
+    (ad) => ad.active && ad.placement === 'footer',
   )
 
   if (activeAds.length === 0) return null
 
   return (
-    <div className="mt-8 mb-4 border-t pt-6">
+    <div className="mt-8 mb-4 border-t pt-6 shrink-0">
       <h3 className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wider px-1">
-        Publicidade & Parceiros
+        Sponsored
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {activeAds.map((ad) => (
@@ -44,7 +44,7 @@ export function PublicityFooter() {
                 {ad.linkUrl && (
                   <Button
                     variant="link"
-                    className="h-auto p-0 text-xs text-trust-blue self-start flex items-center gap-1"
+                    className="h-auto p-0 text-xs text-blue-600 self-start flex items-center gap-1"
                     asChild
                   >
                     <a
@@ -52,7 +52,7 @@ export function PublicityFooter() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Saiba Mais <ExternalLink className="h-3 w-3" />
+                      Learn More <ExternalLink className="h-3 w-3" />
                     </a>
                   </Button>
                 )}
