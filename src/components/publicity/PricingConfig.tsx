@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { CurrencyInput } from '@/components/ui/currency-input'
 import { Save, HelpCircle } from 'lucide-react'
 import usePublicityStore from '@/stores/usePublicityStore'
+import useLanguageStore from '@/stores/useLanguageStore'
 import { AppContext } from '@/stores/AppContext'
 import { useToast } from '@/hooks/use-toast'
 import {
@@ -23,6 +24,7 @@ export function PricingConfig() {
   const { adPricing, updateAdPricing } = usePublicityStore()
   const appContext = useContext(AppContext)
   const currency = appContext?.currency || 'USD'
+  const { t } = useLanguageStore()
   const { toast } = useToast()
 
   const [formData, setFormData] = useState({
@@ -58,8 +60,8 @@ export function PricingConfig() {
   const handleSave = () => {
     updateAdPricing(formData)
     toast({
-      title: 'Pricing Configuration Saved',
-      description: 'Your ad rates have been updated successfully.',
+      title: t('publicity.pricing_config.save_success_title'),
+      description: t('publicity.pricing_config.save_success_desc'),
     })
   }
 
@@ -77,15 +79,17 @@ export function PricingConfig() {
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>Base Duration Rates</CardTitle>
+          <CardTitle>{t('publicity.pricing_config.title_base')}</CardTitle>
           <CardDescription>
-            Set the standard pricing for different advertisement durations.
+            {t('publicity.pricing_config.desc_base')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label className="flex items-center gap-2">Weekly Rate</Label>
+              <Label className="flex items-center gap-2">
+                {t('publicity.pricing_config.label_weekly')}
+              </Label>
               <CurrencyInput
                 value={formData.weekly}
                 onChange={(v) => setFormData({ ...formData, weekly: v })}
@@ -93,7 +97,7 @@ export function PricingConfig() {
               />
             </div>
             <div className="grid gap-2">
-              <Label>Bi-Weekly Rate (14 Days)</Label>
+              <Label>{t('publicity.pricing_config.label_biweekly')}</Label>
               <CurrencyInput
                 value={formData.biWeekly}
                 onChange={(v) => setFormData({ ...formData, biWeekly: v })}
@@ -101,7 +105,7 @@ export function PricingConfig() {
               />
             </div>
             <div className="grid gap-2">
-              <Label>Monthly Rate</Label>
+              <Label>{t('publicity.pricing_config.label_monthly')}</Label>
               <CurrencyInput
                 value={formData.monthly}
                 onChange={(v) => setFormData({ ...formData, monthly: v })}
@@ -115,28 +119,27 @@ export function PricingConfig() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            Placement Modifiers
+            {t('publicity.pricing_config.title_modifiers')}
             <Tooltip>
               <TooltipTrigger asChild>
                 <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
               </TooltipTrigger>
               <TooltipContent>
                 <p className="w-64">
-                  These values represent fixed additions to the base duration
-                  rate depending on where the ad is placed.
+                  {t('publicity.pricing_config.tooltip_modifiers')}
                 </p>
               </TooltipContent>
             </Tooltip>
           </CardTitle>
           <CardDescription>
-            Additional costs for premium placements.
+            {t('publicity.pricing_config.desc_modifiers')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4">
             <div className="grid grid-cols-3 items-center gap-4">
               <Label className="col-span-1 text-right text-muted-foreground">
-                Home Top Banner
+                {t('publicity.ads_manager.placements.home_top')}
               </Label>
               <div className="col-span-2">
                 <CurrencyInput
@@ -148,7 +151,7 @@ export function PricingConfig() {
             </div>
             <div className="grid grid-cols-3 items-center gap-4">
               <Label className="col-span-1 text-right text-muted-foreground">
-                Home Bottom
+                {t('publicity.ads_manager.placements.home_bottom')}
               </Label>
               <div className="col-span-2">
                 <CurrencyInput
@@ -160,7 +163,7 @@ export function PricingConfig() {
             </div>
             <div className="grid grid-cols-3 items-center gap-4">
               <Label className="col-span-1 text-right text-muted-foreground">
-                Partner Page
+                {t('publicity.ads_manager.placements.partner_page')}
               </Label>
               <div className="col-span-2">
                 <CurrencyInput
@@ -172,7 +175,7 @@ export function PricingConfig() {
             </div>
             <div className="grid grid-cols-3 items-center gap-4">
               <Label className="col-span-1 text-right text-muted-foreground">
-                Tenant Portal
+                {t('publicity.ads_manager.placements.tenant_page')}
               </Label>
               <div className="col-span-2">
                 <CurrencyInput
@@ -184,7 +187,7 @@ export function PricingConfig() {
             </div>
             <div className="grid grid-cols-3 items-center gap-4">
               <Label className="col-span-1 text-right text-muted-foreground">
-                PM Login Screen
+                {t('publicity.ads_manager.placements.pm_login')}
               </Label>
               <div className="col-span-2">
                 <CurrencyInput
@@ -198,7 +201,8 @@ export function PricingConfig() {
 
           <div className="flex justify-end pt-6">
             <Button onClick={handleSave} className="bg-trust-blue gap-2">
-              <Save className="h-4 w-4" /> Save Configuration
+              <Save className="h-4 w-4" />{' '}
+              {t('publicity.pricing_config.save_btn')}
             </Button>
           </div>
         </CardContent>

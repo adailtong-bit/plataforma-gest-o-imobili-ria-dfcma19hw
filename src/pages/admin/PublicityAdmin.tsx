@@ -3,29 +3,30 @@ import { AdvertiserList } from '@/components/publicity/AdvertiserList'
 import { AdsManager } from '@/components/publicity/AdsManager'
 import { PricingConfig } from '@/components/publicity/PricingConfig'
 import { Megaphone, Users, DollarSign } from 'lucide-react'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function PublicityAdmin() {
+  const { t } = useLanguageStore()
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-navy">
-          Publicity Administration
+          {t('publicity.title')}
         </h1>
-        <p className="text-muted-foreground">
-          Manage advertisers, campaigns, and monetization settings.
-        </p>
+        <p className="text-muted-foreground">{t('publicity.subtitle')}</p>
       </div>
 
       <Tabs defaultValue="ads" className="space-y-4">
         <TabsList className="w-full justify-start overflow-x-auto h-auto">
           <TabsTrigger value="ads" className="whitespace-nowrap">
-            <Megaphone className="h-4 w-4 mr-2" /> Advertisements
+            <Megaphone className="h-4 w-4 mr-2" /> {t('publicity.tab_ads')}
           </TabsTrigger>
           <TabsTrigger value="advertisers" className="whitespace-nowrap">
-            <Users className="h-4 w-4 mr-2" /> Advertisers
+            <Users className="h-4 w-4 mr-2" /> {t('publicity.tab_advertisers')}
           </TabsTrigger>
           <TabsTrigger value="pricing" className="whitespace-nowrap">
-            <DollarSign className="h-4 w-4 mr-2" /> Pricing Config
+            <DollarSign className="h-4 w-4 mr-2" /> {t('publicity.tab_pricing')}
           </TabsTrigger>
         </TabsList>
 

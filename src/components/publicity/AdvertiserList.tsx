@@ -15,12 +15,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, Edit, Trash2, Search } from 'lucide-react'
 import usePublicityStore from '@/stores/usePublicityStore'
+import useLanguageStore from '@/stores/useLanguageStore'
 import { useToast } from '@/hooks/use-toast'
 import { Advertiser } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
@@ -28,6 +28,7 @@ import { formatDate } from '@/lib/utils'
 export function AdvertiserList() {
   const { advertisers, addAdvertiser, updateAdvertiser, deleteAdvertiser } =
     usePublicityStore()
+  const { t, language } = useLanguageStore()
   const { toast } = useToast()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -60,8 +61,8 @@ export function AdvertiserList() {
   const handleSave = () => {
     if (!formData.name || !formData.email) {
       toast({
-        title: 'Validation Error',
-        description: 'Name and email are required.',
+        title: t('common.validation_error'),
+        description: t('publicity.advertiser_list.validation_error'),
         variant: 'destructive',
       })
       return
@@ -69,41 +70,42 @@ export function AdvertiserList() {
 
     if (editingId) {
       updateAdvertiser({ ...formData, id: editingId } as Advertiser)
-      toast({ title: 'Advertiser updated successfully.' })
+      toast({ title: t('publicity.advertiser_list.update_success') })
     } else {
       addAdvertiser({
         ...formData,
         id: `adv-${Date.now()}`,
         createdAt: new Date().toISOString(),
       } as Advertiser)
-      toast({ title: 'Advertiser added successfully.' })
+      toast({ title: t('publicity.advertiser_list.add_success') })
     }
     setIsOpen(false)
   }
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this advertiser?')) {
+    if (confirm(t('publicity.advertiser_list.delete_confirm'))) {
       deleteAdvertiser(id)
-      toast({ title: 'Advertiser deleted.' })
+      toast({ title: t('publicity.advertiser_list.delete_success') })
     }
   }
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-4">
-        <CardTitle>Advertisers</CardTitle>
+        <CardTitle>{t('publicity.advertiser_list.title')}</CardTitle>
         <div className="flex gap-2">
           <div className="relative w-64">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search advertisers..."
+              placeholder={t('publicity.advertiser_list.search_placeholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-8"
             />
           </div>
           <Button onClick={() => handleOpen()} className="gap-2">
-            <Plus className="h-4 w-4" /> Add Advertiser
+            <Plus className="h-4 w-4" />{' '}
+            {t('publicity.advertiser_list.add_btn')}
           </Button>
         </div>
       </CardHeader>
@@ -111,11 +113,21 @@ export function AdvertiserList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Company / Name</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead>Address</TableHead>
-              <TableHead>Registered</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>
+                {t('publicity.advertiser_list.table_company')}
+              </TableHead>
+              <TableHead>
+                {t('publicity.advertiser_list.table_contact')}
+              </TableHead>
+              <TableHead>
+                {t('publicity.advertiser_list.table_address')}
+              </TableHead>
+              <TableHead>
+                {t('publicity.advertiser_list.table_registered')}
+              </TableHead>
+              <TableHead className="text-right">
+                {t('common.actions')}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -125,7 +137,7 @@ export function AdvertiserList() {
                   colSpan={5}
                   className="text-center py-6 text-muted-foreground"
                 >
-                  No advertisers found.
+                  {t('publicity.advertiser_list.empty_state')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -139,7 +151,7 @@ export function AdvertiserList() {
                     </div>
                   </TableCell>
                   <TableCell>{adv.address || '-'}</TableCell>
-                  <TableCell>{formatDate(adv.createdAt)}</TableCell>
+                  <TableCell>{formatDate(adv.createdAt, language)}</TableCell>
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"
@@ -167,12 +179,14 @@ export function AdvertiserList() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {editingId ? 'Edit Advertiser' : 'New Advertiser'}
+                {editingId
+                  ? t('publicity.advertiser_list.modal_edit')
+                  : t('publicity.advertiser_list.modal_new')}
               </DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label>Company / Name *</Label>
+                <Label>{t('publicity.advertiser_list.label_company')}</Label>
                 <Input
                   value={formData.name}
                   onChange={(e) =>
@@ -182,7 +196,7 @@ export function AdvertiserList() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>Email *</Label>
+                  <Label>{t('publicity.advertiser_list.label_email')}</Label>
                   <Input
                     value={formData.email}
                     onChange={(e) =>
@@ -191,7 +205,7 @@ export function AdvertiserList() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Phone</Label>
+                  <Label>{t('publicity.advertiser_list.label_phone')}</Label>
                   <Input
                     value={formData.phone}
                     onChange={(e) =>
@@ -201,7 +215,7 @@ export function AdvertiserList() {
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label>Address</Label>
+                <Label>{t('publicity.advertiser_list.label_address')}</Label>
                 <Input
                   value={formData.address}
                   onChange={(e) =>
@@ -212,9 +226,9 @@ export function AdvertiserList() {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsOpen(false)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
-              <Button onClick={handleSave}>Save</Button>
+              <Button onClick={handleSave}>{t('common.save')}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
