@@ -22,13 +22,7 @@ import { Property, LedgerEntry } from '@/lib/types'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { formatCurrency } from '@/lib/utils'
-import {
-  startOfYear,
-  endOfYear,
-  eachMonthOfInterval,
-  format,
-  addMonths,
-} from 'date-fns'
+import { eachMonthOfInterval, format, addMonths } from 'date-fns'
 import { TrendingUp, DollarSign, Percent, Activity } from 'lucide-react'
 
 interface PropertyAnalyticsProps {
@@ -134,7 +128,7 @@ export function PropertyAnalytics({ property }: PropertyAnalyticsProps) {
               {financialMetrics.roi.toFixed(2)}%
             </span>
             <span className="text-xs text-muted-foreground">
-              Annualized Return
+              {t('analytics.roi')}
             </span>
           </CardContent>
         </Card>
@@ -148,7 +142,7 @@ export function PropertyAnalytics({ property }: PropertyAnalyticsProps) {
               {financialMetrics.capRate.toFixed(2)}%
             </span>
             <span className="text-xs text-muted-foreground">
-              Market Capitalization
+              {t('analytics.cap_rate')}
             </span>
           </CardContent>
         </Card>
@@ -162,7 +156,7 @@ export function PropertyAnalytics({ property }: PropertyAnalyticsProps) {
               {formatCurrency(financialMetrics.totalIncome / 120, language)}
             </span>
             <span className="text-xs text-muted-foreground">
-              Est. based on 120m²
+              {t('common.analytics.benchmark_desc')}
             </span>
           </CardContent>
         </Card>
@@ -219,9 +213,7 @@ export function PropertyAnalytics({ property }: PropertyAnalyticsProps) {
         <Card>
           <CardHeader>
             <CardTitle>{t('analytics.net_flow')}</CardTitle>
-            <CardDescription>
-              Projected Net Operating Income trend
-            </CardDescription>
+            <CardDescription>{t('analytics.net_flow')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">

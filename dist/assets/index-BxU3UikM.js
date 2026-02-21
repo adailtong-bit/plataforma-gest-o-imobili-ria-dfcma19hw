@@ -55643,7 +55643,7 @@ const translations = {
 			base_title: "Base de Proprietários",
 			search_placeholder: "Buscar proprietário...",
 			contact_details: "Detalhes de Contato",
-			properties_count: "Propriedades",
+			properties_count: "Propiedades",
 			workflow_started: "Workflow Iniciado",
 			workflow_desc: "Ação {action} iniciada para {name}.",
 			renew_contract: "Renovar Contrato",
@@ -55999,6 +55999,7 @@ const translations = {
 			condition: "Condição",
 			revenue: "Receita",
 			profit: "Lucro",
+			provider: "Provedor",
 			analytics: {
 				benchmark_title: "Benchmark de Mercado",
 				benchmark_desc: "Comparativo de desempenho com o mercado.",
@@ -56164,6 +56165,21 @@ const translations = {
 				name_placeholder: "Ex: Internet",
 				provider_placeholder: "Ex: Duke Energy",
 				account_placeholder: "ID da Conta"
+			},
+			features: {
+				bedrooms: "Quartos",
+				bathrooms: "Banheiros",
+				guests: "Hóspedes",
+				wifi_connectivity: "Conectividade Wi-Fi",
+				ssid: "SSID / Nome da Rede",
+				password: "Senha",
+				access_codes: "Códigos de Acesso",
+				unit_code: "Código da Unidade",
+				building_code: "Código do Edifício",
+				pool_code: "Código da Piscina",
+				staff_code: "Código do Staff / Limpeza",
+				condo_read_only: "Acesso do Condomínio (Somente Leitura)",
+				condo_hint: "Credenciais gerenciadas nas configurações do condomínio {condo}."
 			}
 		},
 		auth: {
@@ -56230,7 +56246,21 @@ const translations = {
 			tenant: "Inquilino",
 			partner_employee: "Funcionário Parceiro"
 		},
-		marketing_tab: { portal_sync: "Sincronização de Portais" },
+		marketing_tab: {
+			portal_sync: "Sincronização de Portais",
+			manage_listings: "Gerenciar anúncios em portais externos.",
+			publish_btn: "Publicar",
+			publishing: "Publicando...",
+			publish_success: "Publicação iniciada com sucesso.",
+			leads: "Leads e Interessados",
+			inquiries_desc: "Gerencie consultas de potenciais inquilinos e hóspedes.",
+			contact_info: "Informações de Contato",
+			source: "Origem",
+			inquiry_date: "Data da Consulta",
+			status: "Status",
+			zillow_desc: "Líder do Mercado EUA",
+			idealista_desc: "Mercado Europeu"
+		},
 		automation: {
 			title: "Automação",
 			quickbooks_export: "Exportar para QuickBooks",
@@ -56954,6 +56984,7 @@ const translations = {
 			condition: "Condition",
 			revenue: "Revenue",
 			profit: "Profit",
+			provider: "Provider",
 			analytics: {
 				benchmark_title: "Market Benchmark",
 				benchmark_desc: "Performance comparison with market data.",
@@ -57119,6 +57150,21 @@ const translations = {
 				name_placeholder: "e.g. Internet",
 				provider_placeholder: "e.g. Duke Energy",
 				account_placeholder: "Account ID"
+			},
+			features: {
+				bedrooms: "Bedrooms",
+				bathrooms: "Bathrooms",
+				guests: "Guests",
+				wifi_connectivity: "Wi-Fi Connectivity",
+				ssid: "SSID / Network Name",
+				password: "Password",
+				access_codes: "Access Codes",
+				unit_code: "Unit Code",
+				building_code: "Building Code",
+				pool_code: "Pool Code",
+				staff_code: "Staff Code",
+				condo_read_only: "Condominium Access (Read Only)",
+				condo_hint: "Credentials managed in {condo} settings."
 			}
 		},
 		auth: {
@@ -57185,7 +57231,21 @@ const translations = {
 			tenant: "Tenant",
 			partner_employee: "Partner Employee"
 		},
-		marketing_tab: { portal_sync: "Portal Sync" },
+		marketing_tab: {
+			portal_sync: "Portal Sync",
+			manage_listings: "Manage listings on external portals.",
+			publish_btn: "Publish",
+			publishing: "Publishing...",
+			publish_success: "Publishing started successfully.",
+			leads: "Leads & Prospects",
+			inquiries_desc: "Manage inquiries from potential guests.",
+			contact_info: "Contact Info",
+			source: "Source",
+			inquiry_date: "Inquiry Date",
+			status: "Status",
+			zillow_desc: "US Market Leader",
+			idealista_desc: "European Market"
+		},
 		automation: {
 			title: "Automation",
 			quickbooks_export: "Export to QuickBooks",
@@ -57909,6 +57969,7 @@ const translations = {
 			condition: "Condición",
 			revenue: "Ingresos",
 			profit: "Beneficio",
+			provider: "Proveedor",
 			analytics: {
 				benchmark_title: "Benchmark de Mercado",
 				benchmark_desc: "Comparativo de rendimiento con el mercado.",
@@ -58074,6 +58135,21 @@ const translations = {
 				name_placeholder: "Ej: Internet",
 				provider_placeholder: "Ej: Duke Energy",
 				account_placeholder: "ID de Cuenta"
+			},
+			features: {
+				bedrooms: "Habitaciones",
+				bathrooms: "Baños",
+				guests: "Huéspedes",
+				wifi_connectivity: "Conectividad Wi-Fi",
+				ssid: "SSID / Red",
+				password: "Contraseña",
+				access_codes: "Códigos de Acceso",
+				unit_code: "Código de la Unidad",
+				building_code: "Código del Edificio",
+				pool_code: "Código de la Piscina",
+				staff_code: "Código del Personal",
+				condo_read_only: "Acceso del Condominio (Solo Lectura)",
+				condo_hint: "Credenciales gestionadas en la configuración de {condo}."
 			}
 		},
 		auth: {
@@ -58136,7 +58212,21 @@ const translations = {
 			tenant: "Inquilino",
 			partner_employee: "Empleado Socio"
 		},
-		marketing_tab: { portal_sync: "Sincronización de Portales" },
+		marketing_tab: {
+			portal_sync: "Sincronización de Portales",
+			manage_listings: "Gestionar anuncios en portales externos.",
+			publish_btn: "Publicar",
+			publishing: "Publicando...",
+			publish_success: "Publicación iniciada con éxito.",
+			leads: "Leads e Interesados",
+			inquiries_desc: "Gestione consultas de clientes potenciales.",
+			contact_info: "Información de Contacto",
+			source: "Origen",
+			inquiry_date: "Fecha de Consulta",
+			status: "Estado",
+			zillow_desc: "Líder del Mercado EE.UU.",
+			idealista_desc: "Mercado Europeo"
+		},
 		automation: {
 			title: "Automatización",
 			quickbooks_export: "Exportar a QuickBooks",
@@ -69435,7 +69525,11 @@ function PropertyLedger({ propertyId, entries }) {
 			className: "flex justify-between items-center",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
 				className: "text-lg font-bold text-slate-900",
-				children: [t("financial.title"), " - Ledger"]
+				children: [
+					t("financial.title"),
+					" - ",
+					t("common.history")
+				]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "text-right",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
@@ -69619,7 +69713,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 				status: isPaid ? "cleared" : "pending",
 				paymentDate: isPaid ? initialDate.toISOString() : void 0,
 				attachments: formData.receiptUrl ? [{
-					name: "Comprovante",
+					name: t("common.documents"),
 					url: formData.receiptUrl
 				}] : [],
 				payee: expense.provider
@@ -69634,7 +69728,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 					type: "expense",
 					category: expense.name,
 					amount: expense.amount,
-					description: `${expense.name} - ${expense.provider || ""} (Auto)`,
+					description: `${expense.name} - ${expense.provider || ""} (${t("common.automation")})`,
 					referenceId: expense.id,
 					status: "pending",
 					payee: expense.provider
@@ -69687,7 +69781,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "space-y-6",
 		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("properties.financial") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("properties.tabs.financial") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 				className: "grid grid-cols-1 md:grid-cols-2 gap-4",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -69855,7 +69949,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 											...formData,
 											name: e.target.value
 										}),
-										placeholder: t("properties.financial.name_placeholder")
+										placeholder: t("properties.financial_fields.name_placeholder")
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -69877,7 +69971,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 													...formData,
 													provider: e.target.value
 												}),
-												placeholder: t("properties.financial.provider_placeholder")
+												placeholder: t("properties.financial_fields.provider_placeholder")
 											})
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -69890,7 +69984,7 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 													...formData,
 													accountNumber: e.target.value
 												}),
-												placeholder: t("properties.financial.account_placeholder")
+												placeholder: t("properties.financial_fields.account_placeholder")
 											})
 										})]
 									})]
@@ -70208,7 +70302,7 @@ function PropertyMarketing({ data, onChange, canEdit }) {
 							children: "Zillow"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-sm text-muted-foreground",
-							children: "US Market Leader"
+							children: t("marketing_tab.zillow_desc")
 						})] })]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
 						checked: data.portalSettings?.zillow || false,
@@ -70228,7 +70322,7 @@ function PropertyMarketing({ data, onChange, canEdit }) {
 							children: "Idealista"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-sm text-muted-foreground",
-							children: "European Market"
+							children: t("marketing_tab.idealista_desc")
 						})] })]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
 						checked: data.portalSettings?.idealista || false,
@@ -70245,7 +70339,7 @@ function PropertyMarketing({ data, onChange, canEdit }) {
 						children: isPublishing ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "mr-2 h-4 w-4 animate-spin" }),
 							" ",
-							"Publishing..."
+							t("marketing_tab.publishing")
 						] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Share2, { className: "mr-2 h-4 w-4" }),
 							" ",
@@ -71208,19 +71302,25 @@ function PropertyFeatures({ data, onChange, canEdit, condominium }) {
 					className: "grid grid-cols-1 md:grid-cols-2 gap-4",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.ssid") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: data.wifiSsid || "",
-							onChange: (e) => onChange("wifiSsid", e.target.value),
-							disabled: !canEdit,
-							placeholder: "SSID"
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.ssid") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.wifiSsid || "",
+								onChange: (e) => onChange("wifiSsid", e.target.value),
+								disabled: !canEdit,
+								placeholder: "SSID"
+							})
 						})]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.password") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: data.wifiPassword || "",
-							onChange: (e) => onChange("wifiPassword", e.target.value),
-							disabled: !canEdit,
-							placeholder: "********"
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.password") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.wifiPassword || "",
+								onChange: (e) => onChange("wifiPassword", e.target.value),
+								disabled: !canEdit,
+								placeholder: "********"
+							})
 						})]
 					})]
 				})]
@@ -71239,42 +71339,51 @@ function PropertyFeatures({ data, onChange, canEdit, condominium }) {
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.unit_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: data.accessCodeUnit || "",
-								onChange: (e) => onChange("accessCodeUnit", e.target.value),
-								disabled: !canEdit,
-								placeholder: "1234"
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.unit_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+								className: "w-full block",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: data.accessCodeUnit || "",
+									onChange: (e) => onChange("accessCodeUnit", e.target.value),
+									disabled: !canEdit,
+									placeholder: "1234"
+								})
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.building_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: data.accessCodeBuilding || "",
-								onChange: (e) => onChange("accessCodeBuilding", e.target.value),
-								disabled: !canEdit,
-								placeholder: "#5566"
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.building_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+								className: "w-full block",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: data.accessCodeBuilding || "",
+									onChange: (e) => onChange("accessCodeBuilding", e.target.value),
+									disabled: !canEdit,
+									placeholder: "#5566"
+								})
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.pool_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "relative",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.pool_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, {
+								className: "w-full block relative",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									value: data.accessCodePool || "",
 									onChange: (e) => onChange("accessCodePool", e.target.value),
 									disabled: !canEdit,
 									placeholder: "9090",
 									className: "pl-8"
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Waves, { className: "absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Waves, { className: "absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground z-10" })]
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.staff_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: data.accessCodeCleaning || "",
-								onChange: (e) => onChange("accessCodeCleaning", e.target.value),
-								disabled: !canEdit,
-								placeholder: "Internal use"
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.staff_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+								className: "w-full block",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: data.accessCodeCleaning || "",
+									onChange: (e) => onChange("accessCodeCleaning", e.target.value),
+									disabled: !canEdit,
+									placeholder: "Internal use"
+								})
 							})]
 						})
 					]
@@ -71296,9 +71405,13 @@ function PropertyFeatures({ data, onChange, canEdit, condominium }) {
 						children: Object.entries(condominium.accessCredentials).map(([key, val]) => val && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 							className: "text-xs text-muted-foreground uppercase",
 							children: key.replace(/([A-Z])/g, " $1").trim()
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "font-mono text-sm font-semibold",
-							children: val
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							blur: true,
+							className: "block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "font-mono text-sm font-semibold",
+								children: val
+							})
 						})] }, key))
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
@@ -72533,7 +72646,7 @@ function PropertyAnalytics({ property: property$2 }) {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "text-xs text-muted-foreground",
-							children: "Annualized Return"
+							children: t("analytics.roi")
 						})
 					]
 				}) }),
@@ -72550,7 +72663,7 @@ function PropertyAnalytics({ property: property$2 }) {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "text-xs text-muted-foreground",
-							children: "Market Capitalization"
+							children: t("analytics.cap_rate")
 						})
 					]
 				}) }),
@@ -72567,7 +72680,7 @@ function PropertyAnalytics({ property: property$2 }) {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "text-xs text-muted-foreground",
-							children: "Est. based on 120m²"
+							children: t("common.analytics.benchmark_desc")
 						})
 					]
 				}) })
@@ -72627,7 +72740,7 @@ function PropertyAnalytics({ property: property$2 }) {
 						]
 					})
 				})
-			}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("analytics.net_flow") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Projected Net Operating Income trend" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("analytics.net_flow") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("analytics.net_flow") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "h-[300px] w-full",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartContainer, {
 					config: { net: {
@@ -72666,6 +72779,7 @@ function PropertyAnalytics({ property: property$2 }) {
 }
 function RatePlanManager({ property: property$2 }) {
 	const { updateProperty } = usePropertyStore_default();
+	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const [isOpen, setIsOpen] = (0, import_react.useState)(false);
 	const [editingPlan, setEditingPlan] = (0, import_react.useState)({
@@ -72695,7 +72809,7 @@ function RatePlanManager({ property: property$2 }) {
 			adjustmentValue: 0,
 			active: true
 		});
-		toast$2({ title: "Rate Plan Saved" });
+		toast$2({ title: t("common.success") });
 	};
 	const handleDelete = (id) => {
 		const updatedPlans = property$2.ratePlans?.filter((p$1) => p$1.id !== id) || [];
@@ -72703,7 +72817,7 @@ function RatePlanManager({ property: property$2 }) {
 			...property$2,
 			ratePlans: updatedPlans
 		});
-		toast$2({ title: "Rate Plan Deleted" });
+		toast$2({ title: t("common.delete_success") });
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "space-y-6",
@@ -72712,14 +72826,18 @@ function RatePlanManager({ property: property$2 }) {
 				className: "flex justify-between items-center",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
 					className: "text-lg font-semibold",
-					children: "Rate Plans"
+					children: t("properties.tabs.pricing")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-sm text-muted-foreground",
-					children: "Configure dynamic pricing rules."
+					children: t("settings.automation_desc")
 				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 					onClick: () => setIsOpen(true),
 					className: "gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Add Plan"]
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+						" ",
+						t("common.add_title")
+					]
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -72757,9 +72875,9 @@ function RatePlanManager({ property: property$2 }) {
 					className: "p-4 pt-0 text-sm grid gap-1",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex justify-between",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 							className: "text-muted-foreground",
-							children: "Adjustment:"
+							children: [t("common.value"), ":"]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 							className: "font-bold flex items-center gap-1",
 							children: [
@@ -72771,16 +72889,17 @@ function RatePlanManager({ property: property$2 }) {
 						})]
 					}), plan.startDate && plan.endDate && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex justify-between",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 							className: "text-muted-foreground",
-							children: "Dates:"
+							children: [t("common.date"), ":"]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 							className: "flex items-center gap-1",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-3 w-3" }),
 								" ",
 								plan.startDate,
-								" to",
+								" ",
+								t("common.and"),
 								" ",
 								plan.endDate
 							]
@@ -72788,33 +72907,32 @@ function RatePlanManager({ property: property$2 }) {
 					})]
 				})] }, plan.id)), (!property$2.ratePlans || property$2.ratePlans.length === 0) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg",
-					children: "No rate plans configured."
+					children: t("common.empty")
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 				open: isOpen,
 				onOpenChange: setIsOpen,
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingPlan.id ? "Edit Plan" : "New Rate Plan" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingPlan.id ? t("common.edit") : t("common.new") }) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid gap-4 py-4",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Plan Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									value: editingPlan.name,
 									onChange: (e) => setEditingPlan({
 										...editingPlan,
 										name: e.target.value
-									}),
-									placeholder: "e.g. Summer High Season"
+									})
 								})]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "grid grid-cols-2 gap-4",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.type") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 										value: editingPlan.type,
 										onValueChange: (v) => setEditingPlan({
 											...editingPlan,
@@ -72823,25 +72941,25 @@ function RatePlanManager({ property: property$2 }) {
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 												value: "seasonal",
-												children: "Seasonal"
+												children: t("guest_services.seasonal_pricing")
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 												value: "holiday",
-												children: "Holiday"
+												children: t("common.other")
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 												value: "long_stay",
-												children: "Long Stay"
+												children: t("properties.profile_long")
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 												value: "last_minute",
-												children: "Last Minute"
+												children: t("common.other")
 											})
 										] })]
 									})]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.status") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "flex items-center space-x-2 pt-2",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
 											checked: editingPlan.active,
@@ -72849,7 +72967,7 @@ function RatePlanManager({ property: property$2 }) {
 												...editingPlan,
 												active: c$1
 											})
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: editingPlan.active ? "Active" : "Inactive" })]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: editingPlan.active ? t("common.active") : t("common.inactive") })]
 									})]
 								})]
 							}),
@@ -72857,7 +72975,7 @@ function RatePlanManager({ property: property$2 }) {
 								className: "grid grid-cols-2 gap-4",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Adjustment Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.type") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 										value: editingPlan.adjustmentType,
 										onValueChange: (v) => setEditingPlan({
 											...editingPlan,
@@ -72865,15 +72983,15 @@ function RatePlanManager({ property: property$2 }) {
 										}),
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "percentage",
-											children: "Percentage (%)"
+											children: "%"
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "fixed_price",
-											children: "Fixed Amount ($)"
+											children: "$"
 										})] })]
 									})]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Value (+ Increase, - Discount)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t("common.value"), " (+ / -)"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										type: "number",
 										value: editingPlan.adjustmentValue,
 										onChange: (e) => setEditingPlan({
@@ -72887,7 +73005,7 @@ function RatePlanManager({ property: property$2 }) {
 								className: "grid grid-cols-2 gap-4",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Start Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.start_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										type: "date",
 										value: editingPlan.startDate,
 										onChange: (e) => setEditingPlan({
@@ -72897,7 +73015,7 @@ function RatePlanManager({ property: property$2 }) {
 									})]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "End Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.end_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										type: "date",
 										value: editingPlan.endDate,
 										onChange: (e) => setEditingPlan({
@@ -72911,7 +73029,7 @@ function RatePlanManager({ property: property$2 }) {
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						onClick: handleSave,
-						children: "Save Plan"
+						children: t("common.save")
 					}) })
 				] })
 			})
@@ -73159,7 +73277,7 @@ function PropertyDetails() {
 			return prev;
 		});
 	}, [property$2]);
-	if (!property$2 || !formData) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: "Not Found" });
+	if (!property$2 || !formData) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: t("common.error_404_desc") });
 	const handleSave = () => {
 		if (!formData.name?.trim() || !formData.address?.trim()) {
 			toast$2({
@@ -73181,7 +73299,7 @@ function PropertyDetails() {
 		setIsEditing(false);
 		toast$2({
 			title: t("common.save"),
-			description: t("properties.property_added").replace("Adicionada", "Atualizada")
+			description: t("common.success")
 		});
 	};
 	const handleDelete = () => {
@@ -73200,22 +73318,22 @@ function PropertyDetails() {
 	const handleExport = () => {
 		if (!formData) return;
 		const headers = [
-			"Property ID",
-			"Name",
-			"Address",
-			"City",
-			"State",
-			"Zip Code",
-			"Country",
-			"Type",
-			"Profile",
-			"Status",
-			"Bedrooms",
-			"Bathrooms",
-			"Guests",
-			"Owner ID",
-			"Current Tenant",
-			"Listing Price"
+			"ID",
+			t("common.name"),
+			t("common.address"),
+			t("properties.city_placeholder"),
+			t("properties.state_placeholder"),
+			t("properties.zip_code"),
+			t("common.country"),
+			t("common.type"),
+			t("common.profile"),
+			t("common.status"),
+			t("properties.features.bedrooms"),
+			t("properties.features.bathrooms"),
+			t("properties.features.guests"),
+			t("common.relationship_owner"),
+			t("common.relationship_tenant"),
+			t("common.value")
 		];
 		const row = [
 			formData.id,
@@ -73232,7 +73350,7 @@ function PropertyDetails() {
 			formData.bathrooms,
 			formData.guests,
 			formData.ownerId,
-			activeTenant ? activeTenant.name : "None",
+			activeTenant ? activeTenant.name : t("common.none"),
 			formData.listingPrice || 0
 		];
 		exportToCSV(`property_${formData.name}_export`, headers, [row]);
@@ -95076,4 +95194,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Xh3xx79r.js.map
+//# sourceMappingURL=index-BxU3UikM.js.map

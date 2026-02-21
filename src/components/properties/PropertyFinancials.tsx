@@ -216,7 +216,7 @@ export function PropertyFinancials({
         status: isPaid ? 'cleared' : 'pending',
         paymentDate: isPaid ? initialDate.toISOString() : undefined,
         attachments: formData.receiptUrl
-          ? [{ name: 'Comprovante', url: formData.receiptUrl }]
+          ? [{ name: t('common.documents'), url: formData.receiptUrl }]
           : [],
         payee: expense.provider,
       }
@@ -233,7 +233,7 @@ export function PropertyFinancials({
           type: 'expense',
           category: expense.name,
           amount: expense.amount,
-          description: `${expense.name} - ${expense.provider || ''} (Auto)`,
+          description: `${expense.name} - ${expense.provider || ''} (${t('common.automation')})`,
           referenceId: expense.id,
           status: 'pending',
           payee: expense.provider,
@@ -311,7 +311,7 @@ export function PropertyFinancials({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{t('properties.financial')}</CardTitle>
+          <CardTitle>{t('properties.tabs.financial')}</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid gap-2">
@@ -530,7 +530,7 @@ export function PropertyFinancials({
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                placeholder={t('properties.financial.name_placeholder')}
+                placeholder={t('properties.financial_fields.name_placeholder')}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -544,7 +544,9 @@ export function PropertyFinancials({
                     onChange={(e) =>
                       setFormData({ ...formData, provider: e.target.value })
                     }
-                    placeholder={t('properties.financial.provider_placeholder')}
+                    placeholder={t(
+                      'properties.financial_fields.provider_placeholder',
+                    )}
                   />
                 </DataMask>
               </div>
@@ -559,7 +561,9 @@ export function PropertyFinancials({
                         accountNumber: e.target.value,
                       })
                     }
-                    placeholder={t('properties.financial.account_placeholder')}
+                    placeholder={t(
+                      'properties.financial_fields.account_placeholder',
+                    )}
                   />
                 </DataMask>
               </div>

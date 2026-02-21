@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Lock, Key, Waves } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { DataMask } from '@/components/DataMask'
 
 interface PropertyFeaturesProps {
   data: Property
@@ -62,21 +63,25 @@ export function PropertyFeatures({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>{t('properties.features.ssid')}</Label>
-              <Input
-                value={data.wifiSsid || ''}
-                onChange={(e) => onChange('wifiSsid', e.target.value)}
-                disabled={!canEdit}
-                placeholder="SSID"
-              />
+              <DataMask className="w-full block">
+                <Input
+                  value={data.wifiSsid || ''}
+                  onChange={(e) => onChange('wifiSsid', e.target.value)}
+                  disabled={!canEdit}
+                  placeholder="SSID"
+                />
+              </DataMask>
             </div>
             <div className="grid gap-2">
               <Label>{t('properties.features.password')}</Label>
-              <Input
-                value={data.wifiPassword || ''}
-                onChange={(e) => onChange('wifiPassword', e.target.value)}
-                disabled={!canEdit}
-                placeholder="********"
-              />
+              <DataMask className="w-full block">
+                <Input
+                  value={data.wifiPassword || ''}
+                  onChange={(e) => onChange('wifiPassword', e.target.value)}
+                  disabled={!canEdit}
+                  placeholder="********"
+                />
+              </DataMask>
             </div>
           </div>
         </div>
@@ -88,25 +93,31 @@ export function PropertyFeatures({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="grid gap-2">
               <Label>{t('properties.features.unit_code')}</Label>
-              <Input
-                value={data.accessCodeUnit || ''}
-                onChange={(e) => onChange('accessCodeUnit', e.target.value)}
-                disabled={!canEdit}
-                placeholder="1234"
-              />
+              <DataMask className="w-full block">
+                <Input
+                  value={data.accessCodeUnit || ''}
+                  onChange={(e) => onChange('accessCodeUnit', e.target.value)}
+                  disabled={!canEdit}
+                  placeholder="1234"
+                />
+              </DataMask>
             </div>
             <div className="grid gap-2">
               <Label>{t('properties.features.building_code')}</Label>
-              <Input
-                value={data.accessCodeBuilding || ''}
-                onChange={(e) => onChange('accessCodeBuilding', e.target.value)}
-                disabled={!canEdit}
-                placeholder="#5566"
-              />
+              <DataMask className="w-full block">
+                <Input
+                  value={data.accessCodeBuilding || ''}
+                  onChange={(e) =>
+                    onChange('accessCodeBuilding', e.target.value)
+                  }
+                  disabled={!canEdit}
+                  placeholder="#5566"
+                />
+              </DataMask>
             </div>
             <div className="grid gap-2">
               <Label>{t('properties.features.pool_code')}</Label>
-              <div className="relative">
+              <DataMask className="w-full block relative">
                 <Input
                   value={data.accessCodePool || ''}
                   onChange={(e) => onChange('accessCodePool', e.target.value)}
@@ -114,17 +125,21 @@ export function PropertyFeatures({
                   placeholder="9090"
                   className="pl-8"
                 />
-                <Waves className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              </div>
+                <Waves className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground z-10" />
+              </DataMask>
             </div>
             <div className="grid gap-2">
               <Label>{t('properties.features.staff_code')}</Label>
-              <Input
-                value={data.accessCodeCleaning || ''}
-                onChange={(e) => onChange('accessCodeCleaning', e.target.value)}
-                disabled={!canEdit}
-                placeholder="Internal use"
-              />
+              <DataMask className="w-full block">
+                <Input
+                  value={data.accessCodeCleaning || ''}
+                  onChange={(e) =>
+                    onChange('accessCodeCleaning', e.target.value)
+                  }
+                  disabled={!canEdit}
+                  placeholder="Internal use"
+                />
+              </DataMask>
             </div>
           </div>
         </div>
@@ -144,9 +159,11 @@ export function PropertyFeatures({
                       <Label className="text-xs text-muted-foreground uppercase">
                         {key.replace(/([A-Z])/g, ' $1').trim()}
                       </Label>
-                      <div className="font-mono text-sm font-semibold">
-                        {val}
-                      </div>
+                      <DataMask blur className="block">
+                        <div className="font-mono text-sm font-semibold">
+                          {val}
+                        </div>
+                      </DataMask>
                     </div>
                   ),
               )}

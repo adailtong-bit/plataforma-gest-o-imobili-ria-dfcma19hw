@@ -111,7 +111,7 @@ export function PropertyMarketing({
               <div>
                 <p className="font-semibold">Zillow</p>
                 <p className="text-sm text-muted-foreground">
-                  US Market Leader
+                  {t('marketing_tab.zillow_desc')}
                 </p>
               </div>
             </div>
@@ -129,7 +129,9 @@ export function PropertyMarketing({
               </div>
               <div>
                 <p className="font-semibold">Idealista</p>
-                <p className="text-sm text-muted-foreground">European Market</p>
+                <p className="text-sm text-muted-foreground">
+                  {t('marketing_tab.idealista_desc')}
+                </p>
               </div>
             </div>
             <Switch
@@ -148,7 +150,7 @@ export function PropertyMarketing({
               {isPublishing ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
-                  Publishing...
+                  {t('marketing_tab.publishing')}
                 </>
               ) : (
                 <>

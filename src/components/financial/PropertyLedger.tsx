@@ -39,7 +39,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-bold text-slate-900">
-          {t('financial.title')} - Ledger
+          {t('financial.title')} - {t('common.history')}
         </h3>
         <div className="text-right">
           <span className="text-sm text-slate-500 mr-2">

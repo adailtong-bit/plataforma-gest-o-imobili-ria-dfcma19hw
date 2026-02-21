@@ -100,7 +100,7 @@ export default function PropertyDetails() {
     }
   }, [property])
 
-  if (!property || !formData) return <div>Not Found</div>
+  if (!property || !formData) return <div>{t('common.error_404_desc')}</div>
 
   const handleSave = () => {
     if (!formData.name?.trim() || !formData.address?.trim()) {
@@ -125,10 +125,7 @@ export default function PropertyDetails() {
     setIsEditing(false)
     toast({
       title: t('common.save'),
-      description: t('properties.property_added').replace(
-        'Adicionada',
-        'Atualizada',
-      ),
+      description: t('common.success'),
     })
   }
 
@@ -153,22 +150,22 @@ export default function PropertyDetails() {
     if (!formData) return
 
     const headers = [
-      'Property ID',
-      'Name',
-      'Address',
-      'City',
-      'State',
-      'Zip Code',
-      'Country',
-      'Type',
-      'Profile',
-      'Status',
-      'Bedrooms',
-      'Bathrooms',
-      'Guests',
-      'Owner ID',
-      'Current Tenant',
-      'Listing Price',
+      'ID',
+      t('common.name'),
+      t('common.address'),
+      t('properties.city_placeholder'),
+      t('properties.state_placeholder'),
+      t('properties.zip_code'),
+      t('common.country'),
+      t('common.type'),
+      t('common.profile'),
+      t('common.status'),
+      t('properties.features.bedrooms'),
+      t('properties.features.bathrooms'),
+      t('properties.features.guests'),
+      t('common.relationship_owner'),
+      t('common.relationship_tenant'),
+      t('common.value'),
     ]
 
     const row = [
@@ -186,7 +183,7 @@ export default function PropertyDetails() {
       formData.bathrooms,
       formData.guests,
       formData.ownerId,
-      activeTenant ? activeTenant.name : 'None',
+      activeTenant ? activeTenant.name : t('common.none'),
       formData.listingPrice || 0,
     ]
 
