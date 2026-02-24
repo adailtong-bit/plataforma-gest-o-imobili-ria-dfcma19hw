@@ -52,6 +52,7 @@ import Performance from './pages/Performance'
 import GuestServices from './pages/GuestServices'
 import PointOfSale from './pages/PointOfSale'
 import Marketing from './pages/Marketing'
+import Landing from './pages/Landing'
 import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { useEffect } from 'react'
@@ -75,6 +76,7 @@ const App = () => {
             <TourGuide />
             <Routes>
               {/* Public Routes */}
+              <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/guest/:roomId" element={<RoomConcierge />} />
@@ -89,15 +91,6 @@ const App = () => {
 
               {/* Protected Routes */}
               <Route element={<DashboardLayout />}>
-                {/* Real Estate Dashboard as Main Route */}
-                <Route
-                  path="/"
-                  element={
-                    <RequirePermission resource="dashboard">
-                      <Index />
-                    </RequirePermission>
-                  }
-                />
                 {/* Dashboard Alias */}
                 <Route
                   path="/dashboard"

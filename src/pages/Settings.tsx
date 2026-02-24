@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { FinancialSettings as FinancialSettingsComponent } from '@/components/settings/FinancialSettings'
+import { SubscriptionSettings } from '@/components/settings/SubscriptionSettings'
 import {
   Settings as SettingsIcon,
   CreditCard,
@@ -7,6 +8,7 @@ import {
   Link as LinkIcon,
   Database,
   ClipboardList,
+  DollarSign,
 } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
@@ -42,6 +44,7 @@ export default function Settings() {
   }
 
   const isPM = ['platform_owner', 'software_tenant'].includes(currentUser.role)
+  const isPlatformOwner = currentUser.role === 'platform_owner'
 
   return (
     <div className="flex flex-col gap-6">
@@ -68,6 +71,11 @@ export default function Settings() {
           {isPM && (
             <TabsTrigger value="roles" className="gap-2">
               <Users className="h-4 w-4" /> {t('settings.roles_permissions')}
+            </TabsTrigger>
+          )}
+          {isPlatformOwner && (
+            <TabsTrigger value="subscription" className="gap-2">
+              <DollarSign className="h-4 w-4" /> Subscription & Pricing
             </TabsTrigger>
           )}
           <TabsTrigger value="audit" className="gap-2">
@@ -194,6 +202,12 @@ export default function Settings() {
           </Card>
         </TabsContent>
 
+        {isPlatformOwner && (
+          <TabsContent value="subscription">
+            <SubscriptionSettings />
+          </TabsContent>
+        )}
+
         <TabsContent value="audit">
           <Card>
             <CardHeader>
@@ -203,7 +217,9 @@ export default function Settings() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <AuditLogList />
+              <div className="h-[400px] overflow-auto border rounded-md custom-scrollbar">
+                <AuditLogList />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

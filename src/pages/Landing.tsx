@@ -22,6 +22,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 import {
   CheckCircle2,
   Globe,
@@ -37,16 +40,21 @@ import {
   Calendar,
   ShieldCheck,
   TrendingUp,
+  MapPin,
+  Mail,
+  Phone,
 } from 'lucide-react'
 import logo from '@/assets/logo-estilizado.jpg'
 import { trackEvent } from '@/lib/analytics'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useSubscriptionStore from '@/stores/useSubscriptionStore'
 import { formatCurrency } from '@/lib/utils'
 
 export default function Landing() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { language, setLanguage, t } = useLanguageStore()
+  const { subscriptionConfig } = useSubscriptionStore()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -120,53 +128,6 @@ export default function Landing() {
     },
   ]
 
-  const plans = [
-    {
-      name: t('landing.pricing.starter.name'),
-      price: 29, // number for formatting
-      period: t('landing.pricing.per_month'),
-      description: t('landing.pricing.starter.desc'),
-      features: [
-        t('landing.pricing.starter.feat_1'),
-        t('landing.pricing.starter.feat_2'),
-        t('landing.pricing.starter.feat_3'),
-        t('landing.pricing.starter.feat_4'),
-      ],
-      cta: t('landing.pricing.starter.cta'),
-      popular: false,
-    },
-    {
-      name: t('landing.pricing.professional.name'),
-      price: 99, // number for formatting
-      period: t('landing.pricing.per_month'),
-      description: t('landing.pricing.professional.desc'),
-      features: [
-        t('landing.pricing.professional.feat_1'),
-        t('landing.pricing.professional.feat_2'),
-        t('landing.pricing.professional.feat_3'),
-        t('landing.pricing.professional.feat_4'),
-        t('landing.pricing.professional.feat_5'),
-      ],
-      cta: t('landing.pricing.professional.cta'),
-      popular: true,
-    },
-    {
-      name: t('landing.pricing.enterprise.name'),
-      price: t('landing.pricing.custom_price'), // string
-      period: '',
-      description: t('landing.pricing.enterprise.desc'),
-      features: [
-        t('landing.pricing.enterprise.feat_1'),
-        t('landing.pricing.enterprise.feat_2'),
-        t('landing.pricing.enterprise.feat_3'),
-        t('landing.pricing.enterprise.feat_4'),
-        t('landing.pricing.enterprise.feat_5'),
-      ],
-      cta: t('landing.pricing.enterprise.cta'),
-      popular: false,
-    },
-  ]
-
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-trust-blue selection:text-white overflow-x-hidden">
       {/* Navigation */}
@@ -192,18 +153,18 @@ export default function Landing() {
           {/* Desktop Nav */}
           <nav className="hidden md:flex gap-8 text-sm font-medium items-center">
             <a
+              href="#about"
+              onClick={() => handleNavClick('about')}
+              className="hover:text-trust-blue transition-colors"
+            >
+              Who We Are
+            </a>
+            <a
               href="#features"
               onClick={() => handleNavClick('features')}
               className="hover:text-trust-blue transition-colors"
             >
-              {t('landing.nav.features')}
-            </a>
-            <a
-              href="#testimonials"
-              onClick={() => handleNavClick('testimonials')}
-              className="hover:text-trust-blue transition-colors"
-            >
-              {t('landing.nav.testimonials')}
+              What We Offer
             </a>
             <a
               href="#pricing"
@@ -211,6 +172,13 @@ export default function Landing() {
               className="hover:text-trust-blue transition-colors"
             >
               {t('landing.nav.pricing')}
+            </a>
+            <a
+              href="#contact"
+              onClick={() => handleNavClick('contact')}
+              className="hover:text-trust-blue transition-colors"
+            >
+              Contact
             </a>
 
             {/* Language Selector */}
@@ -284,18 +252,18 @@ export default function Landing() {
         {mobileMenuOpen && (
           <div className="md:hidden bg-background border-b shadow-lg absolute w-full px-6 py-4 flex flex-col gap-4 animate-in slide-in-from-top-5">
             <a
+              href="#about"
+              onClick={() => handleNavClick('about')}
+              className="py-2 hover:text-trust-blue font-medium"
+            >
+              Who We Are
+            </a>
+            <a
               href="#features"
               onClick={() => handleNavClick('features')}
               className="py-2 hover:text-trust-blue font-medium"
             >
-              {t('landing.nav.features')}
-            </a>
-            <a
-              href="#testimonials"
-              onClick={() => handleNavClick('testimonials')}
-              className="py-2 hover:text-trust-blue font-medium"
-            >
-              {t('landing.nav.testimonials')}
+              What We Offer
             </a>
             <a
               href="#pricing"
@@ -303,6 +271,13 @@ export default function Landing() {
               className="py-2 hover:text-trust-blue font-medium"
             >
               {t('landing.nav.pricing')}
+            </a>
+            <a
+              href="#contact"
+              onClick={() => handleNavClick('contact')}
+              className="py-2 hover:text-trust-blue font-medium"
+            >
+              Contact
             </a>
 
             {/* Mobile Language Selector */}
@@ -362,7 +337,6 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-6 container mx-auto text-center flex flex-col items-center overflow-hidden">
-        {/* Decorative Background */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50/80 via-background to-background -z-10 pointer-events-none" />
 
         <Badge
@@ -420,34 +394,50 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="py-12 bg-muted/30 border-y">
+      {/* About Us (Who We Are) */}
+      <section id="about" className="py-24 bg-muted/20 border-y scroll-mt-20">
         <div className="container mx-auto px-6">
-          <p className="text-center text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-8">
-            {t('landing.social_proof.title')}
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
-            {[
-              'Airbnb',
-              'Booking.com',
-              'Expedia',
-              'Vrbo',
-              'QuickBooks',
-              'Stripe',
-            ].map((brand) => (
-              <div key={brand} className="flex items-center justify-center">
-                <img
-                  src={`https://img.usecurling.com/i?q=${brand}&color=black`}
-                  alt={brand}
-                  className="h-8 md:h-10 w-auto object-contain"
-                />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <Badge
+                variant="outline"
+                className="text-trust-blue bg-blue-50 border-blue-200"
+              >
+                Who We Are
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold text-navy leading-tight">
+                Empowering Property Managers with Next-Gen Tools
+              </h2>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                COREPM is built by industry veterans who understand the
+                challenges of modern property management. We realized that
+                juggling multiple tools for short-term and long-term rentals was
+                slowing businesses down.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Our mission is to provide a single, unified command center that
+                handles everything from tenant communication and maintenance
+                workflows to complex financial reporting and OTA
+                synchronization.
+              </p>
+              <div className="pt-4">
+                <Button variant="outline" className="gap-2 border-slate-300">
+                  Read Our Story <ArrowRight className="h-4 w-4" />
+                </Button>
               </div>
-            ))}
+            </div>
+            <div className="relative h-[400px] rounded-xl overflow-hidden shadow-xl">
+              <img
+                src="https://img.usecurling.com/p/800/600?q=office%20teamwork&color=blue"
+                alt="Our Team"
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features Grid */}
+      {/* Features Grid (What We Offer) */}
       <section id="features" className="py-24 bg-background scroll-mt-20">
         <div className="container mx-auto px-6">
           <div className="text-center mb-20 max-w-3xl mx-auto">
@@ -455,7 +445,7 @@ export default function Landing() {
               variant="outline"
               className="mb-4 text-trust-blue border-trust-blue/20 bg-blue-50"
             >
-              {t('landing.features.badge')}
+              What We Offer
             </Badge>
             <h2 className="text-3xl md:text-5xl font-bold mb-6 text-navy">
               {t('landing.features.title')}
@@ -488,71 +478,6 @@ export default function Landing() {
                 </CardContent>
               </Card>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Value Proposition / Stats */}
-      <section className="py-24 bg-trust-blue text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://img.usecurling.com/p/1920/600?q=abstract%20geometric%20blue&color=blue')] opacity-10 bg-cover bg-center mix-blend-overlay" />
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8 animate-in slide-in-from-left-8 duration-700">
-              <h2 className="text-4xl md:text-5xl font-bold leading-tight">
-                {t('landing.stats.title_start')} <br />
-                <span className="text-blue-200">
-                  {t('landing.stats.title_end')}
-                </span>
-              </h2>
-              <p className="text-xl text-blue-100 leading-relaxed">
-                {t('landing.stats.subtitle')}
-              </p>
-              <ul className="space-y-4">
-                {[
-                  t('landing.stats.list_1'),
-                  t('landing.stats.list_2'),
-                  t('landing.stats.list_3'),
-                ].map((item, i) => (
-                  <li
-                    key={i}
-                    className="flex items-center gap-3 text-lg font-medium"
-                  >
-                    <ShieldCheck className="h-6 w-6 text-blue-300" /> {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {[
-                {
-                  label: t('landing.stats.properties'),
-                  value: '10k+',
-                },
-                {
-                  label: t('landing.stats.revenue'),
-                  value: '$500M+',
-                },
-                {
-                  label: t('landing.stats.uptime'),
-                  value: '99.9%',
-                },
-                {
-                  label: t('landing.stats.satisfaction'),
-                  value: '4.9/5',
-                },
-              ].map((stat, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl border border-white/10 hover:bg-white/20 transition-colors"
-                >
-                  <div className="text-4xl font-extrabold mb-2">
-                    {stat.value}
-                  </div>
-                  <div className="text-blue-200 font-medium">{stat.label}</div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
@@ -623,7 +548,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Pricing */}
+      {/* Dynamic Pricing */}
       <section id="pricing" className="py-24 bg-background scroll-mt-20">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
@@ -631,17 +556,18 @@ export default function Landing() {
               {t('landing.pricing.title')}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t('landing.pricing.subtitle')}
+              Choose the perfect plan for your property management business.
+              Scalable, flexible, and transparent.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {plans.map((plan, idx) => (
+            {subscriptionConfig.tiers.map((plan, idx) => (
               <Card
-                key={idx}
-                className={`flex flex-col border transition-all duration-300 ${plan.popular ? 'border-trust-blue shadow-2xl scale-105 z-10 relative' : 'border-border shadow-sm hover:shadow-lg hover:-translate-y-1'}`}
+                key={plan.id}
+                className={`flex flex-col border transition-all duration-300 ${idx === 1 ? 'border-trust-blue shadow-2xl scale-105 z-10 relative' : 'border-border shadow-sm hover:shadow-lg hover:-translate-y-1'}`}
               >
-                {plan.popular && (
+                {idx === 1 && (
                   <div className="bg-trust-blue text-white text-center text-xs font-bold py-1.5 uppercase tracking-wider rounded-t-lg">
                     {t('landing.pricing.most_popular')}
                   </div>
@@ -650,23 +576,35 @@ export default function Landing() {
                   <CardTitle className="text-2xl font-bold">
                     {plan.name}
                   </CardTitle>
-                  <CardDescription className="mt-2">
-                    {plan.description}
+                  <CardDescription className="mt-2 uppercase font-semibold">
+                    Region: {plan.region}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
-                  <div className="mb-8">
+                  <div className="mb-4">
                     <span className="text-5xl font-extrabold text-navy">
-                      {typeof plan.price === 'number'
-                        ? formatCurrency(plan.price, language).replace(
-                            /\.00$/,
-                            '',
-                          )
-                        : plan.price}
+                      {formatCurrency(plan.basePrice, language).replace(
+                        /\.00$/,
+                        '',
+                      )}
                     </span>
                     <span className="text-muted-foreground font-medium">
-                      {plan.period}
+                      /mo
                     </span>
+                  </div>
+                  <div className="text-sm font-medium text-slate-600 mb-6 bg-slate-50 p-3 rounded-lg border">
+                    <p>
+                      Up to{' '}
+                      <strong className="text-navy">{plan.maxUnits}</strong>{' '}
+                      properties.
+                    </p>
+                    <p>
+                      +
+                      <strong className="text-navy">
+                        {formatCurrency(plan.additionalUnitCost, language)}
+                      </strong>{' '}
+                      per extra property.
+                    </p>
                   </div>
                   <ul className="flex-1 space-y-4 mb-8">
                     {plan.features.map((feature, i) => (
@@ -680,7 +618,7 @@ export default function Landing() {
                     ))}
                   </ul>
                   <Button
-                    className={`w-full h-12 text-base font-semibold ${plan.popular ? 'bg-trust-blue hover:bg-blue-700 shadow-lg' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}
+                    className={`w-full h-12 text-base font-semibold ${idx === 1 ? 'bg-trust-blue hover:bg-blue-700 shadow-lg' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}
                     onClick={() =>
                       handleCtaClick(plan.cta, `pricing_${plan.name}`)
                     }
@@ -695,9 +633,92 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Contact Section */}
+      <section id="contact" className="py-24 bg-muted/20 scroll-mt-20 border-t">
+        <div className="container mx-auto px-6 max-w-5xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+            <div>
+              <h2 className="text-3xl font-bold text-navy mb-4">
+                Get in Touch
+              </h2>
+              <p className="text-muted-foreground mb-8 leading-relaxed">
+                Have questions about our pricing, features, or need a custom
+                enterprise plan? Our team is ready to help you optimize your
+                property management.
+              </p>
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 bg-blue-100 flex items-center justify-center rounded-full">
+                    <MapPin className="h-5 w-5 text-trust-blue" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-navy">Our Office</h4>
+                    <p className="text-sm text-muted-foreground">
+                      1500 Tech Blvd, Suite 200
+                      <br />
+                      Miami, FL 33132
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 bg-blue-100 flex items-center justify-center rounded-full">
+                    <Mail className="h-5 w-5 text-trust-blue" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-navy">Email Us</h4>
+                    <p className="text-sm text-muted-foreground">
+                      contact@corepm.com
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 bg-blue-100 flex items-center justify-center rounded-full">
+                    <Phone className="h-5 w-5 text-trust-blue" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-navy">Call Us</h4>
+                    <p className="text-sm text-muted-foreground">
+                      +1 (800) 555-0199
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Card className="shadow-lg border-slate-200">
+              <CardHeader>
+                <CardTitle>Send a Message</CardTitle>
+                <CardDescription>
+                  Fill out the form and we'll be in touch soon.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-2">
+                  <Label>Name</Label>
+                  <Input placeholder="John Doe" />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Email</Label>
+                  <Input placeholder="john@example.com" type="email" />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Message</Label>
+                  <Textarea
+                    placeholder="How can we help?"
+                    className="min-h-[120px]"
+                  />
+                </div>
+                <Button className="w-full bg-trust-blue h-12 text-lg">
+                  Send Message
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Bottom CTA */}
       <section className="py-24 bg-gradient-to-br from-trust-blue to-blue-700 text-white text-center relative overflow-hidden">
-        {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10 bg-[url('https://img.usecurling.com/p/100/100?q=pattern&color=white')] bg-repeat"></div>
 
         <div className="container mx-auto px-6 relative z-10">
@@ -719,8 +740,8 @@ export default function Landing() {
                 {t('landing.footer_cta.cta_primary')}
               </Button>
             </Link>
-            <Link
-              to="/contact"
+            <a
+              href="#contact"
               onClick={() => handleCtaClick('Contact Sales', 'footer')}
             >
               <Button
@@ -730,7 +751,7 @@ export default function Landing() {
               >
                 {t('landing.footer_cta.cta_secondary')}
               </Button>
-            </Link>
+            </a>
           </div>
         </div>
       </section>
@@ -773,12 +794,18 @@ export default function Landing() {
               </h4>
               <ul className="space-y-3 text-sm">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a
+                    href="#features"
+                    className="hover:text-white transition-colors"
+                  >
                     {t('landing.footer.features')}
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a
+                    href="#pricing"
+                    className="hover:text-white transition-colors"
+                  >
                     {t('landing.footer.pricing')}
                   </a>
                 </li>
@@ -829,7 +856,10 @@ export default function Landing() {
               </h4>
               <ul className="space-y-3 text-sm">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a
+                    href="#about"
+                    className="hover:text-white transition-colors"
+                  >
                     {t('landing.footer.about')}
                   </a>
                 </li>
@@ -844,7 +874,10 @@ export default function Landing() {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a
+                    href="#contact"
+                    className="hover:text-white transition-colors"
+                  >
                     {t('landing.footer.contact')}
                   </a>
                 </li>

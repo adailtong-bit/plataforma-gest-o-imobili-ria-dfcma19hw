@@ -58,6 +58,7 @@ import {
   UserRole,
   Resource,
   Action,
+  SubscriptionConfig,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -106,6 +107,60 @@ import { useToast } from '@/hooks/use-toast'
 import { isSameDay, parseISO } from 'date-fns'
 import { formatCurrency as formatCurrencyUtil } from '@/lib/utils'
 import { DEFAULT_PERMISSIONS_MATRIX } from '@/lib/permissions'
+
+const initialSubscriptionConfig: SubscriptionConfig = {
+  tiers: [
+    {
+      id: 'tier-1',
+      name: 'Starter',
+      basePrice: 29,
+      maxUnits: 10,
+      additionalUnitCost: 3,
+      region: 'global',
+      features: [
+        'Up to 10 units',
+        'Basic Support',
+        'Standard Reports',
+        'Guest Portal',
+      ],
+      cta: 'Start Free Trial',
+    },
+    {
+      id: 'tier-2',
+      name: 'Professional',
+      basePrice: 99,
+      maxUnits: 50,
+      additionalUnitCost: 2,
+      region: 'global',
+      features: [
+        'Up to 50 units',
+        'Priority Support',
+        'Advanced Analytics',
+        'Automation Rules',
+        'API Access',
+      ],
+      cta: 'Get Professional',
+    },
+    {
+      id: 'tier-3',
+      name: 'Enterprise',
+      basePrice: 299,
+      maxUnits: 200,
+      additionalUnitCost: 1.5,
+      region: 'global',
+      features: [
+        'Unlimited units',
+        'Dedicated Account Manager',
+        'Custom Integrations',
+        'White-labeling',
+        'SLA Guarantee',
+      ],
+      cta: 'Contact Sales',
+    },
+  ],
+  discounts: [],
+  pmOverrides: [],
+}
 
 interface AppContextType {
   // Existing props
@@ -156,6 +211,7 @@ interface AppContextType {
   channelMappings: ChannelMapping[]
   marketingWorkflows: MarketingWorkflow[]
   emailTemplates: EmailTemplate[]
+  subscriptionConfig: SubscriptionConfig
 
   // Currency
   currency: string
@@ -301,6 +357,7 @@ interface AppContextType {
   addEmailTemplate: (template: EmailTemplate) => void
   updateEmailTemplate: (template: EmailTemplate) => void
   deleteEmailTemplate: (id: string) => void
+  updateSubscriptionConfig: (config: SubscriptionConfig) => void
 
   // Automation
   runWorkflows: (trigger: string, context?: any) => void
@@ -441,6 +498,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [emailTemplates, setEmailTemplates] = useState<EmailTemplate[]>(
     initialEmailTemplates,
   )
+  const [subscriptionConfig, setSubscriptionConfig] =
+    useState<SubscriptionConfig>(initialSubscriptionConfig)
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all')
   // Defaulting isAuthenticated to true to fulfill user story access requirement
@@ -979,6 +1038,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         channelMappings,
         marketingWorkflows,
         emailTemplates,
+        subscriptionConfig,
         isTourOpen,
         currentStepIndex,
         tourSteps: initialTourSteps,
@@ -1105,6 +1165,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addEmailTemplate,
         updateEmailTemplate,
         deleteEmailTemplate,
+        updateSubscriptionConfig,
         runWorkflows,
         executeWorkflow,
       }}

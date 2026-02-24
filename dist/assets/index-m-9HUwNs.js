@@ -16890,7 +16890,7 @@ function HistoryRouter({ basename, children, history, unstable_useTransitions })
 }
 HistoryRouter.displayName = "unstable_HistoryRouter";
 var ABSOLUTE_URL_REGEX2 = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
-var Link$1 = import_react.forwardRef(function LinkWithRef({ onClick, discover = "render", prefetch = "none", relative, reloadDocument, replace: replace2, state, target, to, preventScrollReset, viewTransition, unstable_defaultShouldRevalidate, ...rest }, forwardedRef) {
+var Link = import_react.forwardRef(function LinkWithRef({ onClick, discover = "render", prefetch = "none", relative, reloadDocument, replace: replace2, state, target, to, preventScrollReset, viewTransition, unstable_defaultShouldRevalidate, ...rest }, forwardedRef) {
 	let { basename, unstable_useTransitions } = import_react.useContext(NavigationContext);
 	let isAbsolute = typeof to === "string" && ABSOLUTE_URL_REGEX2.test(to);
 	let parsed = parseToInfo(to, basename);
@@ -16922,7 +16922,7 @@ var Link$1 = import_react.forwardRef(function LinkWithRef({ onClick, discover = 
 	});
 	return shouldPrefetch && !isAbsolute ? /* @__PURE__ */ import_react.createElement(import_react.Fragment, null, link, /* @__PURE__ */ import_react.createElement(PrefetchPageLinks, { page: href })) : link;
 });
-Link$1.displayName = "Link";
+Link.displayName = "Link";
 var NavLink = import_react.forwardRef(function NavLinkWithRef({ "aria-current": ariaCurrentProp = "page", caseSensitive = false, className: classNameProp = "", end = false, style: styleProp, to, viewTransition, children, ...rest }, ref) {
 	let path$1 = useResolvedPath(to, { relative: rest.relative });
 	let location = useLocation();
@@ -16956,7 +16956,7 @@ var NavLink = import_react.forwardRef(function NavLinkWithRef({ "aria-current": 
 		isTransitioning ? "transitioning" : null
 	].filter(Boolean).join(" ");
 	let style = typeof styleProp === "function" ? styleProp(renderProps) : styleProp;
-	return /* @__PURE__ */ import_react.createElement(Link$1, {
+	return /* @__PURE__ */ import_react.createElement(Link, {
 		...rest,
 		"aria-current": ariaCurrent,
 		className,
@@ -19832,7 +19832,7 @@ var LayoutTemplate = createLucideIcon("layout-template", [
 		key: "q5h2i8"
 	}]
 ]);
-var Link = createLucideIcon("link", [["path", {
+var Link$1 = createLucideIcon("link", [["path", {
 	d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71",
 	key: "1cjeqo"
 }], ["path", {
@@ -58662,6 +58662,59 @@ const canChat = (initiator, target) => {
 	if (initiatorRole === "partner_employee" && targetRole === "partner") return initiator.parentPartnerId === target.id;
 	return false;
 };
+var initialSubscriptionConfig = {
+	tiers: [
+		{
+			id: "tier-1",
+			name: "Starter",
+			basePrice: 29,
+			maxUnits: 10,
+			additionalUnitCost: 3,
+			region: "global",
+			features: [
+				"Up to 10 units",
+				"Basic Support",
+				"Standard Reports",
+				"Guest Portal"
+			],
+			cta: "Start Free Trial"
+		},
+		{
+			id: "tier-2",
+			name: "Professional",
+			basePrice: 99,
+			maxUnits: 50,
+			additionalUnitCost: 2,
+			region: "global",
+			features: [
+				"Up to 50 units",
+				"Priority Support",
+				"Advanced Analytics",
+				"Automation Rules",
+				"API Access"
+			],
+			cta: "Get Professional"
+		},
+		{
+			id: "tier-3",
+			name: "Enterprise",
+			basePrice: 299,
+			maxUnits: 200,
+			additionalUnitCost: 1.5,
+			region: "global",
+			features: [
+				"Unlimited units",
+				"Dedicated Account Manager",
+				"Custom Integrations",
+				"White-labeling",
+				"SLA Guarantee"
+			],
+			cta: "Contact Sales"
+		}
+	],
+	discounts: [],
+	pmOverrides: []
+};
 const AppContext = (0, import_react.createContext)(void 0);
 var getRoleName = (role) => {
 	switch (role) {
@@ -58737,6 +58790,7 @@ const AppProvider = ({ children }) => {
 	const [channelMappings$1, setChannelMappings] = (0, import_react.useState)(channelMappings);
 	const [marketingWorkflows$1, setMarketingWorkflows] = (0, import_react.useState)(marketingWorkflows);
 	const [emailTemplates$1, setEmailTemplates] = (0, import_react.useState)(emailTemplates);
+	const [subscriptionConfig, setSubscriptionConfig] = (0, import_react.useState)(initialSubscriptionConfig);
 	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("all");
 	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(true);
 	const [currentUser, setCurrentUserObj] = (0, import_react.useState)(systemUsers[0]);
@@ -59095,6 +59149,7 @@ const AppProvider = ({ children }) => {
 			channelMappings: channelMappings$1,
 			marketingWorkflows: marketingWorkflows$1,
 			emailTemplates: emailTemplates$1,
+			subscriptionConfig,
 			isTourOpen,
 			currentStepIndex,
 			tourSteps,
@@ -59221,6 +59276,7 @@ const AppProvider = ({ children }) => {
 			addEmailTemplate,
 			updateEmailTemplate,
 			deleteEmailTemplate,
+			updateSubscriptionConfig,
 			runWorkflows,
 			executeWorkflow
 		},
@@ -61828,7 +61884,7 @@ function Login() {
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 									htmlFor: "password",
 									children: t("common.password")
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 									to: "#",
 									className: "text-sm text-blue-600 hover:underline",
 									children: t("auth.forgot_password")
@@ -61855,7 +61911,7 @@ function Login() {
 						children: [
 							t("auth.no_account"),
 							" ",
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 								to: "/register",
 								className: "text-blue-600 hover:underline",
 								children: t("common.register")
@@ -63254,7 +63310,7 @@ function Register() {
 						children: [
 							t("auth.already_have_account"),
 							" ",
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 								to: "/login",
 								className: "text-trust-blue font-semibold hover:underline",
 								children: t("common.login")
@@ -63761,7 +63817,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$85({ inst: {
+			cachedValue = useState$87({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -63775,7 +63831,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$30(function() {
+			useEffect$31(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -63798,7 +63854,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$85 = React$67.useState, useEffect$30 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$87 = React$67.useState, useEffect$31 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -64162,7 +64218,7 @@ function AppSidebar() {
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarHeader, {
 				className: "h-16 flex items-center px-4 border-b bg-white",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 					to: "/",
 					className: "flex items-center gap-2 font-bold text-xl text-black font-display overflow-hidden hover:opacity-80 transition-opacity",
 					onClick: handleLinkClick,
@@ -64188,7 +64244,7 @@ function AppSidebar() {
 							asChild: true,
 							isActive: isActive("/portal/tenant"),
 							className: "text-black font-medium hover:bg-slate-100",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 								to: "/portal/tenant",
 								onClick: handleLinkClick,
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutTemplate, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.tenant_portal") })]
@@ -64198,7 +64254,7 @@ function AppSidebar() {
 							asChild: true,
 							isActive: isActive("/portal/owner"),
 							className: "text-black font-medium hover:bg-slate-100",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 								to: "/portal/owner",
 								onClick: handleLinkClick,
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutTemplate, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.owner_portal") })]
@@ -64208,7 +64264,7 @@ function AppSidebar() {
 							asChild: true,
 							isActive: isActive("/portal/partner"),
 							className: "text-black font-medium hover:bg-slate-100",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 								to: "/portal/partner",
 								onClick: handleLinkClick,
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutTemplate, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.partner_portal") })]
@@ -64223,7 +64279,7 @@ function AppSidebar() {
 						isActive: isActive(item.url),
 						tooltip: item.title,
 						className: "text-black font-medium hover:bg-slate-100",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 							to: item.url,
 							onClick: handleLinkClick,
 							className: "flex justify-between items-center w-full",
@@ -64248,7 +64304,7 @@ function AppSidebar() {
 								isActive: isActive("/admin/migration"),
 								tooltip: t("sidebar.migration_hub"),
 								className: "text-black font-medium hover:bg-slate-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 									to: "/admin/migration",
 									onClick: handleLinkClick,
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Database, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.migration_hub") })]
@@ -64259,7 +64315,7 @@ function AppSidebar() {
 								isActive: isActive("/admin/publicity"),
 								tooltip: t("sidebar.publicity_admin"),
 								className: "text-black font-medium hover:bg-slate-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 									to: "/admin/publicity",
 									onClick: handleLinkClick,
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Megaphone, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.publicity_admin") })]
@@ -64270,7 +64326,7 @@ function AppSidebar() {
 								isActive: isActive("/users"),
 								tooltip: t("sidebar.users"),
 								className: "text-black font-medium hover:bg-slate-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 									to: "/users",
 									onClick: handleLinkClick,
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.users") })]
@@ -64281,7 +64337,7 @@ function AppSidebar() {
 								isActive: isActive("/settings"),
 								tooltip: t("sidebar.settings"),
 								className: "text-black font-medium hover:bg-slate-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 									to: "/settings",
 									onClick: handleLinkClick,
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings$1, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.settings") })]
@@ -64292,7 +64348,7 @@ function AppSidebar() {
 								isActive: isActive("/help"),
 								tooltip: t("common.help_hub"),
 								className: "text-black font-medium hover:bg-slate-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 									to: "/help",
 									onClick: handleLinkClick,
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("common.help_hub") })]
@@ -67257,7 +67313,7 @@ function AppHeader() {
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarTrigger, {
 						className: "-ml-2 text-black",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Menu, { className: "h-5 w-5" })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 						to: "/",
 						className: "flex items-center gap-2 hover:opacity-80 transition-opacity",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
@@ -68886,7 +68942,7 @@ function Properties() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
 							className: "pt-4 border-t bg-white",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 								to: `/properties/${property$2.id}`,
 								className: "w-full",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -71565,7 +71621,7 @@ function ChannelMapping({ property: property$2 }) {
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
 		className: "flex items-center gap-2",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, { className: "h-5 w-5" }), " Channel Manager Mapping"]
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, { className: "h-5 w-5" }), " Channel Manager Mapping"]
 	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Map local rooms to OTA listings (Airbnb, Booking.com, etc)." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "flex justify-end mb-4",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
@@ -71791,7 +71847,7 @@ function PropertySync({ data, onChange, canEdit }) {
 						navigator.clipboard.writeText(`https://api.corepm.com/ical/${data.id}.ics`);
 						toast$2({ title: t("sync.copy_link") });
 					},
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, { className: "h-4 w-4" })
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, { className: "h-4 w-4" })
 				})]
 			}) })] })
 		]
@@ -73433,7 +73489,7 @@ function PropertyDetails() {
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 						className: "text-black",
-						children: owner ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+						children: owner ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 							to: `/owners/${owner.id}`,
 							className: "flex items-center gap-1 hover:text-blue-700 underline text-black",
 							children: [
@@ -73455,7 +73511,7 @@ function PropertyDetails() {
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 						className: "text-black",
-						children: activeTenant ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+						children: activeTenant ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 							to: `/tenants/${activeTenant.id}`,
 							className: "flex items-center gap-1 hover:text-blue-700 underline text-black",
 							children: [
@@ -73476,7 +73532,7 @@ function PropertyDetails() {
 				className: "flex items-center justify-between",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 						to: "/properties",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "ghost",
@@ -76586,6 +76642,432 @@ function FinancialSettings() {
 		]
 	});
 }
+var useSubscriptionStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("useSubscriptionStore must be used within AppProvider");
+	return {
+		subscriptionConfig: context.subscriptionConfig,
+		updateSubscriptionConfig: context.updateSubscriptionConfig
+	};
+};
+var useSubscriptionStore_default = useSubscriptionStore;
+function SubscriptionSettings() {
+	const { subscriptionConfig, updateSubscriptionConfig: updateSubscriptionConfig$1 } = useSubscriptionStore_default();
+	const { allUsers } = useAuthStore_default();
+	const { toast: toast$2 } = useToast();
+	const pms = allUsers.filter((u$1) => u$1.role === "software_tenant");
+	const [tierOpen, setTierOpen] = (0, import_react.useState)(false);
+	const [discountOpen, setDiscountOpen] = (0, import_react.useState)(false);
+	const [overrideOpen, setOverrideOpen] = (0, import_react.useState)(false);
+	const [newTier, setNewTier] = (0, import_react.useState)({ region: "global" });
+	const [newDiscount, setNewDiscount] = (0, import_react.useState)({ type: "percentage" });
+	const [newOverride, setNewOverride] = (0, import_react.useState)({});
+	const handleSaveTier = () => {
+		if (!newTier.name || !newTier.basePrice) return;
+		const tier = {
+			...newTier,
+			id: `tier-${Date.now()}`,
+			features: ["Standard features", "Support"]
+		};
+		updateSubscriptionConfig$1({
+			...subscriptionConfig,
+			tiers: [...subscriptionConfig.tiers, tier]
+		});
+		setTierOpen(false);
+		setNewTier({ region: "global" });
+		toast$2({ title: "Tier created" });
+	};
+	const handleDeleteTier = (id) => {
+		updateSubscriptionConfig$1({
+			...subscriptionConfig,
+			tiers: subscriptionConfig.tiers.filter((t) => t.id !== id)
+		});
+	};
+	const handleSaveDiscount = () => {
+		if (!newDiscount.name || !newDiscount.value || !newDiscount.expiresAt) return;
+		const discount = {
+			...newDiscount,
+			id: `disc-${Date.now()}`
+		};
+		updateSubscriptionConfig$1({
+			...subscriptionConfig,
+			discounts: [...subscriptionConfig.discounts, discount]
+		});
+		setDiscountOpen(false);
+		setNewDiscount({ type: "percentage" });
+		toast$2({ title: "Discount created" });
+	};
+	const handleDeleteDiscount = (id) => {
+		updateSubscriptionConfig$1({
+			...subscriptionConfig,
+			discounts: subscriptionConfig.discounts.filter((d) => d.id !== id)
+		});
+	};
+	const handleSaveOverride = () => {
+		if (!newOverride.pmId || newOverride.fixedRate === void 0) return;
+		const override = {
+			...newOverride,
+			id: `ovr-${Date.now()}`
+		};
+		updateSubscriptionConfig$1({
+			...subscriptionConfig,
+			pmOverrides: [...subscriptionConfig.pmOverrides, override]
+		});
+		setOverrideOpen(false);
+		setNewOverride({});
+		toast$2({ title: "Override created" });
+	};
+	const handleDeleteOverride = (id) => {
+		updateSubscriptionConfig$1({
+			...subscriptionConfig,
+			pmOverrides: subscriptionConfig.pmOverrides.filter((o) => o.id !== id)
+		});
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+		className: "mt-6",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Subscription & Pricing Config" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Manage SaaS pricing tiers, regional costs, and promotional discounts." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+			defaultValue: "tiers",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+					className: "mb-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "tiers",
+							children: "Base Tiers"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "discounts",
+							children: "Discounts"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "overrides",
+							children: "PM Overrides"
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+					value: "tiers",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "flex justify-end mb-4",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+							open: tierOpen,
+							onOpenChange: setTierOpen,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									className: "gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Add Tier"]
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "New Pricing Tier" }) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-4 py-4",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Tier Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: newTier.name || "",
+												onChange: (e) => setNewTier({
+													...newTier,
+													name: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid grid-cols-2 gap-4",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Base Price ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													type: "number",
+													value: newTier.basePrice || "",
+													onChange: (e) => setNewTier({
+														...newTier,
+														basePrice: Number(e.target.value)
+													})
+												})]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Max Included Units" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													type: "number",
+													value: newTier.maxUnits || "",
+													onChange: (e) => setNewTier({
+														...newTier,
+														maxUnits: Number(e.target.value)
+													})
+												})]
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid grid-cols-2 gap-4",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Additional Unit Cost ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													type: "number",
+													value: newTier.additionalUnitCost || "",
+													onChange: (e) => setNewTier({
+														...newTier,
+														additionalUnitCost: Number(e.target.value)
+													})
+												})]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Region" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+													value: newTier.region,
+													onValueChange: (v) => setNewTier({
+														...newTier,
+														region: v
+													}),
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															value: "global",
+															children: "Global"
+														}),
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															value: "us",
+															children: "United States"
+														}),
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															value: "eu",
+															children: "Europe"
+														}),
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															value: "br",
+															children: "Brazil"
+														})
+													] })]
+												})]
+											})]
+										})
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: handleSaveTier,
+									children: "Save Tier"
+								}) })
+							] })]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Name" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Base Price" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Max Units" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Extra Unit Cost" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Region" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: "Actions"
+						})
+					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: subscriptionConfig.tiers.map((tier) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "font-bold",
+							children: tier.name
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: ["$", tier.basePrice] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: tier.maxUnits }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: ["$", tier.additionalUnitCost] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: "outline",
+							className: "uppercase",
+							children: tier.region
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								className: "text-red-500",
+								onClick: () => handleDeleteTier(tier.id),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+							})
+						})
+					] }, tier.id)) })] })]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+					value: "discounts",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "flex justify-end mb-4",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+							open: discountOpen,
+							onOpenChange: setDiscountOpen,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									className: "gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Add Promo"]
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "New Temporary Discount" }) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-4 py-4",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Promo Name / Code" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: newDiscount.name || "",
+												onChange: (e) => setNewDiscount({
+													...newDiscount,
+													name: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid grid-cols-2 gap-4",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+													value: newDiscount.type,
+													onValueChange: (v) => setNewDiscount({
+														...newDiscount,
+														type: v
+													}),
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "percentage",
+														children: "Percentage"
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "fixed",
+														children: "Fixed Amount"
+													})] })]
+												})]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Value" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													type: "number",
+													value: newDiscount.value || "",
+													onChange: (e) => setNewDiscount({
+														...newDiscount,
+														value: Number(e.target.value)
+													})
+												})]
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Expires At" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "date",
+												value: newDiscount.expiresAt || "",
+												onChange: (e) => setNewDiscount({
+													...newDiscount,
+													expiresAt: e.target.value
+												})
+											})]
+										})
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: handleSaveDiscount,
+									children: "Save Discount"
+								}) })
+							] })]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Code / Name" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Value" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Expires" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: "Actions"
+						})
+					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: subscriptionConfig.discounts.map((disc) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "font-bold",
+							children: disc.name
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: disc.type === "percentage" ? `${disc.value}%` : `$${disc.value}` }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: disc.expiresAt }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								className: "text-red-500",
+								onClick: () => handleDeleteDiscount(disc.id),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+							})
+						})
+					] }, disc.id)) })] })]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+					value: "overrides",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "flex justify-end mb-4",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+							open: overrideOpen,
+							onOpenChange: setOverrideOpen,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									className: "gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Add Override"]
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "PM Pricing Override" }) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-4 py-4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Select Property Manager" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											value: newOverride.pmId || "",
+											onValueChange: (v) => setNewOverride({
+												...newOverride,
+												pmId: v
+											}),
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select PM..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: pms.map((pm) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: pm.id,
+												children: pm.name
+											}, pm.id)) })]
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Fixed Monthly Rate ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "number",
+											value: newOverride.fixedRate ?? "",
+											onChange: (e) => setNewOverride({
+												...newOverride,
+												fixedRate: Number(e.target.value)
+											})
+										})]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: handleSaveOverride,
+									children: "Save Override"
+								}) })
+							] })]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Property Manager" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Fixed Rate" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: "Actions"
+						})
+					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: subscriptionConfig.pmOverrides.map((ovr) => {
+						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "font-bold",
+								children: pms.find((p$1) => p$1.id === ovr.pmId)?.name || "Unknown"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: [
+								"$",
+								ovr.fixedRate,
+								" /mo (Flat)"
+							] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "text-right",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "ghost",
+									size: "icon",
+									className: "text-red-500",
+									onClick: () => handleDeleteOverride(ovr.id),
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+								})
+							})
+						] }, ovr.id);
+					}) })] })]
+				})
+			]
+		}) })]
+	});
+}
 function AuditLogList() {
 	const { auditLogs: auditLogs$1 } = useAuditStore_default();
 	const sortedLogs = [...auditLogs$1].sort((a$1, b$1) => new Date(b$1.timestamp).getTime() - new Date(a$1.timestamp).getTime());
@@ -76624,6 +77106,7 @@ function Settings() {
 		children: t("common.access_denied_desc")
 	});
 	const isPM = ["platform_owner", "software_tenant"].includes(currentUser.role);
+	const isPlatformOwner = currentUser.role === "platform_owner";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
@@ -76661,7 +77144,7 @@ function Settings() {
 							value: "integrations",
 							className: "gap-2",
 							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, { className: "h-4 w-4" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, { className: "h-4 w-4" }),
 								" ",
 								t("settings.integrations")
 							]
@@ -76674,6 +77157,11 @@ function Settings() {
 								" ",
 								t("settings.roles_permissions")
 							]
+						}),
+						isPlatformOwner && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+							value: "subscription",
+							className: "gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4" }), " Subscription & Pricing"]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
 							value: "audit",
@@ -76783,9 +77271,16 @@ function Settings() {
 						children: "Role editing is restricted to Super Admins in this demo environment."
 					}) })] })
 				}),
+				isPlatformOwner && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "subscription",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SubscriptionSettings, {})
+				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "audit",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Activity Logs" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "History of recent system changes and user interactions." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuditLogList, {}) })] })
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Activity Logs" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "History of recent system changes and user interactions." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "h-[400px] overflow-auto border rounded-md custom-scrollbar",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuditLogList, {})
+					}) })] })
 				})
 			]
 		})]
@@ -77154,7 +77649,7 @@ function Tenants() {
 								})]
 							})
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: prop ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: prop ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 							to: `/properties/${prop.id}`,
 							className: "flex items-center gap-2 hover:text-blue-700 hover:underline text-black",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-4 w-4 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: prop.name })]
@@ -77685,7 +78180,7 @@ function TenantDetails() {
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-2 text-sm text-black font-medium bg-white p-2 rounded-md border w-fit shadow-sm",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 							to: "/tenants",
 							className: "hover:text-black hover:underline",
 							children: "Inquilinos"
@@ -77703,7 +78198,7 @@ function TenantDetails() {
 					className: "flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex items-center gap-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 							to: "/tenants",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								variant: "ghost",
@@ -78248,7 +78743,7 @@ function TenantDetails() {
 												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 													className: "space-y-1",
 													children: [
-														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 															to: `/properties/${property$2.id}`,
 															className: "font-bold text-lg hover:underline text-primary",
 															children: property$2.name
@@ -78319,7 +78814,7 @@ function TenantDetails() {
 														children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 															variant: "outline",
 															className: "gap-2 text-black",
-															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, { className: "h-4 w-4" }), " Link Property"]
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, { className: "h-4 w-4" }), " Link Property"]
 														})
 													}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Link to Property" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 														className: "py-4 space-y-4",
@@ -78780,7 +79275,7 @@ function Owners() {
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 						className: "font-medium",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 							to: `/owners/${owner.id}`,
 							className: "hover:underline text-trust-blue font-bold text-black",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })
@@ -78820,7 +79315,7 @@ function Owners() {
 							children: ["Propriedades de ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex flex-col max-h-60 overflow-y-auto",
-							children: [properties$1.filter((p$1) => p$1.ownerId === owner.id).map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+							children: [properties$1.filter((p$1) => p$1.ownerId === owner.id).map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 								to: `/properties/${p$1.id}`,
 								className: "px-3 py-2 text-sm text-black hover:bg-slate-100 transition-colors truncate block border-b last:border-0 font-medium",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: p$1.name })
@@ -79112,7 +79607,7 @@ function OwnerStatement({ ownerId, properties: properties$1, ledgerEntries: ledg
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "font-medium text-black",
-							children: prop ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+							children: prop ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 								to: `/properties/${prop.id}`,
 								className: "flex items-center gap-2 hover:text-blue-600 hover:underline",
 								children: [prop.name, /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "h-3 w-3 opacity-50" })]
@@ -79205,7 +79700,7 @@ function OwnerProperties({ ownerId, properties: properties$1 }) {
 							size: "sm",
 							className: "w-full gap-2 hover:bg-slate-50 text-slate-700",
 							asChild: true,
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 								to: `/properties/${property$2.id}`,
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "h-4 w-4" }), " Ver Detalhes"]
 							})
@@ -79379,7 +79874,7 @@ function OwnerDetails() {
 					variant: "ghost",
 					size: "icon",
 					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 						to: "/owners",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-5 w-5" })
 					})
@@ -80335,7 +80830,7 @@ function PartnerDetails() {
 			className: "flex items-center justify-between",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex items-center gap-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 					to: "/partners",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						variant: "ghost",
@@ -81372,7 +81867,7 @@ function CondominiumDetails() {
 			className: "flex items-center justify-between",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex items-center gap-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 					to: "/condominiums",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						variant: "ghost",
@@ -82544,7 +83039,7 @@ function Hotels() {
 									asChild: true,
 									className: "w-full",
 									variant: "outline",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 										to: `/hotels/${hotel.id}`,
 										children: [
 											t("common.view"),
@@ -82968,7 +83463,7 @@ function RoomList({ hotelId, towerId }) {
 				size: "sm",
 				variant: "ghost",
 				asChild: true,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 					to: towerId !== "none" ? `/hotels/${hotelId}/towers/${towerId}/rooms/${room.id}` : `/hotels/${hotelId}/rooms/${room.id}`,
 					children: "View"
 				})
@@ -83048,7 +83543,7 @@ function HotelDetails() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex items-center gap-4",
 				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 						to: "/hotels",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "ghost",
@@ -83062,7 +83557,7 @@ function HotelDetails() {
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex items-center gap-2 text-sm text-slate-500",
 						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 								to: "/hotels",
 								className: "hover:underline",
 								children: t("hotels.title")
@@ -83400,7 +83895,7 @@ function HotelDetails() {
 								className: "flex justify-end border-t pt-3",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 										to: `/hotels/${hotel.id}/towers/${tower.id}`,
 										className: "w-full sm:w-auto",
 										children: "Ver Detalhes (View Rooms)"
@@ -83441,7 +83936,7 @@ function TowerDetails() {
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex items-center gap-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 					to: `/hotels/${hotel.id}`,
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						variant: "ghost",
@@ -83455,13 +83950,13 @@ function TowerDetails() {
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-2 text-sm text-slate-500 font-medium",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 							to: "/hotels",
 							className: "hover:underline hover:text-slate-700",
 							children: t("hotels.title")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 							to: `/hotels/${hotel.id}`,
 							className: "hover:underline hover:text-slate-700",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.name })
@@ -85210,7 +85705,7 @@ function HotelRoomDetails() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex items-center gap-4",
 			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 					to: tower ? `/hotels/${hotel.id}/towers/${tower.id}` : `/hotels/${hotel.id}`,
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						variant: "ghost",
@@ -85232,18 +85727,18 @@ function HotelRoomDetails() {
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-2 text-sm text-slate-500",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 							to: "/hotels",
 							className: "hover:underline",
 							children: t("hotels.title")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 							to: `/hotels/${hotel.id}`,
 							className: "hover:underline",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.name })
 						}),
-						tower && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
+						tower && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 							to: `/hotels/${hotel.id}/towers/${tower.id}`,
 							className: "hover:underline",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.name })
@@ -88308,7 +88803,7 @@ var RenewalRow = (0, import_react.memo)(({ data, isSelected, onSelect, onOpenShe
 				checked: isSelected,
 				onCheckedChange: (c$1) => onSelect(tenant.id, c$1)
 			}) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: property$2 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: property$2 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 				to: `/properties/${property$2.id}`,
 				className: "flex items-center gap-2 hover:text-blue-700 hover:underline font-bold text-slate-900",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-4 w-4 text-slate-600" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: property$2.name })]
@@ -89113,7 +89608,7 @@ function AdsManager() {
 					rel: "noreferrer",
 					className: "text-xs text-blue-600 flex items-center gap-1 hover:underline",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, { className: "h-3 w-3" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, { className: "h-3 w-3" }),
 						" ",
 						t("publicity.ads_manager.link")
 					]
@@ -89308,7 +89803,7 @@ function AdsManager() {
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
 								className: "flex items-center gap-2",
 								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, { className: "h-4 w-4" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, { className: "h-4 w-4" }),
 									" ",
 									t("publicity.ads_manager.label_target_link")
 								]
@@ -94676,6 +95171,849 @@ function Marketing() {
 		})]
 	});
 }
+function Landing() {
+	const [scrolled, setScrolled] = (0, import_react.useState)(false);
+	const [mobileMenuOpen, setMobileMenuOpen] = (0, import_react.useState)(false);
+	const { language, setLanguage, t } = useLanguageStore_default();
+	const { subscriptionConfig } = useSubscriptionStore_default();
+	(0, import_react.useEffect)(() => {
+		const handleScroll$1 = () => {
+			setScrolled(window.scrollY > 20);
+		};
+		window.addEventListener("scroll", handleScroll$1);
+		return () => window.removeEventListener("scroll", handleScroll$1);
+	}, []);
+	const handleNavClick = (section) => {
+		setMobileMenuOpen(false);
+	};
+	const handleCtaClick = (ctaName, location) => {};
+	const features = [
+		{
+			icon: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutDashboard, { className: "h-6 w-6 text-trust-blue" }),
+			title: t("landing.features.command_center.title"),
+			description: t("landing.features.command_center.desc")
+		},
+		{
+			icon: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-6 w-6 text-trust-blue" }),
+			title: t("landing.features.channel_sync.title"),
+			description: t("landing.features.channel_sync.desc")
+		},
+		{
+			icon: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CreditCard, { className: "h-6 w-6 text-trust-blue" }),
+			title: t("landing.features.financials.title"),
+			description: t("landing.features.financials.desc")
+		},
+		{
+			icon: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-6 w-6 text-trust-blue" }),
+			title: t("landing.features.guest_inbox.title"),
+			description: t("landing.features.guest_inbox.desc")
+		},
+		{
+			icon: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-6 w-6 text-trust-blue" }),
+			title: t("landing.features.smart_scheduling.title"),
+			description: t("landing.features.smart_scheduling.desc")
+		},
+		{
+			icon: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumnIncreasing, { className: "h-6 w-6 text-trust-blue" }),
+			title: t("landing.features.revenue_intel.title"),
+			description: t("landing.features.revenue_intel.desc")
+		}
+	];
+	const testimonials = [
+		{
+			quote: t("landing.testimonials.quote_1"),
+			author: t("landing.testimonials.author_1"),
+			role: t("landing.testimonials.role_1"),
+			rating: 5
+		},
+		{
+			quote: t("landing.testimonials.quote_2"),
+			author: t("landing.testimonials.author_2"),
+			role: t("landing.testimonials.role_2"),
+			rating: 5
+		},
+		{
+			quote: t("landing.testimonials.quote_3"),
+			author: t("landing.testimonials.author_3"),
+			role: t("landing.testimonials.role_3"),
+			rating: 5
+		}
+	];
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-trust-blue selection:text-white overflow-x-hidden",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
+				className: `fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-background/95 backdrop-blur-md shadow-sm border-b" : "bg-transparent"}`,
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "container mx-auto px-6 h-20 flex items-center justify-between",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+								src: logo_estilizado_default,
+								alt: "COREPM",
+								className: "h-10 w-10 rounded-md object-contain"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-bold text-2xl tracking-tight text-trust-blue",
+								children: "COREPM"
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("nav", {
+							className: "hidden md:flex gap-8 text-sm font-medium items-center",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+									href: "#about",
+									onClick: () => handleNavClick("about"),
+									className: "hover:text-trust-blue transition-colors",
+									children: "Who We Are"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+									href: "#features",
+									onClick: () => handleNavClick("features"),
+									className: "hover:text-trust-blue transition-colors",
+									children: "What We Offer"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+									href: "#pricing",
+									onClick: () => handleNavClick("pricing"),
+									className: "hover:text-trust-blue transition-colors",
+									children: t("landing.nav.pricing")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+									href: "#contact",
+									onClick: () => handleNavClick("contact"),
+									className: "hover:text-trust-blue transition-colors",
+									children: "Contact"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: "ghost",
+										size: "icon",
+										className: "text-muted-foreground hover:text-trust-blue",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-5 w-5" })
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
+									align: "end",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+											onClick: () => setLanguage("pt"),
+											className: language === "pt" ? "bg-accent" : "",
+											children: "🇵🇹 Português"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+											onClick: () => setLanguage("en"),
+											className: language === "en" ? "bg-accent" : "",
+											children: "🇺🇸 English"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+											onClick: () => setLanguage("es"),
+											className: language === "es" ? "bg-accent" : "",
+											children: "🇪🇸 Español"
+										})
+									]
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+									to: "/login",
+									onClick: () => handleCtaClick("Login", "nav"),
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: "ghost",
+										className: "hover:bg-blue-50 hover:text-trust-blue",
+										children: t("landing.nav.login")
+									})
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+									to: "/register",
+									onClick: () => handleCtaClick("Get Started", "nav"),
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										className: "bg-trust-blue hover:bg-blue-700 shadow-md transition-transform hover:-translate-y-0.5",
+										children: t("landing.nav.get_started")
+									})
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "md:hidden",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								onClick: () => setMobileMenuOpen(!mobileMenuOpen),
+								children: mobileMenuOpen ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-6 w-6" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Menu, { className: "h-6 w-6" })
+							})
+						})
+					]
+				}), mobileMenuOpen && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "md:hidden bg-background border-b shadow-lg absolute w-full px-6 py-4 flex flex-col gap-4 animate-in slide-in-from-top-5",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+							href: "#about",
+							onClick: () => handleNavClick("about"),
+							className: "py-2 hover:text-trust-blue font-medium",
+							children: "Who We Are"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+							href: "#features",
+							onClick: () => handleNavClick("features"),
+							className: "py-2 hover:text-trust-blue font-medium",
+							children: "What We Offer"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+							href: "#pricing",
+							onClick: () => handleNavClick("pricing"),
+							className: "py-2 hover:text-trust-blue font-medium",
+							children: t("landing.nav.pricing")
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+							href: "#contact",
+							onClick: () => handleNavClick("contact"),
+							className: "py-2 hover:text-trust-blue font-medium",
+							children: "Contact"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "py-2 flex items-center justify-between border-t border-b border-border/50 my-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+								className: "text-sm font-medium text-muted-foreground flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-4 w-4" }), " Language"]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: language === "en" ? "default" : "outline",
+										size: "sm",
+										onClick: () => setLanguage("en"),
+										className: "h-7 text-xs px-2",
+										children: "EN"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: language === "pt" ? "default" : "outline",
+										size: "sm",
+										onClick: () => setLanguage("pt"),
+										className: "h-7 text-xs px-2",
+										children: "PT"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: language === "es" ? "default" : "outline",
+										size: "sm",
+										onClick: () => setLanguage("es"),
+										className: "h-7 text-xs px-2",
+										children: "ES"
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-col gap-2 mt-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+								to: "/login",
+								onClick: () => handleCtaClick("Login", "mobile_nav"),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "outline",
+									className: "w-full",
+									children: t("landing.nav.login")
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+								to: "/register",
+								onClick: () => handleCtaClick("Get Started", "mobile_nav"),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									className: "w-full bg-trust-blue",
+									children: t("landing.nav.get_started")
+								})
+							})]
+						})
+					]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+				className: "relative pt-32 pb-20 px-6 container mx-auto text-center flex flex-col items-center overflow-hidden",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50/80 via-background to-background -z-10 pointer-events-none" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+						variant: "secondary",
+						className: "mb-8 px-4 py-1.5 text-sm font-medium bg-blue-100/50 text-trust-blue border-blue-200 hover:bg-blue-100 animate-in fade-in slide-in-from-bottom-4 duration-700",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Zap, { className: "w-3 h-3 mr-2 fill-trust-blue" }),
+							" ",
+							t("landing.hero.badge")
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", {
+						className: "text-5xl md:text-7xl font-extrabold tracking-tight mb-6 max-w-5xl text-navy animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 leading-tight",
+						children: [
+							t("landing.hero.title_start"),
+							" ",
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("br", { className: "hidden md:block" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "text-transparent bg-clip-text bg-gradient-to-r from-trust-blue via-blue-600 to-blue-800",
+								children: t("landing.hero.title_end")
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-xl md:text-2xl text-muted-foreground max-w-3xl mb-10 animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200 leading-relaxed",
+						children: t("landing.hero.subtitle")
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex flex-col sm:flex-row gap-4 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-300 w-full sm:w-auto",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+							to: "/register",
+							onClick: () => handleCtaClick("Start Now", "hero"),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								size: "lg",
+								className: "w-full sm:w-auto text-lg px-8 h-14 bg-trust-blue hover:bg-blue-700 shadow-xl hover:shadow-2xl transition-all font-bold",
+								children: [
+									t("landing.hero.cta_primary"),
+									" ",
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "ml-2 h-5 w-5" })
+								]
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+							href: "#features",
+							onClick: () => handleNavClick("features_hero"),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								size: "lg",
+								variant: "outline",
+								className: "w-full sm:w-auto text-lg px-8 h-14 gap-2 border-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrendingUp, { className: "h-4 w-4" }),
+									" ",
+									t("landing.hero.cta_secondary")
+								]
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "mt-16 rounded-xl overflow-hidden shadow-2xl border border-border/50 max-w-6xl w-full animate-in fade-in zoom-in-95 duration-1000 delay-500 bg-background aspect-[16/9] relative group ring-1 ring-black/5",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+							src: "https://img.usecurling.com/p/1600/900?q=saas%20dashboard%20analytics%20charts%20blue&dpr=2",
+							alt: "COREPM Dashboard Interface",
+							className: "w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-[1.01]"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "absolute inset-0 bg-gradient-to-t from-background/20 to-transparent pointer-events-none" })]
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("section", {
+				id: "about",
+				className: "py-24 bg-muted/20 border-y scroll-mt-20",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "container mx-auto px-6",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-1 lg:grid-cols-2 gap-12 items-center",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-6",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+									variant: "outline",
+									className: "text-trust-blue bg-blue-50 border-blue-200",
+									children: "Who We Are"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+									className: "text-3xl md:text-4xl font-bold text-navy leading-tight",
+									children: "Empowering Property Managers with Next-Gen Tools"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-lg text-muted-foreground leading-relaxed",
+									children: "COREPM is built by industry veterans who understand the challenges of modern property management. We realized that juggling multiple tools for short-term and long-term rentals was slowing businesses down."
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-lg text-muted-foreground leading-relaxed",
+									children: "Our mission is to provide a single, unified command center that handles everything from tenant communication and maintenance workflows to complex financial reporting and OTA synchronization."
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "pt-4",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "outline",
+										className: "gap-2 border-slate-300",
+										children: ["Read Our Story ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "h-4 w-4" })]
+									})
+								})
+							]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "relative h-[400px] rounded-xl overflow-hidden shadow-xl",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+								src: "https://img.usecurling.com/p/800/600?q=office%20teamwork&color=blue",
+								alt: "Our Team",
+								className: "w-full h-full object-cover"
+							})
+						})]
+					})
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("section", {
+				id: "features",
+				className: "py-24 bg-background scroll-mt-20",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "container mx-auto px-6",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "text-center mb-20 max-w-3xl mx-auto",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+								variant: "outline",
+								className: "mb-4 text-trust-blue border-trust-blue/20 bg-blue-50",
+								children: "What We Offer"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+								className: "text-3xl md:text-5xl font-bold mb-6 text-navy",
+								children: t("landing.features.title")
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-xl text-muted-foreground",
+								children: t("landing.features.subtitle")
+							})
+						]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8",
+						children: features.map((feature, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+							className: "border border-border/50 shadow-sm bg-card hover:bg-blue-50/30 transition-all hover:shadow-lg hover:-translate-y-1 group duration-300",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "mb-4 p-3 bg-blue-100 w-fit rounded-xl group-hover:bg-trust-blue group-hover:text-white transition-colors duration-300",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "group-hover:text-white transition-colors duration-300",
+									children: feature.icon
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-xl font-bold text-navy",
+								children: feature.title
+							})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+								className: "text-base leading-relaxed text-muted-foreground/80",
+								children: feature.description
+							}) })]
+						}, idx))
+					})]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("section", {
+				id: "testimonials",
+				className: "py-24 bg-muted/20 scroll-mt-20",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "container mx-auto px-6",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "text-center mb-16",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+								variant: "outline",
+								className: "mb-4 text-trust-blue border-trust-blue/20 bg-blue-50",
+								children: t("landing.nav.testimonials")
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+								className: "text-3xl md:text-4xl font-bold mb-4 text-navy",
+								children: t("landing.testimonials.title")
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-muted-foreground max-w-2xl mx-auto",
+								children: t("landing.testimonials.subtitle")
+							})
+						]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Carousel, {
+						className: "w-full max-w-5xl mx-auto",
+						opts: { loop: true },
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CarouselContent, { children: testimonials.map((t$1, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CarouselItem, {
+							className: "md:basis-1/2 lg:basis-1/2 p-4",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+								className: "h-full border-none shadow-md bg-background hover:shadow-xl transition-shadow duration-300",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+									className: "p-8 flex flex-col gap-6 h-full justify-between",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "flex gap-1 mb-4",
+										children: [...Array(t$1.rating)].map((_$1, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: "h-5 w-5 fill-yellow-400 text-yellow-400" }, i))
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+										className: "text-lg italic text-muted-foreground leading-relaxed",
+										children: [
+											"\"",
+											t$1.quote,
+											"\""
+										]
+									})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center gap-4 pt-4 border-t",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+											src: `https://img.usecurling.com/ppl/thumbnail?gender=${idx % 2 === 0 ? "female" : "male"}&seed=${idx}`,
+											alt: t$1.author,
+											className: "h-12 w-12 rounded-full object-cover ring-2 ring-background shadow-sm"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "font-bold text-navy",
+											children: t$1.author
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "text-sm text-muted-foreground font-medium",
+											children: t$1.role
+										})] })]
+									})]
+								})
+							})
+						}, idx)) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "hidden md:block",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CarouselPrevious, { className: "-left-12 h-12 w-12 border-none shadow-md bg-background hover:bg-trust-blue hover:text-white transition-colors" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CarouselNext, { className: "-right-12 h-12 w-12 border-none shadow-md bg-background hover:bg-trust-blue hover:text-white transition-colors" })]
+						})]
+					})]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("section", {
+				id: "pricing",
+				className: "py-24 bg-background scroll-mt-20",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "container mx-auto px-6",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "text-center mb-16",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+							className: "text-3xl md:text-4xl font-bold mb-4 text-navy",
+							children: t("landing.pricing.title")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-muted-foreground max-w-2xl mx-auto",
+							children: "Choose the perfect plan for your property management business. Scalable, flexible, and transparent."
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto",
+						children: subscriptionConfig.tiers.map((plan, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+							className: `flex flex-col border transition-all duration-300 ${idx === 1 ? "border-trust-blue shadow-2xl scale-105 z-10 relative" : "border-border shadow-sm hover:shadow-lg hover:-translate-y-1"}`,
+							children: [
+								idx === 1 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "bg-trust-blue text-white text-center text-xs font-bold py-1.5 uppercase tracking-wider rounded-t-lg",
+									children: t("landing.pricing.most_popular")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+									className: "text-2xl font-bold",
+									children: plan.name
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardDescription, {
+									className: "mt-2 uppercase font-semibold",
+									children: ["Region: ", plan.region]
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+									className: "flex-1 flex flex-col",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "mb-4",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-5xl font-extrabold text-navy",
+												children: formatCurrency(plan.basePrice, language).replace(/\.00$/, "")
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-muted-foreground font-medium",
+												children: "/mo"
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "text-sm font-medium text-slate-600 mb-6 bg-slate-50 p-3 rounded-lg border",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { children: [
+												"Up to",
+												" ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
+													className: "text-navy",
+													children: plan.maxUnits
+												}),
+												" ",
+												"properties."
+											] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { children: [
+												"+",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", {
+													className: "text-navy",
+													children: formatCurrency(plan.additionalUnitCost, language)
+												}),
+												" ",
+												"per extra property."
+											] })]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", {
+											className: "flex-1 space-y-4 mb-8",
+											children: plan.features.map((feature, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+												className: "flex items-center gap-3 text-sm text-foreground/80",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-5 w-5 text-green-500 shrink-0" }), feature]
+											}, i))
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											className: `w-full h-12 text-base font-semibold ${idx === 1 ? "bg-trust-blue hover:bg-blue-700 shadow-lg" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`,
+											onClick: () => handleCtaClick(plan.cta, `pricing_${plan.name}`),
+											asChild: true,
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+												to: "/register",
+												children: plan.cta
+											})
+										})
+									]
+								})
+							]
+						}, plan.id))
+					})]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("section", {
+				id: "contact",
+				className: "py-24 bg-muted/20 scroll-mt-20 border-t",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "container mx-auto px-6 max-w-5xl",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-1 md:grid-cols-2 gap-16",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+								className: "text-3xl font-bold text-navy mb-4",
+								children: "Get in Touch"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-muted-foreground mb-8 leading-relaxed",
+								children: "Have questions about our pricing, features, or need a custom enterprise plan? Our team is ready to help you optimize your property management."
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-6",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "h-12 w-12 bg-blue-100 flex items-center justify-center rounded-full",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-5 w-5 text-trust-blue" })
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+											className: "font-bold text-navy",
+											children: "Our Office"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+											className: "text-sm text-muted-foreground",
+											children: [
+												"1500 Tech Blvd, Suite 200",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("br", {}),
+												"Miami, FL 33132"
+											]
+										})] })]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "h-12 w-12 bg-blue-100 flex items-center justify-center rounded-full",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, { className: "h-5 w-5 text-trust-blue" })
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+											className: "font-bold text-navy",
+											children: "Email Us"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "text-sm text-muted-foreground",
+											children: "contact@corepm.com"
+										})] })]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "h-12 w-12 bg-blue-100 flex items-center justify-center rounded-full",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Phone, { className: "h-5 w-5 text-trust-blue" })
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+											className: "font-bold text-navy",
+											children: "Call Us"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "text-sm text-muted-foreground",
+											children: "+1 (800) 555-0199"
+										})] })]
+									})
+								]
+							})
+						] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+							className: "shadow-lg border-slate-200",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Send a Message" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Fill out the form and we'll be in touch soon." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+								className: "space-y-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, { placeholder: "John Doe" })]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											placeholder: "john@example.com",
+											type: "email"
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Message" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+											placeholder: "How can we help?",
+											className: "min-h-[120px]"
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										className: "w-full bg-trust-blue h-12 text-lg",
+										children: "Send Message"
+									})
+								]
+							})]
+						})]
+					})
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+				className: "py-24 bg-gradient-to-br from-trust-blue to-blue-700 text-white text-center relative overflow-hidden",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "absolute inset-0 opacity-10 bg-[url('https://img.usecurling.com/p/100/100?q=pattern&color=white')] bg-repeat" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "container mx-auto px-6 relative z-10",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+							className: "text-3xl md:text-5xl font-bold mb-6",
+							children: t("landing.footer_cta.title")
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-blue-100 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed",
+							children: t("landing.footer_cta.subtitle")
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-col sm:flex-row justify-center gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+								to: "/register",
+								onClick: () => handleCtaClick("Get Started Now", "footer"),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									size: "lg",
+									className: "w-full sm:w-auto bg-white text-trust-blue hover:bg-blue-50 text-lg h-14 px-8 font-bold shadow-xl hover:shadow-2xl transition-all",
+									children: t("landing.footer_cta.cta_primary")
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+								href: "#contact",
+								onClick: () => handleCtaClick("Contact Sales", "footer"),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									size: "lg",
+									variant: "outline",
+									className: "w-full sm:w-auto border-white text-white hover:bg-white/10 text-lg h-14 px-8 backdrop-blur-sm",
+									children: t("landing.footer_cta.cta_secondary")
+								})
+							})]
+						})
+					]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("footer", {
+				className: "bg-slate-950 text-slate-400 py-16 border-t border-slate-800",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "container mx-auto px-6",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-1 md:grid-cols-4 gap-12 mb-12",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-6",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center gap-2 text-white",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+											src: logo_estilizado_default,
+											alt: "COREPM",
+											className: "h-8 w-8 rounded-sm grayscale opacity-80"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "font-bold text-xl tracking-tight",
+											children: "COREPM"
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-sm leading-relaxed text-slate-500",
+										children: t("landing.hero.subtitle")
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+											href: "#",
+											className: "hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-5 w-5" })
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+											href: "#",
+											className: "hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-5 w-5" })
+										})]
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+								className: "font-bold text-white mb-6 text-sm uppercase tracking-wider",
+								children: t("landing.footer.product")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+								className: "space-y-3 text-sm",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#features",
+										className: "hover:text-white transition-colors",
+										children: t("landing.footer.features")
+									}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#pricing",
+										className: "hover:text-white transition-colors",
+										children: t("landing.footer.pricing")
+									}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#",
+										className: "hover:text-white transition-colors",
+										children: t("landing.footer.integrations")
+									}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#",
+										className: "hover:text-white transition-colors",
+										children: t("landing.footer.enterprise")
+									}) })
+								]
+							})] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+								className: "font-bold text-white mb-6 text-sm uppercase tracking-wider",
+								children: t("landing.footer.resources")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+								className: "space-y-3 text-sm",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#",
+										className: "hover:text-white transition-colors",
+										children: t("landing.footer.blog")
+									}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#",
+										className: "hover:text-white transition-colors",
+										children: t("landing.footer.docs")
+									}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#",
+										className: "hover:text-white transition-colors",
+										children: t("landing.footer.case_studies")
+									}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#",
+										className: "hover:text-white transition-colors",
+										children: t("landing.footer.help")
+									}) })
+								]
+							})] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+								className: "font-bold text-white mb-6 text-sm uppercase tracking-wider",
+								children: t("landing.footer.company")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+								className: "space-y-3 text-sm",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#about",
+										className: "hover:text-white transition-colors",
+										children: t("landing.footer.about")
+									}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#",
+										className: "hover:text-white transition-colors",
+										children: t("landing.footer.careers")
+									}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#",
+										className: "hover:text-white transition-colors",
+										children: t("landing.footer.legal")
+									}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#contact",
+										className: "hover:text-white transition-colors",
+										children: t("landing.footer.contact")
+									}) })
+								]
+							})] })
+						]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { children: [
+							"© ",
+							(/* @__PURE__ */ new Date()).getFullYear(),
+							" COREPM Inc. All rights reserved."
+						] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex gap-8",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+								href: "#",
+								className: "hover:text-white transition-colors",
+								children: t("landing.footer.privacy")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+								href: "#",
+								className: "hover:text-white transition-colors",
+								children: t("landing.footer.terms")
+							})]
+						})]
+					})]
+				})
+			})
+		]
+	});
+}
 function RequirePermission({ children, resource, action = "view" }) {
 	const { currentUser, isAuthenticated, checkPermission } = useAuthStore_default();
 	const location = useLocation();
@@ -94947,6 +96285,10 @@ var App = () => {
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TourGuide, {}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Routes, { children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
+						path: "/",
+						element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Landing, {})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 						path: "/login",
 						element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Login, {})
 					}),
@@ -94969,13 +96311,6 @@ var App = () => {
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Route, {
 						element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DashboardLayout, {}),
 						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
-								path: "/",
-								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
-									resource: "dashboard",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Index, {})
-								})
-							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/dashboard",
 								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
@@ -95286,4 +96621,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-DNDqbMDb.js.map
+//# sourceMappingURL=index-m-9HUwNs.js.map
