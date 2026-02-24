@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { ShieldX } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 
 interface RequirePermissionProps {
   children: JSX.Element
@@ -80,9 +79,9 @@ export function RequirePermission({
   if (isChecking) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4">
-        <Skeleton className="h-16 w-16 rounded-full" />
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-4 w-96" />
+        <div className="h-16 w-16 rounded-full bg-slate-200 animate-pulse" />
+        <div className="h-8 w-64 bg-slate-200 animate-pulse rounded-md" />
+        <div className="h-4 w-96 bg-slate-200 animate-pulse rounded-md" />
       </div>
     )
   }

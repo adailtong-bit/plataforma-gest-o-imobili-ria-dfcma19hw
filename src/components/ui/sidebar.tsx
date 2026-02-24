@@ -1,4 +1,3 @@
-/* Sidebar Component primitives - A component that displays a sidebar (a sidebar that appears on the side of the screen) - from shadcn/ui (exposes Sidebar, SidebarProvider, SidebarTrigger, SidebarRail, SidebarInset, SidebarInput, SidebarHeader, SidebarFooter, SidebarSeparator, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarGroupAction, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuButton) */
 import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { VariantProps, cva } from 'class-variance-authority'
@@ -16,13 +15,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -75,12 +67,8 @@ const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
 
-    // Improved persistence logic: Check cookie on initialization
     const [_open, _setOpen] = React.useState(() => {
-      // Check if user provided an explicit open prop, use that if so (controlled mode)
       if (openProp !== undefined) return openProp
-
-      // Try to read from cookie
       if (typeof document !== 'undefined') {
         const cookie = document.cookie
           .split('; ')
@@ -104,20 +92,17 @@ const SidebarProvider = React.forwardRef<
           _setOpen(openState)
         }
 
-        // Persist to cookie
         document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
       },
       [setOpenProp, open],
     )
 
-    // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
       return isMobile
         ? setOpenMobile((open) => !open)
         : setOpen((open) => !open)
     }, [isMobile, setOpen, setOpenMobile])
 
-    // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
         if (
@@ -158,25 +143,23 @@ const SidebarProvider = React.forwardRef<
 
     return (
       <SidebarContext.Provider value={contextValue}>
-        <TooltipProvider delayDuration={0}>
-          <div
-            style={
-              {
-                '--sidebar-width': SIDEBAR_WIDTH,
-                '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
-                ...style,
-              } as React.CSSProperties
-            }
-            className={cn(
-              'group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar',
-              className,
-            )}
-            ref={ref}
-            {...props}
-          >
-            {children}
-          </div>
-        </TooltipProvider>
+        <div
+          style={
+            {
+              '--sidebar-width': SIDEBAR_WIDTH,
+              '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
+              ...style,
+            } as React.CSSProperties
+          }
+          className={cn(
+            'group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar',
+            className,
+          )}
+          ref={ref}
+          {...props}
+        >
+          {children}
+        </div>
       </SidebarContext.Provider>
     )
   },
@@ -566,7 +549,7 @@ const SidebarMenuButton = React.forwardRef<
   React.ComponentProps<'button'> & {
     asChild?: boolean
     isActive?: boolean
-    tooltip?: string | React.ComponentProps<typeof TooltipContent>
+    tooltip?: string | { children: string }
   } & VariantProps<typeof sidebarMenuButtonVariants>
 >(
   (
@@ -583,38 +566,24 @@ const SidebarMenuButton = React.forwardRef<
   ) => {
     const Comp = asChild ? Slot : 'button'
     const { isMobile, state } = useSidebar()
+    const titleStr = tooltip
+      ? typeof tooltip === 'string'
+        ? tooltip
+        : tooltip.children
+      : undefined
 
-    const button = (
+    return (
       <Comp
         ref={ref}
         data-sidebar="menu-button"
         data-size={size}
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+        title={
+          state === 'collapsed' && !isMobile && titleStr ? titleStr : undefined
+        }
         {...props}
       />
-    )
-
-    if (!tooltip) {
-      return button
-    }
-
-    if (typeof tooltip === 'string') {
-      tooltip = {
-        children: tooltip,
-      }
-    }
-
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>{button}</TooltipTrigger>
-        <TooltipContent
-          side="right"
-          align="center"
-          hidden={state !== 'collapsed' || isMobile}
-          {...tooltip}
-        />
-      </Tooltip>
     )
   },
 )
@@ -689,13 +658,13 @@ const SidebarMenuSkeleton = React.forwardRef<
       {...props}
     >
       {showIcon && (
-        <Skeleton
-          className="size-4 rounded-md"
+        <div
+          className="size-4 rounded-md bg-slate-200 animate-pulse"
           data-sidebar="menu-skeleton-icon"
         />
       )}
-      <Skeleton
-        className="h-4 max-w-[--skeleton-width] flex-1"
+      <div
+        className="h-4 max-w-[--skeleton-width] flex-1 bg-slate-200 animate-pulse rounded-md"
         data-sidebar="menu-skeleton-text"
         style={
           {

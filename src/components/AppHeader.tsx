@@ -24,11 +24,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import useAuthStore from '@/stores/useAuthStore'
@@ -63,18 +58,15 @@ export function AppHeader() {
   const { notifications, markNotificationAsRead } = useNotificationStore()
   const navigate = useNavigate()
 
-  // Stores for search
   const { properties } = usePropertyStore()
   const { tenants } = useTenantStore()
   const { owners } = useOwnerStore()
   const { tasks } = useTaskStore()
 
-  // Ad Store
   const { advertisements } = usePublicityStore()
 
   const [openSearch, setOpenSearch] = useState(false)
 
-  // Prioritize Demo Users
   const demoUsers = allUsers.filter((u) => u.isDemo)
   const otherDemoUsers = allUsers
     .filter((u) => u.id !== currentUser?.id && !u.isDemo)
@@ -82,7 +74,6 @@ export function AppHeader() {
 
   const unreadCount = notifications.filter((n) => !n.read).length
 
-  // Header Ad Logic
   const headerAds = useMemo(
     () => advertisements.filter((a) => a.active && a.placement === 'header'),
     [advertisements],
@@ -185,7 +176,6 @@ export function AppHeader() {
           </Link>
         </div>
 
-        {/* Global Search Button */}
         <div
           className="relative hidden md:flex flex-1 max-w-md mx-4"
           id="global-actions"
@@ -268,7 +258,6 @@ export function AppHeader() {
         </CommandDialog>
 
         <div className="flex items-center gap-2">
-          {/* Search icon for mobile */}
           <Button
             variant="ghost"
             size="icon"
@@ -280,22 +269,15 @@ export function AppHeader() {
 
           <ThemeCustomizer />
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-black hover:bg-slate-100"
-                onClick={() => navigate('/help')}
-                title={t('common.help_hub')}
-              >
-                <HelpCircle className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{t('common.help_hub')}</p>
-            </TooltipContent>
-          </Tooltip>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-black hover:bg-slate-100"
+            onClick={() => navigate('/help')}
+            title={t('common.help_hub')}
+          >
+            <HelpCircle className="h-5 w-5" />
+          </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
