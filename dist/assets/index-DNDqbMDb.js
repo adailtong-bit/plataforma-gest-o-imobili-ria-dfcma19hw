@@ -58269,6 +58269,399 @@ const translations = {
 		}
 	}
 };
+const DEFAULT_PERMISSIONS_MATRIX = {
+	platform_owner: {
+		dashboard: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		properties: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		condominiums: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		tenants: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		owners: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		partners: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		calendar: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		tasks: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		financial: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		messages: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		users: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		settings: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		audit_logs: ["view"],
+		market_analysis: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		workflows: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		renewals: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		publicity: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		short_term: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		migration: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		analytics: ["view"],
+		automation: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		reports: ["view"],
+		visits: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		portal: ["view"],
+		hotels: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		performance: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		guest_services: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		pos: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		marketing: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		]
+	},
+	software_tenant: {
+		dashboard: ["view"],
+		properties: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		condominiums: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		tenants: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		owners: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		partners: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		calendar: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		tasks: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		financial: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		messages: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		users: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		settings: ["view", "edit"],
+		audit_logs: ["view"],
+		market_analysis: ["view"],
+		workflows: [
+			"view",
+			"create",
+			"edit"
+		],
+		renewals: [
+			"view",
+			"create",
+			"edit"
+		],
+		short_term: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		analytics: ["view"],
+		reports: ["view"],
+		visits: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		migration: ["view", "create"],
+		automation: ["view", "edit"],
+		hotels: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		performance: [
+			"view",
+			"create",
+			"edit"
+		],
+		guest_services: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		pos: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		],
+		marketing: [
+			"view",
+			"create",
+			"edit",
+			"delete"
+		]
+	},
+	internal_user: {
+		dashboard: ["view"],
+		properties: ["view", "edit"],
+		condominiums: ["view"],
+		tenants: ["view", "edit"],
+		owners: ["view"],
+		partners: ["view"],
+		calendar: [
+			"view",
+			"create",
+			"edit"
+		],
+		tasks: [
+			"view",
+			"create",
+			"edit"
+		],
+		messages: ["view", "create"],
+		short_term: [
+			"view",
+			"create",
+			"edit"
+		],
+		renewals: ["view", "edit"],
+		reports: ["view"],
+		visits: [
+			"view",
+			"create",
+			"edit"
+		],
+		hotels: [
+			"view",
+			"create",
+			"edit"
+		],
+		users: ["view"],
+		guest_services: ["view", "edit"],
+		pos: ["view", "create"],
+		financial: [
+			"view",
+			"create",
+			"edit"
+		],
+		automation: ["view"]
+	},
+	partner: {
+		dashboard: ["view"],
+		portal: ["view"],
+		tasks: ["view", "edit"],
+		messages: ["view", "create"],
+		financial: ["view"],
+		properties: ["view"],
+		automation: ["view"]
+	},
+	property_owner: {
+		dashboard: ["view"],
+		portal: ["view"],
+		properties: ["view"],
+		financial: ["view"],
+		messages: ["view", "create"],
+		short_term: ["view"],
+		tasks: [
+			"view",
+			"create",
+			"edit"
+		],
+		users: ["view"],
+		automation: ["view"]
+	},
+	tenant: {
+		dashboard: ["view"],
+		portal: ["view"],
+		messages: ["view", "create"],
+		financial: ["view"],
+		properties: ["view"],
+		automation: ["view"]
+	},
+	partner_employee: {
+		dashboard: ["view"],
+		portal: ["view"],
+		tasks: ["view", "edit"],
+		messages: ["view", "create"],
+		properties: ["view"],
+		automation: ["view"]
+	}
+};
+const hasPermission = (user, resource, action) => {
+	if (!user || !user.role) return false;
+	if (user.permissions && user.permissions.length > 0) {
+		const override = user.permissions.find((p$1) => p$1.resource === resource);
+		if (override) return override.actions.includes(action);
+	}
+	const rolePerms = DEFAULT_PERMISSIONS_MATRIX[user.role];
+	if (!rolePerms) return false;
+	const resourcePerms = rolePerms[resource];
+	if (!resourcePerms) return false;
+	return resourcePerms.includes(action);
+};
+const canChat = (initiator, target) => {
+	const initiatorRole = initiator.role;
+	const targetRole = target.role;
+	if ([
+		"platform_owner",
+		"software_tenant",
+		"internal_user"
+	].includes(initiatorRole)) return true;
+	if ([
+		"platform_owner",
+		"software_tenant",
+		"internal_user"
+	].includes(targetRole)) return true;
+	if (initiatorRole === "partner" && targetRole === "partner_employee") return target.parentPartnerId === initiator.id;
+	if (initiatorRole === "partner_employee" && targetRole === "partner") return initiator.parentPartnerId === target.id;
+	return false;
+};
 const AppContext = (0, import_react.createContext)(void 0);
 var getRoleName = (role) => {
 	switch (role) {
@@ -58350,6 +58743,7 @@ const AppProvider = ({ children }) => {
 	const [isTourOpen, setIsTourOpen] = (0, import_react.useState)(false);
 	const [currentStepIndex, setCurrentStepIndex] = (0, import_react.useState)(0);
 	const [activeVideo, setActiveVideo] = (0, import_react.useState)(null);
+	const [rolePermissions, setRolePermissions] = (0, import_react.useState)(DEFAULT_PERMISSIONS_MATRIX);
 	const { toast: toast$2 } = useToast();
 	const setLanguage = (lang) => {
 		setLanguageState(lang);
@@ -58544,6 +58938,40 @@ const AppProvider = ({ children }) => {
 		partners$1,
 		tenants$1
 	]);
+	const updateRolePermissions = (0, import_react.useCallback)((role, resource, actions$1) => {
+		setRolePermissions((prev) => ({
+			...prev,
+			[role]: {
+				...prev[role],
+				[resource]: actions$1
+			}
+		}));
+	}, []);
+	const checkPermission = (0, import_react.useCallback)(async (user, resource, action) => {
+		await new Promise((resolve) => setTimeout(resolve, 500));
+		if (!user || !user.role) return false;
+		if (user.permissions && user.permissions.length > 0) {
+			const override = user.permissions.find((p$1) => p$1.resource === resource);
+			if (override) return override.actions.includes(action);
+		}
+		const rolePerms = rolePermissions[user.role];
+		if (!rolePerms) return false;
+		const resourcePerms = rolePerms[resource];
+		if (!resourcePerms) return false;
+		return resourcePerms.includes(action);
+	}, [rolePermissions]);
+	const hasPermissionSync = (0, import_react.useCallback)((user, resource, action) => {
+		if (!user || !user.role) return false;
+		if (user.permissions && user.permissions.length > 0) {
+			const override = user.permissions.find((p$1) => p$1.resource === resource);
+			if (override) return override.actions.includes(action);
+		}
+		const rolePerms = rolePermissions[user.role];
+		if (!rolePerms) return false;
+		const resourcePerms = rolePerms[resource];
+		if (!resourcePerms) return false;
+		return resourcePerms.includes(action);
+	}, [rolePermissions]);
 	const executeWorkflow = (0, import_react.useCallback)((workflow, targetPropertyIds) => {
 		const propertyIds = targetPropertyIds && targetPropertyIds.length > 0 ? targetPropertyIds : workflow.propertyIds && workflow.propertyIds.length > 0 ? workflow.propertyIds : [];
 		if (propertyIds.length === 0) return;
@@ -58672,6 +59100,10 @@ const AppProvider = ({ children }) => {
 			tourSteps,
 			tutorialModules,
 			activeVideo,
+			rolePermissions,
+			updateRolePermissions,
+			checkPermission,
+			hasPermissionSync,
 			setLanguage,
 			setSelectedPropertyId,
 			t,
@@ -61237,7 +61669,11 @@ var useAuthStore = () => {
 		allUsers: context.allUsers,
 		isAuthenticated: context.isAuthenticated,
 		login: context.login,
-		logout: context.logout
+		logout: context.logout,
+		checkPermission: context.checkPermission,
+		rolePermissions: context.rolePermissions,
+		updateRolePermissions: context.updateRolePermissions,
+		hasPermissionSync: context.hasPermissionSync
 	};
 };
 var useAuthStore_default = useAuthStore;
@@ -63325,7 +63761,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$84({ inst: {
+			cachedValue = useState$85({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -63362,7 +63798,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$84 = React$67.useState, useEffect$30 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$85 = React$67.useState, useEffect$30 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -63520,399 +63956,6 @@ var usePublicityStore = () => {
 	};
 };
 var usePublicityStore_default = usePublicityStore;
-const PERMISSIONS_MATRIX = {
-	platform_owner: {
-		dashboard: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		properties: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		condominiums: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		tenants: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		owners: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		partners: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		calendar: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		tasks: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		financial: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		messages: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		users: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		settings: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		audit_logs: ["view"],
-		market_analysis: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		workflows: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		renewals: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		publicity: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		short_term: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		migration: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		analytics: ["view"],
-		automation: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		reports: ["view"],
-		visits: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		portal: ["view"],
-		hotels: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		performance: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		guest_services: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		pos: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		marketing: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		]
-	},
-	software_tenant: {
-		dashboard: ["view"],
-		properties: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		condominiums: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		tenants: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		owners: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		partners: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		calendar: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		tasks: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		financial: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		messages: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		users: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		settings: ["view", "edit"],
-		audit_logs: ["view"],
-		market_analysis: ["view"],
-		workflows: [
-			"view",
-			"create",
-			"edit"
-		],
-		renewals: [
-			"view",
-			"create",
-			"edit"
-		],
-		short_term: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		analytics: ["view"],
-		reports: ["view"],
-		visits: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		migration: ["view", "create"],
-		automation: ["view", "edit"],
-		hotels: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		performance: [
-			"view",
-			"create",
-			"edit"
-		],
-		guest_services: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		pos: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		],
-		marketing: [
-			"view",
-			"create",
-			"edit",
-			"delete"
-		]
-	},
-	internal_user: {
-		dashboard: ["view"],
-		properties: ["view", "edit"],
-		condominiums: ["view"],
-		tenants: ["view", "edit"],
-		owners: ["view"],
-		partners: ["view"],
-		calendar: [
-			"view",
-			"create",
-			"edit"
-		],
-		tasks: [
-			"view",
-			"create",
-			"edit"
-		],
-		messages: ["view", "create"],
-		short_term: [
-			"view",
-			"create",
-			"edit"
-		],
-		renewals: ["view", "edit"],
-		reports: ["view"],
-		visits: [
-			"view",
-			"create",
-			"edit"
-		],
-		hotels: [
-			"view",
-			"create",
-			"edit"
-		],
-		users: ["view"],
-		guest_services: ["view", "edit"],
-		pos: ["view", "create"],
-		financial: [
-			"view",
-			"create",
-			"edit"
-		],
-		automation: ["view"]
-	},
-	partner: {
-		dashboard: ["view"],
-		portal: ["view"],
-		tasks: ["view", "edit"],
-		messages: ["view", "create"],
-		financial: ["view"],
-		properties: ["view"],
-		automation: ["view"]
-	},
-	property_owner: {
-		dashboard: ["view"],
-		portal: ["view"],
-		properties: ["view"],
-		financial: ["view"],
-		messages: ["view", "create"],
-		short_term: ["view"],
-		tasks: [
-			"view",
-			"create",
-			"edit"
-		],
-		users: ["view"],
-		automation: ["view"]
-	},
-	tenant: {
-		dashboard: ["view"],
-		portal: ["view"],
-		messages: ["view", "create"],
-		financial: ["view"],
-		properties: ["view"],
-		automation: ["view"]
-	},
-	partner_employee: {
-		dashboard: ["view"],
-		portal: ["view"],
-		tasks: ["view", "edit"],
-		messages: ["view", "create"],
-		properties: ["view"],
-		automation: ["view"]
-	}
-};
-const hasPermission = (user, resource, action) => {
-	if (!user || !user.role) return false;
-	if (user.permissions && user.permissions.length > 0) {
-		const override = user.permissions.find((p$1) => p$1.resource === resource);
-		if (override) return override.actions.includes(action);
-	}
-	const rolePermissions = PERMISSIONS_MATRIX[user.role];
-	if (!rolePermissions) return false;
-	const resourcePermissions = rolePermissions[resource];
-	if (!resourcePermissions) return false;
-	return resourcePermissions.includes(action);
-};
-const canChat = (initiator, target) => {
-	const initiatorRole = initiator.role;
-	const targetRole = target.role;
-	if ([
-		"platform_owner",
-		"software_tenant",
-		"internal_user"
-	].includes(initiatorRole)) return true;
-	if ([
-		"platform_owner",
-		"software_tenant",
-		"internal_user"
-	].includes(targetRole)) return true;
-	if (initiatorRole === "partner" && targetRole === "partner_employee") return target.parentPartnerId === initiator.id;
-	if (initiatorRole === "partner_employee" && targetRole === "partner") return initiator.parentPartnerId === target.id;
-	return false;
-};
 function useAdRotation(ads, limit = 1, intervalSeconds = 8) {
 	const [currentIndex, setCurrentIndex] = (0, import_react.useState)(0);
 	(0, import_react.useEffect)(() => {
@@ -68178,7 +68221,7 @@ function AddressInput({ onAddressSelect, defaultValue = "", className, disabled 
 function Properties() {
 	const { properties: properties$1, addProperty, deleteProperty } = usePropertyStore_default();
 	const { condominiums: condominiums$1 } = useCondominiumStore_default();
-	const { currentUser } = useAuthStore_default();
+	const { currentUser, hasPermissionSync } = useAuthStore_default();
 	const { t, language } = useLanguageStore_default();
 	const [filter, setFilter] = (0, import_react.useState)("");
 	const [statusFilter, setStatusFilter] = (0, import_react.useState)("all");
@@ -68396,7 +68439,7 @@ function Properties() {
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-black font-medium",
 					children: t("properties.subtitle")
-				})] }), hasPermission(currentUser, "properties", "create") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				})] }), hasPermissionSync(currentUser, "properties", "create") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 					open,
 					onOpenChange: (v) => {
 						setOpen(v);
@@ -68800,7 +68843,7 @@ function Properties() {
 									className: "absolute bottom-2 left-2 bg-black text-white border-none font-bold",
 									children: property$2.profileType === "short_term" ? "STR" : "LTR"
 								}),
-								hasPermission(currentUser, "properties", "delete") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+								hasPermissionSync(currentUser, "properties", "delete") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
 									asChild: true,
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 										variant: "destructive",
@@ -75445,12 +75488,12 @@ function FinancialReports() {
 }
 function Financial() {
 	const { t, language } = useLanguageStore_default();
-	const { currentUser } = useAuthStore_default();
+	const { currentUser, hasPermissionSync } = useAuthStore_default();
 	const { bankStatements, uploadBankStatement } = useFinancialStore_default();
 	const { toast: toast$2 } = useToast();
 	const fileInputRef = (0, import_react.useRef)(null);
 	const [isUploading, setIsUploading] = (0, import_react.useState)(false);
-	if (!hasPermission(currentUser, "financial", "view")) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+	if (!hasPermissionSync(currentUser, "financial", "view")) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "p-8 text-center text-black font-medium",
 		children: t("common.access_denied_desc")
 	});
@@ -76575,8 +76618,8 @@ function AuditLogList() {
 }
 function Settings() {
 	const { t } = useLanguageStore_default();
-	const { currentUser } = useAuthStore_default();
-	if (!hasPermission(currentUser, "settings", "view")) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+	const { currentUser, hasPermissionSync } = useAuthStore_default();
+	if (!hasPermissionSync(currentUser, "settings", "view")) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "p-8 text-center",
 		children: t("common.access_denied_desc")
 	});
@@ -85458,6 +85501,7 @@ var roles = [
 	"tenant"
 ];
 function PermissionsMatrix() {
+	const { rolePermissions } = useAuthStore_default();
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "overflow-x-auto",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Resource" }), roles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
@@ -85467,7 +85511,7 @@ function PermissionsMatrix() {
 			className: "font-medium capitalize",
 			children: res
 		}), roles.map((role) => {
-			const perms = PERMISSIONS_MATRIX[role]?.[res];
+			const perms = rolePermissions[role]?.[res];
 			return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 				className: "text-center",
 				children: perms && perms.includes("view") ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4 mx-auto text-green-500" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 mx-auto text-slate-300" })
@@ -85488,6 +85532,7 @@ var actions = [
 	"delete"
 ];
 function PermissionSelector({ role, currentPermissions, onChange }) {
+	const { rolePermissions } = useAuthStore_default();
 	const handleToggle = (resource, action, checked) => {
 		let newPerms = [...currentPermissions];
 		const resourcePerm = newPerms.find((p$1) => p$1.resource === resource);
@@ -85512,7 +85557,7 @@ function PermissionSelector({ role, currentPermissions, onChange }) {
 					className: "text-sm font-medium capitalize col-span-1",
 					children: res
 				}), actions.map((act) => {
-					const implicit$1 = PERMISSIONS_MATRIX[role]?.[res]?.includes(act);
+					const implicit$1 = rolePermissions[role]?.[res]?.includes(act);
 					const override = currentPermissions.find((p$1) => p$1.resource === res)?.actions.includes(act);
 					const checked = implicit$1 || override;
 					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -85535,7 +85580,7 @@ function PermissionSelector({ role, currentPermissions, onChange }) {
 }
 function Users() {
 	const { users, addUser, updateUser, deleteUser, approveUser, blockUser } = useUserStore_default();
-	const { currentUser } = useAuthStore_default();
+	const { currentUser, hasPermissionSync } = useAuthStore_default();
 	const { partners: partners$1 } = usePartnerStore_default();
 	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
@@ -85742,7 +85787,7 @@ function Users() {
 			default: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-4 w-4" });
 		}
 	};
-	if (!hasPermission(currentUser, "users", "view")) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+	if (!hasPermissionSync(currentUser, "users", "view")) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "p-8 text-center",
 		children: "Access denied."
 	});
@@ -94632,13 +94677,49 @@ function Marketing() {
 	});
 }
 function RequirePermission({ children, resource, action = "view" }) {
-	const { currentUser, isAuthenticated } = useAuthStore_default();
+	const { currentUser, isAuthenticated, checkPermission } = useAuthStore_default();
 	const location = useLocation();
 	const { toast: toast$2 } = useToast();
 	const { t } = useLanguageStore_default();
-	const hasAccess = isAuthenticated && currentUser && hasPermission(currentUser, resource, action);
+	const [isChecking, setIsChecking] = (0, import_react.useState)(true);
+	const [hasAccess, setHasAccess] = (0, import_react.useState)(false);
 	(0, import_react.useEffect)(() => {
-		if (isAuthenticated && !hasAccess) toast$2({
+		let mounted = true;
+		const verifyAccess = async () => {
+			setIsChecking(true);
+			if (!isAuthenticated || !currentUser) {
+				if (mounted) {
+					setHasAccess(false);
+					setIsChecking(false);
+				}
+				return;
+			}
+			try {
+				const allowed = await checkPermission(currentUser, resource, action);
+				if (mounted) {
+					setHasAccess(allowed);
+					setIsChecking(false);
+				}
+			} catch (error) {
+				if (mounted) {
+					setHasAccess(false);
+					setIsChecking(false);
+				}
+			}
+		};
+		verifyAccess();
+		return () => {
+			mounted = false;
+		};
+	}, [
+		currentUser,
+		isAuthenticated,
+		resource,
+		action,
+		checkPermission
+	]);
+	(0, import_react.useEffect)(() => {
+		if (!isChecking && isAuthenticated && !hasAccess) toast$2({
 			title: t("common.access_denied"),
 			description: t("common.access_denied_desc"),
 			variant: "destructive"
@@ -94646,7 +94727,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 	}, [
 		hasAccess,
 		isAuthenticated,
-		resource,
+		isChecking,
 		toast$2,
 		t
 	]);
@@ -94654,6 +94735,14 @@ function RequirePermission({ children, resource, action = "view" }) {
 		to: "/login",
 		state: { from: location },
 		replace: true
+	});
+	if (isChecking) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-16 w-16 rounded-full" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-8 w-64" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-4 w-96" })
+		]
 	});
 	if (!hasAccess) {
 		if (currentUser.role === "tenant" || currentUser.role === "property_owner" || currentUser.role === "partner" || currentUser.role === "partner_employee") {
@@ -95197,4 +95286,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-DT6daQNa.js.map
+//# sourceMappingURL=index-DNDqbMDb.js.map

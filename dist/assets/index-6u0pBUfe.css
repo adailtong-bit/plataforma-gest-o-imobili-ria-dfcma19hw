@@ -1398,6 +1398,9 @@ video {
 .w-9 {
   width: 2.25rem;
 }
+.w-96 {
+  width: 24rem;
+}
 .w-\[--cell-size\] {
   width: var(--cell-size);
 }

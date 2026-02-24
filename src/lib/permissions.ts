@@ -123,6 +123,29 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
   },
 }
 
+export const hasPermission = (
+  user: User | null | undefined,
+  resource: Resource,
+  action: Action,
+): boolean => {
+  if (!user || !user.role) return false
+
+  if (user.permissions && user.permissions.length > 0) {
+    const override = user.permissions.find((p) => p.resource === resource)
+    if (override) {
+      return override.actions.includes(action)
+    }
+  }
+
+  const rolePerms = DEFAULT_PERMISSIONS_MATRIX[user.role]
+  if (!rolePerms) return false
+
+  const resourcePerms = rolePerms[resource]
+  if (!resourcePerms) return false
+
+  return resourcePerms.includes(action)
+}
+
 export const canChat = (initiator: User, target: User): boolean => {
   const initiatorRole = initiator.role
   const targetRole = target.role
