@@ -1,8 +1,7 @@
 import { Permission, UserRole, Resource, Action } from '@/lib/types'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { PERMISSIONS_MATRIX } from '@/lib/permissions'
-import { useState, useEffect } from 'react'
+import useAuthStore from '@/stores/useAuthStore'
 
 interface PermissionSelectorProps {
   role: UserRole
@@ -18,8 +17,7 @@ export function PermissionSelector({
   currentPermissions,
   onChange,
 }: PermissionSelectorProps) {
-  // Simplistic implementation: override generic role perms
-  // In a real app, this would be a complex matrix UI
+  const { rolePermissions } = useAuthStore()
 
   const handleToggle = (
     resource: Resource,
@@ -52,9 +50,7 @@ export function PermissionSelector({
               {res}
             </span>
             {actions.map((act) => {
-              // Check if implicit in role
-              const implicit = PERMISSIONS_MATRIX[role]?.[res]?.includes(act)
-              // Check if overridden
+              const implicit = rolePermissions[role]?.[res]?.includes(act)
               const override = currentPermissions
                 .find((p) => p.resource === res)
                 ?.actions.includes(act)
@@ -65,7 +61,7 @@ export function PermissionSelector({
                   <Checkbox
                     id={`${res}-${act}`}
                     checked={checked}
-                    disabled={implicit} // Cannot disable role-based base perms in this simplified model
+                    disabled={implicit}
                     onCheckedChange={(c) =>
                       handleToggle(res, act, c as boolean)
                     }

@@ -33,7 +33,6 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
-import { hasPermission } from '@/lib/permissions'
 import { User, Property } from '@/lib/types'
 import {
   AlertDialog,
@@ -55,7 +54,7 @@ import { VisuallyHidden } from '@/components/ui/visually-hidden'
 export default function Properties() {
   const { properties, addProperty, deleteProperty } = usePropertyStore()
   const { condominiums } = useCondominiumStore()
-  const { currentUser } = useAuthStore()
+  const { currentUser, hasPermissionSync } = useAuthStore()
   const { t, language } = useLanguageStore()
   const [filter, setFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -320,7 +319,7 @@ export default function Properties() {
           <p className="text-black font-medium">{t('properties.subtitle')}</p>
         </div>
 
-        {hasPermission(currentUser as User, 'properties', 'create') && (
+        {hasPermissionSync(currentUser as User, 'properties', 'create') && (
           <Dialog
             open={open}
             onOpenChange={(v) => {
@@ -691,7 +690,11 @@ export default function Properties() {
                 {property.profileType === 'short_term' ? 'STR' : 'LTR'}
               </Badge>
 
-              {hasPermission(currentUser as User, 'properties', 'delete') && (
+              {hasPermissionSync(
+                currentUser as User,
+                'properties',
+                'delete',
+              ) && (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button

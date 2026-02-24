@@ -1,7 +1,6 @@
 import { User, UserRole, Resource, Action } from './types'
 
-// Define the standard permissions matrix for each role
-export const PERMISSIONS_MATRIX: Record<
+export const DEFAULT_PERMISSIONS_MATRIX: Record<
   UserRole,
   Partial<Record<Resource, Action[]>>
 > = {
@@ -84,19 +83,19 @@ export const PERMISSIONS_MATRIX: Record<
     guest_services: ['view', 'edit'],
     pos: ['view', 'create'],
     financial: ['view', 'create', 'edit'],
-    automation: ['view'], // Ensure access to automation tab
+    automation: ['view'],
   },
   partner: {
-    dashboard: ['view'], // Grant dashboard access
+    dashboard: ['view'],
     portal: ['view'],
     tasks: ['view', 'edit'],
     messages: ['view', 'create'],
     financial: ['view'],
     properties: ['view'],
-    automation: ['view'], // Ensure access if needed
+    automation: ['view'],
   },
   property_owner: {
-    dashboard: ['view'], // Grant dashboard access
+    dashboard: ['view'],
     portal: ['view'],
     properties: ['view'],
     financial: ['view'],
@@ -104,47 +103,24 @@ export const PERMISSIONS_MATRIX: Record<
     short_term: ['view'],
     tasks: ['view', 'create', 'edit'],
     users: ['view'],
-    automation: ['view'], // Ensure access if needed
+    automation: ['view'],
   },
   tenant: {
-    dashboard: ['view'], // Grant dashboard access
+    dashboard: ['view'],
     portal: ['view'],
     messages: ['view', 'create'],
     financial: ['view'],
     properties: ['view'],
-    automation: ['view'], // Ensure access if needed
+    automation: ['view'],
   },
   partner_employee: {
-    dashboard: ['view'], // Grant dashboard access
+    dashboard: ['view'],
     portal: ['view'],
     tasks: ['view', 'edit'],
     messages: ['view', 'create'],
     properties: ['view'],
-    automation: ['view'], // Ensure access if needed
+    automation: ['view'],
   },
-}
-
-export const hasPermission = (
-  user: User,
-  resource: Resource,
-  action: Action,
-): boolean => {
-  if (!user || !user.role) return false
-
-  if (user.permissions && user.permissions.length > 0) {
-    const override = user.permissions.find((p) => p.resource === resource)
-    if (override) {
-      return override.actions.includes(action)
-    }
-  }
-
-  const rolePermissions = PERMISSIONS_MATRIX[user.role]
-  if (!rolePermissions) return false
-
-  const resourcePermissions = rolePermissions[resource]
-  if (!resourcePermissions) return false
-
-  return resourcePermissions.includes(action)
 }
 
 export const canChat = (initiator: User, target: User): boolean => {

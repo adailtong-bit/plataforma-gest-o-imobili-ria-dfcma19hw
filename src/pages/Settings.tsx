@@ -10,7 +10,6 @@ import {
 } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
-import { hasPermission } from '@/lib/permissions'
 import { User } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import {
@@ -34,9 +33,9 @@ import { AuditLogList } from '@/components/audit/AuditLogList'
 
 export default function Settings() {
   const { t } = useLanguageStore()
-  const { currentUser } = useAuthStore()
+  const { currentUser, hasPermissionSync } = useAuthStore()
 
-  if (!hasPermission(currentUser as User, 'settings', 'view')) {
+  if (!hasPermissionSync(currentUser as User, 'settings', 'view')) {
     return (
       <div className="p-8 text-center">{t('common.access_denied_desc')}</div>
     )

@@ -12,6 +12,10 @@ const useAuthStore = () => {
     isAuthenticated: context.isAuthenticated,
     login: context.login,
     logout: context.logout,
+    checkPermission: context.checkPermission,
+    rolePermissions: context.rolePermissions,
+    updateRolePermissions: context.updateRolePermissions,
+    hasPermissionSync: context.hasPermissionSync,
   }
 }
 

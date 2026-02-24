@@ -19,7 +19,6 @@ import { Upload, FileText, CheckCircle2, AlertCircle } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
 import useFinancialStore from '@/stores/useFinancialStore'
-import { hasPermission } from '@/lib/permissions'
 import { User, BankStatement } from '@/lib/types'
 import { useRef, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -30,13 +29,13 @@ import { DataMask } from '@/components/DataMask'
 
 export default function Financial() {
   const { t, language } = useLanguageStore()
-  const { currentUser } = useAuthStore()
+  const { currentUser, hasPermissionSync } = useAuthStore()
   const { bankStatements, uploadBankStatement } = useFinancialStore()
   const { toast } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
 
-  if (!hasPermission(currentUser as User, 'financial', 'view')) {
+  if (!hasPermissionSync(currentUser as User, 'financial', 'view')) {
     return (
       <div className="p-8 text-center text-black font-medium">
         {t('common.access_denied_desc')}

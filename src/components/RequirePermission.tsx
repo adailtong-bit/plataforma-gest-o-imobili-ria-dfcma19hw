@@ -1,12 +1,12 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import useAuthStore from '@/stores/useAuthStore'
-import { hasPermission } from '@/lib/permissions'
 import { Resource, Action, User } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { ShieldX } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface RequirePermissionProps {
   children: JSX.Element
@@ -19,32 +19,75 @@ export function RequirePermission({
   resource,
   action = 'view',
 }: RequirePermissionProps) {
-  const { currentUser, isAuthenticated } = useAuthStore()
+  const { currentUser, isAuthenticated, checkPermission } = useAuthStore()
   const location = useLocation()
   const { toast } = useToast()
   const { t } = useLanguageStore()
 
-  const hasAccess =
-    isAuthenticated &&
-    currentUser &&
-    hasPermission(currentUser as User, resource, action)
+  const [isChecking, setIsChecking] = useState(true)
+  const [hasAccess, setHasAccess] = useState(false)
 
   useEffect(() => {
-    if (isAuthenticated && !hasAccess) {
+    let mounted = true
+    const verifyAccess = async () => {
+      setIsChecking(true)
+      if (!isAuthenticated || !currentUser) {
+        if (mounted) {
+          setHasAccess(false)
+          setIsChecking(false)
+        }
+        return
+      }
+
+      try {
+        const allowed = await checkPermission(
+          currentUser as User,
+          resource,
+          action,
+        )
+        if (mounted) {
+          setHasAccess(allowed)
+          setIsChecking(false)
+        }
+      } catch (error) {
+        if (mounted) {
+          setHasAccess(false)
+          setIsChecking(false)
+        }
+      }
+    }
+
+    verifyAccess()
+    return () => {
+      mounted = false
+    }
+  }, [currentUser, isAuthenticated, resource, action, checkPermission])
+
+  useEffect(() => {
+    if (!isChecking && isAuthenticated && !hasAccess) {
       toast({
         title: t('common.access_denied'),
         description: t('common.access_denied_desc'),
         variant: 'destructive',
       })
     }
-  }, [hasAccess, isAuthenticated, resource, toast, t])
+  }, [hasAccess, isAuthenticated, isChecking, toast, t])
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
+  if (isChecking) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4">
+        <Skeleton className="h-16 w-16 rounded-full" />
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-4 w-96" />
+      </div>
+    )
+  }
+
   if (!hasAccess) {
-    // Redirect logic for portals based on roles
     if (
       currentUser.role === 'tenant' ||
       currentUser.role === 'property_owner' ||
@@ -59,9 +102,6 @@ export function RequirePermission({
             ? '/portal/partner'
             : '/portal/tenant'
 
-      // Allow if trying to access properties via direct link but check if it's their property
-      // For now, if they are blocked from a resource, we show the denied screen or redirect to portal
-      // The PERMISSIONS_MATRIX update should prevent this for valid resources.
       if (!location.pathname.startsWith(portalPath) && resource === 'portal') {
         return <Navigate to={portalPath} replace />
       }

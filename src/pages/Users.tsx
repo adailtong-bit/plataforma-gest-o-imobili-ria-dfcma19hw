@@ -63,7 +63,6 @@ import {
 import useUserStore from '@/stores/useUserStore'
 import useAuthStore from '@/stores/useAuthStore'
 import usePartnerStore from '@/stores/usePartnerStore'
-import { hasPermission } from '@/lib/permissions'
 import { User, UserRole, Permission } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -76,7 +75,7 @@ import { DataMask } from '@/components/DataMask'
 export default function Users() {
   const { users, addUser, updateUser, deleteUser, approveUser, blockUser } =
     useUserStore()
-  const { currentUser } = useAuthStore()
+  const { currentUser, hasPermissionSync } = useAuthStore()
   const { partners } = usePartnerStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
@@ -323,7 +322,7 @@ export default function Users() {
     }
   }
 
-  if (!hasPermission(currentUser as User, 'users', 'view')) {
+  if (!hasPermissionSync(currentUser as User, 'users', 'view')) {
     return <div className="p-8 text-center">Access denied.</div>
   }
 

@@ -6,9 +6,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { PERMISSIONS_MATRIX } from '@/lib/permissions'
 import { Check, X } from 'lucide-react'
 import { UserRole, Resource } from '@/lib/types'
+import useAuthStore from '@/stores/useAuthStore'
 
 const resources: Resource[] = [
   'dashboard',
@@ -29,6 +29,8 @@ const roles: UserRole[] = [
 ]
 
 export function PermissionsMatrix() {
+  const { rolePermissions } = useAuthStore()
+
   return (
     <div className="overflow-x-auto">
       <Table>
@@ -50,7 +52,7 @@ export function PermissionsMatrix() {
             <TableRow key={res}>
               <TableCell className="font-medium capitalize">{res}</TableCell>
               {roles.map((role) => {
-                const perms = PERMISSIONS_MATRIX[role]?.[res]
+                const perms = rolePermissions[role]?.[res]
                 const hasAccess = perms && perms.includes('view')
                 return (
                   <TableCell key={`${role}-${res}`} className="text-center">

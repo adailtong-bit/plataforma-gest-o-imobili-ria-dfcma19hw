@@ -56,6 +56,8 @@ import {
   MarketingWorkflow,
   EmailTemplate,
   UserRole,
+  Resource,
+  Action,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -103,6 +105,7 @@ import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
 import { isSameDay, parseISO } from 'date-fns'
 import { formatCurrency as formatCurrencyUtil } from '@/lib/utils'
+import { DEFAULT_PERMISSIONS_MATRIX } from '@/lib/permissions'
 
 interface AppContextType {
   // Existing props
@@ -163,6 +166,20 @@ interface AppContextType {
   tourSteps: TourStep[]
   tutorialModules: TutorialModule[]
   activeVideo: string | null
+
+  // Security & Permissions
+  rolePermissions: Record<UserRole, Partial<Record<Resource, Action[]>>>
+  updateRolePermissions: (
+    role: UserRole,
+    resource: Resource,
+    actions: Action[],
+  ) => void
+  checkPermission: (
+    user: User,
+    resource: Resource,
+    action: Action,
+  ) => Promise<boolean>
+  hasPermissionSync: (user: User, resource: Resource, action: Action) => boolean
 
   // Methods
   setLanguage: (lang: Language) => void
@@ -436,6 +453,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [isTourOpen, setIsTourOpen] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [activeVideo, setActiveVideo] = useState<string | null>(null)
+
+  // Security & Permissions
+  const [rolePermissions, setRolePermissions] = useState<
+    Record<UserRole, Partial<Record<Resource, Action[]>>>
+  >(DEFAULT_PERMISSIONS_MATRIX)
 
   const { toast } = useToast()
 
@@ -712,6 +734,66 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     [users, owners, partners, tenants],
   )
 
+  const updateRolePermissions = useCallback(
+    (role: UserRole, resource: Resource, actions: Action[]) => {
+      setRolePermissions((prev) => ({
+        ...prev,
+        [role]: {
+          ...prev[role],
+          [resource]: actions,
+        },
+      }))
+    },
+    [],
+  )
+
+  const checkPermission = useCallback(
+    async (user: User, resource: Resource, action: Action) => {
+      // Simulate database network request
+      await new Promise((resolve) => setTimeout(resolve, 500))
+
+      if (!user || !user.role) return false
+
+      if (user.permissions && user.permissions.length > 0) {
+        const override = user.permissions.find((p) => p.resource === resource)
+        if (override) {
+          return override.actions.includes(action)
+        }
+      }
+
+      const rolePerms = rolePermissions[user.role]
+      if (!rolePerms) return false
+
+      const resourcePerms = rolePerms[resource]
+      if (!resourcePerms) return false
+
+      return resourcePerms.includes(action)
+    },
+    [rolePermissions],
+  )
+
+  const hasPermissionSync = useCallback(
+    (user: User, resource: Resource, action: Action) => {
+      if (!user || !user.role) return false
+
+      if (user.permissions && user.permissions.length > 0) {
+        const override = user.permissions.find((p) => p.resource === resource)
+        if (override) {
+          return override.actions.includes(action)
+        }
+      }
+
+      const rolePerms = rolePermissions[user.role]
+      if (!rolePerms) return false
+
+      const resourcePerms = rolePerms[resource]
+      if (!resourcePerms) return false
+
+      return resourcePerms.includes(action)
+    },
+    [rolePermissions],
+  )
+
   // --- Automation Logic ---
 
   const executeWorkflow = useCallback(
@@ -902,6 +984,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         tourSteps: initialTourSteps,
         tutorialModules: initialTutorialModules,
         activeVideo,
+        rolePermissions,
+        updateRolePermissions,
+        checkPermission,
+        hasPermissionSync,
         setLanguage,
         setSelectedPropertyId,
         t,
