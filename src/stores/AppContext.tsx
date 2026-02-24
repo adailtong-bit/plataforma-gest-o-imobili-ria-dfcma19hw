@@ -784,6 +784,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const deleteEmailTemplate = (id: string) =>
     setEmailTemplates(emailTemplates.filter((x) => x.id !== id))
 
+  const updateSubscriptionConfig = (config: SubscriptionConfig) =>
+    setSubscriptionConfig(config)
+
   const visibleMessages = useMemo(
     () => allMessages.filter((m) => m.ownerId === currentUser.id),
     [allMessages, currentUser.id],
