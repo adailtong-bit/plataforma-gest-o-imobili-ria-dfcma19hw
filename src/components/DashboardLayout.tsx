@@ -4,7 +4,7 @@ import { AppHeader } from '@/components/AppHeader'
 import { AppSidebar } from '@/components/AppSidebar'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
-export default function Layout() {
+export default function DashboardLayout() {
   return (
     <TooltipProvider>
       <SidebarProvider>
