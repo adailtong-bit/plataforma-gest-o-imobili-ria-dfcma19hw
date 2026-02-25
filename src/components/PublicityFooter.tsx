@@ -43,6 +43,11 @@ export function PublicityFooter() {
                 <img
                   src={ad.imageUrl}
                   alt={ad.title}
+                  crossOrigin="anonymous"
+                  onError={(e) => {
+                    e.currentTarget.src = '/placeholder.svg'
+                    e.currentTarget.onerror = null
+                  }}
                   className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
                 />
               </div>

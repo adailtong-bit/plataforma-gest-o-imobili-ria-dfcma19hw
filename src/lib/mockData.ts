@@ -984,7 +984,7 @@ for (let i = 0; i < 30; i++) {
     advertisements.push({
       id: `ad_gen_${i}_${j}`,
       title: `Special Offer ${i}-${j}`,
-      imageUrl: `https://img.usecurling.com/p/600/200?q=sale`,
+      imageUrl: `/placeholder.svg`,
       linkUrl: `https://example.com/offer/${i}`,
       active: true,
       createdAt: new Date().toISOString(),
