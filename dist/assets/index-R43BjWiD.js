@@ -18065,7 +18065,7 @@ function handleAndDispatchCustomEvent$1(name, handler, detail, { discrete }) {
 	if (discrete) dispatchDiscreteCustomEvent(target, event);
 	else target.dispatchEvent(event);
 }
-var Root$10 = DismissableLayer;
+var Root$11 = DismissableLayer;
 var Branch = DismissableLayerBranch;
 var useLayoutEffect2 = globalThis?.document ? import_react.useLayoutEffect : () => {};
 var import_react_dom$6 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
@@ -18256,7 +18256,7 @@ var VisuallyHidden$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 VisuallyHidden$1.displayName = NAME$3;
-var Root$9 = VisuallyHidden$1;
+var Root$10 = VisuallyHidden$1;
 var import_react_dom$5 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
 var PROVIDER_NAME$1 = "ToastProvider";
 var [Collection$3, useCollection$3, createCollectionScope$3] = createCollection("Toast");
@@ -18555,7 +18555,7 @@ var ToastImpl = import_react.forwardRef((props, forwardedRef) => {
 		onClose: handleClose,
 		children: import_react_dom$5.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection$3.ItemSlot, {
 			scope: __scopeToast,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$10, {
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$11, {
 				asChild: true,
 				onEscapeKeyDown: composeEventHandlers(onEscapeKeyDown, () => {
 					if (!context.isFocusedToastEscapeKeyDownRef.current) handleClose();
@@ -19114,20 +19114,6 @@ var Calendar = createLucideIcon("calendar", [
 		key: "8toen8"
 	}]
 ]);
-var ChartNoAxesColumn = createLucideIcon("chart-no-axes-column", [
-	["path", {
-		d: "M5 21v-6",
-		key: "1hz6c0"
-	}],
-	["path", {
-		d: "M12 21V3",
-		key: "1lcnhd"
-	}],
-	["path", {
-		d: "M19 21V9",
-		key: "unv183"
-	}]
-]);
 var ChartPie = createLucideIcon("chart-pie", [["path", {
 	d: "M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z",
 	key: "pzmjnu"
@@ -19379,52 +19365,6 @@ var Globe = createLucideIcon("globe", [
 	["path", {
 		d: "M2 12h20",
 		key: "9i4pu4"
-	}]
-]);
-var Hotel = createLucideIcon("hotel", [
-	["path", {
-		d: "M10 22v-6.57",
-		key: "1wmca3"
-	}],
-	["path", {
-		d: "M12 11h.01",
-		key: "z322tv"
-	}],
-	["path", {
-		d: "M12 7h.01",
-		key: "1ivr5q"
-	}],
-	["path", {
-		d: "M14 15.43V22",
-		key: "1q2vjd"
-	}],
-	["path", {
-		d: "M15 16a5 5 0 0 0-6 0",
-		key: "o9wqvi"
-	}],
-	["path", {
-		d: "M16 11h.01",
-		key: "xkw8gn"
-	}],
-	["path", {
-		d: "M16 7h.01",
-		key: "1kdx03"
-	}],
-	["path", {
-		d: "M8 11h.01",
-		key: "1dfujw"
-	}],
-	["path", {
-		d: "M8 7h.01",
-		key: "1vti4s"
-	}],
-	["rect", {
-		x: "4",
-		y: "2",
-		width: "16",
-		height: "20",
-		rx: "2",
-		key: "1uxh74"
 	}]
 ]);
 var House = createLucideIcon("house", [["path", {
@@ -19860,23 +19800,6 @@ var Sun = createLucideIcon("sun", [
 		key: "1shlcs"
 	}]
 ]);
-var Tags = createLucideIcon("tags", [
-	["path", {
-		d: "M13.172 2a2 2 0 0 1 1.414.586l6.71 6.71a2.4 2.4 0 0 1 0 3.408l-4.592 4.592a2.4 2.4 0 0 1-3.408 0l-6.71-6.71A2 2 0 0 1 6 9.172V3a1 1 0 0 1 1-1z",
-		key: "16rjxf"
-	}],
-	["path", {
-		d: "M2 7v6.172a2 2 0 0 0 .586 1.414l6.71 6.71a2.4 2.4 0 0 0 3.191.193",
-		key: "178nd4"
-	}],
-	["circle", {
-		cx: "10.5",
-		cy: "6.5",
-		r: ".5",
-		fill: "currentColor",
-		key: "12ikhr"
-	}]
-]);
 var Trash2 = createLucideIcon("trash-2", [
 	["path", {
 		d: "M10 11v6",
@@ -20033,10 +19956,6 @@ var X = createLucideIcon("x", [["path", {
 }], ["path", {
 	d: "m6 6 12 12",
 	key: "d8bk6v"
-}]]);
-var Zap = createLucideIcon("zap", [["path", {
-	d: "M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z",
-	key: "1xq2db"
 }]]);
 var CLASS_PART_SEPARATOR = "-";
 var createClassGroupUtils = (config) => {
@@ -24413,10 +24332,10 @@ var Observer = class {
 			if (typeof id !== "string" && typeof id !== "number") return { unwrap };
 			else return Object.assign(id, { unwrap });
 		};
-		this.custom = (jsx$31, data) => {
+		this.custom = (jsx$32, data) => {
 			const id = (data == null ? void 0 : data.id) || toastsCounter++;
 			this.create({
-				jsx: jsx$31(id),
+				jsx: jsx$32(id),
 				id,
 				...data
 			});
@@ -26552,7 +26471,7 @@ var Arrow$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 Arrow$1.displayName = NAME$2;
-var Root$8 = Arrow$1;
+var Root$9 = Arrow$1;
 function useSize(element) {
 	const [size$3, setSize] = import_react.useState(void 0);
 	useLayoutEffect2(() => {
@@ -26619,11 +26538,11 @@ var PopperAnchor = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 PopperAnchor.displayName = ANCHOR_NAME$2;
-var CONTENT_NAME$8 = "PopperContent";
-var [PopperContentProvider, useContentContext] = createPopperContext(CONTENT_NAME$8);
+var CONTENT_NAME$9 = "PopperContent";
+var [PopperContentProvider, useContentContext] = createPopperContext(CONTENT_NAME$9);
 var PopperContent = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopePopper, side = "bottom", sideOffset = 0, align = "center", alignOffset = 0, arrowPadding = 0, avoidCollisions = true, collisionBoundary = [], collisionPadding: collisionPaddingProp = 0, sticky = "partial", hideWhenDetached = false, updatePositionStrategy = "optimized", onPlaced, ...contentProps } = props;
-	const context = usePopperContext(CONTENT_NAME$8, __scopePopper);
+	const context = usePopperContext(CONTENT_NAME$9, __scopePopper);
 	const [content, setContent] = import_react.useState(null);
 	const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
 	const [arrow$3, setArrow] = import_react.useState(null);
@@ -26736,7 +26655,7 @@ var PopperContent = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-PopperContent.displayName = CONTENT_NAME$8;
+PopperContent.displayName = CONTENT_NAME$9;
 var ARROW_NAME$5 = "PopperArrow";
 var OPPOSITE_SIDE = {
 	top: "bottom",
@@ -26769,7 +26688,7 @@ var PopperArrow = import_react.forwardRef(function PopperArrow2(props, forwarded
 			}[contentContext.placedSide],
 			visibility: contentContext.shouldHideArrow ? "hidden" : void 0
 		},
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$8, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$9, {
 			...arrowProps,
 			ref: forwardedRef,
 			style: {
@@ -26950,11 +26869,11 @@ var Tooltip$2 = (props) => {
 	});
 };
 Tooltip$2.displayName = TOOLTIP_NAME;
-var TRIGGER_NAME$7 = "TooltipTrigger";
+var TRIGGER_NAME$8 = "TooltipTrigger";
 var TooltipTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTooltip, ...triggerProps } = props;
-	const context = useTooltipContext(TRIGGER_NAME$7, __scopeTooltip);
-	const providerContext = useTooltipProviderContext(TRIGGER_NAME$7, __scopeTooltip);
+	const context = useTooltipContext(TRIGGER_NAME$8, __scopeTooltip);
+	const providerContext = useTooltipProviderContext(TRIGGER_NAME$8, __scopeTooltip);
 	const popperScope = usePopperScope$3(__scopeTooltip);
 	const composedRefs = useComposedRefs(forwardedRef, import_react.useRef(null), context.onTriggerChange);
 	const isPointerDownRef = import_react.useRef(false);
@@ -26995,7 +26914,7 @@ var TooltipTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-TooltipTrigger$1.displayName = TRIGGER_NAME$7;
+TooltipTrigger$1.displayName = TRIGGER_NAME$8;
 var PORTAL_NAME$6 = "TooltipPortal";
 var [PortalProvider$3, usePortalContext$3] = createTooltipContext(PORTAL_NAME$6, { forceMount: void 0 });
 var TooltipPortal = (props) => {
@@ -27015,11 +26934,11 @@ var TooltipPortal = (props) => {
 	});
 };
 TooltipPortal.displayName = PORTAL_NAME$6;
-var CONTENT_NAME$7 = "TooltipContent";
+var CONTENT_NAME$8 = "TooltipContent";
 var TooltipContent$1 = import_react.forwardRef((props, forwardedRef) => {
-	const portalContext = usePortalContext$3(CONTENT_NAME$7, props.__scopeTooltip);
+	const portalContext = usePortalContext$3(CONTENT_NAME$8, props.__scopeTooltip);
 	const { forceMount = portalContext.forceMount, side = "top", ...contentProps } = props;
-	const context = useTooltipContext(CONTENT_NAME$7, props.__scopeTooltip);
+	const context = useTooltipContext(CONTENT_NAME$8, props.__scopeTooltip);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || context.open,
 		children: context.disableHoverableContent ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipContentImpl, {
@@ -27034,8 +26953,8 @@ var TooltipContent$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 var TooltipContentHoverable = import_react.forwardRef((props, forwardedRef) => {
-	const context = useTooltipContext(CONTENT_NAME$7, props.__scopeTooltip);
-	const providerContext = useTooltipProviderContext(CONTENT_NAME$7, props.__scopeTooltip);
+	const context = useTooltipContext(CONTENT_NAME$8, props.__scopeTooltip);
+	const providerContext = useTooltipProviderContext(CONTENT_NAME$8, props.__scopeTooltip);
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, ref);
 	const [pointerGraceArea, setPointerGraceArea] = import_react.useState(null);
@@ -27112,7 +27031,7 @@ var [VisuallyHiddenContentContextProvider, useVisuallyHiddenContentContext] = cr
 var Slottable$1 = /* @__PURE__ */ createSlottable("TooltipContent");
 var TooltipContentImpl = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTooltip, children, "aria-label": ariaLabel, onEscapeKeyDown, onPointerDownOutside, ...contentProps } = props;
-	const context = useTooltipContext(CONTENT_NAME$7, __scopeTooltip);
+	const context = useTooltipContext(CONTENT_NAME$8, __scopeTooltip);
 	const popperScope = usePopperScope$3(__scopeTooltip);
 	const { onClose } = context;
 	import_react.useEffect(() => {
@@ -27151,7 +27070,7 @@ var TooltipContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Slottable$1, { children }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VisuallyHiddenContentContextProvider, {
 				scope: __scopeTooltip,
 				isInside: true,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$9, {
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$10, {
 					id: context.contentId,
 					role: "tooltip",
 					children: ariaLabel || children
@@ -27160,7 +27079,7 @@ var TooltipContentImpl = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-TooltipContent$1.displayName = CONTENT_NAME$7;
+TooltipContent$1.displayName = CONTENT_NAME$8;
 var ARROW_NAME$4 = "TooltipArrow";
 var TooltipArrow = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTooltip, ...arrowProps } = props;
@@ -28001,7 +27920,7 @@ function PreviousMonthButton(props) {
 	const { components } = useDayPicker();
 	return import_react.createElement(components.Button, { ...props });
 }
-function Root$7(props) {
+function Root$8(props) {
 	const { rootRef, ...rest } = props;
 	return import_react.createElement("div", {
 		...rest,
@@ -28053,7 +27972,7 @@ var custom_components_exports = /* @__PURE__ */ __export({
 	NextMonthButton: () => NextMonthButton,
 	Option: () => Option,
 	PreviousMonthButton: () => PreviousMonthButton,
-	Root: () => Root$7,
+	Root: () => Root$8,
 	Select: () => Select$2,
 	Week: () => Week,
 	WeekNumber: () => WeekNumber,
@@ -57464,47 +57383,23 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 	},
 	internal_user: {
 		dashboard: ["view"],
-		properties: ["view", "edit"],
-		condominiums: ["view"],
-		tenants: ["view", "edit"],
-		owners: ["view"],
-		partners: ["view"],
-		calendar: [
-			"view",
-			"create",
-			"edit"
-		],
-		tasks: [
-			"view",
-			"create",
-			"edit"
-		],
-		messages: ["view", "create"],
-		short_term: [
-			"view",
-			"create",
-			"edit"
-		],
-		renewals: ["view", "edit"],
+		properties: FULL_ACCESS,
+		condominiums: FULL_ACCESS,
+		tenants: FULL_ACCESS,
+		owners: FULL_ACCESS,
+		partners: FULL_ACCESS,
+		calendar: FULL_ACCESS,
+		tasks: FULL_ACCESS,
+		messages: FULL_ACCESS,
+		short_term: FULL_ACCESS,
+		renewals: FULL_ACCESS,
 		reports: ["view"],
-		visits: [
-			"view",
-			"create",
-			"edit"
-		],
-		hotels: [
-			"view",
-			"create",
-			"edit"
-		],
+		visits: FULL_ACCESS,
+		hotels: FULL_ACCESS,
 		users: ["view"],
-		guest_services: ["view", "edit"],
-		pos: ["view", "create"],
-		financial: [
-			"view",
-			"create",
-			"edit"
-		],
+		guest_services: FULL_ACCESS,
+		pos: FULL_ACCESS,
+		financial: FULL_ACCESS,
 		automation: ["view"]
 	},
 	partner: {
@@ -59196,23 +59091,23 @@ var Dialog$1 = (props) => {
 	});
 };
 Dialog$1.displayName = DIALOG_NAME;
-var TRIGGER_NAME$6 = "DialogTrigger";
+var TRIGGER_NAME$7 = "DialogTrigger";
 var DialogTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDialog, ...triggerProps } = props;
-	const context = useDialogContext(TRIGGER_NAME$6, __scopeDialog);
+	const context = useDialogContext(TRIGGER_NAME$7, __scopeDialog);
 	const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
 		type: "button",
 		"aria-haspopup": "dialog",
 		"aria-expanded": context.open,
 		"aria-controls": context.contentId,
-		"data-state": getState$3(context.open),
+		"data-state": getState$4(context.open),
 		...triggerProps,
 		ref: composedTriggerRef,
 		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
 	});
 });
-DialogTrigger$1.displayName = TRIGGER_NAME$6;
+DialogTrigger$1.displayName = TRIGGER_NAME$7;
 var PORTAL_NAME$5 = "DialogPortal";
 var [PortalProvider$2, usePortalContext$2] = createDialogContext(PORTAL_NAME$5, { forceMount: void 0 });
 var DialogPortal$1 = (props) => {
@@ -59255,7 +59150,7 @@ var DialogOverlayImpl = import_react.forwardRef((props, forwardedRef) => {
 		allowPinchZoom: true,
 		shards: [context.contentRef],
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-			"data-state": getState$3(context.open),
+			"data-state": getState$4(context.open),
 			...overlayProps,
 			ref: forwardedRef,
 			style: {
@@ -59265,11 +59160,11 @@ var DialogOverlayImpl = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-var CONTENT_NAME$6 = "DialogContent";
+var CONTENT_NAME$7 = "DialogContent";
 var DialogContent$1 = import_react.forwardRef((props, forwardedRef) => {
-	const portalContext = usePortalContext$2(CONTENT_NAME$6, props.__scopeDialog);
+	const portalContext = usePortalContext$2(CONTENT_NAME$7, props.__scopeDialog);
 	const { forceMount = portalContext.forceMount, ...contentProps } = props;
-	const context = useDialogContext(CONTENT_NAME$6, props.__scopeDialog);
+	const context = useDialogContext(CONTENT_NAME$7, props.__scopeDialog);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || context.open,
 		children: context.modal ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogContentModal, {
@@ -59281,9 +59176,9 @@ var DialogContent$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-DialogContent$1.displayName = CONTENT_NAME$6;
+DialogContent$1.displayName = CONTENT_NAME$7;
 var DialogContentModal = import_react.forwardRef((props, forwardedRef) => {
-	const context = useDialogContext(CONTENT_NAME$6, props.__scopeDialog);
+	const context = useDialogContext(CONTENT_NAME$7, props.__scopeDialog);
 	const contentRef = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, context.contentRef, contentRef);
 	import_react.useEffect(() => {
@@ -59308,7 +59203,7 @@ var DialogContentModal = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 var DialogContentNonModal = import_react.forwardRef((props, forwardedRef) => {
-	const context = useDialogContext(CONTENT_NAME$6, props.__scopeDialog);
+	const context = useDialogContext(CONTENT_NAME$7, props.__scopeDialog);
 	const hasInteractedOutsideRef = import_react.useRef(false);
 	const hasPointerDownOutsideRef = import_react.useRef(false);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogContentImpl, {
@@ -59339,7 +59234,7 @@ var DialogContentNonModal = import_react.forwardRef((props, forwardedRef) => {
 });
 var DialogContentImpl = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDialog, trapFocus, onOpenAutoFocus, onCloseAutoFocus, ...contentProps } = props;
-	const context = useDialogContext(CONTENT_NAME$6, __scopeDialog);
+	const context = useDialogContext(CONTENT_NAME$7, __scopeDialog);
 	const contentRef = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, contentRef);
 	useFocusGuards();
@@ -59354,7 +59249,7 @@ var DialogContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			id: context.contentId,
 			"aria-describedby": context.descriptionId,
 			"aria-labelledby": context.titleId,
-			"data-state": getState$3(context.open),
+			"data-state": getState$4(context.open),
 			...contentProps,
 			ref: composedRefs,
 			onDismiss: () => context.onOpenChange(false)
@@ -59398,12 +59293,12 @@ var DialogClose$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 DialogClose$1.displayName = CLOSE_NAME$1;
-function getState$3(open) {
+function getState$4(open) {
 	return open ? "open" : "closed";
 }
 var TITLE_WARNING_NAME = "DialogTitleWarning";
 var [WarningProvider, useWarningContext] = createContext2(TITLE_WARNING_NAME, {
-	contentName: CONTENT_NAME$6,
+	contentName: CONTENT_NAME$7,
 	titleName: TITLE_NAME$1,
 	docsSlug: "dialog"
 });
@@ -59436,7 +59331,7 @@ var DescriptionWarning$1 = ({ contentRef, descriptionId }) => {
 	]);
 	return null;
 };
-var Root$6 = Dialog$1;
+var Root$7 = Dialog$1;
 var Trigger$4 = DialogTrigger$1;
 var Portal$4 = DialogPortal$1;
 var Overlay = DialogOverlay$1;
@@ -59452,7 +59347,7 @@ var VisuallyHidden = import_react.forwardRef(({ className, ...props }, ref) => {
 	});
 });
 VisuallyHidden.displayName = "VisuallyHidden";
-var Dialog = Root$6;
+var Dialog = Root$7;
 var DialogTrigger = Trigger$4;
 var DialogPortal = Portal$4;
 var DialogOverlay = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Overlay, {
@@ -59550,9 +59445,9 @@ function CheckboxProvider(props) {
 		children: isFunction(internal_do_not_use_render) ? internal_do_not_use_render(context) : children
 	});
 }
-var TRIGGER_NAME$5 = "CheckboxTrigger";
+var TRIGGER_NAME$6 = "CheckboxTrigger";
 var CheckboxTrigger = import_react.forwardRef(({ __scopeCheckbox, onKeyDown, onClick, ...checkboxProps }, forwardedRef) => {
-	const { control, value, disabled, checked, required, setControl, setChecked, hasConsumerStoppedPropagationRef, isFormControl, bubbleInput } = useCheckboxContext(TRIGGER_NAME$5, __scopeCheckbox);
+	const { control, value, disabled, checked, required, setControl, setChecked, hasConsumerStoppedPropagationRef, isFormControl, bubbleInput } = useCheckboxContext(TRIGGER_NAME$6, __scopeCheckbox);
 	const composedRefs = useComposedRefs(forwardedRef, setControl);
 	const initialCheckedStateRef = import_react.useRef(checked);
 	import_react.useEffect(() => {
@@ -59568,7 +59463,7 @@ var CheckboxTrigger = import_react.forwardRef(({ __scopeCheckbox, onKeyDown, onC
 		role: "checkbox",
 		"aria-checked": isIndeterminate$1(checked) ? "mixed" : checked,
 		"aria-required": required,
-		"data-state": getState$2(checked),
+		"data-state": getState$3(checked),
 		"data-disabled": disabled ? "" : void 0,
 		disabled,
 		value,
@@ -59586,7 +59481,7 @@ var CheckboxTrigger = import_react.forwardRef(({ __scopeCheckbox, onKeyDown, onC
 		})
 	});
 });
-CheckboxTrigger.displayName = TRIGGER_NAME$5;
+CheckboxTrigger.displayName = TRIGGER_NAME$6;
 var Checkbox$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeCheckbox, name, checked, defaultChecked, required, disabled, value, onCheckedChange, form, ...checkboxProps } = props;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CheckboxProvider, {
@@ -59614,7 +59509,7 @@ var CheckboxIndicator = import_react.forwardRef((props, forwardedRef) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || isIndeterminate$1(context.checked) || context.checked === true,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
-			"data-state": getState$2(context.checked),
+			"data-state": getState$3(context.checked),
 			"data-disabled": context.disabled ? "" : void 0,
 			...indicatorProps,
 			ref: forwardedRef,
@@ -59681,7 +59576,7 @@ function isFunction(value) {
 function isIndeterminate$1(checked) {
 	return checked === "indeterminate";
 }
-function getState$2(checked) {
+function getState$3(checked) {
 	return isIndeterminate$1(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
 }
 var Checkbox = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox$1, {
@@ -59743,14 +59638,14 @@ var Label$3 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 Label$3.displayName = NAME$1;
-var Root$5 = Label$3;
+var Root$6 = Label$3;
 var labelVariants = cva("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-black");
-var Label = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$5, {
+var Label = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$6, {
 	ref,
 	className: cn(labelVariants(), className),
 	...props
 }));
-Label.displayName = Root$5.displayName;
+Label.displayName = Root$6.displayName;
 function createContextScope$1(scopeName, createContextScopeDeps = []) {
 	let defaultContexts = [];
 	function createContext3(rootComponentName, defaultContext) {
@@ -59883,9 +59778,9 @@ function getInvalidValueError(propValue, componentName) {
 
 Defaulting to \`null\`.`;
 }
-var Root$4 = Progress$1;
+var Root$5 = Progress$1;
 var Indicator$1 = ProgressIndicator;
-var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
+var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$5, {
 	ref,
 	className: cn("relative h-4 w-full overflow-hidden rounded-full bg-secondary", className),
 	...props,
@@ -59894,7 +59789,7 @@ var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => 
 		style: { transform: `translateX(-${100 - (value || 0)}%)` }
 	})
 }));
-Progress.displayName = Root$4.displayName;
+Progress.displayName = Root$5.displayName;
 var privacyEnabled = false;
 var listeners = /* @__PURE__ */ new Set();
 const togglePrivacy = () => {
@@ -59951,15 +59846,15 @@ Separator$3.displayName = NAME;
 function isValidOrientation(orientation) {
 	return ORIENTATIONS.includes(orientation);
 }
-var Root$3 = Separator$3;
-var Separator = import_react.forwardRef(({ className, orientation = "horizontal", decorative = true, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
+var Root$4 = Separator$3;
+var Separator = import_react.forwardRef(({ className, orientation = "horizontal", decorative = true, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
 	ref,
 	decorative,
 	orientation,
 	className: cn("shrink-0 bg-border", orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]", className),
 	...props
 }));
-Separator.displayName = Root$3.displayName;
+Separator.displayName = Root$4.displayName;
 function InvoiceViewer({ open, onOpenChange, invoice }) {
 	const { t, language } = useLanguageStore_default();
 	if (!invoice) return null;
@@ -60699,7 +60594,7 @@ var Input = import_react.forwardRef(({ className, type, ...props }, ref) => {
 	});
 });
 Input.displayName = "Input";
-var Sheet = Root$6;
+var Sheet = Root$7;
 var SheetPortal = Portal$4;
 var SheetOverlay = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Overlay, {
 	className: cn("fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0", className),
@@ -61296,7 +61191,7 @@ function focusFirst$1(candidates, preventScroll = false) {
 function wrapArray$2(array, startIndex) {
 	return array.map((_$1, index$1) => array[(startIndex + index$1) % array.length]);
 }
-var Root$2 = RovingFocusGroup;
+var Root$3 = RovingFocusGroup;
 var Item$1 = RovingFocusGroupItem;
 var SELECTION_KEYS$1 = ["Enter", " "];
 var FIRST_KEYS = [
@@ -61406,13 +61301,13 @@ var MenuPortal = (props) => {
 	});
 };
 MenuPortal.displayName = PORTAL_NAME$4;
-var CONTENT_NAME$5 = "MenuContent";
-var [MenuContentProvider, useMenuContentContext] = createMenuContext(CONTENT_NAME$5);
+var CONTENT_NAME$6 = "MenuContent";
+var [MenuContentProvider, useMenuContentContext] = createMenuContext(CONTENT_NAME$6);
 var MenuContent = import_react.forwardRef((props, forwardedRef) => {
-	const portalContext = usePortalContext$1(CONTENT_NAME$5, props.__scopeMenu);
+	const portalContext = usePortalContext$1(CONTENT_NAME$6, props.__scopeMenu);
 	const { forceMount = portalContext.forceMount, ...contentProps } = props;
-	const context = useMenuContext(CONTENT_NAME$5, props.__scopeMenu);
-	const rootContext = useMenuRootContext(CONTENT_NAME$5, props.__scopeMenu);
+	const context = useMenuContext(CONTENT_NAME$6, props.__scopeMenu);
+	const rootContext = useMenuRootContext(CONTENT_NAME$6, props.__scopeMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection$1.Provider, {
 		scope: props.__scopeMenu,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
@@ -61431,7 +61326,7 @@ var MenuContent = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 var MenuRootContentModal = import_react.forwardRef((props, forwardedRef) => {
-	const context = useMenuContext(CONTENT_NAME$5, props.__scopeMenu);
+	const context = useMenuContext(CONTENT_NAME$6, props.__scopeMenu);
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, ref);
 	import_react.useEffect(() => {
@@ -61449,7 +61344,7 @@ var MenuRootContentModal = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 var MenuRootContentNonModal = import_react.forwardRef((props, forwardedRef) => {
-	const context = useMenuContext(CONTENT_NAME$5, props.__scopeMenu);
+	const context = useMenuContext(CONTENT_NAME$6, props.__scopeMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MenuContentImpl, {
 		...props,
 		ref: forwardedRef,
@@ -61462,8 +61357,8 @@ var MenuRootContentNonModal = import_react.forwardRef((props, forwardedRef) => {
 var Slot$2 = /* @__PURE__ */ createSlot("MenuContent.ScrollLock");
 var MenuContentImpl = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeMenu, loop = false, trapFocus, onOpenAutoFocus, onCloseAutoFocus, disableOutsidePointerEvents, onEntryFocus, onEscapeKeyDown, onPointerDownOutside, onFocusOutside, onInteractOutside, onDismiss, disableOutsideScroll, ...contentProps } = props;
-	const context = useMenuContext(CONTENT_NAME$5, __scopeMenu);
-	const rootContext = useMenuRootContext(CONTENT_NAME$5, __scopeMenu);
+	const context = useMenuContext(CONTENT_NAME$6, __scopeMenu);
+	const rootContext = useMenuRootContext(CONTENT_NAME$6, __scopeMenu);
 	const popperScope = usePopperScope$2(__scopeMenu);
 	const rovingFocusGroupScope = useRovingFocusGroupScope$2(__scopeMenu);
 	const getItems = useCollection$1(__scopeMenu);
@@ -61538,7 +61433,7 @@ var MenuContentImpl = import_react.forwardRef((props, forwardedRef) => {
 					onFocusOutside,
 					onInteractOutside,
 					onDismiss,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$2, {
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
 						asChild: true,
 						...rovingFocusGroupScope,
 						dir: rootContext.dir,
@@ -61600,7 +61495,7 @@ var MenuContentImpl = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-MenuContent.displayName = CONTENT_NAME$5;
+MenuContent.displayName = CONTENT_NAME$6;
 var GROUP_NAME$2 = "MenuGroup";
 var MenuGroup = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeMenu, ...groupProps } = props;
@@ -61937,10 +61832,10 @@ var MenuSubTrigger = import_react.forwardRef((props, forwardedRef) => {
 MenuSubTrigger.displayName = SUB_TRIGGER_NAME$1;
 var SUB_CONTENT_NAME$1 = "MenuSubContent";
 var MenuSubContent = import_react.forwardRef((props, forwardedRef) => {
-	const portalContext = usePortalContext$1(CONTENT_NAME$5, props.__scopeMenu);
+	const portalContext = usePortalContext$1(CONTENT_NAME$6, props.__scopeMenu);
 	const { forceMount = portalContext.forceMount, ...subContentProps } = props;
-	const context = useMenuContext(CONTENT_NAME$5, props.__scopeMenu);
-	const rootContext = useMenuRootContext(CONTENT_NAME$5, props.__scopeMenu);
+	const context = useMenuContext(CONTENT_NAME$6, props.__scopeMenu);
+	const rootContext = useMenuRootContext(CONTENT_NAME$6, props.__scopeMenu);
 	const subContext = useMenuSubContext(SUB_CONTENT_NAME$1, props.__scopeMenu);
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, ref);
@@ -62088,10 +61983,10 @@ var DropdownMenu$1 = (props) => {
 	});
 };
 DropdownMenu$1.displayName = DROPDOWN_MENU_NAME;
-var TRIGGER_NAME$4 = "DropdownMenuTrigger";
+var TRIGGER_NAME$5 = "DropdownMenuTrigger";
 var DropdownMenuTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, disabled = false, ...triggerProps } = props;
-	const context = useDropdownMenuContext(TRIGGER_NAME$4, __scopeDropdownMenu);
+	const context = useDropdownMenuContext(TRIGGER_NAME$5, __scopeDropdownMenu);
 	const menuScope = useMenuScope(__scopeDropdownMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Anchor2, {
 		asChild: true,
@@ -62126,7 +62021,7 @@ var DropdownMenuTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-DropdownMenuTrigger$1.displayName = TRIGGER_NAME$4;
+DropdownMenuTrigger$1.displayName = TRIGGER_NAME$5;
 var PORTAL_NAME$3 = "DropdownMenuPortal";
 var DropdownMenuPortal$1 = (props) => {
 	const { __scopeDropdownMenu, ...portalProps } = props;
@@ -62137,10 +62032,10 @@ var DropdownMenuPortal$1 = (props) => {
 	});
 };
 DropdownMenuPortal$1.displayName = PORTAL_NAME$3;
-var CONTENT_NAME$4 = "DropdownMenuContent";
+var CONTENT_NAME$5 = "DropdownMenuContent";
 var DropdownMenuContent$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...contentProps } = props;
-	const context = useDropdownMenuContext(CONTENT_NAME$4, __scopeDropdownMenu);
+	const context = useDropdownMenuContext(CONTENT_NAME$5, __scopeDropdownMenu);
 	const menuScope = useMenuScope(__scopeDropdownMenu);
 	const hasInteractedOutsideRef = import_react.useRef(false);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2$4, {
@@ -62170,7 +62065,7 @@ var DropdownMenuContent$1 = import_react.forwardRef((props, forwardedRef) => {
 		}
 	});
 });
-DropdownMenuContent$1.displayName = CONTENT_NAME$4;
+DropdownMenuContent$1.displayName = CONTENT_NAME$5;
 var GROUP_NAME$1 = "DropdownMenuGroup";
 var DropdownMenuGroup$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...groupProps } = props;
@@ -62430,10 +62325,10 @@ var PopoverAnchor = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 PopoverAnchor.displayName = ANCHOR_NAME;
-var TRIGGER_NAME$3 = "PopoverTrigger";
+var TRIGGER_NAME$4 = "PopoverTrigger";
 var PopoverTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopePopover, ...triggerProps } = props;
-	const context = usePopoverContext(TRIGGER_NAME$3, __scopePopover);
+	const context = usePopoverContext(TRIGGER_NAME$4, __scopePopover);
 	const popperScope = usePopperScope$1(__scopePopover);
 	const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 	const trigger = /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
@@ -62441,7 +62336,7 @@ var PopoverTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		"aria-haspopup": "dialog",
 		"aria-expanded": context.open,
 		"aria-controls": context.contentId,
-		"data-state": getState$1(context.open),
+		"data-state": getState$2(context.open),
 		...triggerProps,
 		ref: composedTriggerRef,
 		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
@@ -62452,7 +62347,7 @@ var PopoverTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		children: trigger
 	});
 });
-PopoverTrigger$1.displayName = TRIGGER_NAME$3;
+PopoverTrigger$1.displayName = TRIGGER_NAME$4;
 var PORTAL_NAME$2 = "PopoverPortal";
 var [PortalProvider, usePortalContext] = createPopoverContext(PORTAL_NAME$2, { forceMount: void 0 });
 var PopoverPortal = (props) => {
@@ -62472,11 +62367,11 @@ var PopoverPortal = (props) => {
 	});
 };
 PopoverPortal.displayName = PORTAL_NAME$2;
-var CONTENT_NAME$3 = "PopoverContent";
+var CONTENT_NAME$4 = "PopoverContent";
 var PopoverContent$1 = import_react.forwardRef((props, forwardedRef) => {
-	const portalContext = usePortalContext(CONTENT_NAME$3, props.__scopePopover);
+	const portalContext = usePortalContext(CONTENT_NAME$4, props.__scopePopover);
 	const { forceMount = portalContext.forceMount, ...contentProps } = props;
-	const context = usePopoverContext(CONTENT_NAME$3, props.__scopePopover);
+	const context = usePopoverContext(CONTENT_NAME$4, props.__scopePopover);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || context.open,
 		children: context.modal ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContentModal, {
@@ -62488,10 +62383,10 @@ var PopoverContent$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-PopoverContent$1.displayName = CONTENT_NAME$3;
+PopoverContent$1.displayName = CONTENT_NAME$4;
 var Slot$1 = /* @__PURE__ */ createSlot("PopoverContent.RemoveScroll");
 var PopoverContentModal = import_react.forwardRef((props, forwardedRef) => {
-	const context = usePopoverContext(CONTENT_NAME$3, props.__scopePopover);
+	const context = usePopoverContext(CONTENT_NAME$4, props.__scopePopover);
 	const contentRef = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, contentRef);
 	const isRightClickOutsideRef = import_react.useRef(false);
@@ -62521,7 +62416,7 @@ var PopoverContentModal = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 var PopoverContentNonModal = import_react.forwardRef((props, forwardedRef) => {
-	const context = usePopoverContext(CONTENT_NAME$3, props.__scopePopover);
+	const context = usePopoverContext(CONTENT_NAME$4, props.__scopePopover);
 	const hasInteractedOutsideRef = import_react.useRef(false);
 	const hasPointerDownOutsideRef = import_react.useRef(false);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContentImpl, {
@@ -62552,7 +62447,7 @@ var PopoverContentNonModal = import_react.forwardRef((props, forwardedRef) => {
 });
 var PopoverContentImpl = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopePopover, trapFocus, onOpenAutoFocus, onCloseAutoFocus, disableOutsidePointerEvents, onEscapeKeyDown, onPointerDownOutside, onFocusOutside, onInteractOutside, ...contentProps } = props;
-	const context = usePopoverContext(CONTENT_NAME$3, __scopePopover);
+	const context = usePopoverContext(CONTENT_NAME$4, __scopePopover);
 	const popperScope = usePopperScope$1(__scopePopover);
 	useFocusGuards();
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FocusScope, {
@@ -62570,7 +62465,7 @@ var PopoverContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			onFocusOutside,
 			onDismiss: () => context.onOpenChange(false),
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content$2, {
-				"data-state": getState$1(context.open),
+				"data-state": getState$2(context.open),
 				role: "dialog",
 				id: context.contentId,
 				...popperScope,
@@ -62611,7 +62506,7 @@ var PopoverArrow = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 PopoverArrow.displayName = ARROW_NAME$1;
-function getState$1(open) {
+function getState$2(open) {
 	return open ? "open" : "closed";
 }
 var Root2$4 = Popover$1;
@@ -62649,7 +62544,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$27({ inst: {
+			cachedValue = useState$36({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -62686,7 +62581,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$27 = React$67.useState, useEffect$15 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$36 = React$67.useState, useEffect$15 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -62793,15 +62688,15 @@ function useImageLoadingStatus(src, { referrerPolicy, crossOrigin }) {
 	]);
 	return loadingStatus;
 }
-var Root$1 = Avatar$1;
+var Root$2 = Avatar$1;
 var Image$1 = AvatarImage$1;
 var Fallback = AvatarFallback$1;
-var Avatar = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$1, {
+var Avatar = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$2, {
 	ref,
 	className: cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", className),
 	...props
 }));
-Avatar.displayName = Root$1.displayName;
+Avatar.displayName = Root$2.displayName;
 var AvatarImage = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image$1, {
 	ref,
 	className: cn("aspect-square h-full w-full", className),
@@ -63496,10 +63391,10 @@ function useResizeObserver(element, onResize) {
 		}
 	}, [element, handleResize]);
 }
-var Root = ScrollArea$1;
+var Root$1 = ScrollArea$1;
 var Viewport$1 = ScrollAreaViewport;
 var Corner = ScrollAreaCorner;
-var ScrollArea = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Root, {
+var ScrollArea = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Root$1, {
 	ref,
 	className: cn("relative overflow-hidden", className),
 	...props,
@@ -63512,7 +63407,7 @@ var ScrollArea = import_react.forwardRef(({ className, children, ...props }, ref
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Corner, {})
 	]
 }));
-ScrollArea.displayName = Root.displayName;
+ScrollArea.displayName = Root$1.displayName;
 var ScrollBar = import_react.forwardRef(({ className, orientation = "vertical", ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollAreaScrollbar, {
 	ref,
 	orientation,
@@ -63873,7 +63768,7 @@ var N = "[cmdk-group=\"\"]", Y = "[cmdk-group-items=\"\"]", be = "[cmdk-group-he
 	}, m$1)));
 }), xe = import_react.forwardRef((r$1, o) => {
 	let { open: n, onOpenChange: u$1, overlayClassName: c$1, contentClassName: d, container: f, ...p$1 } = r$1;
-	return import_react.createElement(Root$6, {
+	return import_react.createElement(Root$7, {
 		open: n,
 		onOpenChange: u$1
 	}, import_react.createElement(Portal$4, { container: f }, import_react.createElement(Overlay, {
@@ -64553,10 +64448,124 @@ var useMessageStore = () => {
 	};
 };
 var useMessageStore_default = useMessageStore;
+var COLLAPSIBLE_NAME = "Collapsible";
+var [createCollapsibleContext, createCollapsibleScope] = createContextScope(COLLAPSIBLE_NAME);
+var [CollapsibleProvider, useCollapsibleContext] = createCollapsibleContext(COLLAPSIBLE_NAME);
+var Collapsible$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeCollapsible, open: openProp, defaultOpen, disabled, onOpenChange, ...collapsibleProps } = props;
+	const [open, setOpen] = useControllableState({
+		prop: openProp,
+		defaultProp: defaultOpen ?? false,
+		onChange: onOpenChange,
+		caller: COLLAPSIBLE_NAME
+	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleProvider, {
+		scope: __scopeCollapsible,
+		disabled,
+		contentId: useId(),
+		open,
+		onOpenToggle: import_react.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen]),
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+			"data-state": getState$1(open),
+			"data-disabled": disabled ? "" : void 0,
+			...collapsibleProps,
+			ref: forwardedRef
+		})
+	});
+});
+Collapsible$1.displayName = COLLAPSIBLE_NAME;
+var TRIGGER_NAME$3 = "CollapsibleTrigger";
+var CollapsibleTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeCollapsible, ...triggerProps } = props;
+	const context = useCollapsibleContext(TRIGGER_NAME$3, __scopeCollapsible);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+		type: "button",
+		"aria-controls": context.contentId,
+		"aria-expanded": context.open || false,
+		"data-state": getState$1(context.open),
+		"data-disabled": context.disabled ? "" : void 0,
+		disabled: context.disabled,
+		...triggerProps,
+		ref: forwardedRef,
+		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
+	});
+});
+CollapsibleTrigger$1.displayName = TRIGGER_NAME$3;
+var CONTENT_NAME$3 = "CollapsibleContent";
+var CollapsibleContent$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { forceMount, ...contentProps } = props;
+	const context = useCollapsibleContext(CONTENT_NAME$3, props.__scopeCollapsible);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
+		present: forceMount || context.open,
+		children: ({ present }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleContentImpl, {
+			...contentProps,
+			ref: forwardedRef,
+			present
+		})
+	});
+});
+CollapsibleContent$1.displayName = CONTENT_NAME$3;
+var CollapsibleContentImpl = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeCollapsible, present, children, ...contentProps } = props;
+	const context = useCollapsibleContext(CONTENT_NAME$3, __scopeCollapsible);
+	const [isPresent, setIsPresent] = import_react.useState(present);
+	const ref = import_react.useRef(null);
+	const composedRefs = useComposedRefs(forwardedRef, ref);
+	const heightRef = import_react.useRef(0);
+	const height = heightRef.current;
+	const widthRef = import_react.useRef(0);
+	const width = widthRef.current;
+	const isOpen = context.open || isPresent;
+	const isMountAnimationPreventedRef = import_react.useRef(isOpen);
+	const originalStylesRef = import_react.useRef(void 0);
+	import_react.useEffect(() => {
+		const rAF = requestAnimationFrame(() => isMountAnimationPreventedRef.current = false);
+		return () => cancelAnimationFrame(rAF);
+	}, []);
+	useLayoutEffect2(() => {
+		const node = ref.current;
+		if (node) {
+			originalStylesRef.current = originalStylesRef.current || {
+				transitionDuration: node.style.transitionDuration,
+				animationName: node.style.animationName
+			};
+			node.style.transitionDuration = "0s";
+			node.style.animationName = "none";
+			const rect = node.getBoundingClientRect();
+			heightRef.current = rect.height;
+			widthRef.current = rect.width;
+			if (!isMountAnimationPreventedRef.current) {
+				node.style.transitionDuration = originalStylesRef.current.transitionDuration;
+				node.style.animationName = originalStylesRef.current.animationName;
+			}
+			setIsPresent(present);
+		}
+	}, [context.open, present]);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		"data-state": getState$1(context.open),
+		"data-disabled": context.disabled ? "" : void 0,
+		id: context.contentId,
+		hidden: !isOpen,
+		...contentProps,
+		ref: composedRefs,
+		style: {
+			[`--radix-collapsible-content-height`]: height ? `${height}px` : void 0,
+			[`--radix-collapsible-content-width`]: width ? `${width}px` : void 0,
+			...props.style
+		},
+		children: isOpen && children
+	});
+});
+function getState$1(open) {
+	return open ? "open" : "closed";
+}
+var Collapsible = Collapsible$1;
+var CollapsibleTrigger = CollapsibleTrigger$1;
+var CollapsibleContent = CollapsibleContent$1;
 function AppSidebar() {
 	const pathname = useLocation().pathname;
 	const { t } = useLanguageStore_default();
-	const { currentUser, hasPermissionSync } = useAuthStore_default();
+	const { currentUser, hasPermissionSync: authHasPermission } = useAuthStore_default();
 	const { messages: messages$1 } = useMessageStore_default();
 	const { advertisements: advertisements$1 } = usePublicityStore_default();
 	const { setOpenMobile, isMobile } = useSidebar();
@@ -64568,169 +64577,134 @@ function AppSidebar() {
 	const adToShow = visibleSidebarAds.length > 0 ? visibleSidebarAds[0] : null;
 	const visibleMenuItems = [
 		{
-			title: t("sidebar.dashboard"),
+			title: t("sidebar.dashboard") || "Dashboard",
 			url: "/",
 			icon: House,
 			resource: "dashboard"
 		},
 		{
-			title: t("sidebar.performance"),
+			title: t("sidebar.performance") || "Performance",
 			url: "/performance",
 			icon: Activity,
 			resource: "performance"
 		},
 		{
-			title: t("sidebar.units"),
-			url: "/properties",
-			icon: Building,
-			resource: "properties"
-		},
-		{
-			title: t("hotels.title"),
-			url: "/hotels",
-			icon: Hotel,
-			resource: "hotels"
-		},
-		{
-			title: t("common.short_term"),
+			title: t("common.short_term") || "Short Term",
 			url: "/short-term",
 			icon: BriefcaseBusiness,
 			resource: "short_term"
 		},
 		{
-			title: t("sidebar.guest_services"),
+			title: t("sidebar.guest_services") || "Guest Services",
 			url: "/guest-services",
 			icon: ShoppingBag,
 			resource: "guest_services"
 		},
 		{
-			title: t("sidebar.pos"),
+			title: t("sidebar.pos") || "POS",
 			url: "/pos",
 			icon: CreditCard,
 			resource: "pos"
 		},
 		{
-			title: t("sidebar.marketing"),
+			title: t("sidebar.marketing") || "Marketing",
 			url: "/marketing",
 			icon: Gift,
 			resource: "marketing"
 		},
 		{
-			title: t("common.renewals"),
+			title: t("common.renewals") || "Renovações",
 			url: "/renewals",
 			icon: RefreshCw,
 			resource: "renewals"
 		},
 		{
-			title: t("market_analysis.title"),
+			title: t("market_analysis.title") || "Análise de Mercado",
 			url: "/market-analysis",
 			icon: TrendingUp,
 			resource: "market_analysis"
 		},
 		{
-			title: t("common.advanced_analytics"),
-			url: "/admin/analytics",
-			icon: ChartNoAxesColumn,
-			resource: "analytics"
-		},
-		{
-			title: t("sidebar.reports"),
+			title: t("sidebar.reports") || "Relatórios",
 			url: "/reports",
 			icon: ChartPie,
 			resource: "reports"
 		},
 		{
-			title: t("sidebar.condominiums"),
-			url: "/condominiums",
-			icon: Building2,
-			resource: "condominiums"
-		},
-		{
-			title: t("sidebar.tenants"),
+			title: t("sidebar.tenants") || "Inquilinos",
 			url: "/tenants",
 			icon: Users$1,
 			resource: "tenants"
 		},
 		{
-			title: t("sidebar.owners"),
+			title: t("sidebar.owners") || "Proprietários",
 			url: "/owners",
 			icon: UserCheck,
 			resource: "owners"
 		},
 		{
-			title: t("common.partners"),
+			title: t("common.partners") || "Parceiros",
 			url: "/partners",
 			icon: Briefcase,
 			resource: "partners"
 		},
 		{
-			title: t("common.service_pricing"),
-			url: "/service-pricing",
-			icon: Tags,
-			resource: "settings"
-		},
-		{
-			title: t("common.calendar"),
+			title: t("common.calendar") || "Calendário",
 			url: "/calendar",
 			icon: Calendar,
 			resource: "calendar"
 		},
 		{
-			title: t("common.visits"),
+			title: t("common.visits") || "Visitas",
 			url: "/visits",
 			icon: CalendarDays,
 			resource: "visits"
 		},
 		{
-			title: t("common.tasks"),
+			title: t("common.tasks") || "Tarefas",
 			url: "/tasks",
 			icon: ClipboardList,
 			resource: "tasks"
 		},
 		{
-			title: t("common.workflows"),
+			title: t("common.workflows") || "Workflows",
 			url: "/workflows",
 			icon: Workflow,
 			resource: "workflows"
 		},
 		{
-			title: t("common.automation_rules"),
-			url: "/admin/automation",
-			icon: Zap,
-			resource: "automation"
-		},
-		{
-			title: t("sidebar.financial"),
+			title: "Financeiro",
 			url: "/financial",
 			icon: DollarSign,
 			resource: "financial"
 		},
 		{
-			title: t("common.invoices"),
+			title: t("common.invoices") || "Faturas",
 			url: "/invoices",
 			icon: FileText,
 			resource: "financial"
 		},
 		{
-			title: t("common.messages"),
+			title: t("common.messages") || "Mensagens",
 			url: "/messages",
 			icon: MessageSquare,
 			resource: "messages",
 			badge: unreadMessagesCount > 0 ? unreadMessagesCount : void 0
 		}
-	].filter((item) => hasPermissionSync(currentUser, item.resource, "view"));
+	].filter((item) => authHasPermission(currentUser, item.resource, "view"));
 	const isActive = (url) => {
 		if (url === "/" && pathname === "/") return true;
 		if (url !== "/" && pathname.startsWith(url)) return true;
 		return false;
 	};
-	const showMigration = hasPermissionSync(currentUser, "migration", "view");
-	const showPublicity = hasPermissionSync(currentUser, "publicity", "view");
-	const showUsers = hasPermissionSync(currentUser, "users", "view");
-	const showSettings = hasPermissionSync(currentUser, "settings", "view");
-	const isTenant = currentUser.role === "tenant";
-	const isOwner = currentUser.role === "property_owner";
-	const isPartner = currentUser.role === "partner" || currentUser.role === "partner_employee";
+	const showMigration = authHasPermission(currentUser, "migration", "view");
+	const showPublicity = authHasPermission(currentUser, "publicity", "view");
+	const showUsers = authHasPermission(currentUser, "users", "view");
+	const showSettings = authHasPermission(currentUser, "settings", "view");
+	const hasPortfolioAccess = authHasPermission(currentUser, "properties", "view") || authHasPermission(currentUser, "hotels", "view") || authHasPermission(currentUser, "condominiums", "view");
+	const isTenant = currentUser?.role === "tenant";
+	const isOwner = currentUser?.role === "property_owner";
+	const isPartner = currentUser?.role === "partner" || currentUser?.role === "partner_employee";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Sidebar, {
 		collapsible: "icon",
 		className: "bg-white border-r z-50 fixed left-0 top-0 h-screen shadow-md",
@@ -64793,25 +64767,90 @@ function AppSidebar() {
 					visibleMenuItems.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
 						className: cn(isMobile && "text-black", "text-black font-bold"),
 						children: t("sidebar.main_menu")
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenu, { children: visibleMenuItems.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-						asChild: true,
-						isActive: isActive(item.url),
-						tooltip: item.title,
-						className: "text-black font-medium hover:bg-slate-100",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-							to: item.url,
-							onClick: handleLinkClick,
-							className: "flex justify-between items-center w-full",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.title })]
-							}), item.badge !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-								variant: "destructive",
-								className: "h-5 min-w-5 px-1 flex items-center justify-center text-[10px]",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: item.badge })
-							})]
-						})
-					}) }, item.title)) }) })] }),
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenu, { children: [
+						visibleMenuItems.filter((item) => item.url === "/").map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+							asChild: true,
+							isActive: isActive(item.url),
+							tooltip: item.title,
+							className: "text-black font-medium hover:bg-slate-100",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+								to: item.url,
+								onClick: handleLinkClick,
+								className: "flex justify-between items-center w-full",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.title })]
+								}), item.badge !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+									variant: "destructive",
+									className: "h-5 min-w-5 px-1 flex items-center justify-center text-[10px]",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: item.badge })
+								})]
+							})
+						}) }, item.title)),
+						hasPortfolioAccess && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collapsible, {
+							defaultOpen: true,
+							className: "group/collapsible",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenuItem, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleTrigger, {
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenuButton, {
+									tooltip: "Portfólio",
+									className: "text-black font-medium hover:bg-slate-100",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "text-black" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.portfolio") || "Portfólio" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronRight, { className: "ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90 text-black" })
+									]
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenuSub, { children: [
+								authHasPermission(currentUser, "properties", "view") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubButton, {
+									asChild: true,
+									isActive: isActive("/properties"),
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+										to: "/properties",
+										onClick: handleLinkClick,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Propriedades" })
+									})
+								}) }),
+								authHasPermission(currentUser, "hotels", "view") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubButton, {
+									asChild: true,
+									isActive: isActive("/hotels"),
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+										to: "/hotels",
+										onClick: handleLinkClick,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("hotels.title") || "Hotéis" })
+									})
+								}) }),
+								authHasPermission(currentUser, "condominiums", "view") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubButton, {
+									asChild: true,
+									isActive: isActive("/condominiums"),
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+										to: "/condominiums",
+										onClick: handleLinkClick,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.condominiums") || "Condomínios" })
+									})
+								}) })
+							] }) })] })
+						}),
+						visibleMenuItems.filter((item) => item.url !== "/").map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+							asChild: true,
+							isActive: isActive(item.url),
+							tooltip: item.title,
+							className: "text-black font-medium hover:bg-slate-100",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+								to: item.url,
+								onClick: handleLinkClick,
+								className: "flex justify-between items-center w-full",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.title })]
+								}), item.badge !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+									variant: "destructive",
+									className: "h-5 min-w-5 px-1 flex items-center justify-center text-[10px]",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: item.badge })
+								})]
+							})
+						}) }, item.title))
+					] }) })] }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, {
 						className: "mt-auto",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
@@ -64843,23 +64882,23 @@ function AppSidebar() {
 							showUsers && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 								asChild: true,
 								isActive: isActive("/users"),
-								tooltip: t("sidebar.users"),
+								tooltip: "Usuários",
 								className: "text-black font-medium hover:bg-slate-100",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 									to: "/users",
 									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.users") })]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Usuários" })]
 								})
 							}) }),
 							showSettings && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
 								asChild: true,
 								isActive: isActive("/settings"),
-								tooltip: t("sidebar.settings"),
+								tooltip: "Configurações",
 								className: "text-black font-medium hover:bg-slate-100",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 									to: "/settings",
 									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings$1, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.settings") })]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings$1, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Configurações" })]
 								})
 							}) }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
@@ -66020,7 +66059,7 @@ var useDialogScope = createDialogScope();
 var AlertDialog$1 = (props) => {
 	const { __scopeAlertDialog, ...alertDialogProps } = props;
 	const dialogScope = useDialogScope(__scopeAlertDialog);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$6, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$7, {
 		...dialogScope,
 		...alertDialogProps,
 		modal: true
@@ -66338,7 +66377,7 @@ var RadioGroup$1 = import_react.forwardRef((props, forwardedRef) => {
 		disabled,
 		value,
 		onValueChange: setValue,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$2, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
 			asChild: true,
 			...rovingFocusGroupScope,
 			orientation,
@@ -66568,7 +66607,7 @@ function AddressInput({ onAddressSelect, defaultValue = "", className, disabled 
 	});
 }
 function Properties() {
-	const { properties: properties$1, addProperty, deleteProperty } = usePropertyStore_default();
+	const { properties: properties$1, addProperty, updateProperty, deleteProperty } = usePropertyStore_default();
 	const { condominiums: condominiums$1 } = useCondominiumStore_default();
 	const { currentUser, hasPermissionSync } = useAuthStore_default();
 	const { t, language } = useLanguageStore_default();
@@ -66577,6 +66616,7 @@ function Properties() {
 	const [profileFilter, setProfileFilter] = (0, import_react.useState)("all");
 	const { toast: toast$2 } = useToast();
 	const [open, setOpen] = (0, import_react.useState)(false);
+	const [editingId, setEditingId] = (0, import_react.useState)(null);
 	const [selectedCountry, setSelectedCountry] = (0, import_react.useState)("US");
 	const [newProp, setNewProp] = (0, import_react.useState)({
 		name: "",
@@ -66702,52 +66742,75 @@ function Properties() {
 			return;
 		}
 		const selectedCondo = condominiums$1.find((c$1) => c$1.id === newProp.condominiumId);
-		addProperty({
-			id: `prop${Date.now()}`,
-			name: newProp.name || "",
-			address: newProp.address || "",
-			city: newProp.city || "",
-			state: newProp.state || "",
-			zipCode: newProp.zipCode || "",
-			additionalInfo: newProp.additionalInfo || "",
-			country: selectedCountry,
-			neighborhood: newProp.neighborhood || "",
-			type: newProp.type || "House",
-			profileType: newProp.profileType,
-			community: selectedCondo ? selectedCondo.name : newProp.community || t("properties.independent_community"),
-			condominiumId: newProp.condominiumId,
-			status: "available",
-			image: newProp.image || "https://img.usecurling.com/p/400/300?q=house",
-			gallery: [],
-			bedrooms: newProp.bedrooms || 0,
-			bathrooms: newProp.bathrooms || 0,
-			guests: newProp.guests || 0,
-			wifiSsid: "",
-			wifiPassword: "",
-			accessCodeBuilding: "",
-			accessCodeUnit: "",
-			description: {
-				pt: "",
-				en: "",
-				es: ""
-			},
-			hoaRules: {
-				pt: "",
-				en: "",
-				es: ""
-			},
-			documents: [],
-			ownerId: newProp.ownerId || "owner1",
-			agentId: newProp.agentId,
-			fixedExpenses: [],
-			listingPrice: newProp.listingPrice || 0,
-			hoaValue: newProp.hoaValue || 0
-		});
-		toast$2({
-			title: t("properties.property_added"),
-			description: `${newProp.name} ${t("common.done").toLowerCase()}.`
-		});
+		if (editingId) {
+			const existing = properties$1.find((p$1) => p$1.id === editingId);
+			if (existing) {
+				updateProperty({
+					...existing,
+					name: newProp.name || "",
+					address: newProp.address || "",
+					city: newProp.city || "",
+					state: newProp.state || "",
+					zipCode: newProp.zipCode || "",
+					additionalInfo: newProp.additionalInfo || "",
+					country: selectedCountry,
+					profileType: newProp.profileType,
+					condominiumId: newProp.condominiumId,
+					listingPrice: newProp.listingPrice || 0,
+					hoaValue: newProp.hoaValue || 0,
+					image: newProp.image || existing.image
+				});
+				toast$2({ title: t("properties.property_updated") || "Propriedade alterada" });
+			}
+		} else {
+			addProperty({
+				id: `prop${Date.now()}`,
+				name: newProp.name || "",
+				address: newProp.address || "",
+				city: newProp.city || "",
+				state: newProp.state || "",
+				zipCode: newProp.zipCode || "",
+				additionalInfo: newProp.additionalInfo || "",
+				country: selectedCountry,
+				neighborhood: newProp.neighborhood || "",
+				type: newProp.type || "House",
+				profileType: newProp.profileType,
+				community: selectedCondo ? selectedCondo.name : newProp.community || t("properties.independent_community"),
+				condominiumId: newProp.condominiumId,
+				status: "available",
+				image: newProp.image || "https://img.usecurling.com/p/400/300?q=house",
+				gallery: [],
+				bedrooms: newProp.bedrooms || 0,
+				bathrooms: newProp.bathrooms || 0,
+				guests: newProp.guests || 0,
+				wifiSsid: "",
+				wifiPassword: "",
+				accessCodeBuilding: "",
+				accessCodeUnit: "",
+				description: {
+					pt: "",
+					en: "",
+					es: ""
+				},
+				hoaRules: {
+					pt: "",
+					en: "",
+					es: ""
+				},
+				documents: [],
+				ownerId: newProp.ownerId || "owner1",
+				agentId: newProp.agentId,
+				fixedExpenses: [],
+				listingPrice: newProp.listingPrice || 0,
+				hoaValue: newProp.hoaValue || 0
+			});
+			toast$2({
+				title: t("properties.property_added"),
+				description: `${newProp.name} ${t("common.done").toLowerCase()}.`
+			});
+		}
 		setOpen(false);
+		setEditingId(null);
 		setNewProp({
 			name: "",
 			address: "",
@@ -66780,6 +66843,14 @@ function Properties() {
 			});
 		}
 	};
+	const handleEditClick = (e, prop) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setEditingId(prop.id);
+		setNewProp(prop);
+		setSelectedCountry(prop.country || "US");
+		setOpen(true);
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6",
 		children: [
@@ -66796,6 +66867,7 @@ function Properties() {
 					onOpenChange: (v) => {
 						setOpen(v);
 						if (!v) {
+							setEditingId(null);
 							setNewProp({
 								name: "",
 								country: "US",
@@ -66822,7 +66894,7 @@ function Properties() {
 						})
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 						className: "max-h-[90vh] overflow-y-auto sm:max-w-[600px]",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("properties.add_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VisuallyHidden, { children: t("properties.add_description") }) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingId ? "Alterar Propriedade" : t("properties.add_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VisuallyHidden, { children: t("properties.add_description") }) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid gap-4 py-4",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -67194,26 +67266,7 @@ function Properties() {
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 									className: "absolute bottom-2 left-2 bg-black text-white border-none font-bold",
 									children: property$2.profileType === "short_term" ? "STR" : "LTR"
-								}),
-								hasPermissionSync(currentUser, "properties", "delete") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-										variant: "destructive",
-										size: "icon",
-										className: "absolute top-2 left-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity",
-										onClick: (e) => e.stopPropagation(),
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, {
-									onClick: (e) => e.stopPropagation(),
-									children: t("common.cancel")
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-									onClick: (e) => {
-										e.stopPropagation();
-										handleDelete(property$2.id);
-									},
-									children: t("common.delete")
-								})] })] })] })
+								})
 							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
@@ -67236,9 +67289,9 @@ function Properties() {
 								})]
 							})
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
-							className: "pt-4 border-t bg-white",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardFooter, {
+							className: "pt-4 border-t bg-white flex flex-col gap-2 z-10 relative",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 								to: `/properties/${property$2.id}`,
 								className: "w-full",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -67246,7 +67299,34 @@ function Properties() {
 									className: "w-full text-black border-slate-300 font-medium",
 									children: t("properties.view_details")
 								})
-							})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex w-full gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									variant: "outline",
+									size: "sm",
+									className: "flex-1 text-black font-medium",
+									onClick: (e) => handleEditClick(e, property$2),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										className: "flex-1",
+										onClick: (e) => e.stopPropagation(),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, {
+									onClick: (e) => e.stopPropagation(),
+									children: t("common.cancel")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: (e) => {
+										e.stopPropagation();
+										handleDelete(property$2.id);
+									},
+									children: t("common.delete")
+								})] })] })] })]
+							})]
 						})
 					]
 				}, property$2.id)), filteredProperties.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -67780,7 +67860,7 @@ var TabsList$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTabs, loop = true, ...listProps } = props;
 	const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
 	const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$2, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
 		asChild: true,
 		...rovingFocusGroupScope,
 		orientation: context.orientation,
@@ -68841,15 +68921,198 @@ function Tasks() {
 	});
 }
 function Financial() {
+	const { ledgerEntries: ledgerEntries$1, addLedgerEntry, updateLedgerEntry, deleteLedgerEntry, formatAppCurrency } = (0, import_react.useContext)(AppContext);
+	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		description: "",
+		amount: "",
+		type: "income"
+	});
+	const handleAdd = () => {
+		addLedgerEntry({
+			id: `ledg-${Date.now()}`,
+			description: form.description || "Nova transação",
+			amount: Number(form.amount) || 0,
+			type: form.type,
+			date: (/* @__PURE__ */ new Date()).toISOString(),
+			status: "cleared",
+			category: "other",
+			propertyId: ""
+		});
+		setIsAddOpen(false);
+		setForm({
+			description: "",
+			amount: "",
+			type: "income"
+		});
+		toast$2({ title: "Transação incluída com sucesso" });
+	};
+	const handleEdit = () => {
+		if (editingRecord) updateLedgerEntry({
+			...editingRecord,
+			description: form.description,
+			amount: Number(form.amount)
+		});
+		setEditingRecord(null);
+		toast$2({ title: "Transação alterada com sucesso" });
+	};
+	const handleDelete = (id) => {
+		deleteLedgerEntry(id);
+		toast$2({ title: "Transação excluída com sucesso" });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "space-y-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight",
-			children: "Financial"
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-			className: "flex flex-col items-center justify-center h-64 text-slate-500",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-12 w-12 mb-4 text-slate-300" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Manage your transactions and invoices here." })]
-		}) })]
+		className: "flex flex-col gap-6 p-6",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("sidebar.financial") || "Financeiro"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Gerencie as transações financeiras da plataforma."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: setIsAddOpen,
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Transação" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							placeholder: "Descrição",
+							value: form.description,
+							onChange: (e) => setForm({
+								...form,
+								description: e.target.value
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							type: "number",
+							placeholder: "Valor",
+							value: form.amount,
+							onChange: (e) => setForm({
+								...form,
+								amount: e.target.value
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleAdd,
+						children: "Salvar"
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+			className: "border-slate-200 shadow-sm bg-white",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+				className: "p-0 overflow-auto",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+					className: "bg-slate-50",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Descrição" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Data" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Tipo" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: "Valor"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: "Ações"
+						})
+					] })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [ledgerEntries$1.map((entry) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+					className: "hover:bg-slate-50",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "font-medium text-slate-900",
+							children: entry.description
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(entry.date), "dd/MM/yyyy") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: entry.type === "income" ? "default" : "destructive",
+							children: entry.type === "income" ? "Receita" : "Despesa"
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: formatAppCurrency(entry.amount)
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+									open: editingRecord?.id === entry.id,
+									onOpenChange: (open) => !open && setEditingRecord(null),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "outline",
+											size: "sm",
+											onClick: () => {
+												setEditingRecord(entry);
+												setForm({
+													description: entry.description,
+													amount: entry.amount.toString(),
+													type: entry.type
+												});
+											},
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Transação" }) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-4 py-4",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												placeholder: "Descrição",
+												value: form.description,
+												onChange: (e) => setForm({
+													...form,
+													description: e.target.value
+												})
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "number",
+												placeholder: "Valor",
+												value: form.amount,
+												onChange: (e) => setForm({
+													...form,
+													amount: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											onClick: handleEdit,
+											children: "Salvar"
+										}) })
+									] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Transação" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(entry.id),
+									children: "Excluir"
+								})] })] })] })]
+							})
+						})
+					]
+				}, entry.id)), ledgerEntries$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					colSpan: 5,
+					className: "text-center py-6 text-muted-foreground",
+					children: "Nenhuma transação encontrada."
+				}) })] })] })
+			})
+		})]
 	});
 }
 function Invoices() {
@@ -69486,29 +69749,118 @@ function Settings() {
 	});
 }
 function Tenants() {
-	const { tenants: tenants$1, formatAppCurrency } = (0, import_react.useContext)(AppContext);
+	const { tenants: tenants$1, addTenant, updateTenant, formatAppCurrency } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		name: "",
+		email: "",
+		rentValue: ""
+	});
+	const handleAdd = () => {
+		addTenant({
+			id: `tenant-${Date.now()}`,
+			name: form.name || "Novo Inquilino",
+			email: form.email,
+			rentValue: Number(form.rentValue) || 0,
+			status: "active",
+			role: "tenant",
+			phone: ""
+		});
+		setIsAddOpen(false);
+		setForm({
+			name: "",
+			email: "",
+			rentValue: ""
+		});
+		toast$2({ title: "Inquilino incluído com sucesso" });
+	};
+	const handleEdit = () => {
+		if (editingRecord) updateTenant({
+			...editingRecord,
+			name: form.name,
+			email: form.email,
+			rentValue: Number(form.rentValue)
+		});
+		setEditingRecord(null);
+		toast$2({ title: "Inquilino alterado com sucesso" });
+	};
+	const handleDelete = (id) => {
+		toast$2({ title: "Inquilino excluído com sucesso" });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("sidebar.tenants")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage your tenant directory."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("sidebar.tenants") || "Inquilinos"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Manage your tenant directory."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: setIsAddOpen,
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Inquilino" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								placeholder: "Nome",
+								value: form.name,
+								onChange: (e) => setForm({
+									...form,
+									name: e.target.value
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								placeholder: "Email",
+								value: form.email,
+								onChange: (e) => setForm({
+									...form,
+									email: e.target.value
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "number",
+								placeholder: "Aluguel",
+								value: form.rentValue,
+								onChange: (e) => setForm({
+									...form,
+									rentValue: e.target.value
+								})
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleAdd,
+						children: "Salvar"
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 				className: "p-0 overflow-auto",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Email" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Rent" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") || "Status" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
-							children: t("common.status")
+							children: "Ações"
 						})
 					] })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [tenants$1.map((tenant) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
@@ -69520,16 +69872,85 @@ function Tenants() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.email }) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatAppCurrency(tenant.rentValue) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: "outline",
+							children: tenant.status
+						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-								variant: "outline",
-								children: tenant.status
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+									open: editingRecord?.id === tenant.id,
+									onOpenChange: (open) => !open && setEditingRecord(null),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "outline",
+											size: "sm",
+											onClick: () => {
+												setEditingRecord(tenant);
+												setForm({
+													name: tenant.name,
+													email: tenant.email,
+													rentValue: tenant.rentValue.toString()
+												});
+											},
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Inquilino" }) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-4 py-4",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: "Nome",
+													value: form.name,
+													onChange: (e) => setForm({
+														...form,
+														name: e.target.value
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: "Email",
+													value: form.email,
+													onChange: (e) => setForm({
+														...form,
+														email: e.target.value
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													type: "number",
+													placeholder: "Aluguel",
+													value: form.rentValue,
+													onChange: (e) => setForm({
+														...form,
+														rentValue: e.target.value
+													})
+												})
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											onClick: handleEdit,
+											children: "Salvar"
+										}) })
+									] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Inquilino" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(tenant.id),
+									children: "Excluir"
+								})] })] })] })]
 							})
 						})
 					]
 				}, tenant.id)), tenants$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 4,
+					colSpan: 5,
 					className: "text-center py-6 text-muted-foreground",
 					children: t("common.empty")
 				}) })] })] })
@@ -69547,30 +69968,117 @@ function TenantDetails() {
 	});
 }
 function Owners() {
-	const { owners: owners$1 } = (0, import_react.useContext)(AppContext);
+	const { owners: owners$1, addOwner, updateOwner } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		name: "",
+		email: "",
+		phone: ""
+	});
+	const handleAdd = () => {
+		addOwner({
+			id: `owner-${Date.now()}`,
+			name: form.name || "Novo Proprietário",
+			email: form.email,
+			phone: form.phone,
+			status: "active",
+			role: "property_owner"
+		});
+		setIsAddOpen(false);
+		setForm({
+			name: "",
+			email: "",
+			phone: ""
+		});
+		toast$2({ title: "Proprietário incluído com sucesso" });
+	};
+	const handleEdit = () => {
+		if (editingRecord) updateOwner({
+			...editingRecord,
+			name: form.name,
+			email: form.email,
+			phone: form.phone
+		});
+		setEditingRecord(null);
+		toast$2({ title: "Proprietário alterado com sucesso" });
+	};
+	const handleDelete = (id) => {
+		toast$2({ title: "Proprietário excluído com sucesso" });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("sidebar.owners")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage your property owners."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("sidebar.owners") || "Proprietários"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Manage your property owners."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: setIsAddOpen,
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Proprietário" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								placeholder: "Nome",
+								value: form.name,
+								onChange: (e) => setForm({
+									...form,
+									name: e.target.value
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								placeholder: "Email",
+								value: form.email,
+								onChange: (e) => setForm({
+									...form,
+									email: e.target.value
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								placeholder: "Telefone",
+								value: form.phone,
+								onChange: (e) => setForm({
+									...form,
+									phone: e.target.value
+								})
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleAdd,
+						children: "Salvar"
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 				className: "p-0 overflow-auto",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Email" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.phone") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.phone") || "Telefone" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Location" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") || "Status" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
-							children: t("common.status")
+							children: "Ações"
 						})
 					] })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [owners$1.map((owner) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
@@ -69583,16 +70091,84 @@ function Owners() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.email }) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.phone }) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: owner.city ? `${owner.city}, ${owner.state}` : "-" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: owner.status === "active" ? "default" : "secondary",
+							children: owner.status
+						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-								variant: owner.status === "active" ? "default" : "secondary",
-								children: owner.status
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+									open: editingRecord?.id === owner.id,
+									onOpenChange: (open) => !open && setEditingRecord(null),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "outline",
+											size: "sm",
+											onClick: () => {
+												setEditingRecord(owner);
+												setForm({
+													name: owner.name,
+													email: owner.email,
+													phone: owner.phone
+												});
+											},
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Proprietário" }) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-4 py-4",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: "Nome",
+													value: form.name,
+													onChange: (e) => setForm({
+														...form,
+														name: e.target.value
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: "Email",
+													value: form.email,
+													onChange: (e) => setForm({
+														...form,
+														email: e.target.value
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: "Telefone",
+													value: form.phone,
+													onChange: (e) => setForm({
+														...form,
+														phone: e.target.value
+													})
+												})
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											onClick: handleEdit,
+											children: "Salvar"
+										}) })
+									] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Proprietário" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(owner.id),
+									children: "Excluir"
+								})] })] })] })]
 							})
 						})
 					]
 				}, owner.id)), owners$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 5,
+					colSpan: 6,
 					className: "text-center py-6 text-muted-foreground",
 					children: t("common.empty")
 				}) })] })] })
@@ -69610,29 +70186,107 @@ function OwnerDetails() {
 	});
 }
 function Partners() {
-	const { partners: partners$1 } = (0, import_react.useContext)(AppContext);
+	const { partners: partners$1, addPartner, updatePartner } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		name: "",
+		companyName: "",
+		type: ""
+	});
+	const handleAdd = () => {
+		addPartner({
+			id: `partner-${Date.now()}`,
+			name: form.name || "Novo Parceiro",
+			companyName: form.companyName,
+			type: form.type || "cleaning",
+			email: "",
+			phone: "",
+			status: "active",
+			role: "partner"
+		});
+		setIsAddOpen(false);
+		setForm({
+			name: "",
+			companyName: "",
+			type: ""
+		});
+		toast$2({ title: "Parceiro incluído com sucesso" });
+	};
+	const handleEdit = () => {
+		if (editingRecord) updatePartner({
+			...editingRecord,
+			name: form.name,
+			companyName: form.companyName,
+			type: form.type || editingRecord.type
+		});
+		setEditingRecord(null);
+		toast$2({ title: "Parceiro alterado com sucesso" });
+	};
+	const handleDelete = (id) => {
+		toast$2({ title: "Parceiro excluído com sucesso" });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("common.partners")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage your service partners."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("common.partners") || "Parceiros"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Manage your service partners."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: setIsAddOpen,
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Parceiro" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							placeholder: "Nome",
+							value: form.name,
+							onChange: (e) => setForm({
+								...form,
+								name: e.target.value
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							placeholder: "Empresa",
+							value: form.companyName,
+							onChange: (e) => setForm({
+								...form,
+								companyName: e.target.value
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleAdd,
+						children: "Salvar"
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 				className: "p-0 overflow-auto",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Type" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Company" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") || "Status" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
-							children: t("common.status")
+							children: "Ações"
 						})
 					] })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [partners$1.slice(0, 50).map((partner) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
@@ -69647,16 +70301,73 @@ function Partners() {
 							children: partner.type
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: partner.companyName }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: partner.status === "active" ? "default" : "secondary",
+							children: partner.status
+						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-								variant: partner.status === "active" ? "default" : "secondary",
-								children: partner.status
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+									open: editingRecord?.id === partner.id,
+									onOpenChange: (open) => !open && setEditingRecord(null),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "outline",
+											size: "sm",
+											onClick: () => {
+												setEditingRecord(partner);
+												setForm({
+													name: partner.name,
+													companyName: partner.companyName || "",
+													type: partner.type
+												});
+											},
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Parceiro" }) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-4 py-4",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												placeholder: "Nome",
+												value: form.name,
+												onChange: (e) => setForm({
+													...form,
+													name: e.target.value
+												})
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												placeholder: "Empresa",
+												value: form.companyName,
+												onChange: (e) => setForm({
+													...form,
+													companyName: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											onClick: handleEdit,
+											children: "Salvar"
+										}) })
+									] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Parceiro" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(partner.id),
+									children: "Excluir"
+								})] })] })] })]
 							})
 						})
 					]
 				}, partner.id)), partners$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 4,
+					colSpan: 5,
 					className: "text-center py-6 text-muted-foreground",
 					children: t("common.empty")
 				}) })] })] })
@@ -69674,27 +70385,106 @@ function PartnerDetails() {
 	});
 }
 function Condominiums() {
-	const { condominiums: condominiums$1 } = (0, import_react.useContext)(AppContext);
+	const { condominiums: condominiums$1, addCondominium, updateCondominium, deleteCondominium } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		name: "",
+		address: "",
+		city: "",
+		managerEmail: ""
+	});
+	const handleAdd = () => {
+		addCondominium({
+			id: `condo-${Date.now()}`,
+			name: form.name || "Novo Condomínio",
+			address: form.address,
+			city: form.city,
+			managerEmail: form.managerEmail
+		});
+		setIsAddOpen(false);
+		setForm({
+			name: "",
+			address: "",
+			city: "",
+			managerEmail: ""
+		});
+		toast$2({ title: "Condomínio incluído com sucesso" });
+	};
+	const handleEdit = () => {
+		if (editingRecord) updateCondominium({
+			...editingRecord,
+			...form
+		});
+		setEditingRecord(null);
+		toast$2({ title: "Condomínio alterado com sucesso" });
+	};
+	const handleDelete = (id) => {
+		deleteCondominium(id);
+		toast$2({ title: "Condomínio excluído com sucesso" });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("sidebar.condominiums")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage your properties' condominiums."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("sidebar.condominiums") || "Condomínios"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Manage your properties' condominiums."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: setIsAddOpen,
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Condomínio" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							placeholder: "Nome",
+							value: form.name,
+							onChange: (e) => setForm({
+								...form,
+								name: e.target.value
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							placeholder: "Endereço",
+							value: form.address,
+							onChange: (e) => setForm({
+								...form,
+								address: e.target.value
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleAdd,
+						children: "Salvar"
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 				className: "p-0 overflow-auto",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.address") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.address") || "Endereço" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "City" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Manager Email" })
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Manager Email" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: "Ações"
+						})
 					] })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [condominiums$1.map((condo) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
 					className: "hover:bg-slate-50",
@@ -69705,10 +70495,71 @@ function Condominiums() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: condo.address }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: condo.city }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: condo.managerEmail })
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: condo.managerEmail }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+									open: editingRecord?.id === condo.id,
+									onOpenChange: (open) => !open && setEditingRecord(null),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "outline",
+											size: "sm",
+											onClick: () => {
+												setEditingRecord(condo);
+												setForm({
+													name: condo.name,
+													address: condo.address,
+													city: condo.city || "",
+													managerEmail: condo.managerEmail || ""
+												});
+											},
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Condomínio" }) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-4 py-4",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												placeholder: "Nome",
+												value: form.name,
+												onChange: (e) => setForm({
+													...form,
+													name: e.target.value
+												})
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												placeholder: "Endereço",
+												value: form.address,
+												onChange: (e) => setForm({
+													...form,
+													address: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											onClick: handleEdit,
+											children: "Salvar"
+										}) })
+									] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Condomínio" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(condo.id),
+									children: "Excluir"
+								})] })] })] })]
+							})
+						})
 					]
 				}, condo.id)), condominiums$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 4,
+					colSpan: 5,
 					className: "text-center py-6 text-muted-foreground",
 					children: t("common.empty")
 				}) })] })] })
@@ -69726,27 +70577,107 @@ function CondominiumDetails() {
 	});
 }
 function Hotels() {
-	const { hotels: hotels$1 } = (0, import_react.useContext)(AppContext);
+	const { hotels: hotels$1, addHotel, updateHotel, deleteHotel } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		name: "",
+		city: "",
+		managerName: ""
+	});
+	const handleAdd = () => {
+		addHotel({
+			id: `hotel-${Date.now()}`,
+			name: form.name || "Novo Hotel",
+			address: "",
+			city: form.city,
+			state: "",
+			country: "",
+			zipCode: "",
+			managerName: form.managerName
+		});
+		setIsAddOpen(false);
+		setForm({
+			name: "",
+			city: "",
+			managerName: ""
+		});
+		toast$2({ title: "Hotel incluído com sucesso" });
+	};
+	const handleEdit = () => {
+		if (editingRecord) updateHotel({
+			...editingRecord,
+			...form
+		});
+		setEditingRecord(null);
+		toast$2({ title: "Hotel alterado com sucesso" });
+	};
+	const handleDelete = (id) => {
+		deleteHotel(id);
+		toast$2({ title: "Hotel excluído com sucesso" });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("hotels.title")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage your hotel properties."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("hotels.title") || "Hotéis"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Manage your hotel properties."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: setIsAddOpen,
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Hotel" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							placeholder: "Nome",
+							value: form.name,
+							onChange: (e) => setForm({
+								...form,
+								name: e.target.value
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							placeholder: "Cidade",
+							value: form.city,
+							onChange: (e) => setForm({
+								...form,
+								city: e.target.value
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleAdd,
+						children: "Salvar"
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 				className: "p-0 overflow-auto",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.address") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.address") || "Endereço" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Manager" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.phone") })
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.phone") || "Telefone" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: "Ações"
+						})
 					] })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [hotels$1.map((h) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
 					className: "hover:bg-slate-50",
@@ -69761,10 +70692,70 @@ function Hotels() {
 							h.state
 						] }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: h.managerName }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: h.managerPhone }) })
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: h.managerPhone }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+									open: editingRecord?.id === h.id,
+									onOpenChange: (open) => !open && setEditingRecord(null),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "outline",
+											size: "sm",
+											onClick: () => {
+												setEditingRecord(h);
+												setForm({
+													name: h.name,
+													city: h.city,
+													managerName: h.managerName || ""
+												});
+											},
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Hotel" }) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-4 py-4",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												placeholder: "Nome",
+												value: form.name,
+												onChange: (e) => setForm({
+													...form,
+													name: e.target.value
+												})
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												placeholder: "Cidade",
+												value: form.city,
+												onChange: (e) => setForm({
+													...form,
+													city: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											onClick: handleEdit,
+											children: "Salvar"
+										}) })
+									] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Hotel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(h.id),
+									children: "Excluir"
+								})] })] })] })]
+							})
+						})
 					]
 				}, h.id)), hotels$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 4,
+					colSpan: 5,
 					className: "text-center py-6 text-muted-foreground",
 					children: t("common.empty")
 				}) })] })] })
@@ -71702,15 +72693,192 @@ function HotelRoomDetails() {
 	});
 }
 function Users() {
+	const { users, addUser, updateUser, deleteUser } = (0, import_react.useContext)(AppContext);
+	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		name: "",
+		email: "",
+		role: ""
+	});
+	const handleAdd = () => {
+		addUser({
+			id: `user-${Date.now()}`,
+			name: form.name || "Novo Usuário",
+			email: form.email,
+			role: form.role || "internal_user",
+			status: "active",
+			isFirstLogin: false
+		});
+		setIsAddOpen(false);
+		setForm({
+			name: "",
+			email: "",
+			role: ""
+		});
+		toast$2({ title: "Usuário incluído com sucesso" });
+	};
+	const handleEdit = () => {
+		if (editingRecord) updateUser({
+			...editingRecord,
+			name: form.name,
+			email: form.email,
+			role: form.role || editingRecord.role
+		});
+		setEditingRecord(null);
+		toast$2({ title: "Usuário alterado com sucesso" });
+	};
+	const handleDelete = (id) => {
+		deleteUser(id);
+		toast$2({ title: "Usuário excluído com sucesso" });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "space-y-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight",
-			children: "Users"
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-			className: "flex flex-col items-center justify-center h-64 text-slate-500",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-12 w-12 mb-4 text-slate-300" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Manage users and permissions here." })]
-		}) })]
+		className: "flex flex-col gap-6 p-6",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("sidebar.users") || "Usuários"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Manage users and permissions here."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: setIsAddOpen,
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Usuário" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							placeholder: "Nome",
+							value: form.name,
+							onChange: (e) => setForm({
+								...form,
+								name: e.target.value
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							placeholder: "Email",
+							value: form.email,
+							onChange: (e) => setForm({
+								...form,
+								email: e.target.value
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleAdd,
+						children: "Salvar"
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+			className: "border-slate-200 shadow-sm bg-white",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+				className: "p-0 overflow-auto",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+					className: "bg-slate-50",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Email" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Role" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") || "Status" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: "Ações"
+						})
+					] })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [users.map((user) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+					className: "hover:bg-slate-50",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "font-medium text-slate-900",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: user.name })
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: user.email }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: "outline",
+							children: user.role
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: user.status === "active" ? "default" : "secondary",
+							children: user.status
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+									open: editingRecord?.id === user.id,
+									onOpenChange: (open) => !open && setEditingRecord(null),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "outline",
+											size: "sm",
+											onClick: () => {
+												setEditingRecord(user);
+												setForm({
+													name: user.name,
+													email: user.email,
+													role: user.role
+												});
+											},
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Usuário" }) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-4 py-4",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												placeholder: "Nome",
+												value: form.name,
+												onChange: (e) => setForm({
+													...form,
+													name: e.target.value
+												})
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												placeholder: "Email",
+												value: form.email,
+												onChange: (e) => setForm({
+													...form,
+													email: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											onClick: handleEdit,
+											children: "Salvar"
+										}) })
+									] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Usuário" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(user.id),
+									children: "Excluir"
+								})] })] })] })]
+							})
+						})
+					]
+				}, user.id)), users.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					colSpan: 5,
+					className: "text-center py-6 text-muted-foreground",
+					children: "Nenhum usuário encontrado."
+				}) })] })] })
+			})
+		})]
 	});
 }
 function ServicePricing() {
@@ -72367,17 +73535,123 @@ function Automation() {
 	});
 }
 function ShortTerm() {
-	const { bookings: bookings$1, formatAppCurrency } = (0, import_react.useContext)(AppContext);
+	const { bookings: bookings$1, formatAppCurrency, addBooking, updateBooking, deleteBooking } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		guestName: "",
+		checkIn: "",
+		checkOut: "",
+		totalAmount: ""
+	});
+	const handleAdd = () => {
+		addBooking({
+			id: `booking-${Date.now()}`,
+			propertyId: "prop1",
+			propertyName: "Nova Propriedade",
+			guestName: form.guestName || "Novo Hóspede",
+			guestEmail: "guest@example.com",
+			checkIn: form.checkIn || (/* @__PURE__ */ new Date()).toISOString(),
+			checkOut: form.checkOut || (/* @__PURE__ */ new Date()).toISOString(),
+			totalAmount: Number(form.totalAmount) || 0,
+			status: "confirmed",
+			paid: false,
+			platform: "direct"
+		});
+		setIsAddOpen(false);
+		setForm({
+			guestName: "",
+			checkIn: "",
+			checkOut: "",
+			totalAmount: ""
+		});
+		toast$2({ title: "Reserva incluída com sucesso" });
+	};
+	const handleEdit = () => {
+		if (editingRecord) updateBooking({
+			...editingRecord,
+			guestName: form.guestName,
+			checkIn: form.checkIn,
+			checkOut: form.checkOut,
+			totalAmount: Number(form.totalAmount)
+		});
+		setEditingRecord(null);
+		toast$2({ title: "Reserva alterada com sucesso" });
+	};
+	const handleDelete = (id) => {
+		deleteBooking(id);
+		toast$2({ title: "Reserva excluída com sucesso" });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("common.short_term")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage your vacation rentals."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("common.short_term")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Manage your vacation rentals."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: setIsAddOpen,
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Reserva" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								placeholder: "Nome do Hóspede",
+								value: form.guestName,
+								onChange: (e) => setForm({
+									...form,
+									guestName: e.target.value
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "date",
+								placeholder: "Check-In",
+								value: form.checkIn,
+								onChange: (e) => setForm({
+									...form,
+									checkIn: e.target.value
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "date",
+								placeholder: "Check-Out",
+								value: form.checkOut,
+								onChange: (e) => setForm({
+									...form,
+									checkOut: e.target.value
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "number",
+								placeholder: "Valor Total",
+								value: form.totalAmount,
+								onChange: (e) => setForm({
+									...form,
+									totalAmount: e.target.value
+								})
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleAdd,
+						children: "Salvar"
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 				className: "p-0 overflow-auto",
@@ -72392,6 +73666,10 @@ function ShortTerm() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
 							children: "Total"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: "Ações"
 						})
 					] })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [bookings$1.map((b$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
@@ -72412,10 +73690,93 @@ function ShortTerm() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right font-bold",
 							children: formatAppCurrency(b$1.totalAmount)
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+									open: editingRecord?.id === b$1.id,
+									onOpenChange: (open) => !open && setEditingRecord(null),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "outline",
+											size: "sm",
+											onClick: () => {
+												setEditingRecord(b$1);
+												setForm({
+													guestName: b$1.guestName,
+													checkIn: b$1.checkIn.split("T")[0],
+													checkOut: b$1.checkOut.split("T")[0],
+													totalAmount: b$1.totalAmount.toString()
+												});
+											},
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Reserva" }) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-4 py-4",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: "Nome do Hóspede",
+													value: form.guestName,
+													onChange: (e) => setForm({
+														...form,
+														guestName: e.target.value
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													type: "date",
+													placeholder: "Check-In",
+													value: form.checkIn,
+													onChange: (e) => setForm({
+														...form,
+														checkIn: e.target.value
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													type: "date",
+													placeholder: "Check-Out",
+													value: form.checkOut,
+													onChange: (e) => setForm({
+														...form,
+														checkOut: e.target.value
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													type: "number",
+													placeholder: "Valor Total",
+													value: form.totalAmount,
+													onChange: (e) => setForm({
+														...form,
+														totalAmount: e.target.value
+													})
+												})
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											onClick: handleEdit,
+											children: "Salvar"
+										}) })
+									] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Reserva" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(b$1.id),
+									children: "Excluir"
+								})] })] })] })]
+							})
 						})
 					]
 				}, b$1.id)), bookings$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 6,
+					colSpan: 7,
 					className: "text-center py-6 text-muted-foreground",
 					children: t("common.empty")
 				}) })] })] })
@@ -73145,17 +74506,106 @@ function PointOfSale() {
 	});
 }
 function Marketing() {
-	const { campaigns: campaigns$1 } = (0, import_react.useContext)(AppContext);
+	const { campaigns: campaigns$1, addCampaign, updateCampaign, deleteCampaign } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		name: "",
+		targetAudience: "",
+		startDate: ""
+	});
+	const handleAdd = () => {
+		addCampaign({
+			id: `camp-${Date.now()}`,
+			name: form.name || "Nova Campanha",
+			targetAudience: form.targetAudience || "all",
+			startDate: form.startDate || (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+			endDate: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+			status: "active",
+			promotions: []
+		});
+		setIsAddOpen(false);
+		setForm({
+			name: "",
+			targetAudience: "",
+			startDate: ""
+		});
+		toast$2({ title: "Campanha incluída com sucesso" });
+	};
+	const handleEdit = () => {
+		if (editingRecord) updateCampaign({
+			...editingRecord,
+			name: form.name,
+			targetAudience: form.targetAudience || editingRecord.targetAudience,
+			startDate: form.startDate
+		});
+		setEditingRecord(null);
+		toast$2({ title: "Campanha alterada com sucesso" });
+	};
+	const handleDelete = (id) => {
+		deleteCampaign(id);
+		toast$2({ title: "Campanha excluída com sucesso" });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("sidebar.marketing")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage marketing campaigns."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("sidebar.marketing")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Manage marketing campaigns."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: setIsAddOpen,
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Campanha" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								placeholder: "Nome da Campanha",
+								value: form.name,
+								onChange: (e) => setForm({
+									...form,
+									name: e.target.value
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								placeholder: "Público Alvo",
+								value: form.targetAudience,
+								onChange: (e) => setForm({
+									...form,
+									targetAudience: e.target.value
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "date",
+								placeholder: "Data de Início",
+								value: form.startDate,
+								onChange: (e) => setForm({
+									...form,
+									startDate: e.target.value
+								})
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleAdd,
+						children: "Salvar"
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 				className: "p-0 overflow-auto",
@@ -73166,9 +74616,10 @@ function Marketing() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Target Audience" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Start Date" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "End Date" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
-							children: t("common.status")
+							children: "Ações"
 						})
 					] })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [campaigns$1.map((camp) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
@@ -73184,16 +74635,85 @@ function Marketing() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: camp.startDate }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: camp.endDate }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: camp.status === "active" ? "default" : "secondary",
+							children: camp.status
+						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-								variant: camp.status === "active" ? "default" : "secondary",
-								children: camp.status
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+									open: editingRecord?.id === camp.id,
+									onOpenChange: (open) => !open && setEditingRecord(null),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "outline",
+											size: "sm",
+											onClick: () => {
+												setEditingRecord(camp);
+												setForm({
+													name: camp.name,
+													targetAudience: camp.targetAudience || "",
+													startDate: camp.startDate
+												});
+											},
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Campanha" }) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-4 py-4",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: "Nome da Campanha",
+													value: form.name,
+													onChange: (e) => setForm({
+														...form,
+														name: e.target.value
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: "Público Alvo",
+													value: form.targetAudience,
+													onChange: (e) => setForm({
+														...form,
+														targetAudience: e.target.value
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													type: "date",
+													placeholder: "Data de Início",
+													value: form.startDate,
+													onChange: (e) => setForm({
+														...form,
+														startDate: e.target.value
+													})
+												})
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											onClick: handleEdit,
+											children: "Salvar"
+										}) })
+									] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Campanha" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(camp.id),
+									children: "Excluir"
+								})] })] })] })]
 							})
 						})
 					]
 				}, camp.id)), campaigns$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 5,
+					colSpan: 6,
 					className: "text-center py-6 text-muted-foreground",
 					children: t("common.empty")
 				}) })] })] })
@@ -73244,7 +74764,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 	const { toast: toast$2 } = useToast();
 	const { t } = useLanguageStore_default();
 	const [hasAlerted, setHasAlerted] = (0, import_react.useState)(false);
-	const allowed = hasPermissionSync(currentUser, resource, action);
+	const allowed = currentUser ? hasPermissionSync(currentUser, resource, action) : false;
 	(0, import_react.useEffect)(() => {
 		if (!isAuthLoading && isAuthenticated && !allowed && !hasAlerted) {
 			toast$2({
@@ -73822,4 +75342,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-C25U1Ncv.js.map
+//# sourceMappingURL=index-R43BjWiD.js.map

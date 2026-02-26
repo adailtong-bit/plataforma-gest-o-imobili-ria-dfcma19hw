@@ -150,86 +150,86 @@ export default function Tenants() {
                     <Badge variant="outline">{tenant.status}</Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Dialog
-                      open={editingRecord?.id === tenant.id}
-                      onOpenChange={(open) => !open && setEditingRecord(null)}
-                    >
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setEditingRecord(tenant)
-                            setForm({
-                              name: tenant.name,
-                              email: tenant.email,
-                              rentValue: tenant.rentValue.toString(),
-                            })
-                          }}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Alterar Inquilino</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                          <Input
-                            placeholder="Nome"
-                            value={form.name}
-                            onChange={(e) =>
-                              setForm({ ...form, name: e.target.value })
-                            }
-                          />
-                          <Input
-                            placeholder="Email"
-                            value={form.email}
-                            onChange={(e) =>
-                              setForm({ ...form, email: e.target.value })
-                            }
-                          />
-                          <Input
-                            type="number"
-                            placeholder="Aluguel"
-                            value={form.rentValue}
-                            onChange={(e) =>
-                              setForm({ ...form, rentValue: e.target.value })
-                            }
-                          />
-                        </div>
-                        <DialogFooter>
-                          <Button onClick={handleEdit}>Salvar</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir Inquilino</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta ação não pode ser desfeita.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(tenant.id)}
+                    <div className="flex justify-end gap-2">
+                      <Dialog
+                        open={editingRecord?.id === tenant.id}
+                        onOpenChange={(open) => !open && setEditingRecord(null)}
+                      >
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditingRecord(tenant)
+                              setForm({
+                                name: tenant.name,
+                                email: tenant.email,
+                                rentValue: tenant.rentValue.toString(),
+                              })
+                            }}
                           >
-                            Excluir
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                            <Pencil className="h-4 w-4 mr-2" /> Alterar
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Alterar Inquilino</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <Input
+                              placeholder="Nome"
+                              value={form.name}
+                              onChange={(e) =>
+                                setForm({ ...form, name: e.target.value })
+                              }
+                            />
+                            <Input
+                              placeholder="Email"
+                              value={form.email}
+                              onChange={(e) =>
+                                setForm({ ...form, email: e.target.value })
+                              }
+                            />
+                            <Input
+                              type="number"
+                              placeholder="Aluguel"
+                              value={form.rentValue}
+                              onChange={(e) =>
+                                setForm({ ...form, rentValue: e.target.value })
+                              }
+                            />
+                          </div>
+                          <DialogFooter>
+                            <Button onClick={handleEdit}>Salvar</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Excluir Inquilino
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(tenant.id)}
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -250,4 +250,3 @@ export default function Tenants() {
     </div>
   )
 }
-

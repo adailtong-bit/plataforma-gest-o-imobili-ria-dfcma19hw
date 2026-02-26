@@ -159,4 +159,3 @@ export function RequirePermission({
 
   return <PermissionErrorBoundary>{children}</PermissionErrorBoundary>
 }
-

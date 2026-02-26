@@ -55,7 +55,6 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
 import useMessageStore from '@/stores/useMessageStore'
 import usePublicityStore from '@/stores/usePublicityStore'
-import { hasPermissionSync } from '@/lib/permissions'
 import { User, Resource } from '@/lib/types'
 import logo from '@/assets/logo-estilizado.jpg'
 import { Badge } from '@/components/ui/badge'
@@ -193,7 +192,7 @@ export function AppSidebar() {
       resource: 'workflows',
     },
     {
-      title: t('sidebar.financial') || 'Financeiro',
+      title: 'Financeiro',
       url: '/financial',
       icon: DollarSign,
       resource: 'financial',
@@ -398,9 +397,7 @@ export function AppSidebar() {
                                   to="/properties"
                                   onClick={handleLinkClick}
                                 >
-                                  <span>
-                                    {t('sidebar.units') || 'Propriedades'}
-                                  </span>
+                                  <span>Propriedades</span>
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
@@ -527,12 +524,12 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive('/users')}
-                    tooltip={t('sidebar.users') || 'Usuários'}
+                    tooltip="Usuários"
                     className="text-black font-medium hover:bg-slate-100"
                   >
                     <Link to="/users" onClick={handleLinkClick}>
                       <Users className="text-black" />
-                      <span>{t('sidebar.users') || 'Usuários'}</span>
+                      <span>Usuários</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -542,12 +539,12 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive('/settings')}
-                    tooltip={t('sidebar.settings') || 'Configurações'}
+                    tooltip="Configurações"
                     className="text-black font-medium hover:bg-slate-100"
                   >
                     <Link to="/settings" onClick={handleLinkClick}>
                       <Settings className="text-black" />
-                      <span>{t('sidebar.settings') || 'Configurações'}</span>
+                      <span>Configurações</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -634,4 +631,3 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
-

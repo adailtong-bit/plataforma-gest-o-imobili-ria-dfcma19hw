@@ -137,78 +137,76 @@ export default function Hotels() {
                     <DataMask>{h.managerPhone}</DataMask>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Dialog
-                      open={editingRecord?.id === h.id}
-                      onOpenChange={(open) => !open && setEditingRecord(null)}
-                    >
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setEditingRecord(h)
-                            setForm({
-                              name: h.name,
-                              city: h.city,
-                              managerName: h.managerName || '',
-                            })
-                          }}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Alterar Hotel</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                          <Input
-                            placeholder="Nome"
-                            value={form.name}
-                            onChange={(e) =>
-                              setForm({ ...form, name: e.target.value })
-                            }
-                          />
-                          <Input
-                            placeholder="Cidade"
-                            value={form.city}
-                            onChange={(e) =>
-                              setForm({ ...form, city: e.target.value })
-                            }
-                          />
-                        </div>
-                        <DialogFooter>
-                          <Button onClick={handleEdit}>Salvar</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir Hotel</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta ação não pode ser desfeita.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(h.id)}
+                    <div className="flex justify-end gap-2">
+                      <Dialog
+                        open={editingRecord?.id === h.id}
+                        onOpenChange={(open) => !open && setEditingRecord(null)}
+                      >
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditingRecord(h)
+                              setForm({
+                                name: h.name,
+                                city: h.city,
+                                managerName: h.managerName || '',
+                              })
+                            }}
                           >
-                            Excluir
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                            <Pencil className="h-4 w-4 mr-2" /> Alterar
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Alterar Hotel</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <Input
+                              placeholder="Nome"
+                              value={form.name}
+                              onChange={(e) =>
+                                setForm({ ...form, name: e.target.value })
+                              }
+                            />
+                            <Input
+                              placeholder="Cidade"
+                              value={form.city}
+                              onChange={(e) =>
+                                setForm({ ...form, city: e.target.value })
+                              }
+                            />
+                          </div>
+                          <DialogFooter>
+                            <Button onClick={handleEdit}>Salvar</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Excluir Hotel</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(h.id)}
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -229,4 +227,3 @@ export default function Hotels() {
     </div>
   )
 }
-

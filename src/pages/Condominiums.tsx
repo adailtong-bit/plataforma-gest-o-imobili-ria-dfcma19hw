@@ -35,12 +35,8 @@ import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Condominiums() {
-  const {
-    condominiums,
-    addCondominium,
-    updateCondominium,
-    deleteCondominium,
-  } = useContext(AppContext)!
+  const { condominiums, addCondominium, updateCondominium, deleteCondominium } =
+    useContext(AppContext)!
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
@@ -141,81 +137,79 @@ export default function Condominiums() {
                   <TableCell>{condo.city}</TableCell>
                   <TableCell>{condo.managerEmail}</TableCell>
                   <TableCell className="text-right">
-                    <Dialog
-                      open={editingRecord?.id === condo.id}
-                      onOpenChange={(open) => !open && setEditingRecord(null)}
-                    >
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setEditingRecord(condo)
-                            setForm({
-                              name: condo.name,
-                              address: condo.address,
-                              city: condo.city || '',
-                              managerEmail: condo.managerEmail || '',
-                            })
-                          }}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Alterar Condomínio</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                          <Input
-                            placeholder="Nome"
-                            value={form.name}
-                            onChange={(e) =>
-                              setForm({ ...form, name: e.target.value })
-                            }
-                          />
-                          <Input
-                            placeholder="Endereço"
-                            value={form.address}
-                            onChange={(e) =>
-                              setForm({ ...form, address: e.target.value })
-                            }
-                          />
-                        </div>
-                        <DialogFooter>
-                          <Button onClick={handleEdit}>Salvar</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Excluir Condomínio
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta ação não pode ser desfeita.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(condo.id)}
+                    <div className="flex justify-end gap-2">
+                      <Dialog
+                        open={editingRecord?.id === condo.id}
+                        onOpenChange={(open) => !open && setEditingRecord(null)}
+                      >
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditingRecord(condo)
+                              setForm({
+                                name: condo.name,
+                                address: condo.address,
+                                city: condo.city || '',
+                                managerEmail: condo.managerEmail || '',
+                              })
+                            }}
                           >
-                            Excluir
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                            <Pencil className="h-4 w-4 mr-2" /> Alterar
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Alterar Condomínio</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <Input
+                              placeholder="Nome"
+                              value={form.name}
+                              onChange={(e) =>
+                                setForm({ ...form, name: e.target.value })
+                              }
+                            />
+                            <Input
+                              placeholder="Endereço"
+                              value={form.address}
+                              onChange={(e) =>
+                                setForm({ ...form, address: e.target.value })
+                              }
+                            />
+                          </div>
+                          <DialogFooter>
+                            <Button onClick={handleEdit}>Salvar</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Excluir Condomínio
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(condo.id)}
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -236,4 +230,3 @@ export default function Condominiums() {
     </div>
   )
 }
-

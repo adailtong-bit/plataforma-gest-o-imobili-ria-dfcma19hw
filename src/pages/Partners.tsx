@@ -147,78 +147,81 @@ export default function Partners() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Dialog
-                      open={editingRecord?.id === partner.id}
-                      onOpenChange={(open) => !open && setEditingRecord(null)}
-                    >
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setEditingRecord(partner)
-                            setForm({
-                              name: partner.name,
-                              companyName: partner.companyName || '',
-                              type: partner.type,
-                            })
-                          }}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Alterar Parceiro</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                          <Input
-                            placeholder="Nome"
-                            value={form.name}
-                            onChange={(e) =>
-                              setForm({ ...form, name: e.target.value })
-                            }
-                          />
-                          <Input
-                            placeholder="Empresa"
-                            value={form.companyName}
-                            onChange={(e) =>
-                              setForm({ ...form, companyName: e.target.value })
-                            }
-                          />
-                        </div>
-                        <DialogFooter>
-                          <Button onClick={handleEdit}>Salvar</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir Parceiro</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta ação não pode ser desfeita.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(partner.id)}
+                    <div className="flex justify-end gap-2">
+                      <Dialog
+                        open={editingRecord?.id === partner.id}
+                        onOpenChange={(open) => !open && setEditingRecord(null)}
+                      >
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditingRecord(partner)
+                              setForm({
+                                name: partner.name,
+                                companyName: partner.companyName || '',
+                                type: partner.type,
+                              })
+                            }}
                           >
-                            Excluir
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                            <Pencil className="h-4 w-4 mr-2" /> Alterar
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Alterar Parceiro</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <Input
+                              placeholder="Nome"
+                              value={form.name}
+                              onChange={(e) =>
+                                setForm({ ...form, name: e.target.value })
+                              }
+                            />
+                            <Input
+                              placeholder="Empresa"
+                              value={form.companyName}
+                              onChange={(e) =>
+                                setForm({
+                                  ...form,
+                                  companyName: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <DialogFooter>
+                            <Button onClick={handleEdit}>Salvar</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Excluir Parceiro
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(partner.id)}
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -239,4 +242,3 @@ export default function Partners() {
     </div>
   )
 }
-

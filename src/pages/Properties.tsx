@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Trash2, Plus, Building, Home } from 'lucide-react'
+import { MapPin, Trash2, Plus, Building, Home, Pencil } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -52,7 +52,8 @@ import { AddressInput, AddressData } from '@/components/ui/address-input'
 import { VisuallyHidden } from '@/components/ui/visually-hidden'
 
 export default function Properties() {
-  const { properties, addProperty, deleteProperty } = usePropertyStore()
+  const { properties, addProperty, updateProperty, deleteProperty } =
+    usePropertyStore()
   const { condominiums } = useCondominiumStore()
   const { currentUser, hasPermissionSync } = useAuthStore()
   const { t, language } = useLanguageStore()
@@ -63,6 +64,7 @@ export default function Properties() {
   >('all')
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   // State for property being created country
   const [selectedCountry, setSelectedCountry] = useState('US')
@@ -236,48 +238,73 @@ export default function Properties() {
     const selectedCondo = condominiums.find(
       (c) => c.id === newProp.condominiumId,
     )
-    addProperty({
-      id: `prop${Date.now()}`,
-      name: newProp.name || '',
-      address: newProp.address || '',
-      city: newProp.city || '',
-      state: newProp.state || '',
-      zipCode: newProp.zipCode || '',
-      additionalInfo: newProp.additionalInfo || '',
-      country: selectedCountry,
-      neighborhood: newProp.neighborhood || '',
-      type: newProp.type || 'House',
-      profileType: newProp.profileType,
-      community: selectedCondo
-        ? selectedCondo.name
-        : newProp.community || t('properties.independent_community'),
-      condominiumId: newProp.condominiumId,
-      status: 'available',
-      // Ensure default image does not use 'seed' param for /p/ endpoint to prevent errors
-      image: newProp.image || 'https://img.usecurling.com/p/400/300?q=house',
-      gallery: [],
-      bedrooms: newProp.bedrooms || 0,
-      bathrooms: newProp.bathrooms || 0,
-      guests: newProp.guests || 0,
-      wifiSsid: '',
-      wifiPassword: '',
-      accessCodeBuilding: '',
-      accessCodeUnit: '',
-      description: { pt: '', en: '', es: '' },
-      hoaRules: { pt: '', en: '', es: '' },
-      documents: [],
-      ownerId: newProp.ownerId || 'owner1',
-      agentId: newProp.agentId,
-      fixedExpenses: [],
-      listingPrice: newProp.listingPrice || 0,
-      hoaValue: newProp.hoaValue || 0,
-    } as Property)
 
-    toast({
-      title: t('properties.property_added'),
-      description: `${newProp.name} ${t('common.done').toLowerCase()}.`,
-    })
+    if (editingId) {
+      const existing = properties.find((p) => p.id === editingId)
+      if (existing) {
+        updateProperty({
+          ...existing,
+          name: newProp.name || '',
+          address: newProp.address || '',
+          city: newProp.city || '',
+          state: newProp.state || '',
+          zipCode: newProp.zipCode || '',
+          additionalInfo: newProp.additionalInfo || '',
+          country: selectedCountry,
+          profileType: newProp.profileType,
+          condominiumId: newProp.condominiumId,
+          listingPrice: newProp.listingPrice || 0,
+          hoaValue: newProp.hoaValue || 0,
+          image: newProp.image || existing.image,
+        } as Property)
+        toast({
+          title: t('properties.property_updated') || 'Propriedade alterada',
+        })
+      }
+    } else {
+      addProperty({
+        id: `prop${Date.now()}`,
+        name: newProp.name || '',
+        address: newProp.address || '',
+        city: newProp.city || '',
+        state: newProp.state || '',
+        zipCode: newProp.zipCode || '',
+        additionalInfo: newProp.additionalInfo || '',
+        country: selectedCountry,
+        neighborhood: newProp.neighborhood || '',
+        type: newProp.type || 'House',
+        profileType: newProp.profileType,
+        community: selectedCondo
+          ? selectedCondo.name
+          : newProp.community || t('properties.independent_community'),
+        condominiumId: newProp.condominiumId,
+        status: 'available',
+        image: newProp.image || 'https://img.usecurling.com/p/400/300?q=house',
+        gallery: [],
+        bedrooms: newProp.bedrooms || 0,
+        bathrooms: newProp.bathrooms || 0,
+        guests: newProp.guests || 0,
+        wifiSsid: '',
+        wifiPassword: '',
+        accessCodeBuilding: '',
+        accessCodeUnit: '',
+        description: { pt: '', en: '', es: '' },
+        hoaRules: { pt: '', en: '', es: '' },
+        documents: [],
+        ownerId: newProp.ownerId || 'owner1',
+        agentId: newProp.agentId,
+        fixedExpenses: [],
+        listingPrice: newProp.listingPrice || 0,
+        hoaValue: newProp.hoaValue || 0,
+      } as Property)
+      toast({
+        title: t('properties.property_added'),
+        description: `${newProp.name} ${t('common.done').toLowerCase()}.`,
+      })
+    }
+
     setOpen(false)
+    setEditingId(null)
     setNewProp({
       name: '',
       address: '',
@@ -315,6 +342,15 @@ export default function Properties() {
     }
   }
 
+  const handleEditClick = (e: React.MouseEvent, prop: Property) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setEditingId(prop.id)
+    setNewProp(prop)
+    setSelectedCountry(prop.country || 'US')
+    setOpen(true)
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -332,6 +368,7 @@ export default function Properties() {
               setOpen(v)
               if (!v) {
                 // Reset state on close
+                setEditingId(null)
                 setNewProp({
                   name: '',
                   country: 'US',
@@ -354,7 +391,11 @@ export default function Properties() {
             </DialogTrigger>
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
               <DialogHeader>
-                <DialogTitle>{t('properties.add_title')}</DialogTitle>
+                <DialogTitle>
+                  {editingId
+                    ? 'Alterar Propriedade'
+                    : t('properties.add_title')}
+                </DialogTitle>
                 <DialogDescription>
                   <VisuallyHidden>
                     {t('properties.add_description')}
@@ -695,21 +736,50 @@ export default function Properties() {
               <Badge className="absolute bottom-2 left-2 bg-black text-white border-none font-bold">
                 {property.profileType === 'short_term' ? 'STR' : 'LTR'}
               </Badge>
-
-              {hasPermissionSync(
-                currentUser as User,
-                'properties',
-                'delete',
-              ) && (
+            </div>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg text-black">
+                <DataMask>{property.name}</DataMask>
+              </CardTitle>
+              <p className="text-xs text-black mt-1 font-medium">
+                <DataMask>{property.community}</DataMask>
+              </p>
+            </CardHeader>
+            <CardContent className="flex-1 pb-2">
+              <div className="flex items-center gap-1 text-sm text-black mb-4">
+                <MapPin className="h-3 w-3 text-black" />
+                <span className="truncate font-medium">
+                  <DataMask>{property.address}</DataMask>
+                </span>
+              </div>
+            </CardContent>
+            <CardFooter className="pt-4 border-t bg-white flex flex-col gap-2 z-10 relative">
+              <Link to={`/properties/${property.id}`} className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full text-black border-slate-300 font-medium"
+                >
+                  {t('properties.view_details')}
+                </Button>
+              </Link>
+              <div className="flex w-full gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 text-black font-medium"
+                  onClick={(e) => handleEditClick(e, property)}
+                >
+                  <Pencil className="h-4 w-4 mr-2" /> Alterar
+                </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="destructive"
-                      size="icon"
-                      className="absolute top-2 left-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      size="sm"
+                      className="flex-1"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4 mr-2" /> Excluir
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -736,33 +806,7 @@ export default function Properties() {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-              )}
-            </div>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-black">
-                <DataMask>{property.name}</DataMask>
-              </CardTitle>
-              <p className="text-xs text-black mt-1 font-medium">
-                <DataMask>{property.community}</DataMask>
-              </p>
-            </CardHeader>
-            <CardContent className="flex-1 pb-2">
-              <div className="flex items-center gap-1 text-sm text-black mb-4">
-                <MapPin className="h-3 w-3 text-black" />
-                <span className="truncate font-medium">
-                  <DataMask>{property.address}</DataMask>
-                </span>
               </div>
-            </CardContent>
-            <CardFooter className="pt-4 border-t bg-white">
-              <Link to={`/properties/${property.id}`} className="w-full">
-                <Button
-                  variant="outline"
-                  className="w-full text-black border-slate-300 font-medium"
-                >
-                  {t('properties.view_details')}
-                </Button>
-              </Link>
             </CardFooter>
           </Card>
         ))}
