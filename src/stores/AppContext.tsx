@@ -757,8 +757,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const checkPermission = useCallback(
     async (user: User, resource: Resource, action: Action) => {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
       if (!user || !user.role) return false
 
       if (user.permissions && user.permissions.length > 0) {

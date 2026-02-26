@@ -63,86 +63,18 @@ export function RequirePermission({
   resource,
   action = 'view',
 }: RequirePermissionProps) {
-  const { currentUser, isAuthenticated, checkPermission, isAuthLoading } =
+  const { currentUser, isAuthenticated, hasPermissionSync, isAuthLoading } =
     useAuthStore()
   const location = useLocation()
   const { toast } = useToast()
   const { t } = useLanguageStore()
 
-  const [isChecking, setIsChecking] = useState(true)
-  const [hasAccess, setHasAccess] = useState(false)
-  const [hasTimeout, setHasTimeout] = useState(false)
+  const [hasAlerted, setHasAlerted] = useState(false)
+
+  const allowed = hasPermissionSync(currentUser as User, resource, action)
 
   useEffect(() => {
-    let mounted = true
-    let timeoutId: NodeJS.Timeout
-
-    const verifyAccess = async () => {
-      if (isAuthLoading) {
-        return
-      }
-
-      setIsChecking(true)
-      setHasTimeout(false)
-
-      if (!isAuthenticated || !currentUser) {
-        if (mounted) {
-          setHasAccess(false)
-          setIsChecking(false)
-        }
-        return
-      }
-
-      timeoutId = setTimeout(() => {
-        if (mounted && isChecking) {
-          setHasTimeout(true)
-          setIsChecking(false)
-        }
-      }, 8000)
-
-      try {
-        const allowed = await checkPermission(
-          currentUser as User,
-          resource,
-          action,
-        )
-        if (mounted) {
-          setHasAccess(allowed)
-          setIsChecking(false)
-          clearTimeout(timeoutId)
-        }
-      } catch (error) {
-        console.error('Permission check failed:', error)
-        if (mounted) {
-          setHasAccess(false)
-          setIsChecking(false)
-          clearTimeout(timeoutId)
-        }
-      }
-    }
-
-    verifyAccess()
-    return () => {
-      mounted = false
-      if (timeoutId) clearTimeout(timeoutId)
-    }
-  }, [
-    currentUser,
-    isAuthenticated,
-    resource,
-    action,
-    checkPermission,
-    isAuthLoading,
-  ])
-
-  useEffect(() => {
-    if (
-      !isChecking &&
-      isAuthenticated &&
-      !hasAccess &&
-      !hasTimeout &&
-      !isAuthLoading
-    ) {
+    if (!isAuthLoading && isAuthenticated && !allowed && !hasAlerted) {
       toast({
         title: t('common.access_denied') || 'Access Denied',
         description:
@@ -150,22 +82,11 @@ export function RequirePermission({
           'You do not have permission to view this page.',
         variant: 'destructive',
       })
+      setHasAlerted(true)
     }
-  }, [
-    hasAccess,
-    isAuthenticated,
-    isChecking,
-    hasTimeout,
-    isAuthLoading,
-    toast,
-    t,
-  ])
+  }, [isAuthLoading, isAuthenticated, allowed, hasAlerted, toast, t])
 
-  if (!isAuthenticated && !isAuthLoading) {
-    return <Navigate to="/login" state={{ from: location }} replace />
-  }
-
-  if (isChecking || isAuthLoading) {
+  if (isAuthLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500">
         <Loader2 className="h-12 w-12 text-primary animate-spin" />
@@ -176,30 +97,11 @@ export function RequirePermission({
     )
   }
 
-  if (hasTimeout) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 animate-in fade-in duration-500">
-        <div className="bg-orange-50 p-4 rounded-full mb-4">
-          <AlertTriangle className="h-12 w-12 text-orange-600" />
-        </div>
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">
-          Loading Timeout
-        </h1>
-        <p className="text-muted-foreground max-w-md mb-6">
-          The permission verification request timed out. Please check your
-          connection and try again.
-        </p>
-        <Button
-          onClick={() => window.location.reload()}
-          className="bg-primary text-primary-foreground"
-        >
-          Reload Page
-        </Button>
-      </div>
-    )
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  if (!hasAccess) {
+  if (!allowed) {
     if (
       currentUser?.role === 'tenant' ||
       currentUser?.role === 'property_owner' ||

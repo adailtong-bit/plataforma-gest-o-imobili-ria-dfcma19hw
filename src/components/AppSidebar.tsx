@@ -63,7 +63,7 @@ export function AppSidebar() {
   const location = useLocation()
   const pathname = location.pathname
   const { t } = useLanguageStore()
-  const { currentUser } = useAuthStore()
+  const { currentUser, hasPermissionSync } = useAuthStore()
   const { messages } = useMessageStore()
   const { advertisements } = usePublicityStore()
   const { setOpenMobile, isMobile } = useSidebar()
@@ -241,7 +241,7 @@ export function AppSidebar() {
   ]
 
   const visibleMenuItems = allMenuItems.filter((item) =>
-    hasPermission(currentUser as User, item.resource as Resource, 'view'),
+    hasPermissionSync(currentUser as User, item.resource as Resource, 'view'),
   )
 
   const isActive = (url: string) => {
@@ -250,10 +250,22 @@ export function AppSidebar() {
     return false
   }
 
-  const showMigration = hasPermission(currentUser as User, 'migration', 'view')
-  const showPublicity = hasPermission(currentUser as User, 'publicity', 'view')
-  const showUsers = hasPermission(currentUser as User, 'users', 'view')
-  const showSettings = hasPermission(currentUser as User, 'settings', 'view')
+  const showMigration = hasPermissionSync(
+    currentUser as User,
+    'migration',
+    'view',
+  )
+  const showPublicity = hasPermissionSync(
+    currentUser as User,
+    'publicity',
+    'view',
+  )
+  const showUsers = hasPermissionSync(currentUser as User, 'users', 'view')
+  const showSettings = hasPermissionSync(
+    currentUser as User,
+    'settings',
+    'view',
+  )
 
   const isTenant = currentUser.role === 'tenant'
   const isOwner = currentUser.role === 'property_owner'

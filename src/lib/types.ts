@@ -47,37 +47,6 @@ export interface Permission {
   actions: Action[]
 }
 
-export interface SubscriptionTier {
-  id: string
-  name: string
-  basePrice: number
-  maxUnits: number
-  additionalUnitCost: number
-  region: string
-  features: string[]
-  cta: string
-}
-
-export interface SubscriptionDiscount {
-  id: string
-  name: string
-  type: 'percentage' | 'fixed'
-  value: number
-  expiresAt: string
-}
-
-export interface PMSpecificPricing {
-  id: string
-  pmId: string
-  fixedRate: number
-}
-
-export interface SubscriptionConfig {
-  tiers: SubscriptionTier[]
-  discounts: SubscriptionDiscount[]
-  pmOverrides: PMSpecificPricing[]
-}
-
 export interface SeasonalPrice {
   id: string
   startDate: string
