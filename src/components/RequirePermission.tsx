@@ -127,7 +127,7 @@ export function RequirePermission({
           <ShieldX className="h-12 w-12 text-red-600" />
         </div>
         <h1 className="text-2xl font-bold text-slate-900 mb-2">
-          {t('common.access_denied') || 'Access Denied'}
+          {t('common.access_denied') || 'Acesso Negado'}
         </h1>
         <p className="text-muted-foreground max-w-md mb-6">
           {t('common.access_denied_desc') ||
@@ -141,7 +141,7 @@ export function RequirePermission({
             className="bg-primary text-primary-foreground"
             onClick={() => (window.location.href = '/')}
           >
-            {t('common.return_home') || 'Return Home'}
+            {t('common.return_home') || 'Return to Dashboard'}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-8">

@@ -103,7 +103,6 @@ import {
 import { tutorialModules as initialTutorialModules } from '@/lib/tutorials'
 import { translations, Language } from '@/lib/translations'
 import { useToast } from '@/hooks/use-toast'
-import { isSameDay, parseISO } from 'date-fns'
 import { formatCurrency as formatCurrencyUtil } from '@/lib/utils'
 import { DEFAULT_PERMISSIONS_MATRIX } from '@/lib/permissions'
 
@@ -450,23 +449,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const { toast } = useToast()
 
+  // Improved auth loading synchronization
   useEffect(() => {
-    let mounted = true
-    const initAuth = async () => {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 600))
-        if (mounted) {
-          setIsAuthLoading(false)
-        }
-      } catch (err) {
-        console.error('Failed to initialize auth state', err)
-        if (mounted) setIsAuthLoading(false)
-      }
-    }
-    initAuth()
-    return () => {
-      mounted = false
-    }
+    const timer = setTimeout(() => {
+      setIsAuthLoading(false)
+    }, 500)
+    return () => clearTimeout(timer)
   }, [])
 
   const setLanguage = (lang: Language) => {
@@ -701,7 +689,29 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const notifySupplier = () => {}
   const setTyping = () => {}
   const startChat = () => {}
-  const sendMessage = () => {}
+  const sendMessage = (contactId: string, text: string) => {
+    setAllMessages((prev) =>
+      prev.map((m) =>
+        m.contactId === contactId
+          ? {
+              ...m,
+              lastMessage: text,
+              time: new Date().toISOString(),
+              history: [
+                ...m.history,
+                {
+                  id: `hist_${Date.now()}`,
+                  text,
+                  senderId: currentUser.id,
+                  timestamp: new Date().toISOString(),
+                  read: true,
+                },
+              ],
+            }
+          : m,
+      ),
+    )
+  }
   const markAsRead = () => {}
   const startTour = () => setIsTourOpen(true)
   const endTour = () => setIsTourOpen(false)
