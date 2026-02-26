@@ -4,8 +4,9 @@ import { Resource, Action, User } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import { useEffect, useState } from 'react'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { ShieldX } from 'lucide-react'
+import { ShieldX, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface RequirePermissionProps {
   children: JSX.Element
@@ -25,11 +26,16 @@ export function RequirePermission({
 
   const [isChecking, setIsChecking] = useState(true)
   const [hasAccess, setHasAccess] = useState(false)
+  const [hasTimeout, setHasTimeout] = useState(false)
 
   useEffect(() => {
     let mounted = true
+    let timeoutId: NodeJS.Timeout
+
     const verifyAccess = async () => {
       setIsChecking(true)
+      setHasTimeout(false)
+
       if (!isAuthenticated || !currentUser) {
         if (mounted) {
           setHasAccess(false)
@@ -37,6 +43,13 @@ export function RequirePermission({
         }
         return
       }
+
+      timeoutId = setTimeout(() => {
+        if (mounted && isChecking) {
+          setHasTimeout(true)
+          setIsChecking(false)
+        }
+      }, 5000)
 
       try {
         const allowed = await checkPermission(
@@ -47,11 +60,13 @@ export function RequirePermission({
         if (mounted) {
           setHasAccess(allowed)
           setIsChecking(false)
+          clearTimeout(timeoutId)
         }
       } catch (error) {
         if (mounted) {
           setHasAccess(false)
           setIsChecking(false)
+          clearTimeout(timeoutId)
         }
       }
     }
@@ -59,18 +74,21 @@ export function RequirePermission({
     verifyAccess()
     return () => {
       mounted = false
+      if (timeoutId) clearTimeout(timeoutId)
     }
   }, [currentUser, isAuthenticated, resource, action, checkPermission])
 
   useEffect(() => {
-    if (!isChecking && isAuthenticated && !hasAccess) {
+    if (!isChecking && isAuthenticated && !hasAccess && !hasTimeout) {
       toast({
-        title: t('common.access_denied'),
-        description: t('common.access_denied_desc'),
+        title: t('common.access_denied') || 'Access Denied',
+        description:
+          t('common.access_denied_desc') ||
+          'You do not have permission to view this page.',
         variant: 'destructive',
       })
     }
-  }, [hasAccess, isAuthenticated, isChecking, toast, t])
+  }, [hasAccess, isAuthenticated, isChecking, hasTimeout, toast, t])
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />
@@ -79,9 +97,32 @@ export function RequirePermission({
   if (isChecking) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4">
-        <div className="h-16 w-16 rounded-full bg-slate-200 animate-pulse" />
-        <div className="h-8 w-64 bg-slate-200 animate-pulse rounded-md" />
-        <div className="h-4 w-96 bg-slate-200 animate-pulse rounded-md" />
+        <Skeleton className="h-16 w-16 rounded-full" />
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-4 w-96" />
+      </div>
+    )
+  }
+
+  if (hasTimeout) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4">
+        <div className="bg-orange-50 p-4 rounded-full mb-4">
+          <AlertTriangle className="h-12 w-12 text-orange-600" />
+        </div>
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">
+          Loading Error
+        </h1>
+        <p className="text-muted-foreground max-w-md mb-6">
+          The permission verification request timed out. Please check your
+          connection and try again.
+        </p>
+        <Button
+          onClick={() => window.location.reload()}
+          className="bg-trust-blue"
+        >
+          Reload Page
+        </Button>
       </div>
     )
   }
@@ -112,25 +153,26 @@ export function RequirePermission({
           <ShieldX className="h-12 w-12 text-red-600" />
         </div>
         <h1 className="text-2xl font-bold text-slate-900 mb-2">
-          {t('common.access_denied')}
+          {t('common.access_denied') || 'Access Denied'}
         </h1>
         <p className="text-muted-foreground max-w-md mb-6">
-          {t('common.access_denied_desc')}
+          {t('common.access_denied_desc') ||
+            'You do not have permission to view this resource.'}
         </p>
-        <div className="flex gap-2">
+        <div className="flex gap-2 justify-center">
           <Button variant="outline" onClick={() => window.history.back()}>
-            {t('common.back')}
+            {t('common.back') || 'Go Back'}
           </Button>
           <Button
             className="bg-trust-blue"
             onClick={() => (window.location.href = '/')}
           >
-            {t('common.return_home')}
+            {t('common.return_home') || 'Return Home'}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-8">
-          {t('common.resource')}: {resource} | {t('common.role')}:{' '}
-          {t(`roles.${currentUser.role}`)}
+          Resource: {resource} | Role:{' '}
+          {t(`roles.${currentUser.role}`) || currentUser.role}
         </p>
       </div>
     )

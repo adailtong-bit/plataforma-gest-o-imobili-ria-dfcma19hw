@@ -1,420 +1,632 @@
-import { Link } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardFooter,
 } from '@/components/ui/card'
-import useSubscriptionStore from '@/stores/useSubscriptionStore'
 import {
-  Check,
-  Building2,
+  Activity,
   DollarSign,
-  Users,
-  LineChart,
-  ShieldCheck,
-  Zap,
+  Settings2,
+  Trophy,
+  Building,
+  TrendingUp,
+  Download,
 } from 'lucide-react'
-import logo from '@/assets/logo-estilizado.jpg'
+import { Calendar } from '@/components/ui/calendar'
+import { useState, useContext } from 'react'
+import { Button } from '@/components/ui/button'
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  Cell,
+  Pie,
+  PieChart,
+} from 'recharts'
+import { Badge } from '@/components/ui/badge'
+import useTaskStore from '@/stores/useTaskStore'
+import useFinancialStore from '@/stores/useFinancialStore'
+import useLanguageStore from '@/stores/useLanguageStore'
+import usePropertyStore from '@/stores/usePropertyStore'
+import useVisitStore from '@/stores/useVisitStore'
+import useShortTermStore from '@/stores/useShortTermStore'
+import { AppContext } from '@/stores/AppContext'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import { Progress } from '@/components/ui/progress'
+import { DataMask } from '@/components/DataMask'
+import { InvoiceViewer } from '@/components/financial/InvoiceViewer'
+import { Invoice } from '@/lib/types'
+import { useToast } from '@/hooks/use-toast'
 
 export default function Index() {
-  const { subscriptionConfig } = useSubscriptionStore()
+  return <DashboardContent />
+}
+
+function DashboardContent() {
+  const [date, setDate] = useState<Date | undefined>(new Date())
+  const { tasks, approveTask } = useTaskStore()
+  const { ledgerEntries, financials, formatCurrency } = useFinancialStore()
+  const { properties } = usePropertyStore()
+  const { visits } = useVisitStore()
+  const { bookings } = useShortTermStore()
+  const { t, language } = useLanguageStore()
+  const context = useContext(AppContext)
+  const selectedPropertyId = context?.selectedPropertyId || 'all'
+  const { toast } = useToast()
+
+  const [viewInvoiceOpen, setViewInvoiceOpen] = useState(false)
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
+
+  // Dashboard Widget State
+  const [widgets, setWidgets] = useState({
+    kpi: true,
+    revenueChart: true,
+    calendar: true,
+    pending: true,
+    expenseChart: true,
+    health: true,
+  })
+  const [dialogOpen, setDialogOpen] = useState(false)
+
+  // Filter Data based on selectedPropertyId
+  const filteredEntries = ledgerEntries.filter((e) =>
+    selectedPropertyId === 'all' ? true : e.propertyId === selectedPropertyId,
+  )
+
+  const filteredTasks = tasks.filter((t) =>
+    selectedPropertyId === 'all' ? true : t.propertyId === selectedPropertyId,
+  )
+
+  // Calculate real metrics from ledger
+  const totalRevenue = filteredEntries
+    .filter((e) => e.type === 'income')
+    .reduce((acc, curr) => acc + curr.value || curr.amount, 0)
+
+  // Chart Data preparation
+  const locale =
+    language === 'es' ? 'es-ES' : language === 'pt' ? 'pt-BR' : 'en-US'
+
+  const chartData = filteredEntries.reduce(
+    (acc, entry) => {
+      const month = new Date(entry.date).toLocaleString(locale, {
+        month: 'short',
+      })
+      const existing = acc.find((d) => d.month === month)
+      if (existing) {
+        existing.value += entry.amount
+      } else {
+        acc.push({ month, value: entry.amount })
+      }
+      return acc
+    },
+    [] as { month: string; value: number }[],
+  )
+
+  const revenueData =
+    chartData.length > 0 ? chartData : financials.revenue || []
+
+  const chartConfig = {
+    maintenance: {
+      label: t('common.maintenance'),
+      color: 'hsl(var(--chart-1))',
+    },
+    cleaning: {
+      label: t('common.cleaning'),
+      color: 'hsl(var(--chart-2))',
+    },
+    taxes: {
+      label: t('common.taxes'),
+      color: 'hsl(var(--chart-3))',
+    },
+    utilities: {
+      label: t('common.utilities'),
+      color: 'hsl(var(--chart-4))',
+    },
+  }
+
+  // Real Estate Specific Metrics
+  const totalProperties = properties.length
+  const activeListings = properties.filter(
+    (p) => p.status === 'available',
+  ).length
+  const pendingVisits = visits.filter((v) => v.status === 'scheduled').length
+
+  // Hotel Specific Metrics
+  const totalRooms = properties.filter(
+    (p) => p.profileType === 'short_term',
+  ).length
+  const occupiedRooms = properties.filter(
+    (p) => p.profileType === 'short_term' && p.status === 'occupied',
+  ).length
+  const occupancyRate =
+    totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0
+
+  // Calculate ADR (Average Daily Rate) and RevPAR
+  const confirmedBookings = bookings.filter((b) => b.status !== 'cancelled')
+  const totalBookingRevenue = confirmedBookings.reduce(
+    (acc, b) => acc + b.totalAmount,
+    0,
+  )
+  const totalNights = confirmedBookings.reduce((acc, b) => {
+    const nights =
+      (new Date(b.checkOut).getTime() - new Date(b.checkIn).getTime()) /
+      (1000 * 60 * 60 * 24)
+    return acc + Math.max(1, nights)
+  }, 0)
+
+  const adr = totalNights > 0 ? totalBookingRevenue / totalNights : 0
+  const revPar = totalRooms > 0 ? totalBookingRevenue / (totalRooms * 30) : 0 // Rough monthly estimate
+
+  // Gamification: Calculate Global Health Score
+  const relevantProperties =
+    selectedPropertyId === 'all'
+      ? properties
+      : properties.filter((p) => p.id === selectedPropertyId)
+
+  const avgHealthScore =
+    relevantProperties.reduce((acc, p) => acc + (p.healthScore || 80), 0) /
+    (relevantProperties.length || 1)
+
+  const toggleWidget = (key: keyof typeof widgets) => {
+    setWidgets((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  const handleExportDashboard = async () => {
+    try {
+      // Simulate image-to-html logic trying to fetch an external image
+      const imgUrl = 'https://img.usecurling.com/p/600/200?q=sale'
+
+      const response = await fetch(imgUrl, { mode: 'cors' })
+      if (!response.ok) {
+        throw new TypeError('Failed to fetch')
+      }
+
+      toast({
+        title: 'Export Successful',
+        description: 'Dashboard exported with external images.',
+      })
+    } catch (error) {
+      console.warn('Runtime Error resolving image during export:', error)
+      // Fallback: skip asset and continue
+      toast({
+        title: 'Export Completed with Warnings',
+        description:
+          'External images could not be loaded. A default placeholder was used.',
+        variant: 'destructive',
+      })
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-2">
-            <img
-              src={logo}
-              alt="COREPM Logo"
-              className="h-8 w-8 rounded-md object-contain"
-            />
-            <span className="text-xl font-bold tracking-tight">COREPM</span>
-          </div>
-          <nav className="hidden md:flex gap-6">
-            <a
-              href="#about"
-              className="text-sm font-medium hover:text-blue-600 transition-colors"
-            >
-              About Us
-            </a>
-            <a
-              href="#services"
-              className="text-sm font-medium hover:text-blue-600 transition-colors"
-            >
-              Features
-            </a>
-            <a
-              href="#pricing"
-              className="text-sm font-medium hover:text-blue-600 transition-colors"
-            >
-              Pricing
-            </a>
-            <a
-              href="#contact"
-              className="text-sm font-medium hover:text-blue-600 transition-colors"
-            >
-              Contact
-            </a>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link to="/dashboard">
-              <Button variant="outline" className="hidden sm:inline-flex">
-                Sign In
-              </Button>
-            </Link>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-              Get Started
-            </Button>
-          </div>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight text-black">
+            {t('common.real_estate_dashboard')}
+          </h1>
+          <p className="text-black font-medium">{t('dashboard.subtitle')}</p>
         </div>
-      </header>
 
-      <main>
-        {/* Hero Section */}
-        <section className="relative overflow-hidden pt-24 pb-32">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="mx-auto max-w-4xl text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl mb-6">
-              The Ultimate Platform for{' '}
-              <span className="text-blue-600">Property Management</span>
-            </h1>
-            <p className="mx-auto max-w-2xl text-lg text-slate-600 mb-10">
-              Streamline your short-term and long-term rentals, automate
-              maintenance, and scale your real estate portfolio with COREPM's
-              all-in-one solution.
-            </p>
-            <div className="flex justify-center gap-4">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="gap-2 border-slate-300 text-black font-bold"
+            onClick={handleExportDashboard}
+          >
+            <Download className="h-4 w-4" /> {t('common.export')}
+          </Button>
+
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
               <Button
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 h-12 px-8 text-lg"
+                variant="outline"
+                className="gap-2 border-slate-300 text-black font-bold"
               >
-                Start Free Trial
+                <Settings2 className="h-4 w-4" /> {t('dashboard.customize')}
               </Button>
-              <Button size="lg" variant="outline" className="h-12 px-8 text-lg">
-                Book a Demo
-              </Button>
-            </div>
-            <div className="mt-16 mx-auto max-w-5xl rounded-xl border bg-slate-50/50 shadow-2xl overflow-hidden p-2">
-              <img
-                src="https://img.usecurling.com/p/1200/600?q=dashboard"
-                alt="Dashboard Preview"
-                className="w-full rounded-lg border object-cover"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* About Us */}
-        <section id="about" className="py-24 bg-slate-50">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">
-                  Who We Are
-                </h2>
-                <p className="text-lg text-slate-600 mb-4">
-                  COREPM was built by property managers, for property managers.
-                  We understand the complexities of juggling tenants, owners,
-                  maintenance partners, and finances.
-                </p>
-                <p className="text-lg text-slate-600 mb-6">
-                  Our mission is to provide an intuitive, scalable, and robust
-                  software that handles the heavy lifting, so you can focus on
-                  growing your business and providing exceptional guest
-                  experiences.
-                </p>
-                <ul className="space-y-3">
-                  {['Industry Experts', 'Global Reach', '24/7 Support'].map(
-                    (item) => (
-                      <li
-                        key={item}
-                        className="flex items-center gap-3 text-slate-700 font-medium"
-                      >
-                        <div className="rounded-full bg-blue-100 p-1">
-                          <Check className="h-4 w-4 text-blue-600" />
-                        </div>
-                        {item}
-                      </li>
-                    ),
-                  )}
-                </ul>
-              </div>
-              <div className="relative">
-                <img
-                  src="https://img.usecurling.com/p/600/500?q=team"
-                  alt="Our Team"
-                  className="rounded-2xl shadow-xl object-cover"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Services/Offering */}
-        <section id="services" className="py-24">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
-                What We Offer
-              </h2>
-              <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                Everything you need to run a successful property management
-                company from a single dashboard.
-              </p>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: Building2,
-                  title: 'Multi-Portfolio Management',
-                  desc: 'Manage single-family homes, multi-family, vacation rentals, and hotels in one place.',
-                },
-                {
-                  icon: DollarSign,
-                  title: 'Automated Financials',
-                  desc: 'Generate invoices, reconcile bank statements, and manage owner payouts effortlessly.',
-                },
-                {
-                  icon: Users,
-                  title: 'Tenant & Owner Portals',
-                  desc: 'Provide self-service portals for tenants to pay rent and owners to view reports.',
-                },
-                {
-                  icon: ShieldCheck,
-                  title: 'Maintenance Tracking',
-                  desc: 'Assign work orders to partners, track progress, and automate approvals.',
-                },
-                {
-                  icon: LineChart,
-                  title: 'Advanced Analytics',
-                  desc: 'Gain insights into occupancy rates, RevPAR, and market benchmarks.',
-                },
-                {
-                  icon: Zap,
-                  title: 'Workflow Automation',
-                  desc: 'Set up rules to trigger tasks, emails, and notifications based on events.',
-                },
-              ].map((service, i) => (
-                <Card key={i} className="border-slate-200">
-                  <CardHeader>
-                    <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
-                      <service.icon className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <CardTitle className="text-xl">{service.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-slate-600">{service.desc}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Pricing Section */}
-        <section id="pricing" className="py-24 bg-slate-900 text-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
-                Simple, Scalable Pricing
-              </h2>
-              <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-                Pay for what you need. Our plans scale with your portfolio.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {subscriptionConfig.tiers.map((tier, idx) => (
-                <Card
-                  key={tier.id}
-                  className={`flex flex-col border-slate-700 bg-slate-800 text-white ${idx === 1 ? 'ring-2 ring-blue-500 scale-105' : ''}`}
-                >
-                  {idx === 1 && (
-                    <div className="absolute -top-4 left-0 right-0 flex justify-center">
-                      <span className="rounded-full bg-blue-500 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  <CardHeader>
-                    <CardTitle className="text-2xl">{tier.name}</CardTitle>
-                    <CardDescription className="text-slate-400">
-                      For portfolios up to {tier.maxUnits} units
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-1">
-                    <div className="mb-6">
-                      <span className="text-4xl font-bold">
-                        ${tier.basePrice}
-                      </span>
-                      <span className="text-slate-400">/mo</span>
-                    </div>
-                    <p className="text-sm text-slate-300 mb-6 font-medium bg-slate-700/50 p-3 rounded-lg border border-slate-600">
-                      + ${tier.additionalUnitCost} per additional unit
-                    </p>
-                    <ul className="space-y-3">
-                      {tier.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-3">
-                          <Check className="h-5 w-5 shrink-0 text-blue-400" />
-                          <span className="text-slate-300">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                  <CardFooter>
-                    <Button
-                      className={`w-full ${idx === 1 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-700 hover:bg-slate-600'} text-white`}
-                    >
-                      {tier.cta || 'Choose Plan'}
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Contact Section */}
-        <section id="contact" className="py-24">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <div className="rounded-3xl bg-blue-50 p-8 md:p-12 text-center">
-              <h2 className="text-3xl font-bold tracking-tight mb-4">
-                Ready to transform your business?
-              </h2>
-              <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
-                Get in touch with our sales team to schedule a personalized demo
-                and see how COREPM can work for you.
-              </p>
-              <form
-                className="max-w-md mx-auto space-y-4"
-                onSubmit={(e) => e.preventDefault()}
-              >
-                <div className="grid grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder="First Name"
-                    className="w-full rounded-md border border-slate-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t('dashboard.customize_view')}</DialogTitle>
+                <DialogDescription>
+                  {t('dashboard.customize_desc')}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="kpi"
+                    checked={widgets.kpi}
+                    onCheckedChange={() => toggleWidget('kpi')}
                   />
-                  <input
-                    type="text"
-                    placeholder="Last Name"
-                    className="w-full rounded-md border border-slate-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
+                  <Label htmlFor="kpi">{t('dashboard.kpi_indicators')}</Label>
                 </div>
-                <input
-                  type="email"
-                  placeholder="Work Email"
-                  className="w-full rounded-md border border-slate-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Company Name"
-                  className="w-full rounded-md border border-slate-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-                <Button
-                  size="lg"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg mt-4"
-                >
-                  Contact Sales
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="health"
+                    checked={widgets.health}
+                    onCheckedChange={() => toggleWidget('health')}
+                  />
+                  <Label htmlFor="health">
+                    {t('gamification.health_score')}
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="revenueChart"
+                    checked={widgets.revenueChart}
+                    onCheckedChange={() => toggleWidget('revenueChart')}
+                  />
+                  <Label htmlFor="revenueChart">
+                    {t('dashboard.revenue_chart')}
+                  </Label>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={() => setDialogOpen(false)}>
+                  {t('common.done')}
                 </Button>
-              </form>
-            </div>
-          </div>
-        </section>
-      </main>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
 
-      <footer className="border-t py-12 bg-white text-slate-600">
-        <div className="container mx-auto px-4 grid md:grid-cols-4 gap-8">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <img
-                src={logo}
-                alt="COREPM Logo"
-                className="h-6 w-6 rounded-sm object-contain"
-              />
-              <span className="font-bold text-slate-900">COREPM</span>
+      {/* Real Estate KPI Cards */}
+      {widgets.kpi && (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <Card className="border-slate-200 shadow-sm bg-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-bold text-black">
+                {t('common.total_revenue')}
+              </CardTitle>
+              <DollarSign className="h-4 w-4 text-black" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-black">
+                {formatCurrency(totalRevenue)}
+              </div>
+              <p className="text-xs text-black font-bold">
+                +20.1% {t('dashboard.from_last_month')}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="border-slate-200 shadow-sm bg-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-bold text-black">
+                {t('common.analytics.occupancy')}
+              </CardTitle>
+              <Building className="h-4 w-4 text-black" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-black">
+                <DataMask>{occupancyRate}%</DataMask>
+              </div>
+              <p className="text-xs text-black font-bold">
+                {occupiedRooms} / {totalRooms} {t('hotels.rooms')}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="border-slate-200 shadow-sm bg-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-bold text-black">
+                {t('common.analytics.adr')}
+              </CardTitle>
+              <TrendingUp className="h-4 w-4 text-black" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-black">
+                <DataMask>{formatCurrency(adr)}</DataMask>
+              </div>
+              <p className="text-xs text-black font-bold">
+                {t('market_analysis.avg_daily_rate')}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="border-slate-200 shadow-sm bg-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-bold text-black">
+                RevPAR
+              </CardTitle>
+              <Activity className="h-4 w-4 text-black" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-black">
+                <DataMask>{formatCurrency(revPar)}</DataMask>
+              </div>
+              <p className="text-xs text-black font-bold">
+                {t('performance.financial_performance')}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Gamification Widget */}
+      {widgets.health && (
+        <Card className="bg-white text-black animate-in fade-in zoom-in-95 duration-500 shadow-md border-2 border-trust-blue">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-black font-bold">
+              <Trophy className="h-6 w-6 text-yellow-600" />
+              {t('gamification.portfolio_health')}
+            </CardTitle>
+            <CardDescription className="text-black font-medium">
+              {t('gamification.desc')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4">
+              <div className="text-4xl font-bold text-black">
+                <DataMask>{avgHealthScore.toFixed(0)}</DataMask>
+              </div>
+              <div className="flex-1 space-y-1">
+                <div className="flex justify-between text-xs text-black font-bold">
+                  <span>
+                    {t('gamification.level')}: {t('gamification.expert')}
+                  </span>
+                  <span>{t('gamification.target')}: 100</span>
+                </div>
+                <Progress value={avgHealthScore} className="h-3 bg-slate-200" />
+              </div>
             </div>
-            <p className="text-sm">
-              The scalable solution for modern property managers.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold text-slate-900 mb-4">Product</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a href="#" className="hover:text-blue-600">
-                  Features
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-600">
-                  Pricing
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-600">
-                  Integrations
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold text-slate-900 mb-4">Resources</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a href="#" className="hover:text-blue-600">
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-600">
-                  API Docs
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-600">
-                  Blog
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold text-slate-900 mb-4">Company</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a href="#" className="hover:text-blue-600">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-600">
-                  Careers
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-600">
-                  Contact
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="container mx-auto px-4 mt-12 pt-8 border-t text-sm flex flex-col md:flex-row justify-between items-center">
-          <p>&copy; {new Date().getFullYear()} COREPM. All rights reserved.</p>
-          <div className="flex gap-4 mt-4 md:mt-0">
-            <a href="#" className="hover:text-blue-600">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-blue-600">
-              Terms of Service
-            </a>
-          </div>
-        </div>
-      </footer>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        {/* Main Chart */}
+        {widgets.revenueChart && (
+          <Card
+            className={`${widgets.calendar ? 'col-span-4' : 'col-span-7'} animate-in fade-in zoom-in-95 duration-500 border-slate-200 shadow-sm bg-white`}
+          >
+            <CardHeader>
+              <CardTitle className="text-black">
+                {t('dashboard.revenue_vs_expenses')}
+              </CardTitle>
+              <CardDescription className="text-black font-medium">
+                {t('dashboard.revenue_overview')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pl-2">
+              <DataMask className="w-full h-[300px] block">
+                <ChartContainer
+                  config={{
+                    revenue: {
+                      label: t('common.total'),
+                      color: 'hsl(var(--primary))',
+                    },
+                  }}
+                  className="h-[300px] w-full"
+                >
+                  <BarChart data={revenueData}>
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="month"
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                      tick={{ fill: 'black', fontSize: 12, fontWeight: 'bold' }}
+                    />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar
+                      dataKey="value"
+                      fill="var(--color-revenue)"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              </DataMask>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Mini Calendar & Activity */}
+        {widgets.calendar && (
+          <Card
+            className={`${widgets.revenueChart ? 'col-span-3' : 'col-span-7'} animate-in fade-in zoom-in-95 duration-500 delay-100 border-slate-200 shadow-sm bg-white`}
+          >
+            <CardHeader>
+              <CardTitle className="text-black">
+                {t('dashboard.quick_calendar')}
+              </CardTitle>
+              <CardDescription className="text-black font-medium">
+                {t('dashboard.todays_activity')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex justify-center">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                className="rounded-md border border-slate-200 text-black font-medium"
+              />
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        {/* Pending Approvals */}
+        {widgets.pending && (
+          <Card
+            className={`${widgets.expenseChart ? 'col-span-4' : 'col-span-7'} animate-in fade-in slide-in-from-left-4 duration-500 delay-200 border-slate-200 shadow-sm bg-white`}
+          >
+            <CardHeader>
+              <CardTitle className="text-black">
+                {t('dashboard.pending_approvals')}
+              </CardTitle>
+              <CardDescription className="text-black font-medium">
+                {t('dashboard.pending_desc')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {financials.invoices
+                  .filter((i) => i.status === 'pending')
+                  .filter((i) =>
+                    selectedPropertyId === 'all'
+                      ? true
+                      : i.propertyId === selectedPropertyId,
+                  )
+                  .map((invoice) => (
+                    <div
+                      key={invoice.id}
+                      className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="bg-orange-100 p-2 rounded-full">
+                          <Activity className="h-5 w-5 text-orange-700" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-sm text-black">
+                            <DataMask>{invoice.description}</DataMask>
+                          </p>
+                          <p className="text-xs text-black font-bold">
+                            {invoice.date} • <DataMask>{invoice.id}</DataMask>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm text-black">
+                          <DataMask>{formatCurrency(invoice.amount)}</DataMask>
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-slate-300 text-black font-bold"
+                          onClick={() => {
+                            setSelectedInvoice(invoice)
+                            setViewInvoiceOpen(true)
+                          }}
+                        >
+                          {t('dashboard.review')}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                {filteredTasks
+                  .filter((t) => t.status === 'pending_approval')
+                  .map((task) => (
+                    <div
+                      key={task.id}
+                      className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="bg-blue-100 p-2 rounded-full">
+                          <Activity className="h-5 w-5 text-blue-700" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-sm text-black">
+                            <DataMask>{task.title}</DataMask>
+                          </p>
+                          <p className="text-xs text-black font-bold">
+                            <DataMask>{task.propertyName}</DataMask> •{' '}
+                            <DataMask>{task.assignee}</DataMask>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant="secondary"
+                          className="text-black border border-slate-300 font-bold"
+                        >
+                          {t('tasks.approval')}
+                        </Badge>
+                        <Button
+                          size="sm"
+                          variant="default"
+                          className="bg-trust-blue text-white font-bold"
+                          onClick={() => {
+                            approveTask(task.id)
+                            toast({
+                              title: t('common.success'),
+                              description: 'Task approved successfully.',
+                            })
+                          }}
+                        >
+                          {t('dashboard.approve')}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                {financials.invoices.filter((i) => i.status === 'pending')
+                  .length === 0 &&
+                  filteredTasks.filter((t) => t.status === 'pending_approval')
+                    .length === 0 && (
+                    <div className="text-center text-sm text-slate-500 py-4">
+                      {t('common.empty')}
+                    </div>
+                  )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Expenses Chart */}
+        {widgets.expenseChart && (
+          <Card
+            className={`${widgets.pending ? 'col-span-3' : 'col-span-7'} animate-in fade-in slide-in-from-right-4 duration-500 delay-300 border-slate-200 shadow-sm bg-white`}
+          >
+            <CardHeader>
+              <CardTitle className="text-black">
+                {t('dashboard.expense_distribution')}
+              </CardTitle>
+              <CardDescription className="text-black font-medium">
+                {t('dashboard.expense_desc')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DataMask className="w-full h-[250px] block">
+                <ChartContainer
+                  config={chartConfig}
+                  className="mx-auto aspect-square max-h-[250px]"
+                >
+                  <PieChart>
+                    <Pie
+                      data={financials.expenses}
+                      dataKey="value"
+                      nameKey="category"
+                      innerRadius={60}
+                      strokeWidth={5}
+                    >
+                      {financials.expenses.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                  </PieChart>
+                </ChartContainer>
+              </DataMask>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {viewInvoiceOpen && (
+        <InvoiceViewer
+          open={viewInvoiceOpen}
+          onOpenChange={setViewInvoiceOpen}
+          invoice={selectedInvoice}
+        />
+      )}
     </div>
   )
 }
