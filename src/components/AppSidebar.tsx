@@ -12,6 +12,9 @@ import {
   SidebarMenuItem,
   SidebarRail,
   useSidebar,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from '@/components/ui/sidebar'
 import {
   Home,
@@ -44,6 +47,7 @@ import {
   ShoppingBag,
   CreditCard,
   Gift,
+  ChevronRight,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -51,19 +55,24 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
 import useMessageStore from '@/stores/useMessageStore'
 import usePublicityStore from '@/stores/usePublicityStore'
-import { hasPermission } from '@/lib/permissions'
+import { hasPermissionSync } from '@/lib/permissions'
 import { User, Resource } from '@/lib/types'
 import logo from '@/assets/logo-estilizado.jpg'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { DataMask } from '@/components/DataMask'
 import { useAdRotation } from '@/hooks/useAdRotation'
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from '@/components/ui/collapsible'
 
 export function AppSidebar() {
   const location = useLocation()
   const pathname = location.pathname
   const { t } = useLanguageStore()
-  const { currentUser, hasPermissionSync } = useAuthStore()
+  const { currentUser, hasPermissionSync: authHasPermission } = useAuthStore()
   const { messages } = useMessageStore()
   const { advertisements } = usePublicityStore()
   const { setOpenMobile, isMobile } = useSidebar()
@@ -88,151 +97,115 @@ export function AppSidebar() {
 
   const allMenuItems = [
     {
-      title: t('sidebar.dashboard'),
+      title: t('sidebar.dashboard') || 'Dashboard',
       url: '/',
       icon: Home,
       resource: 'dashboard',
     },
     {
-      title: t('sidebar.performance'),
+      title: t('sidebar.performance') || 'Performance',
       url: '/performance',
       icon: Activity,
       resource: 'performance',
     },
     {
-      title: t('sidebar.units'),
-      url: '/properties',
-      icon: Building,
-      resource: 'properties',
-    },
-    {
-      title: t('hotels.title'),
-      url: '/hotels',
-      icon: Hotel,
-      resource: 'hotels',
-    },
-    {
-      title: t('common.short_term'),
+      title: t('common.short_term') || 'Short Term',
       url: '/short-term',
       icon: BriefcaseBusiness,
       resource: 'short_term',
     },
     {
-      title: t('sidebar.guest_services'),
+      title: t('sidebar.guest_services') || 'Guest Services',
       url: '/guest-services',
       icon: ShoppingBag,
       resource: 'guest_services',
     },
     {
-      title: t('sidebar.pos'),
+      title: t('sidebar.pos') || 'POS',
       url: '/pos',
       icon: CreditCard,
       resource: 'pos',
     },
     {
-      title: t('sidebar.marketing'),
+      title: t('sidebar.marketing') || 'Marketing',
       url: '/marketing',
       icon: Gift,
       resource: 'marketing',
     },
     {
-      title: t('common.renewals'),
+      title: t('common.renewals') || 'Renovações',
       url: '/renewals',
       icon: RefreshCw,
       resource: 'renewals',
     },
     {
-      title: t('market_analysis.title'),
+      title: t('market_analysis.title') || 'Análise de Mercado',
       url: '/market-analysis',
       icon: TrendingUp,
       resource: 'market_analysis',
     },
     {
-      title: t('common.advanced_analytics'),
-      url: '/admin/analytics',
-      icon: BarChart2,
-      resource: 'analytics',
-    },
-    {
-      title: t('sidebar.reports'),
+      title: t('sidebar.reports') || 'Relatórios',
       url: '/reports',
       icon: PieChart,
       resource: 'reports',
     },
     {
-      title: t('sidebar.condominiums'),
-      url: '/condominiums',
-      icon: Building2,
-      resource: 'condominiums',
-    },
-    {
-      title: t('sidebar.tenants'),
+      title: t('sidebar.tenants') || 'Inquilinos',
       url: '/tenants',
       icon: Users,
       resource: 'tenants',
     },
     {
-      title: t('sidebar.owners'),
+      title: t('sidebar.owners') || 'Proprietários',
       url: '/owners',
       icon: UserCheck,
       resource: 'owners',
     },
     {
-      title: t('common.partners'),
+      title: t('common.partners') || 'Parceiros',
       url: '/partners',
       icon: Briefcase,
       resource: 'partners',
     },
     {
-      title: t('common.service_pricing'),
-      url: '/service-pricing',
-      icon: Tags,
-      resource: 'settings',
-    },
-    {
-      title: t('common.calendar'),
+      title: t('common.calendar') || 'Calendário',
       url: '/calendar',
       icon: Calendar,
       resource: 'calendar',
     },
     {
-      title: t('common.visits'),
+      title: t('common.visits') || 'Visitas',
       url: '/visits',
       icon: CalendarDays,
       resource: 'visits',
     },
     {
-      title: t('common.tasks'),
+      title: t('common.tasks') || 'Tarefas',
       url: '/tasks',
       icon: ClipboardList,
       resource: 'tasks',
     },
     {
-      title: t('common.workflows'),
+      title: t('common.workflows') || 'Workflows',
       url: '/workflows',
       icon: Workflow,
       resource: 'workflows',
     },
     {
-      title: t('common.automation_rules'),
-      url: '/admin/automation',
-      icon: Zap,
-      resource: 'automation',
-    },
-    {
-      title: t('sidebar.financial'),
+      title: t('sidebar.financial') || 'Financeiro',
       url: '/financial',
       icon: DollarSign,
       resource: 'financial',
     },
     {
-      title: t('common.invoices'),
+      title: t('common.invoices') || 'Faturas',
       url: '/invoices',
       icon: FileText,
       resource: 'financial',
     },
     {
-      title: t('common.messages'),
+      title: t('common.messages') || 'Mensagens',
       url: '/messages',
       icon: MessageSquare,
       resource: 'messages',
@@ -241,7 +214,7 @@ export function AppSidebar() {
   ]
 
   const visibleMenuItems = allMenuItems.filter((item) =>
-    hasPermissionSync(currentUser as User, item.resource as Resource, 'view'),
+    authHasPermission(currentUser as User, item.resource as Resource, 'view'),
   )
 
   const isActive = (url: string) => {
@@ -250,27 +223,32 @@ export function AppSidebar() {
     return false
   }
 
-  const showMigration = hasPermissionSync(
+  const showMigration = authHasPermission(
     currentUser as User,
     'migration',
     'view',
   )
-  const showPublicity = hasPermissionSync(
+  const showPublicity = authHasPermission(
     currentUser as User,
     'publicity',
     'view',
   )
-  const showUsers = hasPermissionSync(currentUser as User, 'users', 'view')
-  const showSettings = hasPermissionSync(
+  const showUsers = authHasPermission(currentUser as User, 'users', 'view')
+  const showSettings = authHasPermission(
     currentUser as User,
     'settings',
     'view',
   )
 
-  const isTenant = currentUser.role === 'tenant'
-  const isOwner = currentUser.role === 'property_owner'
+  const hasPortfolioAccess =
+    authHasPermission(currentUser as User, 'properties', 'view') ||
+    authHasPermission(currentUser as User, 'hotels', 'view') ||
+    authHasPermission(currentUser as User, 'condominiums', 'view')
+
+  const isTenant = currentUser?.role === 'tenant'
+  const isOwner = currentUser?.role === 'property_owner'
   const isPartner =
-    currentUser.role === 'partner' || currentUser.role === 'partner_employee'
+    currentUser?.role === 'partner' || currentUser?.role === 'partner_employee'
 
   return (
     <Sidebar
@@ -359,35 +337,148 @@ export function AppSidebar() {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {visibleMenuItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive(item.url)}
-                      tooltip={item.title}
-                      className="text-black font-medium hover:bg-slate-100"
-                    >
-                      <Link
-                        to={item.url}
-                        onClick={handleLinkClick}
-                        className="flex justify-between items-center w-full"
+                {visibleMenuItems
+                  .filter((item) => item.url === '/')
+                  .map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive(item.url)}
+                        tooltip={item.title}
+                        className="text-black font-medium hover:bg-slate-100"
                       >
-                        <div className="flex items-center gap-2">
-                          <item.icon className="text-black" />
-                          <span>{item.title}</span>
-                        </div>
-                        {item.badge !== undefined && (
-                          <Badge
-                            variant="destructive"
-                            className="h-5 min-w-5 px-1 flex items-center justify-center text-[10px]"
-                          >
-                            <DataMask>{item.badge}</DataMask>
-                          </Badge>
-                        )}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                        <Link
+                          to={item.url}
+                          onClick={handleLinkClick}
+                          className="flex justify-between items-center w-full"
+                        >
+                          <div className="flex items-center gap-2">
+                            <item.icon className="text-black" />
+                            <span>{item.title}</span>
+                          </div>
+                          {item.badge !== undefined && (
+                            <Badge
+                              variant="destructive"
+                              className="h-5 min-w-5 px-1 flex items-center justify-center text-[10px]"
+                            >
+                              <DataMask>{item.badge}</DataMask>
+                            </Badge>
+                          )}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+
+                {hasPortfolioAccess && (
+                  <Collapsible defaultOpen className="group/collapsible">
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton
+                          tooltip="Portfólio"
+                          className="text-black font-medium hover:bg-slate-100"
+                        >
+                          <Building2 className="text-black" />
+                          <span>{t('sidebar.portfolio') || 'Portfólio'}</span>
+                          <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90 text-black" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          {authHasPermission(
+                            currentUser as User,
+                            'properties',
+                            'view',
+                          ) && (
+                            <SidebarMenuSubItem>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={isActive('/properties')}
+                              >
+                                <Link
+                                  to="/properties"
+                                  onClick={handleLinkClick}
+                                >
+                                  <span>
+                                    {t('sidebar.units') || 'Propriedades'}
+                                  </span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          )}
+                          {authHasPermission(
+                            currentUser as User,
+                            'hotels',
+                            'view',
+                          ) && (
+                            <SidebarMenuSubItem>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={isActive('/hotels')}
+                              >
+                                <Link to="/hotels" onClick={handleLinkClick}>
+                                  <span>{t('hotels.title') || 'Hotéis'}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          )}
+                          {authHasPermission(
+                            currentUser as User,
+                            'condominiums',
+                            'view',
+                          ) && (
+                            <SidebarMenuSubItem>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={isActive('/condominiums')}
+                              >
+                                <Link
+                                  to="/condominiums"
+                                  onClick={handleLinkClick}
+                                >
+                                  <span>
+                                    {t('sidebar.condominiums') || 'Condomínios'}
+                                  </span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          )}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
+                )}
+
+                {visibleMenuItems
+                  .filter((item) => item.url !== '/')
+                  .map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive(item.url)}
+                        tooltip={item.title}
+                        className="text-black font-medium hover:bg-slate-100"
+                      >
+                        <Link
+                          to={item.url}
+                          onClick={handleLinkClick}
+                          className="flex justify-between items-center w-full"
+                        >
+                          <div className="flex items-center gap-2">
+                            <item.icon className="text-black" />
+                            <span>{item.title}</span>
+                          </div>
+                          {item.badge !== undefined && (
+                            <Badge
+                              variant="destructive"
+                              className="h-5 min-w-5 px-1 flex items-center justify-center text-[10px]"
+                            >
+                              <DataMask>{item.badge}</DataMask>
+                            </Badge>
+                          )}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -436,12 +527,12 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive('/users')}
-                    tooltip={t('sidebar.users')}
+                    tooltip={t('sidebar.users') || 'Usuários'}
                     className="text-black font-medium hover:bg-slate-100"
                   >
                     <Link to="/users" onClick={handleLinkClick}>
                       <Users className="text-black" />
-                      <span>{t('sidebar.users')}</span>
+                      <span>{t('sidebar.users') || 'Usuários'}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -451,12 +542,12 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive('/settings')}
-                    tooltip={t('sidebar.settings')}
+                    tooltip={t('sidebar.settings') || 'Configurações'}
                     className="text-black font-medium hover:bg-slate-100"
                   >
                     <Link to="/settings" onClick={handleLinkClick}>
                       <Settings className="text-black" />
-                      <span>{t('sidebar.settings')}</span>
+                      <span>{t('sidebar.settings') || 'Configurações'}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -543,3 +634,4 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
+

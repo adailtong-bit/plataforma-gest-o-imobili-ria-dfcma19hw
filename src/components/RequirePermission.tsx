@@ -71,7 +71,10 @@ export function RequirePermission({
 
   const [hasAlerted, setHasAlerted] = useState(false)
 
-  const allowed = hasPermissionSync(currentUser as User, resource, action)
+  // Safely evaluate permissions ensuring currentUser exists to prevent unwanted UI hiding
+  const allowed = currentUser
+    ? hasPermissionSync(currentUser as User, resource, action)
+    : false
 
   useEffect(() => {
     if (!isAuthLoading && isAuthenticated && !allowed && !hasAlerted) {
@@ -156,3 +159,4 @@ export function RequirePermission({
 
   return <PermissionErrorBoundary>{children}</PermissionErrorBoundary>
 }
+
