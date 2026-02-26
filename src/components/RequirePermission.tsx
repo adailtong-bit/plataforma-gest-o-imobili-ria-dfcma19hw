@@ -4,9 +4,8 @@ import { Resource, Action, User } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import { useEffect, useState, Component, ErrorInfo, ReactNode } from 'react'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { ShieldX, AlertTriangle } from 'lucide-react'
+import { ShieldX, AlertTriangle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 
 class PermissionErrorBoundary extends Component<
   { children: ReactNode },
@@ -37,12 +36,12 @@ class PermissionErrorBoundary extends Component<
             Display Error
           </h1>
           <p className="text-muted-foreground max-w-md mb-6">
-            A component failed to render. We have applied a fallback so you can
-            continue using the platform.
+            A component failed to render correctly. We have applied a fallback
+            so you can continue using the platform.
           </p>
           <Button
             onClick={() => window.location.reload()}
-            className="bg-trust-blue"
+            className="bg-primary text-primary-foreground"
           >
             Reload Page
           </Button>
@@ -64,7 +63,8 @@ export function RequirePermission({
   resource,
   action = 'view',
 }: RequirePermissionProps) {
-  const { currentUser, isAuthenticated, checkPermission } = useAuthStore()
+  const { currentUser, isAuthenticated, checkPermission, isAuthLoading } =
+    useAuthStore()
   const location = useLocation()
   const { toast } = useToast()
   const { t } = useLanguageStore()
@@ -78,6 +78,10 @@ export function RequirePermission({
     let timeoutId: NodeJS.Timeout
 
     const verifyAccess = async () => {
+      if (isAuthLoading) {
+        return
+      }
+
       setIsChecking(true)
       setHasTimeout(false)
 
@@ -94,7 +98,7 @@ export function RequirePermission({
           setHasTimeout(true)
           setIsChecking(false)
         }
-      }, 5000)
+      }, 8000)
 
       try {
         const allowed = await checkPermission(
@@ -108,6 +112,7 @@ export function RequirePermission({
           clearTimeout(timeoutId)
         }
       } catch (error) {
+        console.error('Permission check failed:', error)
         if (mounted) {
           setHasAccess(false)
           setIsChecking(false)
@@ -121,10 +126,23 @@ export function RequirePermission({
       mounted = false
       if (timeoutId) clearTimeout(timeoutId)
     }
-  }, [currentUser, isAuthenticated, resource, action, checkPermission])
+  }, [
+    currentUser,
+    isAuthenticated,
+    resource,
+    action,
+    checkPermission,
+    isAuthLoading,
+  ])
 
   useEffect(() => {
-    if (!isChecking && isAuthenticated && !hasAccess && !hasTimeout) {
+    if (
+      !isChecking &&
+      isAuthenticated &&
+      !hasAccess &&
+      !hasTimeout &&
+      !isAuthLoading
+    ) {
       toast({
         title: t('common.access_denied') || 'Access Denied',
         description:
@@ -133,30 +151,39 @@ export function RequirePermission({
         variant: 'destructive',
       })
     }
-  }, [hasAccess, isAuthenticated, isChecking, hasTimeout, toast, t])
+  }, [
+    hasAccess,
+    isAuthenticated,
+    isChecking,
+    hasTimeout,
+    isAuthLoading,
+    toast,
+    t,
+  ])
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isAuthLoading) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  if (isChecking) {
+  if (isChecking || isAuthLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4">
-        <Skeleton className="h-16 w-16 rounded-full" />
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-4 w-96" />
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500">
+        <Loader2 className="h-12 w-12 text-primary animate-spin" />
+        <h2 className="text-xl font-medium text-slate-700">
+          Verifying access...
+        </h2>
       </div>
     )
   }
 
   if (hasTimeout) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 animate-in fade-in duration-500">
         <div className="bg-orange-50 p-4 rounded-full mb-4">
           <AlertTriangle className="h-12 w-12 text-orange-600" />
         </div>
         <h1 className="text-2xl font-bold text-slate-900 mb-2">
-          Loading Error
+          Loading Timeout
         </h1>
         <p className="text-muted-foreground max-w-md mb-6">
           The permission verification request timed out. Please check your
@@ -164,7 +191,7 @@ export function RequirePermission({
         </p>
         <Button
           onClick={() => window.location.reload()}
-          className="bg-trust-blue"
+          className="bg-primary text-primary-foreground"
         >
           Reload Page
         </Button>
@@ -174,10 +201,10 @@ export function RequirePermission({
 
   if (!hasAccess) {
     if (
-      currentUser.role === 'tenant' ||
-      currentUser.role === 'property_owner' ||
-      currentUser.role === 'partner' ||
-      currentUser.role === 'partner_employee'
+      currentUser?.role === 'tenant' ||
+      currentUser?.role === 'property_owner' ||
+      currentUser?.role === 'partner' ||
+      currentUser?.role === 'partner_employee'
     ) {
       const portalPath =
         currentUser.role === 'property_owner'
@@ -193,7 +220,7 @@ export function RequirePermission({
     }
 
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 animate-in fade-in duration-500">
         <div className="bg-red-50 p-4 rounded-full mb-4">
           <ShieldX className="h-12 w-12 text-red-600" />
         </div>
@@ -209,7 +236,7 @@ export function RequirePermission({
             {t('common.back') || 'Go Back'}
           </Button>
           <Button
-            className="bg-trust-blue"
+            className="bg-primary text-primary-foreground"
             onClick={() => (window.location.href = '/')}
           >
             {t('common.return_home') || 'Return Home'}
@@ -217,7 +244,9 @@ export function RequirePermission({
         </div>
         <p className="text-xs text-muted-foreground mt-8">
           Resource: {resource} | Role:{' '}
-          {t(`roles.${currentUser.role}`) || currentUser.role}
+          {currentUser
+            ? t(`roles.${currentUser.role}`) || currentUser.role
+            : 'Unknown'}
         </p>
       </div>
     )

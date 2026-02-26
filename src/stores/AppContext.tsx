@@ -58,7 +58,6 @@ import {
   UserRole,
   Resource,
   Action,
-  SubscriptionConfig,
 } from '@/lib/types'
 import {
   properties as initialProperties,
@@ -108,62 +107,7 @@ import { isSameDay, parseISO } from 'date-fns'
 import { formatCurrency as formatCurrencyUtil } from '@/lib/utils'
 import { DEFAULT_PERMISSIONS_MATRIX } from '@/lib/permissions'
 
-const initialSubscriptionConfig: SubscriptionConfig = {
-  tiers: [
-    {
-      id: 'tier-1',
-      name: 'Starter',
-      basePrice: 29,
-      maxUnits: 10,
-      additionalUnitCost: 3,
-      region: 'global',
-      features: [
-        'Up to 10 units',
-        'Basic Support',
-        'Standard Reports',
-        'Guest Portal',
-      ],
-      cta: 'Start Free Trial',
-    },
-    {
-      id: 'tier-2',
-      name: 'Professional',
-      basePrice: 99,
-      maxUnits: 50,
-      additionalUnitCost: 2,
-      region: 'global',
-      features: [
-        'Up to 50 units',
-        'Priority Support',
-        'Advanced Analytics',
-        'Automation Rules',
-        'API Access',
-      ],
-      cta: 'Get Professional',
-    },
-    {
-      id: 'tier-3',
-      name: 'Enterprise',
-      basePrice: 299,
-      maxUnits: 200,
-      additionalUnitCost: 1.5,
-      region: 'global',
-      features: [
-        'Unlimited units',
-        'Dedicated Account Manager',
-        'Custom Integrations',
-        'White-labeling',
-        'SLA Guarantee',
-      ],
-      cta: 'Contact Sales',
-    },
-  ],
-  discounts: [],
-  pmOverrides: [],
-}
-
 interface AppContextType {
-  // Existing props
   properties: Property[]
   condominiums: Condominium[]
   hotels: Hotel[]
@@ -183,6 +127,7 @@ interface AppContextType {
   allUsers: (User | Owner | Partner | Tenant)[]
   users: User[]
   isAuthenticated: boolean
+  isAuthLoading: boolean
   paymentIntegrations: PaymentIntegration[]
   financialSettings: FinancialSettings
   bankStatements: BankStatement[]
@@ -200,7 +145,6 @@ interface AppContextType {
   visits: Visit[]
   nightAudits: NightAudit[]
 
-  // New props
   guestServices: GuestService[]
   posItems: PosItem[]
   posTransactions: PosTransaction[]
@@ -211,19 +155,15 @@ interface AppContextType {
   channelMappings: ChannelMapping[]
   marketingWorkflows: MarketingWorkflow[]
   emailTemplates: EmailTemplate[]
-  subscriptionConfig: SubscriptionConfig
 
-  // Currency
   currency: string
 
-  // Tour Props
   isTourOpen: boolean
   currentStepIndex: number
   tourSteps: TourStep[]
   tutorialModules: TutorialModule[]
   activeVideo: string | null
 
-  // Security & Permissions
   rolePermissions: Record<UserRole, Partial<Record<Resource, Action[]>>>
   updateRolePermissions: (
     role: UserRole,
@@ -237,7 +177,6 @@ interface AppContextType {
   ) => Promise<boolean>
   hasPermissionSync: (user: User, resource: Resource, action: Action) => boolean
 
-  // Methods
   setLanguage: (lang: Language) => void
   setSelectedPropertyId: (id: string) => void
   t: (key: string, params?: Record<string, string>) => string
@@ -331,7 +270,6 @@ interface AppContextType {
   deleteWorkflow: (id: string) => void
   runNightAudit: () => void
 
-  // New Methods
   addGuestService: (service: GuestService) => void
   updateGuestService: (service: GuestService) => void
   deleteGuestService: (id: string) => void
@@ -357,9 +295,7 @@ interface AppContextType {
   addEmailTemplate: (template: EmailTemplate) => void
   updateEmailTemplate: (template: EmailTemplate) => void
   deleteEmailTemplate: (id: string) => void
-  updateSubscriptionConfig: (config: SubscriptionConfig) => void
 
-  // Automation
   runWorkflows: (trigger: string, context?: any) => void
   executeWorkflow: (workflow: Workflow, targetPropertyIds?: string[]) => void
 
@@ -468,7 +404,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return (saved as Language) || 'en'
   })
 
-  // Global Currency State derived from settings
   const [currency, setCurrency] = useState<string>(
     financialSettings.globalCurrency,
   )
@@ -477,7 +412,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setCurrency(financialSettings.globalCurrency)
   }, [financialSettings.globalCurrency])
 
-  // New State
   const [guestServices, setGuestServices] =
     useState<GuestService[]>(initialGuestServices)
   const [posItems, setPosItems] = useState<PosItem[]>(initialPosItems)
@@ -498,27 +432,42 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [emailTemplates, setEmailTemplates] = useState<EmailTemplate[]>(
     initialEmailTemplates,
   )
-  const [subscriptionConfig, setSubscriptionConfig] =
-    useState<SubscriptionConfig>(initialSubscriptionConfig)
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all')
-  // Defaulting isAuthenticated to true to fulfill user story access requirement
   const [isAuthenticated, setIsAuthenticated] = useState(true)
+  const [isAuthLoading, setIsAuthLoading] = useState(true)
   const [currentUser, setCurrentUserObj] = useState<
     User | Owner | Partner | Tenant
   >(systemUsers[0])
 
-  // Tour State
   const [isTourOpen, setIsTourOpen] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [activeVideo, setActiveVideo] = useState<string | null>(null)
 
-  // Security & Permissions
   const [rolePermissions, setRolePermissions] = useState<
     Record<UserRole, Partial<Record<Resource, Action[]>>>
   >(DEFAULT_PERMISSIONS_MATRIX)
 
   const { toast } = useToast()
+
+  useEffect(() => {
+    let mounted = true
+    const initAuth = async () => {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 600))
+        if (mounted) {
+          setIsAuthLoading(false)
+        }
+      } catch (err) {
+        console.error('Failed to initialize auth state', err)
+        if (mounted) setIsAuthLoading(false)
+      }
+    }
+    initAuth()
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
@@ -784,9 +733,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const deleteEmailTemplate = (id: string) =>
     setEmailTemplates(emailTemplates.filter((x) => x.id !== id))
 
-  const updateSubscriptionConfig = (config: SubscriptionConfig) =>
-    setSubscriptionConfig(config)
-
   const visibleMessages = useMemo(
     () => allMessages.filter((m) => m.ownerId === currentUser.id),
     [allMessages, currentUser.id],
@@ -811,7 +757,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const checkPermission = useCallback(
     async (user: User, resource: Resource, action: Action) => {
-      // Simulate database network request
       await new Promise((resolve) => setTimeout(resolve, 500))
 
       if (!user || !user.role) return false
@@ -856,8 +801,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     [rolePermissions],
   )
 
-  // --- Automation Logic ---
-
   const executeWorkflow = useCallback(
     (workflow: Workflow, targetPropertyIds?: string[]) => {
       const propertyIds =
@@ -867,8 +810,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             ? workflow.propertyIds
             : []
 
-      // If no properties defined or passed, we can't really execute 'tasks' for generic workflows unless it's a system workflow
-      // But typically property workflows need property context.
       if (propertyIds.length === 0) return
 
       let tasksCreated = 0
@@ -879,12 +820,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
         workflow.steps.forEach((step, index) => {
           if (step.actionType === 'task') {
-            // Role & Partner Assignment Logic
             let assigneeName = getRoleName(step.role)
             let assigneeId = undefined
             let assignedRole = step.role
 
-            // Conflict Prevention: Check for linked partner
             const linkedPartner = partners.find(
               (p) =>
                 p.linkedPropertyIds?.includes(propertyId) &&
@@ -893,21 +832,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                   : p.type === 'maintenance'),
             )
 
-            // If a partner is linked to this property for this task type, FORCE assignment to them
             if (linkedPartner) {
               assigneeName = linkedPartner.name
               assigneeId = linkedPartner.id
-              // We keep assignedRole as 'partner' or whatever it was, but concrete assignee is fixed
             }
 
-            // Critical Status Logic (Back-to-Back)
             let priority: Task['priority'] = 'medium'
             let isBackToBack = false
 
-            // Look for bookings checking out today or recently
-            // This logic is simplified for the demo. In prod, we'd check dates carefully against "now"
-            // If the workflow is 'after_checkout', usually we have a booking context.
-            // But here we are bulk running. Let'd assume we check for ANY back-to-back condition near today.
             const today = new Date().toISOString().split('T')[0]
             const checkOutToday = bookings.find(
               (b) => b.propertyId === propertyId && b.checkOut === today,
@@ -934,7 +866,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
               status: 'pending',
               type: step.name.toLowerCase().includes('clean')
                 ? 'cleaning'
-                : 'maintenance', // Inference
+                : 'maintenance',
               priority: priority,
               date: new Date().toISOString(),
               assignee: assigneeName,
@@ -963,7 +895,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const runWorkflows = useCallback(
     (trigger: string, context?: any) => {
-      // 1. Filter relevant workflows
       const activeWorkflows = workflows.filter(
         (wf) => wf.active && wf.trigger === trigger,
       )
@@ -972,20 +903,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
       let propertyId = context?.property?.id || context?.booking?.propertyId
 
-      // If we have a property context, just run for that property
       if (propertyId) {
         activeWorkflows.forEach((wf) => {
-          // If workflow has specific properties, respect that constraint
           if (wf.propertyIds && wf.propertyIds.length > 0) {
-            if (!wf.propertyIds.includes(propertyId)) return // Skip if this workflow doesn't apply to this property
+            if (!wf.propertyIds.includes(propertyId)) return
           }
           executeWorkflow(wf, [propertyId])
         })
       } else {
-        // Global Trigger (no specific property context passed, maybe 'manual' without selection)
-        // We run for all configured properties of the matching workflows
         activeWorkflows.forEach((wf) => {
-          executeWorkflow(wf) // Will use wf.propertyIds inside
+          executeWorkflow(wf)
         })
       }
     },
@@ -1014,6 +941,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         allUsers,
         users,
         isAuthenticated,
+        isAuthLoading,
         paymentIntegrations,
         financialSettings,
         bankStatements,
@@ -1041,7 +969,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         channelMappings,
         marketingWorkflows,
         emailTemplates,
-        subscriptionConfig,
         isTourOpen,
         currentStepIndex,
         tourSteps: initialTourSteps,
@@ -1168,7 +1095,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addEmailTemplate,
         updateEmailTemplate,
         deleteEmailTemplate,
-        updateSubscriptionConfig,
         runWorkflows,
         executeWorkflow,
       }}

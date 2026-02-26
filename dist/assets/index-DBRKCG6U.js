@@ -19516,6 +19516,10 @@ var List = createLucideIcon("list", [
 		key: "m83p4d"
 	}]
 ]);
+var LoaderCircle = createLucideIcon("loader-circle", [["path", {
+	d: "M21 12a9 9 0 1 1-6.219-8.56",
+	key: "13zald"
+}]]);
 var MapPin = createLucideIcon("map-pin", [["path", {
 	d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0",
 	key: "1r0f0z"
@@ -57398,59 +57402,6 @@ const hasPermission = (user, resource, action) => {
 	if (!resourcePerms) return false;
 	return resourcePerms.includes(action);
 };
-var initialSubscriptionConfig = {
-	tiers: [
-		{
-			id: "tier-1",
-			name: "Starter",
-			basePrice: 29,
-			maxUnits: 10,
-			additionalUnitCost: 3,
-			region: "global",
-			features: [
-				"Up to 10 units",
-				"Basic Support",
-				"Standard Reports",
-				"Guest Portal"
-			],
-			cta: "Start Free Trial"
-		},
-		{
-			id: "tier-2",
-			name: "Professional",
-			basePrice: 99,
-			maxUnits: 50,
-			additionalUnitCost: 2,
-			region: "global",
-			features: [
-				"Up to 50 units",
-				"Priority Support",
-				"Advanced Analytics",
-				"Automation Rules",
-				"API Access"
-			],
-			cta: "Get Professional"
-		},
-		{
-			id: "tier-3",
-			name: "Enterprise",
-			basePrice: 299,
-			maxUnits: 200,
-			additionalUnitCost: 1.5,
-			region: "global",
-			features: [
-				"Unlimited units",
-				"Dedicated Account Manager",
-				"Custom Integrations",
-				"White-labeling",
-				"SLA Guarantee"
-			],
-			cta: "Contact Sales"
-		}
-	],
-	discounts: [],
-	pmOverrides: []
-};
 const AppContext = (0, import_react.createContext)(void 0);
 var getRoleName = (role) => {
 	switch (role) {
@@ -57526,15 +57477,31 @@ const AppProvider = ({ children }) => {
 	const [channelMappings$1, setChannelMappings] = (0, import_react.useState)(channelMappings);
 	const [marketingWorkflows$1, setMarketingWorkflows] = (0, import_react.useState)(marketingWorkflows);
 	const [emailTemplates$1, setEmailTemplates] = (0, import_react.useState)(emailTemplates);
-	const [subscriptionConfig, setSubscriptionConfig] = (0, import_react.useState)(initialSubscriptionConfig);
 	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("all");
 	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(true);
+	const [isAuthLoading, setIsAuthLoading] = (0, import_react.useState)(true);
 	const [currentUser, setCurrentUserObj] = (0, import_react.useState)(systemUsers[0]);
 	const [isTourOpen, setIsTourOpen] = (0, import_react.useState)(false);
 	const [currentStepIndex, setCurrentStepIndex] = (0, import_react.useState)(0);
 	const [activeVideo, setActiveVideo] = (0, import_react.useState)(null);
 	const [rolePermissions, setRolePermissions] = (0, import_react.useState)(DEFAULT_PERMISSIONS_MATRIX);
 	const { toast: toast$2 } = useToast();
+	(0, import_react.useEffect)(() => {
+		let mounted = true;
+		const initAuth = async () => {
+			try {
+				await new Promise((resolve) => setTimeout(resolve, 600));
+				if (mounted) setIsAuthLoading(false);
+			} catch (err) {
+				console.error("Failed to initialize auth state", err);
+				if (mounted) setIsAuthLoading(false);
+			}
+		};
+		initAuth();
+		return () => {
+			mounted = false;
+		};
+	}, []);
 	const setLanguage = (lang) => {
 		setLanguageState(lang);
 		localStorage.setItem("app_language", lang);
@@ -57716,7 +57683,6 @@ const AppProvider = ({ children }) => {
 	const addEmailTemplate = (t$1) => setEmailTemplates([...emailTemplates$1, t$1]);
 	const updateEmailTemplate = (t$1) => setEmailTemplates(emailTemplates$1.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
 	const deleteEmailTemplate = (id) => setEmailTemplates(emailTemplates$1.filter((x$2) => x$2.id !== id));
-	const updateSubscriptionConfig = (config) => setSubscriptionConfig(config);
 	const visibleMessages = (0, import_react.useMemo)(() => allMessages.filter((m$1) => m$1.ownerId === currentUser.id), [allMessages, currentUser.id]);
 	const allUsers = (0, import_react.useMemo)(() => [
 		...users,
@@ -57859,6 +57825,7 @@ const AppProvider = ({ children }) => {
 			allUsers,
 			users,
 			isAuthenticated,
+			isAuthLoading,
 			paymentIntegrations,
 			financialSettings,
 			bankStatements,
@@ -57886,7 +57853,6 @@ const AppProvider = ({ children }) => {
 			channelMappings: channelMappings$1,
 			marketingWorkflows: marketingWorkflows$1,
 			emailTemplates: emailTemplates$1,
-			subscriptionConfig,
 			isTourOpen,
 			currentStepIndex,
 			tourSteps,
@@ -58013,7 +57979,6 @@ const AppProvider = ({ children }) => {
 			addEmailTemplate,
 			updateEmailTemplate,
 			deleteEmailTemplate,
-			updateSubscriptionConfig,
 			runWorkflows,
 			executeWorkflow
 		},
@@ -60494,6 +60459,7 @@ var useAuthStore = () => {
 		setCurrentUser: context.setCurrentUser,
 		allUsers: context.allUsers,
 		isAuthenticated: context.isAuthenticated,
+		isAuthLoading: context.isAuthLoading,
 		login: context.login,
 		logout: context.logout,
 		checkPermission: context.checkPermission,
@@ -70707,12 +70673,6 @@ function Marketing() {
 		}) })] })
 	});
 }
-function Skeleton({ className, ...props }) {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: cn("animate-pulse rounded-md bg-muted", className),
-		...props
-	});
-}
 var PermissionErrorBoundary = class extends import_react.Component {
 	constructor(props) {
 		super(props);
@@ -70738,11 +70698,11 @@ var PermissionErrorBoundary = class extends import_react.Component {
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-muted-foreground max-w-md mb-6",
-					children: "A component failed to render. We have applied a fallback so you can continue using the platform."
+					children: "A component failed to render correctly. We have applied a fallback so you can continue using the platform."
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 					onClick: () => window.location.reload(),
-					className: "bg-trust-blue",
+					className: "bg-primary text-primary-foreground",
 					children: "Reload Page"
 				})
 			]
@@ -70751,7 +70711,7 @@ var PermissionErrorBoundary = class extends import_react.Component {
 	}
 };
 function RequirePermission({ children, resource, action = "view" }) {
-	const { currentUser, isAuthenticated, checkPermission } = useAuthStore_default();
+	const { currentUser, isAuthenticated, checkPermission, isAuthLoading } = useAuthStore_default();
 	const location = useLocation();
 	const { toast: toast$2 } = useToast();
 	const { t } = useLanguageStore_default();
@@ -70762,6 +70722,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 		let mounted = true;
 		let timeoutId;
 		const verifyAccess = async () => {
+			if (isAuthLoading) return;
 			setIsChecking(true);
 			setHasTimeout(false);
 			if (!isAuthenticated || !currentUser) {
@@ -70776,7 +70737,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 					setHasTimeout(true);
 					setIsChecking(false);
 				}
-			}, 5e3);
+			}, 8e3);
 			try {
 				const allowed = await checkPermission(currentUser, resource, action);
 				if (mounted) {
@@ -70785,6 +70746,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 					clearTimeout(timeoutId);
 				}
 			} catch (error) {
+				console.error("Permission check failed:", error);
 				if (mounted) {
 					setHasAccess(false);
 					setIsChecking(false);
@@ -70802,10 +70764,11 @@ function RequirePermission({ children, resource, action = "view" }) {
 		isAuthenticated,
 		resource,
 		action,
-		checkPermission
+		checkPermission,
+		isAuthLoading
 	]);
 	(0, import_react.useEffect)(() => {
-		if (!isChecking && isAuthenticated && !hasAccess && !hasTimeout) toast$2({
+		if (!isChecking && isAuthenticated && !hasAccess && !hasTimeout && !isAuthLoading) toast$2({
 			title: t("common.access_denied") || "Access Denied",
 			description: t("common.access_denied_desc") || "You do not have permission to view this page.",
 			variant: "destructive"
@@ -70815,24 +70778,24 @@ function RequirePermission({ children, resource, action = "view" }) {
 		isAuthenticated,
 		isChecking,
 		hasTimeout,
+		isAuthLoading,
 		toast$2,
 		t
 	]);
-	if (!isAuthenticated) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
+	if (!isAuthenticated && !isAuthLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
 		to: "/login",
 		state: { from: location },
 		replace: true
 	});
-	if (isChecking) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4",
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-16 w-16 rounded-full" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-8 w-64" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-4 w-96" })
-		]
+	if (isChecking || isAuthLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "h-12 w-12 text-primary animate-spin" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+			className: "text-xl font-medium text-slate-700",
+			children: "Verifying access..."
+		})]
 	});
 	if (hasTimeout) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4",
+		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 animate-in fade-in duration-500",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "bg-orange-50 p-4 rounded-full mb-4",
@@ -70840,7 +70803,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 				className: "text-2xl font-bold text-slate-900 mb-2",
-				children: "Loading Error"
+				children: "Loading Timeout"
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 				className: "text-muted-foreground max-w-md mb-6",
@@ -70848,13 +70811,13 @@ function RequirePermission({ children, resource, action = "view" }) {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 				onClick: () => window.location.reload(),
-				className: "bg-trust-blue",
+				className: "bg-primary text-primary-foreground",
 				children: "Reload Page"
 			})
 		]
 	});
 	if (!hasAccess) {
-		if (currentUser.role === "tenant" || currentUser.role === "property_owner" || currentUser.role === "partner" || currentUser.role === "partner_employee") {
+		if (currentUser?.role === "tenant" || currentUser?.role === "property_owner" || currentUser?.role === "partner" || currentUser?.role === "partner_employee") {
 			const portalPath = currentUser.role === "property_owner" ? "/portal/owner" : currentUser.role === "partner" || currentUser.role === "partner_employee" ? "/portal/partner" : "/portal/tenant";
 			if (!location.pathname.startsWith(portalPath) && resource === "portal") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
 				to: portalPath,
@@ -70862,7 +70825,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 			});
 		}
 		return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4",
+			className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 animate-in fade-in duration-500",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "bg-red-50 p-4 rounded-full mb-4",
@@ -70883,7 +70846,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 						onClick: () => window.history.back(),
 						children: t("common.back") || "Go Back"
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						className: "bg-trust-blue",
+						className: "bg-primary text-primary-foreground",
 						onClick: () => window.location.href = "/",
 						children: t("common.return_home") || "Return Home"
 					})]
@@ -70895,7 +70858,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 						resource,
 						" | Role:",
 						" ",
-						t(`roles.${currentUser.role}`) || currentUser.role
+						currentUser ? t(`roles.${currentUser.role}`) || currentUser.role : "Unknown"
 					]
 				})
 			]
@@ -71401,4 +71364,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-S1ux9ObA.js.map
+//# sourceMappingURL=index-DBRKCG6U.js.map

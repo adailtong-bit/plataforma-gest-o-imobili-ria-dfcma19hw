@@ -1272,9 +1272,6 @@ video {
 .w-9 {
   width: 2.25rem;
 }
-.w-96 {
-  width: 24rem;
-}
 .w-\[--cell-size\] {
   width: var(--cell-size);
 }
@@ -2810,9 +2807,6 @@ video {
 }
 .ease-linear {
   animation-timing-function: linear;
-}
-.running {
-  animation-play-state: running;
 }
 .no-spinner::-webkit-inner-spin-button,
   .no-spinner::-webkit-outer-spin-button {

@@ -10,6 +10,7 @@ const useAuthStore = () => {
     setCurrentUser: context.setCurrentUser,
     allUsers: context.allUsers,
     isAuthenticated: context.isAuthenticated,
+    isAuthLoading: context.isAuthLoading,
     login: context.login,
     logout: context.logout,
     checkPermission: context.checkPermission,
