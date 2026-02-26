@@ -1188,6 +1188,9 @@ video {
 .min-h-10 {
   min-height: 2.5rem;
 }
+.min-h-\[100px\] {
+  min-height: 100px;
+}
 .min-h-\[300px\] {
   min-height: 300px;
 }
@@ -1253,6 +1256,9 @@ video {
 }
 .w-4 {
   width: 1rem;
+}
+.w-48 {
+  width: 12rem;
 }
 .w-5 {
   width: 1.25rem;
@@ -1366,6 +1372,9 @@ video {
 }
 .max-w-5xl {
   max-width: 64rem;
+}
+.max-w-6xl {
+  max-width: 72rem;
 }
 .max-w-\[--skeleton-width\] {
   max-width: var(--skeleton-width);
@@ -4210,6 +4219,10 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
 
   .md\:w-\[300px\] {
     width: 300px;
+  }
+
+  .md\:w-\[400px\] {
+    width: 400px;
   }
 
   .md\:w-\[var\(--radix-navigation-menu-viewport-width\)\] {

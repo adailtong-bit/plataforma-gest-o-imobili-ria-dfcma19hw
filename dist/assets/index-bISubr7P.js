@@ -19395,6 +19395,22 @@ var Image = createLucideIcon("image", [
 		key: "1xmnt7"
 	}]
 ]);
+var Key = createLucideIcon("key", [
+	["path", {
+		d: "m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4",
+		key: "g0fldk"
+	}],
+	["path", {
+		d: "m21 2-9.6 9.6",
+		key: "1j0ho8"
+	}],
+	["circle", {
+		cx: "7.5",
+		cy: "15.5",
+		r: "5.5",
+		key: "yqb3hr"
+	}]
+]);
 var LayoutGrid = createLucideIcon("layout-grid", [
 	["rect", {
 		width: "7",
@@ -19484,6 +19500,18 @@ var List = createLucideIcon("list", [
 var LoaderCircle = createLucideIcon("loader-circle", [["path", {
 	d: "M21 12a9 9 0 1 1-6.219-8.56",
 	key: "13zald"
+}]]);
+var Lock = createLucideIcon("lock", [["rect", {
+	width: "18",
+	height: "11",
+	x: "3",
+	y: "11",
+	rx: "2",
+	ry: "2",
+	key: "1w4ew1"
+}], ["path", {
+	d: "M7 11V7a5 5 0 0 1 10 0v4",
+	key: "fwvmzm"
 }]]);
 var MapPin = createLucideIcon("map-pin", [["path", {
 	d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0",
@@ -19926,6 +19954,20 @@ var Users$1 = createLucideIcon("users", [
 		cy: "7",
 		r: "4",
 		key: "nufk8"
+	}]
+]);
+var Waves = createLucideIcon("waves", [
+	["path", {
+		d: "M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1",
+		key: "knzxuh"
+	}],
+	["path", {
+		d: "M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1",
+		key: "2jd2cc"
+	}],
+	["path", {
+		d: "M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1",
+		key: "rd2r6e"
 	}]
 ]);
 var Workflow = createLucideIcon("workflow", [
@@ -62544,7 +62586,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$36({ inst: {
+			cachedValue = useState$38({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -62558,7 +62600,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$15(function() {
+			useEffect$16(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -62581,7 +62623,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$36 = React$67.useState, useEffect$15 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$38 = React$67.useState, useEffect$16 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -67337,13 +67379,1109 @@ function Properties() {
 		]
 	});
 }
-function PropertyDetails() {
+function Skeleton({ className, ...props }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "p-6",
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Property Details" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-slate-600",
-			children: "Details module under construction."
-		}) })] })
+		className: cn("animate-pulse rounded-md bg-muted", className),
+		...props
+	});
+}
+var TABS_NAME = "Tabs";
+var [createTabsContext, createTabsScope] = createContextScope(TABS_NAME, [createRovingFocusGroupScope]);
+var useRovingFocusGroupScope = createRovingFocusGroupScope();
+var [TabsProvider, useTabsContext] = createTabsContext(TABS_NAME);
+var Tabs$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeTabs, value: valueProp, onValueChange, defaultValue, orientation = "horizontal", dir, activationMode = "automatic", ...tabsProps } = props;
+	const direction = useDirection(dir);
+	const [value, setValue] = useControllableState({
+		prop: valueProp,
+		onChange: onValueChange,
+		defaultProp: defaultValue ?? "",
+		caller: TABS_NAME
+	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsProvider, {
+		scope: __scopeTabs,
+		baseId: useId(),
+		value,
+		onValueChange: setValue,
+		orientation,
+		dir: direction,
+		activationMode,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+			dir: direction,
+			"data-orientation": orientation,
+			...tabsProps,
+			ref: forwardedRef
+		})
+	});
+});
+Tabs$1.displayName = TABS_NAME;
+var TAB_LIST_NAME = "TabsList";
+var TabsList$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeTabs, loop = true, ...listProps } = props;
+	const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
+	const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
+		asChild: true,
+		...rovingFocusGroupScope,
+		orientation: context.orientation,
+		dir: context.dir,
+		loop,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+			role: "tablist",
+			"aria-orientation": context.orientation,
+			...listProps,
+			ref: forwardedRef
+		})
+	});
+});
+TabsList$1.displayName = TAB_LIST_NAME;
+var TRIGGER_NAME = "TabsTrigger";
+var TabsTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
+	const context = useTabsContext(TRIGGER_NAME, __scopeTabs);
+	const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
+	const triggerId = makeTriggerId(context.baseId, value);
+	const contentId = makeContentId(context.baseId, value);
+	const isSelected = value === context.value;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Item$1, {
+		asChild: true,
+		...rovingFocusGroupScope,
+		focusable: !disabled,
+		active: isSelected,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+			type: "button",
+			role: "tab",
+			"aria-selected": isSelected,
+			"aria-controls": contentId,
+			"data-state": isSelected ? "active" : "inactive",
+			"data-disabled": disabled ? "" : void 0,
+			disabled,
+			id: triggerId,
+			...triggerProps,
+			ref: forwardedRef,
+			onMouseDown: composeEventHandlers(props.onMouseDown, (event) => {
+				if (!disabled && event.button === 0 && event.ctrlKey === false) context.onValueChange(value);
+				else event.preventDefault();
+			}),
+			onKeyDown: composeEventHandlers(props.onKeyDown, (event) => {
+				if ([" ", "Enter"].includes(event.key)) context.onValueChange(value);
+			}),
+			onFocus: composeEventHandlers(props.onFocus, () => {
+				const isAutomaticActivation = context.activationMode !== "manual";
+				if (!isSelected && !disabled && isAutomaticActivation) context.onValueChange(value);
+			})
+		})
+	});
+});
+TabsTrigger$1.displayName = TRIGGER_NAME;
+var CONTENT_NAME = "TabsContent";
+var TabsContent$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeTabs, value, forceMount, children, ...contentProps } = props;
+	const context = useTabsContext(CONTENT_NAME, __scopeTabs);
+	const triggerId = makeTriggerId(context.baseId, value);
+	const contentId = makeContentId(context.baseId, value);
+	const isSelected = value === context.value;
+	const isMountAnimationPreventedRef = import_react.useRef(isSelected);
+	import_react.useEffect(() => {
+		const rAF = requestAnimationFrame(() => isMountAnimationPreventedRef.current = false);
+		return () => cancelAnimationFrame(rAF);
+	}, []);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
+		present: forceMount || isSelected,
+		children: ({ present }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+			"data-state": isSelected ? "active" : "inactive",
+			"data-orientation": context.orientation,
+			role: "tabpanel",
+			"aria-labelledby": triggerId,
+			hidden: !present,
+			id: contentId,
+			tabIndex: 0,
+			...contentProps,
+			ref: forwardedRef,
+			style: {
+				...props.style,
+				animationDuration: isMountAnimationPreventedRef.current ? "0s" : void 0
+			},
+			children: present && children
+		})
+	});
+});
+TabsContent$1.displayName = CONTENT_NAME;
+function makeTriggerId(baseId, value) {
+	return `${baseId}-trigger-${value}`;
+}
+function makeContentId(baseId, value) {
+	return `${baseId}-content-${value}`;
+}
+var Root2 = Tabs$1;
+var List$1 = TabsList$1;
+var Trigger = TabsTrigger$1;
+var Content = TabsContent$1;
+var Tabs = Root2;
+var TabsList = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(List$1, {
+	ref,
+	className: cn("inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground", className),
+	...props
+}));
+TabsList.displayName = List$1.displayName;
+var TabsTrigger = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trigger, {
+	ref,
+	className: cn("inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm", className),
+	...props
+}));
+TabsTrigger.displayName = Trigger.displayName;
+var TabsContent = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content, {
+	ref,
+	className: cn("mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", className),
+	...props
+}));
+TabsContent.displayName = Content.displayName;
+var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
+		className: cn("flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50", className),
+		ref,
+		...props
+	});
+});
+Textarea.displayName = "Textarea";
+function FileUpload({ value, onChange, label = "Upload File", accept, disabled }) {
+	const inputRef = (0, import_react.useRef)(null);
+	const handleFileChange = (e) => {
+		const file = e.target.files?.[0];
+		if (file) onChange(URL.createObjectURL(file));
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col gap-2",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: label }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex gap-2 items-center",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+					type: "file",
+					ref: inputRef,
+					className: "hidden",
+					accept,
+					onChange: handleFileChange,
+					disabled
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					type: "button",
+					variant: "outline",
+					onClick: () => inputRef.current?.click(),
+					disabled,
+					className: "w-full",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "h-4 w-4 mr-2" }), " Select File"]
+				})]
+			}),
+			value && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "text-xs text-green-600 truncate mt-1",
+				children: "File uploaded successfully"
+			})
+		]
+	});
+}
+function PropertyOverview({ data, onChange, canEdit }) {
+	const { t, language } = useLanguageStore_default();
+	const score = data.healthScore || 80;
+	const locale$2 = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+		className: "bg-white",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+			className: "flex flex-row justify-between items-start",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+				className: "text-black",
+				children: t("properties.overview") || "Overview"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+				variant: "outline",
+				className: "flex items-center gap-1 px-3 py-1 bg-white border-slate-200",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trophy, { className: "h-3 w-3 text-yellow-500" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+						className: "text-black",
+						children: [t("gamification.health_score") || "Health Score", ":"]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+						className: `ml-1 font-bold ${score >= 90 ? "text-green-600" : "text-yellow-600"}`,
+						children: [score, "/100"]
+					})
+				]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+			className: "grid grid-cols-1 md:grid-cols-2 gap-6",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") || "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+						className: "w-full block",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: data.name,
+							onChange: (e) => onChange("name", e.target.value),
+							disabled: !canEdit,
+							placeholder: t("properties.search_placeholder") || "Property Name",
+							className: "text-black bg-white border-slate-300"
+						})
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t("properties.property_value") || "Listing Price", " ($)"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+						className: "w-full block",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+							value: data.listingPrice || 0,
+							onChange: (val) => onChange("listingPrice", val),
+							disabled: !canEdit,
+							locale: locale$2,
+							className: "text-black bg-white border-slate-300"
+						})
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.profile_filter") || "Profile Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: data.profileType,
+						onValueChange: (v) => onChange("profileType", v),
+						disabled: !canEdit,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+							className: "text-black bg-white border-slate-300",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, {
+							className: "bg-white",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "short_term",
+								className: "text-black",
+								children: t("properties.profile_short") || "Short Term"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "long_term",
+								className: "text-black",
+								children: t("properties.profile_long") || "Long Term"
+							})]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.type") || "Property Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: data.type,
+						onValueChange: (v) => onChange("type", v),
+						disabled: !canEdit,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+							className: "text-black bg-white border-slate-300",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, {
+							className: "bg-white",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "House",
+									className: "text-black",
+									children: t("properties.house") || "House"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Condo",
+									className: "text-black",
+									children: t("properties.condo") || "Condo"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Townhouse",
+									className: "text-black",
+									children: t("properties.townhouse") || "Townhouse"
+								})
+							]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.status") || "Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: data.status,
+						onValueChange: (v) => onChange("status", v),
+						disabled: !canEdit,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+							className: "text-black bg-white border-slate-300",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, {
+							className: "bg-white",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "interested",
+									className: "text-black",
+									children: t("status.interested") || "Interested"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "rented",
+									className: "text-black",
+									children: t("status.rented") || "Rented"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "available",
+									className: "text-black",
+									children: t("status.available") || "Available"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "in_registration",
+									className: "text-black",
+									children: t("status.in_registration") || "In Registration"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "suspended",
+									className: "text-black",
+									children: t("status.suspended") || "Suspended"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "released",
+									className: "text-black",
+									children: t("status.released") || "Released"
+								})
+							]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.marketing") || "Marketing Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: data.marketingStatus || "unlisted",
+						onValueChange: (v) => onChange("marketingStatus", v),
+						disabled: !canEdit,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+							className: "text-black bg-white border-slate-300",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, {
+							className: "bg-white",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "listed",
+								className: "text-black",
+								children: t("properties.publish_portals") || "Listed"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "unlisted",
+								className: "text-black",
+								children: t("common.inactive") || "Unlisted"
+							})]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2 col-span-1 md:col-span-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.info_label") || "Description" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+						className: "w-full block",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+							value: data.additionalInfo || "",
+							onChange: (e) => onChange("additionalInfo", e.target.value),
+							disabled: !canEdit,
+							placeholder: t("properties.additional_info_placeholder") || "Additional details...",
+							className: "text-black bg-white border-slate-300 min-h-[100px]"
+						})
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2 col-span-1 md:col-span-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.cover_image") || "Cover Image" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "space-y-2",
+						children: data.image ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "relative w-full max-w-md aspect-video rounded-md overflow-hidden bg-slate-100 border border-slate-200",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+								src: data.image,
+								alt: "Property",
+								className: "w-full h-full object-cover",
+								crossOrigin: "anonymous",
+								onError: (e) => {
+									e.currentTarget.src = "/placeholder.svg";
+									e.currentTarget.onerror = null;
+								}
+							}), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: "absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:bg-red-600 transition-colors shadow-sm font-medium",
+								onClick: () => onChange("image", ""),
+								title: "Remove Cover Image",
+								children: "Delete Image"
+							})]
+						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "max-w-md",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
+								value: data.image,
+								onChange: (url) => onChange("image", url),
+								disabled: !canEdit,
+								label: t("properties.upload_image") || "Upload Image"
+							})
+						})
+					})]
+				})
+			]
+		})]
+	});
+}
+function LocationMap({ address, city, state, zipCode, country }) {
+	const fullAddress = [
+		address,
+		city,
+		state,
+		zipCode,
+		country
+	].filter(Boolean).join(", ");
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+		className: "h-full",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+			className: "flex items-center gap-2",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-5 w-5" }), " Location"]
+		}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+			className: "h-[250px] bg-slate-100 flex items-center justify-center rounded-md",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "text-center text-muted-foreground",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-10 w-10 mx-auto mb-2 opacity-20" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "font-semibold",
+						children: "Map View"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-xs max-w-[200px] mx-auto",
+						children: fullAddress
+					})
+				]
+			})
+		})]
+	});
+}
+function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$1 }) {
+	const { t } = useLanguageStore_default();
+	const selectedCountry = data.country || "US";
+	const handleCountryChange = (val) => {
+		onChange("country", val);
+		onChange("zipCode", "");
+	};
+	const handleZipChange = (e) => {
+		onChange("zipCode", applyZipCodeMask(e.target.value, selectedCountry));
+	};
+	const isZipInvalid = !data.zipCode || isGenericOrPlaceholder(data.zipCode);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("properties.location.address") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+			className: "grid gap-4",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: selectedCountry,
+						onValueChange: handleCountryChange,
+						disabled: !canEdit,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "US",
+								children: t("properties.location.country_us")
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "BR",
+								children: t("properties.location.country_br")
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "ES",
+								children: t("properties.location.country_es")
+							})
+						] })]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+						t("properties.location.address"),
+						" ",
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-red-500",
+							children: "*"
+						})
+					] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+						className: "w-full block",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: data.address,
+							onChange: (e) => onChange("address", e.target.value),
+							disabled: !canEdit,
+							placeholder: t("properties.search_placeholder")
+						})
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid grid-cols-2 gap-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+							t("properties.zip_code"),
+							" ",
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "text-red-500",
+								children: "*"
+							})
+						] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.zipCode || "",
+								onChange: handleZipChange,
+								disabled: !canEdit,
+								required: true,
+								className: isZipInvalid ? "border-red-300" : "",
+								placeholder: selectedCountry === "BR" ? "00000-000" : "00000"
+							})
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.info_label") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.additionalInfo || "",
+								onChange: (e) => onChange("additionalInfo", e.target.value),
+								disabled: !canEdit,
+								placeholder: t("properties.location.complement_placeholder")
+							})
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid grid-cols-2 gap-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.location.neighborhood") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.neighborhood || "",
+								onChange: (e) => onChange("neighborhood", e.target.value),
+								disabled: !canEdit
+							})
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.location.community") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.community,
+								onChange: (e) => onChange("community", e.target.value),
+								disabled: !canEdit
+							})
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid grid-cols-2 gap-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.city_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.city || "",
+								onChange: (e) => onChange("city", e.target.value),
+								disabled: !canEdit
+							})
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.state_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.state || "",
+								onChange: (e) => onChange("state", e.target.value),
+								disabled: !canEdit
+							})
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.location.linked_condo") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: data.condominiumId || "none",
+						onValueChange: (v) => onChange("condominiumId", v === "none" ? void 0 : v),
+						disabled: !canEdit,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+							value: "none",
+							children: t("common.none")
+						}), condominiums$1.map((c$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+							value: c$1.id,
+							children: c$1.name
+						}, c$1.id))] })]
+					})]
+				})
+			]
+		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LocationMap, {
+			address: data.address,
+			city: data.city,
+			state: data.state,
+			zipCode: data.zipCode,
+			country: selectedCountry
+		})]
+	});
+}
+function PropertyFeatures({ data, onChange, canEdit, condominium }) {
+	const { t } = useLanguageStore_default();
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("properties.tabs.features") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+		className: "grid grid-cols-1 md:grid-cols-3 gap-6",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.bedrooms") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					type: "number",
+					value: data.bedrooms,
+					onChange: (e) => onChange("bedrooms", Number(e.target.value)),
+					disabled: !canEdit
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.bathrooms") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					type: "number",
+					value: data.bathrooms,
+					onChange: (e) => onChange("bathrooms", Number(e.target.value)),
+					disabled: !canEdit
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.guests") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					type: "number",
+					value: data.guests,
+					onChange: (e) => onChange("guests", Number(e.target.value)),
+					disabled: !canEdit
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "md:col-span-3 border-t pt-4 mt-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+					className: "font-semibold text-sm mb-4",
+					children: t("properties.features.wifi_connectivity")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid grid-cols-1 md:grid-cols-2 gap-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.ssid") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.wifiSsid || "",
+								onChange: (e) => onChange("wifiSsid", e.target.value),
+								disabled: !canEdit,
+								placeholder: "SSID"
+							})
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.password") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							className: "w-full block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: data.wifiPassword || "",
+								onChange: (e) => onChange("wifiPassword", e.target.value),
+								disabled: !canEdit,
+								placeholder: "********"
+							})
+						})]
+					})]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "md:col-span-3 border-t pt-4 mt-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+					className: "font-semibold text-sm mb-4 flex items-center gap-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-4 w-4" }),
+						" ",
+						t("properties.features.access_codes")
+					]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.unit_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+								className: "w-full block",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: data.accessCodeUnit || "",
+									onChange: (e) => onChange("accessCodeUnit", e.target.value),
+									disabled: !canEdit,
+									placeholder: "1234"
+								})
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.building_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+								className: "w-full block",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: data.accessCodeBuilding || "",
+									onChange: (e) => onChange("accessCodeBuilding", e.target.value),
+									disabled: !canEdit,
+									placeholder: "#5566"
+								})
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.pool_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, {
+								className: "w-full block relative",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: data.accessCodePool || "",
+									onChange: (e) => onChange("accessCodePool", e.target.value),
+									disabled: !canEdit,
+									placeholder: "9090",
+									className: "pl-8"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Waves, { className: "absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground z-10" })]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.staff_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+								className: "w-full block",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: data.accessCodeCleaning || "",
+									onChange: (e) => onChange("accessCodeCleaning", e.target.value),
+									disabled: !canEdit,
+									placeholder: "Internal use"
+								})
+							})]
+						})
+					]
+				})]
+			}),
+			condominium && condominium.accessCredentials && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "md:col-span-3 border-t pt-4 mt-4 bg-muted/20 p-4 rounded-lg",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+						className: "font-semibold text-sm flex items-center gap-2 text-muted-foreground mb-3",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lock, { className: "h-4 w-4" }),
+							" ",
+							t("properties.features.condo_read_only")
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "grid grid-cols-2 md:grid-cols-4 gap-4",
+						children: Object.entries(condominium.accessCredentials).map(([key, val]) => val && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "text-xs text-muted-foreground uppercase",
+							children: key.replace(/([A-Z])/g, " $1").trim()
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+							blur: true,
+							className: "block",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "font-mono text-sm font-semibold",
+								children: val
+							})
+						})] }, key))
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-xs text-muted-foreground mt-2 italic",
+						children: t("properties.features.condo_hint", { condo: condominium.name })
+					})
+				]
+			})
+		]
+	})] });
+}
+function PropertyMedia({ data, onChange, canEdit }) {
+	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const galleryInputRef = (0, import_react.useRef)(null);
+	const [isUploading, setIsUploading] = (0, import_react.useState)(false);
+	const handleGalleryUpload = (e) => {
+		const files = e.target.files;
+		if (files && files.length > 0) {
+			setIsUploading(true);
+			setTimeout(() => {
+				const newImages = Array.from(files).map((file) => URL.createObjectURL(file));
+				onChange("gallery", [...data.gallery || [], ...newImages]);
+				setIsUploading(false);
+				if (galleryInputRef.current) galleryInputRef.current.value = "";
+				toast$2({
+					title: "Sucesso",
+					description: `${newImages.length} foto(s) adicionada(s) à galeria.`
+				});
+			}, 1e3);
+		}
+	};
+	const handleRemoveGalleryImage = (index$1) => {
+		onChange("gallery", (data.gallery || []).filter((_$1, i) => i !== index$1));
+		toast$2({
+			title: "Removido",
+			description: "Imagem removida da galeria."
+		});
+	};
+	const handleSetMainPhoto = (url) => {
+		onChange("image", url);
+		toast$2({
+			title: "Foto Principal Atualizada",
+			description: "A imagem de capa foi alterada."
+		});
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "space-y-6",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "grid grid-cols-1 gap-6",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Imagem Principal" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Esta é a imagem de capa da propriedade." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "max-w-md",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
+					value: data.image,
+					onChange: (url) => onChange("image", url),
+					disabled: !canEdit,
+					label: "Alterar Capa"
+				})
+			}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+				className: "flex flex-row items-center justify-between",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Galeria de Fotos" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Fotos adicionais da propriedade." })] }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+					type: "file",
+					ref: galleryInputRef,
+					className: "hidden",
+					multiple: true,
+					accept: "image/*",
+					onChange: handleGalleryUpload
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: () => galleryInputRef.current?.click(),
+					disabled: isUploading,
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "mr-2 h-4 w-4" }), isUploading ? "Enviando..." : "Adicionar Fotos"]
+				})] })]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: !data.gallery || data.gallery.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg",
+				children: "Sem fotos na galeria."
+			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "grid grid-cols-2 md:grid-cols-4 gap-4",
+				children: data.gallery.map((img, index$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "relative group aspect-video rounded-lg overflow-hidden border bg-muted",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+							src: img,
+							alt: `Gallery ${index$1}`,
+							className: "w-full h-full object-cover transition-transform group-hover:scale-105",
+							crossOrigin: "anonymous",
+							onError: (e) => {
+								e.currentTarget.src = "/placeholder.svg";
+								e.currentTarget.onerror = null;
+							}
+						}),
+						data.image === img && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "absolute top-2 left-2 bg-trust-blue text-white text-[10px] px-2 py-0.5 rounded-full z-10 flex items-center gap-1",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: "h-3 w-3 fill-white" }), " Principal"]
+						}),
+						canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "secondary",
+								size: "sm",
+								className: "h-7 text-xs",
+								onClick: () => handleSetMainPhoto(img),
+								children: "Definir Principal"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "destructive",
+									size: "icon",
+									className: "h-8 w-8",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Imagem" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Tem certeza que deseja remover esta imagem da galeria?" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+								onClick: () => handleRemoveGalleryImage(index$1),
+								children: "Excluir"
+							})] })] })] })]
+						})
+					]
+				}, index$1))
+			}) })] })]
+		})
+	});
+}
+function PropertyDetails() {
+	const { id } = useParams();
+	const navigate = useNavigate();
+	const { properties: properties$1, updateProperty, deleteProperty } = usePropertyStore_default();
+	const { condominiums: condominiums$1 } = useCondominiumStore_default();
+	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isLoading, setIsLoading] = (0, import_react.useState)(true);
+	const [property$2, setProperty] = (0, import_react.useState)(null);
+	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
+	const [formData, setFormData] = (0, import_react.useState)(null);
+	(0, import_react.useEffect)(() => {
+		setIsLoading(true);
+		const timer = setTimeout(() => {
+			const found = properties$1.find((p$1) => p$1.id === id);
+			if (found) {
+				setProperty(found);
+				setFormData(found);
+			}
+			setIsLoading(false);
+		}, 500);
+		return () => clearTimeout(timer);
+	}, [id, properties$1]);
+	if (isLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "p-6 space-y-6 max-w-6xl mx-auto",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center mb-6",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-10 w-48" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-10 w-32" })]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-[400px] w-full" })]
+	});
+	if (!property$2 || !formData) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "p-6 text-center max-w-6xl mx-auto flex flex-col items-center justify-center min-h-[60vh]",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+				className: "text-2xl font-bold text-slate-900 mb-2",
+				children: "Property Not Found"
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-slate-600 mb-6",
+				children: "The property you are looking for does not exist or has been removed."
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+				onClick: () => navigate("/properties"),
+				className: "bg-trust-blue text-white",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "mr-2 h-4 w-4" }), " Back to Properties"]
+			})
+		]
+	});
+	const handleChange = (field, value) => {
+		setFormData({
+			...formData,
+			[field]: value
+		});
+	};
+	const handleSave = () => {
+		updateProperty(formData);
+		setProperty(formData);
+		setIsEditing(false);
+		toast$2({
+			title: t("common.success") || "Success",
+			description: "Property updated successfully."
+		});
+	};
+	const handleDelete = () => {
+		if (id) {
+			deleteProperty(id);
+			toast$2({
+				title: t("common.success") || "Success",
+				description: "Property deleted successfully."
+			});
+			navigate("/properties");
+		}
+	};
+	const condo = condominiums$1.find((c$1) => c$1.id === formData.condominiumId);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "p-6 flex flex-col gap-6 max-w-6xl mx-auto animate-in fade-in duration-500",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex items-center justify-between flex-wrap gap-4 bg-white p-4 rounded-lg border shadow-sm",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "outline",
+					size: "icon",
+					onClick: () => navigate("/properties"),
+					className: "border-slate-300",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-4 w-4 text-slate-700" })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-2xl font-bold tracking-tight text-slate-900",
+					children: formData.name
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					className: "text-sm text-slate-500 font-medium",
+					children: [
+						formData.address,
+						", ",
+						formData.city
+					]
+				})] })]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex items-center gap-2",
+				children: isEditing ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					variant: "outline",
+					onClick: () => {
+						setFormData(property$2);
+						setIsEditing(false);
+					},
+					className: "border-slate-300 font-medium",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 mr-2" }),
+						" ",
+						t("common.cancel") || "Cancel"
+					]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: handleSave,
+					className: "bg-trust-blue text-white font-bold",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Save, { className: "h-4 w-4 mr-2" }),
+						" ",
+						t("common.save") || "Save Changes"
+					]
+				})] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					variant: "outline",
+					onClick: () => setIsEditing(true),
+					className: "border-slate-300 font-medium",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+						" ",
+						t("common.edit") || "Edit Property"
+					]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						variant: "destructive",
+						className: "font-medium",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+							" ",
+							t("common.delete") || "Delete"
+						]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.delete_title") || "Are you absolutely sure?" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") || "This action cannot be undone. This will permanently delete the property record." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") || "Cancel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+					onClick: handleDelete,
+					children: t("common.delete") || "Delete"
+				})] })] })] })] })
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+			defaultValue: "overview",
+			className: "w-full",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+				className: "grid w-full grid-cols-4 md:w-[400px]",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: "overview",
+						children: "Overview"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: "location",
+						children: "Location"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: "features",
+						children: "Features"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: "media",
+						children: "Media"
+					})
+				]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "mt-6",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+						value: "overview",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyOverview, {
+							data: formData,
+							onChange: handleChange,
+							canEdit: isEditing
+						})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+						value: "location",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyLocation, {
+							data: formData,
+							onChange: handleChange,
+							canEdit: isEditing,
+							condominiums: condominiums$1
+						})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+						value: "features",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyFeatures, {
+							data: formData,
+							onChange: handleChange,
+							canEdit: isEditing,
+							condominium: condo
+						})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+						value: "media",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyMedia, {
+							data: formData,
+							onChange: handleChange,
+							canEdit: isEditing
+						})
+					})
+				]
+			})]
+		})]
 	});
 }
 var usePartnerStore = () => {
@@ -67825,157 +68963,6 @@ function CalendarPage() {
 		]
 	});
 }
-var TABS_NAME = "Tabs";
-var [createTabsContext, createTabsScope] = createContextScope(TABS_NAME, [createRovingFocusGroupScope]);
-var useRovingFocusGroupScope = createRovingFocusGroupScope();
-var [TabsProvider, useTabsContext] = createTabsContext(TABS_NAME);
-var Tabs$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeTabs, value: valueProp, onValueChange, defaultValue, orientation = "horizontal", dir, activationMode = "automatic", ...tabsProps } = props;
-	const direction = useDirection(dir);
-	const [value, setValue] = useControllableState({
-		prop: valueProp,
-		onChange: onValueChange,
-		defaultProp: defaultValue ?? "",
-		caller: TABS_NAME
-	});
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsProvider, {
-		scope: __scopeTabs,
-		baseId: useId(),
-		value,
-		onValueChange: setValue,
-		orientation,
-		dir: direction,
-		activationMode,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-			dir: direction,
-			"data-orientation": orientation,
-			...tabsProps,
-			ref: forwardedRef
-		})
-	});
-});
-Tabs$1.displayName = TABS_NAME;
-var TAB_LIST_NAME = "TabsList";
-var TabsList$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeTabs, loop = true, ...listProps } = props;
-	const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
-	const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
-		asChild: true,
-		...rovingFocusGroupScope,
-		orientation: context.orientation,
-		dir: context.dir,
-		loop,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-			role: "tablist",
-			"aria-orientation": context.orientation,
-			...listProps,
-			ref: forwardedRef
-		})
-	});
-});
-TabsList$1.displayName = TAB_LIST_NAME;
-var TRIGGER_NAME = "TabsTrigger";
-var TabsTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
-	const context = useTabsContext(TRIGGER_NAME, __scopeTabs);
-	const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
-	const triggerId = makeTriggerId(context.baseId, value);
-	const contentId = makeContentId(context.baseId, value);
-	const isSelected = value === context.value;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Item$1, {
-		asChild: true,
-		...rovingFocusGroupScope,
-		focusable: !disabled,
-		active: isSelected,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
-			type: "button",
-			role: "tab",
-			"aria-selected": isSelected,
-			"aria-controls": contentId,
-			"data-state": isSelected ? "active" : "inactive",
-			"data-disabled": disabled ? "" : void 0,
-			disabled,
-			id: triggerId,
-			...triggerProps,
-			ref: forwardedRef,
-			onMouseDown: composeEventHandlers(props.onMouseDown, (event) => {
-				if (!disabled && event.button === 0 && event.ctrlKey === false) context.onValueChange(value);
-				else event.preventDefault();
-			}),
-			onKeyDown: composeEventHandlers(props.onKeyDown, (event) => {
-				if ([" ", "Enter"].includes(event.key)) context.onValueChange(value);
-			}),
-			onFocus: composeEventHandlers(props.onFocus, () => {
-				const isAutomaticActivation = context.activationMode !== "manual";
-				if (!isSelected && !disabled && isAutomaticActivation) context.onValueChange(value);
-			})
-		})
-	});
-});
-TabsTrigger$1.displayName = TRIGGER_NAME;
-var CONTENT_NAME = "TabsContent";
-var TabsContent$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeTabs, value, forceMount, children, ...contentProps } = props;
-	const context = useTabsContext(CONTENT_NAME, __scopeTabs);
-	const triggerId = makeTriggerId(context.baseId, value);
-	const contentId = makeContentId(context.baseId, value);
-	const isSelected = value === context.value;
-	const isMountAnimationPreventedRef = import_react.useRef(isSelected);
-	import_react.useEffect(() => {
-		const rAF = requestAnimationFrame(() => isMountAnimationPreventedRef.current = false);
-		return () => cancelAnimationFrame(rAF);
-	}, []);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
-		present: forceMount || isSelected,
-		children: ({ present }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-			"data-state": isSelected ? "active" : "inactive",
-			"data-orientation": context.orientation,
-			role: "tabpanel",
-			"aria-labelledby": triggerId,
-			hidden: !present,
-			id: contentId,
-			tabIndex: 0,
-			...contentProps,
-			ref: forwardedRef,
-			style: {
-				...props.style,
-				animationDuration: isMountAnimationPreventedRef.current ? "0s" : void 0
-			},
-			children: present && children
-		})
-	});
-});
-TabsContent$1.displayName = CONTENT_NAME;
-function makeTriggerId(baseId, value) {
-	return `${baseId}-trigger-${value}`;
-}
-function makeContentId(baseId, value) {
-	return `${baseId}-content-${value}`;
-}
-var Root2 = Tabs$1;
-var List$1 = TabsList$1;
-var Trigger = TabsTrigger$1;
-var Content = TabsContent$1;
-var Tabs = Root2;
-var TabsList = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(List$1, {
-	ref,
-	className: cn("inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground", className),
-	...props
-}));
-TabsList.displayName = List$1.displayName;
-var TabsTrigger = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trigger, {
-	ref,
-	className: cn("inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm", className),
-	...props
-}));
-TabsTrigger.displayName = Trigger.displayName;
-var TabsContent = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content, {
-	ref,
-	className: cn("mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", className),
-	...props
-}));
-TabsContent.displayName = Content.displayName;
 function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = false }) {
 	const { t, language } = useLanguageStore_default();
 	const getPriorityColor = (priority) => {
@@ -68086,14 +69073,6 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 		})
 	});
 }
-var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
-		className: cn("flex min-h-[80px] w-full rounded-md border border-input bg-white px-3 py-2 text-base text-black ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-100 md:text-sm shadow-none", "disabled:text-black disabled:bg-white", className),
-		ref,
-		...props
-	});
-});
-Textarea.displayName = "Textarea";
 function CreateTaskDialog({ open: controlledOpen, onOpenChange, initialPropertyId, initialDate }) {
 	const [internalOpen, setInternalOpen] = (0, import_react.useState)(false);
 	const isControlled = controlledOpen !== void 0;
@@ -75342,4 +76321,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-R43BjWiD.js.map
+//# sourceMappingURL=index-bISubr7P.js.map
