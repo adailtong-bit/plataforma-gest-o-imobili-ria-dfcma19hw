@@ -54,6 +54,13 @@ export interface SeasonalPrice {
   price: number
 }
 
+export interface ItemPrice {
+  id: string
+  price: number
+  startDate: string
+  endDate: string
+}
+
 export interface GuestService {
   id: string
   name: string
@@ -63,6 +70,7 @@ export interface GuestService {
   active: boolean
   validityStart?: string
   seasonalPrices?: SeasonalPrice[]
+  prices?: ItemPrice[]
 }
 
 export interface ServiceOrder {
@@ -84,6 +92,7 @@ export interface PosItem {
   category: 'minibar' | 'restaurant' | 'laundry' | 'shop'
   active: boolean
   validityStart?: string
+  prices?: ItemPrice[]
 }
 
 export interface PosTransaction {
@@ -873,6 +882,7 @@ export interface Invoice {
   toId?: string
   propertyId?: string
   type?: 'team_to_partner' | 'partner_to_pm' | 'admin_to_pm' | 'generic'
+  bookingId?: string
 }
 
 export interface Payment {

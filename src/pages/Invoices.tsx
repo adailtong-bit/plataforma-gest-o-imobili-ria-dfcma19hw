@@ -116,7 +116,9 @@ export default function Invoices() {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             {t('common.invoices')}
           </h1>
-          <p className="text-muted-foreground">Manage generated invoices.</p>
+          <p className="text-muted-foreground">
+            Gerencie as faturas geradas (incluindo serviços e PDV).
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Input
@@ -187,6 +189,7 @@ export default function Invoices() {
               <TableRow>
                 <TableHead>Invoice ID</TableHead>
                 <TableHead>{t('common.description')}</TableHead>
+                <TableHead>Reserva Associada</TableHead>
                 <TableHead>{t('common.date')}</TableHead>
                 <TableHead>{t('common.status')}</TableHead>
                 <TableHead className="text-right">
@@ -203,8 +206,14 @@ export default function Invoices() {
                   <TableCell className="font-mono text-xs">
                     <DataMask>{inv.id}</DataMask>
                   </TableCell>
-                  <TableCell className="font-medium text-slate-900">
+                  <TableCell
+                    className="font-medium text-slate-900 max-w-[200px] truncate"
+                    title={inv.description}
+                  >
                     <DataMask>{inv.description}</DataMask>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-xs font-mono">
+                    {inv.bookingId || '-'}
                   </TableCell>
                   <TableCell>
                     {format(new Date(inv.date), 'MMM dd, yyyy')}
@@ -257,7 +266,7 @@ export default function Invoices() {
               {filteredInvoices.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className="text-center py-6 text-muted-foreground"
                   >
                     {t('common.empty')}

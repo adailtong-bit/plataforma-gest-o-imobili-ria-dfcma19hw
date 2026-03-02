@@ -3,6 +3,7 @@ import { twMerge } from 'tailwind-merge'
 import { Language } from './translations'
 import { format } from 'date-fns'
 import { ptBR, es, enUS } from 'date-fns/locale'
+import { ItemPrice } from './types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -12,7 +13,6 @@ export const isValidEmail = (email: string) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
-// Check for generic or placeholder values to enforce data integrity
 export const isGenericOrPlaceholder = (
   value: string | undefined | null,
 ): boolean => {
@@ -172,18 +172,16 @@ export const getCurrencyLocale = (currency: string) => {
   const currencyLocales: Record<string, string> = {
     USD: 'en-US',
     BRL: 'pt-BR',
-    EUR: 'de-DE', // Standard Euro formatting
+    EUR: 'de-DE',
   }
   return currencyLocales[currency] || 'en-US'
 }
 
 export const formatCurrency = (value: number, currency: string = 'USD') => {
   let code = currency
-  // Validation for currency code to prevent RangeError with locale strings or empty values
   if (!code || typeof code !== 'string' || code.length !== 3) {
     code = 'USD'
   }
-  // Ensure it is uppercase
   code = code.toUpperCase()
 
   const locale = getCurrencyLocale(code)
@@ -194,7 +192,6 @@ export const formatCurrency = (value: number, currency: string = 'USD') => {
       currency: code,
     }).format(value)
   } catch (error) {
-    // Fallback if formatting fails
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -218,4 +215,20 @@ export const formatDate = (
   }
 
   return format(d, 'MM/dd/yyyy', { locale: enUS })
+}
+
+export const getCurrentPrice = (
+  basePrice: number,
+  prices?: ItemPrice[],
+): number => {
+  if (!prices || prices.length === 0) return basePrice
+  const today = new Date().toISOString().split('T')[0]
+  const active = prices.find(
+    (p) =>
+      p.startDate &&
+      p.endDate &&
+      p.startDate.split('T')[0] <= today &&
+      today <= p.endDate.split('T')[0],
+  )
+  return active ? active.price : basePrice
 }

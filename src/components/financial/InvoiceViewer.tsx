@@ -61,7 +61,7 @@ export function InvoiceViewer({
               {t('invoices.invoice_viewer.bill_to')}:
             </p>
             <p className="font-bold text-lg">
-              <DataMask>Client / Owner</DataMask>
+              <DataMask>Hóspede / Cliente</DataMask>
             </p>
           </div>
 
@@ -83,7 +83,7 @@ export function InvoiceViewer({
               </div>
               <div className="text-right">1</div>
               <div className="text-right font-medium">
-                <DataMask>{formatCurrency(invoice.amount, language)}</DataMask>
+                <DataMask>{formatCurrency(invoice.amount, 'BRL')}</DataMask>
               </div>
             </div>
           </div>
@@ -93,18 +93,14 @@ export function InvoiceViewer({
               <div className="flex justify-between text-sm">
                 <span>{t('invoices.invoice_viewer.subtotal')}</span>
                 <span>
-                  <DataMask>
-                    {formatCurrency(invoice.amount, language)}
-                  </DataMask>
+                  <DataMask>{formatCurrency(invoice.amount, 'BRL')}</DataMask>
                 </span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg text-slate-900">
                 <span>{t('invoices.invoice_viewer.total')}</span>
                 <span>
-                  <DataMask>
-                    {formatCurrency(invoice.amount, language)}
-                  </DataMask>
+                  <DataMask>{formatCurrency(invoice.amount, 'BRL')}</DataMask>
                 </span>
               </div>
             </div>
@@ -121,7 +117,7 @@ export function InvoiceViewer({
             <Printer className="h-4 w-4 mr-2" />{' '}
             {t('invoices.invoice_viewer.print')}
           </Button>
-          <Button className="bg-trust-blue">
+          <Button className="bg-trust-blue text-white">
             <Download className="h-4 w-4 mr-2" />{' '}
             {t('invoices.invoice_viewer.download')}
           </Button>

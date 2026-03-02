@@ -15,8 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { GuestService } from '@/lib/types'
+import { GuestService, ItemPrice } from '@/lib/types'
 import { useState, useEffect } from 'react'
+import { CurrencyInput } from '@/components/ui/currency-input'
+import useFinancialStore from '@/stores/useFinancialStore'
+import { getCurrencyLocale } from '@/lib/utils'
+import { Plus, Trash2 } from 'lucide-react'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface ServiceDialogProps {
   open: boolean
@@ -31,56 +36,207 @@ export function ServiceDialog({
   onSave,
   service,
 }: ServiceDialogProps) {
+  const { t } = useLanguageStore()
+  const { currency } = useFinancialStore()
+  const locale = getCurrencyLocale(currency)
+
   const [data, setData] = useState<Partial<GuestService>>({})
+  const [prices, setPrices] = useState<ItemPrice[]>([])
+  const [newPrice, setNewPrice] = useState<number>(0)
+  const [newStartDate, setNewStartDate] = useState('')
+  const [newEndDate, setNewEndDate] = useState('')
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    setData(service || { name: '', price: 0, category: 'other' })
+    setData(
+      service || {
+        name: '',
+        description: '',
+        price: 0,
+        category: 'other',
+        active: true,
+      },
+    )
+    setPrices(service?.prices || [])
+    setNewPrice(0)
+    setNewStartDate('')
+    setNewEndDate('')
+    setError('')
   }, [service, open])
+
+  const handleAddPrice = () => {
+    if (!newStartDate || !newEndDate) {
+      setError(t('common.validation_error') + ': Datas são obrigatórias.')
+      return
+    }
+    if (newStartDate > newEndDate) {
+      setError(
+        t('common.validation_error') +
+          ': Data de Início deve ser anterior à Data de Término.',
+      )
+      return
+    }
+    setError('')
+    setPrices([
+      ...prices,
+      {
+        id: `price-${Date.now()}`,
+        price: newPrice,
+        startDate: newStartDate,
+        endDate: newEndDate,
+      },
+    ])
+    setNewPrice(0)
+    setNewStartDate('')
+    setNewEndDate('')
+  }
+
+  const handleRemovePrice = (id: string) => {
+    setPrices(prices.filter((p) => p.id !== id))
+  }
+
+  const handleSave = () => {
+    if (!data.name) {
+      setError(t('common.name_required'))
+      return
+    }
+    onSave({ ...data, prices })
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
-          <DialogTitle>{service ? 'Edit Service' : 'New Service'}</DialogTitle>
+          <DialogTitle>
+            {service ? t('common.edit') : t('common.new')}{' '}
+            {t('sidebar.guest_services')}
+          </DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
+          {error && <div className="text-red-500 text-sm">{error}</div>}
           <div className="grid gap-2">
-            <Label>Name</Label>
+            <Label>{t('common.name')} *</Label>
             <Input
-              value={data.name}
+              value={data.name || ''}
               onChange={(e) => setData({ ...data, name: e.target.value })}
             />
           </div>
           <div className="grid gap-2">
-            <Label>Price</Label>
+            <Label>{t('common.description')}</Label>
             <Input
-              type="number"
-              value={data.price}
+              value={data.description || ''}
               onChange={(e) =>
-                setData({ ...data, price: Number(e.target.value) })
+                setData({ ...data, description: e.target.value })
               }
             />
           </div>
-          <div className="grid gap-2">
-            <Label>Category</Label>
-            <Select
-              value={data.category}
-              onValueChange={(v: any) => setData({ ...data, category: v })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="transport">Transport</SelectItem>
-                <SelectItem value="dining">Dining</SelectItem>
-                <SelectItem value="spa">Spa</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label>
+                {t('common.value')} Base ({currency}) *
+              </Label>
+              <CurrencyInput
+                value={data.price || 0}
+                onChange={(val) => setData({ ...data, price: val })}
+                currency={currency}
+                locale={locale}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>{t('common.category')} *</Label>
+              <Select
+                value={data.category || 'other'}
+                onValueChange={(v: any) => setData({ ...data, category: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="transport">Transport</SelectItem>
+                  <SelectItem value="dining">Dining</SelectItem>
+                  <SelectItem value="spa">Spa</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="border-t pt-4 mt-2">
+            <Label className="text-base font-semibold mb-4 block">
+              Preços Específicos por Período
+            </Label>
+            <div className="flex flex-col gap-3">
+              {prices.map((p) => (
+                <div
+                  key={p.id}
+                  className="flex items-center justify-between bg-slate-50 p-2 rounded border"
+                >
+                  <div className="text-sm">
+                    <span className="font-medium">
+                      {new Intl.NumberFormat(locale, {
+                        style: 'currency',
+                        currency,
+                      }).format(p.price)}
+                    </span>
+                    <span className="text-slate-500 ml-2">
+                      ({p.startDate} - {p.endDate})
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-red-500 h-8 w-8"
+                    onClick={() => handleRemovePrice(p.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+
+              <div className="grid grid-cols-3 gap-2 items-end bg-slate-50 p-3 rounded border">
+                <div className="grid gap-2 col-span-3 mb-2">
+                  <Label>Novo Preço ({currency})</Label>
+                  <CurrencyInput
+                    value={newPrice}
+                    onChange={(val) => setNewPrice(val)}
+                    currency={currency}
+                    locale={locale}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Data de Início</Label>
+                  <Input
+                    type="date"
+                    value={newStartDate}
+                    onChange={(e) => setNewStartDate(e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Data de Término</Label>
+                  <Input
+                    type="date"
+                    value={newEndDate}
+                    onChange={(e) => setNewEndDate(e.target.value)}
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={handleAddPrice}
+                  className="w-full"
+                >
+                  <Plus className="h-4 w-4 mr-1" /> Add
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={() => onSave(data)}>Save</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            {t('common.cancel')}
+          </Button>
+          <Button onClick={handleSave} className="bg-trust-blue text-white">
+            {t('common.save')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
