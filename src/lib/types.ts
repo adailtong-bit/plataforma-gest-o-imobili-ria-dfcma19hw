@@ -785,6 +785,8 @@ export interface ServiceRate {
   type?: 'generic' | 'specific'
   categoryId?: string
   lastUpdated?: string
+  country?: 'US' | 'BR' | 'ES'
+  description?: string
 }
 
 export interface PartnerEmployee {
@@ -1207,3 +1209,4 @@ export interface PMSpecificPricing {
   pmId: string
   fixedRate: number
 }
+
