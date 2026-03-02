@@ -19155,6 +19155,13 @@ var ChevronUp = createLucideIcon("chevron-up", [["path", {
 	d: "m18 15-6-6-6 6",
 	key: "153udz"
 }]]);
+var ChevronsUpDown = createLucideIcon("chevrons-up-down", [["path", {
+	d: "m7 15 5 5 5-5",
+	key: "1hf1tw"
+}], ["path", {
+	d: "m7 9 5-5 5 5",
+	key: "sgt6xg"
+}]]);
 var CircleCheckBig = createLucideIcon("circle-check-big", [["path", {
 	d: "M21.801 10A10 10 0 1 1 17 3.335",
 	key: "yps3ct"
@@ -19571,6 +19578,17 @@ var Lock = createLucideIcon("lock", [["rect", {
 	d: "M7 11V7a5 5 0 0 1 10 0v4",
 	key: "fwvmzm"
 }]]);
+var Mail = createLucideIcon("mail", [["path", {
+	d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7",
+	key: "132q7q"
+}], ["rect", {
+	x: "2",
+	y: "4",
+	width: "20",
+	height: "16",
+	rx: "2",
+	key: "izxlao"
+}]]);
 var MapPin = createLucideIcon("map-pin", [["path", {
 	d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0",
 	key: "1r0f0z"
@@ -19612,6 +19630,10 @@ var PanelLeft = createLucideIcon("panel-left", [["rect", {
 }], ["path", {
 	d: "M9 3v18",
 	key: "fh3hqa"
+}]]);
+var Pen = createLucideIcon("pen", [["path", {
+	d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
+	key: "1a8usu"
 }]]);
 var Pencil = createLucideIcon("pencil", [["path", {
 	d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
@@ -53599,6 +53621,7 @@ const bookings = [{
 	checkOut: "2024-06-05",
 	status: "checked_in",
 	totalAmount: 1400,
+	baseAmount: 1400,
 	paid: true,
 	platform: "direct",
 	propertyName: "Suite 101 (Norte)"
@@ -53611,6 +53634,7 @@ const bookings = [{
 	checkOut: "2024-06-15",
 	status: "confirmed",
 	totalAmount: 1200,
+	baseAmount: 1200,
 	paid: true,
 	platform: "booking.com",
 	propertyName: "Suite 205 (Sul)"
@@ -53680,7 +53704,9 @@ const promotions = [{
 	active: true,
 	usageCount: 12,
 	totalDiscountApplied: 450,
-	description: "15% off summer bookings"
+	description: "15% off summer bookings",
+	targetType: "all",
+	scope: "global"
 }, {
 	id: "promo2",
 	code: "EARLYBIRD",
@@ -53691,7 +53717,10 @@ const promotions = [{
 	active: true,
 	usageCount: 5,
 	totalDiscountApplied: 200,
-	description: "Early bird special"
+	description: "Early bird special",
+	targetType: "hotel",
+	targetId: "h1",
+	scope: "global"
 }];
 const campaigns = [{
 	id: "camp1",
@@ -54033,6 +54062,7 @@ for (let i = 0; i < 300; i++) {
 	const prop = rndItem(stProps);
 	const cIn = rndDateStr(new Date(2024, 0, 1), new Date(2024, 11, 1));
 	const cOut = rndDateStr(new Date(2024, 11, 2), new Date(2024, 11, 31));
+	const amt = rnd(200, 2e3);
 	bookings.push({
 		id: `booking_gen_${i}`,
 		propertyId: prop.id,
@@ -54047,7 +54077,8 @@ for (let i = 0; i < 300; i++) {
 			"checked_out",
 			"cancelled"
 		]),
-		totalAmount: rnd(200, 2e3),
+		totalAmount: amt,
+		baseAmount: amt,
 		paid: rnd(0, 1) === 1,
 		platform: rndItem([
 			"airbnb",
@@ -54346,7 +54377,9 @@ for (let i = 0; i < 30; i++) promotions.push({
 	endDate: rndDateStr(new Date(2024, 6, 2), new Date(2025, 0, 1)),
 	active: true,
 	usageCount: rnd(0, 100),
-	description: `Generated promotion ${i}`
+	description: `Generated promotion ${i}`,
+	targetType: "all",
+	scope: "global"
 });
 const tutorialModules = [
 	{
@@ -59731,7 +59764,13 @@ var Separator = import_react.forwardRef(({ className, orientation = "horizontal"
 Separator.displayName = Root$5.displayName;
 function InvoiceViewer({ open, onOpenChange, invoice }) {
 	const { t, language } = useLanguageStore_default();
+	const { bookings: bookings$1, promotions: promotions$1, currency } = (0, import_react.useContext)(AppContext);
 	if (!invoice) return null;
+	const booking = invoice.bookingId ? bookings$1.find((b$1) => b$1.id === invoice.bookingId) : null;
+	const promotion = booking?.promotionId ? promotions$1.find((p$1) => p$1.id === booking.promotionId) : null;
+	const subtotal = booking?.baseAmount || invoice.amount;
+	const discount = booking?.discountAmount || 0;
+	const finalTotal = invoice.amount;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open,
 		onOpenChange,
@@ -59780,44 +59819,74 @@ function InvoiceViewer({ open, onOpenChange, invoice }) {
 								children: [t("invoices.invoice_viewer.bill_to"), ":"]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 								className: "font-bold text-lg",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: "Hóspede / Cliente" })
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: booking ? booking.guestName : "Cliente" })
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "border-t border-b py-4 mb-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid grid-cols-4 font-bold text-sm mb-2 text-slate-900",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "col-span-2",
-										children: t("invoices.invoice_viewer.description")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "text-right",
-										children: t("invoices.invoice_viewer.quantity")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "text-right",
-										children: t("invoices.invoice_viewer.amount")
-									})
-								]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid grid-cols-4 text-sm text-slate-700",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "col-span-2",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: invoice.description })
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "text-right",
-										children: "1"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "text-right font-medium",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(invoice.amount, "BRL") })
-									})
-								]
-							})]
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-4 font-bold text-sm mb-2 text-slate-900",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "col-span-2",
+											children: t("invoices.invoice_viewer.description")
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "text-right",
+											children: t("invoices.invoice_viewer.quantity")
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "text-right",
+											children: t("invoices.invoice_viewer.amount")
+										})
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-4 text-sm text-slate-700 py-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "col-span-2",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: invoice.description })
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "text-right",
+											children: "1"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "text-right font-medium",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(subtotal, currency) })
+										})
+									]
+								}),
+								promotion && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-4 text-sm text-green-700 py-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "col-span-2 flex flex-col",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Discount Applied" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+													className: "text-xs font-medium",
+													children: ["Code: ", promotion.code]
+												}),
+												promotion.description && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "text-xs opacity-80",
+													children: promotion.description
+												})
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "text-right",
+											children: "1"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "text-right font-medium",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["-", formatCurrency(discount, currency)] })
+										})
+									]
+								})
+							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "flex justify-end",
@@ -59826,12 +59895,16 @@ function InvoiceViewer({ open, onOpenChange, invoice }) {
 								children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "flex justify-between text-sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("invoices.invoice_viewer.subtotal") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(invoice.amount, "BRL") }) })]
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("invoices.invoice_viewer.subtotal") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(subtotal, currency) }) })]
+									}),
+									promotion && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex justify-between text-sm text-green-700",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Discount" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["-", formatCurrency(discount, currency)] }) })]
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "flex justify-between font-bold text-lg text-slate-900",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("invoices.invoice_viewer.total") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(invoice.amount, "BRL") }) })]
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("invoices.invoice_viewer.total") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(finalTotal, currency) }) })]
 									})
 								]
 							})
@@ -63186,7 +63259,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$48({ inst: {
+			cachedValue = useState$50({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -63223,7 +63296,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$48 = React$67.useState, useEffect$20 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$50 = React$67.useState, useEffect$20 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -76140,47 +76213,94 @@ function Automation() {
 	});
 }
 function ShortTerm() {
-	const { bookings: bookings$1, formatAppCurrency, addBooking, updateBooking, deleteBooking } = (0, import_react.useContext)(AppContext);
+	const { bookings: bookings$1, properties: properties$1, promotions: promotions$1, formatAppCurrency, addBooking, updateBooking, deleteBooking } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
 	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
-	const [form, setForm] = (0, import_react.useState)({
+	const defaultForm = {
 		guestName: "",
 		checkIn: "",
 		checkOut: "",
-		totalAmount: ""
-	});
+		propertyId: "none",
+		baseAmount: "",
+		promotionId: "none"
+	};
+	const [form, setForm] = (0, import_react.useState)(defaultForm);
+	const applicablePromotions = (0, import_react.useMemo)(() => {
+		if (form.propertyId === "none") return [];
+		const selectedProp = properties$1.find((p$1) => p$1.id === form.propertyId);
+		return promotions$1.filter((p$1) => {
+			if (!p$1.active) return false;
+			if (p$1.targetType === "all" || !p$1.targetType) return true;
+			if (p$1.targetType === "property" && p$1.targetId === form.propertyId) return true;
+			if (p$1.targetType === "hotel" && selectedProp?.hotelId === p$1.targetId) {
+				if (p$1.scope === "global" || !p$1.scope) return true;
+				if (p$1.scope === "specific_rooms" && p$1.roomIds?.includes(form.propertyId)) return true;
+			}
+			return false;
+		});
+	}, [
+		form.propertyId,
+		properties$1,
+		promotions$1
+	]);
+	const discountAmount = (0, import_react.useMemo)(() => {
+		const base = Number(form.baseAmount) || 0;
+		if (form.promotionId !== "none") {
+			const p$1 = promotions$1.find((x$2) => x$2.id === form.promotionId);
+			if (p$1) return p$1.type === "percentage" ? base * (p$1.value / 100) : p$1.value;
+		}
+		return 0;
+	}, [
+		form.baseAmount,
+		form.promotionId,
+		promotions$1
+	]);
+	const finalAmount = (0, import_react.useMemo)(() => {
+		const base = Number(form.baseAmount) || 0;
+		return Math.max(0, base - discountAmount);
+	}, [form.baseAmount, discountAmount]);
 	const handleAdd = () => {
+		if (form.propertyId === "none") {
+			toast$2({
+				title: t("common.error"),
+				variant: "destructive"
+			});
+			return;
+		}
+		const prop = properties$1.find((p$1) => p$1.id === form.propertyId);
 		addBooking({
 			id: `booking-${Date.now()}`,
-			propertyId: "prop1",
-			propertyName: "Nova Propriedade",
+			propertyId: form.propertyId,
+			propertyName: prop?.name || "Property",
 			guestName: form.guestName || "Novo Hóspede",
 			guestEmail: "guest@example.com",
 			checkIn: form.checkIn || (/* @__PURE__ */ new Date()).toISOString(),
 			checkOut: form.checkOut || (/* @__PURE__ */ new Date()).toISOString(),
-			totalAmount: Number(form.totalAmount) || 0,
+			baseAmount: Number(form.baseAmount) || 0,
+			discountAmount,
+			promotionId: form.promotionId !== "none" ? form.promotionId : void 0,
+			totalAmount: finalAmount,
 			status: "confirmed",
 			paid: false,
 			platform: "direct"
 		});
 		setIsAddOpen(false);
-		setForm({
-			guestName: "",
-			checkIn: "",
-			checkOut: "",
-			totalAmount: ""
-		});
+		setForm(defaultForm);
 		toast$2({ title: "Reserva incluída com sucesso" });
 	};
 	const handleEdit = () => {
 		if (editingRecord) updateBooking({
 			...editingRecord,
+			propertyId: form.propertyId,
 			guestName: form.guestName,
 			checkIn: form.checkIn,
 			checkOut: form.checkOut,
-			totalAmount: Number(form.totalAmount)
+			baseAmount: Number(form.baseAmount) || 0,
+			discountAmount,
+			promotionId: form.promotionId !== "none" ? form.promotionId : void 0,
+			totalAmount: finalAmount
 		});
 		setEditingRecord(null);
 		toast$2({ title: "Reserva alterada com sucesso" });
@@ -76188,6 +76308,17 @@ function ShortTerm() {
 	const handleDelete = (id) => {
 		deleteBooking(id);
 		toast$2({ title: "Reserva excluída com sucesso" });
+	};
+	const openEdit = (b$1) => {
+		setEditingRecord(b$1);
+		setForm({
+			guestName: b$1.guestName,
+			checkIn: b$1.checkIn.split("T")[0],
+			checkOut: b$1.checkOut.split("T")[0],
+			propertyId: b$1.propertyId || "none",
+			baseAmount: (b$1.baseAmount || b$1.totalAmount).toString(),
+			promotionId: b$1.promotionId || "none"
+		});
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
@@ -76201,7 +76332,10 @@ function ShortTerm() {
 				children: "Manage your vacation rentals."
 			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 				open: isAddOpen,
-				onOpenChange: setIsAddOpen,
+				onOpenChange: (v) => {
+					setIsAddOpen(v);
+					if (!v) setForm(defaultForm);
+				},
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
 					asChild: true,
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
@@ -76213,40 +76347,103 @@ function ShortTerm() {
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "space-y-4 py-4",
 						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								placeholder: "Nome do Hóspede",
-								value: form.guestName,
-								onChange: (e) => setForm({
-									...form,
-									guestName: e.target.value
-								})
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Propriedade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: form.propertyId,
+									onValueChange: (v) => setForm({
+										...form,
+										propertyId: v,
+										promotionId: "none"
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "none",
+										children: "Selecione..."
+									}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: p$1.id,
+										children: p$1.name
+									}, p$1.id))] })]
+								})]
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								type: "date",
-								placeholder: "Check-In",
-								value: form.checkIn,
-								onChange: (e) => setForm({
-									...form,
-									checkIn: e.target.value
-								})
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nome do Hóspede" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									placeholder: "Nome do Hóspede",
+									value: form.guestName,
+									onChange: (e) => setForm({
+										...form,
+										guestName: e.target.value
+									})
+								})]
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								type: "date",
-								placeholder: "Check-Out",
-								value: form.checkOut,
-								onChange: (e) => setForm({
-									...form,
-									checkOut: e.target.value
-								})
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-2 gap-4",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Check-In" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										type: "date",
+										value: form.checkIn,
+										onChange: (e) => setForm({
+											...form,
+											checkIn: e.target.value
+										})
+									})]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Check-Out" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										type: "date",
+										value: form.checkOut,
+										onChange: (e) => setForm({
+											...form,
+											checkOut: e.target.value
+										})
+									})]
+								})]
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								type: "number",
-								placeholder: "Valor Total",
-								value: form.totalAmount,
-								onChange: (e) => setForm({
-									...form,
-									totalAmount: e.target.value
-								})
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-2 gap-4 border-t pt-4",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Valor Base" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										type: "number",
+										placeholder: "Valor Base",
+										value: form.baseAmount,
+										onChange: (e) => setForm({
+											...form,
+											baseAmount: e.target.value
+										})
+									})]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Promoção" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: form.promotionId,
+										onValueChange: (v) => setForm({
+											...form,
+											promotionId: v
+										}),
+										disabled: applicablePromotions.length === 0,
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Nenhuma" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "none",
+											children: "Nenhuma"
+										}), applicablePromotions.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+											value: p$1.id,
+											children: [
+												p$1.code,
+												" (",
+												p$1.type === "percentage" ? `${p$1.value}%` : `$${p$1.value}`,
+												")"
+											]
+										}, p$1.id))] })]
+									})]
+								})]
+							}),
+							discountAmount > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-between items-center text-sm text-green-600 bg-green-50 p-2 rounded",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Desconto Aplicado:" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["-", formatAppCurrency(discountAmount)] })]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-between items-center font-bold text-lg",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Total Final:" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: formatAppCurrency(finalAmount) })]
 							})
 						]
 					}),
@@ -76293,8 +76490,17 @@ function ShortTerm() {
 							children: b$1.status
 						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right font-bold",
-							children: formatAppCurrency(b$1.totalAmount)
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex flex-col items-end",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "font-bold",
+									children: formatAppCurrency(b$1.totalAmount)
+								}), b$1.promotionId && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									className: "text-xs text-green-600",
+									children: ["Desc. ", formatAppCurrency(b$1.discountAmount || 0)]
+								})]
+							})
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
@@ -76308,15 +76514,7 @@ function ShortTerm() {
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 											variant: "outline",
 											size: "sm",
-											onClick: () => {
-												setEditingRecord(b$1);
-												setForm({
-													guestName: b$1.guestName,
-													checkIn: b$1.checkIn.split("T")[0],
-													checkOut: b$1.checkOut.split("T")[0],
-													totalAmount: b$1.totalAmount.toString()
-												});
-											},
+											onClick: () => openEdit(b$1),
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
 										})
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
@@ -76324,40 +76522,95 @@ function ShortTerm() {
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-4 py-4",
 											children: [
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Nome do Hóspede",
-													value: form.guestName,
-													onChange: (e) => setForm({
-														...form,
-														guestName: e.target.value
-													})
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "space-y-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Propriedade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+														value: form.propertyId,
+														onValueChange: (v) => setForm({
+															...form,
+															propertyId: v,
+															promotionId: "none"
+														}),
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															value: "none",
+															children: "Selecione..."
+														}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															value: p$1.id,
+															children: p$1.name
+														}, p$1.id))] })]
+													})]
 												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													type: "date",
-													placeholder: "Check-In",
-													value: form.checkIn,
-													onChange: (e) => setForm({
-														...form,
-														checkIn: e.target.value
-													})
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "space-y-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nome do Hóspede" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: form.guestName,
+														onChange: (e) => setForm({
+															...form,
+															guestName: e.target.value
+														})
+													})]
 												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													type: "date",
-													placeholder: "Check-Out",
-													value: form.checkOut,
-													onChange: (e) => setForm({
-														...form,
-														checkOut: e.target.value
-													})
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid grid-cols-2 gap-4",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "space-y-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Check-In" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+															type: "date",
+															value: form.checkIn,
+															onChange: (e) => setForm({
+																...form,
+																checkIn: e.target.value
+															})
+														})]
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "space-y-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Check-Out" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+															type: "date",
+															value: form.checkOut,
+															onChange: (e) => setForm({
+																...form,
+																checkOut: e.target.value
+															})
+														})]
+													})]
 												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													type: "number",
-													placeholder: "Valor Total",
-													value: form.totalAmount,
-													onChange: (e) => setForm({
-														...form,
-														totalAmount: e.target.value
-													})
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid grid-cols-2 gap-4 border-t pt-4",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "space-y-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Valor Base" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+															type: "number",
+															value: form.baseAmount,
+															onChange: (e) => setForm({
+																...form,
+																baseAmount: e.target.value
+															})
+														})]
+													}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "space-y-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Promoção" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+															value: form.promotionId,
+															onValueChange: (v) => setForm({
+																...form,
+																promotionId: v
+															}),
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Nenhuma" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: "none",
+																children: "Nenhuma"
+															}), applicablePromotions.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: p$1.id,
+																children: p$1.code
+															}, p$1.id))] })]
+														})]
+													})]
+												}),
+												discountAmount > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "flex justify-between items-center text-sm text-green-600 bg-green-50 p-2 rounded",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Desconto Aplicado:" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["-", formatAppCurrency(discountAmount)] })]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "flex justify-between items-center font-bold text-lg",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Total Final:" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: formatAppCurrency(finalAmount) })]
 												})
 											]
 										}),
@@ -78746,6 +78999,867 @@ function PointOfSale() {
 		]
 	});
 }
+var useManagementStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("useManagementStore must be used within AppProvider");
+	return {
+		guestServices: context.guestServices,
+		serviceOrders: context.serviceOrders,
+		addGuestService: context.addGuestService,
+		updateGuestService: context.updateGuestService,
+		deleteGuestService: context.deleteGuestService,
+		addServiceOrder: context.addServiceOrder,
+		posItems: context.posItems,
+		posTransactions: context.posTransactions,
+		addPosItem: context.addPosItem,
+		updatePosItem: context.updatePosItem,
+		deletePosItem: context.deletePosItem,
+		addPosTransaction: context.addPosTransaction,
+		promotions: context.promotions,
+		campaigns: context.campaigns,
+		addPromotion: context.addPromotion,
+		updatePromotion: context.updatePromotion,
+		deletePromotion: context.deletePromotion,
+		addCampaign: context.addCampaign,
+		updateCampaign: context.updateCampaign,
+		deleteCampaign: context.deleteCampaign,
+		marketingWorkflows: context.marketingWorkflows,
+		emailTemplates: context.emailTemplates,
+		addMarketingWorkflow: context.addMarketingWorkflow,
+		updateMarketingWorkflow: context.updateMarketingWorkflow,
+		deleteMarketingWorkflow: context.deleteMarketingWorkflow,
+		addEmailTemplate: context.addEmailTemplate,
+		updateEmailTemplate: context.updateEmailTemplate,
+		deleteEmailTemplate: context.deleteEmailTemplate
+	};
+};
+var useManagementStore_default = useManagementStore;
+function MarketingAutomation() {
+	const { marketingWorkflows: marketingWorkflows$1, emailTemplates: emailTemplates$1, addMarketingWorkflow, updateMarketingWorkflow, deleteMarketingWorkflow, addEmailTemplate, updateEmailTemplate, deleteEmailTemplate } = useManagementStore_default();
+	const { toast: toast$2 } = useToast();
+	const { t } = useLanguageStore_default();
+	const [workflowDialogOpen, setWorkflowDialogOpen] = (0, import_react.useState)(false);
+	const [templateDialogOpen, setTemplateDialogOpen] = (0, import_react.useState)(false);
+	const [editingWorkflow, setEditingWorkflow] = (0, import_react.useState)({
+		name: "",
+		trigger: "booking_confirmed",
+		offsetTime: 0,
+		active: true
+	});
+	const [editingTemplate, setEditingTemplate] = (0, import_react.useState)({
+		name: "",
+		subject: "",
+		body: ""
+	});
+	const handleSaveWorkflow = () => {
+		if (!editingWorkflow.name || !editingWorkflow.templateId) {
+			toast$2({
+				title: t("common.error"),
+				description: t("common.validation_error"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingWorkflow.id) updateMarketingWorkflow(editingWorkflow);
+		else addMarketingWorkflow({
+			...editingWorkflow,
+			id: `mw-${Date.now()}`
+		});
+		setWorkflowDialogOpen(false);
+		setEditingWorkflow({
+			name: "",
+			trigger: "booking_confirmed",
+			offsetTime: 0,
+			active: true
+		});
+		toast$2({
+			title: t("common.success"),
+			description: t("marketing.workflow_started", {
+				action: "save",
+				name: editingWorkflow.name
+			})
+		});
+	};
+	const handleSaveTemplate = () => {
+		if (!editingTemplate.name || !editingTemplate.subject || !editingTemplate.body) {
+			toast$2({
+				title: t("common.error"),
+				description: t("common.validation_error"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingTemplate.id) updateEmailTemplate(editingTemplate);
+		else addEmailTemplate({
+			...editingTemplate,
+			id: `et-${Date.now()}`
+		});
+		setTemplateDialogOpen(false);
+		setEditingTemplate({
+			name: "",
+			subject: "",
+			body: ""
+		});
+		toast$2({
+			title: t("common.success"),
+			description: t("common.save")
+		});
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "grid gap-6",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+				className: "flex flex-row items-center justify-between",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("marketing.automated_workflows") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("marketing.automated_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: () => setWorkflowDialogOpen(true),
+					className: "gap-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+						" ",
+						t("marketing.new_workflow")
+					]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.trigger_event") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.timing") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.template") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "text-right",
+					children: t("common.actions")
+				})
+			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: marketingWorkflows$1.map((wf) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "font-medium",
+					children: wf.name
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "capitalize",
+					children: t(`marketing.${wf.trigger}`) || wf.trigger
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.offsetTime === 0 ? t("marketing.immediately") : `${Math.abs(wf.offsetTime)} ${t("marketing.hours")} ${wf.offsetTime > 0 ? t("marketing.after") : t("marketing.before")}` }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: emailTemplates$1.find((t$1) => t$1.id === wf.templateId)?.name || "Unknown" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+					variant: wf.active ? "default" : "secondary",
+					children: wf.active ? t("common.active") : t("common.inactive")
+				}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "text-right",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex justify-end gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							size: "icon",
+							onClick: () => {
+								setEditingWorkflow(wf);
+								setWorkflowDialogOpen(true);
+							},
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-4 w-4" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							size: "icon",
+							className: "text-red-500",
+							onClick: () => deleteMarketingWorkflow(wf.id),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+						})]
+					})
+				})
+			] }, wf.id)) })] }) })] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+				className: "flex flex-row items-center justify-between",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("marketing.email_templates") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("marketing.email_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: () => setTemplateDialogOpen(true),
+					variant: "outline",
+					className: "gap-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, { className: "h-4 w-4" }),
+						" ",
+						t("marketing.new_message")
+					]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
+				children: emailTemplates$1.map((tpl) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+					className: "bg-slate-50",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+						className: "p-4 pb-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex justify-between items-start",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-base font-bold",
+								children: tpl.name
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex gap-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "ghost",
+									size: "icon",
+									className: "h-6 w-6",
+									onClick: () => {
+										setEditingTemplate(tpl);
+										setTemplateDialogOpen(true);
+									},
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-3 w-3" })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "ghost",
+									size: "icon",
+									className: "h-6 w-6 text-red-500",
+									onClick: () => deleteEmailTemplate(tpl.id),
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-3 w-3" })
+								})]
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+							className: "text-xs truncate",
+							children: tpl.subject
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+						className: "p-4 pt-2 text-xs text-muted-foreground line-clamp-3",
+						children: tpl.body
+					})]
+				}, tpl.id))
+			}) })] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: workflowDialogOpen,
+				onOpenChange: setWorkflowDialogOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingWorkflow.id ? t("common.edit") + " " + t("marketing.new_workflow") : t("marketing.new_workflow") }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-4 py-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: editingWorkflow.name,
+									onChange: (e) => setEditingWorkflow({
+										...editingWorkflow,
+										name: e.target.value
+									})
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.trigger_event") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: editingWorkflow.trigger,
+									onValueChange: (v) => setEditingWorkflow({
+										...editingWorkflow,
+										trigger: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "booking_confirmed",
+											children: t("marketing.booking_confirmed")
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "check_in",
+											children: t("marketing.check_in")
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "check_out",
+											children: t("marketing.check_out")
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "cancellation",
+											children: t("marketing.cancellation")
+										})
+									] })]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+										t("marketing.timing"),
+										" (",
+										t("marketing.hours"),
+										" offset)"
+									] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										type: "number",
+										value: editingWorkflow.offsetTime,
+										onChange: (e) => setEditingWorkflow({
+											...editingWorkflow,
+											offsetTime: Number(e.target.value)
+										}),
+										placeholder: "e.g. -24 for 1 day before"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-xs text-muted-foreground",
+										children: "Negative for \"before\", positive for \"after\", 0 for \"immediate\"."
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.template") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: editingWorkflow.templateId,
+									onValueChange: (v) => setEditingWorkflow({
+										...editingWorkflow,
+										templateId: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: emailTemplates$1.map((t$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: t$1.id,
+										children: t$1.name
+									}, t$1.id)) })]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+									checked: editingWorkflow.active,
+									onCheckedChange: (c$1) => setEditingWorkflow({
+										...editingWorkflow,
+										active: c$1
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.active") })]
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleSaveWorkflow,
+						children: t("common.save")
+					}) })
+				] })
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: templateDialogOpen,
+				onOpenChange: setTemplateDialogOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "max-w-lg",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingTemplate.id ? t("common.edit") + " " + t("marketing.template") : t("marketing.new_message") }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-4 py-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.template") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: editingTemplate.name,
+										onChange: (e) => setEditingTemplate({
+											...editingTemplate,
+											name: e.target.value
+										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.subject") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: editingTemplate.subject,
+										onChange: (e) => setEditingTemplate({
+											...editingTemplate,
+											subject: e.target.value
+										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.body") }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+											value: editingTemplate.body,
+											onChange: (e) => setEditingTemplate({
+												...editingTemplate,
+												body: e.target.value
+											}),
+											rows: 6
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+											className: "text-xs text-muted-foreground",
+											children: [
+												t("marketing.placeholders"),
+												": ",
+												"{guest_name}",
+												",",
+												" ",
+												"{property_name}",
+												", ",
+												"{check_in}",
+												", ",
+												"{check_out}",
+												"."
+											]
+										})
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							onClick: handleSaveTemplate,
+							children: t("common.save")
+						}) })
+					]
+				})
+			})
+		]
+	});
+}
+function MultiSelect({ options: options$1, selected, onChange, placeholder = "Select items...", className }) {
+	const [open, setOpen] = import_react.useState(false);
+	const handleUnselect = (item) => {
+		onChange(selected.filter((i) => i !== item));
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, {
+		open,
+		onOpenChange: setOpen,
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
+			asChild: true,
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+				variant: "outline",
+				role: "combobox",
+				"aria-expanded": open,
+				className: cn("w-full justify-between h-auto min-h-10 hover:bg-background", className),
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex gap-1 flex-wrap",
+					children: [selected.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "text-muted-foreground font-normal",
+						children: placeholder
+					}), selected.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+						variant: "secondary",
+						className: "mr-1 mb-1",
+						onClick: (e) => {
+							e.stopPropagation();
+							handleUnselect(item);
+						},
+						children: [options$1.find((opt) => opt.value === item)?.label || item, /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							className: "ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+							onKeyDown: (e) => {
+								if (e.key === "Enter") handleUnselect(item);
+							},
+							onMouseDown: (e) => {
+								e.preventDefault();
+								e.stopPropagation();
+							},
+							onClick: (e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								handleUnselect(item);
+							},
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-3 w-3 text-muted-foreground hover:text-foreground" })
+						})]
+					}, item))]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronsUpDown, { className: "h-4 w-4 shrink-0 opacity-50" })]
+			})
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContent, {
+			className: "w-full p-0",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Command, {
+				className: "w-full",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandInput, { placeholder: "Search..." }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandEmpty, { children: "No item found." }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
+						className: "max-h-64 overflow-auto",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandList, { children: options$1.map((option) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
+							onSelect: () => {
+								onChange(selected.includes(option.value) ? selected.filter((item) => item !== option.value) : [...selected, option.value]);
+								setOpen(true);
+							},
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: cn("mr-2 h-4 w-4", selected.includes(option.value) ? "opacity-100" : "opacity-0") }), option.label]
+						}, option.value)) })
+					})
+				]
+			})
+		})]
+	});
+}
+function PromotionsManagement() {
+	const { promotions: promotions$1, addPromotion, updatePromotion, deletePromotion, properties: properties$1, hotels: hotels$1, formatAppCurrency } = (0, import_react.useContext)(AppContext);
+	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const defaultForm = {
+		code: "",
+		description: "",
+		type: "percentage",
+		value: 0,
+		targetType: "all",
+		targetId: "none",
+		scope: "global",
+		roomIds: [],
+		startDate: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+		endDate: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+		active: true
+	};
+	const [form, setForm] = (0, import_react.useState)(defaultForm);
+	const getTargetLabel = (type, id) => {
+		if (type === "all" || !type) return t("common.all");
+		if (type === "property") {
+			const prop = properties$1.find((p$1) => p$1.id === id);
+			return prop ? prop.name : id;
+		}
+		if (type === "hotel") {
+			const hotel = hotels$1.find((h) => h.id === id);
+			return hotel ? hotel.name : id;
+		}
+		return id;
+	};
+	const availableRooms = form.targetType === "hotel" ? properties$1.filter((p$1) => p$1.hotelId === form.targetId).map((p$1) => ({
+		label: p$1.name,
+		value: p$1.id
+	})) : form.targetType === "property" && form.targetId !== "none" ? properties$1.filter((p$1) => p$1.id === form.targetId).map((p$1) => ({
+		label: p$1.name,
+		value: p$1.id
+	})) : [];
+	const handleSave = () => {
+		if (!form.code || form.value === void 0) {
+			toast$2({
+				title: t("common.error"),
+				description: t("common.validation_error"),
+				variant: "destructive"
+			});
+			return;
+		}
+		const payload = {
+			...defaultForm,
+			...editingRecord || {
+				id: `promo-${Date.now()}`,
+				usageCount: 0
+			},
+			...form,
+			value: Number(form.value)
+		};
+		if (editingRecord) {
+			updatePromotion(payload);
+			toast$2({ title: t("common.success") });
+		} else {
+			addPromotion(payload);
+			toast$2({ title: t("common.success") });
+		}
+		setIsAddOpen(false);
+		setEditingRecord(null);
+		setForm(defaultForm);
+	};
+	const handleDelete = (id) => {
+		deletePromotion(id);
+		toast$2({ title: t("common.delete_success") });
+	};
+	const openEdit = (promo) => {
+		setEditingRecord(promo);
+		setForm({
+			code: promo.code,
+			description: promo.description || "",
+			type: promo.type,
+			value: promo.value,
+			targetType: promo.targetType || "all",
+			targetId: promo.targetId || "none",
+			scope: promo.scope || "global",
+			roomIds: promo.roomIds || [],
+			startDate: promo.startDate,
+			endDate: promo.endDate,
+			active: promo.active
+		});
+		setIsAddOpen(true);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col gap-6",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+				className: "text-xl font-bold text-slate-900",
+				children: t("marketing.promotions")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground text-sm",
+				children: t("marketing.manage_promotions")
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: (v) => {
+					setIsAddOpen(v);
+					if (!v) {
+						setEditingRecord(null);
+						setForm(defaultForm);
+					}
+				},
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+							" ",
+							t("common.add")
+						]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "max-w-md",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") : t("common.add") }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-4 py-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-2 gap-4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: form.code,
+											onChange: (e) => setForm({
+												...form,
+												code: e.target.value
+											}),
+											placeholder: "e.g. SUMMER20"
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "space-y-2 flex items-end pb-2",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+												checked: form.active,
+												onCheckedChange: (c$1) => setForm({
+													...form,
+													active: c$1
+												})
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.active") })]
+										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+										value: form.description,
+										onChange: (e) => setForm({
+											...form,
+											description: e.target.value
+										}),
+										rows: 2
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-2 gap-4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.discount_type") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											value: form.type,
+											onValueChange: (v) => setForm({
+												...form,
+												type: v
+											}),
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "percentage",
+												children: "Percentage (%)"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "fixed_amount",
+												children: "Fixed Amount"
+											})] })]
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+											t("marketing.discount_value"),
+											" (",
+											form.type === "percentage" ? "%" : "$",
+											")"
+										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "number",
+											value: form.value,
+											onChange: (e) => setForm({
+												...form,
+												value: Number(e.target.value)
+											})
+										})]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-2 gap-4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.start_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "date",
+											value: form.startDate,
+											onChange: (e) => setForm({
+												...form,
+												startDate: e.target.value
+											})
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.end_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "date",
+											value: form.endDate,
+											onChange: (e) => setForm({
+												...form,
+												endDate: e.target.value
+											})
+										})]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.target") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: form.targetType,
+										onValueChange: (v) => setForm({
+											...form,
+											targetType: v,
+											targetId: "none"
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "all",
+												children: t("common.all")
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "hotel",
+												children: t("common.hotels")
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "property",
+												children: t("common.properties")
+											})
+										] })]
+									})]
+								}),
+								form.targetType !== "all" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+										"Select",
+										" ",
+										form.targetType === "hotel" ? t("common.hotels") : t("common.properties")
+									] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: form.targetId,
+										onValueChange: (v) => setForm({
+											...form,
+											targetId: v
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+												value: "none",
+												children: [t("common.select"), "..."]
+											}),
+											form.targetType === "hotel" && hotels$1.map((h) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: h.id,
+												children: h.name
+											}, h.id)),
+											form.targetType === "property" && properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: p$1.id,
+												children: p$1.name
+											}, p$1.id))
+										] })]
+									})]
+								}),
+								form.targetType !== "all" && form.targetId !== "none" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Scope" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: form.scope,
+										onValueChange: (v) => setForm({
+											...form,
+											scope: v,
+											roomIds: []
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "global",
+											children: "General / All Rooms"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "specific_rooms",
+											children: "Specific Rooms"
+										})] })]
+									})]
+								}),
+								form.scope === "specific_rooms" && form.targetId !== "none" && availableRooms.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Specific Rooms" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MultiSelect, {
+										options: availableRooms,
+										selected: form.roomIds || [],
+										onChange: (selected) => setForm({
+											...form,
+											roomIds: selected
+										}),
+										placeholder: "Select rooms..."
+									})]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							onClick: handleSave,
+							children: t("common.save")
+						}) })
+					]
+				})]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+			className: "border-slate-200 shadow-sm bg-white",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+				className: "p-0 overflow-auto",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+					className: "bg-slate-50",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Code" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Target" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Discount" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Dates" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Usage" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: "Actions"
+						})
+					] })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [promotions$1.map((promo) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+					className: "hover:bg-slate-50",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+							className: "font-bold text-slate-900",
+							children: [promo.code, promo.description && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-xs text-muted-foreground font-normal line-clamp-1",
+								children: promo.description
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-col",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "text-sm font-medium",
+								children: getTargetLabel(promo.targetType, promo.targetId)
+							}), promo.scope === "specific_rooms" && promo.roomIds && promo.roomIds.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+								className: "text-xs text-muted-foreground",
+								children: [promo.roomIds.length, " specific rooms"]
+							})]
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: "secondary",
+							children: promo.type === "percentage" ? `${promo.value}%` : formatAppCurrency(promo.value)
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+							className: "text-sm text-muted-foreground",
+							children: [
+								promo.startDate,
+								" - ",
+								promo.endDate
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: promo.usageCount }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: promo.active ? "default" : "outline",
+							children: promo.active ? t("common.active") : "Inactive"
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "outline",
+									size: "sm",
+									onClick: () => openEdit(promo),
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4" })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm_delete") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(promo.id),
+									children: t("common.delete")
+								})] })] })] })]
+							})
+						})
+					]
+				}, promo.id)), promotions$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					colSpan: 7,
+					className: "text-center py-6 text-muted-foreground",
+					children: t("common.empty")
+				}) })] })] })
+			})
+		})]
+	});
+}
 function Marketing() {
 	const { campaigns: campaigns$1, addCampaign, updateCampaign, deleteCampaign } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
@@ -78791,174 +79905,214 @@ function Marketing() {
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 			className: "flex justify-between items-center",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 				className: "text-3xl font-bold tracking-tight text-slate-900",
 				children: t("sidebar.marketing")
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 				className: "text-muted-foreground",
-				children: "Manage marketing campaigns."
-			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-				open: isAddOpen,
-				onOpenChange: setIsAddOpen,
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						className: "bg-trust-blue gap-2 text-white",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Campanha" }) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-4 py-4",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								placeholder: "Nome da Campanha",
-								value: form.name,
-								onChange: (e) => setForm({
-									...form,
-									name: e.target.value
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								placeholder: "Público Alvo",
-								value: form.targetAudience,
-								onChange: (e) => setForm({
-									...form,
-									targetAudience: e.target.value
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								type: "date",
-								placeholder: "Data de Início",
-								value: form.startDate,
-								onChange: (e) => setForm({
-									...form,
-									startDate: e.target.value
-								})
-							})
-						]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						onClick: handleAdd,
-						children: "Salvar"
-					}) })
-				] })]
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-			className: "border-slate-200 shadow-sm bg-white",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-				className: "p-0 overflow-auto",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
-					className: "bg-slate-50",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Campaign Name" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Target Audience" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Start Date" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "End Date" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: "Ações"
-						})
-					] })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [campaigns$1.map((camp) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
-					className: "hover:bg-slate-50",
+				children: "Manage marketing features."
+			})] })
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+			defaultValue: "campaigns",
+			className: "w-full",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+					className: "grid w-full max-w-md grid-cols-3",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "font-medium text-slate-900",
-							children: camp.name
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "campaigns",
+							children: "Campaigns"
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "capitalize",
-							children: camp.targetAudience
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "promotions",
+							children: "Promotions"
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: camp.startDate }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: camp.endDate }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: camp.status === "active" ? "default" : "secondary",
-							children: camp.status
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex justify-end gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-									open: editingRecord?.id === camp.id,
-									onOpenChange: (open) => !open && setEditingRecord(null),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-										asChild: true,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-											variant: "outline",
-											size: "sm",
-											onClick: () => {
-												setEditingRecord(camp);
-												setForm({
-													name: camp.name,
-													targetAudience: camp.targetAudience || "",
-													startDate: camp.startDate
-												});
-											},
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
-										})
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Campanha" }) }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "space-y-4 py-4",
-											children: [
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Nome da Campanha",
-													value: form.name,
-													onChange: (e) => setForm({
-														...form,
-														name: e.target.value
-													})
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Público Alvo",
-													value: form.targetAudience,
-													onChange: (e) => setForm({
-														...form,
-														targetAudience: e.target.value
-													})
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													type: "date",
-													placeholder: "Data de Início",
-													value: form.startDate,
-													onChange: (e) => setForm({
-														...form,
-														startDate: e.target.value
-													})
-												})
-											]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-											onClick: handleEdit,
-											children: "Salvar"
-										}) })
-									] })]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-										variant: "destructive",
-										size: "sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
-									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Campanha" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-									onClick: () => handleDelete(camp.id),
-									children: "Excluir"
-								})] })] })] })]
-							})
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "automation",
+							children: "Automation"
 						})
 					]
-				}, camp.id)), campaigns$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 6,
-					className: "text-center py-6 text-muted-foreground",
-					children: t("common.empty")
-				}) })] })] })
-			})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+					value: "campaigns",
+					className: "mt-6 space-y-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "flex justify-end",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+							open: isAddOpen,
+							onOpenChange: setIsAddOpen,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									className: "bg-trust-blue gap-2 text-white",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir Campanha"]
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Campanha" }) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-4 py-4",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											placeholder: "Nome da Campanha",
+											value: form.name,
+											onChange: (e) => setForm({
+												...form,
+												name: e.target.value
+											})
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											placeholder: "Público Alvo",
+											value: form.targetAudience,
+											onChange: (e) => setForm({
+												...form,
+												targetAudience: e.target.value
+											})
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "date",
+											placeholder: "Data de Início",
+											value: form.startDate,
+											onChange: (e) => setForm({
+												...form,
+												startDate: e.target.value
+											})
+										})
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: handleAdd,
+									children: "Salvar"
+								}) })
+							] })]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+						className: "border-slate-200 shadow-sm bg-white",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+							className: "p-0 overflow-auto",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+								className: "bg-slate-50",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Campaign Name" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Target Audience" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Start Date" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "End Date" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+										className: "text-right",
+										children: "Ações"
+									})
+								] })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [campaigns$1.map((camp) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+								className: "hover:bg-slate-50",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+										className: "font-medium text-slate-900",
+										children: camp.name
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+										className: "capitalize",
+										children: camp.targetAudience
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: camp.startDate }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: camp.endDate }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+										variant: camp.status === "active" ? "default" : "secondary",
+										children: camp.status
+									}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+										className: "text-right",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex justify-end gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+												open: editingRecord?.id === camp.id,
+												onOpenChange: (open) => !open && setEditingRecord(null),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+													asChild: true,
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+														variant: "outline",
+														size: "sm",
+														onClick: () => {
+															setEditingRecord(camp);
+															setForm({
+																name: camp.name,
+																targetAudience: camp.targetAudience || "",
+																startDate: camp.startDate
+															});
+														},
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+													})
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Campanha" }) }),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "space-y-4 py-4",
+														children: [
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+																placeholder: "Nome da Campanha",
+																value: form.name,
+																onChange: (e) => setForm({
+																	...form,
+																	name: e.target.value
+																})
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+																placeholder: "Público Alvo",
+																value: form.targetAudience,
+																onChange: (e) => setForm({
+																	...form,
+																	targetAudience: e.target.value
+																})
+															}),
+															/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+																type: "date",
+																placeholder: "Data de Início",
+																value: form.startDate,
+																onChange: (e) => setForm({
+																	...form,
+																	startDate: e.target.value
+																})
+															})
+														]
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+														onClick: handleEdit,
+														children: "Salvar"
+													}) })
+												] })]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+												asChild: true,
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+													variant: "destructive",
+													size: "sm",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+												})
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Campanha" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+												onClick: () => handleDelete(camp.id),
+												children: "Excluir"
+											})] })] })] })]
+										})
+									})
+								]
+							}, camp.id)), campaigns$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								colSpan: 6,
+								className: "text-center py-6 text-muted-foreground",
+								children: t("common.empty")
+							}) })] })] })
+						})
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "promotions",
+					className: "mt-6",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PromotionsManagement, {})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "automation",
+					className: "mt-6",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MarketingAutomation, {})
+				})
+			]
 		})]
 	});
 }
@@ -79620,4 +80774,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-DQR1u2_H.js.map
+//# sourceMappingURL=index-CiRHPsh0.js.map

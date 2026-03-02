@@ -1,3 +1,5 @@
+import { useContext } from 'react'
+import { AppContext } from '@/stores/AppContext'
 import {
   Dialog,
   DialogContent,
@@ -25,8 +27,20 @@ export function InvoiceViewer({
   invoice,
 }: InvoiceViewerProps) {
   const { t, language } = useLanguageStore()
+  const { bookings, promotions, currency } = useContext(AppContext)!
 
   if (!invoice) return null
+
+  const booking = invoice.bookingId
+    ? bookings.find((b) => b.id === invoice.bookingId)
+    : null
+  const promotion = booking?.promotionId
+    ? promotions.find((p) => p.id === booking.promotionId)
+    : null
+
+  const subtotal = booking?.baseAmount || invoice.amount
+  const discount = booking?.discountAmount || 0
+  const finalTotal = invoice.amount
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -61,7 +75,7 @@ export function InvoiceViewer({
               {t('invoices.invoice_viewer.bill_to')}:
             </p>
             <p className="font-bold text-lg">
-              <DataMask>Hóspede / Cliente</DataMask>
+              <DataMask>{booking ? booking.guestName : 'Cliente'}</DataMask>
             </p>
           </div>
 
@@ -77,15 +91,34 @@ export function InvoiceViewer({
                 {t('invoices.invoice_viewer.amount')}
               </div>
             </div>
-            <div className="grid grid-cols-4 text-sm text-slate-700">
+            <div className="grid grid-cols-4 text-sm text-slate-700 py-2">
               <div className="col-span-2">
                 <DataMask>{invoice.description}</DataMask>
               </div>
               <div className="text-right">1</div>
               <div className="text-right font-medium">
-                <DataMask>{formatCurrency(invoice.amount, 'BRL')}</DataMask>
+                <DataMask>{formatCurrency(subtotal, currency)}</DataMask>
               </div>
             </div>
+            {promotion && (
+              <div className="grid grid-cols-4 text-sm text-green-700 py-2">
+                <div className="col-span-2 flex flex-col">
+                  <span>Discount Applied</span>
+                  <span className="text-xs font-medium">
+                    Code: {promotion.code}
+                  </span>
+                  {promotion.description && (
+                    <span className="text-xs opacity-80">
+                      {promotion.description}
+                    </span>
+                  )}
+                </div>
+                <div className="text-right">1</div>
+                <div className="text-right font-medium">
+                  <DataMask>-{formatCurrency(discount, currency)}</DataMask>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end">
@@ -93,14 +126,22 @@ export function InvoiceViewer({
               <div className="flex justify-between text-sm">
                 <span>{t('invoices.invoice_viewer.subtotal')}</span>
                 <span>
-                  <DataMask>{formatCurrency(invoice.amount, 'BRL')}</DataMask>
+                  <DataMask>{formatCurrency(subtotal, currency)}</DataMask>
                 </span>
               </div>
+              {promotion && (
+                <div className="flex justify-between text-sm text-green-700">
+                  <span>Discount</span>
+                  <span>
+                    <DataMask>-{formatCurrency(discount, currency)}</DataMask>
+                  </span>
+                </div>
+              )}
               <Separator />
               <div className="flex justify-between font-bold text-lg text-slate-900">
                 <span>{t('invoices.invoice_viewer.total')}</span>
                 <span>
-                  <DataMask>{formatCurrency(invoice.amount, 'BRL')}</DataMask>
+                  <DataMask>{formatCurrency(finalTotal, currency)}</DataMask>
                 </span>
               </div>
             </div>

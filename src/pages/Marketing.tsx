@@ -34,6 +34,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { MarketingAutomation } from '@/components/marketing/MarketingAutomation'
+import { PromotionsManagement } from '@/components/marketing/PromotionsManagement'
 
 export default function Marketing() {
   const { campaigns, addCampaign, updateCampaign, deleteCampaign } =
@@ -89,181 +92,207 @@ export default function Marketing() {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             {t('sidebar.marketing')}
           </h1>
-          <p className="text-muted-foreground">Manage marketing campaigns.</p>
+          <p className="text-muted-foreground">Manage marketing features.</p>
         </div>
-        <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-trust-blue gap-2 text-white">
-              <Plus className="h-4 w-4" /> Incluir
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Incluir Campanha</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <Input
-                placeholder="Nome da Campanha"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-              <Input
-                placeholder="Público Alvo"
-                value={form.targetAudience}
-                onChange={(e) =>
-                  setForm({ ...form, targetAudience: e.target.value })
-                }
-              />
-              <Input
-                type="date"
-                placeholder="Data de Início"
-                value={form.startDate}
-                onChange={(e) =>
-                  setForm({ ...form, startDate: e.target.value })
-                }
-              />
-            </div>
-            <DialogFooter>
-              <Button onClick={handleAdd}>Salvar</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
 
-      <Card className="border-slate-200 shadow-sm bg-white">
-        <CardContent className="p-0 overflow-auto">
-          <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead>Campaign Name</TableHead>
-                <TableHead>Target Audience</TableHead>
-                <TableHead>Start Date</TableHead>
-                <TableHead>End Date</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {campaigns.map((camp) => (
-                <TableRow key={camp.id} className="hover:bg-slate-50">
-                  <TableCell className="font-medium text-slate-900">
-                    {camp.name}
-                  </TableCell>
-                  <TableCell className="capitalize">
-                    {camp.targetAudience}
-                  </TableCell>
-                  <TableCell>{camp.startDate}</TableCell>
-                  <TableCell>{camp.endDate}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        camp.status === 'active' ? 'default' : 'secondary'
-                      }
-                    >
-                      {camp.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Dialog
-                        open={editingRecord?.id === camp.id}
-                        onOpenChange={(open) => !open && setEditingRecord(null)}
-                      >
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setEditingRecord(camp)
-                              setForm({
-                                name: camp.name,
-                                targetAudience: camp.targetAudience || '',
-                                startDate: camp.startDate,
-                              })
-                            }}
+      <Tabs defaultValue="campaigns" className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
+          <TabsTrigger value="promotions">Promotions</TabsTrigger>
+          <TabsTrigger value="automation">Automation</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="campaigns" className="mt-6 space-y-4">
+          <div className="flex justify-end">
+            <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-trust-blue gap-2 text-white">
+                  <Plus className="h-4 w-4" /> Incluir Campanha
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Incluir Campanha</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <Input
+                    placeholder="Nome da Campanha"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Público Alvo"
+                    value={form.targetAudience}
+                    onChange={(e) =>
+                      setForm({ ...form, targetAudience: e.target.value })
+                    }
+                  />
+                  <Input
+                    type="date"
+                    placeholder="Data de Início"
+                    value={form.startDate}
+                    onChange={(e) =>
+                      setForm({ ...form, startDate: e.target.value })
+                    }
+                  />
+                </div>
+                <DialogFooter>
+                  <Button onClick={handleAdd}>Salvar</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <Card className="border-slate-200 shadow-sm bg-white">
+            <CardContent className="p-0 overflow-auto">
+              <Table>
+                <TableHeader className="bg-slate-50">
+                  <TableRow>
+                    <TableHead>Campaign Name</TableHead>
+                    <TableHead>Target Audience</TableHead>
+                    <TableHead>Start Date</TableHead>
+                    <TableHead>End Date</TableHead>
+                    <TableHead>{t('common.status')}</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {campaigns.map((camp) => (
+                    <TableRow key={camp.id} className="hover:bg-slate-50">
+                      <TableCell className="font-medium text-slate-900">
+                        {camp.name}
+                      </TableCell>
+                      <TableCell className="capitalize">
+                        {camp.targetAudience}
+                      </TableCell>
+                      <TableCell>{camp.startDate}</TableCell>
+                      <TableCell>{camp.endDate}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            camp.status === 'active' ? 'default' : 'secondary'
+                          }
+                        >
+                          {camp.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Dialog
+                            open={editingRecord?.id === camp.id}
+                            onOpenChange={(open) =>
+                              !open && setEditingRecord(null)
+                            }
                           >
-                            <Pencil className="h-4 w-4 mr-2" /> Alterar
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Alterar Campanha</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4 py-4">
-                            <Input
-                              placeholder="Nome da Campanha"
-                              value={form.name}
-                              onChange={(e) =>
-                                setForm({ ...form, name: e.target.value })
-                              }
-                            />
-                            <Input
-                              placeholder="Público Alvo"
-                              value={form.targetAudience}
-                              onChange={(e) =>
-                                setForm({
-                                  ...form,
-                                  targetAudience: e.target.value,
-                                })
-                              }
-                            />
-                            <Input
-                              type="date"
-                              placeholder="Data de Início"
-                              value={form.startDate}
-                              onChange={(e) =>
-                                setForm({ ...form, startDate: e.target.value })
-                              }
-                            />
-                          </div>
-                          <DialogFooter>
-                            <Button onClick={handleEdit}>Salvar</Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="sm">
-                            <Trash2 className="h-4 w-4 mr-2" /> Excluir
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Excluir Campanha
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Esta ação não pode ser desfeita.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDelete(camp.id)}
-                            >
-                              Excluir
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {campaigns.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="text-center py-6 text-muted-foreground"
-                  >
-                    {t('common.empty')}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setEditingRecord(camp)
+                                  setForm({
+                                    name: camp.name,
+                                    targetAudience: camp.targetAudience || '',
+                                    startDate: camp.startDate,
+                                  })
+                                }}
+                              >
+                                <Pencil className="h-4 w-4 mr-2" /> Alterar
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Alterar Campanha</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4 py-4">
+                                <Input
+                                  placeholder="Nome da Campanha"
+                                  value={form.name}
+                                  onChange={(e) =>
+                                    setForm({ ...form, name: e.target.value })
+                                  }
+                                />
+                                <Input
+                                  placeholder="Público Alvo"
+                                  value={form.targetAudience}
+                                  onChange={(e) =>
+                                    setForm({
+                                      ...form,
+                                      targetAudience: e.target.value,
+                                    })
+                                  }
+                                />
+                                <Input
+                                  type="date"
+                                  placeholder="Data de Início"
+                                  value={form.startDate}
+                                  onChange={(e) =>
+                                    setForm({
+                                      ...form,
+                                      startDate: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                              <DialogFooter>
+                                <Button onClick={handleEdit}>Salvar</Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="destructive" size="sm">
+                                <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Excluir Campanha
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Esta ação não pode ser desfeita.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(camp.id)}
+                                >
+                                  Excluir
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {campaigns.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={6}
+                        className="text-center py-6 text-muted-foreground"
+                      >
+                        {t('common.empty')}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="promotions" className="mt-6">
+          <PromotionsManagement />
+        </TabsContent>
+
+        <TabsContent value="automation" className="mt-6">
+          <MarketingAutomation />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

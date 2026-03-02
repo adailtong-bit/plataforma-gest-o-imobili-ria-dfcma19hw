@@ -455,6 +455,7 @@ export const bookings: Booking[] = [
     checkOut: '2024-06-05',
     status: 'checked_in',
     totalAmount: 1400,
+    baseAmount: 1400,
     paid: true,
     platform: 'direct',
     propertyName: 'Suite 101 (Norte)',
@@ -468,6 +469,7 @@ export const bookings: Booking[] = [
     checkOut: '2024-06-15',
     status: 'confirmed',
     totalAmount: 1200,
+    baseAmount: 1200,
     paid: true,
     platform: 'booking.com',
     propertyName: 'Suite 205 (Sul)',
@@ -526,6 +528,8 @@ export const promotions: Promotion[] = [
     usageCount: 12,
     totalDiscountApplied: 450,
     description: '15% off summer bookings',
+    targetType: 'all',
+    scope: 'global',
   },
   {
     id: 'promo2',
@@ -538,6 +542,9 @@ export const promotions: Promotion[] = [
     usageCount: 5,
     totalDiscountApplied: 200,
     description: 'Early bird special',
+    targetType: 'hotel',
+    targetId: 'h1',
+    scope: 'global',
   },
 ]
 export const campaigns: Campaign[] = [
@@ -867,6 +874,7 @@ for (let i = 0; i < 300; i++) {
   const prop = rndItem(stProps)
   const cIn = rndDateStr(new Date(2024, 0, 1), new Date(2024, 11, 1))
   const cOut = rndDateStr(new Date(2024, 11, 2), new Date(2024, 11, 31))
+  const amt = rnd(200, 2000)
 
   bookings.push({
     id: `booking_gen_${i}`,
@@ -877,7 +885,8 @@ for (let i = 0; i < 300; i++) {
     checkIn: cIn,
     checkOut: cOut,
     status: rndItem(['confirmed', 'checked_in', 'checked_out', 'cancelled']),
-    totalAmount: rnd(200, 2000),
+    totalAmount: amt,
+    baseAmount: amt,
     paid: rnd(0, 1) === 1,
     platform: rndItem(['airbnb', 'vrbo', 'direct', 'booking.com']),
   })
@@ -1198,5 +1207,7 @@ for (let i = 0; i < 30; i++) {
     active: true,
     usageCount: rnd(0, 100),
     description: `Generated promotion ${i}`,
+    targetType: 'all',
+    scope: 'global',
   })
 }

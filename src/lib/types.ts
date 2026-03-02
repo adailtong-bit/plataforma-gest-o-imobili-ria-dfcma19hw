@@ -123,6 +123,10 @@ export interface Promotion {
   usageCount: number
   maxUsage?: number
   totalDiscountApplied?: number
+  targetType?: 'all' | 'property' | 'hotel'
+  targetId?: string
+  scope?: 'global' | 'specific_rooms'
+  roomIds?: string[]
 }
 
 export interface Campaign {
@@ -675,6 +679,9 @@ export interface Booking {
   lateCheckOut?: string
   status: 'confirmed' | 'checked_in' | 'checked_out' | 'cancelled'
   totalAmount: number
+  baseAmount?: number
+  promotionId?: string
+  discountAmount?: number
   paid: boolean
   platform: 'airbnb' | 'vrbo' | 'direct' | 'booking.com' | 'other'
   notes?: string
