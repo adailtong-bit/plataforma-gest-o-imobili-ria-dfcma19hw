@@ -393,7 +393,11 @@ export function AppSidebar() {
                           className="text-black font-medium hover:bg-slate-100"
                         >
                           <Building2 className="text-black" />
-                          <span>{t('sidebar.portfolio') || 'Portfólio'}</span>
+                          <span>
+                            <DataMask>
+                              {t('sidebar.portfolio') || 'Portfólio'}
+                            </DataMask>
+                          </span>
                           <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90 text-black" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
@@ -413,7 +417,9 @@ export function AppSidebar() {
                                   to="/properties"
                                   onClick={handleLinkClick}
                                 >
-                                  <span>Propriedades</span>
+                                  <span>
+                                    <DataMask>Propriedades</DataMask>
+                                  </span>
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
@@ -429,7 +435,11 @@ export function AppSidebar() {
                                 isActive={isActive('/hotels')}
                               >
                                 <Link to="/hotels" onClick={handleLinkClick}>
-                                  <span>{t('hotels.title') || 'Hotéis'}</span>
+                                  <span>
+                                    <DataMask>
+                                      {t('hotels.title') || 'Hotéis'}
+                                    </DataMask>
+                                  </span>
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
@@ -449,7 +459,10 @@ export function AppSidebar() {
                                   onClick={handleLinkClick}
                                 >
                                   <span>
-                                    {t('sidebar.condominiums') || 'Condomínios'}
+                                    <DataMask>
+                                      {t('sidebar.condominiums') ||
+                                        'Condomínios'}
+                                    </DataMask>
                                   </span>
                                 </Link>
                               </SidebarMenuSubButton>

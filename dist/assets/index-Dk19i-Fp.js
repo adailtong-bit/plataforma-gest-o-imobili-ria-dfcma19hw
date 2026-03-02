@@ -64901,7 +64901,7 @@ function AppSidebar() {
 									className: "text-black font-medium hover:bg-slate-100",
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "text-black" }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.portfolio") || "Portfólio" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("sidebar.portfolio") || "Portfólio" }) }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronRight, { className: "ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90 text-black" })
 									]
 								})
@@ -64912,7 +64912,7 @@ function AppSidebar() {
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 										to: "/properties",
 										onClick: handleLinkClick,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Propriedades" })
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: "Propriedades" }) })
 									})
 								}) }),
 								authHasPermission(currentUser, "hotels", "view") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubButton, {
@@ -64921,7 +64921,7 @@ function AppSidebar() {
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 										to: "/hotels",
 										onClick: handleLinkClick,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("hotels.title") || "Hotéis" })
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("hotels.title") || "Hotéis" }) })
 									})
 								}) }),
 								authHasPermission(currentUser, "condominiums", "view") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubButton, {
@@ -64930,7 +64930,7 @@ function AppSidebar() {
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 										to: "/condominiums",
 										onClick: handleLinkClick,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.condominiums") || "Condomínios" })
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("sidebar.condominiums") || "Condomínios" }) })
 									})
 								}) })
 							] }) })] })
@@ -76864,4 +76864,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-CWhQvvpA.js.map
+//# sourceMappingURL=index-Dk19i-Fp.js.map
