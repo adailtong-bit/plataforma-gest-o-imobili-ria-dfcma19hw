@@ -277,6 +277,9 @@ export interface Condominium {
   id: string
   name: string
   address: string
+  number?: string
+  complement?: string
+  neighborhood?: string
   zipCode?: string
   city?: string
   state?: string
