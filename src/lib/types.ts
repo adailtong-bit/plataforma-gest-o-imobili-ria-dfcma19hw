@@ -1131,3 +1131,27 @@ export interface NightAudit {
     noShows: number
   }
 }
+
+export interface SubscriptionTier {
+  id: string
+  name: string
+  basePrice: number
+  maxUnits: number
+  additionalUnitCost: number
+  region: 'global' | 'us' | 'eu' | 'br'
+  features: string[]
+}
+
+export interface SubscriptionDiscount {
+  id: string
+  name: string
+  type: 'percentage' | 'fixed'
+  value: number
+  expiresAt: string
+}
+
+export interface PMSpecificPricing {
+  id: string
+  pmId: string
+  fixedRate: number
+}

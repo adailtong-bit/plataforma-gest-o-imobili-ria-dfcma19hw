@@ -4363,30 +4363,30 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 		function pingEngtangledActionScope() {
 			if (0 === --currentEntangledPendingCount && (-1 < transitionUpdateTime || (transitionStartTime = -1.1), null !== currentEntangledListeners)) {
 				null !== currentEntangledActionThenable && (currentEntangledActionThenable.status = "fulfilled");
-				var listeners$2 = currentEntangledListeners;
+				var listeners$3 = currentEntangledListeners;
 				currentEntangledListeners = null;
 				currentEntangledLane = 0;
 				currentEntangledActionThenable = null;
-				for (var i = 0; i < listeners$2.length; i++) (0, listeners$2[i])();
+				for (var i = 0; i < listeners$3.length; i++) (0, listeners$3[i])();
 			}
 		}
 		function chainThenableValue(thenable, result) {
-			var listeners$2 = [], thenableWithOverride = {
+			var listeners$3 = [], thenableWithOverride = {
 				status: "pending",
 				value: null,
 				reason: null,
 				then: function(resolve) {
-					listeners$2.push(resolve);
+					listeners$3.push(resolve);
 				}
 			};
 			thenable.then(function() {
 				thenableWithOverride.status = "fulfilled";
 				thenableWithOverride.value = result;
-				for (var i = 0; i < listeners$2.length; i++) (0, listeners$2[i])(result);
+				for (var i = 0; i < listeners$3.length; i++) (0, listeners$3[i])(result);
 			}, function(error) {
 				thenableWithOverride.status = "rejected";
 				thenableWithOverride.reason = error;
-				for (error = 0; error < listeners$2.length; error++) (0, listeners$2[error])(void 0);
+				for (error = 0; error < listeners$3.length; error++) (0, listeners$3[error])(void 0);
 			});
 			return thenableWithOverride;
 		}
@@ -10449,11 +10449,11 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			};
 		}
 		function accumulateTwoPhaseListeners(targetFiber, reactName) {
-			for (var captureName = reactName + "Capture", listeners$2 = []; null !== targetFiber;) {
+			for (var captureName = reactName + "Capture", listeners$3 = []; null !== targetFiber;) {
 				var _instance3 = targetFiber, stateNode = _instance3.stateNode;
 				_instance3 = _instance3.tag;
-				5 !== _instance3 && 26 !== _instance3 && 27 !== _instance3 || null === stateNode || (_instance3 = getListener(targetFiber, captureName), null != _instance3 && listeners$2.unshift(createDispatchListener(targetFiber, _instance3, stateNode)), _instance3 = getListener(targetFiber, reactName), null != _instance3 && listeners$2.push(createDispatchListener(targetFiber, _instance3, stateNode)));
-				if (3 === targetFiber.tag) return listeners$2;
+				5 !== _instance3 && 26 !== _instance3 && 27 !== _instance3 || null === stateNode || (_instance3 = getListener(targetFiber, captureName), null != _instance3 && listeners$3.unshift(createDispatchListener(targetFiber, _instance3, stateNode)), _instance3 = getListener(targetFiber, reactName), null != _instance3 && listeners$3.push(createDispatchListener(targetFiber, _instance3, stateNode)));
+				if (3 === targetFiber.tag) return listeners$3;
 				targetFiber = targetFiber.return;
 			}
 			return [];
@@ -10466,16 +10466,16 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			return inst ? inst : null;
 		}
 		function accumulateEnterLeaveListenersForEvent(dispatchQueue, event, target, common, inCapturePhase) {
-			for (var registrationName = event._reactName, listeners$2 = []; null !== target && target !== common;) {
+			for (var registrationName = event._reactName, listeners$3 = []; null !== target && target !== common;) {
 				var _instance4 = target, alternate = _instance4.alternate, stateNode = _instance4.stateNode;
 				_instance4 = _instance4.tag;
 				if (null !== alternate && alternate === common) break;
-				5 !== _instance4 && 26 !== _instance4 && 27 !== _instance4 || null === stateNode || (alternate = stateNode, inCapturePhase ? (stateNode = getListener(target, registrationName), null != stateNode && listeners$2.unshift(createDispatchListener(target, stateNode, alternate))) : inCapturePhase || (stateNode = getListener(target, registrationName), null != stateNode && listeners$2.push(createDispatchListener(target, stateNode, alternate))));
+				5 !== _instance4 && 26 !== _instance4 && 27 !== _instance4 || null === stateNode || (alternate = stateNode, inCapturePhase ? (stateNode = getListener(target, registrationName), null != stateNode && listeners$3.unshift(createDispatchListener(target, stateNode, alternate))) : inCapturePhase || (stateNode = getListener(target, registrationName), null != stateNode && listeners$3.push(createDispatchListener(target, stateNode, alternate))));
 				target = target.return;
 			}
-			0 !== listeners$2.length && dispatchQueue.push({
+			0 !== listeners$3.length && dispatchQueue.push({
 				event,
-				listeners: listeners$2
+				listeners: listeners$3
 			});
 		}
 		function validatePropertiesInDevelopment(type, props) {
@@ -13729,15 +13729,15 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 		var rendererCursorDEV = createCursor(null);
 		var rendererSigil = {};
 		var currentlyRenderingFiber$1 = null, lastContextDependency = null, isDisallowedContextReadInDEV = !1, AbortControllerLocal = "undefined" !== typeof AbortController ? AbortController : function() {
-			var listeners$2 = [], signal = this.signal = {
+			var listeners$3 = [], signal = this.signal = {
 				aborted: !1,
 				addEventListener: function(type, listener) {
-					listeners$2.push(listener);
+					listeners$3.push(listener);
 				}
 			};
 			this.abort = function() {
 				signal.aborted = !0;
-				listeners$2.forEach(function(listener) {
+				listeners$3.forEach(function(listener) {
 					return listener();
 				});
 			};
@@ -17309,11 +17309,11 @@ const reducer = (state, action) => {
 			};
 	}
 };
-var listeners$1 = [];
+var listeners$2 = [];
 var memoryState = { toasts: [] };
 function dispatch(action) {
 	memoryState = reducer(memoryState, action);
-	listeners$1.forEach((listener) => {
+	listeners$2.forEach((listener) => {
 		listener(memoryState);
 	});
 }
@@ -17350,10 +17350,10 @@ function toast$1({ ...props }) {
 function useToast() {
 	const [state, setState] = import_react.useState(memoryState);
 	import_react.useEffect(() => {
-		listeners$1.push(setState);
+		listeners$2.push(setState);
 		return () => {
-			const index$1 = listeners$1.indexOf(setState);
-			if (index$1 > -1) listeners$1.splice(index$1, 1);
+			const index$1 = listeners$2.indexOf(setState);
+			if (index$1 > -1) listeners$2.splice(index$1, 1);
 		};
 	}, [state]);
 	return {
@@ -18065,7 +18065,7 @@ function handleAndDispatchCustomEvent$1(name, handler, detail, { discrete }) {
 	if (discrete) dispatchDiscreteCustomEvent(target, event);
 	else target.dispatchEvent(event);
 }
-var Root$11 = DismissableLayer;
+var Root$12 = DismissableLayer;
 var Branch = DismissableLayerBranch;
 var useLayoutEffect2 = globalThis?.document ? import_react.useLayoutEffect : () => {};
 var import_react_dom$6 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
@@ -18256,7 +18256,7 @@ var VisuallyHidden$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 VisuallyHidden$1.displayName = NAME$3;
-var Root$10 = VisuallyHidden$1;
+var Root$11 = VisuallyHidden$1;
 var import_react_dom$5 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
 var PROVIDER_NAME$1 = "ToastProvider";
 var [Collection$3, useCollection$3, createCollectionScope$3] = createCollection("Toast");
@@ -18555,7 +18555,7 @@ var ToastImpl = import_react.forwardRef((props, forwardedRef) => {
 		onClose: handleClose,
 		children: import_react_dom$5.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection$3.ItemSlot, {
 			scope: __scopeToast,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$11, {
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$12, {
 				asChild: true,
 				onEscapeKeyDown: composeEventHandlers(onEscapeKeyDown, () => {
 					if (!context.isFocusedToastEscapeKeyDownRef.current) handleClose();
@@ -19409,6 +19409,16 @@ var Image = createLucideIcon("image", [
 		key: "1xmnt7"
 	}]
 ]);
+var KeyRound = createLucideIcon("key-round", [["path", {
+	d: "M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z",
+	key: "1s6t7t"
+}], ["circle", {
+	cx: "16.5",
+	cy: "7.5",
+	r: ".5",
+	fill: "currentColor",
+	key: "w0ekpg"
+}]]);
 var Key = createLucideIcon("key", [
 	["path", {
 		d: "m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4",
@@ -19777,6 +19787,10 @@ var ShieldX = createLucideIcon("shield-x", [
 		key: "18nt4w"
 	}]
 ]);
+var Shield = createLucideIcon("shield", [["path", {
+	d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+	key: "oel41y"
+}]]);
 var ShoppingBag = createLucideIcon("shopping-bag", [
 	["path", {
 		d: "M16 10a4 4 0 0 1-8 0",
@@ -24409,10 +24423,10 @@ var Observer = class {
 			if (typeof id !== "string" && typeof id !== "number") return { unwrap };
 			else return Object.assign(id, { unwrap });
 		};
-		this.custom = (jsx$32, data) => {
+		this.custom = (jsx$33, data) => {
 			const id = (data == null ? void 0 : data.id) || toastsCounter++;
 			this.create({
-				jsx: jsx$32(id),
+				jsx: jsx$33(id),
 				id,
 				...data
 			});
@@ -26548,7 +26562,7 @@ var Arrow$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 Arrow$1.displayName = NAME$2;
-var Root$9 = Arrow$1;
+var Root$10 = Arrow$1;
 function useSize(element) {
 	const [size$3, setSize] = import_react.useState(void 0);
 	useLayoutEffect2(() => {
@@ -26765,7 +26779,7 @@ var PopperArrow = import_react.forwardRef(function PopperArrow2(props, forwarded
 			}[contentContext.placedSide],
 			visibility: contentContext.shouldHideArrow ? "hidden" : void 0
 		},
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$9, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$10, {
 			...arrowProps,
 			ref: forwardedRef,
 			style: {
@@ -27147,7 +27161,7 @@ var TooltipContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Slottable$1, { children }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VisuallyHiddenContentContextProvider, {
 				scope: __scopeTooltip,
 				isInside: true,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$10, {
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$11, {
 					id: context.contentId,
 					role: "tooltip",
 					children: ariaLabel || children
@@ -27997,7 +28011,7 @@ function PreviousMonthButton(props) {
 	const { components } = useDayPicker();
 	return import_react.createElement(components.Button, { ...props });
 }
-function Root$8(props) {
+function Root$9(props) {
 	const { rootRef, ...rest } = props;
 	return import_react.createElement("div", {
 		...rest,
@@ -28049,7 +28063,7 @@ var custom_components_exports = /* @__PURE__ */ __export({
 	NextMonthButton: () => NextMonthButton,
 	Option: () => Option,
 	PreviousMonthButton: () => PreviousMonthButton,
-	Root: () => Root$8,
+	Root: () => Root$9,
 	Select: () => Select$2,
 	Week: () => Week,
 	WeekNumber: () => WeekNumber,
@@ -51099,7 +51113,7 @@ var eventCenter = new (/* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((
 		if (Object.getOwnPropertySymbols) return names.concat(Object.getOwnPropertySymbols(events));
 		return names;
 	};
-	EventEmitter$1.prototype.listeners = function listeners$2(event) {
+	EventEmitter$1.prototype.listeners = function listeners$3(event) {
 		var evt = prefix ? prefix + event : event, handlers = this._events[evt];
 		if (!handlers) return [];
 		if (handlers.fn) return [handlers.fn];
@@ -51107,47 +51121,47 @@ var eventCenter = new (/* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((
 		return ee$1;
 	};
 	EventEmitter$1.prototype.listenerCount = function listenerCount(event) {
-		var evt = prefix ? prefix + event : event, listeners$2 = this._events[evt];
-		if (!listeners$2) return 0;
-		if (listeners$2.fn) return 1;
-		return listeners$2.length;
+		var evt = prefix ? prefix + event : event, listeners$3 = this._events[evt];
+		if (!listeners$3) return 0;
+		if (listeners$3.fn) return 1;
+		return listeners$3.length;
 	};
 	EventEmitter$1.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
 		var evt = prefix ? prefix + event : event;
 		if (!this._events[evt]) return false;
-		var listeners$2 = this._events[evt], len = arguments.length, args, i;
-		if (listeners$2.fn) {
-			if (listeners$2.once) this.removeListener(event, listeners$2.fn, void 0, true);
+		var listeners$3 = this._events[evt], len = arguments.length, args, i;
+		if (listeners$3.fn) {
+			if (listeners$3.once) this.removeListener(event, listeners$3.fn, void 0, true);
 			switch (len) {
-				case 1: return listeners$2.fn.call(listeners$2.context), true;
-				case 2: return listeners$2.fn.call(listeners$2.context, a1), true;
-				case 3: return listeners$2.fn.call(listeners$2.context, a1, a2), true;
-				case 4: return listeners$2.fn.call(listeners$2.context, a1, a2, a3), true;
-				case 5: return listeners$2.fn.call(listeners$2.context, a1, a2, a3, a4), true;
-				case 6: return listeners$2.fn.call(listeners$2.context, a1, a2, a3, a4, a5), true;
+				case 1: return listeners$3.fn.call(listeners$3.context), true;
+				case 2: return listeners$3.fn.call(listeners$3.context, a1), true;
+				case 3: return listeners$3.fn.call(listeners$3.context, a1, a2), true;
+				case 4: return listeners$3.fn.call(listeners$3.context, a1, a2, a3), true;
+				case 5: return listeners$3.fn.call(listeners$3.context, a1, a2, a3, a4), true;
+				case 6: return listeners$3.fn.call(listeners$3.context, a1, a2, a3, a4, a5), true;
 			}
 			for (i = 1, args = new Array(len - 1); i < len; i++) args[i - 1] = arguments[i];
-			listeners$2.fn.apply(listeners$2.context, args);
+			listeners$3.fn.apply(listeners$3.context, args);
 		} else {
-			var length = listeners$2.length, j;
+			var length = listeners$3.length, j;
 			for (i = 0; i < length; i++) {
-				if (listeners$2[i].once) this.removeListener(event, listeners$2[i].fn, void 0, true);
+				if (listeners$3[i].once) this.removeListener(event, listeners$3[i].fn, void 0, true);
 				switch (len) {
 					case 1:
-						listeners$2[i].fn.call(listeners$2[i].context);
+						listeners$3[i].fn.call(listeners$3[i].context);
 						break;
 					case 2:
-						listeners$2[i].fn.call(listeners$2[i].context, a1);
+						listeners$3[i].fn.call(listeners$3[i].context, a1);
 						break;
 					case 3:
-						listeners$2[i].fn.call(listeners$2[i].context, a1, a2);
+						listeners$3[i].fn.call(listeners$3[i].context, a1, a2);
 						break;
 					case 4:
-						listeners$2[i].fn.call(listeners$2[i].context, a1, a2, a3);
+						listeners$3[i].fn.call(listeners$3[i].context, a1, a2, a3);
 						break;
 					default:
 						if (!args) for (j = 1, args = new Array(len - 1); j < len; j++) args[j - 1] = arguments[j];
-						listeners$2[i].fn.apply(listeners$2[i].context, args);
+						listeners$3[i].fn.apply(listeners$3[i].context, args);
 				}
 			}
 		}
@@ -51166,11 +51180,11 @@ var eventCenter = new (/* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((
 			clearEvent(this, evt);
 			return this;
 		}
-		var listeners$2 = this._events[evt];
-		if (listeners$2.fn) {
-			if (listeners$2.fn === fn && (!once || listeners$2.once) && (!context || listeners$2.context === context)) clearEvent(this, evt);
+		var listeners$3 = this._events[evt];
+		if (listeners$3.fn) {
+			if (listeners$3.fn === fn && (!once || listeners$3.once) && (!context || listeners$3.context === context)) clearEvent(this, evt);
 		} else {
-			for (var i = 0, events = [], length = listeners$2.length; i < length; i++) if (listeners$2[i].fn !== fn || once && !listeners$2[i].once || context && listeners$2[i].context !== context) events.push(listeners$2[i]);
+			for (var i = 0, events = [], length = listeners$3.length; i < length; i++) if (listeners$3[i].fn !== fn || once && !listeners$3[i].once || context && listeners$3[i].context !== context) events.push(listeners$3[i]);
 			if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;
 			else clearEvent(this, evt);
 		}
@@ -57477,7 +57491,8 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 		guest_services: FULL_ACCESS,
 		pos: FULL_ACCESS,
 		financial: FULL_ACCESS,
-		automation: ["view"]
+		automation: ["view"],
+		settings: ["view", "edit"]
 	},
 	partner: {
 		dashboard: ["view"],
@@ -57486,7 +57501,8 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 		messages: ["view", "create"],
 		financial: ["view"],
 		properties: ["view"],
-		automation: ["view"]
+		automation: ["view"],
+		settings: ["view", "edit"]
 	},
 	property_owner: {
 		dashboard: ["view"],
@@ -57501,7 +57517,8 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 			"edit"
 		],
 		users: ["view"],
-		automation: ["view"]
+		automation: ["view"],
+		settings: ["view", "edit"]
 	},
 	tenant: {
 		dashboard: ["view"],
@@ -57509,7 +57526,8 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 		messages: ["view", "create"],
 		financial: ["view"],
 		properties: ["view"],
-		automation: ["view"]
+		automation: ["view"],
+		settings: ["view", "edit"]
 	},
 	partner_employee: {
 		dashboard: ["view"],
@@ -57517,7 +57535,8 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 		tasks: ["view", "edit"],
 		messages: ["view", "create"],
 		properties: ["view"],
-		automation: ["view"]
+		automation: ["view"],
+		settings: ["view", "edit"]
 	}
 };
 const AppContext = (0, import_react.createContext)(void 0);
@@ -59178,7 +59197,7 @@ var DialogTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		"aria-haspopup": "dialog",
 		"aria-expanded": context.open,
 		"aria-controls": context.contentId,
-		"data-state": getState$4(context.open),
+		"data-state": getState$5(context.open),
 		...triggerProps,
 		ref: composedTriggerRef,
 		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
@@ -59227,7 +59246,7 @@ var DialogOverlayImpl = import_react.forwardRef((props, forwardedRef) => {
 		allowPinchZoom: true,
 		shards: [context.contentRef],
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-			"data-state": getState$4(context.open),
+			"data-state": getState$5(context.open),
 			...overlayProps,
 			ref: forwardedRef,
 			style: {
@@ -59326,7 +59345,7 @@ var DialogContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			id: context.contentId,
 			"aria-describedby": context.descriptionId,
 			"aria-labelledby": context.titleId,
-			"data-state": getState$4(context.open),
+			"data-state": getState$5(context.open),
 			...contentProps,
 			ref: composedRefs,
 			onDismiss: () => context.onOpenChange(false)
@@ -59370,7 +59389,7 @@ var DialogClose$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 DialogClose$1.displayName = CLOSE_NAME$1;
-function getState$4(open) {
+function getState$5(open) {
 	return open ? "open" : "closed";
 }
 var TITLE_WARNING_NAME = "DialogTitleWarning";
@@ -59408,7 +59427,7 @@ var DescriptionWarning$1 = ({ contentRef, descriptionId }) => {
 	]);
 	return null;
 };
-var Root$7 = Dialog$1;
+var Root$8 = Dialog$1;
 var Trigger$4 = DialogTrigger$1;
 var Portal$4 = DialogPortal$1;
 var Overlay = DialogOverlay$1;
@@ -59424,7 +59443,7 @@ var VisuallyHidden = import_react.forwardRef(({ className, ...props }, ref) => {
 	});
 });
 VisuallyHidden.displayName = "VisuallyHidden";
-var Dialog = Root$7;
+var Dialog = Root$8;
 var DialogTrigger = Trigger$4;
 var DialogPortal = Portal$4;
 var DialogOverlay = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Overlay, {
@@ -59540,7 +59559,7 @@ var CheckboxTrigger = import_react.forwardRef(({ __scopeCheckbox, onKeyDown, onC
 		role: "checkbox",
 		"aria-checked": isIndeterminate$1(checked) ? "mixed" : checked,
 		"aria-required": required,
-		"data-state": getState$3(checked),
+		"data-state": getState$4(checked),
 		"data-disabled": disabled ? "" : void 0,
 		disabled,
 		value,
@@ -59586,7 +59605,7 @@ var CheckboxIndicator = import_react.forwardRef((props, forwardedRef) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || isIndeterminate$1(context.checked) || context.checked === true,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
-			"data-state": getState$3(context.checked),
+			"data-state": getState$4(context.checked),
 			"data-disabled": context.disabled ? "" : void 0,
 			...indicatorProps,
 			ref: forwardedRef,
@@ -59598,9 +59617,9 @@ var CheckboxIndicator = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 CheckboxIndicator.displayName = INDICATOR_NAME$3;
-var BUBBLE_INPUT_NAME$2 = "CheckboxBubbleInput";
+var BUBBLE_INPUT_NAME$3 = "CheckboxBubbleInput";
 var CheckboxBubbleInput = import_react.forwardRef(({ __scopeCheckbox, ...props }, forwardedRef) => {
-	const { control, hasConsumerStoppedPropagationRef, checked, defaultChecked, required, disabled, name, value, form, bubbleInput, setBubbleInput } = useCheckboxContext(BUBBLE_INPUT_NAME$2, __scopeCheckbox);
+	const { control, hasConsumerStoppedPropagationRef, checked, defaultChecked, required, disabled, name, value, form, bubbleInput, setBubbleInput } = useCheckboxContext(BUBBLE_INPUT_NAME$3, __scopeCheckbox);
 	const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
 	const prevChecked = usePrevious(checked);
 	const controlSize = useSize(control);
@@ -59646,14 +59665,14 @@ var CheckboxBubbleInput = import_react.forwardRef(({ __scopeCheckbox, ...props }
 		}
 	});
 });
-CheckboxBubbleInput.displayName = BUBBLE_INPUT_NAME$2;
+CheckboxBubbleInput.displayName = BUBBLE_INPUT_NAME$3;
 function isFunction(value) {
 	return typeof value === "function";
 }
 function isIndeterminate$1(checked) {
 	return checked === "indeterminate";
 }
-function getState$3(checked) {
+function getState$4(checked) {
 	return isIndeterminate$1(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
 }
 var Checkbox = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox$1, {
@@ -59715,14 +59734,14 @@ var Label$3 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 Label$3.displayName = NAME$1;
-var Root$6 = Label$3;
+var Root$7 = Label$3;
 var labelVariants = cva("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-black");
-var Label = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$6, {
+var Label = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$7, {
 	ref,
 	className: cn(labelVariants(), className),
 	...props
 }));
-Label.displayName = Root$6.displayName;
+Label.displayName = Root$7.displayName;
 function createContextScope$1(scopeName, createContextScopeDeps = []) {
 	let defaultContexts = [];
 	function createContext3(rootComponentName, defaultContext) {
@@ -59855,9 +59874,9 @@ function getInvalidValueError(propValue, componentName) {
 
 Defaulting to \`null\`.`;
 }
-var Root$5 = Progress$1;
+var Root$6 = Progress$1;
 var Indicator$1 = ProgressIndicator;
-var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$5, {
+var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$6, {
 	ref,
 	className: cn("relative h-4 w-full overflow-hidden rounded-full bg-secondary", className),
 	...props,
@@ -59866,23 +59885,23 @@ var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => 
 		style: { transform: `translateX(-${100 - (value || 0)}%)` }
 	})
 }));
-Progress.displayName = Root$5.displayName;
+Progress.displayName = Root$6.displayName;
 var privacyEnabled = false;
-var listeners = /* @__PURE__ */ new Set();
+var listeners$1 = /* @__PURE__ */ new Set();
 const togglePrivacy = () => {
 	privacyEnabled = !privacyEnabled;
-	listeners.forEach((l) => l(privacyEnabled));
+	listeners$1.forEach((l) => l(privacyEnabled));
 };
 const setPrivacy = (val) => {
 	privacyEnabled = val;
-	listeners.forEach((l) => l(privacyEnabled));
+	listeners$1.forEach((l) => l(privacyEnabled));
 };
 const usePrivacyStore = () => {
 	const [isPrivate, setIsPrivate] = (0, import_react.useState)(privacyEnabled);
 	(0, import_react.useEffect)(() => {
-		listeners.add(setIsPrivate);
+		listeners$1.add(setIsPrivate);
 		return () => {
-			listeners.delete(setIsPrivate);
+			listeners$1.delete(setIsPrivate);
 		};
 	}, []);
 	return {
@@ -59923,15 +59942,15 @@ Separator$3.displayName = NAME;
 function isValidOrientation(orientation) {
 	return ORIENTATIONS.includes(orientation);
 }
-var Root$4 = Separator$3;
-var Separator = import_react.forwardRef(({ className, orientation = "horizontal", decorative = true, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
+var Root$5 = Separator$3;
+var Separator = import_react.forwardRef(({ className, orientation = "horizontal", decorative = true, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$5, {
 	ref,
 	decorative,
 	orientation,
 	className: cn("shrink-0 bg-border", orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]", className),
 	...props
 }));
-Separator.displayName = Root$4.displayName;
+Separator.displayName = Root$5.displayName;
 function InvoiceViewer({ open, onOpenChange, invoice }) {
 	const { t, language } = useLanguageStore_default();
 	if (!invoice) return null;
@@ -60671,7 +60690,7 @@ var Input = import_react.forwardRef(({ className, type, ...props }, ref) => {
 	});
 });
 Input.displayName = "Input";
-var Sheet = Root$7;
+var Sheet = Root$8;
 var SheetPortal = Portal$4;
 var SheetOverlay = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Overlay, {
 	className: cn("fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0", className),
@@ -61268,7 +61287,7 @@ function focusFirst$1(candidates, preventScroll = false) {
 function wrapArray$2(array, startIndex) {
 	return array.map((_$1, index$1) => array[(startIndex + index$1) % array.length]);
 }
-var Root$3 = RovingFocusGroup;
+var Root$4 = RovingFocusGroup;
 var Item$1 = RovingFocusGroupItem;
 var SELECTION_KEYS$1 = ["Enter", " "];
 var FIRST_KEYS = [
@@ -61510,7 +61529,7 @@ var MenuContentImpl = import_react.forwardRef((props, forwardedRef) => {
 					onFocusOutside,
 					onInteractOutside,
 					onDismiss,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
 						asChild: true,
 						...rovingFocusGroupScope,
 						dir: rootContext.dir,
@@ -62413,7 +62432,7 @@ var PopoverTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		"aria-haspopup": "dialog",
 		"aria-expanded": context.open,
 		"aria-controls": context.contentId,
-		"data-state": getState$2(context.open),
+		"data-state": getState$3(context.open),
 		...triggerProps,
 		ref: composedTriggerRef,
 		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
@@ -62542,7 +62561,7 @@ var PopoverContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			onFocusOutside,
 			onDismiss: () => context.onOpenChange(false),
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content$2, {
-				"data-state": getState$2(context.open),
+				"data-state": getState$3(context.open),
 				role: "dialog",
 				id: context.contentId,
 				...popperScope,
@@ -62583,7 +62602,7 @@ var PopoverArrow = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 PopoverArrow.displayName = ARROW_NAME$1;
-function getState$2(open) {
+function getState$3(open) {
 	return open ? "open" : "closed";
 }
 var Root2$4 = Popover$1;
@@ -62621,7 +62640,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$38({ inst: {
+			cachedValue = useState$40({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -62635,7 +62654,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$16(function() {
+			useEffect$18(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -62658,7 +62677,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$38 = React$67.useState, useEffect$16 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$40 = React$67.useState, useEffect$18 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -62765,15 +62784,15 @@ function useImageLoadingStatus(src, { referrerPolicy, crossOrigin }) {
 	]);
 	return loadingStatus;
 }
-var Root$2 = Avatar$1;
+var Root$3 = Avatar$1;
 var Image$1 = AvatarImage$1;
 var Fallback = AvatarFallback$1;
-var Avatar = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$2, {
+var Avatar = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
 	ref,
 	className: cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", className),
 	...props
 }));
-Avatar.displayName = Root$2.displayName;
+Avatar.displayName = Root$3.displayName;
 var AvatarImage = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image$1, {
 	ref,
 	className: cn("aspect-square h-full w-full", className),
@@ -63274,10 +63293,10 @@ var ScrollAreaScrollbarImpl = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-var THUMB_NAME = "ScrollAreaThumb";
+var THUMB_NAME$1 = "ScrollAreaThumb";
 var ScrollAreaThumb = import_react.forwardRef((props, forwardedRef) => {
 	const { forceMount, ...thumbProps } = props;
-	const scrollbarContext = useScrollbarContext(THUMB_NAME, props.__scopeScrollArea);
+	const scrollbarContext = useScrollbarContext(THUMB_NAME$1, props.__scopeScrollArea);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || scrollbarContext.hasThumb,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollAreaThumbImpl, {
@@ -63288,8 +63307,8 @@ var ScrollAreaThumb = import_react.forwardRef((props, forwardedRef) => {
 });
 var ScrollAreaThumbImpl = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeScrollArea, style, ...thumbProps } = props;
-	const scrollAreaContext = useScrollAreaContext(THUMB_NAME, __scopeScrollArea);
-	const scrollbarContext = useScrollbarContext(THUMB_NAME, __scopeScrollArea);
+	const scrollAreaContext = useScrollAreaContext(THUMB_NAME$1, __scopeScrollArea);
+	const scrollbarContext = useScrollbarContext(THUMB_NAME$1, __scopeScrollArea);
 	const { onThumbPositionChange } = scrollbarContext;
 	const composedRef = useComposedRefs(forwardedRef, (node) => scrollbarContext.onThumbChange(node));
 	const removeUnlinkedScrollListenerRef = import_react.useRef(void 0);
@@ -63339,7 +63358,7 @@ var ScrollAreaThumbImpl = import_react.forwardRef((props, forwardedRef) => {
 		onPointerUp: composeEventHandlers(props.onPointerUp, scrollbarContext.onThumbPointerUp)
 	});
 });
-ScrollAreaThumb.displayName = THUMB_NAME;
+ScrollAreaThumb.displayName = THUMB_NAME$1;
 var CORNER_NAME = "ScrollAreaCorner";
 var ScrollAreaCorner = import_react.forwardRef((props, forwardedRef) => {
 	const context = useScrollAreaContext(CORNER_NAME, props.__scopeScrollArea);
@@ -63468,10 +63487,10 @@ function useResizeObserver(element, onResize) {
 		}
 	}, [element, handleResize]);
 }
-var Root$1 = ScrollArea$1;
+var Root$2 = ScrollArea$1;
 var Viewport$1 = ScrollAreaViewport;
 var Corner = ScrollAreaCorner;
-var ScrollArea = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Root$1, {
+var ScrollArea = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Root$2, {
 	ref,
 	className: cn("relative overflow-hidden", className),
 	...props,
@@ -63484,7 +63503,7 @@ var ScrollArea = import_react.forwardRef(({ className, children, ...props }, ref
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Corner, {})
 	]
 }));
-ScrollArea.displayName = Root$1.displayName;
+ScrollArea.displayName = Root$2.displayName;
 var ScrollBar = import_react.forwardRef(({ className, orientation = "vertical", ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollAreaScrollbar, {
 	ref,
 	orientation,
@@ -63845,7 +63864,7 @@ var N = "[cmdk-group=\"\"]", Y = "[cmdk-group-items=\"\"]", be = "[cmdk-group-he
 	}, m$1)));
 }), xe = import_react.forwardRef((r$1, o) => {
 	let { open: n, onOpenChange: u$1, overlayClassName: c$1, contentClassName: d, container: f, ...p$1 } = r$1;
-	return import_react.createElement(Root$7, {
+	return import_react.createElement(Root$8, {
 		open: n,
 		onOpenChange: u$1
 	}, import_react.createElement(Portal$4, { container: f }, import_react.createElement(Overlay, {
@@ -64543,7 +64562,7 @@ var Collapsible$1 = import_react.forwardRef((props, forwardedRef) => {
 		open,
 		onOpenToggle: import_react.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen]),
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-			"data-state": getState$1(open),
+			"data-state": getState$2(open),
 			"data-disabled": disabled ? "" : void 0,
 			...collapsibleProps,
 			ref: forwardedRef
@@ -64559,7 +64578,7 @@ var CollapsibleTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		type: "button",
 		"aria-controls": context.contentId,
 		"aria-expanded": context.open || false,
-		"data-state": getState$1(context.open),
+		"data-state": getState$2(context.open),
 		"data-disabled": context.disabled ? "" : void 0,
 		disabled: context.disabled,
 		...triggerProps,
@@ -64619,7 +64638,7 @@ var CollapsibleContentImpl = import_react.forwardRef((props, forwardedRef) => {
 		}
 	}, [context.open, present]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-		"data-state": getState$1(context.open),
+		"data-state": getState$2(context.open),
 		"data-disabled": context.disabled ? "" : void 0,
 		id: context.contentId,
 		hidden: !isOpen,
@@ -64633,7 +64652,7 @@ var CollapsibleContentImpl = import_react.forwardRef((props, forwardedRef) => {
 		children: isOpen && children
 	});
 });
-function getState$1(open) {
+function getState$2(open) {
 	return open ? "open" : "closed";
 }
 var Collapsible = Collapsible$1;
@@ -66005,7 +66024,7 @@ var SelectArrow = import_react.forwardRef((props, forwardedRef) => {
 	}) : null;
 });
 SelectArrow.displayName = ARROW_NAME;
-var BUBBLE_INPUT_NAME$1 = "SelectBubbleInput";
+var BUBBLE_INPUT_NAME$2 = "SelectBubbleInput";
 var SelectBubbleInput = import_react.forwardRef(({ __scopeSelect, value, ...props }, forwardedRef) => {
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, ref);
@@ -66031,7 +66050,7 @@ var SelectBubbleInput = import_react.forwardRef(({ __scopeSelect, value, ...prop
 		defaultValue: value
 	});
 });
-SelectBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
+SelectBubbleInput.displayName = BUBBLE_INPUT_NAME$2;
 function shouldShowPlaceholder(value) {
 	return value === "" || value === void 0;
 }
@@ -66166,7 +66185,7 @@ var useDialogScope = createDialogScope();
 var AlertDialog$1 = (props) => {
 	const { __scopeAlertDialog, ...alertDialogProps } = props;
 	const dialogScope = useDialogScope(__scopeAlertDialog);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$7, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$8, {
 		...dialogScope,
 		...alertDialogProps,
 		modal: true
@@ -66372,7 +66391,7 @@ var Radio = import_react.forwardRef((props, forwardedRef) => {
 			type: "button",
 			role: "radio",
 			"aria-checked": checked,
-			"data-state": getState(checked),
+			"data-state": getState$1(checked),
 			"data-disabled": disabled ? "" : void 0,
 			disabled,
 			value,
@@ -66406,7 +66425,7 @@ var RadioIndicator = import_react.forwardRef((props, forwardedRef) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || context.checked,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
-			"data-state": getState(context.checked),
+			"data-state": getState$1(context.checked),
 			"data-disabled": context.disabled ? "" : void 0,
 			...indicatorProps,
 			ref: forwardedRef
@@ -66414,7 +66433,7 @@ var RadioIndicator = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 RadioIndicator.displayName = INDICATOR_NAME;
-var BUBBLE_INPUT_NAME = "RadioBubbleInput";
+var BUBBLE_INPUT_NAME$1 = "RadioBubbleInput";
 var RadioBubbleInput = import_react.forwardRef(({ __scopeRadio, control, checked, bubbles = true, ...props }, forwardedRef) => {
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -66452,8 +66471,8 @@ var RadioBubbleInput = import_react.forwardRef(({ __scopeRadio, control, checked
 		}
 	});
 });
-RadioBubbleInput.displayName = BUBBLE_INPUT_NAME;
-function getState(checked) {
+RadioBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
+function getState$1(checked) {
 	return checked ? "checked" : "unchecked";
 }
 var ARROW_KEYS = [
@@ -66484,7 +66503,7 @@ var RadioGroup$1 = import_react.forwardRef((props, forwardedRef) => {
 		disabled,
 		value,
 		onValueChange: setValue,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
 			asChild: true,
 			...rovingFocusGroupScope,
 			orientation,
@@ -67485,7 +67504,7 @@ var TabsList$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTabs, loop = true, ...listProps } = props;
 	const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
 	const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
 		asChild: true,
 		...rovingFocusGroupScope,
 		orientation: context.orientation,
@@ -70354,12 +70373,172 @@ function Messages() {
 		})]
 	});
 }
+var SWITCH_NAME = "Switch";
+var [createSwitchContext, createSwitchScope] = createContextScope(SWITCH_NAME);
+var [SwitchProvider, useSwitchContext] = createSwitchContext(SWITCH_NAME);
+var Switch$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeSwitch, name, checked: checkedProp, defaultChecked, required, disabled, value = "on", onCheckedChange, form, ...switchProps } = props;
+	const [button, setButton] = import_react.useState(null);
+	const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
+	const hasConsumerStoppedPropagationRef = import_react.useRef(false);
+	const isFormControl = button ? form || !!button.closest("form") : true;
+	const [checked, setChecked] = useControllableState({
+		prop: checkedProp,
+		defaultProp: defaultChecked ?? false,
+		onChange: onCheckedChange,
+		caller: SWITCH_NAME
+	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SwitchProvider, {
+		scope: __scopeSwitch,
+		checked,
+		disabled,
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+			type: "button",
+			role: "switch",
+			"aria-checked": checked,
+			"aria-required": required,
+			"data-state": getState(checked),
+			"data-disabled": disabled ? "" : void 0,
+			disabled,
+			value,
+			...switchProps,
+			ref: composedRefs,
+			onClick: composeEventHandlers(props.onClick, (event) => {
+				setChecked((prevChecked) => !prevChecked);
+				if (isFormControl) {
+					hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+					if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+				}
+			})
+		}), isFormControl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SwitchBubbleInput, {
+			control: button,
+			bubbles: !hasConsumerStoppedPropagationRef.current,
+			name,
+			value,
+			checked,
+			required,
+			disabled,
+			form,
+			style: { transform: "translateX(-100%)" }
+		})]
+	});
+});
+Switch$1.displayName = SWITCH_NAME;
+var THUMB_NAME = "SwitchThumb";
+var SwitchThumb = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeSwitch, ...thumbProps } = props;
+	const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+		"data-state": getState(context.checked),
+		"data-disabled": context.disabled ? "" : void 0,
+		...thumbProps,
+		ref: forwardedRef
+	});
+});
+SwitchThumb.displayName = THUMB_NAME;
+var BUBBLE_INPUT_NAME = "SwitchBubbleInput";
+var SwitchBubbleInput = import_react.forwardRef(({ __scopeSwitch, control, checked, bubbles = true, ...props }, forwardedRef) => {
+	const ref = import_react.useRef(null);
+	const composedRefs = useComposedRefs(ref, forwardedRef);
+	const prevChecked = usePrevious(checked);
+	const controlSize = useSize(control);
+	import_react.useEffect(() => {
+		const input = ref.current;
+		if (!input) return;
+		const inputProto = window.HTMLInputElement.prototype;
+		const setChecked = Object.getOwnPropertyDescriptor(inputProto, "checked").set;
+		if (prevChecked !== checked && setChecked) {
+			const event = new Event("click", { bubbles });
+			setChecked.call(input, checked);
+			input.dispatchEvent(event);
+		}
+	}, [
+		prevChecked,
+		checked,
+		bubbles
+	]);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+		type: "checkbox",
+		"aria-hidden": true,
+		defaultChecked: checked,
+		...props,
+		tabIndex: -1,
+		ref: composedRefs,
+		style: {
+			...props.style,
+			...controlSize,
+			position: "absolute",
+			pointerEvents: "none",
+			opacity: 0,
+			margin: 0
+		}
+	});
+});
+SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME;
+function getState(checked) {
+	return checked ? "checked" : "unchecked";
+}
+var Root = Switch$1;
+var Thumb = SwitchThumb;
+var Switch = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root, {
+	className: cn("peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input", className),
+	...props,
+	ref,
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Thumb, { className: cn("pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0") })
+}));
+Switch.displayName = Root.displayName;
+var globalConfig = {
+	tiers: [{
+		id: "tier-1",
+		name: "Essential",
+		basePrice: 49,
+		maxUnits: 10,
+		additionalUnitCost: 2,
+		region: "global",
+		features: [
+			"Basic Reporting",
+			"Up to 10 Properties",
+			"Standard Support"
+		]
+	}, {
+		id: "tier-2",
+		name: "Professional",
+		basePrice: 199,
+		maxUnits: 50,
+		additionalUnitCost: 1.5,
+		region: "global",
+		features: [
+			"Advanced Analytics",
+			"Up to 50 Properties",
+			"Priority Support"
+		]
+	}],
+	discounts: [{
+		id: "disc-1",
+		name: "SUMMER2025",
+		type: "percentage",
+		value: 15,
+		expiresAt: "2025-08-31"
+	}],
+	pmOverrides: []
+};
+var listeners = /* @__PURE__ */ new Set();
 var useSubscriptionStore = () => {
-	const context = (0, import_react.useContext)(AppContext);
-	if (!context) throw new Error("useSubscriptionStore must be used within AppProvider");
+	const [subscriptionConfig, setSubscriptionConfig] = (0, import_react.useState)(globalConfig);
+	(0, import_react.useEffect)(() => {
+		const handler = () => setSubscriptionConfig(globalConfig);
+		listeners.add(handler);
+		return () => {
+			listeners.delete(handler);
+		};
+	}, []);
+	const updateSubscriptionConfig = (newConfig) => {
+		globalConfig = newConfig;
+		listeners.forEach((listener) => listener());
+	};
 	return {
-		subscriptionConfig: context.subscriptionConfig,
-		updateSubscriptionConfig: context.updateSubscriptionConfig
+		subscriptionConfig,
+		updateSubscriptionConfig
 	};
 };
 var useSubscriptionStore_default = useSubscriptionStore;
@@ -70781,15 +70960,306 @@ function SubscriptionSettings() {
 	});
 }
 function Settings() {
+	const { currentUser, isAuthLoading } = useAuthStore_default();
+	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isLoading, setIsLoading] = (0, import_react.useState)(true);
+	const [profileData, setProfileData] = (0, import_react.useState)({
+		name: "",
+		email: "",
+		phone: ""
+	});
+	const [preferences, setPreferences] = (0, import_react.useState)({
+		emailNotif: true,
+		smsNotif: false,
+		marketingEmails: false
+	});
+	(0, import_react.useEffect)(() => {
+		if (!isAuthLoading) {
+			if (currentUser) setProfileData({
+				name: currentUser.name || "",
+				email: currentUser.email || "",
+				phone: currentUser.phone || ""
+			});
+			setTimeout(() => setIsLoading(false), 300);
+		}
+	}, [currentUser, isAuthLoading]);
+	const handleSaveProfile = () => {
+		toast$2({
+			title: "Profile Updated",
+			description: "Your profile information has been saved successfully."
+		});
+	};
+	const handleSavePreferences = () => {
+		toast$2({
+			title: "Preferences Saved",
+			description: "Your notification and system preferences have been updated."
+		});
+	};
+	const handleSaveSecurity = () => {
+		toast$2({
+			title: "Security Updated",
+			description: "Your security settings have been updated successfully."
+		});
+	};
+	if (isAuthLoading || isLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "max-w-5xl mx-auto space-y-6 animate-in fade-in p-6",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-10 w-48 mb-2" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-4 w-96" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-[400px] w-full rounded-xl" })]
+	});
+	const canViewSubscription = currentUser?.role === "platform_owner" || currentUser?.role === "software_tenant";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "max-w-5xl mx-auto space-y-6",
+		className: "max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500 pb-10",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight",
-			children: "Settings"
+			className: "text-3xl font-bold tracking-tight text-slate-900",
+			children: t("sidebar.settings") || "Settings"
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 			className: "text-muted-foreground mt-2",
-			children: "Manage your system settings and subscription pricing."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SubscriptionSettings, {})]
+			children: "Manage your account settings and preferences."
+		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+			defaultValue: "profile",
+			className: "space-y-6",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+					className: "bg-slate-100 border border-slate-200",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+							value: "profile",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-4 w-4" }), " Profile"]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+							value: "preferences",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, { className: "h-4 w-4" }), " Preferences"]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+							value: "security",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shield, { className: "h-4 w-4" }), " Security"]
+						}),
+						canViewSubscription && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+							value: "subscription",
+							className: "data-[state=active]:bg-white data-[state=active]:text-black gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CreditCard, { className: "h-4 w-4" }), " Subscription"]
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "profile",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200 shadow-sm bg-white",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Profile Information" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Update your personal details and public profile." })] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+								className: "space-y-6",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-6",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
+										className: "h-20 w-20 border-2 border-slate-100",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, { src: currentUser?.avatar }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
+											className: "text-xl bg-slate-100 font-bold",
+											children: profileData.name.charAt(0)
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: "outline",
+										className: "border-slate-300",
+										children: "Change Avatar"
+									})]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-4 md:grid-cols-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Full Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: profileData.name,
+												onChange: (e) => setProfileData({
+													...profileData,
+													name: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email Address" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: profileData.email,
+												disabled: true,
+												className: "bg-slate-50 cursor-not-allowed"
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Phone Number" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: profileData.phone,
+												onChange: (e) => setProfileData({
+													...profileData,
+													phone: e.target.value
+												})
+											})]
+										})
+									]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
+								className: "border-t bg-slate-50/50 py-4 flex justify-end",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: handleSaveProfile,
+									className: "bg-trust-blue text-white font-bold",
+									children: "Save Changes"
+								})
+							})
+						]
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "preferences",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200 shadow-sm bg-white",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "System Preferences" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Manage how you receive notifications and updates." })] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+								className: "space-y-6",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-4",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center justify-between",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-0.5",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+													className: "text-base font-bold",
+													children: "Email Notifications"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "text-sm text-muted-foreground font-medium",
+													children: "Receive updates via email."
+												})]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+												checked: preferences.emailNotif,
+												onCheckedChange: (c$1) => setPreferences({
+													...preferences,
+													emailNotif: c$1
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center justify-between",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-0.5",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+													className: "text-base font-bold",
+													children: "SMS Notifications"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "text-sm text-muted-foreground font-medium",
+													children: "Receive important alerts via text message."
+												})]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+												checked: preferences.smsNotif,
+												onCheckedChange: (c$1) => setPreferences({
+													...preferences,
+													smsNotif: c$1
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center justify-between",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-0.5",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+													className: "text-base font-bold",
+													children: "Marketing Emails"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "text-sm text-muted-foreground font-medium",
+													children: "Receive news and promotional offers."
+												})]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+												checked: preferences.marketingEmails,
+												onCheckedChange: (c$1) => setPreferences({
+													...preferences,
+													marketingEmails: c$1
+												})
+											})]
+										})
+									]
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
+								className: "border-t bg-slate-50/50 py-4 flex justify-end",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: handleSavePreferences,
+									className: "bg-trust-blue text-white font-bold",
+									children: "Save Preferences"
+								})
+							})
+						]
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "security",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200 shadow-sm bg-white",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Security Settings" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Manage your password and security protocols." })] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+								className: "space-y-6",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-4 max-w-md",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												className: "font-bold",
+												children: "Current Password"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, { type: "password" })]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												className: "font-bold",
+												children: "New Password"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, { type: "password" })]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+												className: "font-bold",
+												children: "Confirm New Password"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, { type: "password" })]
+										})
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "pt-6 mt-2 border-t border-slate-100 flex items-center justify-between",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-0.5",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+											className: "text-base font-bold flex items-center gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(KeyRound, { className: "h-4 w-4" }), "Two-Factor Authentication"]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "text-sm text-muted-foreground font-medium",
+											children: "Add an extra layer of security to your account."
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										variant: "outline",
+										className: "font-bold",
+										children: "Enable 2FA"
+									})]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
+								className: "border-t bg-slate-50/50 py-4 flex justify-end",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: handleSaveSecurity,
+									className: "bg-trust-blue text-white font-bold",
+									children: "Update Password"
+								})
+							})
+						]
+					})
+				}),
+				canViewSubscription && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "subscription",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SubscriptionSettings, {})
+				})
+			]
+		})]
 	});
 }
 function Tenants() {
@@ -71956,7 +72426,7 @@ function Alignment(align, viewSize) {
 	return { measure };
 }
 function EventStore() {
-	let listeners$2 = [];
+	let listeners$3 = [];
 	function add(node, type, handler, options$1 = { passive: true }) {
 		let removeListener;
 		if ("addEventListener" in node) {
@@ -71967,11 +72437,11 @@ function EventStore() {
 			legacyMediaQueryList.addListener(handler);
 			removeListener = () => legacyMediaQueryList.removeListener(handler);
 		}
-		listeners$2.push(removeListener);
+		listeners$3.push(removeListener);
 		return self$1;
 	}
 	function clear() {
-		listeners$2 = listeners$2.filter((remove) => remove());
+		listeners$3 = listeners$3.filter((remove) => remove());
 	}
 	const self$1 = {
 		add,
@@ -73021,28 +73491,28 @@ function Engine(root$3, container, slides, ownerDocument, ownerWindow, options$1
 	return engine;
 }
 function EventHandler() {
-	let listeners$2 = {};
+	let listeners$3 = {};
 	let api;
 	function init(emblaApi) {
 		api = emblaApi;
 	}
 	function getListeners(evt) {
-		return listeners$2[evt] || [];
+		return listeners$3[evt] || [];
 	}
 	function emit(evt) {
 		getListeners(evt).forEach((e) => e(api, evt));
 		return self$1;
 	}
 	function on(evt, cb) {
-		listeners$2[evt] = getListeners(evt).concat([cb]);
+		listeners$3[evt] = getListeners(evt).concat([cb]);
 		return self$1;
 	}
 	function off(evt, cb) {
-		listeners$2[evt] = getListeners(evt).filter((e) => e !== cb);
+		listeners$3[evt] = getListeners(evt).filter((e) => e !== cb);
 		return self$1;
 	}
 	function clear() {
-		listeners$2 = {};
+		listeners$3 = {};
 	}
 	const self$1 = {
 		init,
@@ -76394,4 +76864,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-DG7TJ7R7.js.map
+//# sourceMappingURL=index-CWhQvvpA.js.map

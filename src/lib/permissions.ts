@@ -88,6 +88,7 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     pos: FULL_ACCESS,
     financial: FULL_ACCESS,
     automation: ['view'],
+    settings: ['view', 'edit'],
   },
   partner: {
     dashboard: ['view'],
@@ -97,6 +98,7 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     financial: ['view'],
     properties: ['view'],
     automation: ['view'],
+    settings: ['view', 'edit'],
   },
   property_owner: {
     dashboard: ['view'],
@@ -108,6 +110,7 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     tasks: ['view', 'create', 'edit'],
     users: ['view'],
     automation: ['view'],
+    settings: ['view', 'edit'],
   },
   tenant: {
     dashboard: ['view'],
@@ -116,6 +119,7 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     financial: ['view'],
     properties: ['view'],
     automation: ['view'],
+    settings: ['view', 'edit'],
   },
   partner_employee: {
     dashboard: ['view'],
@@ -124,6 +128,7 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     messages: ['view', 'create'],
     properties: ['view'],
     automation: ['view'],
+    settings: ['view', 'edit'],
   },
 }
 
