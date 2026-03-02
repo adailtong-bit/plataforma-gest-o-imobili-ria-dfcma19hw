@@ -17,112 +17,92 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 import { Plus } from 'lucide-react'
 import useTaskStore from '@/stores/useTaskStore'
 import usePropertyStore from '@/stores/usePropertyStore'
-import useAuthStore from '@/stores/useAuthStore'
+import usePartnerStore from '@/stores/usePartnerStore'
 import { useToast } from '@/hooks/use-toast'
-import useLanguageStore from '@/stores/useLanguageStore'
-import { Task } from '@/lib/types'
 
-interface CreateTaskDialogProps {
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
-  initialPropertyId?: string
-  initialDate?: Date
-}
-
-export function CreateTaskDialog({
-  open: controlledOpen,
-  onOpenChange,
-  initialPropertyId,
-  initialDate,
-}: CreateTaskDialogProps) {
-  const [internalOpen, setInternalOpen] = useState(false)
-  const isControlled = controlledOpen !== undefined
-  const isOpen = isControlled ? controlledOpen : internalOpen
-  const setIsOpen = isControlled ? onOpenChange : setInternalOpen
-
+export function CreateTaskDialog() {
+  const [open, setOpen] = useState(false)
   const { addTask } = useTaskStore()
   const { properties } = usePropertyStore()
-  const { currentUser } = useAuthStore()
-  const { t } = useLanguageStore()
+  const { partners } = usePartnerStore()
   const { toast } = useToast()
 
-  const [newTask, setNewTask] = useState<Partial<Task>>({
+  const [form, setForm] = useState({
     title: '',
-    propertyId: initialPropertyId || '',
-    type: 'maintenance',
+    propertyId: '',
+    type: '',
     priority: 'medium',
-    date: initialDate ? initialDate.toISOString().split('T')[0] : '',
-    description: '',
+    assigneeId: '',
+    date: new Date().toISOString().split('T')[0],
   })
 
   const handleSave = () => {
-    if (!newTask.title || !newTask.propertyId) {
+    if (!form.title || !form.propertyId || !form.type) {
       toast({
-        title: 'Error',
-        description: 'Title and Property are required.',
+        title: 'Validation Error',
+        description: 'Please fill all required fields',
         variant: 'destructive',
       })
       return
     }
 
-    const prop = properties.find((p) => p.id === newTask.propertyId)
+    const prop = properties.find((p) => p.id === form.propertyId)
+    const partner = partners.find((p) => p.id === form.assigneeId)
 
     addTask({
-      ...newTask,
       id: `task-${Date.now()}`,
+      title: form.title,
+      propertyId: form.propertyId,
+      propertyName: prop?.name || '',
+      propertyAddress: prop?.address,
+      type: form.type as any,
+      priority: form.priority as any,
       status: 'pending',
-      propertyName: prop?.name || 'Unknown',
-      date: newTask.date
-        ? new Date(newTask.date).toISOString()
-        : new Date().toISOString(),
-      assignee: 'Unassigned',
-      createdBy: currentUser.id,
-    } as Task)
+      date: form.date,
+      assigneeId: form.assigneeId,
+      assignee: partner?.name || 'Unassigned',
+      source: 'manual',
+    })
 
-    toast({ title: 'Success', description: 'Task created.' })
-    if (setIsOpen) setIsOpen(false)
-    setNewTask({
+    toast({ title: 'Task created successfully' })
+    setOpen(false)
+    setForm({
       title: '',
       propertyId: '',
-      type: 'maintenance',
+      type: '',
       priority: 'medium',
-      date: '',
-      description: '',
+      assigneeId: '',
+      date: new Date().toISOString().split('T')[0],
     })
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {!isControlled && (
-        <DialogTrigger asChild>
-          <Button className="bg-trust-blue gap-2">
-            <Plus className="h-4 w-4" /> {t('common.new_task')}
-          </Button>
-        </DialogTrigger>
-      )}
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="bg-trust-blue text-white gap-2 h-9">
+          <Plus className="h-4 w-4" /> New Task
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t('common.create_title')}</DialogTitle>
+          <DialogTitle>Create New Task</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label>{t('tasks.task_title')}</Label>
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label>Title *</Label>
             <Input
-              value={newTask.title}
-              onChange={(e) =>
-                setNewTask({ ...newTask, title: e.target.value })
-              }
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
             />
           </div>
-          <div className="grid gap-2">
-            <Label>{t('common.property')}</Label>
+          <div className="space-y-2">
+            <Label>Property *</Label>
             <Select
-              value={newTask.propertyId}
-              onValueChange={(v) => setNewTask({ ...newTask, propertyId: v })}
+              value={form.propertyId}
+              onValueChange={(v) => setForm({ ...form, propertyId: v })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select Property" />
@@ -137,35 +117,27 @@ export function CreateTaskDialog({
             </Select>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label>{t('common.type')}</Label>
+            <div className="space-y-2">
+              <Label>Type *</Label>
               <Select
-                value={newTask.type}
-                onValueChange={(v) =>
-                  setNewTask({ ...newTask, type: v as any })
-                }
+                value={form.type}
+                onValueChange={(v) => setForm({ ...form, type: v })}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Select Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="maintenance">
-                    {t('partners.maintenance')}
-                  </SelectItem>
-                  <SelectItem value="cleaning">
-                    {t('partners.cleaning')}
-                  </SelectItem>
+                  <SelectItem value="cleaning">Cleaning</SelectItem>
+                  <SelectItem value="maintenance">Maintenance</SelectItem>
                   <SelectItem value="inspection">Inspection</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid gap-2">
-              <Label>{t('common.priority')}</Label>
+            <div className="space-y-2">
+              <Label>Priority</Label>
               <Select
-                value={newTask.priority}
-                onValueChange={(v) =>
-                  setNewTask({ ...newTask, priority: v as any })
-                }
+                value={form.priority}
+                onValueChange={(v) => setForm({ ...form, priority: v })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -179,26 +151,40 @@ export function CreateTaskDialog({
               </Select>
             </div>
           </div>
-          <div className="grid gap-2">
-            <Label>{t('common.date')}</Label>
-            <Input
-              type="date"
-              value={newTask.date}
-              onChange={(e) => setNewTask({ ...newTask, date: e.target.value })}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label>{t('common.description')}</Label>
-            <Textarea
-              value={newTask.description}
-              onChange={(e) =>
-                setNewTask({ ...newTask, description: e.target.value })
-              }
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Assignee</Label>
+              <Select
+                value={form.assigneeId}
+                onValueChange={(v) => setForm({ ...form, assigneeId: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Unassigned" />
+                </SelectTrigger>
+                <SelectContent>
+                  {partners.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Date</Label>
+              <Input
+                type="date"
+                value={form.date}
+                onChange={(e) => setForm({ ...form, date: e.target.value })}
+              />
+            </div>
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={handleSave}>{t('common.save')}</Button>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave}>Create Task</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -36,6 +36,7 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     guest_services: FULL_ACCESS,
     pos: FULL_ACCESS,
     marketing: FULL_ACCESS,
+    service_pricing: FULL_ACCESS,
   },
   software_tenant: {
     dashboard: FULL_ACCESS,
@@ -67,6 +68,7 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     guest_services: FULL_ACCESS,
     pos: FULL_ACCESS,
     marketing: FULL_ACCESS,
+    service_pricing: FULL_ACCESS,
   },
   internal_user: {
     dashboard: ['view'],
@@ -89,6 +91,7 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     financial: FULL_ACCESS,
     automation: ['view'],
     settings: ['view', 'edit'],
+    service_pricing: FULL_ACCESS,
   },
   partner: {
     dashboard: ['view'],

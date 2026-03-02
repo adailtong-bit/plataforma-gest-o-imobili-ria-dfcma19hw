@@ -1,20 +1,6 @@
-import * as React from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
-import { MapPin, Check, Loader2 } from 'lucide-react'
+import { Search } from 'lucide-react'
 
 export interface AddressData {
   street: string
@@ -22,173 +8,103 @@ export interface AddressData {
   state: string
   zipCode: string
   country: string
-  community?: string
-  neighborhood?: string
 }
 
 interface AddressInputProps {
   onAddressSelect: (address: AddressData) => void
-  defaultValue?: string
-  className?: string
-  disabled?: boolean
+  placeholder?: string
 }
-
-// Mock addresses with expanded data
-const MOCK_ADDRESSES = [
-  {
-    label: '123 Palm Street, Orlando, FL',
-    data: {
-      street: '123 Palm Street',
-      city: 'Orlando',
-      state: 'FL',
-      zipCode: '32801',
-      country: 'USA',
-      community: 'Sunny Isles',
-      neighborhood: 'Downtown',
-    },
-  },
-  {
-    label: '450 Brickell Ave, Miami, FL',
-    data: {
-      street: '450 Brickell Ave',
-      city: 'Miami',
-      state: 'FL',
-      zipCode: '33131',
-      country: 'USA',
-      community: 'Brickell Heights',
-      neighborhood: 'Brickell',
-    },
-  },
-  {
-    label: '800 Ocean Drive, Miami Beach, FL',
-    data: {
-      street: '800 Ocean Drive',
-      city: 'Miami Beach',
-      state: 'FL',
-      zipCode: '33139',
-      country: 'USA',
-      community: 'Art Deco District',
-      neighborhood: 'South Beach',
-    },
-  },
-  {
-    label: 'Av. Paulista 1000, São Paulo, SP',
-    data: {
-      street: 'Av. Paulista 1000',
-      city: 'São Paulo',
-      state: 'SP',
-      zipCode: '01310-100',
-      country: 'Brazil',
-      community: 'Bela Vista',
-      neighborhood: 'Bela Vista',
-    },
-  },
-]
 
 export function AddressInput({
   onAddressSelect,
-  defaultValue = '',
-  className,
-  disabled,
+  placeholder = 'Search address...',
 }: AddressInputProps) {
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState(defaultValue)
-  const [loading, setLoading] = React.useState(false)
-  const [suggestions, setSuggestions] = React.useState(MOCK_ADDRESSES)
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState<any[]>([])
+  const [isOpen, setIsOpen] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement>(null)
 
-  const handleSelect = (addr: (typeof MOCK_ADDRESSES)[0]) => {
-    setValue(addr.label)
-    onAddressSelect(addr.data)
-    setOpen(false)
-  }
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
-  // Simulate remote search
-  const handleSearch = (term: string) => {
-    setLoading(true)
-    setTimeout(() => {
-      const filtered = MOCK_ADDRESSES.filter((addr) =>
-        addr.label.toLowerCase().includes(term.toLowerCase()),
+  const searchAddress = async (text: string) => {
+    setQuery(text)
+    if (text.length < 3) {
+      setResults([])
+      setIsOpen(false)
+      return
+    }
+
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(text)}&addressdetails=1&limit=5`,
       )
-      setSuggestions(filtered)
-      setLoading(false)
-    }, 500)
+      const data = await res.json()
+      setResults(data)
+      setIsOpen(true)
+    } catch (error) {
+      console.error('Address search error', error)
+    }
   }
 
-  // Effect to sync external default value
-  React.useEffect(() => {
-    if (defaultValue) setValue(defaultValue)
-  }, [defaultValue])
+  const handleSelect = (item: any) => {
+    const addr = item.address
+    const data: AddressData = {
+      street: addr.road || addr.pedestrian || addr.suburb || '',
+      city: addr.city || addr.town || addr.village || '',
+      state: addr.state || '',
+      zipCode: addr.postcode || '',
+      country: addr.country || '',
+    }
+
+    // Auto map common country names to ISO
+    if (data.country === 'United States' || data.country === 'Estados Unidos')
+      data.country = 'USA'
+    if (data.country === 'Brasil') data.country = 'Brazil'
+    if (data.country === 'España') data.country = 'Spain'
+
+    setQuery(item.display_name)
+    setIsOpen(false)
+    onAddressSelect(data)
+  }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <div className="relative w-full group">
-          <Input
-            value={value}
-            onChange={(e) => {
-              setValue(e.target.value)
-              handleSearch(e.target.value)
-              setOpen(true)
-            }}
-            disabled={disabled}
-            className={cn(
-              'pr-8 transition-shadow focus:ring-2 bg-white text-black',
-              className,
-            )}
-            placeholder="Search address (e.g. 123 Main St)"
-            role="combobox"
-            aria-expanded={open}
-          />
-          <MapPin className="absolute right-2.5 top-2.5 h-4 w-4 text-muted-foreground opacity-50 group-focus-within:opacity-100 transition-opacity" />
+    <div ref={wrapperRef} className="relative w-full">
+      <div className="relative">
+        <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+        <Input
+          value={query}
+          onChange={(e) => searchAddress(e.target.value)}
+          placeholder={placeholder}
+          className="pl-9 bg-white text-black"
+          onFocus={() => {
+            if (results.length > 0) setIsOpen(true)
+          }}
+        />
+      </div>
+      {isOpen && results.length > 0 && (
+        <div className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+          {results.map((item, i) => (
+            <div
+              key={i}
+              className="p-2 text-sm hover:bg-slate-100 cursor-pointer border-b last:border-0 text-black"
+              onClick={() => handleSelect(item)}
+            >
+              {item.display_name}
+            </div>
+          ))}
         </div>
-      </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0 bg-white" align="start">
-        <Command>
-          <CommandInput
-            placeholder="Type address..."
-            className="h-9 bg-white text-black"
-            onValueChange={handleSearch}
-          />
-          <CommandList>
-            {loading ? (
-              <div className="py-6 text-center text-sm text-black flex items-center justify-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" /> Searching...
-              </div>
-            ) : (
-              <>
-                <CommandEmpty className="text-black">
-                  No address found.
-                </CommandEmpty>
-                <CommandGroup heading="Suggestions" className="text-black">
-                  {suggestions.map((addr) => (
-                    <CommandItem
-                      key={addr.label}
-                      value={addr.label}
-                      onSelect={() => handleSelect(addr)}
-                      className="cursor-pointer hover:bg-slate-100 text-black"
-                    >
-                      <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
-                      <div className="flex flex-col">
-                        <span className="font-medium text-black">
-                          {addr.label}
-                        </span>
-                        {addr.data.community && (
-                          <span className="text-[10px] text-muted-foreground">
-                            {addr.data.community}
-                          </span>
-                        )}
-                      </div>
-                      {value === addr.label && (
-                        <Check className="ml-auto h-4 w-4 opacity-100 text-black" />
-                      )}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </>
-            )}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+      )}
+    </div>
   )
 }

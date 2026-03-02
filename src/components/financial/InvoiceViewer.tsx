@@ -1,168 +1,97 @@
-import { useContext } from 'react'
-import { AppContext } from '@/stores/AppContext'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Invoice } from '@/lib/types'
-import { formatCurrency, formatDate } from '@/lib/utils'
-import useLanguageStore from '@/stores/useLanguageStore'
-import { Printer, Download } from 'lucide-react'
-import { Separator } from '@/components/ui/separator'
-import { DataMask } from '@/components/DataMask'
-
-interface InvoiceViewerProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  invoice: Invoice | null
-}
+import { format } from 'date-fns'
+import { Download, Printer } from 'lucide-react'
+import useFinancialStore from '@/stores/useFinancialStore'
 
 export function InvoiceViewer({
   open,
   onOpenChange,
   invoice,
-}: InvoiceViewerProps) {
-  const { t, language } = useLanguageStore()
-  const { bookings, promotions, currency } = useContext(AppContext)!
-
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  invoice: Invoice | null
+}) {
+  const { formatCurrency } = useFinancialStore()
   if (!invoice) return null
-
-  const booking = invoice.bookingId
-    ? bookings.find((b) => b.id === invoice.bookingId)
-    : null
-  const promotion = booking?.promotionId
-    ? promotions.find((p) => p.id === booking.promotionId)
-    : null
-
-  const subtotal = booking?.baseAmount || invoice.amount
-  const discount = booking?.discountAmount || 0
-  const finalTotal = invoice.amount
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-white text-black">
-        <DialogHeader>
-          <DialogTitle>{t('invoices.invoice_viewer.title')}</DialogTitle>
-        </DialogHeader>
-        <div className="p-6 border rounded-md shadow-sm bg-white">
-          <div className="flex justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight text-navy">
-                INVOICE
-              </h2>
-              <p className="text-sm text-slate-500 font-medium">COREPM Inc.</p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-slate-500">
-                {t('invoices.invoice_viewer.invoice_no')}
-              </p>
-              <p className="font-bold text-lg">
-                <DataMask>#{invoice.id.slice(-6).toUpperCase()}</DataMask>
-              </p>
-              <p className="text-sm text-slate-500 mt-1">
-                {t('invoices.invoice_viewer.date')}:{' '}
-                {formatDate(invoice.date, language)}
-              </p>
-            </div>
-          </div>
-
-          <div className="mb-8">
-            <p className="text-sm text-slate-500 mb-1">
-              {t('invoices.invoice_viewer.bill_to')}:
-            </p>
-            <p className="font-bold text-lg">
-              <DataMask>{booking ? booking.guestName : 'Cliente'}</DataMask>
-            </p>
-          </div>
-
-          <div className="border-t border-b py-4 mb-4">
-            <div className="grid grid-cols-4 font-bold text-sm mb-2 text-slate-900">
-              <div className="col-span-2">
-                {t('invoices.invoice_viewer.description')}
-              </div>
-              <div className="text-right">
-                {t('invoices.invoice_viewer.quantity')}
-              </div>
-              <div className="text-right">
-                {t('invoices.invoice_viewer.amount')}
-              </div>
-            </div>
-            <div className="grid grid-cols-4 text-sm text-slate-700 py-2">
-              <div className="col-span-2">
-                <DataMask>{invoice.description}</DataMask>
-              </div>
-              <div className="text-right">1</div>
-              <div className="text-right font-medium">
-                <DataMask>{formatCurrency(subtotal, currency)}</DataMask>
-              </div>
-            </div>
-            {promotion && (
-              <div className="grid grid-cols-4 text-sm text-green-700 py-2">
-                <div className="col-span-2 flex flex-col">
-                  <span>Discount Applied</span>
-                  <span className="text-xs font-medium">
-                    Code: {promotion.code}
-                  </span>
-                  {promotion.description && (
-                    <span className="text-xs opacity-80">
-                      {promotion.description}
-                    </span>
-                  )}
-                </div>
-                <div className="text-right">1</div>
-                <div className="text-right font-medium">
-                  <DataMask>-{formatCurrency(discount, currency)}</DataMask>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="flex justify-end">
-            <div className="w-1/2 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>{t('invoices.invoice_viewer.subtotal')}</span>
-                <span>
-                  <DataMask>{formatCurrency(subtotal, currency)}</DataMask>
-                </span>
-              </div>
-              {promotion && (
-                <div className="flex justify-between text-sm text-green-700">
-                  <span>Discount</span>
-                  <span>
-                    <DataMask>-{formatCurrency(discount, currency)}</DataMask>
-                  </span>
-                </div>
-              )}
-              <Separator />
-              <div className="flex justify-between font-bold text-lg text-slate-900">
-                <span>{t('invoices.invoice_viewer.total')}</span>
-                <span>
-                  <DataMask>{formatCurrency(finalTotal, currency)}</DataMask>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8 pt-4 border-t text-center text-sm text-slate-500">
-            <p className="font-medium">
-              {t('invoices.invoice_viewer.thank_you')}
-            </p>
+      <DialogContent className="max-w-2xl bg-white text-black p-0 overflow-hidden">
+        <div className="p-4 border-b bg-slate-50 flex justify-between items-center">
+          <DialogTitle>Invoice Details</DialogTitle>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              <Printer className="h-4 w-4 mr-2" /> Print
+            </Button>
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" /> PDF
+            </Button>
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => window.print()}>
-            <Printer className="h-4 w-4 mr-2" />{' '}
-            {t('invoices.invoice_viewer.print')}
-          </Button>
-          <Button className="bg-trust-blue text-white">
-            <Download className="h-4 w-4 mr-2" />{' '}
-            {t('invoices.invoice_viewer.download')}
-          </Button>
-        </DialogFooter>
+        <div className="p-8 space-y-8">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-2xl font-bold text-trust-blue">INVOICE</h2>
+              <p className="text-sm text-slate-500 mt-1">#{invoice.id}</p>
+            </div>
+            <div className="text-right text-sm">
+              <p className="font-semibold">Date</p>
+              <p>{format(new Date(invoice.date), 'MMMM dd, yyyy')}</p>
+            </div>
+          </div>
+          <div className="border-t border-b py-4">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="font-semibold text-slate-500 mb-1">Bill To:</p>
+                <p className="font-medium">Client / Property Owner</p>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold text-slate-500 mb-1">Status:</p>
+                <p className="uppercase font-bold text-slate-800">
+                  {invoice.status}
+                </p>
+              </div>
+            </div>
+          </div>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-200">
+                <th className="text-left py-2 font-semibold text-slate-600">
+                  Description
+                </th>
+                <th className="text-right py-2 font-semibold text-slate-600">
+                  Amount
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="py-4 text-slate-800">{invoice.description}</td>
+                <td className="py-4 text-right font-medium">
+                  {formatCurrency(invoice.amount)}
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr className="border-t-2 border-slate-800">
+                <td className="py-4 text-right font-bold text-slate-600">
+                  Total
+                </td>
+                <td className="py-4 text-right font-bold text-lg text-trust-blue">
+                  {formatCurrency(invoice.amount)}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </DialogContent>
     </Dialog>
   )

@@ -8,13 +8,11 @@ const usePropertyStore = () => {
 
   return {
     properties: context.properties,
-    channelMappings: context.channelMappings, // Added mappings
+    selectedPropertyId: context.selectedPropertyId,
+    setSelectedPropertyId: context.setSelectedPropertyId,
     addProperty: context.addProperty,
     updateProperty: context.updateProperty,
     deleteProperty: context.deleteProperty,
-    addChannelMapping: context.addChannelMapping,
-    updateChannelMapping: context.updateChannelMapping,
-    deleteChannelMapping: context.deleteChannelMapping,
   }
 }
 

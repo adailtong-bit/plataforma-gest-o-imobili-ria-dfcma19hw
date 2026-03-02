@@ -39,6 +39,7 @@ export type Resource =
   | 'guest_services'
   | 'pos'
   | 'marketing'
+  | 'service_pricing'
 
 export type Action = 'view' | 'create' | 'edit' | 'delete'
 
@@ -1209,4 +1210,3 @@ export interface PMSpecificPricing {
   pmId: string
   fixedRate: number
 }
-

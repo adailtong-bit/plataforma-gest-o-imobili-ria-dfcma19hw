@@ -1,15 +1,18 @@
-import { useContext } from 'react'
-import { Bell, Search, Globe, Eye, EyeOff } from 'lucide-react'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar'
+import { Bell, Search, Globe, HelpCircle, ShieldAlert } from 'lucide-react'
+import { Input } from '@/components/ui/input'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import useLanguageStore from '@/stores/useLanguageStore'
+import useAuthStore from '@/stores/useAuthStore'
+import usePropertyStore from '@/stores/usePropertyStore'
 import {
   Select,
   SelectContent,
@@ -17,83 +20,107 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { SidebarTrigger } from '@/components/ui/sidebar'
-import { Badge } from '@/components/ui/badge'
-import useLanguageStore from '@/stores/useLanguageStore'
-import { AppContext } from '@/stores/AppContext'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { useNavigate } from 'react-router-dom'
-import { Language } from '@/lib/translations'
-import { Property, User } from '@/lib/types'
+import { Badge } from '@/components/ui/badge'
 import { usePrivacyStore } from '@/stores/usePrivacyStore'
-import { DataMask } from '@/components/DataMask'
-import { getRoleLabel } from '@/lib/permissions'
 
 export function AppHeader() {
   const { language, setLanguage, t } = useLanguageStore()
-  const {
-    properties,
-    selectedPropertyId,
-    setSelectedPropertyId,
-    currentUser,
-    allUsers,
-    setCurrentUser,
-    logout,
-    notifications,
-  } = useContext(AppContext)!
+  const { currentUser, allUsers, setCurrentUser } = useAuthStore()
+  const { isMobile } = useSidebar()
   const navigate = useNavigate()
+  const { selectedPropertyId, setSelectedPropertyId, properties } =
+    usePropertyStore()
   const { isPrivate, togglePrivacy } = usePrivacyStore()
 
-  const unreadCount = notifications.filter((n) => !n.read).length
+  const handleDemoUserChange = (userId: string) => {
+    setCurrentUser(userId)
+    navigate('/') // Reset to dashboard to avoid permission errors on current page
+  }
+
+  // Filter properties based on role
+  const accessibleProperties = properties.filter((p) => {
+    if (currentUser?.role === 'property_owner') {
+      return p.ownerId === currentUser.id
+    }
+    return true
+  })
+
+  const demoUsers = allUsers.filter((u) => u.isDemo)
+  const regularUsers = allUsers.filter(
+    (u) => !u.isDemo && u.id !== currentUser?.id,
+  )
+
+  const isPortalUser = [
+    'tenant',
+    'property_owner',
+    'partner',
+    'partner_employee',
+  ].includes(currentUser?.role || '')
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 w-full items-center gap-4 border-b bg-white px-6 shadow-sm">
-      <div className="flex items-center gap-4 flex-1">
-        <SidebarTrigger className="shrink-0 md:hidden text-slate-700" />
-        <div className="relative w-full max-w-sm hidden md:flex">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-          <Input
-            type="search"
-            placeholder={t('common.search') || 'Search properties...'}
-            className="w-full rounded-md bg-slate-50 pl-9 border-slate-200 text-sm focus-visible:ring-trust-blue"
-          />
-        </div>
-      </div>
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-slate-200 bg-white px-6 shadow-sm shrink-0">
+      <SidebarTrigger className="text-slate-600 hover:text-slate-900" />
 
-      <div className="flex items-center gap-2 shrink-0 ml-auto">
-        <div className="hidden sm:flex items-center gap-2 mr-2">
-          <Select
-            value={selectedPropertyId}
-            onValueChange={setSelectedPropertyId}
-          >
-            <SelectTrigger className="w-[180px] h-9 bg-slate-50 border-slate-200">
-              <SelectValue placeholder={t('common.all') || 'All Properties'} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                {t('common.all') || 'All Properties'}
-              </SelectItem>
-              {properties.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {!isMobile && !isPortalUser && (
+        <div className="flex-1 max-w-xl">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+            <Input
+              type="search"
+              placeholder={t('common.search') || 'Search anything...'}
+              className="w-full bg-slate-50 border-slate-200 pl-9 focus-visible:ring-trust-blue"
+            />
+          </div>
         </div>
+      )}
+
+      {isMobile && <div className="flex-1" />}
+
+      <div className="flex items-center gap-3 ml-auto shrink-0">
+        {/* Privacy Toggle */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={togglePrivacy}
+          className={
+            isPrivate ? 'text-trust-blue bg-blue-50' : 'text-slate-500'
+          }
+          title={t('common.analytics.privacy_mode')}
+        >
+          <ShieldAlert className="h-4 w-4" />
+        </Button>
+
+        {/* Global Property Filter - Only for Managers/Admins */}
+        {!isPortalUser && (
+          <div className="hidden md:block w-[200px]">
+            <Select
+              value={selectedPropertyId}
+              onValueChange={setSelectedPropertyId}
+            >
+              <SelectTrigger className="h-9 bg-slate-50 border-slate-200 text-sm">
+                <SelectValue placeholder="All Properties" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Properties</SelectItem>
+                {accessibleProperties.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         <Button
           variant="ghost"
           size="icon"
-          className="relative text-slate-700 hover:bg-slate-100"
-          title={t('analytics.privacy_mode')}
-          onClick={togglePrivacy}
+          className="relative text-slate-600 hover:bg-slate-100"
         >
-          {isPrivate ? (
-            <EyeOff className="h-5 w-5 text-blue-600" />
-          ) : (
-            <Eye className="h-5 w-5" />
-          )}
+          <Bell className="h-5 w-5" />
+          <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
         </Button>
 
         <DropdownMenu>
@@ -101,122 +128,82 @@ export function AppHeader() {
             <Button
               variant="ghost"
               size="icon"
-              className="relative text-slate-700 hover:bg-slate-100"
+              className="text-slate-600 hover:bg-slate-100 uppercase font-bold text-xs"
             >
-              <Bell className="h-5 w-5" />
-              {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                </span>
-              )}
+              <Globe className="h-4 w-4 mr-1" />
+              {language}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80">
-            <DropdownMenuLabel>
-              {t('common.notifications') || 'Notifications'}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {notifications.slice(0, 5).map((n) => (
-              <DropdownMenuItem
-                key={n.id}
-                className="flex flex-col items-start gap-1 p-3"
-              >
-                <div className="flex items-center justify-between w-full">
-                  <span className="font-semibold">{n.title}</span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {new Date(n.timestamp).toLocaleTimeString()}
-                  </span>
-                </div>
-                <span className="text-xs text-muted-foreground line-clamp-2">
-                  {n.message}
-                </span>
-              </DropdownMenuItem>
-            ))}
-            {notifications.length === 0 && (
-              <div className="p-4 text-center text-sm text-muted-foreground">
-                No new notifications
-              </div>
-            )}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="justify-center text-blue-600 font-medium cursor-pointer">
-              View all
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-slate-700 hover:bg-slate-100"
+          <DropdownMenuContent align="end" className="w-32 bg-white">
+            <DropdownMenuItem
+              onClick={() => setLanguage('en')}
+              className={language === 'en' ? 'bg-slate-50 font-bold' : ''}
             >
-              <Globe className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setLanguage('en')}>
               English
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setLanguage('es')}>
-              Español
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setLanguage('pt')}>
+            <DropdownMenuItem
+              onClick={() => setLanguage('pt')}
+              className={language === 'pt' ? 'bg-slate-50 font-bold' : ''}
+            >
               Português
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setLanguage('es')}
+              className={language === 'es' ? 'bg-slate-50 font-bold' : ''}
+            >
+              Español
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-slate-600 hover:bg-slate-100 hidden sm:flex"
+          onClick={() => navigate('/help')}
+        >
+          <HelpCircle className="h-5 w-5" />
+        </Button>
+
+        {/* User Switcher (For Demo purposes) */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="relative h-9 w-9 rounded-full ml-2 border border-slate-200 p-0"
+              className="relative h-9 w-9 rounded-full ml-2 ring-2 ring-transparent hover:ring-slate-200 transition-all"
             >
               <Avatar className="h-9 w-9">
-                <AvatarImage src={currentUser?.avatar} alt="Avatar" />
-                <AvatarFallback className="bg-slate-100 text-slate-700 font-bold">
-                  {currentUser?.name?.charAt(0) || 'U'}
+                <AvatarImage
+                  src={currentUser?.avatar}
+                  alt={currentUser?.name}
+                />
+                <AvatarFallback className="bg-trust-blue text-white text-xs">
+                  {currentUser?.name?.charAt(0)}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <div className="flex items-center justify-start gap-2 p-2">
-              <div className="flex flex-col space-y-1 leading-none">
-                <p className="font-medium">
-                  <DataMask>{currentUser?.name}</DataMask>
+          <DropdownMenuContent align="end" className="w-64 bg-white p-2">
+            <DropdownMenuLabel className="font-normal border-b pb-2 mb-2">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-bold leading-none text-slate-900">
+                  {currentUser?.name}
                 </p>
-                <p className="w-[200px] truncate text-xs text-muted-foreground">
-                  <DataMask>{currentUser?.email}</DataMask>
+                <p className="text-xs leading-none text-slate-500 font-medium">
+                  {t(`roles.${currentUser?.role}`) || currentUser?.role}
                 </p>
-                <Badge variant="secondary" className="w-fit mt-1 text-[10px]">
-                  {currentUser?.role
-                    ? getRoleLabel(currentUser.role, t)
-                    : 'Unknown'}
-                </Badge>
               </div>
-            </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate('/settings')}>
-              {t('common.profile') || 'Profile'}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/settings')}>
-              {t('sidebar.settings') || 'Settings'}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel className="text-xs text-slate-500">
-              {t('header.demo_profiles') || 'Demo Profiles'}
             </DropdownMenuLabel>
-            {allUsers
-              .filter((u) => u.id !== currentUser?.id)
-              .slice(0, 5)
-              .map((u) => (
+
+            <DropdownMenuLabel className="text-xs text-slate-500 uppercase font-bold tracking-wider">
+              {t('header.demo_profiles')}
+            </DropdownMenuLabel>
+            <div className="max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
+              {demoUsers.map((u) => (
                 <DropdownMenuItem
                   key={u.id}
-                  onClick={() => setCurrentUser(u.id)}
-                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={() => handleDemoUserChange(u.id)}
+                  className={`flex items-center gap-2 cursor-pointer rounded-md ${currentUser?.id === u.id ? 'bg-blue-50 text-trust-blue' : ''}`}
                 >
                   <Avatar className="h-6 w-6">
                     <AvatarImage src={u.avatar} />
@@ -226,21 +213,61 @@ export function AppHeader() {
                   </Avatar>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">{u.name}</span>
-                    <span className="text-[10px] text-muted-foreground capitalize">
-                      {u.role.replace('_', ' ')}
+                    <span className="text-[10px] text-slate-500">
+                      {t(`roles.${u.role}`) || u.role}
                     </span>
                   </div>
+                  {u.isDemo && (
+                    <Badge
+                      variant="outline"
+                      className="ml-auto text-[8px] h-4 px-1"
+                    >
+                      DEMO
+                    </Badge>
+                  )}
                 </DropdownMenuItem>
               ))}
+            </div>
+
+            {regularUsers.length > 0 && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-xs text-slate-500 uppercase font-bold tracking-wider">
+                  {t('header.other_users')}
+                </DropdownMenuLabel>
+                <div className="max-h-[150px] overflow-y-auto custom-scrollbar pr-1">
+                  {regularUsers.map((u) => (
+                    <DropdownMenuItem
+                      key={u.id}
+                      onClick={() => handleDemoUserChange(u.id)}
+                      className="flex items-center gap-2 cursor-pointer rounded-md"
+                    >
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={u.avatar} />
+                        <AvatarFallback className="text-[10px]">
+                          {u.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">{u.name}</span>
+                        <span className="text-[10px] text-slate-500">
+                          {t(`roles.${u.role}`) || u.role}
+                        </span>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+              </>
+            )}
+
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
               onClick={() => {
-                logout()
                 navigate('/login')
               }}
+              className="text-red-600 focus:bg-red-50 focus:text-red-700 font-medium cursor-pointer"
             >
-              {t('common.logout') || 'Log out'}
+              {t('common.logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

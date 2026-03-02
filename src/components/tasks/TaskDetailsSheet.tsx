@@ -4,16 +4,11 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  SheetFooter,
 } from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Task } from '@/lib/types'
+import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
-import { DataMask } from '@/components/DataMask'
-import { Separator } from '@/components/ui/separator'
-import { MapPin, Calendar, User, Clock } from 'lucide-react'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { MapPin, User, Calendar, DollarSign, FileText } from 'lucide-react'
 
 interface TaskDetailsSheetProps {
   task: Task | null
@@ -26,105 +21,112 @@ export function TaskDetailsSheet({
   open,
   onOpenChange,
 }: TaskDetailsSheetProps) {
-  const { t, language } = useLanguageStore()
-
   if (!task) return null
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-[500px] overflow-y-auto">
-        <SheetHeader>
-          <div className="flex justify-between items-start">
-            <SheetTitle className="text-xl font-bold">
-              <DataMask>{task.title}</DataMask>
-            </SheetTitle>
-            <Badge>{task.status}</Badge>
-          </div>
-          <SheetDescription>
-            <div className="flex items-center gap-2 mt-1">
-              <MapPin className="h-3 w-3" />{' '}
-              <DataMask>{task.propertyName}</DataMask>
-            </div>
-          </SheetDescription>
+      <SheetContent className="sm:max-w-md overflow-y-auto">
+        <SheetHeader className="mb-6">
+          <SheetTitle className="text-xl">{task.title}</SheetTitle>
+          <SheetDescription>Task Details</SheetDescription>
         </SheetHeader>
 
-        <div className="py-6 space-y-6">
-          <div className="space-y-4">
-            <h4 className="text-sm font-bold uppercase text-muted-foreground">
-              {t('common.details')}
-            </h4>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground flex items-center gap-1">
-                  <Calendar className="h-3 w-3" /> Scheduled
-                </span>
-                <span className="font-medium">
+        <div className="space-y-6">
+          <div className="flex gap-2 flex-wrap">
+            <Badge variant="outline" className="uppercase text-xs">
+              {task.status.replace('_', ' ')}
+            </Badge>
+            <Badge variant="secondary" className="uppercase text-xs">
+              {task.type}
+            </Badge>
+            <Badge className="uppercase text-xs">{task.priority}</Badge>
+          </div>
+
+          <div className="space-y-4 bg-slate-50 p-4 rounded-lg border">
+            <div className="flex items-start gap-3">
+              <MapPin className="h-5 w-5 text-slate-500 mt-0.5" />
+              <div>
+                <p className="font-semibold text-sm">Property</p>
+                <p className="text-sm text-slate-700">{task.propertyName}</p>
+                {task.propertyAddress && (
+                  <p className="text-xs text-slate-500">
+                    {task.propertyAddress}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <User className="h-5 w-5 text-slate-500 mt-0.5" />
+              <div>
+                <p className="font-semibold text-sm">Assignee</p>
+                <p className="text-sm text-slate-700">{task.assignee}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Calendar className="h-5 w-5 text-slate-500 mt-0.5" />
+              <div>
+                <p className="font-semibold text-sm">Scheduled Date</p>
+                <p className="text-sm text-slate-700">
                   {format(new Date(task.date), 'PPP')}
-                </span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground flex items-center gap-1">
-                  <User className="h-3 w-3" /> Assignee
-                </span>
-                <span className="font-medium">
-                  <DataMask>{task.assignee}</DataMask>
-                </span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground">Priority</span>
-                <span className="capitalize">{task.priority}</span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground">Type</span>
-                <span className="capitalize">
-                  {t(`partners.${task.type}`) || task.type}
-                </span>
+                </p>
               </div>
             </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-2">
-            <h4 className="text-sm font-bold uppercase text-muted-foreground">
-              {t('common.description')}
-            </h4>
-            <div className="bg-muted/30 p-3 rounded-md text-sm">
-              <DataMask>
-                {task.description || 'No description provided.'}
-              </DataMask>
-            </div>
-          </div>
-
-          {task.evidence && task.evidence.length > 0 && (
-            <>
-              <Separator />
-              <div className="space-y-2">
-                <h4 className="text-sm font-bold uppercase text-muted-foreground">
-                  Evidence
-                </h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {task.evidence.map((ev, i) => (
-                    <div
-                      key={ev.id}
-                      className="relative aspect-video rounded-md overflow-hidden border"
-                    >
-                      <img
-                        src={ev.url}
-                        alt={`Evidence ${i}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
+            {(task.price !== undefined || task.laborCost !== undefined) && (
+              <div className="flex items-start gap-3">
+                <DollarSign className="h-5 w-5 text-slate-500 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-sm">Financials</p>
+                  {task.price !== undefined && (
+                    <p className="text-sm text-slate-700">
+                      Price: ${task.price}
+                    </p>
+                  )}
+                  {task.laborCost !== undefined && (
+                    <p className="text-sm text-slate-700">
+                      Labor: ${task.laborCost}
+                    </p>
+                  )}
+                  {task.materialCost !== undefined && (
+                    <p className="text-sm text-slate-700">
+                      Material: ${task.materialCost}
+                    </p>
+                  )}
                 </div>
               </div>
-            </>
+            )}
+            {task.description && (
+              <div className="flex items-start gap-3">
+                <FileText className="h-5 w-5 text-slate-500 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-sm">Description</p>
+                  <p className="text-sm text-slate-700 whitespace-pre-wrap">
+                    {task.description}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {task.images && task.images.length > 0 && (
+            <div>
+              <h4 className="font-semibold text-sm mb-3">Images</h4>
+              <div className="grid grid-cols-2 gap-2">
+                {task.images.map((img, i) => (
+                  <div
+                    key={i}
+                    className="aspect-square rounded-md overflow-hidden border"
+                  >
+                    <img
+                      src={img}
+                      alt={`Task image ${i}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
-
-        <SheetFooter>
-          <Button onClick={() => onOpenChange(false)}>Close</Button>
-        </SheetFooter>
       </SheetContent>
     </Sheet>
   )

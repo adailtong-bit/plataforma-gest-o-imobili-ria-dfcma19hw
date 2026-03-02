@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -8,38 +9,36 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Task } from '@/lib/types'
-import { useState, useEffect } from 'react'
 import useTaskStore from '@/stores/useTaskStore'
 import { useToast } from '@/hooks/use-toast'
-
-interface EditTaskDialogProps {
-  task: Task | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
 
 export function EditTaskDialog({
   task,
   open,
   onOpenChange,
-}: EditTaskDialogProps) {
+}: {
+  task: Task | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
   const { updateTask } = useTaskStore()
   const { toast } = useToast()
-  const [formData, setFormData] = useState<Partial<Task>>({})
+  const [form, setForm] = useState<Partial<Task>>({})
 
   useEffect(() => {
-    if (task) setFormData({ ...task })
+    if (task) setForm(task)
   }, [task])
 
   const handleSave = () => {
-    if (task && formData) {
-      updateTask({ ...task, ...formData } as Task)
-      toast({ title: 'Task Updated' })
+    if (task) {
+      updateTask({ ...task, ...form } as Task)
+      toast({ title: 'Task updated successfully' })
       onOpenChange(false)
     }
   }
+
+  if (!task) return null
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -47,33 +46,40 @@ export function EditTaskDialog({
         <DialogHeader>
           <DialogTitle>Edit Task</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
             <Label>Title</Label>
             <Input
-              value={formData.title || ''}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
+              value={form.title || ''}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
             />
           </div>
-          <div className="grid gap-2">
-            <Label>Description</Label>
-            <Textarea
-              value={formData.description || ''}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
+          <div className="space-y-2">
+            <Label>Date</Label>
+            <Input
+              type="date"
+              value={form.date?.split('T')[0] || ''}
+              onChange={(e) => setForm({ ...form, date: e.target.value })}
             />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Price</Label>
+              <Input
+                type="number"
+                value={form.price || ''}
+                onChange={(e) =>
+                  setForm({ ...form, price: Number(e.target.value) })
+                }
+              />
+            </div>
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} className="bg-trust-blue">
-            Save Changes
-          </Button>
+          <Button onClick={handleSave}>Save Changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

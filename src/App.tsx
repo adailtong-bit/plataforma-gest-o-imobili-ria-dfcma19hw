@@ -332,7 +332,7 @@ const App = () => {
                 <Route
                   path="/service-pricing"
                   element={
-                    <RequirePermission resource="settings">
+                    <RequirePermission resource="service_pricing">
                       <ServicePricing />
                     </RequirePermission>
                   }

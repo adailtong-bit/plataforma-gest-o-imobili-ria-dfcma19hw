@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 
-const VisuallyHidden = React.forwardRef<
+export const VisuallyHidden = React.forwardRef<
   HTMLSpanElement,
   React.HTMLAttributes<HTMLSpanElement>
 >(({ className, ...props }, ref) => {
@@ -9,7 +9,7 @@ const VisuallyHidden = React.forwardRef<
     <span
       ref={ref}
       className={cn(
-        'absolute w-[1px] h-[1px] p-0 -m-[1px] overflow-hidden clip-[rect(0,0,0,0)] whitespace-nowrap border-0',
+        'absolute w-[1px] h-[1px] p-0 -m-[1px] overflow-hidden whitespace-nowrap border-0 [clip:rect(0,0,0,0)]',
         className,
       )}
       {...props}
@@ -17,5 +17,3 @@ const VisuallyHidden = React.forwardRef<
   )
 })
 VisuallyHidden.displayName = 'VisuallyHidden'
-
-export { VisuallyHidden }

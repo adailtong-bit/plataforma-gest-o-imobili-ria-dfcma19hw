@@ -3,35 +3,42 @@ import { Advertisement } from '@/lib/types'
 
 export function useAdRotation(
   ads: Advertisement[],
-  limit: number = 1,
-  intervalSeconds: number = 8,
+  displayCount: number = 2,
+  rotationIntervalSeconds: number = 10,
 ) {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [visibleAds, setVisibleAds] = useState<Advertisement[]>([])
 
   useEffect(() => {
-    // If we don't have enough ads to rotate, just reset index and do nothing
-    if (!ads || ads.length <= limit) {
-      setCurrentIndex(0)
+    if (!ads || ads.length === 0) {
+      setVisibleAds([])
       return
     }
 
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + limit) % ads.length)
-    }, intervalSeconds * 1000)
+    if (ads.length <= displayCount) {
+      setVisibleAds(ads)
+      return
+    }
 
-    return () => clearInterval(timer)
-  }, [ads, limit, intervalSeconds])
+    // Initial shuffle
+    const shuffled = [...ads].sort(() => 0.5 - Math.random())
+    setVisibleAds(shuffled.slice(0, displayCount))
 
-  if (!ads || ads.length === 0) return []
+    const interval = setInterval(() => {
+      setVisibleAds((current) => {
+        const nextAds = [...ads].filter(
+          (a) => !current.find((c) => c.id === a.id),
+        )
+        const candidates =
+          nextAds.length >= displayCount ? nextAds : [...nextAds, ...current]
+        const nextShuffled = candidates
+          .sort(() => 0.5 - Math.random())
+          .slice(0, displayCount)
+        return nextShuffled
+      })
+    }, rotationIntervalSeconds * 1000)
 
-  // If we have fewer ads than the limit, return them all
-  if (ads.length <= limit) return ads
-
-  // Return the current slice of ads
-  const visibleAds = []
-  for (let i = 0; i < limit; i++) {
-    visibleAds.push(ads[(currentIndex + i) % ads.length])
-  }
+    return () => clearInterval(interval)
+  }, [ads, displayCount, rotationIntervalSeconds])
 
   return visibleAds
 }

@@ -1,27 +1,6 @@
-import { useState, useRef } from 'react'
-import { GenericDocument, DocumentCategory } from '@/lib/types'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { FileText, Download, Trash2, Upload, File } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
-import useLanguageStore from '@/stores/useLanguageStore'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -29,7 +8,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Label } from '@/components/ui/label'
+import {
+  FileText,
+  Download,
+  Trash2,
+  Eye,
+  Plus,
+  ShieldCheck,
+} from 'lucide-react'
+import { format } from 'date-fns'
+import { GenericDocument, DocumentCategory } from '@/lib/types'
 import {
   Dialog,
   DialogContent,
@@ -37,281 +25,186 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
-import { formatDate } from '@/lib/utils'
+import { Label } from '@/components/ui/label'
 
 interface DocumentVaultProps {
   documents: GenericDocument[]
-  onUpdate: (documents: GenericDocument[]) => void
-  canEdit: boolean
-  title?: string
-  description?: string
+  onUpdate: (docs: GenericDocument[]) => void
+  canEdit?: boolean
   entityContext?: {
     id: string
-    name: string
     type: 'tenant' | 'owner' | 'partner'
+    name: string
   }
 }
 
 export function DocumentVault({
   documents,
   onUpdate,
-  canEdit,
-  title,
-  description,
+  canEdit = false,
   entityContext,
 }: DocumentVaultProps) {
-  const { t, language } = useLanguageStore()
-  const { toast } = useToast()
-  const docInputRef = useRef<HTMLInputElement>(null)
-  const [isUploading, setIsUploading] = useState(false)
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [selectedCategory, setSelectedCategory] =
-    useState<DocumentCategory>('Other')
-  const [linkedEntity, setLinkedEntity] = useState<string>(
-    entityContext?.id || '',
-  )
+  const [isAddOpen, setIsAddOpen] = useState(false)
+  const [form, setForm] = useState<Partial<GenericDocument>>({
+    category: 'Other',
+  })
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setSelectedFile(file)
-      if (entityContext) {
-        setLinkedEntity(entityContext.id)
-      }
-      setUploadDialogOpen(true)
+  const handleAdd = () => {
+    if (!form.name || !form.url) return
+    const newDoc: GenericDocument = {
+      id: `doc-${Date.now()}`,
+      name: form.name,
+      url: form.url,
+      category: (form.category as DocumentCategory) || 'Other',
+      date: new Date().toISOString(),
+      linkedEntityId: entityContext?.id,
+      linkedEntityType: entityContext?.type,
+      linkedEntityName: entityContext?.name,
     }
+    onUpdate([...documents, newDoc])
+    setIsAddOpen(false)
+    setForm({ category: 'Other' })
   }
 
-  const handleConfirmUpload = () => {
-    if (!selectedFile) return
-
-    setIsUploading(true)
-    setTimeout(() => {
-      const newDoc: GenericDocument = {
-        id: `doc-${Date.now()}`,
-        name: selectedFile.name,
-        url: URL.createObjectURL(selectedFile),
-        date: new Date().toISOString(),
-        type: selectedFile.type,
-        size: `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`,
-        category: selectedCategory,
-        linkedEntityId: linkedEntity || undefined,
-        linkedEntityName:
-          linkedEntity === entityContext?.id ? entityContext.name : undefined,
-        linkedEntityType:
-          linkedEntity === entityContext?.id ? entityContext.type : undefined,
-      }
-      onUpdate([...(documents || []), newDoc])
-      setIsUploading(false)
-      setUploadDialogOpen(false)
-      setSelectedFile(null)
-      if (docInputRef.current) docInputRef.current.value = ''
-      toast({
-        title: t('common.success'),
-        description: t('common.upload') + ' ' + t('common.completed'),
-      })
-    }, 1000)
+  const handleRemove = (id: string) => {
+    onUpdate(documents.filter((d) => d.id !== id))
   }
 
-  const handleRemoveDoc = (docId: string) => {
-    const newDocs = (documents || []).filter((d) => d.id !== docId)
-    onUpdate(newDocs)
-    toast({
-      title: t('common.removed'),
-      description: t('common.delete_success'),
-    })
-  }
+  const categories: DocumentCategory[] = [
+    'Contract',
+    'Insurance',
+    'ID',
+    'Passport',
+    'SSN',
+    'DriverLicense',
+    'Other',
+  ]
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle>{title || t('common.documents')}</CardTitle>
-          <CardDescription>
-            {description || t('common.documents')}
-          </CardDescription>
+    <div className="space-y-4">
+      {canEdit && (
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsAddOpen(true)}
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" /> Add Document
+          </Button>
         </div>
-        {canEdit && (
-          <div>
-            <input
-              type="file"
-              ref={docInputRef}
-              className="hidden"
-              accept=".pdf,.doc,.docx,.txt,.jpg,.png"
-              onChange={handleFileSelect}
-            />
-            <Button
-              onClick={() => docInputRef.current?.click()}
-              className="bg-trust-blue"
-            >
-              <Upload className="mr-2 h-4 w-4" />
-              {t('common.upload')}
-            </Button>
+      )}
+
+      <div className="border rounded-md divide-y bg-white">
+        {documents.map((doc) => (
+          <div
+            key={doc.id}
+            className="flex items-center justify-between p-3 hover:bg-slate-50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="bg-blue-50 p-2 rounded">
+                <FileText className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 flex items-center gap-2">
+                  {doc.name}
+                  {doc.category === 'Contract' && (
+                    <ShieldCheck
+                      className="h-3 w-3 text-green-600"
+                      title="Legal Document"
+                    />
+                  )}
+                </p>
+                <div className="flex gap-2 text-xs text-slate-500">
+                  <span className="bg-slate-100 px-1.5 py-0.5 rounded uppercase">
+                    {doc.category}
+                  </span>
+                  <span>{format(new Date(doc.date), 'MMM dd, yyyy')}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" title="View" asChild>
+                <a href={doc.url} target="_blank" rel="noreferrer">
+                  <Eye className="h-4 w-4 text-slate-600" />
+                </a>
+              </Button>
+              <Button variant="ghost" size="icon" title="Download">
+                <Download className="h-4 w-4 text-slate-600" />
+              </Button>
+              {canEdit && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleRemove(doc.id)}
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+        ))}
+        {documents.length === 0 && (
+          <div className="p-8 text-center text-sm text-slate-500">
+            No documents uploaded yet.
           </div>
         )}
-      </CardHeader>
-      <CardContent>
-        {/* Upload Dialog */}
-        <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{t('common.upload')}</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label>{t('common.details')}</Label>
-                <div className="p-2 border rounded bg-muted text-sm flex items-center gap-2 text-black">
-                  <File className="h-4 w-4 text-blue-500" />
-                  {selectedFile?.name}
-                </div>
-              </div>
+      </div>
 
-              {entityContext && (
-                <div className="grid gap-2">
-                  <Label>Link Document to Specific Person</Label>
-                  <Select value={linkedEntity} onValueChange={setLinkedEntity}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Person..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={entityContext.id}>
-                        {entityContext.name} ({t(`roles.${entityContext.type}`)}
-                        )
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              <div className="grid gap-2">
-                <Label>{t('common.category')}</Label>
-                <Select
-                  value={selectedCategory}
-                  onValueChange={(v) =>
-                    setSelectedCategory(v as DocumentCategory)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Contract">
-                      {t('common.contracts')}
-                    </SelectItem>
-                    <SelectItem value="ID">
-                      ID / {t('common.tax_id')}
-                    </SelectItem>
-                    <SelectItem value="Passport">Passport</SelectItem>
-                    <SelectItem value="SSN">SSN / Tax ID</SelectItem>
-                    <SelectItem value="Insurance">Insurance</SelectItem>
-                    <SelectItem value="Deed">Deed</SelectItem>
-                    <SelectItem value="Inspection">Inspection</SelectItem>
-                    <SelectItem value="Other">{t('common.none')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Document</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Document Name</Label>
+              <Input
+                value={form.name || ''}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="e.g. Signed Lease Agreement"
+              />
             </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setUploadDialogOpen(false)}
+            <div className="space-y-2">
+              <Label>Category</Label>
+              <Select
+                value={form.category}
+                onValueChange={(v) =>
+                  setForm({ ...form, category: v as DocumentCategory })
+                }
               >
-                {t('common.cancel')}
-              </Button>
-              <Button onClick={handleConfirmUpload} disabled={isUploading}>
-                {isUploading ? '...' : t('common.confirm')}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        <div className="space-y-4">
-          {!documents || documents.length === 0 ? (
-            <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
-              {t('common.empty')}
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          ) : (
-            documents.map((doc) => (
-              <div
-                key={doc.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="bg-blue-100 p-2 rounded-full">
-                    <FileText className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-sm text-black">
-                        {doc.name}
-                      </p>
-                      <Badge variant="secondary" className="text-xs">
-                        {doc.category}
-                      </Badge>
-                      {doc.linkedEntityName && (
-                        <Badge variant="outline" className="text-xs">
-                          Linked to: {doc.linkedEntityName}
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground text-black">
-                      {formatDate(doc.date, language)} •{' '}
-                      {doc.size || 'Unknown size'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <a
-                    href={doc.url}
-                    download={doc.name}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button variant="ghost" size="icon">
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </a>
-                  {canEdit && (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            {t('common.confirm_delete')}
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {t('common.delete_desc')}
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>
-                            {t('common.cancel')}
-                          </AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleRemoveDoc(doc.id)}
-                          >
-                            {t('common.delete')}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            <div className="space-y-2">
+              <Label>File URL (Mock Upload)</Label>
+              <Input
+                value={form.url || ''}
+                onChange={(e) => setForm({ ...form, url: e.target.value })}
+                placeholder="https://..."
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAdd} disabled={!form.name || !form.url}>
+              Save Document
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   )
 }

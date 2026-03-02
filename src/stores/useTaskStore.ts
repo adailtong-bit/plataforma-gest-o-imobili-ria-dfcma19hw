@@ -7,15 +7,14 @@ const useTaskStore = () => {
 
   return {
     tasks: context.tasks,
-    updateTaskStatus: context.updateTaskStatus,
-    updateTask: context.updateTask,
     addTask: context.addTask,
+    updateTask: context.updateTask,
     deleteTask: context.deleteTask,
+    updateTaskStatus: context.updateTaskStatus,
     approveTask: context.approveTask,
     rejectTask: context.rejectTask,
     addTaskImage: context.addTaskImage,
     addTaskEvidence: context.addTaskEvidence,
-    notifySupplier: context.notifySupplier,
   }
 }
 

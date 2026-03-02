@@ -1,77 +1,74 @@
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { useState } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 import useTaskStore from '@/stores/useTaskStore'
 import { useToast } from '@/hooks/use-toast'
-
-interface RejectTaskDialogProps {
-  taskId: string
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
 
 export function RejectTaskDialog({
   taskId,
   open,
   onOpenChange,
-}: RejectTaskDialogProps) {
+}: {
+  taskId: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
   const { rejectTask } = useTaskStore()
   const { toast } = useToast()
   const [reason, setReason] = useState('')
 
-  const handleConfirm = () => {
+  const handleReject = () => {
     if (!reason.trim()) {
       toast({
-        title: 'Error',
-        description: 'Reason is required',
+        title: 'Validation Error',
+        description: 'Please provide a reason for rejection.',
         variant: 'destructive',
       })
       return
     }
     rejectTask(taskId, reason)
-    toast({ title: 'Task Rejected' })
+    toast({
+      title: 'Task Rejected',
+      description: 'The task has been marked as rejected.',
+    })
     onOpenChange(false)
     setReason('')
   }
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Reject Task</AlertDialogTitle>
-          <AlertDialogDescription>
-            Please provide a reason for rejecting this task. This will be sent
-            to the requester.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <div className="py-2">
-          <Label>Reason</Label>
-          <Textarea
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="Why is this being rejected?"
-          />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Reject Task</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label>Reason for Rejection *</Label>
+            <Textarea
+              placeholder="Explain why this task is being rejected..."
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="min-h-[100px]"
+            />
+          </div>
         </div>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleConfirm}
-            className="bg-red-600 hover:bg-red-700"
-          >
-            Reject
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={handleReject}>
+            Reject Task
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
