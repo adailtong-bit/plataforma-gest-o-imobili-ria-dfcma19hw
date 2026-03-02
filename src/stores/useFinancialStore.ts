@@ -16,6 +16,7 @@ const useFinancialStore = () => {
     formatCurrency: context.formatAppCurrency,
     addInvoice: context.addInvoice,
     updateInvoice: context.updateInvoice,
+    deleteInvoice: context.deleteInvoice,
     markPaymentAs: context.markPaymentAs,
     updateFinancialSettings: context.updateFinancialSettings,
     uploadBankStatement: context.uploadBankStatement,

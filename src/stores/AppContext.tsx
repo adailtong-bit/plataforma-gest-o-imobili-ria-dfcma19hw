@@ -203,6 +203,7 @@ interface AppContextType {
   notifySupplier: (taskId: string) => void
   addInvoice: (invoice: Invoice) => void
   updateInvoice: (invoice: Invoice) => void
+  deleteInvoice: (invoiceId: string) => void
   markPaymentAs: (paymentId: string, status: Payment['status']) => void
   addTaskImage: (taskId: string, imageUrl: string) => void
   addTaskEvidence: (taskId: string, evidence: Evidence) => void
@@ -545,6 +546,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setFinancials((prev) => ({
       ...prev,
       invoices: prev.invoices.map((x) => (x.id === i.id ? i : x)),
+    }))
+  const deleteInvoice = (id: string) =>
+    setFinancials((prev) => ({
+      ...prev,
+      invoices: prev.invoices.filter((x) => x.id !== id),
     }))
   const addGuestService = (s: GuestService) =>
     setGuestServices([...guestServices, s])
@@ -1013,6 +1019,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         notifySupplier,
         addInvoice,
         updateInvoice,
+        deleteInvoice,
         markPaymentAs,
         addTaskImage,
         addTaskEvidence,

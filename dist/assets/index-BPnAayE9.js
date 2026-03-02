@@ -57712,6 +57712,10 @@ const AppProvider = ({ children }) => {
 		...prev,
 		invoices: prev.invoices.map((x$2) => x$2.id === i.id ? i : x$2)
 	}));
+	const deleteInvoice = (id) => setFinancials((prev) => ({
+		...prev,
+		invoices: prev.invoices.filter((x$2) => x$2.id !== id)
+	}));
 	const addGuestService = (s$1) => setGuestServices([...guestServices$1, s$1]);
 	const updateGuestService = (s$1) => setGuestServices(guestServices$1.map((x$2) => x$2.id === s$1.id ? s$1 : x$2));
 	const deleteGuestService = (id) => setGuestServices(guestServices$1.filter((x$2) => x$2.id !== id));
@@ -58045,6 +58049,7 @@ const AppProvider = ({ children }) => {
 			notifySupplier,
 			addInvoice,
 			updateInvoice,
+			deleteInvoice,
 			markPaymentAs,
 			addTaskImage,
 			addTaskEvidence,
@@ -58171,6 +58176,7 @@ var useFinancialStore = () => {
 		formatCurrency: context.formatAppCurrency,
 		addInvoice: context.addInvoice,
 		updateInvoice: context.updateInvoice,
+		deleteInvoice: context.deleteInvoice,
 		markPaymentAs: context.markPaymentAs,
 		updateFinancialSettings: context.updateFinancialSettings,
 		uploadBankStatement: context.uploadBankStatement,
@@ -62657,7 +62663,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$40({ inst: {
+			cachedValue = useState$46({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -62694,7 +62700,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$40 = React$67.useState, useEffect$18 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$46 = React$67.useState, useEffect$18 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -70442,61 +70448,225 @@ function Financial() {
 	});
 }
 function Invoices() {
-	const { financials: financials$1, formatAppCurrency } = (0, import_react.useContext)(AppContext);
+	const { financials: financials$1, addInvoice, updateInvoice, deleteInvoice, formatAppCurrency } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		description: "",
+		amount: 0,
+		status: "pending",
+		date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+	});
+	const [viewerOpen, setViewerOpen] = (0, import_react.useState)(false);
+	const [viewingInvoice, setViewingInvoice] = (0, import_react.useState)(null);
+	const handleSave = () => {
+		if (!form.description) {
+			toast$2({
+				title: t("common.error"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingRecord) {
+			updateInvoice({
+				...editingRecord,
+				...form
+			});
+			toast$2({ title: t("common.success") });
+		} else {
+			addInvoice({
+				id: `inv-${Date.now()}`,
+				description: form.description,
+				amount: Number(form.amount) || 0,
+				status: form.status || "pending",
+				date: form.date || (/* @__PURE__ */ new Date()).toISOString(),
+				type: "generic"
+			});
+			toast$2({ title: t("common.success") });
+		}
+		setIsAddOpen(false);
+		setEditingRecord(null);
+		setForm({
+			description: "",
+			amount: 0,
+			status: "pending",
+			date: ""
+		});
+	};
+	const handleDelete = (id) => {
+		deleteInvoice(id);
+		toast$2({ title: t("common.delete_success") });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("common.invoices")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage generated invoices."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-			className: "border-slate-200 shadow-sm bg-white",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-				className: "p-0 overflow-auto",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
-					className: "bg-slate-50",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Invoice ID" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Description" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Date" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: "Amount"
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex justify-between items-center",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold tracking-tight text-slate-900",
+					children: t("common.invoices")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-muted-foreground",
+					children: "Manage generated invoices."
+				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+					open: isAddOpen,
+					onOpenChange: (v) => {
+						setIsAddOpen(v);
+						if (!v) {
+							setEditingRecord(null);
+							setForm({
+								description: "",
+								amount: 0,
+								status: "pending",
+								date: ""
+							});
+						}
+					},
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							className: "bg-trust-blue gap-2 text-white",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+								" ",
+								t("common.add_title")
+							]
 						})
-					] })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [financials$1.invoices.slice(0, 50).map((inv) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
-					className: "hover:bg-slate-50",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "font-mono text-xs",
-							children: inv.id
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") : t("common.add_title") }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-4 py-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: form.description,
+									onChange: (e) => setForm({
+										...form,
+										description: e.target.value
+									})
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.value") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "number",
+									value: form.amount,
+									onChange: (e) => setForm({
+										...form,
+										amount: Number(e.target.value)
+									})
+								})]
+							})]
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "font-medium text-slate-900",
-							children: inv.description
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(inv.date), "MMM dd, yyyy") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: "outline",
-							className: "uppercase text-[10px]",
-							children: inv.status
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right font-medium",
-							children: formatAppCurrency(inv.amount)
-						})
-					]
-				}, inv.id)), financials$1.invoices.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 5,
-					className: "text-center py-6 text-muted-foreground",
-					children: t("common.empty")
-				}) })] })] })
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							onClick: handleSave,
+							children: t("common.save")
+						}) })
+					] })]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+				className: "border-slate-200 shadow-sm bg-white",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+					className: "p-0 overflow-auto",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+						className: "bg-slate-50",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Invoice ID" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.description") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.date") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "text-right",
+								children: t("common.value")
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "text-right",
+								children: t("common.actions")
+							})
+						] })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [financials$1.invoices.slice(0, 50).map((inv) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+						className: "hover:bg-slate-50",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "font-mono text-xs",
+								children: inv.id
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "font-medium text-slate-900",
+								children: inv.description
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(inv.date), "MMM dd, yyyy") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+								variant: "outline",
+								className: "uppercase text-[10px]",
+								children: inv.status
+							}) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "text-right font-medium",
+								children: formatAppCurrency(inv.amount)
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "text-right",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex justify-end gap-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											variant: "ghost",
+											size: "icon",
+											onClick: () => {
+												setViewingInvoice(inv);
+												setViewerOpen(true);
+											},
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4" })
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "outline",
+											size: "sm",
+											onClick: () => {
+												setEditingRecord(inv);
+												setForm(inv);
+												setIsAddOpen(true);
+											},
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+												" ",
+												t("common.edit")
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+											asChild: true,
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+												variant: "destructive",
+												size: "sm",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+													" ",
+													t("common.delete")
+												]
+											})
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+											onClick: () => handleDelete(inv.id),
+											children: t("common.confirm")
+										})] })] })] })
+									]
+								})
+							})
+						]
+					}, inv.id)), financials$1.invoices.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						colSpan: 6,
+						className: "text-center py-6 text-muted-foreground",
+						children: t("common.empty")
+					}) })] })] })
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(InvoiceViewer, {
+				open: viewerOpen,
+				onOpenChange: setViewerOpen,
+				invoice: viewingInvoice
 			})
-		})]
+		]
 	});
 }
 function Messages() {
@@ -74936,21 +75106,141 @@ function Users() {
 	});
 }
 function ServicePricing() {
-	const { partners: partners$1, formatAppCurrency } = (0, import_react.useContext)(AppContext);
+	const { genericServiceRates: genericServiceRates$1, addGenericServiceRate, updateGenericServiceRate, deleteGenericServiceRate, formatAppCurrency } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
-	const allServices = partners$1.flatMap((p$1) => p$1.serviceRates?.map((sr) => ({
-		...sr,
-		partnerName: p$1.name
-	})) || []);
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		serviceName: "",
+		servicePrice: 0,
+		productPrice: 0,
+		pmValue: 0,
+		partnerPayment: 0,
+		validFrom: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+	});
+	const handleSave = () => {
+		if (!form.serviceName) {
+			toast$2({
+				title: t("common.error"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingRecord) {
+			updateGenericServiceRate({
+				...editingRecord,
+				...form
+			});
+			toast$2({ title: t("common.success") });
+		} else {
+			addGenericServiceRate({
+				id: `sr-${Date.now()}`,
+				serviceName: form.serviceName,
+				servicePrice: Number(form.servicePrice) || 0,
+				productPrice: Number(form.productPrice) || 0,
+				pmValue: Number(form.pmValue) || 0,
+				partnerPayment: Number(form.partnerPayment) || 0,
+				validFrom: form.validFrom || (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+			});
+			toast$2({ title: t("common.success") });
+		}
+		setIsAddOpen(false);
+		setEditingRecord(null);
+		setForm({
+			serviceName: "",
+			servicePrice: 0,
+			productPrice: 0,
+			pmValue: 0,
+			partnerPayment: 0,
+			validFrom: ""
+		});
+	};
+	const handleDelete = (id) => {
+		deleteGenericServiceRate(id);
+		toast$2({ title: t("common.delete_success") });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("common.service_pricing")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Price catalog for partner services."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("common.service_pricing")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Price catalog for generic services and products."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: (v) => {
+					setIsAddOpen(v);
+					if (!v) {
+						setEditingRecord(null);
+						setForm({
+							serviceName: "",
+							servicePrice: 0,
+							productPrice: 0,
+							pmValue: 0,
+							partnerPayment: 0,
+							validFrom: ""
+						});
+					}
+				},
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+							" ",
+							t("common.add_title")
+						]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") : t("common.add_title") }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: form.serviceName,
+								onChange: (e) => setForm({
+									...form,
+									serviceName: e.target.value
+								})
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Cost Price" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "number",
+									value: form.servicePrice,
+									onChange: (e) => setForm({
+										...form,
+										servicePrice: Number(e.target.value)
+									})
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Sale Price" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "number",
+									value: form.productPrice,
+									onChange: (e) => setForm({
+										...form,
+										productPrice: Number(e.target.value)
+									})
+								})]
+							})]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleSave,
+						children: t("common.save")
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 				className: "p-0 overflow-auto",
@@ -74958,28 +75248,64 @@ function ServicePricing() {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Service Name" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Partner" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Service Price" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Cost Price" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
-							children: "Product Price"
+							children: "Sale Price"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: t("common.actions")
 						})
 					] })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [allServices.map((service, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [genericServiceRates$1.map((service) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
 					className: "hover:bg-slate-50",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "font-medium text-slate-900",
-							children: service.serviceName
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: service.serviceName })
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: service.partnerName }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatAppCurrency(service.servicePrice) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right font-medium",
 							children: formatAppCurrency(service.productPrice)
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									variant: "outline",
+									size: "sm",
+									onClick: () => {
+										setEditingRecord(service);
+										setForm(service);
+										setIsAddOpen(true);
+									},
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+										" ",
+										t("common.edit")
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+											" ",
+											t("common.delete")
+										]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(service.id),
+									children: t("common.confirm")
+								})] })] })] })]
+							})
 						})
 					]
-				}, `${service.id}-${idx}`)), allServices.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				}, service.id)), genericServiceRates$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 					colSpan: 4,
 					className: "text-center py-6 text-muted-foreground",
 					children: t("common.empty")
@@ -75152,29 +75478,130 @@ function MarketAnalysis() {
 	});
 }
 function Workflows() {
-	const { workflows: workflows$1 } = (0, import_react.useContext)(AppContext);
+	const { workflows: workflows$1, addWorkflow, updateWorkflow, deleteWorkflow } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		name: "",
+		trigger: "manual",
+		active: true
+	});
+	const handleSave = () => {
+		if (!form.name) {
+			toast$2({
+				title: t("common.error"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingRecord) {
+			updateWorkflow({
+				...editingRecord,
+				...form
+			});
+			toast$2({ title: t("common.success") });
+		} else {
+			addWorkflow({
+				id: `wf-${Date.now()}`,
+				name: form.name,
+				description: form.description || "",
+				trigger: form.trigger || "manual",
+				steps: [],
+				active: form.active ?? true
+			});
+			toast$2({ title: t("common.success") });
+		}
+		setIsAddOpen(false);
+		setEditingRecord(null);
+		setForm({
+			name: "",
+			trigger: "manual",
+			active: true
+		});
+	};
+	const handleDelete = (id) => {
+		deleteWorkflow(id);
+		toast$2({ title: t("common.delete_success") });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("common.workflows")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage automated task workflows."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("common.workflows")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Manage automated task workflows."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: (v) => {
+					setIsAddOpen(v);
+					if (!v) {
+						setEditingRecord(null);
+						setForm({
+							name: "",
+							trigger: "manual",
+							active: true
+						});
+					}
+				},
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+							" ",
+							t("common.add_title")
+						]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") : t("common.add_title") }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: form.name,
+								onChange: (e) => setForm({
+									...form,
+									name: e.target.value
+								})
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Trigger" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: form.trigger,
+								onChange: (e) => setForm({
+									...form,
+									trigger: e.target.value
+								})
+							})]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleSave,
+						children: t("common.save")
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 				className: "p-0 overflow-auto",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Workflow Name" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Trigger" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Steps Count" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
-							children: t("common.status")
+							children: t("common.actions")
 						})
 					] })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [workflows$1.map((wf) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
@@ -75188,17 +75615,48 @@ function Workflows() {
 							className: "font-mono text-xs",
 							children: wf.trigger
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.steps.length }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.steps?.length || 0 }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: wf.active ? "default" : "secondary",
+							children: wf.active ? t("common.active") : t("common.inactive")
+						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-								variant: wf.active ? "default" : "secondary",
-								children: wf.active ? "Active" : "Inactive"
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									variant: "outline",
+									size: "sm",
+									onClick: () => {
+										setEditingRecord(wf);
+										setForm(wf);
+										setIsAddOpen(true);
+									},
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+										" ",
+										t("common.edit")
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+											" ",
+											t("common.delete")
+										]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(wf.id),
+									children: t("common.confirm")
+								})] })] })] })]
 							})
 						})
 					]
 				}, wf.id)), workflows$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 4,
+					colSpan: 5,
 					className: "text-center py-6 text-muted-foreground",
 					children: t("common.empty")
 				}) })] })] })
@@ -75888,30 +76346,152 @@ function Reports() {
 	});
 }
 function Visits() {
-	const { visits: visits$1 } = (0, import_react.useContext)(AppContext);
+	const { visits: visits$1, addVisit, updateVisit, deleteVisit, properties: properties$1 } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		clientName: "",
+		propertyName: "",
+		date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 16),
+		reason: "showing",
+		status: "scheduled"
+	});
+	const handleSave = () => {
+		if (!form.clientName || !form.propertyName) {
+			toast$2({
+				title: t("common.error"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingRecord) {
+			updateVisit({
+				...editingRecord,
+				...form
+			});
+			toast$2({ title: t("common.success") });
+		} else {
+			addVisit({
+				id: `v-${Date.now()}`,
+				clientName: form.clientName,
+				propertyName: form.propertyName,
+				propertyId: "p1",
+				date: form.date || (/* @__PURE__ */ new Date()).toISOString(),
+				reason: form.reason || "showing",
+				status: form.status || "scheduled"
+			});
+			toast$2({ title: t("common.success") });
+		}
+		setIsAddOpen(false);
+		setEditingRecord(null);
+		setForm({
+			clientName: "",
+			propertyName: "",
+			date: "",
+			reason: "showing",
+			status: "scheduled"
+		});
+	};
+	const handleDelete = (id) => {
+		deleteVisit(id);
+		toast$2({ title: t("common.delete_success") });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("common.visits")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage scheduled property visits."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("common.visits")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Manage scheduled property visits."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: (v) => {
+					setIsAddOpen(v);
+					if (!v) {
+						setEditingRecord(null);
+						setForm({
+							clientName: "",
+							propertyName: "",
+							date: "",
+							reason: "showing",
+							status: "scheduled"
+						});
+					}
+				},
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+							" ",
+							t("common.add_title")
+						]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") : t("common.add_title") }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.client_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: form.clientName,
+									onChange: (e) => setForm({
+										...form,
+										clientName: e.target.value
+									})
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.property") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: form.propertyName,
+									onChange: (e) => setForm({
+										...form,
+										propertyName: e.target.value
+									})
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "datetime-local",
+									value: form.date ? new Date(form.date).toISOString().slice(0, 16) : "",
+									onChange: (e) => setForm({
+										...form,
+										date: new Date(e.target.value).toISOString()
+									})
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleSave,
+						children: t("common.save")
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 				className: "p-0 overflow-auto",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Client Name" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.client_name") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.property") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Date" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.date") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Reason" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
-							children: t("common.status")
+							children: t("common.actions")
 						})
 					] })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [visits$1.map((visit) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
@@ -75927,16 +76507,47 @@ function Visits() {
 							className: "capitalize",
 							children: visit.reason
 						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: "outline",
+							children: visit.status
+						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-								variant: "outline",
-								children: visit.status
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									variant: "outline",
+									size: "sm",
+									onClick: () => {
+										setEditingRecord(visit);
+										setForm(visit);
+										setIsAddOpen(true);
+									},
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+										" ",
+										t("common.edit")
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+											" ",
+											t("common.delete")
+										]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(visit.id),
+									children: t("common.confirm")
+								})] })] })] })]
 							})
 						})
 					]
 				}, visit.id)), visits$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 5,
+					colSpan: 6,
 					className: "text-center py-6 text-muted-foreground",
 					children: t("common.empty")
 				}) })] })] })
@@ -76450,29 +77061,154 @@ function Performance() {
 	});
 }
 function GuestServices() {
-	const { guestServices: guestServices$1, formatAppCurrency } = (0, import_react.useContext)(AppContext);
+	const { guestServices: guestServices$1, addGuestService, updateGuestService, deleteGuestService, formatAppCurrency } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		name: "",
+		description: "",
+		price: 0,
+		category: "other",
+		active: true
+	});
+	const handleSave = () => {
+		if (!form.name) {
+			toast$2({
+				title: t("common.validation_error"),
+				description: t("common.name_required"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingRecord) {
+			updateGuestService({
+				...editingRecord,
+				...form
+			});
+			toast$2({ title: t("common.success") });
+		} else {
+			addGuestService({
+				id: `gs-${Date.now()}`,
+				name: form.name,
+				description: form.description || "",
+				price: Number(form.price) || 0,
+				category: form.category || "other",
+				active: form.active ?? true
+			});
+			toast$2({ title: t("common.success") });
+		}
+		setIsAddOpen(false);
+		setEditingRecord(null);
+		setForm({
+			name: "",
+			description: "",
+			price: 0,
+			category: "other",
+			active: true
+		});
+	};
+	const handleDelete = (id) => {
+		deleteGuestService(id);
+		toast$2({ title: t("common.delete_success") });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("sidebar.guest_services")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage services offered to guests."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("sidebar.guest_services")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Manage services offered to guests."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: (v) => {
+					setIsAddOpen(v);
+					if (!v) {
+						setEditingRecord(null);
+						setForm({
+							name: "",
+							description: "",
+							price: 0,
+							category: "other",
+							active: true
+						});
+					}
+				},
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						className: "bg-trust-blue gap-2 text-white",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+							" ",
+							t("common.add_title")
+						]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") : t("common.add_title") }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: form.name,
+									onChange: (e) => setForm({
+										...form,
+										name: e.target.value
+									})
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: form.description,
+									onChange: (e) => setForm({
+										...form,
+										description: e.target.value
+									})
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.value") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "number",
+									value: form.price,
+									onChange: (e) => setForm({
+										...form,
+										price: Number(e.target.value)
+									})
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleSave,
+						children: t("common.save")
+					}) })
+				] })]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 				className: "p-0 overflow-auto",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Service Name" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Category" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.category") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
-							children: "Price"
+							children: t("common.value")
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+							className: "text-right",
+							children: t("common.actions")
 						})
 					] })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [guestServices$1.map((service) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
@@ -76480,7 +77216,7 @@ function GuestServices() {
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "font-medium text-slate-900",
-							children: service.name
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: service.name })
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "capitalize",
@@ -76488,15 +77224,49 @@ function GuestServices() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: service.active ? "default" : "secondary",
-							children: service.active ? "Active" : "Inactive"
+							children: service.active ? t("common.active") : t("common.inactive")
 						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right font-medium",
-							children: formatAppCurrency(service.price)
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatAppCurrency(service.price) })
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-right",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex justify-end gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									variant: "outline",
+									size: "sm",
+									onClick: () => {
+										setEditingRecord(service);
+										setForm(service);
+										setIsAddOpen(true);
+									},
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+										" ",
+										t("common.edit")
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "destructive",
+										size: "sm",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+											" ",
+											t("common.delete")
+										]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+									onClick: () => handleDelete(service.id),
+									children: t("common.confirm")
+								})] })] })] })]
+							})
 						})
 					]
 				}, service.id)), guestServices$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 4,
+					colSpan: 5,
 					className: "text-center py-6 text-muted-foreground",
 					children: t("common.empty")
 				}) })] })] })
@@ -76505,57 +77275,262 @@ function GuestServices() {
 	});
 }
 function PointOfSale() {
-	const { posTransactions: posTransactions$1, formatAppCurrency } = (0, import_react.useContext)(AppContext);
+	const { posItems: posItems$1, addPosItem, updatePosItem, deletePosItem, posTransactions: posTransactions$1, formatAppCurrency } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({
+		name: "",
+		price: 0,
+		category: "minibar",
+		active: true
+	});
+	const handleSave = () => {
+		if (!form.name) {
+			toast$2({
+				title: t("common.error"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingRecord) {
+			updatePosItem({
+				...editingRecord,
+				...form
+			});
+			toast$2({ title: t("common.success") });
+		} else {
+			addPosItem({
+				id: `pos-${Date.now()}`,
+				name: form.name,
+				price: Number(form.price) || 0,
+				category: form.category || "minibar",
+				active: form.active ?? true
+			});
+			toast$2({ title: t("common.success") });
+		}
+		setIsAddOpen(false);
+		setEditingRecord(null);
+		setForm({
+			name: "",
+			price: 0,
+			category: "minibar",
+			active: true
+		});
+	};
+	const handleDelete = (id) => {
+		deletePosItem(id);
+		toast$2({ title: t("common.delete_success") });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("sidebar.pos")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage POS transactions."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-			className: "border-slate-200 shadow-sm bg-white",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-				className: "p-0 overflow-auto",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
-					className: "bg-slate-50",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Transaction ID" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Items" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Date" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: "Total"
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "flex justify-between items-center",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: t("sidebar.pos")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Manage POS items and view transactions."
+			})] })
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+			defaultValue: "items",
+			className: "space-y-4",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+					value: "items",
+					children: t("pos.manage_products") || "Products"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+					value: "transactions",
+					children: "Transactions"
+				})] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "items",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200 shadow-sm bg-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "p-4 border-b flex justify-end",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+								open: isAddOpen,
+								onOpenChange: (v) => {
+									setIsAddOpen(v);
+									if (!v) {
+										setEditingRecord(null);
+										setForm({
+											name: "",
+											price: 0,
+											category: "minibar",
+											active: true
+										});
+									}
+								},
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										className: "bg-trust-blue gap-2 text-white",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+											" ",
+											t("common.add_title")
+										]
+									})
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") : t("common.add_title") }) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "space-y-4 py-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: form.name,
+												onChange: (e) => setForm({
+													...form,
+													name: e.target.value
+												})
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.value") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "number",
+												value: form.price,
+												onChange: (e) => setForm({
+													...form,
+													price: Number(e.target.value)
+												})
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										onClick: handleSave,
+										children: t("common.save")
+									}) })
+								] })]
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+							className: "p-0 overflow-auto",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+								className: "bg-slate-50",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.category") }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+										className: "text-right",
+										children: t("common.value")
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+										className: "text-right",
+										children: t("common.actions")
+									})
+								] })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [posItems$1.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+								className: "hover:bg-slate-50",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+										className: "font-medium text-slate-900",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: item.name })
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+										className: "capitalize",
+										children: item.category
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+										variant: item.active ? "default" : "secondary",
+										children: item.active ? t("common.active") : t("common.inactive")
+									}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+										className: "text-right font-medium",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatAppCurrency(item.price) })
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+										className: "text-right",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex justify-end gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+												variant: "outline",
+												size: "sm",
+												onClick: () => {
+													setEditingRecord(item);
+													setForm(item);
+													setIsAddOpen(true);
+												},
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+													" ",
+													t("common.edit")
+												]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+												asChild: true,
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+													variant: "destructive",
+													size: "sm",
+													children: [
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+														" ",
+														t("common.delete")
+													]
+												})
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+												onClick: () => handleDelete(item.id),
+												children: t("common.confirm")
+											})] })] })] })]
+										})
+									})
+								]
+							}, item.id)), posItems$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								colSpan: 5,
+								className: "text-center py-6 text-muted-foreground",
+								children: t("common.empty")
+							}) })] })] })
+						})]
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "transactions",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+						className: "border-slate-200 shadow-sm bg-white",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+							className: "p-0 overflow-auto",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+								className: "bg-slate-50",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Transaction ID" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Items" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Date" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+										className: "text-right",
+										children: "Total"
+									})
+								] })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [posTransactions$1.slice(0, 50).map((trx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+								className: "hover:bg-slate-50",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+										className: "font-medium text-slate-900",
+										children: trx.id
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: trx.items.map((i) => i.name).join(", ") }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(trx.timestamp), "MMM dd, HH:mm") }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+										variant: "outline",
+										className: "uppercase text-[10px]",
+										children: trx.status
+									}) }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+										className: "text-right font-medium",
+										children: formatAppCurrency(trx.totalAmount)
+									})
+								]
+							}, trx.id)), posTransactions$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								colSpan: 5,
+								className: "text-center py-6 text-muted-foreground",
+								children: t("common.empty")
+							}) })] })] })
 						})
-					] })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [posTransactions$1.slice(0, 50).map((trx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
-					className: "hover:bg-slate-50",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "font-medium text-slate-900",
-							children: trx.id
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: trx.items.map((i) => i.name).join(", ") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(trx.timestamp), "MMM dd, HH:mm") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: "outline",
-							className: "uppercase text-[10px]",
-							children: trx.status
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right font-medium",
-							children: formatAppCurrency(trx.totalAmount)
-						})
-					]
-				}, trx.id)), posTransactions$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 5,
-					className: "text-center py-6 text-muted-foreground",
-					children: t("common.empty")
-				}) })] })] })
-			})
+					})
+				})
+			]
 		})]
 	});
 }
@@ -77404,4 +78379,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-DwHC4-vT.js.map
+//# sourceMappingURL=index-BPnAayE9.js.map
