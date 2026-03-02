@@ -198,7 +198,7 @@ export function AppSidebar() {
       resource: 'workflows',
     },
     {
-      title: 'Financeiro',
+      title: t('common.financial') || 'Financeiro',
       url: '/financial',
       icon: DollarSign,
       resource: 'financial',

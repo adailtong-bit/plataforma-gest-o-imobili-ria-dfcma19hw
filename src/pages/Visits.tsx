@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Pencil, Trash2, MoreHorizontal, Eye } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -29,8 +29,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
@@ -40,11 +45,11 @@ import { Visit } from '@/lib/types'
 import { DataMask } from '@/components/DataMask'
 
 export default function Visits() {
-  const { visits, addVisit, updateVisit, deleteVisit, properties } =
-    useContext(AppContext)!
+  const { visits, addVisit, updateVisit, deleteVisit } = useContext(AppContext)!
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
+  const [search, setSearch] = useState('')
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [editingRecord, setEditingRecord] = useState<Visit | null>(null)
   const [form, setForm] = useState<Partial<Visit>>({
@@ -54,6 +59,13 @@ export default function Visits() {
     reason: 'showing',
     status: 'scheduled',
   })
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+
+  const filteredVisits = visits.filter(
+    (v) =>
+      v.clientName.toLowerCase().includes(search.toLowerCase()) ||
+      v.propertyName.toLowerCase().includes(search.toLowerCase()),
+  )
 
   const handleSave = () => {
     if (!form.clientName || !form.propertyName) {
@@ -87,14 +99,17 @@ export default function Visits() {
     })
   }
 
-  const handleDelete = (id: string) => {
-    deleteVisit(id)
-    toast({ title: t('common.delete_success') })
+  const handleDelete = () => {
+    if (deleteId) {
+      deleteVisit(deleteId)
+      toast({ title: t('common.delete_success') })
+      setDeleteId(null)
+    }
   }
 
   return (
     <div className="flex flex-col gap-6 p-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             {t('common.visits')}
@@ -103,75 +118,83 @@ export default function Visits() {
             Manage scheduled property visits.
           </p>
         </div>
-        <Dialog
-          open={isAddOpen}
-          onOpenChange={(v) => {
-            setIsAddOpen(v)
-            if (!v) {
-              setEditingRecord(null)
-              setForm({
-                clientName: '',
-                propertyName: '',
-                date: '',
-                reason: 'showing',
-                status: 'scheduled',
-              })
-            }
-          }}
-        >
-          <DialogTrigger asChild>
-            <Button className="bg-trust-blue gap-2 text-white">
-              <Plus className="h-4 w-4" /> {t('common.add_title')}
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingRecord ? t('common.edit') : t('common.add_title')}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label>{t('common.client_name')}</Label>
-                <Input
-                  value={form.clientName}
-                  onChange={(e) =>
-                    setForm({ ...form, clientName: e.target.value })
-                  }
-                />
+        <div className="flex items-center gap-2">
+          <Input
+            placeholder={t('common.search')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-64"
+          />
+          <Dialog
+            open={isAddOpen}
+            onOpenChange={(v) => {
+              setIsAddOpen(v)
+              if (!v) {
+                setEditingRecord(null)
+                setForm({
+                  clientName: '',
+                  propertyName: '',
+                  date: '',
+                  reason: 'showing',
+                  status: 'scheduled',
+                })
+              }
+            }}
+          >
+            <DialogTrigger asChild>
+              <Button className="bg-trust-blue gap-2 text-white">
+                <Plus className="h-4 w-4" /> {t('common.add')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {editingRecord ? t('common.edit') : t('common.add')}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label>{t('common.client_name')}</Label>
+                  <Input
+                    value={form.clientName}
+                    onChange={(e) =>
+                      setForm({ ...form, clientName: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('common.property')}</Label>
+                  <Input
+                    value={form.propertyName}
+                    onChange={(e) =>
+                      setForm({ ...form, propertyName: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('common.date')}</Label>
+                  <Input
+                    type="datetime-local"
+                    value={
+                      form.date
+                        ? new Date(form.date).toISOString().slice(0, 16)
+                        : ''
+                    }
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        date: new Date(e.target.value).toISOString(),
+                      })
+                    }
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>{t('common.property')}</Label>
-                <Input
-                  value={form.propertyName}
-                  onChange={(e) =>
-                    setForm({ ...form, propertyName: e.target.value })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>{t('common.date')}</Label>
-                <Input
-                  type="datetime-local"
-                  value={
-                    form.date
-                      ? new Date(form.date).toISOString().slice(0, 16)
-                      : ''
-                  }
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      date: new Date(e.target.value).toISOString(),
-                    })
-                  }
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button onClick={handleSave}>{t('common.save')}</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter>
+                <Button onClick={handleSave}>{t('common.save')}</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <Card className="border-slate-200 shadow-sm bg-white">
@@ -190,7 +213,7 @@ export default function Visits() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {visits.map((visit) => (
+              {filteredVisits.map((visit) => (
                 <TableRow key={visit.id} className="hover:bg-slate-50">
                   <TableCell className="font-medium text-slate-900">
                     <DataMask>{visit.clientName}</DataMask>
@@ -204,51 +227,35 @@ export default function Visits() {
                     <Badge variant="outline">{visit.status}</Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setEditingRecord(visit)
-                          setForm(visit)
-                          setIsAddOpen(true)
-                        }}
-                      >
-                        <Pencil className="h-4 w-4 mr-2" /> {t('common.edit')}
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="sm">
-                            <Trash2 className="h-4 w-4 mr-2" />{' '}
-                            {t('common.delete')}
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              {t('common.delete_title')}
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {t('common.delete_desc')}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>
-                              {t('common.cancel')}
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDelete(visit.id)}
-                            >
-                              {t('common.confirm')}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setEditingRecord(visit)
+                            setForm(visit)
+                            setIsAddOpen(true)
+                          }}
+                        >
+                          <Pencil className="h-4 w-4 mr-2" /> {t('common.edit')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-red-600"
+                          onClick={() => setDeleteId(visit.id)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />{' '}
+                          {t('common.delete')}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
-              {visits.length === 0 && (
+              {filteredVisits.length === 0 && (
                 <TableRow>
                   <TableCell
                     colSpan={6}
@@ -262,6 +269,26 @@ export default function Visits() {
           </Table>
         </CardContent>
       </Card>
+
+      <AlertDialog
+        open={!!deleteId}
+        onOpenChange={(v) => !v && setDeleteId(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('common.confirm_delete')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('common.delete_desc')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>
+              {t('common.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

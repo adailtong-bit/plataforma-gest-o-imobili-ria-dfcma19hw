@@ -1,15 +1,6 @@
-import { useState, useEffect, useMemo } from 'react'
-import {
-  Bell,
-  Search,
-  Menu,
-  Globe,
-  Circle,
-  Building,
-  User,
-  CheckSquare,
-  HelpCircle,
-} from 'lucide-react'
+import { useContext } from 'react'
+import { Bell, Search, Globe, Eye, EyeOff } from 'lucide-react'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -20,478 +11,238 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { SidebarTrigger } from '@/components/ui/sidebar'
-import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
-import useNotificationStore from '@/stores/useNotificationStore'
-import usePublicityStore from '@/stores/usePublicityStore'
-import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { format, isValid } from 'date-fns'
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from '@/components/ui/command'
-import { useNavigate, Link } from 'react-router-dom'
-import usePropertyStore from '@/stores/usePropertyStore'
-import useTenantStore from '@/stores/useTenantStore'
-import useOwnerStore from '@/stores/useOwnerStore'
-import useTaskStore from '@/stores/useTaskStore'
-import { ThemeCustomizer } from '@/components/ThemeCustomizer'
-import logo from '@/assets/logo-estilizado.jpg'
+import { AppContext } from '@/stores/AppContext'
+import { useNavigate } from 'react-router-dom'
+import { Language } from '@/lib/translations'
+import { Property, User } from '@/lib/types'
+import { usePrivacyStore } from '@/stores/usePrivacyStore'
 import { DataMask } from '@/components/DataMask'
-import { useAdRotation } from '@/hooks/useAdRotation'
+import { getRoleLabel } from '@/lib/permissions'
 
 export function AppHeader() {
-  const { currentUser, setCurrentUser, allUsers, logout } = useAuthStore()
   const { language, setLanguage, t } = useLanguageStore()
-  const { notifications, markNotificationAsRead } = useNotificationStore()
+  const {
+    properties,
+    selectedPropertyId,
+    setSelectedPropertyId,
+    currentUser,
+    allUsers,
+    setCurrentUser,
+    logout,
+    notifications,
+  } = useContext(AppContext)!
   const navigate = useNavigate()
-
-  // Stores for search
-  const { properties } = usePropertyStore()
-  const { tenants } = useTenantStore()
-  const { owners } = useOwnerStore()
-  const { tasks } = useTaskStore()
-
-  // Ad Store
-  const { advertisements } = usePublicityStore()
-
-  const [openSearch, setOpenSearch] = useState(false)
-
-  // Prioritize Demo Users
-  const demoUsers = allUsers.filter((u) => u.isDemo)
-  const otherDemoUsers = allUsers
-    .filter((u) => u.id !== currentUser?.id && !u.isDemo)
-    .slice(0, 4)
+  const { isPrivate, togglePrivacy } = usePrivacyStore()
 
   const unreadCount = notifications.filter((n) => !n.read).length
 
-  // Header Ad Logic
-  const headerAds = useMemo(
-    () => advertisements.filter((a) => a.active && a.placement === 'header'),
-    [advertisements],
-  )
-  const visibleHeaderAds = useAdRotation(headerAds, 1, 10)
-  const adToShow = visibleHeaderAds.length > 0 ? visibleHeaderAds[0] : null
-
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setOpenSearch((open) => !open)
-      }
-    }
-    document.addEventListener('keydown', down)
-    return () => document.removeEventListener('keydown', down)
-  }, [])
-
-  const handleSearchSelect = (type: string, id: string) => {
-    setOpenSearch(false)
-    switch (type) {
-      case 'property':
-        navigate(`/properties/${id}`)
-        break
-      case 'tenant':
-        navigate(`/tenants/${id}`)
-        break
-      case 'owner':
-        navigate(`/owners/${id}`)
-        break
-      case 'task':
-        navigate(`/tasks`)
-        break
-      case 'help':
-        navigate(`/help`)
-        break
-    }
-  }
-
-  const handleNotificationClick = (id: string) => {
-    markNotificationAsRead(id)
-  }
-
-  const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
-
   return (
-    <header className="flex flex-col w-full sticky top-0 z-50 shadow-sm bg-white">
-      {adToShow && (
-        <div
-          key={adToShow.id}
-          className="bg-slate-900 text-white px-4 py-2 flex items-center justify-center text-xs sm:text-sm text-center relative overflow-hidden h-10 shrink-0 animate-in fade-in duration-500"
-        >
-          <a
-            href={adToShow.linkUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2 hover:underline z-10 relative"
+    <header className="sticky top-0 z-40 flex h-16 w-full items-center gap-4 border-b bg-white px-6 shadow-sm">
+      <div className="flex items-center gap-4 flex-1">
+        <SidebarTrigger className="shrink-0 md:hidden text-slate-700" />
+        <div className="relative w-full max-w-sm hidden md:flex">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+          <Input
+            type="search"
+            placeholder={t('common.search') || 'Search properties...'}
+            className="w-full rounded-md bg-slate-50 pl-9 border-slate-200 text-sm focus-visible:ring-trust-blue"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 shrink-0 ml-auto">
+        <div className="hidden sm:flex items-center gap-2 mr-2">
+          <Select
+            value={selectedPropertyId}
+            onValueChange={setSelectedPropertyId}
           >
-            <span className="font-bold bg-white/20 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider">
-              Sponsored
-            </span>
-            <span>{adToShow.title}</span>
-            {adToShow.description && (
-              <span className="hidden sm:inline text-slate-300">
-                - {adToShow.description}
-              </span>
-            )}
-          </a>
-          {adToShow.imageUrl && (
-            <img
-              src={adToShow.imageUrl}
-              alt=""
-              crossOrigin="anonymous"
-              onError={(e) => {
-                e.currentTarget.src = '/placeholder.svg'
-                e.currentTarget.onerror = null
-              }}
-              className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
-            />
+            <SelectTrigger className="w-[180px] h-9 bg-slate-50 border-slate-200">
+              <SelectValue placeholder={t('common.all') || 'All Properties'} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                {t('common.all') || 'All Properties'}
+              </SelectItem>
+              {properties.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative text-slate-700 hover:bg-slate-100"
+          title={t('analytics.privacy_mode')}
+          onClick={togglePrivacy}
+        >
+          {isPrivate ? (
+            <EyeOff className="h-5 w-5 text-blue-600" />
+          ) : (
+            <Eye className="h-5 w-5" />
           )}
-        </div>
-      )}
+        </Button>
 
-      <div className="flex h-16 items-center gap-4 border-b px-6 w-full justify-between shrink-0">
-        <div className="flex items-center gap-4">
-          <SidebarTrigger className="-ml-2 text-black">
-            <Menu className="h-5 w-5" />
-          </SidebarTrigger>
-
-          <Link
-            to="/"
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-          >
-            <img
-              src={logo}
-              alt="COREPM Logo"
-              className="h-8 w-8 rounded-md shrink-0 object-contain"
-            />
-            <h2 className="text-lg font-bold md:text-xl text-black font-display tracking-tight hidden sm:block">
-              COREPM
-            </h2>
-          </Link>
-        </div>
-
-        {/* Global Search Button */}
-        <div
-          className="relative hidden md:flex flex-1 max-w-md mx-4"
-          id="global-actions"
-        >
-          <Button
-            variant="outline"
-            className="relative w-full justify-start text-sm text-black border-slate-300 font-medium"
-            onClick={() => setOpenSearch(true)}
-          >
-            <Search className="mr-2 h-4 w-4" />
-            {t('common.search')}...
-            <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-slate-100 px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex text-black">
-              <span className="text-xs">⌘</span>K
-            </kbd>
-          </Button>
-        </div>
-
-        <CommandDialog open={openSearch} onOpenChange={setOpenSearch}>
-          <CommandInput placeholder="Type to search..." />
-          <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup heading="System">
-              <CommandItem
-                onSelect={() => handleSearchSelect('help', '')}
-                className="text-black"
-              >
-                <HelpCircle className="mr-2 h-4 w-4" />
-                {t('common.help_hub')}
-              </CommandItem>
-            </CommandGroup>
-            <CommandSeparator />
-            <CommandGroup heading={t('properties.title')}>
-              {properties.slice(0, 5).map((p) => (
-                <CommandItem
-                  key={p.id}
-                  onSelect={() => handleSearchSelect('property', p.id)}
-                >
-                  <Building className="mr-2 h-4 w-4 text-black" />
-                  <DataMask>{p.name}</DataMask>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-            <CommandSeparator />
-            <CommandGroup heading={t('common.tenants')}>
-              {tenants.slice(0, 5).map((t) => (
-                <CommandItem
-                  key={t.id}
-                  onSelect={() => handleSearchSelect('tenant', t.id)}
-                >
-                  <User className="mr-2 h-4 w-4 text-black" />
-                  <DataMask>{t.name}</DataMask>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-            <CommandSeparator />
-            <CommandGroup heading={t('common.owners')}>
-              {owners.slice(0, 5).map((o) => (
-                <CommandItem
-                  key={o.id}
-                  onSelect={() => handleSearchSelect('owner', o.id)}
-                >
-                  <User className="mr-2 h-4 w-4 text-black" />
-                  <DataMask>{o.name}</DataMask>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-            <CommandSeparator />
-            <CommandGroup heading={t('common.tasks')}>
-              {tasks.slice(0, 5).map((task) => (
-                <CommandItem
-                  key={task.id}
-                  onSelect={() => handleSearchSelect('task', task.id)}
-                >
-                  <CheckSquare className="mr-2 h-4 w-4 text-black" />
-                  <DataMask>{task.title}</DataMask>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </CommandDialog>
-
-        <div className="flex items-center gap-2">
-          {/* Search icon for mobile */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden text-black"
-            onClick={() => setOpenSearch(true)}
-          >
-            <Search className="h-5 w-5" />
-          </Button>
-
-          <ThemeCustomizer />
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-black hover:bg-slate-100"
-                onClick={() => navigate('/help')}
-                title={t('common.help_hub')}
-              >
-                <HelpCircle className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{t('common.help_hub')}</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Globe className="h-5 w-5 text-black" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative text-slate-700 hover:bg-slate-100"
+            >
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuLabel>
+              {t('common.notifications') || 'Notifications'}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {notifications.slice(0, 5).map((n) => (
               <DropdownMenuItem
-                onClick={() => setLanguage('pt')}
-                className={language === 'pt' ? 'bg-slate-100 font-bold' : ''}
+                key={n.id}
+                className="flex flex-col items-start gap-1 p-3"
               >
-                🇵🇹 Português
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-semibold">{n.title}</span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {new Date(n.timestamp).toLocaleTimeString()}
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground line-clamp-2">
+                  {n.message}
+                </span>
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setLanguage('en')}
-                className={language === 'en' ? 'bg-slate-100 font-bold' : ''}
-              >
-                🇺🇸 English
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setLanguage('es')}
-                className={language === 'es' ? 'bg-slate-100 font-bold' : ''}
-              >
-                🇪🇸 Español
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            ))}
+            {notifications.length === 0 && (
+              <div className="p-4 text-center text-sm text-muted-foreground">
+                No new notifications
+              </div>
+            )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="justify-center text-blue-600 font-medium cursor-pointer">
+              View all
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative text-black"
-              >
-                <Bell className="h-5 w-5" />
-                {unreadCount > 0 && (
-                  <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600 animate-pulse ring-2 ring-white" />
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 p-0 bg-white" align="end">
-              <div className="flex items-center justify-between p-4 border-b">
-                <h4 className="font-bold leading-none text-black">
-                  {t('common.notifications')}
-                </h4>
-                <Badge
-                  variant="secondary"
-                  className="text-black bg-slate-100 font-bold"
-                >
-                  <DataMask>{unreadCount}</DataMask> {t('dashboard.unread')}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-slate-700 hover:bg-slate-100"
+            >
+              <Globe className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setLanguage('en')}>
+              English
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLanguage('es')}>
+              Español
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLanguage('pt')}>
+              Português
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="relative h-9 w-9 rounded-full ml-2 border border-slate-200 p-0"
+            >
+              <Avatar className="h-9 w-9">
+                <AvatarImage src={currentUser?.avatar} alt="Avatar" />
+                <AvatarFallback className="bg-slate-100 text-slate-700 font-bold">
+                  {currentUser?.name?.charAt(0) || 'U'}
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <div className="flex items-center justify-start gap-2 p-2">
+              <div className="flex flex-col space-y-1 leading-none">
+                <p className="font-medium">
+                  <DataMask>{currentUser?.name}</DataMask>
+                </p>
+                <p className="w-[200px] truncate text-xs text-muted-foreground">
+                  <DataMask>{currentUser?.email}</DataMask>
+                </p>
+                <Badge variant="secondary" className="w-fit mt-1 text-[10px]">
+                  {currentUser?.role
+                    ? getRoleLabel(currentUser.role, t)
+                    : 'Unknown'}
                 </Badge>
               </div>
-              <ScrollArea className="h-[300px]">
-                {notifications.length === 0 ? (
-                  <div className="p-8 text-center text-sm text-black font-medium">
-                    Nenhuma notificação.
-                  </div>
-                ) : (
-                  <div className="flex flex-col">
-                    {notifications.map((notif) => {
-                      const notifDate = new Date(notif.timestamp)
-                      const dateDisplay = isValid(notifDate)
-                        ? format(notifDate, 'dd/MM HH:mm')
-                        : ''
-
-                      return (
-                        <button
-                          key={notif.id}
-                          className={`flex flex-col items-start gap-1 p-4 text-left hover:bg-slate-50 transition-colors border-b last:border-0 ${!notif.read ? 'bg-blue-50' : ''}`}
-                          onClick={() => handleNotificationClick(notif.id)}
-                        >
-                          <div className="flex items-center justify-between w-full">
-                            <span
-                              className={`text-sm text-black ${!notif.read ? 'font-bold' : 'font-medium'}`}
-                            >
-                              <DataMask>{notif.title}</DataMask>
-                            </span>
-                            {!notif.read && (
-                              <Circle className="h-2 w-2 fill-blue-600 text-blue-600" />
-                            )}
-                          </div>
-                          <span className="text-xs text-black font-medium line-clamp-2">
-                            <DataMask>{notif.message}</DataMask>
-                          </span>
-                          <span className="text-[10px] text-black font-bold mt-1">
-                            <DataMask>{dateDisplay}</DataMask>
-                          </span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                )}
-              </ScrollArea>
-            </PopoverContent>
-          </Popover>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-10 w-10 rounded-full"
-                id="user-profile"
-              >
-                <Avatar className="h-10 w-10 border border-slate-200">
-                  <AvatarImage
-                    src={currentUser?.avatar}
-                    alt={currentUser?.name}
-                  />
-                  <AvatarFallback className="bg-slate-100 text-black font-bold">
-                    {currentUser?.name?.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-56 bg-white"
-              align="end"
-              forceMount
-            >
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-bold leading-none text-black">
-                    <DataMask>{currentUser?.name}</DataMask>
-                  </p>
-                  <p className="text-xs leading-none text-black font-medium">
-                    <DataMask>{currentUser?.email}</DataMask>
-                  </p>
-                  <Badge
-                    className="mt-2 w-fit bg-black hover:bg-black/90 text-white font-bold"
-                    variant="secondary"
-                  >
-                    {t(`roles.${currentUser?.role}`)}
-                  </Badge>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-
-              {demoUsers.length > 0 && (
-                <>
-                  <DropdownMenuLabel className="text-xs font-bold text-blue-700">
-                    {t('header.demo_profiles')}
-                  </DropdownMenuLabel>
-                  {demoUsers.map((user) => (
-                    <DropdownMenuItem
-                      key={user.id}
-                      onClick={() => setCurrentUser(user.id)}
-                      className="cursor-pointer bg-blue-50 hover:bg-blue-100"
-                    >
-                      <div className="flex flex-col w-full">
-                        <span className="font-bold text-black">
-                          {user.name}
-                        </span>
-                        <span className="text-[10px] text-black font-medium capitalize">
-                          {t(`roles.${user.role}`)}
-                        </span>
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-                  <DropdownMenuSeparator />
-                </>
-              )}
-
-              <DropdownMenuLabel className="font-bold text-black">
-                {t('header.other_users')}
-              </DropdownMenuLabel>
-              {otherDemoUsers.map((user) => (
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate('/settings')}>
+              {t('common.profile') || 'Profile'}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/settings')}>
+              {t('sidebar.settings') || 'Settings'}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-xs text-slate-500">
+              {t('header.demo_profiles') || 'Demo Profiles'}
+            </DropdownMenuLabel>
+            {allUsers
+              .filter((u) => u.id !== currentUser?.id)
+              .slice(0, 5)
+              .map((u) => (
                 <DropdownMenuItem
-                  key={user.id}
-                  onClick={() => setCurrentUser(user.id)}
-                  className="hover:bg-slate-50"
+                  key={u.id}
+                  onClick={() => setCurrentUser(u.id)}
+                  className="flex items-center gap-2 cursor-pointer"
                 >
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={u.avatar} />
+                    <AvatarFallback className="text-[10px]">
+                      {u.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
                   <div className="flex flex-col">
-                    <span className="font-medium text-black">{user.name}</span>
-                    <span className="text-[10px] text-black font-medium">
-                      {t(`roles.${user.role}`)}
+                    <span className="text-sm font-medium">{u.name}</span>
+                    <span className="text-[10px] text-muted-foreground capitalize">
+                      {u.role.replace('_', ' ')}
                     </span>
                   </div>
                 </DropdownMenuItem>
               ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className="font-medium text-black hover:bg-slate-50"
-              >
-                {t('common.logout')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+              onClick={() => {
+                logout()
+                navigate('/login')
+              }}
+            >
+              {t('common.logout') || 'Log out'}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   )
