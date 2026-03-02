@@ -19,17 +19,19 @@ export function LocationMap({
     .filter(Boolean)
     .join(', ')
   return (
-    <Card className="h-full">
+    <Card className="h-full min-h-[300px]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <MapPin className="h-5 w-5" /> Location
+          <MapPin className="h-5 w-5" /> Location Map
         </CardTitle>
       </CardHeader>
-      <CardContent className="h-[250px] bg-slate-100 flex items-center justify-center rounded-md">
-        <div className="text-center text-muted-foreground">
-          <MapPin className="h-10 w-10 mx-auto mb-2 opacity-20" />
-          <p className="font-semibold">Map View</p>
-          <p className="text-xs max-w-[200px] mx-auto">{fullAddress}</p>
+      <CardContent className="h-[calc(100%-4rem)] min-h-[250px] bg-slate-100 flex items-center justify-center rounded-md m-6 mt-0">
+        <div className="text-center text-muted-foreground p-6">
+          <MapPin className="h-10 w-10 mx-auto mb-4 opacity-20" />
+          <p className="font-semibold text-lg mb-2">Map View Unavailable</p>
+          <p className="text-sm max-w-[250px] mx-auto italic">
+            {fullAddress || 'No address provided'}
+          </p>
         </div>
       </CardContent>
     </Card>

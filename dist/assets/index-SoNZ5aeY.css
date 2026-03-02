@@ -886,6 +886,9 @@ video {
 .-m-\[1px\] {
   margin: -1px;
 }
+.m-6 {
+  margin: 1.5rem;
+}
 .-mx-1 {
   margin-left: -0.25rem;
   margin-right: -0.25rem;
@@ -968,6 +971,9 @@ video {
 }
 .mr-auto {
   margin-right: auto;
+}
+.mt-0 {
+  margin-top: 0px;
 }
 .mt-0\.5 {
   margin-top: 0.125rem;
@@ -1127,6 +1133,9 @@ video {
 .h-\[500px\] {
   height: 500px;
 }
+.h-\[calc\(100\%-4rem\)\] {
+  height: calc(100% - 4rem);
+}
 .h-\[calc\(100vh-6rem\)\] {
   height: calc(100vh - 6rem);
 }
@@ -1190,6 +1199,9 @@ video {
 }
 .min-h-\[100px\] {
   min-height: 100px;
+}
+.min-h-\[250px\] {
+  min-height: 250px;
 }
 .min-h-\[300px\] {
   min-height: 300px;
@@ -1654,6 +1666,11 @@ video {
   --tw-space-y-reverse: 0;
   margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
+}
+.space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));
 }
 .space-y-4 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-y-reverse: 0;
@@ -3273,6 +3290,10 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
   --tw-bg-opacity: 1;
   background-color: rgb(254 202 202 / var(--tw-bg-opacity, 1));
 }
+.hover\:bg-red-50:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 242 242 / var(--tw-bg-opacity, 1));
+}
 .hover\:bg-red-600:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(220 38 38 / var(--tw-bg-opacity, 1));
@@ -4128,8 +4149,8 @@ table .\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading]
     max-width: 500px;
   }
 
-  .sm\:max-w-\[600px\] {
-    max-width: 600px;
+  .sm\:max-w-\[700px\] {
+    max-width: 700px;
   }
 
   .sm\:max-w-\[800px\] {

@@ -21,6 +21,7 @@ import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useCondominiumStore from '@/stores/useCondominiumStore'
+import useHotelStore from '@/stores/useHotelStore'
 import {
   Dialog,
   DialogContent,
@@ -55,6 +56,7 @@ export default function Properties() {
   const { properties, addProperty, updateProperty, deleteProperty } =
     usePropertyStore()
   const { condominiums } = useCondominiumStore()
+  const { hotels, towers } = useHotelStore()
   const { currentUser, hasPermissionSync } = useAuthStore()
   const { t, language } = useLanguageStore()
   const [filter, setFilter] = useState('')
@@ -66,33 +68,35 @@ export default function Properties() {
   const [open, setOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
 
-  // State for property being created country
   const [selectedCountry, setSelectedCountry] = useState('US')
 
-  // Initial state without default profileType to force user selection
   const [newProp, setNewProp] = useState<Partial<Property>>({
     name: '',
     address: '',
+    number: '',
+    neighborhood: '',
     city: '',
     state: '',
     zipCode: '',
     additionalInfo: '',
-    neighborhood: '',
-    country: 'US', // Initial default
+    country: 'US',
     type: 'House',
-    profileType: undefined, // Must be selected manually
+    profileType: undefined,
     bedrooms: 3,
     bathrooms: 2,
     guests: 6,
     ownerId: '',
     agentId: '',
     condominiumId: '',
+    hotelId: undefined,
+    towerId: undefined,
+    floor: '',
+    roomNumber: '',
     image: '',
     listingPrice: 0,
     hoaValue: 0,
   })
 
-  // Filter properties based on user permissions
   const accessibleProperties = properties.filter((p) => {
     if (
       currentUser &&
@@ -110,11 +114,13 @@ export default function Properties() {
     const pAddress = p.address || ''
     const condoName =
       condominiums.find((c) => c.id === p.condominiumId)?.name || ''
+    const hotelName = hotels.find((h) => h.id === p.hotelId)?.name || ''
 
     const matchesFilter =
       pName.toLowerCase().includes(filter.toLowerCase()) ||
       pAddress.toLowerCase().includes(filter.toLowerCase()) ||
-      condoName.toLowerCase().includes(filter.toLowerCase())
+      condoName.toLowerCase().includes(filter.toLowerCase()) ||
+      hotelName.toLowerCase().includes(filter.toLowerCase())
 
     const matchesStatus = statusFilter === 'all' || p.status === statusFilter
     const matchesProfile =
@@ -173,7 +179,6 @@ export default function Properties() {
   }
 
   const handleAddProperty = () => {
-    // Strict Validation
     if (!newProp.name?.trim()) {
       toast({
         title: t('properties.validation_error'),
@@ -190,7 +195,6 @@ export default function Properties() {
       })
       return
     }
-
     if (!newProp.address?.trim()) {
       toast({
         title: t('properties.validation_error'),
@@ -199,8 +203,7 @@ export default function Properties() {
       })
       return
     }
-    // Check mandatory Zip Code
-    if (!newProp.zipCode?.trim()) {
+    if (!newProp.zipCode?.trim() || isGenericOrPlaceholder(newProp.zipCode)) {
       toast({
         title: t('properties.validation_error'),
         description: t('properties.zip_required'),
@@ -208,15 +211,6 @@ export default function Properties() {
       })
       return
     }
-    if (isGenericOrPlaceholder(newProp.zipCode)) {
-      toast({
-        title: t('properties.validation_error'),
-        description: t('properties.zip_required'),
-        variant: 'destructive',
-      })
-      return
-    }
-
     if (!newProp.city?.trim() || !newProp.state?.trim()) {
       toast({
         title: t('properties.validation_error'),
@@ -225,7 +219,6 @@ export default function Properties() {
       })
       return
     }
-    // Check mandatory Profile Type (Rental Type)
     if (!newProp.profileType) {
       toast({
         title: t('properties.validation_error'),
@@ -238,6 +231,11 @@ export default function Properties() {
     const selectedCondo = condominiums.find(
       (c) => c.id === newProp.condominiumId,
     )
+    const selectedHotel = hotels.find((h) => h.id === newProp.hotelId)
+
+    let comm = newProp.community || t('properties.independent_community')
+    if (selectedHotel) comm = selectedHotel.name
+    else if (selectedCondo) comm = selectedCondo.name
 
     if (editingId) {
       const existing = properties.find((p) => p.id === editingId)
@@ -246,6 +244,8 @@ export default function Properties() {
           ...existing,
           name: newProp.name || '',
           address: newProp.address || '',
+          number: newProp.number || '',
+          neighborhood: newProp.neighborhood || '',
           city: newProp.city || '',
           state: newProp.state || '',
           zipCode: newProp.zipCode || '',
@@ -253,6 +253,11 @@ export default function Properties() {
           country: selectedCountry,
           profileType: newProp.profileType,
           condominiumId: newProp.condominiumId,
+          hotelId: newProp.hotelId,
+          towerId: newProp.towerId,
+          floor: newProp.floor,
+          roomNumber: newProp.roomNumber,
+          community: comm,
           listingPrice: newProp.listingPrice || 0,
           hoaValue: newProp.hoaValue || 0,
           image: newProp.image || existing.image,
@@ -266,28 +271,27 @@ export default function Properties() {
         id: `prop${Date.now()}`,
         name: newProp.name || '',
         address: newProp.address || '',
+        number: newProp.number || '',
+        neighborhood: newProp.neighborhood || '',
         city: newProp.city || '',
         state: newProp.state || '',
         zipCode: newProp.zipCode || '',
         additionalInfo: newProp.additionalInfo || '',
         country: selectedCountry,
-        neighborhood: newProp.neighborhood || '',
         type: newProp.type || 'House',
         profileType: newProp.profileType,
-        community: selectedCondo
-          ? selectedCondo.name
-          : newProp.community || t('properties.independent_community'),
+        community: comm,
         condominiumId: newProp.condominiumId,
+        hotelId: newProp.hotelId,
+        towerId: newProp.towerId,
+        floor: newProp.floor || '',
+        roomNumber: newProp.roomNumber || '',
         status: 'available',
         image: newProp.image || 'https://img.usecurling.com/p/400/300?q=house',
         gallery: [],
         bedrooms: newProp.bedrooms || 0,
         bathrooms: newProp.bathrooms || 0,
         guests: newProp.guests || 0,
-        wifiSsid: '',
-        wifiPassword: '',
-        accessCodeBuilding: '',
-        accessCodeUnit: '',
         description: { pt: '', en: '', es: '' },
         hoaRules: { pt: '', en: '', es: '' },
         documents: [],
@@ -308,17 +312,22 @@ export default function Properties() {
     setNewProp({
       name: '',
       address: '',
+      number: '',
+      neighborhood: '',
       city: '',
       state: '',
       zipCode: '',
       additionalInfo: '',
-      neighborhood: '',
       country: 'US',
       type: 'House',
       profileType: undefined,
       bedrooms: 3,
       bathrooms: 2,
       guests: 6,
+      hotelId: undefined,
+      towerId: undefined,
+      floor: '',
+      roomNumber: '',
       image: '',
       listingPrice: 0,
       hoaValue: 0,
@@ -351,6 +360,31 @@ export default function Properties() {
     setOpen(true)
   }
 
+  const handleHotelChange = (val: string) => {
+    if (val === 'none') {
+      setNewProp({ ...newProp, hotelId: undefined, towerId: undefined })
+    } else {
+      const hotel = hotels.find((h) => h.id === val)
+      if (hotel) {
+        setNewProp({
+          ...newProp,
+          hotelId: val,
+          towerId: undefined,
+          address: hotel.address || '',
+          number: hotel.number || '',
+          neighborhood: hotel.neighborhood || '',
+          city: hotel.city || '',
+          state: hotel.state || '',
+          zipCode: hotel.zipCode || '',
+          country: hotel.country || 'US',
+        })
+        setSelectedCountry(hotel.country || 'US')
+      }
+    }
+  }
+
+  const isHotelLinked = !!newProp.hotelId && newProp.hotelId !== 'none'
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -367,7 +401,6 @@ export default function Properties() {
             onOpenChange={(v) => {
               setOpen(v)
               if (!v) {
-                // Reset state on close
                 setEditingId(null)
                 setNewProp({
                   name: '',
@@ -389,7 +422,7 @@ export default function Properties() {
                 <Plus className="h-4 w-4" /> {t('properties.new_property')}
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px]">
               <DialogHeader>
                 <DialogTitle>
                   {editingId
@@ -451,7 +484,94 @@ export default function Properties() {
                   </RadioGroup>
                 </div>
 
-                {/* Country Selection Priority */}
+                {/* Hotel Link */}
+                <div className="grid gap-4 p-4 border rounded-md bg-slate-50">
+                  <div className="grid gap-2">
+                    <Label className="font-bold text-black flex items-center gap-2">
+                      <Building className="h-4 w-4" /> Parent Hotel Link
+                    </Label>
+                    <Select
+                      value={newProp.hotelId || 'none'}
+                      onValueChange={handleHotelChange}
+                    >
+                      <SelectTrigger className="text-black bg-white">
+                        <SelectValue placeholder="Select Hotel (Optional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {hotels.map((h) => (
+                          <SelectItem key={h.id} value={h.id}>
+                            {h.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {isHotelLinked && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-slate-200">
+                      <div className="grid gap-2">
+                        <Label className="text-xs text-black font-bold">
+                          Tower / Wing
+                        </Label>
+                        <Select
+                          value={newProp.towerId || 'none'}
+                          onValueChange={(v) =>
+                            setNewProp({
+                              ...newProp,
+                              towerId: v === 'none' ? undefined : v,
+                            })
+                          }
+                        >
+                          <SelectTrigger className="text-black bg-white">
+                            <SelectValue placeholder="Select..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            {towers
+                              .filter((t) => t.hotelId === newProp.hotelId)
+                              .map((t) => (
+                                <SelectItem key={t.id} value={t.id}>
+                                  {t.name}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label className="text-xs text-black font-bold">
+                          Floor
+                        </Label>
+                        <Input
+                          value={newProp.floor || ''}
+                          onChange={(e) =>
+                            setNewProp({ ...newProp, floor: e.target.value })
+                          }
+                          className="bg-white text-black"
+                          placeholder="e.g. 5"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label className="text-xs text-black font-bold">
+                          Room/Suite
+                        </Label>
+                        <Input
+                          value={newProp.roomNumber || ''}
+                          onChange={(e) =>
+                            setNewProp({
+                              ...newProp,
+                              roomNumber: e.target.value,
+                            })
+                          }
+                          className="bg-white text-black"
+                          placeholder="e.g. 501"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Main Inputs */}
                 <div className="grid gap-2">
                   <Label className="text-black font-bold">
                     {t('common.country')}
@@ -462,6 +582,7 @@ export default function Properties() {
                       setSelectedCountry(val)
                       setNewProp((prev) => ({ ...prev, zipCode: '' }))
                     }}
+                    disabled={isHotelLinked}
                   >
                     <SelectTrigger className="text-black">
                       <SelectValue />
@@ -488,29 +609,60 @@ export default function Properties() {
                   />
                 </div>
 
-                <div className="grid gap-2">
-                  <Label className="text-black font-bold">
-                    {t('common.search_address')}
-                  </Label>
-                  <AddressInput onAddressSelect={handleAddressSelect} />
-                </div>
+                {!isHotelLinked && (
+                  <div className="grid gap-2">
+                    <Label className="text-black font-bold">
+                      {t('common.search_address')}
+                    </Label>
+                    <AddressInput onAddressSelect={handleAddressSelect} />
+                  </div>
+                )}
 
-                <div className="grid gap-2">
-                  <Label className="text-black font-bold">
-                    {t('common.address')}{' '}
-                    <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    value={newProp.address}
-                    onChange={(e) =>
-                      setNewProp({ ...newProp, address: e.target.value })
-                    }
-                    placeholder={t('properties.address_placeholder')}
-                    className="text-black"
-                  />
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="grid gap-2 col-span-3">
+                    <Label className="text-black font-bold">
+                      {t('common.address')}{' '}
+                      <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      value={newProp.address}
+                      onChange={(e) =>
+                        setNewProp({ ...newProp, address: e.target.value })
+                      }
+                      placeholder={t('properties.address_placeholder')}
+                      className="text-black"
+                      disabled={isHotelLinked}
+                    />
+                  </div>
+                  <div className="grid gap-2 col-span-1">
+                    <Label className="text-black font-bold">No.</Label>
+                    <Input
+                      value={newProp.number || ''}
+                      onChange={(e) =>
+                        setNewProp({ ...newProp, number: e.target.value })
+                      }
+                      placeholder="Number"
+                      className="text-black"
+                      disabled={isHotelLinked}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
+                  <div className="grid gap-1">
+                    <Label className="text-xs text-black font-bold">
+                      Neighborhood
+                    </Label>
+                    <Input
+                      value={newProp.neighborhood || ''}
+                      onChange={(e) =>
+                        setNewProp({ ...newProp, neighborhood: e.target.value })
+                      }
+                      placeholder="Neighborhood"
+                      className="text-black"
+                      disabled={isHotelLinked}
+                    />
+                  </div>
                   <div className="grid gap-1">
                     <Label className="text-xs text-black font-bold">
                       {t('properties.zip_code')}{' '}
@@ -523,22 +675,7 @@ export default function Properties() {
                         selectedCountry === 'BR' ? '00000-000' : '00000'
                       }
                       className="text-black"
-                    />
-                  </div>
-                  <div className="grid gap-1">
-                    <Label className="text-xs text-black font-bold">
-                      {t('properties.info_label')}
-                    </Label>
-                    <Input
-                      value={newProp.additionalInfo}
-                      onChange={(e) =>
-                        setNewProp({
-                          ...newProp,
-                          additionalInfo: e.target.value,
-                        })
-                      }
-                      placeholder={t('properties.additional_info_placeholder')}
-                      className="text-black"
+                      disabled={isHotelLinked}
                     />
                   </div>
                 </div>
@@ -555,6 +692,7 @@ export default function Properties() {
                         setNewProp({ ...newProp, city: e.target.value })
                       }
                       className="text-black"
+                      disabled={isHotelLinked}
                     />
                   </div>
                   <div className="grid gap-1">
@@ -568,6 +706,7 @@ export default function Properties() {
                         setNewProp({ ...newProp, state: e.target.value })
                       }
                       className="text-black"
+                      disabled={isHotelLinked}
                     />
                   </div>
                 </div>
@@ -612,9 +751,6 @@ export default function Properties() {
                       }
                       className="text-black"
                     />
-                    <span className="text-[10px] text-black font-medium">
-                      {t('properties.hoa_auto_hint')}
-                    </span>
                   </div>
                 </div>
 
@@ -635,11 +771,6 @@ export default function Properties() {
                     }}
                     className="text-black"
                   />
-                  {!newProp.image && (
-                    <p className="text-xs text-black italic">
-                      {t('properties.no_image_selected')}
-                    </p>
-                  )}
                   {newProp.image && (
                     <img
                       src={newProp.image}
@@ -655,7 +786,7 @@ export default function Properties() {
 
                 <Button
                   onClick={handleAddProperty}
-                  className="bg-trust-blue w-full"
+                  className="bg-trust-blue w-full mt-4"
                 >
                   {t('common.save')}
                 </Button>
@@ -749,7 +880,10 @@ export default function Properties() {
               <div className="flex items-center gap-1 text-sm text-black mb-4">
                 <MapPin className="h-3 w-3 text-black" />
                 <span className="truncate font-medium">
-                  <DataMask>{property.address}</DataMask>
+                  <DataMask>
+                    {property.address}
+                    {property.number ? `, ${property.number}` : ''}
+                  </DataMask>
                 </span>
               </div>
             </CardContent>

@@ -319,6 +319,8 @@ export interface Hotel {
   id: string
   name: string
   address: string
+  number?: string
+  neighborhood?: string
   city: string
   state: string
   country: string
@@ -555,6 +557,7 @@ export interface Property {
   id: string
   name: string
   address: string
+  number?: string
   neighborhood?: string
   city?: string
   state?: string
@@ -567,6 +570,7 @@ export interface Property {
   condominiumId?: string
   hotelId?: string
   towerId?: string
+  floor?: string
   roomNumber?: string
   status: PropertyStatus
   marketingStatus?: 'listed' | 'unlisted'
