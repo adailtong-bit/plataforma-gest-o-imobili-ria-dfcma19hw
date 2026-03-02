@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,7 @@ import { Send } from 'lucide-react'
 import { Tenant, ChatMessage } from '@/lib/types'
 import { cn, formatCurrency } from '@/lib/utils'
 import { format, parseISO, isValid } from 'date-fns'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface TenantNegotiationTabProps {
   tenant: Tenant
@@ -29,8 +30,15 @@ export function TenantNegotiationTab({
   onSend,
   onUpdateTenant,
 }: TenantNegotiationTabProps) {
+  const { t } = useLanguageStore()
   const [text, setText] = useState('')
   const [decision, setDecision] = useState(tenant.tenantDecision || 'pending')
+
+  useEffect(() => {
+    if (tenant.tenantDecision) {
+      setDecision(tenant.tenantDecision)
+    }
+  }, [tenant.tenantDecision])
 
   const proposedRent = tenant.suggestedRenewalPrice || tenant.rentValue
   const ownerAccepted = tenant.ownerDecision === 'accepted'
@@ -55,40 +63,59 @@ export function TenantNegotiationTab({
     <div className="mt-4 space-y-4">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm">Pricing & Tenant Approval</CardTitle>
+          <CardTitle className="text-sm">
+            {t('renewals.pricing_tenant_approval') ||
+              'Pricing & Tenant Approval'}
+          </CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="flex justify-between text-sm items-center">
+        <CardContent className="flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center text-sm gap-2">
             <span className="text-muted-foreground">
-              New Rent Value (Preço de Renovação):
+              {t('renewals.new_rent_value') || 'New Rent Value'}:
             </span>
-            <div className="text-right">
+            <div className="text-left sm:text-right">
               <span className="font-bold text-lg text-trust-blue">
                 {formatCurrency(proposedRent)}
               </span>
               {!ownerAccepted && (
-                <div className="text-xs text-orange-600 font-medium">
-                  Pending Owner Approval
+                <div className="text-xs text-orange-600 font-medium mt-1">
+                  {t('renewals.pending_owner_approval') ||
+                    'Pending Owner Approval'}
                 </div>
               )}
             </div>
           </div>
-          <div className="grid gap-2">
-            <Label className="text-xs">Tenant Decision</Label>
-            <div className="flex gap-2">
+          <div className="space-y-2">
+            <Label className="text-xs">
+              {t('common.status') || 'Tenant Decision'}
+            </Label>
+            <div className="flex flex-col sm:flex-row gap-2">
               <Select value={decision} onValueChange={setDecision}>
                 <SelectTrigger className="flex-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="accepted">Accepted</SelectItem>
-                  <SelectItem value="counter">Counter-offer</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
+                  <SelectItem value="pending">
+                    {t('common.pending') || 'Pending'}
+                  </SelectItem>
+                  <SelectItem value="accepted">
+                    {t('common.accepted') || 'Accepted'}
+                  </SelectItem>
+                  <SelectItem value="counter">
+                    {t('common.counter') || 'Counter-offer'}
+                  </SelectItem>
+                  <SelectItem value="rejected">
+                    {t('common.rejected') || 'Rejected'}
+                  </SelectItem>
                 </SelectContent>
               </Select>
-              <Button size="sm" variant="outline" onClick={handleSendProposal}>
-                Save Decision
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={handleSendProposal}
+              >
+                {t('common.save') || 'Save Decision'}
               </Button>
             </div>
           </div>
@@ -126,7 +153,7 @@ export function TenantNegotiationTab({
       </ScrollArea>
       <div className="flex gap-2">
         <Input
-          placeholder="Message to tenant..."
+          placeholder={t('common.type_message') || 'Message to tenant...'}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) =>

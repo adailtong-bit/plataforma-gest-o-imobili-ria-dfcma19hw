@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -11,10 +11,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { CurrencyInput } from '@/components/ui/currency-input'
 import { Send } from 'lucide-react'
 import { Tenant, Owner, ChatMessage } from '@/lib/types'
 import { cn, formatCurrency } from '@/lib/utils'
 import { format, parseISO, isValid } from 'date-fns'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface OwnerNegotiationTabProps {
   tenant: Tenant
@@ -31,20 +33,29 @@ export function OwnerNegotiationTab({
   onSend,
   onUpdateTenant,
 }: OwnerNegotiationTabProps) {
+  const { t } = useLanguageStore()
   const [text, setText] = useState('')
-  const [proposed, setProposed] = useState(
-    tenant.suggestedRenewalPrice?.toString() || '',
+  const [proposed, setProposed] = useState<number>(
+    tenant.suggestedRenewalPrice || tenant.rentValue || 0,
   )
   const [decision, setDecision] = useState(tenant.ownerDecision || 'pending')
 
+  useEffect(() => {
+    if (tenant.suggestedRenewalPrice) {
+      setProposed(tenant.suggestedRenewalPrice)
+    }
+    if (tenant.ownerDecision) {
+      setDecision(tenant.ownerDecision)
+    }
+  }, [tenant.suggestedRenewalPrice, tenant.ownerDecision])
+
   const handleSendProposal = () => {
-    const val = parseFloat(proposed)
     onUpdateTenant({
-      suggestedRenewalPrice: val,
+      suggestedRenewalPrice: proposed,
       ownerDecision: decision as any,
     })
     onSend(
-      `Property Manager sent a proposal: ${formatCurrency(val)}. Status marked as: ${decision}`,
+      `Property Manager sent a proposal: ${formatCurrency(proposed)}. Status marked as: ${decision}`,
     )
   }
 
@@ -63,46 +74,61 @@ export function OwnerNegotiationTab({
     <div className="mt-4 space-y-4">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm">Pricing & Owner Approval</CardTitle>
+          <CardTitle className="text-sm">
+            {t('renewals.pricing_owner_approval') || 'Pricing & Owner Approval'}
+          </CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Current Rent Value:</span>
+        <CardContent className="flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center text-sm gap-2">
+            <span className="text-muted-foreground">
+              {t('renewals.current_value') || 'Current Rent Value'}:
+            </span>
             <span className="font-bold">
               {formatCurrency(tenant.rentValue)}
             </span>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-1">
-              <Label className="text-xs">Proposed Renewal Value</Label>
-              <Input
-                type="number"
-                value={proposed}
-                onChange={(e) => setProposed(e.target.value)}
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-xs">
+                {t('renewals.proposed_value') || 'Proposed Renewal Value'}
+              </Label>
+              <CurrencyInput value={proposed} onChange={setProposed} />
             </div>
-            <div className="grid gap-1">
-              <Label className="text-xs">Owner Decision</Label>
+            <div className="space-y-2">
+              <Label className="text-xs">
+                {t('common.status') || 'Owner Decision'}
+              </Label>
               <Select value={decision} onValueChange={setDecision}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="accepted">Accepted</SelectItem>
-                  <SelectItem value="counter">Counter-offer</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
+                  <SelectItem value="pending">
+                    {t('common.pending') || 'Pending'}
+                  </SelectItem>
+                  <SelectItem value="accepted">
+                    {t('common.accepted') || 'Accepted'}
+                  </SelectItem>
+                  <SelectItem value="counter">
+                    {t('common.counter') || 'Counter-offer'}
+                  </SelectItem>
+                  <SelectItem value="rejected">
+                    {t('common.rejected') || 'Rejected'}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
-          <Button
-            size="sm"
-            className="w-full bg-trust-blue text-white"
-            onClick={handleSendProposal}
-          >
-            Update Terms & Notify Owner
-          </Button>
+          <div className="pt-2">
+            <Button
+              size="sm"
+              className="w-full bg-trust-blue text-white"
+              onClick={handleSendProposal}
+            >
+              {t('common.update') || 'Update Terms'} &{' '}
+              {t('common.notify_owner') || 'Notify Owner'}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -137,7 +163,7 @@ export function OwnerNegotiationTab({
       </ScrollArea>
       <div className="flex gap-2">
         <Input
-          placeholder="Message to owner..."
+          placeholder={t('common.type_message') || 'Message to owner...'}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) =>

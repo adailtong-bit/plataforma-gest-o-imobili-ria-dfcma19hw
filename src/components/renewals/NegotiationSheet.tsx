@@ -5,7 +5,6 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  SheetFooter,
 } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -16,8 +15,8 @@ import usePropertyStore from '@/stores/usePropertyStore'
 import useOwnerStore from '@/stores/useOwnerStore'
 import useMessageStore from '@/stores/useMessageStore'
 import useAuthStore from '@/stores/useAuthStore'
+import useLanguageStore from '@/stores/useLanguageStore'
 import { useToast } from '@/hooks/use-toast'
-import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Lock, User, Building, Users, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -38,16 +37,12 @@ export function NegotiationSheet({
   onOpenChange,
   tenantId,
 }: NegotiationSheetProps) {
-  const {
-    tenants,
-    updateTenant,
-    updateTenantNegotiation,
-    renewTenantContract,
-  } = useTenantStore()
+  const { tenants, updateTenant, renewTenantContract } = useTenantStore()
   const { properties } = usePropertyStore()
   const { owners } = useOwnerStore()
   const { messages, sendMessage, startChat } = useMessageStore()
   const { currentUser } = useAuthStore()
+  const { t } = useLanguageStore()
   const { toast } = useToast()
 
   const tenant = tenants.find((t) => t.id === tenantId)
@@ -109,9 +104,10 @@ export function NegotiationSheet({
         note: newLogNote,
         user: currentUser.name,
       }
-      updateTenantNegotiation(tenant.id, { log })
+      const currentLogs = tenant.negotiationLogs || []
+      updateTenant({ ...tenant, negotiationLogs: [...currentLogs, log] })
       setNewLogNote('')
-      toast({ title: 'Note added' })
+      toast({ title: t('common.success') || 'Note added' })
     }
   }
 
@@ -121,8 +117,9 @@ export function NegotiationSheet({
       tenant.tenantDecision !== 'accepted'
     ) {
       toast({
-        title: 'Validation Error',
+        title: t('common.error') || 'Validation Error',
         description:
+          t('renewals.both_must_accept') ||
           'Both Owner and Tenant must accept the terms before closing.',
         variant: 'destructive',
       })
@@ -141,8 +138,9 @@ export function NegotiationSheet({
       linkedEntityId: tenant.id,
     })
     toast({
-      title: 'Renewal Finalized',
-      description: 'Contract renewed successfully.',
+      title: t('common.success') || 'Renewal Finalized',
+      description:
+        t('renewals.contract_renewed') || 'Contract renewed successfully.',
     })
     setCloseDialogOpen(false)
     onOpenChange(false)
@@ -162,20 +160,22 @@ export function NegotiationSheet({
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="w-[400px] sm:w-[600px] overflow-y-auto pb-24">
+        <SheetContent className="w-[90vw] sm:w-[600px] overflow-y-auto pb-32 sm:pb-24">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" /> Negotiation Hub
+              <Users className="h-5 w-5" />{' '}
+              {t('renewals.negotiation_hub') || 'Negotiation Hub'}
             </SheetTitle>
             <SheetDescription>
-              Manage multi-party lease renewals efficiently.
+              {t('renewals.negotiation_hub_desc') ||
+                'Manage multi-party lease renewals efficiently.'}
             </SheetDescription>
           </SheetHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4 p-4 bg-muted/20 rounded-lg">
               <div className="flex flex-col gap-1">
                 <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                  <User className="h-3 w-3" /> Tenant
+                  <User className="h-3 w-3" /> {t('common.tenant') || 'Tenant'}
                 </Label>
                 <div className="font-medium text-sm truncate flex items-center gap-2">
                   {tenant.name}
@@ -184,7 +184,8 @@ export function NegotiationSheet({
               </div>
               <div className="flex flex-col gap-1">
                 <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                  <User className="h-3 w-3" /> Owner
+                  <User className="h-3 w-3" />{' '}
+                  {t('common.relationship_owner') || 'Owner'}
                 </Label>
                 <div className="font-medium text-sm truncate flex items-center gap-2">
                   {owner?.name || 'N/A'}
@@ -193,7 +194,8 @@ export function NegotiationSheet({
               </div>
               <div className="col-span-2 flex flex-col gap-1">
                 <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Building className="h-3 w-3" /> Property
+                  <Building className="h-3 w-3" />{' '}
+                  {t('common.property') || 'Property'}
                 </Label>
                 <div className="font-medium text-sm truncate">
                   {property?.name}
@@ -202,21 +204,36 @@ export function NegotiationSheet({
             </div>
 
             <Tabs defaultValue="owner" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="owner" className="text-xs">
-                  Owner
+              <TabsList className="grid w-full grid-cols-5 h-auto min-h-10 p-1">
+                <TabsTrigger
+                  value="owner"
+                  className="text-xs whitespace-normal sm:whitespace-nowrap h-full"
+                >
+                  {t('common.relationship_owner') || 'Owner'}
                 </TabsTrigger>
-                <TabsTrigger value="tenant" className="text-xs">
-                  Tenant
+                <TabsTrigger
+                  value="tenant"
+                  className="text-xs whitespace-normal sm:whitespace-nowrap h-full"
+                >
+                  {t('common.tenant') || 'Tenant'}
                 </TabsTrigger>
-                <TabsTrigger value="aggregated" className="text-xs">
-                  Unified
+                <TabsTrigger
+                  value="aggregated"
+                  className="text-xs whitespace-normal sm:whitespace-nowrap h-full"
+                >
+                  {t('common.unified') || 'Unified'}
                 </TabsTrigger>
-                <TabsTrigger value="documents" className="text-xs">
-                  Docs
+                <TabsTrigger
+                  value="documents"
+                  className="text-xs whitespace-normal sm:whitespace-nowrap h-full"
+                >
+                  {t('common.documents') || 'Docs'}
                 </TabsTrigger>
-                <TabsTrigger value="internal" className="text-xs">
-                  Notes
+                <TabsTrigger
+                  value="internal"
+                  className="text-xs whitespace-normal sm:whitespace-nowrap h-full"
+                >
+                  {t('common.notes') || 'Notes'}
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="owner">
@@ -243,12 +260,15 @@ export function NegotiationSheet({
               <TabsContent value="aggregated" className="mt-4 space-y-4">
                 <div className="flex items-center gap-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded border border-yellow-200">
                   <Lock className="h-4 w-4" />
-                  <span>Confidential: Visible only to Property Managers.</span>
+                  <span>
+                    {t('renewals.confidential_note') ||
+                      'Confidential: Visible only to Property Managers.'}
+                  </span>
                 </div>
                 <ScrollArea className="h-[300px] border rounded-md p-4 bg-slate-50">
                   {aggregatedHistory.length === 0 ? (
                     <div className="text-center text-muted-foreground text-sm pt-8">
-                      No messages yet.
+                      {t('common.empty') || 'No messages yet.'}
                     </div>
                   ) : (
                     aggregatedHistory.map((msg, idx) => (
@@ -295,52 +315,60 @@ export function NegotiationSheet({
                     updateTenant({ ...tenant, documents: docs })
                   }
                   canEdit={true}
-                  title="Lease Documents"
+                  title={t('common.documents') || 'Lease Documents'}
                 />
               </TabsContent>
               <TabsContent value="internal" className="mt-4 space-y-4">
-                <ScrollArea className="h-[200px] border rounded-md p-4">
+                <ScrollArea className="h-[200px] border rounded-md p-4 bg-slate-50">
                   {tenant.negotiationLogs?.map((log) => (
                     <div
                       key={log.id}
-                      className="text-sm flex flex-col gap-1 bg-muted/30 p-2 rounded mb-2"
+                      className="text-sm flex flex-col gap-1 bg-white p-2 border rounded mb-2 shadow-sm"
                     >
                       <div className="flex justify-between text-xs text-muted-foreground">
-                        <span className="font-semibold">{log.user}</span>
+                        <span className="font-semibold text-slate-700">
+                          {log.user}
+                        </span>
                         <span>{formatTime(log.date)}</span>
                       </div>
-                      <p>{log.note}</p>
+                      <p className="text-slate-900">{log.note}</p>
                     </div>
                   ))}
+                  {(!tenant.negotiationLogs ||
+                    tenant.negotiationLogs.length === 0) && (
+                    <div className="text-center text-muted-foreground text-sm pt-4">
+                      {t('common.empty') || 'No notes yet.'}
+                    </div>
+                  )}
                 </ScrollArea>
                 <div className="gap-2 flex flex-col">
-                  <Label>Add Internal Note</Label>
+                  <Label>{t('renewals.add_note') || 'Add Internal Note'}</Label>
                   <Textarea
                     value={newLogNote}
                     onChange={(e) => setNewLogNote(e.target.value)}
                   />
                   <Button size="sm" onClick={handleSaveNotes} className="w-fit">
-                    Save Note
+                    {t('common.save') || 'Save Note'}
                   </Button>
                 </div>
               </TabsContent>
             </Tabs>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t flex justify-between gap-4">
+          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 bg-white border-t flex flex-col sm:flex-row justify-between gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
             <Button
               variant="outline"
-              className="flex-1"
+              className="w-full sm:flex-1"
               onClick={() =>
                 updateTenant({ ...tenant, negotiationStatus: 'vacating' })
               }
             >
-              Mark as Vacating
+              {t('renewals.mark_vacating') || 'Mark as Vacating'}
             </Button>
             <Button
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+              className="w-full sm:flex-1 bg-emerald-600 hover:bg-emerald-700"
               onClick={initiateClose}
             >
-              Close Negotiation
+              {t('renewals.close_negotiation')}
             </Button>
           </div>
         </SheetContent>

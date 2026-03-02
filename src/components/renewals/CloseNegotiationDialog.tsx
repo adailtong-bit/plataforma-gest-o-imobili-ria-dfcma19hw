@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { FileUpload } from '@/components/ui/file-upload'
+import { CurrencyInput } from '@/components/ui/currency-input'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { useToast } from '@/hooks/use-toast'
 
@@ -39,11 +40,19 @@ export function CloseNegotiationDialog({
   const [newEnd, setNewEnd] = useState('')
   const [contractUrl, setContractUrl] = useState('')
 
+  useEffect(() => {
+    if (open) {
+      setNewValue(currentValue)
+    }
+  }, [open, currentValue])
+
   const handleConfirm = () => {
     if (!newStart || !newEnd || !contractUrl) {
       toast({
         title: t('common.error'),
-        description: 'Por favor, preencha todos os campos e anexe o contrato.',
+        description:
+          t('renewals.fill_all_fields') ||
+          'Please fill in all fields and attach the contract.',
         variant: 'destructive',
       })
       return
@@ -60,26 +69,22 @@ export function CloseNegotiationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
             {t('renewals.close_negotiation')} (Finalize Renewal)
           </DialogTitle>
           <DialogDescription>
-            Confirme os novos termos e anexe o contrato assinado para finalizar.
-            O status será atualizado para "Renewed".
+            {t('renewals.close_negotiation_desc') ||
+              'Confirm the new terms and attach the signed contract to finalize. The status will be updated to "Renewed".'}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label>{t('renewals.new_value')}</Label>
-            <Input
-              type="number"
-              value={newValue}
-              onChange={(e) => setNewValue(Number(e.target.value))}
-            />
+            <CurrencyInput value={newValue} onChange={setNewValue} />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>{t('renewals.new_start_date')}</Label>
               <Input
@@ -102,12 +107,12 @@ export function CloseNegotiationDialog({
             <FileUpload
               value={contractUrl}
               onChange={setContractUrl}
-              label="Upload PDF/Doc"
+              label={t('common.upload_file') || 'Upload PDF/Doc'}
               accept=".pdf,.doc,.docx"
             />
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('common.cancel')}
           </Button>
