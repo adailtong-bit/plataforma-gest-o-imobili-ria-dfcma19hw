@@ -205,10 +205,10 @@ export default function Hotels() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
             <Building className="h-8 w-8 text-trust-blue" />
-            {t('hotels.title') || 'Hotels'}
+            {t('hotels.title')}
           </h1>
           <p className="text-muted-foreground">
-            Manage your hotel properties and wings.
+            {t('hotels.subtitle') || 'Manage your hotel properties and wings.'}
           </p>
         </div>
         <Dialog
@@ -220,13 +220,13 @@ export default function Hotels() {
         >
           <DialogTrigger asChild>
             <Button className="bg-trust-blue gap-2 text-white">
-              <Plus className="h-4 w-4" /> {t('common.add') || 'Add Hotel'}
+              <Plus className="h-4 w-4" /> {t('hotels.add_title')}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingRecord ? 'Edit Hotel' : 'Add Hotel'}
+                {editingRecord ? t('common.edit') : t('hotels.add_title')}
               </DialogTitle>
               <DialogDescription>
                 Define hotel details, full address, and internal divisions.
@@ -253,9 +253,9 @@ export default function Hotels() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Manager Name</Label>
+                    <Label>{t('common.manager')}</Label>
                     <Input
-                      placeholder="Manager Name"
+                      placeholder={t('common.manager')}
                       value={form.managerName}
                       onChange={(e) =>
                         setForm({ ...form, managerName: e.target.value })
@@ -263,7 +263,7 @@ export default function Hotels() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Manager Phone</Label>
+                    <Label>{t('common.phone')}</Label>
                     <Input
                       placeholder="+1 (555) 000-0000"
                       value={form.managerPhone}
@@ -274,7 +274,7 @@ export default function Hotels() {
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label>Manager Email</Label>
+                  <Label>{t('common.email')}</Label>
                   <Input
                     placeholder="manager@hotel.com"
                     value={form.managerEmail}
@@ -421,10 +421,10 @@ export default function Hotels() {
 
             <DialogFooter className="mt-6 border-t pt-4">
               <Button variant="outline" onClick={() => setIsAddOpen(false)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button onClick={handleSave} className="bg-trust-blue text-white">
-                Save Hotel
+                {t('common.save')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -436,11 +436,13 @@ export default function Hotels() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>{t('common.name') || 'Name'}</TableHead>
-                <TableHead>{t('common.address') || 'Address'}</TableHead>
-                <TableHead>Manager</TableHead>
-                <TableHead>{t('common.phone') || 'Phone'}</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('common.name')}</TableHead>
+                <TableHead>{t('common.address')}</TableHead>
+                <TableHead>{t('common.manager')}</TableHead>
+                <TableHead>{t('common.phone')}</TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -468,12 +470,13 @@ export default function Hotels() {
                         size="sm"
                         onClick={() => handleEditClick(h)}
                       >
-                        <Pencil className="h-4 w-4 mr-2" /> Edit
+                        <Pencil className="h-4 w-4 mr-2" /> {t('common.edit')}
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive" size="sm">
-                            <Trash2 className="h-4 w-4 mr-2" /> Delete
+                            <Trash2 className="h-4 w-4 mr-2" />{' '}
+                            {t('common.delete')}
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
@@ -485,11 +488,13 @@ export default function Hotels() {
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel>
+                              {t('common.cancel')}
+                            </AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDelete(h.id)}
                             >
-                              Delete
+                              {t('common.delete')}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -504,7 +509,7 @@ export default function Hotels() {
                     colSpan={5}
                     className="text-center py-6 text-muted-foreground"
                   >
-                    {t('common.empty') || 'No records found.'}
+                    {t('common.empty')}
                   </TableCell>
                 </TableRow>
               )}

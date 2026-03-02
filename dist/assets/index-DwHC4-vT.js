@@ -72492,10 +72492,10 @@ function Hotels() {
 			className: "flex justify-between items-center",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", {
 				className: "text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-8 w-8 text-trust-blue" }), t("hotels.title") || "Hotels"]
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-8 w-8 text-trust-blue" }), t("hotels.title")]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 				className: "text-muted-foreground",
-				children: "Manage your hotel properties and wings."
+				children: t("hotels.subtitle") || "Manage your hotel properties and wings."
 			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 				open: isAddOpen,
 				onOpenChange: (v) => {
@@ -72509,13 +72509,13 @@ function Hotels() {
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
 							" ",
-							t("common.add") || "Add Hotel"
+							t("hotels.add_title")
 						]
 					})
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 					className: "max-w-2xl max-h-[90vh] overflow-y-auto",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? "Edit Hotel" : "Add Hotel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "Define hotel details, full address, and internal divisions." })] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") : t("hotels.add_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "Define hotel details, full address, and internal divisions." })] }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
 							defaultValue: "details",
 							className: "w-full mt-4",
@@ -72559,8 +72559,8 @@ function Hotels() {
 											className: "grid grid-cols-2 gap-4",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Manager Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Manager Name",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.manager") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: t("common.manager"),
 													value: form.managerName,
 													onChange: (e) => setForm({
 														...form,
@@ -72569,7 +72569,7 @@ function Hotels() {
 												})]
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Manager Phone" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													placeholder: "+1 (555) 000-0000",
 													value: form.managerPhone,
 													onChange: (e) => setForm({
@@ -72581,7 +72581,7 @@ function Hotels() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Manager Email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												placeholder: "manager@hotel.com",
 												value: form.managerEmail,
 												onChange: (e) => setForm({
@@ -72749,11 +72749,11 @@ function Hotels() {
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								variant: "outline",
 								onClick: () => setIsAddOpen(false),
-								children: "Cancel"
+								children: t("common.cancel")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								onClick: handleSave,
 								className: "bg-trust-blue text-white",
-								children: "Save Hotel"
+								children: t("common.save")
 							})]
 						})
 					]
@@ -72766,13 +72766,13 @@ function Hotels() {
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Name" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.address") || "Address" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Manager" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.phone") || "Phone" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.address") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.manager") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.phone") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
-							children: "Actions"
+							children: t("common.actions")
 						})
 					] })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [hotels$1.map((h) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
@@ -72800,17 +72800,25 @@ function Hotels() {
 									variant: "outline",
 									size: "sm",
 									onClick: () => handleEditClick(h),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Edit"]
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+										" ",
+										t("common.edit")
+									]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
 									asChild: true,
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 										variant: "destructive",
 										size: "sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Delete"]
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+											" ",
+											t("common.delete")
+										]
 									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Delete Hotel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "This action cannot be undone. Are you sure you want to permanently delete this hotel?" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Delete Hotel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "This action cannot be undone. Are you sure you want to permanently delete this hotel?" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
 									onClick: () => handleDelete(h.id),
-									children: "Delete"
+									children: t("common.delete")
 								})] })] })] })]
 							})
 						})
@@ -72818,7 +72826,7 @@ function Hotels() {
 				}, h.id)), hotels$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 					colSpan: 5,
 					className: "text-center py-6 text-muted-foreground",
-					children: t("common.empty") || "No records found."
+					children: t("common.empty")
 				}) })] })] })
 			})
 		})]
@@ -77396,4 +77404,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BqD-Yj4y.js.map
+//# sourceMappingURL=index-DwHC4-vT.js.map
