@@ -19114,6 +19114,20 @@ var Calendar = createLucideIcon("calendar", [
 		key: "8toen8"
 	}]
 ]);
+var ChartNoAxesColumn = createLucideIcon("chart-no-axes-column", [
+	["path", {
+		d: "M5 21v-6",
+		key: "1hz6c0"
+	}],
+	["path", {
+		d: "M12 21V3",
+		key: "1lcnhd"
+	}],
+	["path", {
+		d: "M19 21V9",
+		key: "unv183"
+	}]
+]);
 var ChartPie = createLucideIcon("chart-pie", [["path", {
 	d: "M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z",
 	key: "pzmjnu"
@@ -19828,6 +19842,23 @@ var Sun = createLucideIcon("sun", [
 		key: "1shlcs"
 	}]
 ]);
+var Tags = createLucideIcon("tags", [
+	["path", {
+		d: "M13.172 2a2 2 0 0 1 1.414.586l6.71 6.71a2.4 2.4 0 0 1 0 3.408l-4.592 4.592a2.4 2.4 0 0 1-3.408 0l-6.71-6.71A2 2 0 0 1 6 9.172V3a1 1 0 0 1 1-1z",
+		key: "16rjxf"
+	}],
+	["path", {
+		d: "M2 7v6.172a2 2 0 0 0 .586 1.414l6.71 6.71a2.4 2.4 0 0 0 3.191.193",
+		key: "178nd4"
+	}],
+	["circle", {
+		cx: "10.5",
+		cy: "6.5",
+		r: ".5",
+		fill: "currentColor",
+		key: "12ikhr"
+	}]
+]);
 var Trash2 = createLucideIcon("trash-2", [
 	["path", {
 		d: "M10 11v6",
@@ -19998,6 +20029,10 @@ var X = createLucideIcon("x", [["path", {
 }], ["path", {
 	d: "m6 6 12 12",
 	key: "d8bk6v"
+}]]);
+var Zap = createLucideIcon("zap", [["path", {
+	d: "M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z",
+	key: "1xq2db"
 }]]);
 var CLASS_PART_SEPARATOR = "-";
 var createClassGroupUtils = (config) => {
@@ -57572,7 +57607,7 @@ const AppProvider = ({ children }) => {
 	(0, import_react.useEffect)(() => {
 		const timer = setTimeout(() => {
 			setIsAuthLoading(false);
-		}, 500);
+		}, 150);
 		return () => clearTimeout(timer);
 	}, []);
 	const setLanguage = (lang) => {
@@ -64691,6 +64726,12 @@ function AppSidebar() {
 			resource: "partners"
 		},
 		{
+			title: t("common.service_pricing") || "Price Catalog",
+			url: "/service-pricing",
+			icon: Tags,
+			resource: "settings"
+		},
+		{
 			title: t("common.calendar") || "Calendário",
 			url: "/calendar",
 			icon: Calendar,
@@ -64743,6 +64784,8 @@ function AppSidebar() {
 	const showPublicity = authHasPermission(currentUser, "publicity", "view");
 	const showUsers = authHasPermission(currentUser, "users", "view");
 	const showSettings = authHasPermission(currentUser, "settings", "view");
+	const showAnalytics = authHasPermission(currentUser, "analytics", "view");
+	const showAutomation = authHasPermission(currentUser, "automation", "view");
 	const hasPortfolioAccess = authHasPermission(currentUser, "properties", "view") || authHasPermission(currentUser, "hotels", "view") || authHasPermission(currentUser, "condominiums", "view");
 	const isTenant = currentUser?.role === "tenant";
 	const isOwner = currentUser?.role === "property_owner";
@@ -64919,6 +64962,28 @@ function AppSidebar() {
 									to: "/admin/publicity",
 									onClick: handleLinkClick,
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Megaphone, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.publicity_admin") })]
+								})
+							}) }),
+							showAnalytics && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+								asChild: true,
+								isActive: isActive("/admin/analytics"),
+								tooltip: t("common.advanced_analytics") || "Advanced Analytics",
+								className: "text-black font-medium hover:bg-slate-100",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+									to: "/admin/analytics",
+									onClick: handleLinkClick,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumn, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("common.advanced_analytics") || "Advanced Analytics" })]
+								})
+							}) }),
+							showAutomation && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+								asChild: true,
+								isActive: isActive("/admin/automation"),
+								tooltip: t("common.automation_rules") || "Automation Rules",
+								className: "text-black font-medium hover:bg-slate-100",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+									to: "/admin/automation",
+									onClick: handleLinkClick,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Zap, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("common.automation_rules") || "Automation Rules" })]
 								})
 							}) }),
 							showUsers && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
@@ -75746,12 +75811,19 @@ function RequirePermission({ children, resource, action = "view" }) {
 	const allowed = currentUser ? hasPermissionSync(currentUser, resource, action) : false;
 	(0, import_react.useEffect)(() => {
 		if (!isAuthLoading && isAuthenticated && !allowed && !hasAlerted) {
-			toast$2({
-				title: t("common.access_denied") || "Access Denied",
-				description: t("common.access_denied_desc") || "You do not have permission to view this page.",
-				variant: "destructive"
-			});
-			setHasAlerted(true);
+			if (![
+				"tenant",
+				"property_owner",
+				"partner",
+				"partner_employee"
+			].includes(currentUser?.role || "")) {
+				toast$2({
+					title: t("common.access_denied") || "Access Denied",
+					description: t("common.access_denied_desc") || "You do not have permission to view this page.",
+					variant: "destructive"
+				});
+				setHasAlerted(true);
+			}
 		}
 	}, [
 		isAuthLoading,
@@ -75759,7 +75831,8 @@ function RequirePermission({ children, resource, action = "view" }) {
 		allowed,
 		hasAlerted,
 		toast$2,
-		t
+		t,
+		currentUser
 	]);
 	if (isAuthLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500",
@@ -75776,7 +75849,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 	if (!allowed) {
 		if (currentUser?.role === "tenant" || currentUser?.role === "property_owner" || currentUser?.role === "partner" || currentUser?.role === "partner_employee") {
 			const portalPath = currentUser.role === "property_owner" ? "/portal/owner" : currentUser.role === "partner" || currentUser.role === "partner_employee" ? "/portal/partner" : "/portal/tenant";
-			if (!location.pathname.startsWith(portalPath) && resource === "portal") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
+			if (!location.pathname.startsWith(portalPath)) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
 				to: portalPath,
 				replace: true
 			});
@@ -76321,4 +76394,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-bISubr7P.js.map
+//# sourceMappingURL=index-DG7TJ7R7.js.map

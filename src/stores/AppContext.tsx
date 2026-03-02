@@ -453,7 +453,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsAuthLoading(false)
-    }, 500)
+    }, 150) // Reduced delay for immediate visual response
     return () => clearTimeout(timer)
   }, [])
 

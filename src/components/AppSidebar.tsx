@@ -168,6 +168,12 @@ export function AppSidebar() {
       resource: 'partners',
     },
     {
+      title: t('common.service_pricing') || 'Price Catalog',
+      url: '/service-pricing',
+      icon: Tags,
+      resource: 'settings',
+    },
+    {
       title: t('common.calendar') || 'Calendário',
       url: '/calendar',
       icon: Calendar,
@@ -236,6 +242,16 @@ export function AppSidebar() {
   const showSettings = authHasPermission(
     currentUser as User,
     'settings',
+    'view',
+  )
+  const showAnalytics = authHasPermission(
+    currentUser as User,
+    'analytics',
+    'view',
+  )
+  const showAutomation = authHasPermission(
+    currentUser as User,
+    'automation',
     'view',
   )
 
@@ -515,6 +531,42 @@ export function AppSidebar() {
                     <Link to="/admin/publicity" onClick={handleLinkClick}>
                       <Megaphone className="text-black" />
                       <span>{t('sidebar.publicity_admin')}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+              {showAnalytics && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive('/admin/analytics')}
+                    tooltip={
+                      t('common.advanced_analytics') || 'Advanced Analytics'
+                    }
+                    className="text-black font-medium hover:bg-slate-100"
+                  >
+                    <Link to="/admin/analytics" onClick={handleLinkClick}>
+                      <BarChart2 className="text-black" />
+                      <span>
+                        {t('common.advanced_analytics') || 'Advanced Analytics'}
+                      </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+              {showAutomation && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive('/admin/automation')}
+                    tooltip={t('common.automation_rules') || 'Automation Rules'}
+                    className="text-black font-medium hover:bg-slate-100"
+                  >
+                    <Link to="/admin/automation" onClick={handleLinkClick}>
+                      <Zap className="text-black" />
+                      <span>
+                        {t('common.automation_rules') || 'Automation Rules'}
+                      </span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

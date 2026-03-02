@@ -78,16 +78,33 @@ export function RequirePermission({
 
   useEffect(() => {
     if (!isAuthLoading && isAuthenticated && !allowed && !hasAlerted) {
-      toast({
-        title: t('common.access_denied') || 'Access Denied',
-        description:
-          t('common.access_denied_desc') ||
-          'You do not have permission to view this page.',
-        variant: 'destructive',
-      })
-      setHasAlerted(true)
+      const isPortalUser = [
+        'tenant',
+        'property_owner',
+        'partner',
+        'partner_employee',
+      ].includes(currentUser?.role || '')
+
+      if (!isPortalUser) {
+        toast({
+          title: t('common.access_denied') || 'Access Denied',
+          description:
+            t('common.access_denied_desc') ||
+            'You do not have permission to view this page.',
+          variant: 'destructive',
+        })
+        setHasAlerted(true)
+      }
     }
-  }, [isAuthLoading, isAuthenticated, allowed, hasAlerted, toast, t])
+  }, [
+    isAuthLoading,
+    isAuthenticated,
+    allowed,
+    hasAlerted,
+    toast,
+    t,
+    currentUser,
+  ])
 
   if (isAuthLoading) {
     return (
@@ -105,12 +122,14 @@ export function RequirePermission({
   }
 
   if (!allowed) {
-    if (
+    const isPortalUser =
       currentUser?.role === 'tenant' ||
       currentUser?.role === 'property_owner' ||
       currentUser?.role === 'partner' ||
       currentUser?.role === 'partner_employee'
-    ) {
+
+    // Properly redirect portal users even if they try to hit the root or unauthorized pages
+    if (isPortalUser) {
       const portalPath =
         currentUser.role === 'property_owner'
           ? '/portal/owner'
@@ -119,7 +138,7 @@ export function RequirePermission({
             ? '/portal/partner'
             : '/portal/tenant'
 
-      if (!location.pathname.startsWith(portalPath) && resource === 'portal') {
+      if (!location.pathname.startsWith(portalPath)) {
         return <Navigate to={portalPath} replace />
       }
     }
