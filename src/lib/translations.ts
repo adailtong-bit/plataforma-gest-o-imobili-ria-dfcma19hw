@@ -1790,7 +1790,7 @@ export const translations = {
     },
     dashboard: {
       unread: 'unread',
-      from last month: 'from last month',
+      from_last_month: 'from last month',
       customize: 'Customize',
       customize_view: 'Customize View',
       customize_desc: 'Select widgets to display.',
@@ -2818,4 +2818,3 @@ export const translations = {
     },
   },
 }
-

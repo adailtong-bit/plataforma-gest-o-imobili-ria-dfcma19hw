@@ -19427,6 +19427,22 @@ var Image = createLucideIcon("image", [
 		key: "1xmnt7"
 	}]
 ]);
+var Info = createLucideIcon("info", [
+	["circle", {
+		cx: "12",
+		cy: "12",
+		r: "10",
+		key: "1mglay"
+	}],
+	["path", {
+		d: "M12 16v-4",
+		key: "1dtifu"
+	}],
+	["path", {
+		d: "M12 8h.01",
+		key: "e9boi3"
+	}]
+]);
 var KeyRound = createLucideIcon("key-round", [["path", {
 	d: "M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z",
 	key: "1s6t7t"
@@ -54673,7 +54689,30 @@ const translations = {
 			add_title: "Adicionar Condomínio",
 			manager: "Gerente/Síndico",
 			contact: "Contato",
-			no_condos: "Nenhum condomínio encontrado."
+			no_condos: "Nenhum condomínio encontrado.",
+			general_info: "Informações Gerais",
+			addressing: "Endereçamento",
+			access_codes: "Códigos de Acesso",
+			management: "Gestão",
+			description: "Descrição",
+			street: "Rua/Avenida",
+			number: "Número",
+			complement: "Complemento",
+			neighborhood: "Bairro",
+			city: "Cidade",
+			state: "Estado",
+			zip_code: "CEP",
+			manager_name: "Nome do Gerente",
+			manager_phone: "Telefone do Gerente",
+			manager_email: "Email do Gerente",
+			gate_code: "Código do Portão",
+			pedestrian_gate: "Portão de Pedestres",
+			pool_code: "Código da Piscina",
+			amenities_code: "Código das Áreas Comuns",
+			edit_condo: "Editar Condomínio",
+			view_details: "Ver Detalhes",
+			search_placeholder: "Buscar condomínio...",
+			delete_confirm: "Tem certeza que deseja excluir este condomínio?"
 		},
 		owners: {
 			title: "Proprietários",
@@ -55661,7 +55700,30 @@ const translations = {
 			add_title: "Add Condo",
 			manager: "Manager",
 			contact: "Contact",
-			no_condos: "No condominiums found."
+			no_condos: "No condominiums found.",
+			general_info: "General Info",
+			addressing: "Addressing",
+			access_codes: "Access Codes",
+			management: "Management",
+			description: "Description",
+			street: "Street",
+			number: "Number",
+			complement: "Complement",
+			neighborhood: "Neighborhood",
+			city: "City",
+			state: "State",
+			zip_code: "Zip Code",
+			manager_name: "Manager Name",
+			manager_phone: "Manager Phone",
+			manager_email: "Manager Email",
+			gate_code: "Gate Code",
+			pedestrian_gate: "Pedestrian Gate",
+			pool_code: "Pool Code",
+			amenities_code: "Amenities Code",
+			edit_condo: "Edit Condo",
+			view_details: "View Details",
+			search_placeholder: "Search condominium...",
+			delete_confirm: "Are you sure you want to delete this condominium?"
 		},
 		owners: {
 			title: "Owners",
@@ -56650,7 +56712,30 @@ const translations = {
 			add_title: "Añadir Condominio",
 			manager: "Gerente/Administrador",
 			contact: "Contacto",
-			no_condos: "Ningún condominio encontrado."
+			no_condos: "Ningún condominio encontrado.",
+			general_info: "Información General",
+			addressing: "Dirección",
+			access_codes: "Códigos de Acceso",
+			management: "Gestión",
+			description: "Descripción",
+			street: "Calle/Avenida",
+			number: "Número",
+			complement: "Complemento",
+			neighborhood: "Barrio",
+			city: "Ciudad",
+			state: "Estado",
+			zip_code: "Código Postal",
+			manager_name: "Nombre del Gerente",
+			manager_phone: "Teléfono del Gerente",
+			manager_email: "Email del Gerente",
+			gate_code: "Código del Portón",
+			pedestrian_gate: "Puerta de Peatones",
+			pool_code: "Código de Piscina",
+			amenities_code: "Código de Áreas Comunes",
+			edit_condo: "Editar Condominio",
+			view_details: "Ver Detalles",
+			search_placeholder: "Buscar condominio...",
+			delete_confirm: "¿Estás seguro de que deseas eliminar este condominio?"
 		},
 		owners: {
 			title: "Propietarios",
@@ -71728,89 +71813,406 @@ function PartnerDetails() {
 }
 function Condominiums() {
 	const { condominiums: condominiums$1, addCondominium, updateCondominium, deleteCondominium } = (0, import_react.useContext)(AppContext);
+	const { currentUser, hasPermissionSync } = useAuthStore_default();
 	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
+	const canCreate = hasPermissionSync(currentUser, "condominiums", "create");
+	const canEdit = hasPermissionSync(currentUser, "condominiums", "edit");
+	const canDelete = hasPermissionSync(currentUser, "condominiums", "delete");
+	const [search, setSearch] = (0, import_react.useState)("");
 	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
 	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
 	const [form, setForm] = (0, import_react.useState)({
 		name: "",
+		description: "",
 		address: "",
+		number: "",
+		complement: "",
+		neighborhood: "",
 		city: "",
-		managerEmail: ""
+		state: "",
+		zipCode: "",
+		country: "US",
+		managerName: "",
+		managerPhone: "",
+		managerEmail: "",
+		accessCredentials: {
+			gate: "",
+			pedestrianGate: "",
+			poolCode: "",
+			amenities: ""
+		}
 	});
-	const handleAdd = () => {
-		addCondominium({
-			id: `condo-${Date.now()}`,
-			name: form.name || "Novo Condomínio",
-			address: form.address,
+	const filteredCondos = condominiums$1.filter((c$1) => c$1.name.toLowerCase().includes(search.toLowerCase()) || c$1.city?.toLowerCase().includes(search.toLowerCase()));
+	const updateAccess = (field, value) => {
+		setForm((prev) => ({
+			...prev,
+			accessCredentials: {
+				...prev.accessCredentials,
+				[field]: value
+			}
+		}));
+	};
+	const handleSave = () => {
+		if (!form.name) {
+			toast$2({
+				title: t("common.error"),
+				description: t("common.name_required"),
+				variant: "destructive"
+			});
+			return;
+		}
+		const payload = {
+			...editingRecord || { id: `condo-${Date.now()}` },
+			name: form.name,
+			description: form.description,
+			address: form.address || "",
+			number: form.number,
+			complement: form.complement,
+			neighborhood: form.neighborhood,
 			city: form.city,
-			managerEmail: form.managerEmail
-		});
+			state: form.state,
+			zipCode: form.zipCode,
+			country: form.country,
+			managerName: form.managerName,
+			managerPhone: form.managerPhone,
+			managerEmail: form.managerEmail,
+			accessCredentials: form.accessCredentials
+		};
+		if (editingRecord) {
+			updateCondominium(payload);
+			toast$2({
+				title: t("common.success"),
+				description: t("common.success")
+			});
+		} else {
+			addCondominium(payload);
+			toast$2({
+				title: t("common.success"),
+				description: t("common.success")
+			});
+		}
 		setIsAddOpen(false);
+		resetForm();
+	};
+	const resetForm = () => {
+		setEditingRecord(null);
 		setForm({
 			name: "",
+			description: "",
 			address: "",
+			number: "",
+			complement: "",
+			neighborhood: "",
 			city: "",
-			managerEmail: ""
+			state: "",
+			zipCode: "",
+			country: "US",
+			managerName: "",
+			managerPhone: "",
+			managerEmail: "",
+			accessCredentials: {
+				gate: "",
+				pedestrianGate: "",
+				poolCode: "",
+				amenities: ""
+			}
 		});
-		toast$2({ title: "Condomínio incluído com sucesso" });
 	};
-	const handleEdit = () => {
-		if (editingRecord) updateCondominium({
-			...editingRecord,
-			...form
+	const handleEditClick = (condo) => {
+		setEditingRecord(condo);
+		setForm({
+			name: condo.name,
+			description: condo.description || "",
+			address: condo.address,
+			number: condo.number || "",
+			complement: condo.complement || "",
+			neighborhood: condo.neighborhood || "",
+			city: condo.city || "",
+			state: condo.state || "",
+			zipCode: condo.zipCode || "",
+			country: condo.country || "US",
+			managerName: condo.managerName || "",
+			managerPhone: condo.managerPhone || "",
+			managerEmail: condo.managerEmail || "",
+			accessCredentials: {
+				gate: condo.accessCredentials?.gate || "",
+				pedestrianGate: condo.accessCredentials?.pedestrianGate || "",
+				poolCode: condo.accessCredentials?.poolCode || "",
+				amenities: condo.accessCredentials?.amenities || ""
+			}
 		});
-		setEditingRecord(null);
-		toast$2({ title: "Condomínio alterado com sucesso" });
+		setIsAddOpen(true);
 	};
 	const handleDelete = (id) => {
 		deleteCondominium(id);
-		toast$2({ title: "Condomínio excluído com sucesso" });
+		toast$2({ title: t("common.delete_success") });
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex justify-between items-center",
+			className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 				className: "text-3xl font-bold tracking-tight text-slate-900",
-				children: t("sidebar.condominiums") || "Condomínios"
+				children: t("condominiums.title")
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 				className: "text-muted-foreground",
-				children: "Manage your properties' condominiums."
-			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-				open: isAddOpen,
-				onOpenChange: setIsAddOpen,
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						className: "bg-trust-blue gap-2 text-white",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Condomínio" }) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-4 py-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							placeholder: "Nome",
-							value: form.name,
-							onChange: (e) => setForm({
-								...form,
-								name: e.target.value
+				children: t("condominiums.subtitle")
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					placeholder: t("condominiums.search_placeholder"),
+					value: search,
+					onChange: (e) => setSearch(e.target.value),
+					className: "w-64 bg-white"
+				}), canCreate && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+					open: isAddOpen,
+					onOpenChange: (v) => {
+						setIsAddOpen(v);
+						if (!v) resetForm();
+					},
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							className: "bg-trust-blue gap-2 text-white",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+								" ",
+								t("condominiums.new_condo")
+							]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+						className: "max-w-2xl max-h-[90vh] overflow-y-auto",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("condominiums.edit_condo") : t("condominiums.add_title") }) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+								defaultValue: "general",
+								className: "w-full mt-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+										className: "grid w-full grid-cols-3",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+												value: "general",
+												children: t("condominiums.general_info")
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+												value: "addressing",
+												children: t("condominiums.addressing")
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+												value: "access",
+												children: t("condominiums.access_codes")
+											})
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+										value: "general",
+										className: "space-y-4 py-4",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+													t("common.name"),
+													" ",
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "text-red-500",
+														children: "*"
+													})
+												] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.name,
+													onChange: (e) => setForm({
+														...form,
+														name: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.description,
+													onChange: (e) => setForm({
+														...form,
+														description: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid grid-cols-2 gap-4",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "grid gap-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.manager_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+															value: form.managerName,
+															onChange: (e) => setForm({
+																...form,
+																managerName: e.target.value
+															})
+														})]
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "grid gap-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.manager_phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+															value: form.managerPhone,
+															onChange: (e) => setForm({
+																...form,
+																managerPhone: e.target.value
+															})
+														})]
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "grid gap-2 col-span-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.manager_email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+															value: form.managerEmail,
+															onChange: (e) => setForm({
+																...form,
+																managerEmail: e.target.value
+															})
+														})]
+													})
+												]
+											})
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+										value: "addressing",
+										className: "space-y-4 py-4",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid grid-cols-4 gap-4",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2 col-span-3",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.street") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: form.address,
+														onChange: (e) => setForm({
+															...form,
+															address: e.target.value
+														})
+													})]
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2 col-span-1",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: form.number,
+														onChange: (e) => setForm({
+															...form,
+															number: e.target.value
+														})
+													})]
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid grid-cols-2 gap-4",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.complement") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: form.complement,
+														onChange: (e) => setForm({
+															...form,
+															complement: e.target.value
+														})
+													})]
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.neighborhood") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: form.neighborhood,
+														onChange: (e) => setForm({
+															...form,
+															neighborhood: e.target.value
+														})
+													})]
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid grid-cols-3 gap-4",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "grid gap-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.city") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+															value: form.city,
+															onChange: (e) => setForm({
+																...form,
+																city: e.target.value
+															})
+														})]
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "grid gap-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.state") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+															value: form.state,
+															onChange: (e) => setForm({
+																...form,
+																state: e.target.value
+															})
+														})]
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+														className: "grid gap-2",
+														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.zip_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+															value: form.zipCode,
+															onChange: (e) => setForm({
+																...form,
+																zipCode: e.target.value
+															})
+														})]
+													})
+												]
+											})
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+										value: "access",
+										className: "space-y-4 py-4",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid grid-cols-2 gap-4",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.gate_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: form.accessCredentials?.gate || "",
+														onChange: (e) => updateAccess("gate", e.target.value)
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.pedestrian_gate") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: form.accessCredentials?.pedestrianGate || "",
+														onChange: (e) => updateAccess("pedestrianGate", e.target.value)
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.pool_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: form.accessCredentials?.poolCode || "",
+														onChange: (e) => updateAccess("poolCode", e.target.value)
+													})]
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "grid gap-2",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("condominiums.amenities_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+														value: form.accessCredentials?.amenities || "",
+														onChange: (e) => updateAccess("amenities", e.target.value)
+													})]
+												})
+											]
+										})
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, {
+								className: "mt-6 border-t pt-4",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "outline",
+									onClick: () => setIsAddOpen(false),
+									children: t("common.cancel")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: handleSave,
+									className: "bg-trust-blue text-white",
+									children: t("common.save")
+								})]
 							})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							placeholder: "Endereço",
-							value: form.address,
-							onChange: (e) => setForm({
-								...form,
-								address: e.target.value
-							})
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						onClick: handleAdd,
-						children: "Salvar"
-					}) })
-				] })]
+						]
+					})]
+				})]
 			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
@@ -71819,103 +72221,321 @@ function Condominiums() {
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.address") || "Endereço" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "City" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Manager Email" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("condominiums.addressing") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.manager_col") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
-							children: "Ações"
+							children: t("common.actions")
 						})
 					] })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [condominiums$1.map((condo) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [filteredCondos.map((condo) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
 					className: "hover:bg-slate-50",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "font-medium text-slate-900",
-							children: condo.name
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.name })
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: condo.address }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: condo.city }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: condo.managerEmail }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [
+							condo.address,
+							condo.number ? `, ${condo.number}` : "",
+							condo.city ? ` - ${condo.city}` : ""
+						] }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-col text-xs",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-medium text-slate-900",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerName || "-" })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "text-slate-500",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerPhone || "" })
+							})]
+						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex justify-end gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-									open: editingRecord?.id === condo.id,
-									onOpenChange: (open) => !open && setEditingRecord(null),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-										asChild: true,
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+										to: `/condominiums/${condo.id}`,
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 											variant: "outline",
 											size: "sm",
-											onClick: () => {
-												setEditingRecord(condo);
-												setForm({
-													name: condo.name,
-													address: condo.address,
-													city: condo.city || "",
-													managerEmail: condo.managerEmail || ""
-												});
-											},
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4 mr-2" }),
+												" ",
+												t("common.view")
+											]
 										})
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Condomínio" }) }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "space-y-4 py-4",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												placeholder: "Nome",
-												value: form.name,
-												onChange: (e) => setForm({
-													...form,
-													name: e.target.value
-												})
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												placeholder: "Endereço",
-												value: form.address,
-												onChange: (e) => setForm({
-													...form,
-													address: e.target.value
-												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-											onClick: handleEdit,
-											children: "Salvar"
-										}) })
-									] })]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-										variant: "destructive",
+									}),
+									canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "outline",
 										size: "sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
-									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Condomínio" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-									onClick: () => handleDelete(condo.id),
-									children: "Excluir"
-								})] })] })] })]
+										onClick: () => handleEditClick(condo),
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+											" ",
+											t("common.edit")
+										]
+									}),
+									canDelete && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "destructive",
+											size: "sm",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+												" ",
+												t("common.delete")
+											]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("condominiums.delete_confirm") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+										onClick: () => handleDelete(condo.id),
+										children: t("common.delete")
+									})] })] })] })
+								]
 							})
 						})
 					]
-				}, condo.id)), condominiums$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 5,
+				}, condo.id)), filteredCondos.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					colSpan: 4,
 					className: "text-center py-6 text-muted-foreground",
-					children: t("common.empty")
+					children: t("condominiums.no_condos")
 				}) })] })] })
 			})
 		})]
 	});
 }
 function CondominiumDetails() {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "p-6",
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Condominium Details" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-slate-600",
-			children: "Details module under construction."
-		}) })] })
+	const { id } = useParams();
+	const navigate = useNavigate();
+	const { condominiums: condominiums$1 } = (0, import_react.useContext)(AppContext);
+	const { t } = useLanguageStore_default();
+	const condo = condominiums$1.find((c$1) => c$1.id === id);
+	if (!condo) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			className: "text-2xl font-bold mb-4",
+			children: "Condominium Not Found"
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+			onClick: () => navigate("/condominiums"),
+			children: t("common.back")
+		})]
+	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "p-6 flex flex-col gap-6 max-w-5xl mx-auto animate-in fade-in duration-500",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex items-center gap-4 bg-white p-4 rounded-lg border shadow-sm",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "outline",
+				size: "icon",
+				onClick: () => navigate("/condominiums"),
+				className: "border-slate-300",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-4 w-4 text-slate-700" })
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-2xl font-bold tracking-tight text-slate-900",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.name })
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-sm text-slate-500 font-medium",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [condo.city, condo.state ? `, ${condo.state}` : ""] })
+			})] })]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "grid grid-cols-1 md:grid-cols-2 gap-6",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+					className: "border-slate-200 shadow-sm bg-white",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+						className: "pb-4 border-b",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+							className: "text-lg flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Info, { className: "h-5 w-5 text-trust-blue" }), t("condominiums.general_info")]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+						className: "pt-4 space-y-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-muted-foreground font-medium",
+							children: t("condominiums.description")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm font-medium text-slate-900 mt-1",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.description || "-" })
+						})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-muted-foreground font-medium",
+							children: t("common.name")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm font-medium text-slate-900 mt-1",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.name })
+						})] })]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+					className: "border-slate-200 shadow-sm bg-white",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+						className: "pb-4 border-b",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+							className: "text-lg flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-5 w-5 text-trust-blue" }), t("condominiums.management")]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+						className: "pt-4 space-y-4",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground font-medium",
+									children: t("condominiums.manager_name")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-medium text-slate-900 mt-1",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerName || "-" })
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground font-medium",
+									children: t("condominiums.manager_phone")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-medium text-slate-900 mt-1",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerPhone || "-" })
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "col-span-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-sm text-muted-foreground font-medium",
+										children: t("condominiums.manager_email")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-sm font-medium text-slate-900 mt-1",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.managerEmail || "-" })
+									})]
+								})
+							]
+						})
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+					className: "border-slate-200 shadow-sm bg-white",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+						className: "pb-4 border-b",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+							className: "text-lg flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-5 w-5 text-trust-blue" }), t("condominiums.addressing")]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+						className: "pt-4 space-y-4",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "col-span-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-sm text-muted-foreground font-medium",
+										children: t("condominiums.street")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-sm font-medium text-slate-900 mt-1",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.address || "-" })
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground font-medium",
+									children: t("condominiums.number")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-medium text-slate-900 mt-1",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.number || "-" })
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground font-medium",
+									children: t("condominiums.complement")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-medium text-slate-900 mt-1",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.complement || "-" })
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground font-medium",
+									children: t("condominiums.neighborhood")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-medium text-slate-900 mt-1",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.neighborhood || "-" })
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground font-medium",
+									children: t("condominiums.city")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-medium text-slate-900 mt-1",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.city || "-" })
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground font-medium",
+									children: t("condominiums.state")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-medium text-slate-900 mt-1",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.state || "-" })
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground font-medium",
+									children: t("condominiums.zip_code")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-medium text-slate-900 mt-1",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: condo.zipCode || "-" })
+								})] })
+							]
+						})
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+					className: "border-slate-200 shadow-sm bg-white",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+						className: "pb-4 border-b",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+							className: "text-lg flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-5 w-5 text-trust-blue" }), t("condominiums.access_codes")]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+						className: "pt-4 space-y-4",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground font-medium",
+									children: t("condominiums.gate_code")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-bold text-slate-900 mt-1 bg-slate-100 p-2 rounded inline-block w-full",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+										blur: true,
+										children: condo.accessCredentials?.gate || "-"
+									})
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground font-medium",
+									children: t("condominiums.pedestrian_gate")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-bold text-slate-900 mt-1 bg-slate-100 p-2 rounded inline-block w-full",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+										blur: true,
+										children: condo.accessCredentials?.pedestrianGate || "-"
+									})
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground font-medium",
+									children: t("condominiums.pool_code")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-bold text-slate-900 mt-1 bg-slate-100 p-2 rounded inline-block w-full",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+										blur: true,
+										children: condo.accessCredentials?.poolCode || "-"
+									})
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-muted-foreground font-medium",
+									children: t("condominiums.amenities_code")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-bold text-slate-900 mt-1 bg-slate-100 p-2 rounded inline-block w-full",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+										blur: true,
+										children: condo.accessCredentials?.amenities || "-"
+									})
+								})] })
+							]
+						})
+					})]
+				})
+			]
+		})]
 	});
 }
 function Hotels() {
@@ -78128,4 +78748,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Dumpqv3l.js.map
+//# sourceMappingURL=index-CDMhdknT.js.map
