@@ -54553,6 +54553,7 @@ const translations = {
 		},
 		sidebar: {
 			dashboard: "Painel",
+			portfolio: "Portfólio",
 			units: "Propriedades",
 			condominiums: "Condomínios",
 			owners: "Proprietários",
@@ -55539,6 +55540,7 @@ const translations = {
 		},
 		sidebar: {
 			dashboard: "Dashboard",
+			portfolio: "Portfolio",
 			units: "Properties",
 			condominiums: "Condominiums",
 			owners: "Owners",
@@ -56525,6 +56527,7 @@ const translations = {
 		},
 		sidebar: {
 			dashboard: "Panel",
+			portfolio: "Portafolio",
 			units: "Propiedades",
 			condominiums: "Condominios",
 			owners: "Propietarios",
@@ -57261,10 +57264,10 @@ const translations = {
 				auto_translate: "Traducción Automática",
 				copy_from: "Copiar de",
 				desc_pt_placeholder: "Descripción completa en Portugués...",
-				desc_en_placeholder: "Descripción completa en Inglés...",
+				desc_en_placeholder: "Descripción completa en Inglês...",
 				desc_es_placeholder: "Descripción completa en Español...",
 				rules_pt_placeholder: "Reglas del condominio en Portugués...",
-				rules_en_placeholder: "Reglas del condominio en Inglés...",
+				rules_en_placeholder: "Reglas del condominio en Inglês...",
 				rules_es_placeholder: "Reglas del condominio en Español..."
 			},
 			financial: "Financiero",
@@ -64897,11 +64900,11 @@ function AppSidebar() {
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenuItem, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleTrigger, {
 								asChild: true,
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenuButton, {
-									tooltip: "Portfólio",
+									tooltip: t("sidebar.portfolio"),
 									className: "text-black font-medium hover:bg-slate-100",
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "text-black" }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("sidebar.portfolio") || "Portfólio" }) }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("sidebar.portfolio") }) }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronRight, { className: "ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90 text-black" })
 									]
 								})
@@ -64912,7 +64915,7 @@ function AppSidebar() {
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 										to: "/properties",
 										onClick: handleLinkClick,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: "Propriedades" }) })
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("sidebar.units") }) })
 									})
 								}) }),
 								authHasPermission(currentUser, "hotels", "view") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubButton, {
@@ -64921,7 +64924,7 @@ function AppSidebar() {
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 										to: "/hotels",
 										onClick: handleLinkClick,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("hotels.title") || "Hotéis" }) })
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("hotels.title") }) })
 									})
 								}) }),
 								authHasPermission(currentUser, "condominiums", "view") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubButton, {
@@ -64930,7 +64933,7 @@ function AppSidebar() {
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 										to: "/condominiums",
 										onClick: handleLinkClick,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("sidebar.condominiums") || "Condomínios" }) })
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("sidebar.condominiums") }) })
 									})
 								}) })
 							] }) })] })
@@ -76864,4 +76867,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Dk19i-Fp.js.map
+//# sourceMappingURL=index-DjxbCVZH.js.map
