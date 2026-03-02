@@ -57470,10 +57470,16 @@ const AppProvider = ({ children }) => {
 		const saved = localStorage.getItem("app_tenants");
 		return saved ? JSON.parse(saved) : tenants;
 	});
+	(0, import_react.useEffect)(() => {
+		localStorage.setItem("app_tenants", JSON.stringify(tenants$1));
+	}, [tenants$1]);
 	const [owners$1, setOwners] = (0, import_react.useState)(() => {
 		const saved = localStorage.getItem("app_owners");
 		return saved ? JSON.parse(saved) : owners;
 	});
+	(0, import_react.useEffect)(() => {
+		localStorage.setItem("app_owners", JSON.stringify(owners$1));
+	}, [owners$1]);
 	const [partners$1, setPartners] = (0, import_react.useState)(partners);
 	const [bookings$1, setBookings] = (0, import_react.useState)(bookings);
 	const [calendarBlocks$1, setCalendarBlocks] = (0, import_react.useState)(calendarBlocks);
@@ -66777,7 +66783,8 @@ var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
 	});
 });
 Textarea.displayName = "Textarea";
-function FileUpload({ value, onChange, label = "Upload File", accept, disabled }) {
+function FileUpload({ value, onChange, label, accept, disabled }) {
+	const { t } = useLanguageStore_default();
 	const inputRef = (0, import_react.useRef)(null);
 	const handleFileChange = (e) => {
 		const file = e.target.files?.[0];
@@ -66786,7 +66793,7 @@ function FileUpload({ value, onChange, label = "Upload File", accept, disabled }
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-2",
 		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: label }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: label || t("common.upload") }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex gap-2 items-center",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
@@ -66801,13 +66808,17 @@ function FileUpload({ value, onChange, label = "Upload File", accept, disabled }
 					variant: "outline",
 					onClick: () => inputRef.current?.click(),
 					disabled,
-					className: "w-full",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "h-4 w-4 mr-2" }), " Select File"]
+					className: "w-full bg-white hover:bg-slate-50 border-slate-200 shadow-sm",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "h-4 w-4 mr-2" }),
+						" ",
+						t("common.upload")
+					]
 				})]
 			}),
-			value && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "text-xs text-green-600 truncate mt-1",
-				children: "File uploaded successfully"
+			value && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "text-xs text-emerald-600 truncate mt-1 flex items-center gap-1 font-medium",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-1.5 rounded-full bg-emerald-500" }), t("common.success")]
 			})
 		]
 	});
@@ -76191,65 +76202,82 @@ function CloseNegotiationDialog({ open, onOpenChange, onConfirm, currentValue })
 			newEnd,
 			contractUrl
 		});
-		onOpenChange(false);
+		setNewStart("");
+		setNewEnd("");
+		setContractUrl("");
 	};
 	const loc = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open,
 		onOpenChange,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-			className: "sm:max-w-[425px]",
+			className: "sm:max-w-[500px]",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("renewals.close_negotiation") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: t("renewals.close_negotiation_desc") })] }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-4 py-4",
+					className: "grid gap-5 py-4",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.new_value") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								className: "font-semibold",
+								children: t("renewals.new_value")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
 								value: newValue,
 								onChange: setNewValue,
-								locale: loc
+								locale: loc,
+								className: "w-full"
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.new_start_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									className: "font-semibold",
+									children: t("renewals.new_start_date")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									type: "date",
 									value: newStart,
-									onChange: (e) => setNewStart(e.target.value)
+									onChange: (e) => setNewStart(e.target.value),
+									className: "w-full"
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.new_end_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									className: "font-semibold",
+									children: t("renewals.new_end_date")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									type: "date",
 									value: newEnd,
-									onChange: (e) => setNewEnd(e.target.value)
+									onChange: (e) => setNewEnd(e.target.value),
+									className: "w-full"
 								})]
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.contract_upload") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								className: "font-semibold",
+								children: t("renewals.contract_upload")
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
 								value: contractUrl,
 								onChange: setContractUrl,
-								label: t("common.upload") || "Upload",
 								accept: ".pdf,.doc,.docx"
 							})]
 						})
 					]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, {
-					className: "gap-2 sm:gap-0",
+					className: "gap-3 sm:gap-2 pt-2 border-t mt-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						variant: "outline",
+						className: "w-full sm:w-auto",
 						onClick: () => onOpenChange(false),
 						children: t("common.cancel")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						className: "w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white",
 						onClick: handleConfirm,
-						className: "bg-emerald-600 hover:bg-emerald-700 text-white",
 						children: t("common.confirm")
 					})]
 				})
@@ -76259,6 +76287,7 @@ function CloseNegotiationDialog({ open, onOpenChange, onConfirm, currentValue })
 }
 function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant }) {
 	const { t, language } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
 	const [text, setText] = (0, import_react.useState)("");
 	const [proposed, setProposed] = (0, import_react.useState)(tenant.suggestedRenewalPrice || tenant.rentValue || 0);
 	const [decision, setDecision] = (0, import_react.useState)(tenant.ownerDecision || "pending");
@@ -76278,7 +76307,11 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 			suggestedRenewalPrice: proposed,
 			ownerDecision: decision
 		});
-		onSend(`Property Manager sent a proposal: ${formatLocalCurrency(proposed)}. Status marked as: ${decision}`);
+		onSend(`Property Manager sent a proposal: ${formatLocalCurrency(proposed)}. Status marked as: ${t(`common.${decision}`)}`);
+		toast$2({
+			title: t("common.success"),
+			description: t("common.success")
+		});
 	};
 	const formatTime = (iso) => {
 		try {
@@ -76291,13 +76324,13 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "mt-4 space-y-4",
+		className: "mt-4 space-y-4 flex flex-col h-full",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
 				className: "pb-2",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-					className: "text-sm",
-					children: t("renewals.pricing_owner_approval")
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+					className: "text-sm flex items-center gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-4 w-4 text-green-600" }), t("renewals.pricing_owner_approval")]
 				})
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 				className: "flex flex-col gap-4",
@@ -76308,31 +76341,35 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 							className: "text-muted-foreground",
 							children: [t("renewals.current_value"), ":"]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "font-bold",
+							className: "font-bold text-lg",
 							children: formatLocalCurrency(tenant.rentValue)
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
+						className: "grid grid-cols-1 sm:grid-cols-2 gap-4 items-start",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "space-y-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-								className: "text-xs",
+								className: "text-xs font-semibold",
 								children: t("renewals.proposed_value")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
 								value: proposed,
 								onChange: setProposed,
-								locale: loc
+								locale: loc,
+								className: "w-full"
 							})]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "space-y-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-								className: "text-xs",
+								className: "text-xs font-semibold",
 								children: t("common.status")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 								value: decision,
 								onValueChange: setDecision,
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+									className: "w-full",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 										value: "pending",
 										children: t("common.pending")
@@ -76356,8 +76393,8 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 						className: "pt-2",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							size: "sm",
-							className: "w-full bg-trust-blue text-white whitespace-normal h-auto py-2",
+							size: "default",
+							className: "w-full bg-trust-blue hover:bg-blue-700 text-white transition-colors",
 							onClick: handleSendProposal,
 							children: t("renewals.update_terms_notify")
 						})
@@ -76365,32 +76402,38 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 				]
 			})] }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
-				className: "h-[250px] border rounded-md p-4 bg-white",
+				className: "h-[250px] border rounded-md p-4 bg-slate-50 flex-1",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "flex flex-col gap-4",
-					children: history.map((msg, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					children: history.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "text-center text-muted-foreground text-sm pt-4",
+						children: t("renewals.empty_messages")
+					}) : history.map((msg, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: cn("flex flex-col max-w-[85%]", msg.senderId === "me" ? "self-end items-end" : "self-start items-start"),
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: cn("p-3 rounded-lg text-sm shadow-sm", msg.senderId === "me" ? "bg-trust-blue text-white rounded-br-none" : "bg-gray-100 border rounded-bl-none"),
+							className: cn("p-3 rounded-lg text-sm shadow-sm", msg.senderId === "me" ? "bg-trust-blue text-white rounded-br-none" : "bg-white border rounded-bl-none"),
 							children: msg.text
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-[10px] text-muted-foreground mt-1",
+							className: "text-[10px] text-muted-foreground mt-1 font-medium",
 							children: formatTime(msg.timestamp)
 						})]
 					}, idx))
 				})
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex gap-2",
+				className: "flex gap-2 items-center bg-white p-2 rounded-lg border shadow-sm shrink-0",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					className: "border-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none px-2",
 					placeholder: t("renewals.type_message"),
 					value: text,
 					onChange: (e) => setText(e.target.value),
-					onKeyDown: (e) => e.key === "Enter" && !e.shiftKey && (onSend(text), setText(""))
+					onKeyDown: (e) => e.key === "Enter" && !e.shiftKey && text.trim() && (onSend(text.trim()), setText(""))
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 					size: "icon",
+					className: "shrink-0 rounded-full h-8 w-8 bg-trust-blue",
+					disabled: !text.trim(),
 					onClick: () => {
-						onSend(text);
+						onSend(text.trim());
 						setText("");
 					},
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Send, { className: "h-4 w-4" })
@@ -76401,6 +76444,7 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 }
 function TenantNegotiationTab({ tenant, history, onSend, onUpdateTenant }) {
 	const { t, language } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
 	const [text, setText] = (0, import_react.useState)("");
 	const [decision, setDecision] = (0, import_react.useState)(tenant.tenantDecision || "pending");
 	(0, import_react.useEffect)(() => {
@@ -76417,7 +76461,11 @@ function TenantNegotiationTab({ tenant, history, onSend, onUpdateTenant }) {
 	const ownerAccepted = tenant.ownerDecision === "accepted";
 	const handleSendProposal = () => {
 		onUpdateTenant({ tenantDecision: decision });
-		onSend(`Property Manager updated Tenant status to: ${decision}`);
+		onSend(`Property Manager updated Tenant status to: ${t(`common.${decision}`)}`);
+		toast$2({
+			title: t("common.success"),
+			description: t("common.success")
+		});
 	};
 	const formatTime = (iso) => {
 		try {
@@ -76430,13 +76478,13 @@ function TenantNegotiationTab({ tenant, history, onSend, onUpdateTenant }) {
 		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "mt-4 space-y-4",
+		className: "mt-4 space-y-4 flex flex-col h-full",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
 				className: "pb-2",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-					className: "text-sm",
-					children: t("renewals.pricing_tenant_approval")
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+					className: "text-sm flex items-center gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(UserCheck, { className: "h-4 w-4 text-blue-600" }), t("renewals.pricing_tenant_approval")]
 				})
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 				className: "flex flex-col gap-4",
@@ -76456,40 +76504,42 @@ function TenantNegotiationTab({ tenant, history, onSend, onUpdateTenant }) {
 						})]
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "space-y-2",
+					className: "space-y-2 mt-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-						className: "text-xs",
+						className: "text-xs font-semibold",
 						children: t("common.status")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex flex-col sm:flex-row gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-							value: decision,
-							onValueChange: setDecision,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-								className: "flex-1",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "pending",
-									children: t("common.pending")
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "accepted",
-									children: t("common.accepted")
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "counter",
-									children: t("common.counter")
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "rejected",
-									children: t("common.rejected")
-								})
-							] })]
+						className: "flex flex-col sm:flex-row gap-3 items-start sm:items-stretch",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "w-full sm:flex-1",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: decision,
+								onValueChange: setDecision,
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+									className: "w-full h-10",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "pending",
+										children: t("common.pending")
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "accepted",
+										children: t("common.accepted")
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "counter",
+										children: t("common.counter")
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "rejected",
+										children: t("common.rejected")
+									})
+								] })]
+							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							size: "sm",
-							variant: "outline",
-							className: "w-full sm:w-auto whitespace-normal",
+							size: "default",
+							className: "w-full sm:w-auto h-10 bg-trust-blue hover:bg-blue-700 text-white shrink-0",
 							onClick: handleSendProposal,
 							children: t("renewals.save_decision")
 						})]
@@ -76497,32 +76547,38 @@ function TenantNegotiationTab({ tenant, history, onSend, onUpdateTenant }) {
 				})]
 			})] }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
-				className: "h-[250px] border rounded-md p-4 bg-white",
+				className: "h-[250px] border rounded-md p-4 bg-slate-50 flex-1",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "flex flex-col gap-4",
-					children: history.map((msg, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					children: history.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "text-center text-muted-foreground text-sm pt-4",
+						children: t("renewals.empty_messages")
+					}) : history.map((msg, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: cn("flex flex-col max-w-[85%]", msg.senderId === "me" ? "self-end items-end" : "self-start items-start"),
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: cn("p-3 rounded-lg text-sm shadow-sm", msg.senderId === "me" ? "bg-trust-blue text-white rounded-br-none" : "bg-gray-100 border rounded-bl-none"),
+							className: cn("p-3 rounded-lg text-sm shadow-sm", msg.senderId === "me" ? "bg-trust-blue text-white rounded-br-none" : "bg-white border rounded-bl-none"),
 							children: msg.text
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-[10px] text-muted-foreground mt-1",
+							className: "text-[10px] text-muted-foreground mt-1 font-medium",
 							children: formatTime(msg.timestamp)
 						})]
 					}, idx))
 				})
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex gap-2",
+				className: "flex gap-2 items-center bg-white p-2 rounded-lg border shadow-sm shrink-0",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					className: "border-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none px-2",
 					placeholder: t("renewals.type_message"),
 					value: text,
 					onChange: (e) => setText(e.target.value),
-					onKeyDown: (e) => e.key === "Enter" && !e.shiftKey && (onSend(text), setText(""))
+					onKeyDown: (e) => e.key === "Enter" && !e.shiftKey && text.trim() && (onSend(text.trim()), setText(""))
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 					size: "icon",
+					className: "shrink-0 rounded-full h-8 w-8 bg-trust-blue",
+					disabled: !text.trim(),
 					onClick: () => {
-						onSend(text);
+						onSend(text.trim());
 						setText("");
 					},
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Send, { className: "h-4 w-4" })
@@ -81881,4 +81937,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BS3tQM13.js.map
+//# sourceMappingURL=index-Bx5i0GT6.js.map

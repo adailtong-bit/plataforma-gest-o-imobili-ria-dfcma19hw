@@ -11,11 +11,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Send } from 'lucide-react'
+import { Send, UserCheck } from 'lucide-react'
 import { Tenant, ChatMessage } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { format, parseISO, isValid } from 'date-fns'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { useToast } from '@/hooks/use-toast'
 
 interface TenantNegotiationTabProps {
   tenant: Tenant
@@ -31,6 +32,7 @@ export function TenantNegotiationTab({
   onUpdateTenant,
 }: TenantNegotiationTabProps) {
   const { t, language } = useLanguageStore()
+  const { toast } = useToast()
   const [text, setText] = useState('')
   const [decision, setDecision] = useState(tenant.tenantDecision || 'pending')
 
@@ -55,7 +57,13 @@ export function TenantNegotiationTab({
 
   const handleSendProposal = () => {
     onUpdateTenant({ tenantDecision: decision as any })
-    onSend(`Property Manager updated Tenant status to: ${decision}`)
+    onSend(
+      `Property Manager updated Tenant status to: ${t(`common.${decision}`)}`,
+    )
+    toast({
+      title: t('common.success'),
+      description: t('common.success'),
+    })
   }
 
   const formatTime = (iso: string) => {
@@ -70,10 +78,11 @@ export function TenantNegotiationTab({
   }
 
   return (
-    <div className="mt-4 space-y-4">
+    <div className="mt-4 space-y-4 flex flex-col h-full">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <UserCheck className="h-4 w-4 text-blue-600" />
             {t('renewals.pricing_tenant_approval')}
           </CardTitle>
         </CardHeader>
@@ -93,28 +102,35 @@ export function TenantNegotiationTab({
               )}
             </div>
           </div>
-          <div className="space-y-2">
-            <Label className="text-xs">{t('common.status')}</Label>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Select value={decision} onValueChange={setDecision}>
-                <SelectTrigger className="flex-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">{t('common.pending')}</SelectItem>
-                  <SelectItem value="accepted">
-                    {t('common.accepted')}
-                  </SelectItem>
-                  <SelectItem value="counter">{t('common.counter')}</SelectItem>
-                  <SelectItem value="rejected">
-                    {t('common.rejected')}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="space-y-2 mt-2">
+            <Label className="text-xs font-semibold">
+              {t('common.status')}
+            </Label>
+            <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-stretch">
+              <div className="w-full sm:flex-1">
+                <Select value={decision} onValueChange={setDecision}>
+                  <SelectTrigger className="w-full h-10">
+                    <SelectValue placeholder={t('common.select')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">
+                      {t('common.pending')}
+                    </SelectItem>
+                    <SelectItem value="accepted">
+                      {t('common.accepted')}
+                    </SelectItem>
+                    <SelectItem value="counter">
+                      {t('common.counter')}
+                    </SelectItem>
+                    <SelectItem value="rejected">
+                      {t('common.rejected')}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <Button
-                size="sm"
-                variant="outline"
-                className="w-full sm:w-auto whitespace-normal"
+                size="default"
+                className="w-full sm:w-auto h-10 bg-trust-blue hover:bg-blue-700 text-white shrink-0"
                 onClick={handleSendProposal}
               >
                 {t('renewals.save_decision')}
@@ -124,48 +140,60 @@ export function TenantNegotiationTab({
         </CardContent>
       </Card>
 
-      <ScrollArea className="h-[250px] border rounded-md p-4 bg-white">
+      <ScrollArea className="h-[250px] border rounded-md p-4 bg-slate-50 flex-1">
         <div className="flex flex-col gap-4">
-          {history.map((msg, idx) => (
-            <div
-              key={idx}
-              className={cn(
-                'flex flex-col max-w-[85%]',
-                msg.senderId === 'me'
-                  ? 'self-end items-end'
-                  : 'self-start items-start',
-              )}
-            >
+          {history.length === 0 ? (
+            <div className="text-center text-muted-foreground text-sm pt-4">
+              {t('renewals.empty_messages')}
+            </div>
+          ) : (
+            history.map((msg, idx) => (
               <div
+                key={idx}
                 className={cn(
-                  'p-3 rounded-lg text-sm shadow-sm',
+                  'flex flex-col max-w-[85%]',
                   msg.senderId === 'me'
-                    ? 'bg-trust-blue text-white rounded-br-none'
-                    : 'bg-gray-100 border rounded-bl-none',
+                    ? 'self-end items-end'
+                    : 'self-start items-start',
                 )}
               >
-                {msg.text}
+                <div
+                  className={cn(
+                    'p-3 rounded-lg text-sm shadow-sm',
+                    msg.senderId === 'me'
+                      ? 'bg-trust-blue text-white rounded-br-none'
+                      : 'bg-white border rounded-bl-none',
+                  )}
+                >
+                  {msg.text}
+                </div>
+                <span className="text-[10px] text-muted-foreground mt-1 font-medium">
+                  {formatTime(msg.timestamp)}
+                </span>
               </div>
-              <span className="text-[10px] text-muted-foreground mt-1">
-                {formatTime(msg.timestamp)}
-              </span>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </ScrollArea>
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-center bg-white p-2 rounded-lg border shadow-sm shrink-0">
         <Input
+          className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none px-2"
           placeholder={t('renewals.type_message')}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) =>
-            e.key === 'Enter' && !e.shiftKey && (onSend(text), setText(''))
+            e.key === 'Enter' &&
+            !e.shiftKey &&
+            text.trim() &&
+            (onSend(text.trim()), setText(''))
           }
         />
         <Button
           size="icon"
+          className="shrink-0 rounded-full h-8 w-8 bg-trust-blue"
+          disabled={!text.trim()}
           onClick={() => {
-            onSend(text)
+            onSend(text.trim())
             setText('')
           }}
         >

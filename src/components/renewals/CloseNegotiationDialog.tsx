@@ -62,7 +62,10 @@ export function CloseNegotiationDialog({
       newEnd,
       contractUrl,
     })
-    onOpenChange(false)
+
+    setNewStart('')
+    setNewEnd('')
+    setContractUrl('')
   }
 
   const loc =
@@ -70,57 +73,69 @@ export function CloseNegotiationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{t('renewals.close_negotiation')}</DialogTitle>
           <DialogDescription>
             {t('renewals.close_negotiation_desc')}
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label>{t('renewals.new_value')}</Label>
+        <div className="grid gap-5 py-4">
+          <div className="space-y-2">
+            <Label className="font-semibold">{t('renewals.new_value')}</Label>
             <CurrencyInput
               value={newValue}
               onChange={setNewValue}
               locale={loc}
+              className="w-full"
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label>{t('renewals.new_start_date')}</Label>
+            <div className="space-y-2">
+              <Label className="font-semibold">
+                {t('renewals.new_start_date')}
+              </Label>
               <Input
                 type="date"
                 value={newStart}
                 onChange={(e) => setNewStart(e.target.value)}
+                className="w-full"
               />
             </div>
-            <div className="grid gap-2">
-              <Label>{t('renewals.new_end_date')}</Label>
+            <div className="space-y-2">
+              <Label className="font-semibold">
+                {t('renewals.new_end_date')}
+              </Label>
               <Input
                 type="date"
                 value={newEnd}
                 onChange={(e) => setNewEnd(e.target.value)}
+                className="w-full"
               />
             </div>
           </div>
-          <div className="grid gap-2">
-            <Label>{t('renewals.contract_upload')}</Label>
+          <div className="space-y-2">
+            <Label className="font-semibold">
+              {t('renewals.contract_upload')}
+            </Label>
             <FileUpload
               value={contractUrl}
               onChange={setContractUrl}
-              label={t('common.upload') || 'Upload'}
               accept=".pdf,.doc,.docx"
             />
           </div>
         </div>
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="gap-3 sm:gap-2 pt-2 border-t mt-2">
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            onClick={() => onOpenChange(false)}
+          >
             {t('common.cancel')}
           </Button>
           <Button
+            className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white"
             onClick={handleConfirm}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
           >
             {t('common.confirm')}
           </Button>

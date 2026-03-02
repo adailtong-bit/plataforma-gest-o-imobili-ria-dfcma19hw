@@ -346,10 +346,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return saved ? JSON.parse(saved) : initialTenants
   })
 
+  useEffect(() => {
+    localStorage.setItem('app_tenants', JSON.stringify(tenants))
+  }, [tenants])
+
   const [owners, setOwners] = useState<Owner[]>(() => {
     const saved = localStorage.getItem('app_owners')
     return saved ? JSON.parse(saved) : initialOwners
   })
+
+  useEffect(() => {
+    localStorage.setItem('app_owners', JSON.stringify(owners))
+  }, [owners])
 
   const [partners, setPartners] = useState<Partner[]>(initialPartners)
   const [bookings, setBookings] = useState<Booking[]>(initialBookings)
