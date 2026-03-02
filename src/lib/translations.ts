@@ -111,6 +111,7 @@ export const translations = {
     },
     sidebar: {
       dashboard: 'Painel',
+      portfolio: 'Portfólio',
       units: 'Propriedades',
       condominiums: 'Condomínios',
       owners: 'Proprietários',
@@ -1111,6 +1112,7 @@ export const translations = {
     },
     sidebar: {
       dashboard: 'Dashboard',
+      portfolio: 'Portfolio',
       units: 'Properties',
       condominiums: 'Condominiums',
       owners: 'Owners',
@@ -1847,7 +1849,7 @@ export const translations = {
       },
       content: {
         house_rules: 'House Rules',
-        auto_translate: 'Auto-Translate',
+        auto-translate: 'Auto-Translate',
         copy_from: 'Copy from',
         desc_pt_placeholder: 'Full description in Portuguese...',
         desc_en_placeholder: 'Full description in English...',
@@ -2111,6 +2113,7 @@ export const translations = {
     },
     sidebar: {
       dashboard: 'Panel',
+      portfolio: 'Portafolio',
       units: 'Propiedades',
       condominiums: 'Condominios',
       owners: 'Propietarios',

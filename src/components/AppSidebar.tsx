@@ -389,14 +389,12 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton
-                          tooltip="Portfólio"
+                          tooltip={t('sidebar.portfolio')}
                           className="text-black font-medium hover:bg-slate-100"
                         >
                           <Building2 className="text-black" />
                           <span>
-                            <DataMask>
-                              {t('sidebar.portfolio') || 'Portfólio'}
-                            </DataMask>
+                            <DataMask>{t('sidebar.portfolio')}</DataMask>
                           </span>
                           <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90 text-black" />
                         </SidebarMenuButton>
@@ -418,7 +416,7 @@ export function AppSidebar() {
                                   onClick={handleLinkClick}
                                 >
                                   <span>
-                                    <DataMask>Propriedades</DataMask>
+                                    <DataMask>{t('sidebar.units')}</DataMask>
                                   </span>
                                 </Link>
                               </SidebarMenuSubButton>
@@ -436,9 +434,7 @@ export function AppSidebar() {
                               >
                                 <Link to="/hotels" onClick={handleLinkClick}>
                                   <span>
-                                    <DataMask>
-                                      {t('hotels.title') || 'Hotéis'}
-                                    </DataMask>
+                                    <DataMask>{t('hotels.title')}</DataMask>
                                   </span>
                                 </Link>
                               </SidebarMenuSubButton>
@@ -460,8 +456,7 @@ export function AppSidebar() {
                                 >
                                   <span>
                                     <DataMask>
-                                      {t('sidebar.condominiums') ||
-                                        'Condomínios'}
+                                      {t('sidebar.condominiums')}
                                     </DataMask>
                                   </span>
                                 </Link>
