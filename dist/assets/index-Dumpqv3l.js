@@ -53152,7 +53152,7 @@ var badgeVariants = cva("inline-flex items-center rounded-full border px-2.5 py-
 	} },
 	defaultVariants: { variant: "default" }
 });
-function Badge$1({ className, variant, ...props }) {
+function Badge({ className, variant, ...props }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: cn(badgeVariants({ variant }), className),
 		...props
@@ -60201,7 +60201,7 @@ function DashboardContent() {
 									})] })]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "flex items-center gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 										variant: "secondary",
 										className: "text-black border border-slate-300 font-bold",
 										children: t("tasks.approval")
@@ -63840,7 +63840,7 @@ function AppSidebar() {
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "flex items-center gap-2",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.title })]
-								}), item.badge !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+								}), item.badge !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 									variant: "destructive",
 									className: "h-5 min-w-5 px-1 flex items-center justify-center text-[10px]",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: item.badge })
@@ -63903,7 +63903,7 @@ function AppSidebar() {
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "flex items-center gap-2",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.title })]
-								}), item.badge !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+								}), item.badge !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 									variant: "destructive",
 									className: "h-5 min-w-5 px-1 flex items-center justify-center text-[10px]",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: item.badge })
@@ -66241,11 +66241,11 @@ function Properties() {
 									className: "flex items-center justify-center h-full text-black font-medium",
 									children: t("properties.no_image")
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 									className: `absolute top-2 right-2 ${getStatusColor(property$2.status)}`,
 									children: t(`status.${property$2.status}`)
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 									className: "absolute bottom-2 left-2 bg-black text-white border-none font-bold",
 									children: property$2.profileType === "short_term" ? "STR" : "LTR"
 								})
@@ -66530,7 +66530,7 @@ function PropertyOverview({ data, onChange, canEdit }) {
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
 				className: "text-black",
 				children: t("properties.overview") || "Overview"
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
 				variant: "outline",
 				className: "flex items-center gap-1 px-3 py-1 bg-white border-slate-200",
 				children: [
@@ -68250,7 +68250,7 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetTitle, {
 						className: "text-xl font-bold",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, { children: task.status })]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, { children: task.status })]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetDescription, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-2 mt-1",
 					children: [
@@ -68474,7 +68474,7 @@ function CalendarPage() {
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex flex-wrap gap-2",
 							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
 									variant: "outline",
 									className: "bg-blue-100 text-blue-800 border-blue-300 font-bold",
 									children: [
@@ -68483,7 +68483,7 @@ function CalendarPage() {
 										t("common.operations")
 									]
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
 									variant: "outline",
 									className: "bg-red-100 text-red-800 border-red-300 font-bold",
 									children: [
@@ -68492,7 +68492,7 @@ function CalendarPage() {
 										t("common.contracts")
 									]
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
 									variant: "outline",
 									className: "bg-green-100 text-green-800 border-green-300 font-bold",
 									children: [
@@ -68553,11 +68553,11 @@ function CalendarPage() {
 											onClick: () => handleTaskClick(event.data),
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "flex justify-between items-start mb-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 													variant: "outline",
 													className: "text-[10px] uppercase bg-blue-100 text-blue-800 border-blue-300 font-bold",
 													children: t(`partners.${event.data.type}`) || event.data.type
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 													variant: "outline",
 													className: cn("text-[10px] uppercase", getStatusColor(event.data.status)),
 													children: t(`common.${event.data.status}`) || event.data.status
@@ -68605,7 +68605,7 @@ function CalendarPage() {
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "flex justify-between items-start",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 													variant: "outline",
 													className: "text-[10px] uppercase bg-red-100 text-red-800 border-red-300 font-bold",
 													children: "Expiration"
@@ -68644,7 +68644,7 @@ function CalendarPage() {
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "flex justify-between items-start",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 													variant: "outline",
 													className: "text-[10px] uppercase bg-green-100 text-green-800 border-green-300 font-bold",
 													children: t("common.due_date")
@@ -68714,7 +68714,7 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex justify-between items-start",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 						variant: "outline",
 						className: cn("font-bold", getPriorityColor(task.priority)),
 						children: task.priority.toUpperCase()
@@ -68769,13 +68769,13 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "pt-2 flex items-center justify-between border-t border-slate-100",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 						variant: "secondary",
 						className: cn("text-[10px]", getStatusColor(task.status)),
 						children: t(`common.${task.status}`) || task.status
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex gap-1",
-						children: [task.images && task.images.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+						children: [task.images && task.images.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
 							variant: "outline",
 							className: "gap-1 px-1.5",
 							children: [
@@ -68783,7 +68783,7 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 								" ",
 								task.images.length
 							]
-						}), task.evidence && task.evidence.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+						}), task.evidence && task.evidence.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
 							variant: "outline",
 							className: "gap-1 px-1.5 bg-green-50 text-green-700 border-green-200",
 							children: [
@@ -69437,7 +69437,7 @@ function Tasks() {
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
 											className: "font-bold text-sm uppercase text-orange-900",
 											children: t("tasks.approval")
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 											className: "bg-orange-100 text-orange-900 font-bold border-orange-300 hover:bg-orange-200",
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: approvalTasks.length })
 										})]
@@ -69458,7 +69458,7 @@ function Tasks() {
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
 											className: "font-bold text-sm uppercase text-black",
 											children: [t("common.pending"), " (Ready)"]
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 											variant: "secondary",
 											className: "bg-white border text-black font-bold border-slate-300",
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: pendingTasks.length })
@@ -69480,7 +69480,7 @@ function Tasks() {
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
 											className: "font-bold text-sm uppercase text-blue-900",
 											children: t("tasks.in_progress")
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 											className: "bg-blue-100 text-blue-900 font-bold border-blue-300 hover:bg-blue-200",
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: inProgressTasks.length })
 										})]
@@ -69502,7 +69502,7 @@ function Tasks() {
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
 											className: "font-bold text-sm uppercase text-green-900",
 											children: t("common.completed")
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 											className: "bg-green-100 text-green-900 font-bold border-green-300 hover:bg-green-200",
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: completedTasks.length })
 										})]
@@ -69551,12 +69551,12 @@ function Tasks() {
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: task.propertyName }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: task.assignee }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(task.date), "dd/MM/yyyy") }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 											variant: "outline",
 											className: getPriorityColor(task.priority),
 											children: task.priority.toUpperCase()
 										}) }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 											variant: "secondary",
 											className: task.status === "pending_approval" ? task.approvalStatus === "owner_pending" ? "bg-orange-100 text-orange-800" : "bg-yellow-100 text-yellow-800" : task.status === "rejected" ? "bg-red-100 text-red-800" : "",
 											children: getStatusLabel(task.status, task.approvalStatus)
@@ -69740,7 +69740,7 @@ function Financial() {
 							children: entry.description
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(entry.date), "dd/MM/yyyy") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: entry.type === "income" ? "default" : "destructive",
 							children: entry.type === "income" ? "Receita" : "Despesa"
 						}) }),
@@ -69984,7 +69984,7 @@ function Invoices() {
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: inv.description })
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(inv.date), "MMM dd, yyyy") }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: "outline",
 								className: "uppercase text-[10px]",
 								children: inv.status
@@ -70583,7 +70583,7 @@ function SubscriptionSettings() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: ["$", tier.basePrice] }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: tier.maxUnits }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: ["$", tier.additionalUnitCost] }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: "outline",
 							className: "uppercase",
 							children: tier.region
@@ -71214,7 +71214,7 @@ function Tenants() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.email }) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatAppCurrency(tenant.rentValue) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: "outline",
 							children: tenant.status
 						}) }),
@@ -71433,7 +71433,7 @@ function Owners() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.email }) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.phone }) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: owner.city ? `${owner.city}, ${owner.state}` : "-" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: owner.status === "active" ? "default" : "secondary",
 							children: owner.status
 						}) }),
@@ -71643,7 +71643,7 @@ function Partners() {
 							children: partner.type
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: partner.companyName }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: partner.status === "active" ? "default" : "secondary",
 							children: partner.status
 						}) }),
@@ -74050,7 +74050,7 @@ function HotelRoomDetails() {
 					children: [
 						"Room ",
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formData.roomNumber }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: "outline",
 							className: "text-lg font-normal ml-2",
 							children: formData.status
@@ -74422,11 +74422,11 @@ function Users() {
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: user.name })
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: user.email }) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: "outline",
 							children: user.role
 						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: user.status === "active" ? "default" : "secondary",
 							children: user.status
 						}) }),
@@ -75051,7 +75051,7 @@ function Workflows() {
 								children: wf.trigger
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.steps?.length || 0 }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: wf.active ? "default" : "secondary",
 								children: wf.active ? t("common.active") : t("common.inactive")
 							}) }),
@@ -75126,16 +75126,16 @@ function Renewals() {
 	}).sort((a$1, b$1) => new Date(a$1.leaseEnd).getTime() - new Date(b$1.leaseEnd).getTime());
 	const getStatusBadge = (endDate) => {
 		const daysLeft = differenceInDays(new Date(endDate), /* @__PURE__ */ new Date());
-		if (daysLeft <= 30) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+		if (daysLeft <= 30) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
 			variant: "destructive",
 			className: "font-bold",
 			children: [daysLeft, " days left"]
 		});
-		if (daysLeft <= 60) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+		if (daysLeft <= 60) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
 			className: "bg-orange-100 text-orange-800 hover:bg-orange-200 border-orange-300 font-bold",
 			children: [daysLeft, " days left"]
 		});
-		return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge$1, {
+		return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
 			variant: "secondary",
 			className: "bg-green-100 text-green-800 hover:bg-green-200 border-green-300 font-bold",
 			children: [daysLeft, " days left"]
@@ -75296,7 +75296,7 @@ function PublicityAdmin() {
 						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: ad.active ? "default" : "secondary",
 								children: ad.active ? "Active" : "Inactive"
 							})
@@ -75474,7 +75474,7 @@ function Automation() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: rule.enabled ? "default" : "secondary",
 								children: rule.enabled ? "Enabled" : "Disabled"
 							})
@@ -75637,7 +75637,7 @@ function ShortTerm() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: b$1.propertyName }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(b$1.checkIn), "MMM dd, yyyy") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(b$1.checkOut), "MMM dd, yyyy") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: "outline",
 							className: "uppercase text-[10px]",
 							children: b$1.status
@@ -76164,7 +76164,7 @@ function Visits() {
 								className: "capitalize",
 								children: visit.reason
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: "outline",
 								children: visit.status
 							}) }),
@@ -76312,7 +76312,7 @@ function Housekeeping() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(task.date), "MMM dd, yyyy") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: task.status === "completed" ? "default" : "secondary",
 								children: task.status.replace("_", " ")
 							})
@@ -76903,7 +76903,7 @@ function GuestServices() {
 								className: "capitalize",
 								children: service.category
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: service.active ? "default" : "secondary",
 								children: service.active ? t("common.active") : t("common.inactive")
 							}) }),
@@ -77138,7 +77138,7 @@ function PointOfSale() {
 											className: "capitalize",
 											children: item.category
 										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 											variant: item.active ? "default" : "secondary",
 											children: item.active ? t("common.active") : t("common.inactive")
 										}) }),
@@ -77223,7 +77223,7 @@ function PointOfSale() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: trx.items.map((i) => i.name).join(", ") }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(trx.timestamp), "MMM dd, HH:mm") }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 											variant: "outline",
 											className: "uppercase text-[10px]",
 											children: trx.status
@@ -77384,7 +77384,7 @@ function Marketing() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: camp.startDate }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: camp.endDate }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge$1, {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: camp.status === "active" ? "default" : "secondary",
 							children: camp.status
 						}) }),
@@ -78128,4 +78128,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Cz_TPNp7.js.map
+//# sourceMappingURL=index-Dumpqv3l.js.map

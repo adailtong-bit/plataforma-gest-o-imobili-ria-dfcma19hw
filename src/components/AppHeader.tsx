@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { SidebarTrigger } from '@/components/ui/sidebar'
+import { Badge } from '@/components/ui/badge'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { AppContext } from '@/stores/AppContext'
 import { useNavigate } from 'react-router-dom'
