@@ -21,16 +21,16 @@ import {
 import useTenantStore from '@/stores/useTenantStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { format, differenceInDays } from 'date-fns'
+import { differenceInDays } from 'date-fns'
 import { DataMask } from '@/components/DataMask'
 import { Search, Calendar, FileText } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, formatDate } from '@/lib/utils'
 import { NegotiationSheet } from '@/components/renewals/NegotiationSheet'
 
 export default function Renewals() {
   const { tenants } = useTenantStore()
   const { properties } = usePropertyStore()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
 
@@ -68,16 +68,18 @@ export default function Renewals() {
 
   const getStatusBadge = (endDate: string) => {
     const daysLeft = differenceInDays(new Date(endDate), new Date())
+    const text = t('renewals.days_left', { days: daysLeft.toString() })
+
     if (daysLeft <= 30)
       return (
         <Badge variant="destructive" className="font-bold">
-          {daysLeft} days left
+          {text}
         </Badge>
       )
     if (daysLeft <= 60)
       return (
         <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 border-orange-300 font-bold">
-          {daysLeft} days left
+          {text}
         </Badge>
       )
     return (
@@ -85,7 +87,7 @@ export default function Renewals() {
         variant="secondary"
         className="bg-green-100 text-green-800 hover:bg-green-200 border-green-300 font-bold"
       >
-        {daysLeft} days left
+        {text}
       </Badge>
     )
   }
@@ -103,6 +105,15 @@ export default function Renewals() {
     }
   }
 
+  const formatLocalCurrency = (value: number) => {
+    const loc =
+      language === 'pt' ? 'pt-BR' : language === 'es' ? 'es-ES' : 'en-US'
+    return new Intl.NumberFormat(loc, {
+      style: 'currency',
+      currency: 'USD',
+    }).format(value)
+  }
+
   const handleManage = (id: string) => {
     setSelectedTenant(id)
     setSheetOpen(true)
@@ -113,11 +124,9 @@ export default function Renewals() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Contract Renewals
+            {t('renewals.title')}
           </h1>
-          <p className="text-muted-foreground">
-            Manage multi-party negotiations and finalize leases.
-          </p>
+          <p className="text-muted-foreground">{t('renewals.subtitle')}</p>
         </div>
       </div>
 
@@ -137,9 +146,13 @@ export default function Renewals() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('renewals.all_status')}</SelectItem>
-            <SelectItem value="critical">Critical (&le; 30 days)</SelectItem>
-            <SelectItem value="warning">Warning (31 - 60 days)</SelectItem>
-            <SelectItem value="safe">Safe (&gt; 60 days)</SelectItem>
+            <SelectItem value="critical">
+              {t('renewals.critical_status')}
+            </SelectItem>
+            <SelectItem value="warning">
+              {t('renewals.warning_status')}
+            </SelectItem>
+            <SelectItem value="safe">{t('renewals.safe_status')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -151,9 +164,9 @@ export default function Renewals() {
               <TableRow>
                 <TableHead>{t('common.name')}</TableHead>
                 <TableHead>{t('common.property')}</TableHead>
-                <TableHead>Current/Proposed</TableHead>
+                <TableHead>{t('renewals.current_proposed')}</TableHead>
                 <TableHead>{t('common.end_date')}</TableHead>
-                <TableHead>Negotiation Status</TableHead>
+                <TableHead>{t('renewals.negotiation_status')}</TableHead>
                 <TableHead className="text-right">
                   {t('common.actions')}
                 </TableHead>
@@ -179,11 +192,11 @@ export default function Renewals() {
                     <TableCell className="font-medium">
                       <div className="flex flex-col">
                         <span className="text-slate-500 text-xs">
-                          ${tenant.rentValue?.toLocaleString()}
+                          {formatLocalCurrency(tenant.rentValue)}
                         </span>
                         {tenant.suggestedRenewalPrice && (
                           <span className="text-trust-blue">
-                            ${tenant.suggestedRenewalPrice.toLocaleString()}
+                            {formatLocalCurrency(tenant.suggestedRenewalPrice)}
                           </span>
                         )}
                       </div>
@@ -191,7 +204,7 @@ export default function Renewals() {
                     <TableCell>
                       <div className="flex items-center gap-2 text-slate-700">
                         <Calendar className="h-4 w-4 text-slate-400" />
-                        {format(new Date(tenant.leaseEnd!), 'MMM dd, yyyy')}
+                        {formatDate(tenant.leaseEnd, language)}
                       </div>
                       <div className="mt-1">
                         {getStatusBadge(tenant.leaseEnd!)}
@@ -203,12 +216,12 @@ export default function Renewals() {
                           variant="outline"
                           className="bg-green-100 text-green-800 border-green-300"
                         >
-                          Renewed
+                          {t('renewals.renewed')}
                         </Badge>
                       ) : (
                         <div className="flex flex-col gap-1 text-xs mt-1">
                           <span>
-                            Owner:{' '}
+                            {t('renewals.owner')}:{' '}
                             <Badge
                               variant="outline"
                               className={cn(
@@ -216,11 +229,11 @@ export default function Renewals() {
                                 getDecisionColor(tenant.ownerDecision),
                               )}
                             >
-                              {tenant.ownerDecision || 'pending'}
+                              {t(`common.${tenant.ownerDecision || 'pending'}`)}
                             </Badge>
                           </span>
                           <span>
-                            Tenant:{' '}
+                            {t('renewals.tenant')}:{' '}
                             <Badge
                               variant="outline"
                               className={cn(
@@ -228,7 +241,9 @@ export default function Renewals() {
                                 getDecisionColor(tenant.tenantDecision),
                               )}
                             >
-                              {tenant.tenantDecision || 'pending'}
+                              {t(
+                                `common.${tenant.tenantDecision || 'pending'}`,
+                              )}
                             </Badge>
                           </span>
                         </div>
@@ -245,7 +260,7 @@ export default function Renewals() {
                         }}
                       >
                         <FileText className="h-4 w-4" />
-                        Manage
+                        {t('renewals.manage')}
                       </Button>
                     </TableCell>
                   </TableRow>

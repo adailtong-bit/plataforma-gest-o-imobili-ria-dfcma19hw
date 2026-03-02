@@ -54962,20 +54962,46 @@ const translations = {
 			tasks_generated_desc: "Tarefas serão geradas para cada propriedade selecionada."
 		},
 		renewals: {
-			title: "Renovações",
-			subtitle: "Gestão de vencimento de contratos.",
-			negotiation_started: "Negociação Iniciada",
+			title: "Renovação de Contratos",
+			subtitle: "Gerencie negociações multipartes e finalize contratos.",
 			search_placeholder: "Buscar renovação...",
+			all_status: "Todos os Status",
+			critical_status: "Crítico (≤ 30 dias)",
+			warning_status: "Atenção (31 - 60 dias)",
+			safe_status: "Seguro (> 60 dias)",
+			days_left: "faltam {days} dias",
+			current_proposed: "Atual / Proposto",
+			negotiation_status: "Status da Negociação",
+			renewed: "Renovado",
+			owner: "Proprietário",
+			tenant: "Inquilino",
+			manage: "Gerenciar",
+			no_results: "Nenhuma renovação encontrada.",
+			negotiation_hub: "Central de Negociação",
+			negotiation_hub_desc: "Gerencie renovações de aluguel de forma eficiente.",
+			confidential_note: "Confidencial: Visível apenas para os Gerentes.",
+			add_note: "Adicionar Nota Interna",
+			mark_vacating: "Marcar como Desocupando",
+			close_negotiation: "Fechar Negociação",
+			close_negotiation_desc: "Confirme os novos termos e anexe o contrato para finalizar. O status será \"Renovado\".",
+			new_value: "Novo Valor do Aluguel",
+			new_start_date: "Nova Data de Início",
+			new_end_date: "Nova Data de Fim",
+			contract_upload: "Upload do Contrato",
+			fill_all_fields: "Preencha todos os campos e anexe o contrato.",
+			both_must_accept: "Ambos devem aceitar os termos antes de fechar.",
+			contract_renewed: "Contrato renovado com sucesso.",
+			pricing_owner_approval: "Preço e Aprovação do Proprietário",
 			current_value: "Valor Atual",
-			suggestion: "Sugestão ($)",
-			all_status: "Todos Status",
-			filter_date: "Filtrar por Data",
-			no_results: "Nenhuma renovação correspondente aos filtros.",
-			contract_upload: "Upload de Contrato",
-			new_value: "Novo Valor",
-			new_start_date: "Nova Data Início",
-			new_end_date: "Nova Data Fim",
-			close_negotiation: "Fechar Negociação"
+			proposed_value: "Valor Proposto",
+			update_terms_notify: "Atualizar Termos e Notificar Proprietário",
+			pricing_tenant_approval: "Preço e Aprovação do Inquilino",
+			new_rent_value: "Novo Valor do Aluguel",
+			pending_owner_approval: "Aguardando Aprovação do Proprietário",
+			save_decision: "Salvar Decisão",
+			type_message: "Digite uma mensagem...",
+			empty_notes: "Nenhuma nota ainda.",
+			empty_messages: "Nenhuma mensagem ainda."
 		},
 		short_term: {
 			title: "Aluguel Temporada",
@@ -55044,6 +55070,9 @@ const translations = {
 			automation: "Automação",
 			all: "Todos",
 			pending: "Pendente",
+			accepted: "Aceito",
+			rejected: "Rejeitado",
+			counter: "Contraproposta",
 			approved: "Aprovado",
 			completed: "Concluído",
 			paid: "Pago",
@@ -55058,6 +55087,7 @@ const translations = {
 			upload: "Upload",
 			description: "Descrição",
 			date: "Data",
+			end_date: "Data Fim",
 			due_date: "Vencimento",
 			value: "Valor",
 			priority: "Prioridade",
@@ -55182,7 +55212,6 @@ const translations = {
 			list: "Lista",
 			calendar_view: "Calendário",
 			start_date: "Data Início",
-			end_date: "Data Fim",
 			and: "e",
 			validation_error: "Erro de Validação",
 			delete_success: "Excluído com sucesso.",
@@ -55190,7 +55219,6 @@ const translations = {
 			delete_linked_error: "Não é possível excluir pois existem registros vinculados.",
 			new_task: "Nova Tarefa",
 			create_title: "Criar Tarefa",
-			rejected: "Rejeitado",
 			search_address: "Buscar Endereço"
 		},
 		dashboard: {
@@ -55973,20 +56001,46 @@ const translations = {
 			tasks_generated_desc: "Tasks will be generated for each selected property."
 		},
 		renewals: {
-			title: "Renewals",
-			subtitle: "Contract expiration management.",
-			negotiation_started: "Negotiation Started",
+			title: "Contract Renewals",
+			subtitle: "Manage multi-party negotiations and finalize leases.",
 			search_placeholder: "Search renewal...",
-			current_value: "Current Value",
-			suggestion: "Suggestion ($)",
 			all_status: "All Status",
-			filter_date: "Filter by Date",
-			no_results: "No renewals found matching filters.",
-			contract_upload: "Contract Upload",
-			new_value: "New Value",
+			critical_status: "Critical (≤ 30 days)",
+			warning_status: "Warning (31 - 60 days)",
+			safe_status: "Safe (> 60 days)",
+			days_left: "{days} days left",
+			current_proposed: "Current / Proposed",
+			negotiation_status: "Negotiation Status",
+			renewed: "Renewed",
+			owner: "Owner",
+			tenant: "Tenant",
+			manage: "Manage",
+			no_results: "No results found.",
+			negotiation_hub: "Negotiation Hub",
+			negotiation_hub_desc: "Manage multi-party lease renewals efficiently.",
+			confidential_note: "Confidential: Visible only to Property Managers.",
+			add_note: "Add Internal Note",
+			mark_vacating: "Mark as Vacating",
+			close_negotiation: "Close Negotiation",
+			close_negotiation_desc: "Confirm the new terms and attach the signed contract to finalize. The status will be updated to \"Renewed\".",
+			new_value: "New Rent Value",
 			new_start_date: "New Start Date",
 			new_end_date: "New End Date",
-			close_negotiation: "Close Negotiation"
+			contract_upload: "Upload Contract",
+			fill_all_fields: "Please fill in all fields and attach the contract.",
+			both_must_accept: "Both Owner and Tenant must accept the terms before closing.",
+			contract_renewed: "Contract renewed successfully.",
+			pricing_owner_approval: "Pricing & Owner Approval",
+			current_value: "Current Value",
+			proposed_value: "Proposed Value",
+			update_terms_notify: "Update Terms & Notify Owner",
+			pricing_tenant_approval: "Pricing & Tenant Approval",
+			new_rent_value: "New Rent Value",
+			pending_owner_approval: "Pending Owner Approval",
+			save_decision: "Save Decision",
+			type_message: "Type a message...",
+			empty_notes: "No notes yet.",
+			empty_messages: "No messages yet."
 		},
 		short_term: {
 			title: "Short Term Rental",
@@ -56055,6 +56109,9 @@ const translations = {
 			automation: "Automation",
 			all: "All",
 			pending: "Pending",
+			accepted: "Accepted",
+			rejected: "Rejected",
+			counter: "Counter-offer",
 			approved: "Approved",
 			completed: "Completed",
 			paid: "Paid",
@@ -56069,6 +56126,7 @@ const translations = {
 			upload: "Upload",
 			description: "Description",
 			date: "Date",
+			end_date: "End Date",
 			due_date: "Due Date",
 			value: "Value",
 			priority: "Priority",
@@ -56193,7 +56251,6 @@ const translations = {
 			list: "List",
 			calendar_view: "Calendar",
 			start_date: "Start Date",
-			end_date: "End Date",
 			and: "and",
 			validation_error: "Validation Error",
 			delete_success: "Deleted successfully.",
@@ -56201,7 +56258,6 @@ const translations = {
 			delete_linked_error: "Cannot delete because there are linked records.",
 			new_task: "New Task",
 			create_title: "Create Task",
-			rejected: "Rejected",
 			search_address: "Search Address",
 			manager_col: "Manager"
 		},
@@ -56992,13 +57048,41 @@ const translations = {
 			current_value: "Valor Actual",
 			suggestion: "Sugerencia ($)",
 			all_status: "Todos los Estados",
-			filter_date: "Filtrar por Fecha",
+			critical_status: "Crítico (≤ 30 días)",
+			warning_status: "Aviso (31 - 60 días)",
+			safe_status: "Seguro (> 60 días)",
+			days_left: "quedan {days} días",
+			current_proposed: "Actual / Propuesto",
+			negotiation_status: "Estado de Negociación",
+			renewed: "Renovado",
+			owner: "Propietario",
+			tenant: "Inquilino",
+			manage: "Gestionar",
 			no_results: "Ninguna renovación coincide con los filtros.",
-			contract_upload: "Subir Contrato",
-			new_value: "Nuevo Valor",
+			negotiation_hub: "Centro de Negociación",
+			negotiation_hub_desc: "Gestione renovaciones de alquiler de manera eficiente.",
+			confidential_note: "Confidencial: Visible solo para Gerentes.",
+			add_note: "Añadir Nota Interna",
+			mark_vacating: "Marcar como Desalojando",
+			close_negotiation: "Cerrar Negociación",
+			close_negotiation_desc: "Confirme los nuevos términos y adjunte el contrato firmado para finalizar. El estado será \"Renovado\".",
+			new_value: "Nuevo Valor de Alquiler",
 			new_start_date: "Nueva Fecha Inicio",
 			new_end_date: "Nueva Fecha Fin",
-			close_negotiation: "Cerrar Negociación"
+			contract_upload: "Subir Contrato",
+			fill_all_fields: "Por favor, rellene todos los campos y adjunte el contrato.",
+			both_must_accept: "Ambos, Propietario e Inquilino, deben aceptar antes de cerrar.",
+			contract_renewed: "Contrato renovado con éxito.",
+			pricing_owner_approval: "Precios y Aprobación del Propietario",
+			proposed_value: "Valor Propuesto",
+			update_terms_notify: "Actualizar Términos y Notificar Propietario",
+			pricing_tenant_approval: "Precios y Aprobación del Inquilino",
+			new_rent_value: "Nuevo Valor de Alquiler",
+			pending_owner_approval: "Aprobación del Propietario Pendiente",
+			save_decision: "Guardar Decisión",
+			type_message: "Escriba un mensaje...",
+			empty_notes: "Ninguna nota aún.",
+			empty_messages: "Ningún mensaje aún."
 		},
 		short_term: {
 			title: "Alquiler Temporal",
@@ -57067,6 +57151,9 @@ const translations = {
 			automation: "Automatización",
 			all: "Todos",
 			pending: "Pendiente",
+			accepted: "Aceptado",
+			rejected: "Rechazado",
+			counter: "Contraoferta",
 			approved: "Aprobado",
 			completed: "Completado",
 			paid: "Pagado",
@@ -57081,6 +57168,7 @@ const translations = {
 			upload: "Subir",
 			description: "Descripción",
 			date: "Fecha",
+			end_date: "Fecha Fin",
 			due_date: "Vencimiento",
 			value: "Valor",
 			priority: "Prioridad",
@@ -57205,7 +57293,6 @@ const translations = {
 			list: "Lista",
 			calendar_view: "Calendario",
 			start_date: "Fecha Inicio",
-			end_date: "Fecha Fin",
 			and: "y",
 			validation_error: "Error de Validación",
 			delete_success: "Eliminado con éxito.",
@@ -57213,7 +57300,6 @@ const translations = {
 			delete_linked_error: "No es posible eliminar porque existen registros vinculados.",
 			new_task: "Nueva Tarea",
 			create_title: "Crear Tarea",
-			rejected: "Rechazado",
 			search_address: "Buscar Dirección",
 			manager_col: "Gerente"
 		}
@@ -76081,7 +76167,7 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description, entit
 	})] })] });
 }
 function CloseNegotiationDialog({ open, onOpenChange, onConfirm, currentValue }) {
-	const { t } = useLanguageStore_default();
+	const { t, language } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const [newValue, setNewValue] = (0, import_react.useState)(currentValue);
 	const [newStart, setNewStart] = (0, import_react.useState)("");
@@ -76094,7 +76180,7 @@ function CloseNegotiationDialog({ open, onOpenChange, onConfirm, currentValue })
 		if (!newStart || !newEnd || !contractUrl) {
 			toast$2({
 				title: t("common.error"),
-				description: t("renewals.fill_all_fields") || "Please fill in all fields and attach the contract.",
+				description: t("renewals.fill_all_fields"),
 				variant: "destructive"
 			});
 			return;
@@ -76107,13 +76193,14 @@ function CloseNegotiationDialog({ open, onOpenChange, onConfirm, currentValue })
 		});
 		onOpenChange(false);
 	};
+	const loc = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open,
 		onOpenChange,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 			className: "sm:max-w-[425px]",
 			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogTitle, { children: [t("renewals.close_negotiation"), " (Finalize Renewal)"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: t("renewals.close_negotiation_desc") || "Confirm the new terms and attach the signed contract to finalize. The status will be updated to \"Renewed\"." })] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("renewals.close_negotiation") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: t("renewals.close_negotiation_desc") })] }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "grid gap-4 py-4",
 					children: [
@@ -76121,7 +76208,8 @@ function CloseNegotiationDialog({ open, onOpenChange, onConfirm, currentValue })
 							className: "grid gap-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.new_value") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
 								value: newValue,
-								onChange: setNewValue
+								onChange: setNewValue,
+								locale: loc
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -76147,7 +76235,7 @@ function CloseNegotiationDialog({ open, onOpenChange, onConfirm, currentValue })
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.contract_upload") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
 								value: contractUrl,
 								onChange: setContractUrl,
-								label: t("common.upload_file") || "Upload PDF/Doc",
+								label: t("common.upload") || "Upload",
 								accept: ".pdf,.doc,.docx"
 							})]
 						})
@@ -76170,10 +76258,17 @@ function CloseNegotiationDialog({ open, onOpenChange, onConfirm, currentValue })
 	});
 }
 function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant }) {
-	const { t } = useLanguageStore_default();
+	const { t, language } = useLanguageStore_default();
 	const [text, setText] = (0, import_react.useState)("");
 	const [proposed, setProposed] = (0, import_react.useState)(tenant.suggestedRenewalPrice || tenant.rentValue || 0);
 	const [decision, setDecision] = (0, import_react.useState)(tenant.ownerDecision || "pending");
+	const loc = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
+	const formatLocalCurrency = (value) => {
+		return new Intl.NumberFormat(loc, {
+			style: "currency",
+			currency: "USD"
+		}).format(value);
+	};
 	(0, import_react.useEffect)(() => {
 		if (tenant.suggestedRenewalPrice) setProposed(tenant.suggestedRenewalPrice);
 		if (tenant.ownerDecision) setDecision(tenant.ownerDecision);
@@ -76183,7 +76278,7 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 			suggestedRenewalPrice: proposed,
 			ownerDecision: decision
 		});
-		onSend(`Property Manager sent a proposal: ${formatCurrency(proposed)}. Status marked as: ${decision}`);
+		onSend(`Property Manager sent a proposal: ${formatLocalCurrency(proposed)}. Status marked as: ${decision}`);
 	};
 	const formatTime = (iso) => {
 		try {
@@ -76202,7 +76297,7 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 				className: "pb-2",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
 					className: "text-sm",
-					children: t("renewals.pricing_owner_approval") || "Pricing & Owner Approval"
+					children: t("renewals.pricing_owner_approval")
 				})
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 				className: "flex flex-col gap-4",
@@ -76211,10 +76306,10 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 						className: "flex flex-col sm:flex-row justify-between sm:items-center text-sm gap-2",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 							className: "text-muted-foreground",
-							children: [t("renewals.current_value") || "Current Rent Value", ":"]
+							children: [t("renewals.current_value"), ":"]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "font-bold",
-							children: formatCurrency(tenant.rentValue)
+							children: formatLocalCurrency(tenant.rentValue)
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -76223,35 +76318,36 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 							className: "space-y-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 								className: "text-xs",
-								children: t("renewals.proposed_value") || "Proposed Renewal Value"
+								children: t("renewals.proposed_value")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
 								value: proposed,
-								onChange: setProposed
+								onChange: setProposed,
+								locale: loc
 							})]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "space-y-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 								className: "text-xs",
-								children: t("common.status") || "Owner Decision"
+								children: t("common.status")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 								value: decision,
 								onValueChange: setDecision,
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 										value: "pending",
-										children: t("common.pending") || "Pending"
+										children: t("common.pending")
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 										value: "accepted",
-										children: t("common.accepted") || "Accepted"
+										children: t("common.accepted")
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 										value: "counter",
-										children: t("common.counter") || "Counter-offer"
+										children: t("common.counter")
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 										value: "rejected",
-										children: t("common.rejected") || "Rejected"
+										children: t("common.rejected")
 									})
 								] })]
 							})]
@@ -76259,16 +76355,11 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 						className: "pt-2",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							size: "sm",
-							className: "w-full bg-trust-blue text-white",
+							className: "w-full bg-trust-blue text-white whitespace-normal h-auto py-2",
 							onClick: handleSendProposal,
-							children: [
-								t("common.update") || "Update Terms",
-								" &",
-								" ",
-								t("common.notify_owner") || "Notify Owner"
-							]
+							children: t("renewals.update_terms_notify")
 						})
 					})
 				]
@@ -76292,7 +76383,7 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex gap-2",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					placeholder: t("common.type_message") || "Message to owner...",
+					placeholder: t("renewals.type_message"),
 					value: text,
 					onChange: (e) => setText(e.target.value),
 					onKeyDown: (e) => e.key === "Enter" && !e.shiftKey && (onSend(text), setText(""))
@@ -76309,12 +76400,19 @@ function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant })
 	});
 }
 function TenantNegotiationTab({ tenant, history, onSend, onUpdateTenant }) {
-	const { t } = useLanguageStore_default();
+	const { t, language } = useLanguageStore_default();
 	const [text, setText] = (0, import_react.useState)("");
 	const [decision, setDecision] = (0, import_react.useState)(tenant.tenantDecision || "pending");
 	(0, import_react.useEffect)(() => {
 		if (tenant.tenantDecision) setDecision(tenant.tenantDecision);
 	}, [tenant.tenantDecision]);
+	const loc = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
+	const formatLocalCurrency = (value) => {
+		return new Intl.NumberFormat(loc, {
+			style: "currency",
+			currency: "USD"
+		}).format(value);
+	};
 	const proposedRent = tenant.suggestedRenewalPrice || tenant.rentValue;
 	const ownerAccepted = tenant.ownerDecision === "accepted";
 	const handleSendProposal = () => {
@@ -76338,7 +76436,7 @@ function TenantNegotiationTab({ tenant, history, onSend, onUpdateTenant }) {
 				className: "pb-2",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
 					className: "text-sm",
-					children: t("renewals.pricing_tenant_approval") || "Pricing & Tenant Approval"
+					children: t("renewals.pricing_tenant_approval")
 				})
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 				className: "flex flex-col gap-4",
@@ -76346,22 +76444,22 @@ function TenantNegotiationTab({ tenant, history, onSend, onUpdateTenant }) {
 					className: "flex flex-col sm:flex-row justify-between sm:items-center text-sm gap-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 						className: "text-muted-foreground",
-						children: [t("renewals.new_rent_value") || "New Rent Value", ":"]
+						children: [t("renewals.new_rent_value"), ":"]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "text-left sm:text-right",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "font-bold text-lg text-trust-blue",
-							children: formatCurrency(proposedRent)
+							children: formatLocalCurrency(proposedRent)
 						}), !ownerAccepted && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "text-xs text-orange-600 font-medium mt-1",
-							children: t("renewals.pending_owner_approval") || "Pending Owner Approval"
+							children: t("renewals.pending_owner_approval")
 						})]
 					})]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "space-y-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 						className: "text-xs",
-						children: t("common.status") || "Tenant Decision"
+						children: t("common.status")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex flex-col sm:flex-row gap-2",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
@@ -76373,27 +76471,27 @@ function TenantNegotiationTab({ tenant, history, onSend, onUpdateTenant }) {
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "pending",
-									children: t("common.pending") || "Pending"
+									children: t("common.pending")
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "accepted",
-									children: t("common.accepted") || "Accepted"
+									children: t("common.accepted")
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "counter",
-									children: t("common.counter") || "Counter-offer"
+									children: t("common.counter")
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: "rejected",
-									children: t("common.rejected") || "Rejected"
+									children: t("common.rejected")
 								})
 							] })]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							size: "sm",
 							variant: "outline",
-							className: "w-full sm:w-auto",
+							className: "w-full sm:w-auto whitespace-normal",
 							onClick: handleSendProposal,
-							children: t("common.save") || "Save Decision"
+							children: t("renewals.save_decision")
 						})]
 					})]
 				})]
@@ -76417,7 +76515,7 @@ function TenantNegotiationTab({ tenant, history, onSend, onUpdateTenant }) {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex gap-2",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					placeholder: t("common.type_message") || "Message to tenant...",
+					placeholder: t("renewals.type_message"),
 					value: text,
 					onChange: (e) => setText(e.target.value),
 					onKeyDown: (e) => e.key === "Enter" && !e.shiftKey && (onSend(text), setText(""))
@@ -76496,14 +76594,14 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 				negotiationLogs: [...currentLogs, log$1]
 			});
 			setNewLogNote("");
-			toast$2({ title: t("common.success") || "Note added" });
+			toast$2({ title: t("common.success") });
 		}
 	};
 	const initiateClose = () => {
 		if (tenant.ownerDecision !== "accepted" || tenant.tenantDecision !== "accepted") {
 			toast$2({
-				title: t("common.error") || "Validation Error",
-				description: t("renewals.both_must_accept") || "Both Owner and Tenant must accept the terms before closing.",
+				title: t("common.error"),
+				description: t("renewals.both_must_accept"),
 				variant: "destructive"
 			});
 			return;
@@ -76520,8 +76618,8 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 			linkedEntityId: tenant.id
 		});
 		toast$2({
-			title: t("common.success") || "Renewal Finalized",
-			description: t("renewals.contract_renewed") || "Contract renewed successfully."
+			title: t("common.success"),
+			description: t("renewals.contract_renewed")
 		});
 		setCloseDialogOpen(false);
 		onOpenChange(false);
@@ -76547,9 +76645,9 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-5 w-5" }),
 						" ",
-						t("renewals.negotiation_hub") || "Negotiation Hub"
+						t("renewals.negotiation_hub")
 					]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetDescription, { children: t("renewals.negotiation_hub_desc") || "Manage multi-party lease renewals efficiently." })] }),
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetDescription, { children: t("renewals.negotiation_hub_desc") })] }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "grid gap-4 py-4",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -76562,7 +76660,7 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }),
 										" ",
-										t("common.tenant") || "Tenant"
+										t("renewals.tenant")
 									]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "font-medium text-sm truncate flex items-center gap-2",
@@ -76576,11 +76674,11 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }),
 										" ",
-										t("common.relationship_owner") || "Owner"
+										t("renewals.owner")
 									]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "font-medium text-sm truncate flex items-center gap-2",
-									children: [owner?.name || "N/A", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2 w-2 rounded-full bg-green-500" })]
+									children: [owner?.name || t("common.none"), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2 w-2 rounded-full bg-green-500" })]
 								})]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -76590,7 +76688,7 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-3 w-3" }),
 										" ",
-										t("common.property") || "Property"
+										t("common.property")
 									]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 									className: "font-medium text-sm truncate",
@@ -76608,27 +76706,27 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 										value: "owner",
 										className: "text-xs whitespace-normal sm:whitespace-nowrap h-full",
-										children: t("common.relationship_owner") || "Owner"
+										children: t("renewals.owner")
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 										value: "tenant",
 										className: "text-xs whitespace-normal sm:whitespace-nowrap h-full",
-										children: t("common.tenant") || "Tenant"
+										children: t("renewals.tenant")
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 										value: "aggregated",
 										className: "text-xs whitespace-normal sm:whitespace-nowrap h-full",
-										children: t("common.unified") || "Unified"
+										children: t("common.history") || "Unified"
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 										value: "documents",
 										className: "text-xs whitespace-normal sm:whitespace-nowrap h-full",
-										children: t("common.documents") || "Docs"
+										children: t("common.documents")
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 										value: "internal",
 										className: "text-xs whitespace-normal sm:whitespace-nowrap h-full",
-										children: t("common.notes") || "Notes"
+										children: t("renewals.add_note").split(" ")[0] || "Notes"
 									})
 								]
 							}),
@@ -76662,12 +76760,12 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 								className: "mt-4 space-y-4",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "flex items-center gap-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded border border-yellow-200",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lock, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("renewals.confidential_note") || "Confidential: Visible only to Property Managers." })]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lock, { className: "h-4 w-4 shrink-0" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("renewals.confidential_note") })]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
 									className: "h-[300px] border rounded-md p-4 bg-slate-50",
 									children: aggregatedHistory.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 										className: "text-center text-muted-foreground text-sm pt-8",
-										children: t("common.empty") || "No messages yet."
+										children: t("renewals.empty_messages")
 									}) : aggregatedHistory.map((msg, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "mb-4 text-sm",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -76701,7 +76799,7 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 										documents: docs
 									}),
 									canEdit: true,
-									title: t("common.documents") || "Lease Documents"
+									title: t("common.documents")
 								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
@@ -76723,12 +76821,12 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 										})]
 									}, log$1.id)), (!tenant.negotiationLogs || tenant.negotiationLogs.length === 0) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 										className: "text-center text-muted-foreground text-sm pt-4",
-										children: t("common.empty") || "No notes yet."
+										children: t("renewals.empty_notes")
 									})]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "gap-2 flex flex-col",
 									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.add_note") || "Add Internal Note" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.add_note") }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
 											value: newLogNote,
 											onChange: (e) => setNewLogNote(e.target.value)
@@ -76737,7 +76835,7 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 											size: "sm",
 											onClick: handleSaveNotes,
 											className: "w-fit",
-											children: t("common.save") || "Save Note"
+											children: t("common.save")
 										})
 									]
 								})]
@@ -76749,14 +76847,14 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 					className: "absolute bottom-0 left-0 right-0 p-4 sm:p-6 bg-white border-t flex flex-col sm:flex-row justify-between gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						variant: "outline",
-						className: "w-full sm:flex-1",
+						className: "w-full sm:flex-1 whitespace-normal h-auto py-2",
 						onClick: () => updateTenant({
 							...tenant,
 							negotiationStatus: "vacating"
 						}),
-						children: t("renewals.mark_vacating") || "Mark as Vacating"
+						children: t("renewals.mark_vacating")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						className: "w-full sm:flex-1 bg-emerald-600 hover:bg-emerald-700",
+						className: "w-full sm:flex-1 bg-emerald-600 hover:bg-emerald-700 whitespace-normal h-auto py-2",
 						onClick: initiateClose,
 						children: t("renewals.close_negotiation")
 					})]
@@ -76773,7 +76871,7 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 function Renewals() {
 	const { tenants: tenants$1 } = useTenantStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
-	const { t } = useLanguageStore_default();
+	const { t, language } = useLanguageStore_default();
 	const [searchTerm, setSearchTerm] = (0, import_react.useState)("");
 	const [statusFilter, setStatusFilter] = (0, import_react.useState)("all");
 	const [sheetOpen, setSheetOpen] = (0, import_react.useState)(false);
@@ -76791,19 +76889,20 @@ function Renewals() {
 	}).sort((a$1, b$1) => new Date(a$1.leaseEnd).getTime() - new Date(b$1.leaseEnd).getTime());
 	const getStatusBadge = (endDate) => {
 		const daysLeft = differenceInDays(new Date(endDate), /* @__PURE__ */ new Date());
-		if (daysLeft <= 30) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+		const text = t("renewals.days_left", { days: daysLeft.toString() });
+		if (daysLeft <= 30) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 			variant: "destructive",
 			className: "font-bold",
-			children: [daysLeft, " days left"]
+			children: text
 		});
-		if (daysLeft <= 60) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+		if (daysLeft <= 60) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 			className: "bg-orange-100 text-orange-800 hover:bg-orange-200 border-orange-300 font-bold",
-			children: [daysLeft, " days left"]
+			children: text
 		});
-		return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+		return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 			variant: "secondary",
 			className: "bg-green-100 text-green-800 hover:bg-green-200 border-green-300 font-bold",
-			children: [daysLeft, " days left"]
+			children: text
 		});
 	};
 	const getDecisionColor = (decision) => {
@@ -76813,6 +76912,13 @@ function Renewals() {
 			case "counter": return "text-yellow-700 bg-yellow-100 border-yellow-300";
 			default: return "text-slate-700 bg-slate-100 border-slate-300";
 		}
+	};
+	const formatLocalCurrency = (value) => {
+		const loc = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
+		return new Intl.NumberFormat(loc, {
+			style: "currency",
+			currency: "USD"
+		}).format(value);
 	};
 	const handleManage = (id) => {
 		setSelectedTenant(id);
@@ -76825,10 +76931,10 @@ function Renewals() {
 				className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 					className: "text-3xl font-bold tracking-tight text-slate-900",
-					children: "Contract Renewals"
+					children: t("renewals.title")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-muted-foreground",
-					children: "Manage multi-party negotiations and finalize leases."
+					children: t("renewals.subtitle")
 				})] })
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -76854,15 +76960,15 @@ function Renewals() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 							value: "critical",
-							children: "Critical (≤ 30 days)"
+							children: t("renewals.critical_status")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 							value: "warning",
-							children: "Warning (31 - 60 days)"
+							children: t("renewals.warning_status")
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 							value: "safe",
-							children: "Safe (> 60 days)"
+							children: t("renewals.safe_status")
 						})
 					] })]
 				})]
@@ -76876,9 +76982,9 @@ function Renewals() {
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.property") }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Current/Proposed" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("renewals.current_proposed") }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.end_date") }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Negotiation Status" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("renewals.negotiation_status") }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 								className: "text-right",
 								children: t("common.actions")
@@ -76902,18 +77008,18 @@ function Renewals() {
 									className: "font-medium",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "flex flex-col",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 											className: "text-slate-500 text-xs",
-											children: ["$", tenant.rentValue?.toLocaleString()]
-										}), tenant.suggestedRenewalPrice && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+											children: formatLocalCurrency(tenant.rentValue)
+										}), tenant.suggestedRenewalPrice && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 											className: "text-trust-blue",
-											children: ["$", tenant.suggestedRenewalPrice.toLocaleString()]
+											children: formatLocalCurrency(tenant.suggestedRenewalPrice)
 										})]
 									})
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "flex items-center gap-2 text-slate-700",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-4 w-4 text-slate-400" }), format(new Date(tenant.leaseEnd), "MMM dd, yyyy")]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-4 w-4 text-slate-400" }), formatDate(tenant.leaseEnd, language)]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 									className: "mt-1",
 									children: getStatusBadge(tenant.leaseEnd)
@@ -76921,24 +77027,26 @@ function Renewals() {
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: tenant.negotiationStatus === "closed" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 									variant: "outline",
 									className: "bg-green-100 text-green-800 border-green-300",
-									children: "Renewed"
+									children: t("renewals.renewed")
 								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "flex flex-col gap-1 text-xs mt-1",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
-										"Owner:",
+										t("renewals.owner"),
+										":",
 										" ",
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 											variant: "outline",
 											className: cn("text-[10px] capitalize", getDecisionColor(tenant.ownerDecision)),
-											children: tenant.ownerDecision || "pending"
+											children: t(`common.${tenant.ownerDecision || "pending"}`)
 										})
 									] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
-										"Tenant:",
+										t("renewals.tenant"),
+										":",
 										" ",
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 											variant: "outline",
 											className: cn("text-[10px] capitalize", getDecisionColor(tenant.tenantDecision)),
-											children: tenant.tenantDecision || "pending"
+											children: t(`common.${tenant.tenantDecision || "pending"}`)
 										})
 									] })]
 								}) }),
@@ -76952,7 +77060,7 @@ function Renewals() {
 											e.stopPropagation();
 											handleManage(tenant.id);
 										},
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4" }), "Manage"]
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4" }), t("renewals.manage")]
 									})
 								})
 							]
@@ -81773,4 +81881,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-D1mt0KMp.js.map
+//# sourceMappingURL=index-BS3tQM13.js.map
