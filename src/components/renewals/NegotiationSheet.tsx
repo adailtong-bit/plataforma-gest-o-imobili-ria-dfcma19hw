@@ -157,7 +157,7 @@ export function NegotiationSheet({
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="w-[90vw] sm:w-[600px] overflow-y-auto pb-32 sm:pb-24">
+        <SheetContent className="w-[90vw] sm:w-[600px] overflow-y-auto">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" /> {t('renewals.negotiation_hub')}
@@ -344,7 +344,8 @@ export function NegotiationSheet({
               </TabsContent>
             </Tabs>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 bg-white border-t flex flex-col sm:flex-row justify-between gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
+
+          <div className="mt-6 pt-4 border-t flex flex-col sm:flex-row justify-between gap-3">
             <Button
               variant="outline"
               className="w-full sm:flex-1 whitespace-normal h-auto py-2"
@@ -355,7 +356,7 @@ export function NegotiationSheet({
               {t('renewals.mark_vacating')}
             </Button>
             <Button
-              className="w-full sm:flex-1 bg-emerald-600 hover:bg-emerald-700 whitespace-normal h-auto py-2"
+              className="w-full sm:flex-1 bg-emerald-600 hover:bg-emerald-700 text-white whitespace-normal h-auto py-2"
               onClick={initiateClose}
             >
               {t('renewals.close_negotiation')}

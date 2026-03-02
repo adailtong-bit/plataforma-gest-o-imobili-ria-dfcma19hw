@@ -76694,7 +76694,7 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 		open,
 		onOpenChange,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetContent, {
-			className: "w-[90vw] sm:w-[600px] overflow-y-auto pb-32 sm:pb-24",
+			className: "w-[90vw] sm:w-[600px] overflow-y-auto",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetTitle, {
 					className: "flex items-center gap-2",
@@ -76900,7 +76900,7 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 					})]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "absolute bottom-0 left-0 right-0 p-4 sm:p-6 bg-white border-t flex flex-col sm:flex-row justify-between gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10",
+					className: "mt-6 pt-4 border-t flex flex-col sm:flex-row justify-between gap-3",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						variant: "outline",
 						className: "w-full sm:flex-1 whitespace-normal h-auto py-2",
@@ -76910,7 +76910,7 @@ function NegotiationSheet({ open, onOpenChange, tenantId }) {
 						}),
 						children: t("renewals.mark_vacating")
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						className: "w-full sm:flex-1 bg-emerald-600 hover:bg-emerald-700 whitespace-normal h-auto py-2",
+						className: "w-full sm:flex-1 bg-emerald-600 hover:bg-emerald-700 text-white whitespace-normal h-auto py-2",
 						onClick: initiateClose,
 						children: t("renewals.close_negotiation")
 					})]
@@ -81937,4 +81937,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-Bx5i0GT6.js.map
+//# sourceMappingURL=index-BM5rf45-.js.map
