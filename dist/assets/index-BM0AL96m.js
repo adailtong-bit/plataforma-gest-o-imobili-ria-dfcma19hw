@@ -54840,7 +54840,13 @@ const translations = {
 			workflow_started: "Workflow Iniciado",
 			workflow_desc: "Ação {action} iniciada para {name}.",
 			renew_contract: "Renovar Contrato",
-			success_desc: "Proprietário registrado com sucesso."
+			success_desc: "Proprietário registrado com sucesso.",
+			add_owner: "Incluir Proprietário",
+			edit_owner: "Alterar Proprietário",
+			owner_added: "Proprietário incluído com sucesso",
+			owner_updated: "Proprietário alterado com sucesso",
+			delete_owner: "Excluir Proprietário",
+			delete_owner_desc: "Esta ação não pode ser desfeita."
 		},
 		tenants: {
 			title: "Inquilinos",
@@ -54850,7 +54856,13 @@ const translations = {
 			list_title: "Lista de Inquilinos",
 			search_placeholder: "Buscar inquilino...",
 			property: "Propriedade",
-			send_message: "Enviar Mensagem"
+			send_message: "Enviar Mensagem",
+			add_tenant: "Incluir Inquilino",
+			edit_tenant: "Alterar Inquilino",
+			tenant_added: "Inquilino incluído com sucesso",
+			tenant_updated: "Inquilino alterado com sucesso",
+			delete_tenant: "Excluir Inquilino",
+			delete_tenant_desc: "Esta ação não pode ser desfeita."
 		},
 		partners: {
 			title: "Parceiros",
@@ -55072,6 +55084,34 @@ const translations = {
 			email_placeholder: "email@hospede.com"
 		},
 		common: {
+			personal_data: "Dados Pessoais",
+			contact_address: "Contato e Endereço",
+			documents: "Documentos",
+			rg_id: "RG / ID",
+			dob: "Data de Nasc. / Fundação",
+			nationality: "Nacionalidade",
+			marital_status: "Estado Civil",
+			profession: "Profissão",
+			monthly_income: "Renda Mensal",
+			base_rent: "Aluguel Base",
+			secondary_phone: "Telefone Secundário",
+			whatsapp: "WhatsApp",
+			street: "Logradouro",
+			number: "Número",
+			complement: "Complemento",
+			neighborhood: "Bairro",
+			city: "Cidade",
+			state: "Estado",
+			zip_code: "CEP / Zip Code",
+			single: "Solteiro(a)",
+			married: "Casado(a)",
+			divorced: "Divorciado(a)",
+			widowed: "Viúvo(a)",
+			country_us: "Estados Unidos",
+			country_br: "Brasil",
+			country_es: "Espanha",
+			tax_id_label: "CPF / CNPJ / Tax ID",
+			full_name_label: "Nome Completo / Razão Social",
 			add: "Adicionar",
 			dashboard: "Painel Imobiliário",
 			real_estate_dashboard: "Painel Imobiliário",
@@ -55144,7 +55184,6 @@ const translations = {
 			password: "Senha",
 			confirm_password: "Confirmar Senha",
 			add_title: "Adicionar",
-			documents: "Documentos",
 			contact_via_whatsapp: "WhatsApp",
 			contact_via_email: "Email",
 			tax_id: "CPF/CNPJ / Tax ID",
@@ -55879,7 +55918,13 @@ const translations = {
 			workflow_started: "Workflow Started",
 			workflow_desc: "{action} action started for {name}.",
 			renew_contract: "Renew Contract",
-			success_desc: "Owner registered successfully."
+			success_desc: "Owner registered successfully.",
+			add_owner: "Add Owner",
+			edit_owner: "Edit Owner",
+			owner_added: "Owner added successfully",
+			owner_updated: "Owner updated successfully",
+			delete_owner: "Delete Owner",
+			delete_owner_desc: "This action cannot be undone."
 		},
 		tenants: {
 			title: "Tenants",
@@ -55889,7 +55934,13 @@ const translations = {
 			list_title: "Tenant List",
 			search_placeholder: "Search tenant...",
 			property: "Property",
-			send_message: "Send Message"
+			send_message: "Send Message",
+			add_tenant: "Add Tenant",
+			edit_tenant: "Edit Tenant",
+			tenant_added: "Tenant added successfully",
+			tenant_updated: "Tenant updated successfully",
+			delete_tenant: "Delete Tenant",
+			delete_tenant_desc: "This action cannot be undone."
 		},
 		partners: {
 			title: "Partners",
@@ -56111,6 +56162,34 @@ const translations = {
 			email_placeholder: "guest@email.com"
 		},
 		common: {
+			personal_data: "Personal Data",
+			contact_address: "Contact & Address",
+			documents: "Documents",
+			rg_id: "ID Document",
+			dob: "Date of Birth / Foundation",
+			nationality: "Nationality",
+			marital_status: "Marital Status",
+			profession: "Profession",
+			monthly_income: "Monthly Income",
+			base_rent: "Base Rent",
+			secondary_phone: "Secondary Phone",
+			whatsapp: "WhatsApp",
+			street: "Street",
+			number: "Number",
+			complement: "Complement / Apt",
+			neighborhood: "Neighborhood",
+			city: "City",
+			state: "State",
+			zip_code: "Zip Code",
+			single: "Single",
+			married: "Married",
+			divorced: "Divorced",
+			widowed: "Widowed",
+			country_us: "United States",
+			country_br: "Brazil",
+			country_es: "Spain",
+			tax_id_label: "Tax ID / SSN / CPF",
+			full_name_label: "Full Name / Company Name",
 			add: "Add",
 			dashboard: "Real Estate Dashboard",
 			real_estate_dashboard: "Real Estate Dashboard",
@@ -56183,7 +56262,6 @@ const translations = {
 			password: "Password",
 			confirm_password: "Confirm Password",
 			add_title: "Add",
-			documents: "Documents",
 			contact_via_whatsapp: "WhatsApp",
 			contact_via_email: "Email",
 			tax_id: "Tax ID",
@@ -56919,7 +56997,13 @@ const translations = {
 			workflow_started: "Flujo de Trabajo Iniciado",
 			workflow_desc: "Acción {action} iniciada para {name}.",
 			renew_contract: "Renovar Contrato",
-			success_desc: "Propietario registrado con éxito."
+			success_desc: "Propietario registrado con éxito.",
+			add_owner: "Añadir Propietario",
+			edit_owner: "Editar Propietario",
+			owner_added: "Propietario añadido con éxito",
+			owner_updated: "Propietario actualizado con éxito",
+			delete_owner: "Eliminar Propietario",
+			delete_owner_desc: "Esta acción no se puede deshacer."
 		},
 		tenants: {
 			title: "Inquilinos",
@@ -56929,7 +57013,13 @@ const translations = {
 			list_title: "Lista de Inquilinos",
 			search_placeholder: "Buscar inquilino...",
 			property: "Propiedad",
-			send_message: "Enviar Mensaje"
+			send_message: "Enviar Mensaje",
+			add_tenant: "Añadir Inquilino",
+			edit_tenant: "Editar Inquilino",
+			tenant_added: "Inquilino añadido con éxito",
+			tenant_updated: "Inquilino actualizado con éxito",
+			delete_tenant: "Eliminar Inquilino",
+			delete_tenant_desc: "Esta acción no se puede deshacer."
 		},
 		partners: {
 			title: "Socios",
@@ -57137,7 +57227,7 @@ const translations = {
 			total: "Total",
 			platform: "Plataforma",
 			reports: "Informes",
-			calendar: "Calendario",
+			calendar: "Calendário",
 			bookings: "Reservas",
 			communication: "Comunicación",
 			revenue: "Ingresos",
@@ -57153,6 +57243,34 @@ const translations = {
 			email_placeholder: "email@huesped.com"
 		},
 		common: {
+			personal_data: "Datos Personales",
+			contact_address: "Contacto y Dirección",
+			documents: "Documentos",
+			rg_id: "Documento de Identidad",
+			dob: "Fecha de Nac. / Fundación",
+			nationality: "Nacionalidad",
+			marital_status: "Estado Civil",
+			profession: "Profesión",
+			monthly_income: "Ingreso Mensual",
+			base_rent: "Alquiler Base",
+			secondary_phone: "Teléfono Secundario",
+			whatsapp: "WhatsApp",
+			street: "Calle/Avenida",
+			number: "Número",
+			complement: "Complemento",
+			neighborhood: "Barrio",
+			city: "Ciudad",
+			state: "Estado",
+			zip_code: "Código Postal",
+			single: "Soltero(a)",
+			married: "Casado(a)",
+			divorced: "Divorciado(a)",
+			widowed: "Viudo(a)",
+			country_us: "Estados Unidos",
+			country_br: "Brasil",
+			country_es: "España",
+			tax_id_label: "NIF / RUT / Tax ID",
+			full_name_label: "Nombre Completo / Razón Social",
 			add: "Añadir",
 			dashboard: "Panel Inmobiliario",
 			real_estate_dashboard: "Panel Inmobiliario",
@@ -57225,7 +57343,6 @@ const translations = {
 			password: "Contraseña",
 			confirm_password: "Confirmar Contraseña",
 			add_title: "Añadir",
-			documents: "Documentos",
 			contact_via_whatsapp: "WhatsApp",
 			contact_via_email: "Correo",
 			tax_id: "NIF/Tax ID",
@@ -71731,39 +71848,48 @@ function DocumentVault({ documents, onUpdate, canEdit, title, description, entit
 	})] })] });
 }
 function Tenants() {
-	const { tenants: tenants$1, addTenant, updateTenant, formatAppCurrency } = (0, import_react.useContext)(AppContext);
-	const { t } = useLanguageStore_default();
+	const { tenants: tenants$1, addTenant, updateTenant, formatAppCurrency, currency } = (0, import_react.useContext)(AppContext);
+	const { t, language } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
+	const locale$2 = {
+		pt: "pt-BR",
+		en: "en-US",
+		es: "es-ES"
+	}[language] || "en-US";
 	const [isOpen, setIsOpen] = (0, import_react.useState)(false);
 	const [editingId, setEditingId] = (0, import_react.useState)(null);
 	const [form, setForm] = (0, import_react.useState)({});
 	const handleOpenAdd = () => {
 		setEditingId(null);
-		setForm({});
+		setForm({ country: "US" });
 		setIsOpen(true);
 	};
 	const handleOpenEdit = (tenant) => {
 		setEditingId(tenant.id);
-		setForm(tenant);
+		setForm({
+			country: "US",
+			...tenant
+		});
 		setIsOpen(true);
 	};
 	const handleSave = () => {
 		if (editingId) {
 			updateTenant({ ...form });
-			toast$2({ title: "Inquilino alterado com sucesso" });
+			toast$2({ title: t("common.tenant_updated") });
 		} else {
 			addTenant({
 				...form,
 				id: `tenant-${Date.now()}`,
-				name: form.name || "Novo Inquilino",
+				name: form.name || t("common.new"),
 				status: "active",
 				role: "tenant",
 				rentValue: form.rentValue || 0
 			});
-			toast$2({ title: "Inquilino incluído com sucesso" });
+			toast$2({ title: t("common.tenant_added") });
 		}
 		setIsOpen(false);
 	};
+	const ctry = form.country || "US";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
 		children: [
@@ -71771,41 +71897,72 @@ function Tenants() {
 				className: "flex justify-between items-center",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 					className: "text-3xl font-bold tracking-tight text-slate-900",
-					children: t("sidebar.tenants") || "Inquilinos"
+					children: t("sidebar.tenants")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-muted-foreground",
-					children: "Manage your tenant directory."
+					children: t("tenants.subtitle")
 				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 					onClick: handleOpenAdd,
 					className: "bg-trust-blue gap-2 text-white",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+						" ",
+						t("common.add")
+					]
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 				open: isOpen,
 				onOpenChange: setIsOpen,
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-					className: "max-w-4xl max-h-[90vh] overflow-y-auto",
+					className: "max-w-4xl max-h-[90vh] overflow-y-auto bg-white text-black",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingId ? "Alterar Inquilino" : "Incluir Inquilino" }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingId ? t("common.edit_tenant") : t("common.add_tenant") }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "grid grid-cols-1 md:grid-cols-2 gap-4 mt-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: form.country || "US",
+									onValueChange: (v) => setForm({
+										...form,
+										country: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select_country") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "US",
+											children: t("common.country_us")
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "BR",
+											children: t("common.country_br")
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "ES",
+											children: t("common.country_es")
+										})
+									] })]
+								})]
+							})
+						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
 							defaultValue: "personal",
-							className: "w-full mt-4",
+							className: "w-full mt-2",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
 									className: "grid w-full grid-cols-3 mb-4",
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 											value: "personal",
-											children: "Dados Pessoais"
+											children: t("common.personal_data")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 											value: "contact",
-											children: "Contato e Endereço"
+											children: t("common.contact_address")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 											value: "documents",
-											children: "Documentos"
+											children: t("common.documents")
 										})
 									]
 								}),
@@ -71815,7 +71972,7 @@ function Tenants() {
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nome Completo" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.full_name_label") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												value: form.name || "",
 												onChange: (e) => setForm({
 													...form,
@@ -71825,7 +71982,7 @@ function Tenants() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												type: "email",
 												value: form.email || "",
 												onChange: (e) => setForm({
@@ -71836,18 +71993,18 @@ function Tenants() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CPF / CNPJ" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.tax_id_label") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												maxLength: 18,
 												value: form.cpfCnpj || "",
 												onChange: (e) => setForm({
 													...form,
-													cpfCnpj: applyDocumentMask(e.target.value, "BR")
+													cpfCnpj: applyDocumentMask(e.target.value, ctry)
 												})
 											})]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "RG" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.rg_id") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												value: form.rg || "",
 												onChange: (e) => setForm({
 													...form,
@@ -71857,7 +72014,7 @@ function Tenants() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nascimento" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.dob") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												type: "date",
 												value: form.dob || "",
 												onChange: (e) => setForm({
@@ -71868,7 +72025,7 @@ function Tenants() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nacionalidade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.nationality") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												value: form.nationality || "",
 												onChange: (e) => setForm({
 													...form,
@@ -71878,39 +72035,39 @@ function Tenants() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Estado Civil" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.marital_status") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 												value: form.maritalStatus || "",
 												onValueChange: (v) => setForm({
 													...form,
 													maritalStatus: v
 												}),
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "Solteiro",
-														children: "Solteiro(a)"
+														value: "Single",
+														children: t("common.single")
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "Casado",
-														children: "Casado(a)"
+														value: "Married",
+														children: t("common.married")
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "Divorciado",
-														children: "Divorciado(a)"
+														value: "Divorced",
+														children: t("common.divorced")
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "Viuvo",
-														children: "Viúvo(a)"
+														value: "Widowed",
+														children: t("common.widowed")
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "Outro",
-														children: "Outro"
+														value: "Other",
+														children: t("common.other")
 													})
 												] })]
 											})]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Profissão" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.profession") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												value: form.profession || "",
 												onChange: (e) => setForm({
 													...form,
@@ -71920,24 +72077,26 @@ function Tenants() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Renda Mensal" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												type: "number",
-												value: form.monthlyIncome || "",
-												onChange: (e) => setForm({
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.monthly_income") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+												value: form.monthlyIncome || 0,
+												onChange: (v) => setForm({
 													...form,
-													monthlyIncome: Number(e.target.value)
-												})
+													monthlyIncome: v
+												}),
+												currency,
+												locale: locale$2
 											})]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Aluguel Base" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												type: "number",
-												value: form.rentValue || "",
-												onChange: (e) => setForm({
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.base_rent") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+												value: form.rentValue || 0,
+												onChange: (v) => setForm({
 													...form,
-													rentValue: Number(e.target.value)
-												})
+													rentValue: v
+												}),
+												currency,
+												locale: locale$2
 											})]
 										})
 									]
@@ -71947,64 +72106,76 @@ function Tenants() {
 									className: "space-y-6",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
 										className: "text-sm font-medium mb-3 border-b pb-2",
-										children: "Contatos"
+										children: t("common.phone")
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid grid-cols-1 md:grid-cols-3 gap-4",
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone Principal" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
 													value: form.phone || "",
 													onChange: (e) => setForm({
 														...form,
 														phone: e.target.value
 													}),
-													defaultCountry: "BR"
+													country: ctry,
+													onCountryChange: (c$1) => setForm({
+														...form,
+														country: c$1
+													})
 												})]
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone Secundário" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.secondary_phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
 													value: form.secondaryPhone || "",
 													onChange: (e) => setForm({
 														...form,
 														secondaryPhone: e.target.value
 													}),
-													defaultCountry: "BR"
+													country: ctry,
+													onCountryChange: (c$1) => setForm({
+														...form,
+														country: c$1
+													})
 												})]
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "WhatsApp" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.whatsapp") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
 													value: form.whatsapp || "",
 													onChange: (e) => setForm({
 														...form,
 														whatsapp: e.target.value
 													}),
-													defaultCountry: "BR"
+													country: ctry,
+													onCountryChange: (c$1) => setForm({
+														...form,
+														country: c$1
+													})
 												})]
 											})
 										]
 									})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
 										className: "text-sm font-medium mb-3 border-b pb-2",
-										children: "Endereço"
+										children: t("common.address")
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid grid-cols-1 md:grid-cols-4 gap-4",
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CEP" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													maxLength: 9,
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.zip_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													maxLength: 10,
 													value: form.zipCode || "",
 													onChange: (e) => setForm({
 														...form,
-														zipCode: applyZipCodeMask(e.target.value, "BR")
+														zipCode: applyZipCodeMask(e.target.value, ctry)
 													})
 												})]
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Logradouro" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.street") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													value: form.address || "",
 													onChange: (e) => setForm({
 														...form,
@@ -72014,7 +72185,7 @@ function Tenants() {
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Número" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													value: form.addressNumber || "",
 													onChange: (e) => setForm({
 														...form,
@@ -72024,7 +72195,7 @@ function Tenants() {
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Complemento" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.complement") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													value: form.complement || "",
 													onChange: (e) => setForm({
 														...form,
@@ -72034,7 +72205,7 @@ function Tenants() {
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Bairro" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.neighborhood") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													value: form.neighborhood || "",
 													onChange: (e) => setForm({
 														...form,
@@ -72044,7 +72215,7 @@ function Tenants() {
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Cidade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.city") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													value: form.city || "",
 													onChange: (e) => setForm({
 														...form,
@@ -72054,7 +72225,7 @@ function Tenants() {
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Estado" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.state") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													value: form.state || "",
 													onChange: (e) => setForm({
 														...form,
@@ -72088,10 +72259,10 @@ function Tenants() {
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								variant: "outline",
 								onClick: () => setIsOpen(false),
-								children: "Cancelar"
+								children: t("common.cancel")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								onClick: handleSave,
-								children: "Salvar"
+								children: t("common.save")
 							})]
 						})
 					]
@@ -72104,14 +72275,14 @@ function Tenants() {
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 						className: "bg-slate-50",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "CPF / CNPJ" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Email" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Aluguel" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") || "Status" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.tax_id_label") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.email") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.base_rent") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 								className: "text-right",
-								children: "Ações"
+								children: t("common.actions")
 							})
 						] })
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [tenants$1.map((tenant) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
@@ -72126,7 +72297,7 @@ function Tenants() {
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatAppCurrency(tenant.rentValue) }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: "outline",
-								children: tenant.status
+								children: t(`status.${tenant.status}`) || tenant.status
 							}) }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 								className: "text-right",
@@ -72136,17 +72307,25 @@ function Tenants() {
 										variant: "outline",
 										size: "sm",
 										onClick: () => handleOpenEdit(tenant),
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+											" ",
+											t("common.edit")
+										]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
 										asChild: true,
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 											variant: "destructive",
 											size: "sm",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+												" ",
+												t("common.delete")
+											]
 										})
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Inquilino" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-										onClick: () => toast$2({ title: "Inquilino excluído com sucesso" }),
-										children: "Excluir"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.delete_tenant") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_tenant_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+										onClick: () => toast$2({ title: t("common.delete_success") }),
+										children: t("common.confirm")
 									})] })] })] })]
 								})
 							})
@@ -72179,30 +72358,34 @@ function Owners() {
 	const [form, setForm] = (0, import_react.useState)({});
 	const handleOpenAdd = () => {
 		setEditingId(null);
-		setForm({});
+		setForm({ country: "US" });
 		setIsOpen(true);
 	};
 	const handleOpenEdit = (owner) => {
 		setEditingId(owner.id);
-		setForm(owner);
+		setForm({
+			country: "US",
+			...owner
+		});
 		setIsOpen(true);
 	};
 	const handleSave = () => {
 		if (editingId) {
 			updateOwner({ ...form });
-			toast$2({ title: "Proprietário alterado com sucesso" });
+			toast$2({ title: t("common.owner_updated") });
 		} else {
 			addOwner({
 				...form,
 				id: `owner-${Date.now()}`,
-				name: form.name || "Novo Proprietário",
+				name: form.name || t("common.new"),
 				status: "active",
 				role: "property_owner"
 			});
-			toast$2({ title: "Proprietário incluído com sucesso" });
+			toast$2({ title: t("common.owner_added") });
 		}
 		setIsOpen(false);
 	};
+	const ctry = form.country || "US";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
 		children: [
@@ -72210,41 +72393,72 @@ function Owners() {
 				className: "flex justify-between items-center",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 					className: "text-3xl font-bold tracking-tight text-slate-900",
-					children: t("sidebar.owners") || "Proprietários"
+					children: t("sidebar.owners")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-muted-foreground",
-					children: "Manage your property owners."
+					children: t("owners.subtitle")
 				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 					onClick: handleOpenAdd,
 					className: "bg-trust-blue gap-2 text-white",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+						" ",
+						t("common.add")
+					]
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 				open: isOpen,
 				onOpenChange: setIsOpen,
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-					className: "max-w-4xl max-h-[90vh] overflow-y-auto",
+					className: "max-w-4xl max-h-[90vh] overflow-y-auto bg-white text-black",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingId ? "Alterar Proprietário" : "Incluir Proprietário" }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingId ? t("common.edit_owner") : t("common.add_owner") }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "grid grid-cols-1 md:grid-cols-2 gap-4 mt-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: form.country || "US",
+									onValueChange: (v) => setForm({
+										...form,
+										country: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select_country") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "US",
+											children: t("common.country_us")
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "BR",
+											children: t("common.country_br")
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "ES",
+											children: t("common.country_es")
+										})
+									] })]
+								})]
+							})
+						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
 							defaultValue: "personal",
-							className: "w-full mt-4",
+							className: "w-full mt-2",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
 									className: "grid w-full grid-cols-3 mb-4",
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 											value: "personal",
-											children: "Dados Pessoais"
+											children: t("common.personal_data")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 											value: "contact",
-											children: "Contato e Endereço"
+											children: t("common.contact_address")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 											value: "documents",
-											children: "Documentos"
+											children: t("common.documents")
 										})
 									]
 								}),
@@ -72254,7 +72468,7 @@ function Owners() {
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nome Completo / Razão Social" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.full_name_label") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												value: form.name || "",
 												onChange: (e) => setForm({
 													...form,
@@ -72264,7 +72478,7 @@ function Owners() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												type: "email",
 												value: form.email || "",
 												onChange: (e) => setForm({
@@ -72275,18 +72489,18 @@ function Owners() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CPF / CNPJ" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.tax_id_label") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												maxLength: 18,
 												value: form.cpfCnpj || "",
 												onChange: (e) => setForm({
 													...form,
-													cpfCnpj: applyDocumentMask(e.target.value, "BR")
+													cpfCnpj: applyDocumentMask(e.target.value, ctry)
 												})
 											})]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "RG" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.rg_id") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												value: form.rg || "",
 												onChange: (e) => setForm({
 													...form,
@@ -72296,7 +72510,7 @@ function Owners() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nascimento / Fundação" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.dob") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												type: "date",
 												value: form.dob || "",
 												onChange: (e) => setForm({
@@ -72307,7 +72521,7 @@ function Owners() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nacionalidade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.nationality") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												value: form.nationality || "",
 												onChange: (e) => setForm({
 													...form,
@@ -72317,39 +72531,39 @@ function Owners() {
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Estado Civil" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.marital_status") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 												value: form.maritalStatus || "",
 												onValueChange: (v) => setForm({
 													...form,
 													maritalStatus: v
 												}),
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "Solteiro",
-														children: "Solteiro(a)"
+														value: "Single",
+														children: t("common.single")
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "Casado",
-														children: "Casado(a)"
+														value: "Married",
+														children: t("common.married")
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "Divorciado",
-														children: "Divorciado(a)"
+														value: "Divorced",
+														children: t("common.divorced")
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "Viuvo",
-														children: "Viúvo(a)"
+														value: "Widowed",
+														children: t("common.widowed")
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "Outro",
-														children: "Outro"
+														value: "Other",
+														children: t("common.other")
 													})
 												] })]
 											})]
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "space-y-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Profissão" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.profession") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												value: form.profession || "",
 												onChange: (e) => setForm({
 													...form,
@@ -72364,64 +72578,76 @@ function Owners() {
 									className: "space-y-6",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
 										className: "text-sm font-medium mb-3 border-b pb-2",
-										children: "Contatos"
+										children: t("common.phone")
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid grid-cols-1 md:grid-cols-3 gap-4",
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone Principal" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
 													value: form.phone || "",
 													onChange: (e) => setForm({
 														...form,
 														phone: e.target.value
 													}),
-													defaultCountry: "BR"
+													country: ctry,
+													onCountryChange: (c$1) => setForm({
+														...form,
+														country: c$1
+													})
 												})]
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone Secundário" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.secondary_phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
 													value: form.secondaryPhone || "",
 													onChange: (e) => setForm({
 														...form,
 														secondaryPhone: e.target.value
 													}),
-													defaultCountry: "BR"
+													country: ctry,
+													onCountryChange: (c$1) => setForm({
+														...form,
+														country: c$1
+													})
 												})]
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "WhatsApp" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.whatsapp") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
 													value: form.whatsapp || "",
 													onChange: (e) => setForm({
 														...form,
 														whatsapp: e.target.value
 													}),
-													defaultCountry: "BR"
+													country: ctry,
+													onCountryChange: (c$1) => setForm({
+														...form,
+														country: c$1
+													})
 												})]
 											})
 										]
 									})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
 										className: "text-sm font-medium mb-3 border-b pb-2",
-										children: "Endereço"
+										children: t("common.address")
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "grid grid-cols-1 md:grid-cols-4 gap-4",
 										children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CEP" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													maxLength: 9,
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.zip_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													maxLength: 10,
 													value: form.zipCode || "",
 													onChange: (e) => setForm({
 														...form,
-														zipCode: applyZipCodeMask(e.target.value, "BR")
+														zipCode: applyZipCodeMask(e.target.value, ctry)
 													})
 												})]
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Logradouro" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.street") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													value: form.address || "",
 													onChange: (e) => setForm({
 														...form,
@@ -72431,7 +72657,7 @@ function Owners() {
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Número" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													value: form.addressNumber || "",
 													onChange: (e) => setForm({
 														...form,
@@ -72441,7 +72667,7 @@ function Owners() {
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Complemento" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.complement") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													value: form.complement || "",
 													onChange: (e) => setForm({
 														...form,
@@ -72451,7 +72677,7 @@ function Owners() {
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Bairro" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.neighborhood") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													value: form.neighborhood || "",
 													onChange: (e) => setForm({
 														...form,
@@ -72461,7 +72687,7 @@ function Owners() {
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Cidade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.city") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													value: form.city || "",
 													onChange: (e) => setForm({
 														...form,
@@ -72471,7 +72697,7 @@ function Owners() {
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "space-y-1 md:col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Estado" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.state") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													value: form.state || "",
 													onChange: (e) => setForm({
 														...form,
@@ -72505,10 +72731,10 @@ function Owners() {
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								variant: "outline",
 								onClick: () => setIsOpen(false),
-								children: "Cancelar"
+								children: t("common.cancel")
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								onClick: handleSave,
-								children: "Salvar"
+								children: t("common.save")
 							})]
 						})
 					]
@@ -72521,15 +72747,15 @@ function Owners() {
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 						className: "bg-slate-50",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "CPF / CNPJ" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Email" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.phone") || "Telefone" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Localização" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") || "Status" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.tax_id_label") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.email") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.phone") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.location") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 								className: "text-right",
-								children: "Ações"
+								children: t("common.actions")
 							})
 						] })
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [owners$1.map((owner) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
@@ -72545,7 +72771,7 @@ function Owners() {
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: owner.city ? `${owner.city}, ${owner.state}` : "-" }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: owner.status === "active" ? "default" : "secondary",
-								children: owner.status
+								children: t(`status.${owner.status}`) || owner.status
 							}) }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 								className: "text-right",
@@ -72555,17 +72781,25 @@ function Owners() {
 										variant: "outline",
 										size: "sm",
 										onClick: () => handleOpenEdit(owner),
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+											" ",
+											t("common.edit")
+										]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
 										asChild: true,
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 											variant: "destructive",
 											size: "sm",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+												" ",
+												t("common.delete")
+											]
 										})
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Proprietário" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-										onClick: () => toast$2({ title: "Proprietário excluído com sucesso" }),
-										children: "Excluir"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.delete_owner") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_owner_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+										onClick: () => toast$2({ title: t("common.delete_success") }),
+										children: t("common.confirm")
 									})] })] })] })]
 								})
 							})
@@ -82474,4 +82708,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-83P9_Vup.js.map
+//# sourceMappingURL=index-BM0AL96m.js.map

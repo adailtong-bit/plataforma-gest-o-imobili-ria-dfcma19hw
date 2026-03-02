@@ -59,75 +59,101 @@ export default function Owners() {
 
   const handleOpenAdd = () => {
     setEditingId(null)
-    setForm({})
+    setForm({ country: 'US' })
     setIsOpen(true)
   }
   const handleOpenEdit = (owner: Owner) => {
     setEditingId(owner.id)
-    setForm(owner)
+    setForm({ country: 'US', ...owner })
     setIsOpen(true)
   }
 
   const handleSave = () => {
     if (editingId) {
       updateOwner({ ...form } as Owner)
-      toast({ title: 'Proprietário alterado com sucesso' })
+      toast({ title: t('common.owner_updated') })
     } else {
       addOwner({
         ...form,
         id: `owner-${Date.now()}`,
-        name: form.name || 'Novo Proprietário',
+        name: form.name || t('common.new'),
         status: 'active',
         role: 'property_owner',
       } as Owner)
-      toast({ title: 'Proprietário incluído com sucesso' })
+      toast({ title: t('common.owner_added') })
     }
     setIsOpen(false)
   }
+
+  const ctry = (form.country as 'US' | 'BR' | 'ES') || 'US'
 
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('sidebar.owners') || 'Proprietários'}
+            {t('sidebar.owners')}
           </h1>
-          <p className="text-muted-foreground">Manage your property owners.</p>
+          <p className="text-muted-foreground">{t('owners.subtitle')}</p>
         </div>
         <Button
           onClick={handleOpenAdd}
           className="bg-trust-blue gap-2 text-white"
         >
-          <Plus className="h-4 w-4" /> Incluir
+          <Plus className="h-4 w-4" /> {t('common.add')}
         </Button>
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white text-black">
           <DialogHeader>
             <DialogTitle>
-              {editingId ? 'Alterar Proprietário' : 'Incluir Proprietário'}
+              {editingId ? t('common.edit_owner') : t('common.add_owner')}
             </DialogTitle>
           </DialogHeader>
-          <Tabs defaultValue="personal" className="w-full mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+            <div className="space-y-1">
+              <Label>{t('common.country')}</Label>
+              <Select
+                value={form.country || 'US'}
+                onValueChange={(v) => setForm({ ...form, country: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t('common.select_country')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="US">{t('common.country_us')}</SelectItem>
+                  <SelectItem value="BR">{t('common.country_br')}</SelectItem>
+                  <SelectItem value="ES">{t('common.country_es')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <Tabs defaultValue="personal" className="w-full mt-2">
             <TabsList className="grid w-full grid-cols-3 mb-4">
-              <TabsTrigger value="personal">Dados Pessoais</TabsTrigger>
-              <TabsTrigger value="contact">Contato e Endereço</TabsTrigger>
-              <TabsTrigger value="documents">Documentos</TabsTrigger>
+              <TabsTrigger value="personal">
+                {t('common.personal_data')}
+              </TabsTrigger>
+              <TabsTrigger value="contact">
+                {t('common.contact_address')}
+              </TabsTrigger>
+              <TabsTrigger value="documents">
+                {t('common.documents')}
+              </TabsTrigger>
             </TabsList>
             <TabsContent
               value="personal"
               className="grid grid-cols-1 md:grid-cols-2 gap-4"
             >
               <div className="space-y-1">
-                <Label>Nome Completo / Razão Social</Label>
+                <Label>{t('common.full_name_label')}</Label>
                 <Input
                   value={form.name || ''}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
               </div>
               <div className="space-y-1">
-                <Label>Email</Label>
+                <Label>{t('common.email')}</Label>
                 <Input
                   type="email"
                   value={form.email || ''}
@@ -135,27 +161,27 @@ export default function Owners() {
                 />
               </div>
               <div className="space-y-1">
-                <Label>CPF / CNPJ</Label>
+                <Label>{t('common.tax_id_label')}</Label>
                 <Input
                   maxLength={18}
                   value={form.cpfCnpj || ''}
                   onChange={(e) =>
                     setForm({
                       ...form,
-                      cpfCnpj: applyDocumentMask(e.target.value, 'BR'),
+                      cpfCnpj: applyDocumentMask(e.target.value, ctry),
                     })
                   }
                 />
               </div>
               <div className="space-y-1">
-                <Label>RG</Label>
+                <Label>{t('common.rg_id')}</Label>
                 <Input
                   value={form.rg || ''}
                   onChange={(e) => setForm({ ...form, rg: e.target.value })}
                 />
               </div>
               <div className="space-y-1">
-                <Label>Nascimento / Fundação</Label>
+                <Label>{t('common.dob')}</Label>
                 <Input
                   type="date"
                   value={form.dob || ''}
@@ -163,7 +189,7 @@ export default function Owners() {
                 />
               </div>
               <div className="space-y-1">
-                <Label>Nacionalidade</Label>
+                <Label>{t('common.nationality')}</Label>
                 <Input
                   value={form.nationality || ''}
                   onChange={(e) =>
@@ -172,25 +198,31 @@ export default function Owners() {
                 />
               </div>
               <div className="space-y-1">
-                <Label>Estado Civil</Label>
+                <Label>{t('common.marital_status')}</Label>
                 <Select
                   value={form.maritalStatus || ''}
                   onValueChange={(v) => setForm({ ...form, maritalStatus: v })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione..." />
+                    <SelectValue placeholder={t('common.select')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Solteiro">Solteiro(a)</SelectItem>
-                    <SelectItem value="Casado">Casado(a)</SelectItem>
-                    <SelectItem value="Divorciado">Divorciado(a)</SelectItem>
-                    <SelectItem value="Viuvo">Viúvo(a)</SelectItem>
-                    <SelectItem value="Outro">Outro</SelectItem>
+                    <SelectItem value="Single">{t('common.single')}</SelectItem>
+                    <SelectItem value="Married">
+                      {t('common.married')}
+                    </SelectItem>
+                    <SelectItem value="Divorced">
+                      {t('common.divorced')}
+                    </SelectItem>
+                    <SelectItem value="Widowed">
+                      {t('common.widowed')}
+                    </SelectItem>
+                    <SelectItem value="Other">{t('common.other')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1">
-                <Label>Profissão</Label>
+                <Label>{t('common.profession')}</Label>
                 <Input
                   value={form.profession || ''}
                   onChange={(e) =>
@@ -202,61 +234,64 @@ export default function Owners() {
             <TabsContent value="contact" className="space-y-6">
               <div>
                 <h3 className="text-sm font-medium mb-3 border-b pb-2">
-                  Contatos
+                  {t('common.phone')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <Label>Telefone Principal</Label>
+                    <Label>{t('common.phone')}</Label>
                     <PhoneInput
                       value={form.phone || ''}
                       onChange={(e) =>
                         setForm({ ...form, phone: e.target.value })
                       }
-                      defaultCountry="BR"
+                      country={ctry}
+                      onCountryChange={(c) => setForm({ ...form, country: c })}
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label>Telefone Secundário</Label>
+                    <Label>{t('common.secondary_phone')}</Label>
                     <PhoneInput
                       value={form.secondaryPhone || ''}
                       onChange={(e) =>
                         setForm({ ...form, secondaryPhone: e.target.value })
                       }
-                      defaultCountry="BR"
+                      country={ctry}
+                      onCountryChange={(c) => setForm({ ...form, country: c })}
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label>WhatsApp</Label>
+                    <Label>{t('common.whatsapp')}</Label>
                     <PhoneInput
                       value={form.whatsapp || ''}
                       onChange={(e) =>
                         setForm({ ...form, whatsapp: e.target.value })
                       }
-                      defaultCountry="BR"
+                      country={ctry}
+                      onCountryChange={(c) => setForm({ ...form, country: c })}
                     />
                   </div>
                 </div>
               </div>
               <div>
                 <h3 className="text-sm font-medium mb-3 border-b pb-2">
-                  Endereço
+                  {t('common.address')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="space-y-1 md:col-span-1">
-                    <Label>CEP</Label>
+                    <Label>{t('common.zip_code')}</Label>
                     <Input
-                      maxLength={9}
+                      maxLength={10}
                       value={form.zipCode || ''}
                       onChange={(e) =>
                         setForm({
                           ...form,
-                          zipCode: applyZipCodeMask(e.target.value, 'BR'),
+                          zipCode: applyZipCodeMask(e.target.value, ctry),
                         })
                       }
                     />
                   </div>
                   <div className="space-y-1 md:col-span-2">
-                    <Label>Logradouro</Label>
+                    <Label>{t('common.street')}</Label>
                     <Input
                       value={form.address || ''}
                       onChange={(e) =>
@@ -265,7 +300,7 @@ export default function Owners() {
                     />
                   </div>
                   <div className="space-y-1 md:col-span-1">
-                    <Label>Número</Label>
+                    <Label>{t('common.number')}</Label>
                     <Input
                       value={form.addressNumber || ''}
                       onChange={(e) =>
@@ -274,7 +309,7 @@ export default function Owners() {
                     />
                   </div>
                   <div className="space-y-1 md:col-span-1">
-                    <Label>Complemento</Label>
+                    <Label>{t('common.complement')}</Label>
                     <Input
                       value={form.complement || ''}
                       onChange={(e) =>
@@ -283,7 +318,7 @@ export default function Owners() {
                     />
                   </div>
                   <div className="space-y-1 md:col-span-1">
-                    <Label>Bairro</Label>
+                    <Label>{t('common.neighborhood')}</Label>
                     <Input
                       value={form.neighborhood || ''}
                       onChange={(e) =>
@@ -292,7 +327,7 @@ export default function Owners() {
                     />
                   </div>
                   <div className="space-y-1 md:col-span-1">
-                    <Label>Cidade</Label>
+                    <Label>{t('common.city')}</Label>
                     <Input
                       value={form.city || ''}
                       onChange={(e) =>
@@ -301,7 +336,7 @@ export default function Owners() {
                     />
                   </div>
                   <div className="space-y-1 md:col-span-1">
-                    <Label>Estado</Label>
+                    <Label>{t('common.state')}</Label>
                     <Input
                       value={form.state || ''}
                       onChange={(e) =>
@@ -327,9 +362,9 @@ export default function Owners() {
           </Tabs>
           <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => setIsOpen(false)}>
-              Cancelar
+              {t('common.cancel')}
             </Button>
-            <Button onClick={handleSave}>Salvar</Button>
+            <Button onClick={handleSave}>{t('common.save')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -339,13 +374,15 @@ export default function Owners() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>{t('common.name') || 'Nome'}</TableHead>
-                <TableHead>CPF / CNPJ</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>{t('common.phone') || 'Telefone'}</TableHead>
-                <TableHead>Localização</TableHead>
-                <TableHead>{t('common.status') || 'Status'}</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead>{t('common.name')}</TableHead>
+                <TableHead>{t('common.tax_id_label')}</TableHead>
+                <TableHead>{t('common.email')}</TableHead>
+                <TableHead>{t('common.phone')}</TableHead>
+                <TableHead>{t('common.location')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -372,7 +409,7 @@ export default function Owners() {
                         owner.status === 'active' ? 'default' : 'secondary'
                       }
                     >
-                      {owner.status}
+                      {t(`status.${owner.status}`) || owner.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -382,33 +419,34 @@ export default function Owners() {
                         size="sm"
                         onClick={() => handleOpenEdit(owner)}
                       >
-                        <Pencil className="h-4 w-4 mr-2" /> Alterar
+                        <Pencil className="h-4 w-4 mr-2" /> {t('common.edit')}
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive" size="sm">
-                            <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                            <Trash2 className="h-4 w-4 mr-2" />{' '}
+                            {t('common.delete')}
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>
-                              Excluir Proprietário
+                              {t('common.delete_owner')}
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              Esta ação não pode ser desfeita.
+                              {t('common.delete_owner_desc')}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogCancel>
+                              {t('common.cancel')}
+                            </AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() =>
-                                toast({
-                                  title: 'Proprietário excluído com sucesso',
-                                })
+                                toast({ title: t('common.delete_success') })
                               }
                             >
-                              Excluir
+                              {t('common.confirm')}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
