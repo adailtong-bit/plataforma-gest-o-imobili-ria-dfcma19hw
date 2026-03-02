@@ -17,7 +17,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
 import {
@@ -32,48 +31,58 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { DataMask } from '@/components/DataMask'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PhoneInput } from '@/components/ui/phone-input'
+import { applyDocumentMask, applyZipCodeMask } from '@/lib/utils'
+import { DocumentVault } from '@/components/documents/DocumentVault'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Owner } from '@/lib/types'
 
 export default function Owners() {
   const { owners, addOwner, updateOwner } = useContext(AppContext)!
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
-  const [isAddOpen, setIsAddOpen] = useState(false)
-  const [editingRecord, setEditingRecord] = useState<any>(null)
-  const [form, setForm] = useState({ name: '', email: '', phone: '' })
+  const [isOpen, setIsOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [form, setForm] = useState<Partial<Owner>>({})
 
-  const handleAdd = () => {
-    addOwner({
-      id: `owner-${Date.now()}`,
-      name: form.name || 'Novo Proprietário',
-      email: form.email,
-      phone: form.phone,
-      status: 'active',
-      role: 'property_owner',
-    })
-    setIsAddOpen(false)
-    setForm({ name: '', email: '', phone: '' })
-    toast({ title: 'Proprietário incluído com sucesso' })
+  const handleOpenAdd = () => {
+    setEditingId(null)
+    setForm({})
+    setIsOpen(true)
+  }
+  const handleOpenEdit = (owner: Owner) => {
+    setEditingId(owner.id)
+    setForm(owner)
+    setIsOpen(true)
   }
 
-  const handleEdit = () => {
-    if (editingRecord) {
-      updateOwner({
-        ...editingRecord,
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-      })
+  const handleSave = () => {
+    if (editingId) {
+      updateOwner({ ...form } as Owner)
+      toast({ title: 'Proprietário alterado com sucesso' })
+    } else {
+      addOwner({
+        ...form,
+        id: `owner-${Date.now()}`,
+        name: form.name || 'Novo Proprietário',
+        status: 'active',
+        role: 'property_owner',
+      } as Owner)
+      toast({ title: 'Proprietário incluído com sucesso' })
     }
-    setEditingRecord(null)
-    toast({ title: 'Proprietário alterado com sucesso' })
-  }
-
-  const handleDelete = (id: string) => {
-    toast({ title: 'Proprietário excluído com sucesso' })
+    setIsOpen(false)
   }
 
   return (
@@ -85,39 +94,245 @@ export default function Owners() {
           </h1>
           <p className="text-muted-foreground">Manage your property owners.</p>
         </div>
-        <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-trust-blue gap-2 text-white">
-              <Plus className="h-4 w-4" /> Incluir
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Incluir Proprietário</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <Input
-                placeholder="Nome"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-              <Input
-                placeholder="Email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
-              <Input
-                placeholder="Telefone"
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              />
-            </div>
-            <DialogFooter>
-              <Button onClick={handleAdd}>Salvar</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Button
+          onClick={handleOpenAdd}
+          className="bg-trust-blue gap-2 text-white"
+        >
+          <Plus className="h-4 w-4" /> Incluir
+        </Button>
       </div>
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingId ? 'Alterar Proprietário' : 'Incluir Proprietário'}
+            </DialogTitle>
+          </DialogHeader>
+          <Tabs defaultValue="personal" className="w-full mt-4">
+            <TabsList className="grid w-full grid-cols-3 mb-4">
+              <TabsTrigger value="personal">Dados Pessoais</TabsTrigger>
+              <TabsTrigger value="contact">Contato e Endereço</TabsTrigger>
+              <TabsTrigger value="documents">Documentos</TabsTrigger>
+            </TabsList>
+            <TabsContent
+              value="personal"
+              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            >
+              <div className="space-y-1">
+                <Label>Nome Completo / Razão Social</Label>
+                <Input
+                  value={form.name || ''}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={form.email || ''}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label>CPF / CNPJ</Label>
+                <Input
+                  maxLength={18}
+                  value={form.cpfCnpj || ''}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      cpfCnpj: applyDocumentMask(e.target.value, 'BR'),
+                    })
+                  }
+                />
+              </div>
+              <div className="space-y-1">
+                <Label>RG</Label>
+                <Input
+                  value={form.rg || ''}
+                  onChange={(e) => setForm({ ...form, rg: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label>Nascimento / Fundação</Label>
+                <Input
+                  type="date"
+                  value={form.dob || ''}
+                  onChange={(e) => setForm({ ...form, dob: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label>Nacionalidade</Label>
+                <Input
+                  value={form.nationality || ''}
+                  onChange={(e) =>
+                    setForm({ ...form, nationality: e.target.value })
+                  }
+                />
+              </div>
+              <div className="space-y-1">
+                <Label>Estado Civil</Label>
+                <Select
+                  value={form.maritalStatus || ''}
+                  onValueChange={(v) => setForm({ ...form, maritalStatus: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Solteiro">Solteiro(a)</SelectItem>
+                    <SelectItem value="Casado">Casado(a)</SelectItem>
+                    <SelectItem value="Divorciado">Divorciado(a)</SelectItem>
+                    <SelectItem value="Viuvo">Viúvo(a)</SelectItem>
+                    <SelectItem value="Outro">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label>Profissão</Label>
+                <Input
+                  value={form.profession || ''}
+                  onChange={(e) =>
+                    setForm({ ...form, profession: e.target.value })
+                  }
+                />
+              </div>
+            </TabsContent>
+            <TabsContent value="contact" className="space-y-6">
+              <div>
+                <h3 className="text-sm font-medium mb-3 border-b pb-2">
+                  Contatos
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <Label>Telefone Principal</Label>
+                    <PhoneInput
+                      value={form.phone || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, phone: e.target.value })
+                      }
+                      defaultCountry="BR"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>Telefone Secundário</Label>
+                    <PhoneInput
+                      value={form.secondaryPhone || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, secondaryPhone: e.target.value })
+                      }
+                      defaultCountry="BR"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>WhatsApp</Label>
+                    <PhoneInput
+                      value={form.whatsapp || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, whatsapp: e.target.value })
+                      }
+                      defaultCountry="BR"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium mb-3 border-b pb-2">
+                  Endereço
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="space-y-1 md:col-span-1">
+                    <Label>CEP</Label>
+                    <Input
+                      maxLength={9}
+                      value={form.zipCode || ''}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          zipCode: applyZipCodeMask(e.target.value, 'BR'),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <Label>Logradouro</Label>
+                    <Input
+                      value={form.address || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, address: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1 md:col-span-1">
+                    <Label>Número</Label>
+                    <Input
+                      value={form.addressNumber || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, addressNumber: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1 md:col-span-1">
+                    <Label>Complemento</Label>
+                    <Input
+                      value={form.complement || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, complement: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1 md:col-span-1">
+                    <Label>Bairro</Label>
+                    <Input
+                      value={form.neighborhood || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, neighborhood: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1 md:col-span-1">
+                    <Label>Cidade</Label>
+                    <Input
+                      value={form.city || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, city: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1 md:col-span-1">
+                    <Label>Estado</Label>
+                    <Input
+                      value={form.state || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, state: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="documents">
+              <DocumentVault
+                documents={form.documents || []}
+                onUpdate={(docs) => setForm({ ...form, documents: docs })}
+                canEdit={true}
+                entityContext={
+                  form.name
+                    ? { id: editingId || 'new', name: form.name, type: 'owner' }
+                    : undefined
+                }
+              />
+            </TabsContent>
+          </Tabs>
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => setIsOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSave}>Salvar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Card className="border-slate-200 shadow-sm bg-white">
         <CardContent className="p-0 overflow-auto">
@@ -125,9 +340,10 @@ export default function Owners() {
             <TableHeader className="bg-slate-50">
               <TableRow>
                 <TableHead>{t('common.name') || 'Nome'}</TableHead>
+                <TableHead>CPF / CNPJ</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>{t('common.phone') || 'Telefone'}</TableHead>
-                <TableHead>Location</TableHead>
+                <TableHead>Localização</TableHead>
                 <TableHead>{t('common.status') || 'Status'}</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -137,6 +353,9 @@ export default function Owners() {
                 <TableRow key={owner.id} className="hover:bg-slate-50">
                   <TableCell className="font-medium text-slate-900">
                     <DataMask>{owner.name}</DataMask>
+                  </TableCell>
+                  <TableCell>
+                    <DataMask>{owner.cpfCnpj || '-'}</DataMask>
                   </TableCell>
                   <TableCell>
                     <DataMask>{owner.email}</DataMask>
@@ -158,58 +377,13 @@ export default function Owners() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Dialog
-                        open={editingRecord?.id === owner.id}
-                        onOpenChange={(open) => !open && setEditingRecord(null)}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOpenEdit(owner)}
                       >
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setEditingRecord(owner)
-                              setForm({
-                                name: owner.name,
-                                email: owner.email,
-                                phone: owner.phone,
-                              })
-                            }}
-                          >
-                            <Pencil className="h-4 w-4 mr-2" /> Alterar
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Alterar Proprietário</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4 py-4">
-                            <Input
-                              placeholder="Nome"
-                              value={form.name}
-                              onChange={(e) =>
-                                setForm({ ...form, name: e.target.value })
-                              }
-                            />
-                            <Input
-                              placeholder="Email"
-                              value={form.email}
-                              onChange={(e) =>
-                                setForm({ ...form, email: e.target.value })
-                              }
-                            />
-                            <Input
-                              placeholder="Telefone"
-                              value={form.phone}
-                              onChange={(e) =>
-                                setForm({ ...form, phone: e.target.value })
-                              }
-                            />
-                          </div>
-                          <DialogFooter>
-                            <Button onClick={handleEdit}>Salvar</Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
+                        <Pencil className="h-4 w-4 mr-2" /> Alterar
+                      </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive" size="sm">
@@ -228,7 +402,11 @@ export default function Owners() {
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={() => handleDelete(owner.id)}
+                              onClick={() =>
+                                toast({
+                                  title: 'Proprietário excluído com sucesso',
+                                })
+                              }
                             >
                               Excluir
                             </AlertDialogAction>
@@ -242,7 +420,7 @@ export default function Owners() {
               {owners.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className="text-center py-6 text-muted-foreground"
                   >
                     {t('common.empty')}

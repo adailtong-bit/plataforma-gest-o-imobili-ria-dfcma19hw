@@ -666,6 +666,21 @@ export interface Tenant {
   }
   isDemo?: boolean
   inspections?: InventoryInspection[]
+  cpfCnpj?: string
+  rg?: string
+  dob?: string
+  nationality?: string
+  maritalStatus?: string
+  profession?: string
+  monthlyIncome?: number
+  secondaryPhone?: string
+  whatsapp?: string
+  zipCode?: string
+  addressNumber?: string
+  complement?: string
+  neighborhood?: string
+  city?: string
+  state?: string
 }
 
 export interface Booking {
@@ -739,6 +754,17 @@ export interface Owner {
   secondContact?: { name: string; phone: string; email?: string }
   pmAgreementUrl?: string
   isDemo?: boolean
+  cpfCnpj?: string
+  rg?: string
+  dob?: string
+  nationality?: string
+  maritalStatus?: string
+  profession?: string
+  secondaryPhone?: string
+  whatsapp?: string
+  addressNumber?: string
+  complement?: string
+  neighborhood?: string
 }
 
 export interface ServiceCategory {

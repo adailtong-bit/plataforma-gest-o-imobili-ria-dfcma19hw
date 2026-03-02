@@ -23959,6 +23959,49 @@ const isGenericOrPlaceholder = (value) => {
 	].includes(lower)) return true;
 	return false;
 };
+const applyPhoneMask = (value, country) => {
+	const digits = value.replace(/\D/g, "");
+	if (country === "US") {
+		if (digits.length <= 3) return digits;
+		if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+		return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+	}
+	if (country === "BR") {
+		if (digits.length <= 2) return digits;
+		if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+		if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+		return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+	}
+	if (country === "ES") {
+		if (digits.length <= 3) return digits;
+		if (digits.length <= 5) return `${digits.slice(0, 3)} ${digits.slice(3)}`;
+		if (digits.length <= 7) return `${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5)}`;
+		return `${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 7)} ${digits.slice(7, 9)}`;
+	}
+	return value;
+};
+const applyDocumentMask = (value, country) => {
+	const digits = value.replace(/\D/g, "");
+	if (country === "US") {
+		if (digits.length <= 3) return digits;
+		if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+		return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5, 9)}`;
+	}
+	if (country === "BR") if (digits.length <= 11) {
+		if (digits.length <= 3) return digits;
+		if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+		if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+		return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
+	} else {
+		if (digits.length <= 12) return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}`;
+		return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-${digits.slice(12, 14)}`;
+	}
+	if (country === "ES") {
+		if (digits.length <= 8) return digits;
+		return `${digits.slice(0, 8)}-${digits.slice(8, 9)}`;
+	}
+	return value;
+};
 const applyZipCodeMask = (value, country) => {
 	const digits = value.replace(/\D/g, "");
 	if (country === "US") return digits.slice(0, 5);
@@ -71400,214 +71443,722 @@ function Settings() {
 		})]
 	});
 }
+var COUNTRIES = {
+	US: {
+		code: "+1",
+		flag: "🇺🇸",
+		mask: "(999) 999-9999",
+		maxLength: 14
+	},
+	BR: {
+		code: "+55",
+		flag: "🇧🇷",
+		mask: "(99) 99999-9999",
+		maxLength: 15
+	},
+	ES: {
+		code: "+34",
+		flag: "🇪🇸",
+		mask: "999 99 99 99",
+		maxLength: 13
+	}
+};
+function PhoneInput({ className, value, onChange, defaultCountry = "US", country: controlledCountry, onCountryChange, ...props }) {
+	const [internalCountry, setInternalCountry] = import_react.useState(defaultCountry);
+	const currentCountry = controlledCountry || internalCountry;
+	const handleCountryChange = (val) => {
+		const newCountry = val;
+		if (onCountryChange) onCountryChange(newCountry);
+		else setInternalCountry(newCountry);
+	};
+	const handlePhoneChange = (e) => {
+		const rawValue = e.target.value;
+		const maskedValue = applyPhoneMask(rawValue, currentCountry);
+		if (maskedValue.length > COUNTRIES[currentCountry].maxLength) return;
+		onChange({
+			...e,
+			target: {
+				...e.target,
+				value: maskedValue
+			}
+		});
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: cn("flex gap-2", className),
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+			value: currentCountry,
+			onValueChange: handleCountryChange,
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+				className: "w-[100px] bg-white text-black",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectValue, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "mr-2",
+					children: COUNTRIES[currentCountry].flag
+				}), COUNTRIES[currentCountry].code] })
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, {
+				className: "bg-white",
+				children: Object.entries(COUNTRIES).map(([key, data]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+					value: key,
+					className: "text-black hover:bg-slate-100",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "mr-2",
+						children: data.flag
+					}), data.code]
+				}, key))
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+			...props,
+			value,
+			onChange: handlePhoneChange,
+			placeholder: COUNTRIES[currentCountry].mask,
+			maxLength: COUNTRIES[currentCountry].maxLength,
+			className: cn("flex-1 bg-white text-black", className)
+		})]
+	});
+}
+function DocumentVault({ documents, onUpdate, canEdit, title, description, entityContext }) {
+	const { t, language } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const docInputRef = (0, import_react.useRef)(null);
+	const [isUploading, setIsUploading] = (0, import_react.useState)(false);
+	const [uploadDialogOpen, setUploadDialogOpen] = (0, import_react.useState)(false);
+	const [selectedFile, setSelectedFile] = (0, import_react.useState)(null);
+	const [selectedCategory, setSelectedCategory] = (0, import_react.useState)("Other");
+	const [linkedEntity, setLinkedEntity] = (0, import_react.useState)(entityContext?.id || "");
+	const handleFileSelect = (e) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			setSelectedFile(file);
+			if (entityContext) setLinkedEntity(entityContext.id);
+			setUploadDialogOpen(true);
+		}
+	};
+	const handleConfirmUpload = () => {
+		if (!selectedFile) return;
+		setIsUploading(true);
+		setTimeout(() => {
+			const newDoc = {
+				id: `doc-${Date.now()}`,
+				name: selectedFile.name,
+				url: URL.createObjectURL(selectedFile),
+				date: (/* @__PURE__ */ new Date()).toISOString(),
+				type: selectedFile.type,
+				size: `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`,
+				category: selectedCategory,
+				linkedEntityId: linkedEntity || void 0,
+				linkedEntityName: linkedEntity === entityContext?.id ? entityContext.name : void 0,
+				linkedEntityType: linkedEntity === entityContext?.id ? entityContext.type : void 0
+			};
+			onUpdate([...documents || [], newDoc]);
+			setIsUploading(false);
+			setUploadDialogOpen(false);
+			setSelectedFile(null);
+			if (docInputRef.current) docInputRef.current.value = "";
+			toast$2({
+				title: t("common.success"),
+				description: t("common.upload") + " " + t("common.completed")
+			});
+		}, 1e3);
+	};
+	const handleRemoveDoc = (docId) => {
+		onUpdate((documents || []).filter((d) => d.id !== docId));
+		toast$2({
+			title: t("common.removed"),
+			description: t("common.delete_success")
+		});
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+		className: "flex flex-row items-center justify-between",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: title || t("common.documents") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: description || t("common.documents") })] }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+			type: "file",
+			ref: docInputRef,
+			className: "hidden",
+			accept: ".pdf,.doc,.docx,.txt,.jpg,.png",
+			onChange: handleFileSelect
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+			onClick: () => docInputRef.current?.click(),
+			className: "bg-trust-blue",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "mr-2 h-4 w-4" }), t("common.upload")]
+		})] })]
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+		open: uploadDialogOpen,
+		onOpenChange: setUploadDialogOpen,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("common.upload") }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid gap-4 py-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.details") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "p-2 border rounded bg-muted text-sm flex items-center gap-2 text-black",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(File, { className: "h-4 w-4 text-blue-500" }), selectedFile?.name]
+						})]
+					}),
+					entityContext && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Link Document to Specific Person" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: linkedEntity,
+							onValueChange: setLinkedEntity,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Person..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+								value: entityContext.id,
+								children: [
+									entityContext.name,
+									" (",
+									t(`roles.${entityContext.type}`),
+									")"
+								]
+							}) })]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.category") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: selectedCategory,
+							onValueChange: (v) => setSelectedCategory(v),
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Contract",
+									children: t("common.contracts")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+									value: "ID",
+									children: ["ID / ", t("common.tax_id")]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Passport",
+									children: "Passport"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "SSN",
+									children: "SSN / Tax ID"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Insurance",
+									children: "Insurance"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Deed",
+									children: "Deed"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Inspection",
+									children: "Inspection"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Other",
+									children: t("common.none")
+								})
+							] })]
+						})]
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "outline",
+				onClick: () => setUploadDialogOpen(false),
+				children: t("common.cancel")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				onClick: handleConfirmUpload,
+				disabled: isUploading,
+				children: isUploading ? "..." : t("common.confirm")
+			})] })
+		] })
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "space-y-4",
+		children: !documents || documents.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg",
+			children: t("common.empty")
+		}) : documents.map((doc) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "bg-blue-100 p-2 rounded-full",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-5 w-5 text-blue-600" })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "font-medium text-sm text-black",
+							children: doc.name
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: "secondary",
+							className: "text-xs",
+							children: doc.category
+						}),
+						doc.linkedEntityName && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+							variant: "outline",
+							className: "text-xs",
+							children: ["Linked to: ", doc.linkedEntityName]
+						})
+					]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					className: "text-xs text-muted-foreground text-black",
+					children: [
+						formatDate(doc.date, language),
+						" •",
+						" ",
+						doc.size || "Unknown size"
+					]
+				})] })]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+					href: doc.url,
+					download: doc.name,
+					target: "_blank",
+					rel: "noopener noreferrer",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "ghost",
+						size: "icon",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" })
+					})
+				}), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "ghost",
+						size: "icon",
+						className: "text-red-500 hover:text-red-700",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm_delete") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+					onClick: () => handleRemoveDoc(doc.id),
+					children: t("common.delete")
+				})] })] })] })]
+			})]
+		}, doc.id))
+	})] })] });
+}
 function Tenants() {
 	const { tenants: tenants$1, addTenant, updateTenant, formatAppCurrency } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
-	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
-	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
-	const [form, setForm] = (0, import_react.useState)({
-		name: "",
-		email: "",
-		rentValue: ""
-	});
-	const handleAdd = () => {
-		addTenant({
-			id: `tenant-${Date.now()}`,
-			name: form.name || "Novo Inquilino",
-			email: form.email,
-			rentValue: Number(form.rentValue) || 0,
-			status: "active",
-			role: "tenant",
-			phone: ""
-		});
-		setIsAddOpen(false);
-		setForm({
-			name: "",
-			email: "",
-			rentValue: ""
-		});
-		toast$2({ title: "Inquilino incluído com sucesso" });
+	const [isOpen, setIsOpen] = (0, import_react.useState)(false);
+	const [editingId, setEditingId] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({});
+	const handleOpenAdd = () => {
+		setEditingId(null);
+		setForm({});
+		setIsOpen(true);
 	};
-	const handleEdit = () => {
-		if (editingRecord) updateTenant({
-			...editingRecord,
-			name: form.name,
-			email: form.email,
-			rentValue: Number(form.rentValue)
-		});
-		setEditingRecord(null);
-		toast$2({ title: "Inquilino alterado com sucesso" });
+	const handleOpenEdit = (tenant) => {
+		setEditingId(tenant.id);
+		setForm(tenant);
+		setIsOpen(true);
 	};
-	const handleDelete = (id) => {
-		toast$2({ title: "Inquilino excluído com sucesso" });
+	const handleSave = () => {
+		if (editingId) {
+			updateTenant({ ...form });
+			toast$2({ title: "Inquilino alterado com sucesso" });
+		} else {
+			addTenant({
+				...form,
+				id: `tenant-${Date.now()}`,
+				name: form.name || "Novo Inquilino",
+				status: "active",
+				role: "tenant",
+				rentValue: form.rentValue || 0
+			});
+			toast$2({ title: "Inquilino incluído com sucesso" });
+		}
+		setIsOpen(false);
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex justify-between items-center",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-slate-900",
-				children: t("sidebar.tenants") || "Inquilinos"
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-muted-foreground",
-				children: "Manage your tenant directory."
-			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-				open: isAddOpen,
-				onOpenChange: setIsAddOpen,
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						className: "bg-trust-blue gap-2 text-white",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Inquilino" }) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-4 py-4",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex justify-between items-center",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold tracking-tight text-slate-900",
+					children: t("sidebar.tenants") || "Inquilinos"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-muted-foreground",
+					children: "Manage your tenant directory."
+				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: handleOpenAdd,
+					className: "bg-trust-blue gap-2 text-white",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: isOpen,
+				onOpenChange: setIsOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "max-w-4xl max-h-[90vh] overflow-y-auto",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingId ? "Alterar Inquilino" : "Incluir Inquilino" }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+							defaultValue: "personal",
+							className: "w-full mt-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+									className: "grid w-full grid-cols-3 mb-4",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+											value: "personal",
+											children: "Dados Pessoais"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+											value: "contact",
+											children: "Contato e Endereço"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+											value: "documents",
+											children: "Documentos"
+										})
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+									value: "personal",
+									className: "grid grid-cols-1 md:grid-cols-2 gap-4",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nome Completo" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: form.name || "",
+												onChange: (e) => setForm({
+													...form,
+													name: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "email",
+												value: form.email || "",
+												onChange: (e) => setForm({
+													...form,
+													email: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CPF / CNPJ" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												maxLength: 18,
+												value: form.cpfCnpj || "",
+												onChange: (e) => setForm({
+													...form,
+													cpfCnpj: applyDocumentMask(e.target.value, "BR")
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "RG" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: form.rg || "",
+												onChange: (e) => setForm({
+													...form,
+													rg: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nascimento" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "date",
+												value: form.dob || "",
+												onChange: (e) => setForm({
+													...form,
+													dob: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nacionalidade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: form.nationality || "",
+												onChange: (e) => setForm({
+													...form,
+													nationality: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Estado Civil" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+												value: form.maritalStatus || "",
+												onValueChange: (v) => setForm({
+													...form,
+													maritalStatus: v
+												}),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "Solteiro",
+														children: "Solteiro(a)"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "Casado",
+														children: "Casado(a)"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "Divorciado",
+														children: "Divorciado(a)"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "Viuvo",
+														children: "Viúvo(a)"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "Outro",
+														children: "Outro"
+													})
+												] })]
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Profissão" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: form.profession || "",
+												onChange: (e) => setForm({
+													...form,
+													profession: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Renda Mensal" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "number",
+												value: form.monthlyIncome || "",
+												onChange: (e) => setForm({
+													...form,
+													monthlyIncome: Number(e.target.value)
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Aluguel Base" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "number",
+												value: form.rentValue || "",
+												onChange: (e) => setForm({
+													...form,
+													rentValue: Number(e.target.value)
+												})
+											})]
+										})
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+									value: "contact",
+									className: "space-y-6",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+										className: "text-sm font-medium mb-3 border-b pb-2",
+										children: "Contatos"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-1 md:grid-cols-3 gap-4",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone Principal" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+													value: form.phone || "",
+													onChange: (e) => setForm({
+														...form,
+														phone: e.target.value
+													}),
+													defaultCountry: "BR"
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone Secundário" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+													value: form.secondaryPhone || "",
+													onChange: (e) => setForm({
+														...form,
+														secondaryPhone: e.target.value
+													}),
+													defaultCountry: "BR"
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "WhatsApp" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+													value: form.whatsapp || "",
+													onChange: (e) => setForm({
+														...form,
+														whatsapp: e.target.value
+													}),
+													defaultCountry: "BR"
+												})]
+											})
+										]
+									})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+										className: "text-sm font-medium mb-3 border-b pb-2",
+										children: "Endereço"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-1 md:grid-cols-4 gap-4",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CEP" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													maxLength: 9,
+													value: form.zipCode || "",
+													onChange: (e) => setForm({
+														...form,
+														zipCode: applyZipCodeMask(e.target.value, "BR")
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Logradouro" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.address || "",
+													onChange: (e) => setForm({
+														...form,
+														address: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Número" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.addressNumber || "",
+													onChange: (e) => setForm({
+														...form,
+														addressNumber: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Complemento" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.complement || "",
+													onChange: (e) => setForm({
+														...form,
+														complement: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Bairro" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.neighborhood || "",
+													onChange: (e) => setForm({
+														...form,
+														neighborhood: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Cidade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.city || "",
+													onChange: (e) => setForm({
+														...form,
+														city: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Estado" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.state || "",
+													onChange: (e) => setForm({
+														...form,
+														state: e.target.value
+													})
+												})]
+											})
+										]
+									})] })]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+									value: "documents",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DocumentVault, {
+										documents: form.documents || [],
+										onUpdate: (docs) => setForm({
+											...form,
+											documents: docs
+										}),
+										canEdit: true,
+										entityContext: form.name ? {
+											id: editingId || "new",
+											name: form.name,
+											type: "tenant"
+										} : void 0
+									})
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, {
+							className: "mt-6",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "outline",
+								onClick: () => setIsOpen(false),
+								children: "Cancelar"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								onClick: handleSave,
+								children: "Salvar"
+							})]
+						})
+					]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+				className: "border-slate-200 shadow-sm bg-white",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+					className: "p-0 overflow-auto",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+						className: "bg-slate-50",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "CPF / CNPJ" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Email" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Aluguel" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") || "Status" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "text-right",
+								children: "Ações"
+							})
+						] })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [tenants$1.map((tenant) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+						className: "hover:bg-slate-50",
 						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								placeholder: "Nome",
-								value: form.name,
-								onChange: (e) => setForm({
-									...form,
-									name: e.target.value
-								})
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "font-medium text-slate-900",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.name })
 							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								placeholder: "Email",
-								value: form.email,
-								onChange: (e) => setForm({
-									...form,
-									email: e.target.value
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								type: "number",
-								placeholder: "Aluguel",
-								value: form.rentValue,
-								onChange: (e) => setForm({
-									...form,
-									rentValue: e.target.value
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.cpfCnpj || "-" }) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.email }) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatAppCurrency(tenant.rentValue) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+								variant: "outline",
+								children: tenant.status
+							}) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "text-right",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex justify-end gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "outline",
+										size: "sm",
+										onClick: () => handleOpenEdit(tenant),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "destructive",
+											size: "sm",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Inquilino" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+										onClick: () => toast$2({ title: "Inquilino excluído com sucesso" }),
+										children: "Excluir"
+									})] })] })] })]
 								})
 							})
 						]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						onClick: handleAdd,
-						children: "Salvar"
-					}) })
-				] })]
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-			className: "border-slate-200 shadow-sm bg-white",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-				className: "p-0 overflow-auto",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
-					className: "bg-slate-50",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Email" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Rent" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") || "Status" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: "Ações"
-						})
-					] })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [tenants$1.map((tenant) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
-					className: "hover:bg-slate-50",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "font-medium text-slate-900",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.name })
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tenant.email }) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatAppCurrency(tenant.rentValue) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: "outline",
-							children: tenant.status
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex justify-end gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-									open: editingRecord?.id === tenant.id,
-									onOpenChange: (open) => !open && setEditingRecord(null),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-										asChild: true,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-											variant: "outline",
-											size: "sm",
-											onClick: () => {
-												setEditingRecord(tenant);
-												setForm({
-													name: tenant.name,
-													email: tenant.email,
-													rentValue: tenant.rentValue.toString()
-												});
-											},
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
-										})
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Inquilino" }) }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "space-y-4 py-4",
-											children: [
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Nome",
-													value: form.name,
-													onChange: (e) => setForm({
-														...form,
-														name: e.target.value
-													})
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Email",
-													value: form.email,
-													onChange: (e) => setForm({
-														...form,
-														email: e.target.value
-													})
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													type: "number",
-													placeholder: "Aluguel",
-													value: form.rentValue,
-													onChange: (e) => setForm({
-														...form,
-														rentValue: e.target.value
-													})
-												})
-											]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-											onClick: handleEdit,
-											children: "Salvar"
-										}) })
-									] })]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-										variant: "destructive",
-										size: "sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
-									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Inquilino" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-									onClick: () => handleDelete(tenant.id),
-									children: "Excluir"
-								})] })] })] })]
-							})
-						})
-					]
-				}, tenant.id)), tenants$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 5,
-					className: "text-center py-6 text-muted-foreground",
-					children: t("common.empty")
-				}) })] })] })
+					}, tenant.id)), tenants$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						colSpan: 6,
+						className: "text-center py-6 text-muted-foreground",
+						children: t("common.empty")
+					}) })] })] })
+				})
 			})
-		})]
+		]
 	});
 }
 function TenantDetails() {
@@ -71623,209 +72174,410 @@ function Owners() {
 	const { owners: owners$1, addOwner, updateOwner } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
-	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
-	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
-	const [form, setForm] = (0, import_react.useState)({
-		name: "",
-		email: "",
-		phone: ""
-	});
-	const handleAdd = () => {
-		addOwner({
-			id: `owner-${Date.now()}`,
-			name: form.name || "Novo Proprietário",
-			email: form.email,
-			phone: form.phone,
-			status: "active",
-			role: "property_owner"
-		});
-		setIsAddOpen(false);
-		setForm({
-			name: "",
-			email: "",
-			phone: ""
-		});
-		toast$2({ title: "Proprietário incluído com sucesso" });
+	const [isOpen, setIsOpen] = (0, import_react.useState)(false);
+	const [editingId, setEditingId] = (0, import_react.useState)(null);
+	const [form, setForm] = (0, import_react.useState)({});
+	const handleOpenAdd = () => {
+		setEditingId(null);
+		setForm({});
+		setIsOpen(true);
 	};
-	const handleEdit = () => {
-		if (editingRecord) updateOwner({
-			...editingRecord,
-			name: form.name,
-			email: form.email,
-			phone: form.phone
-		});
-		setEditingRecord(null);
-		toast$2({ title: "Proprietário alterado com sucesso" });
+	const handleOpenEdit = (owner) => {
+		setEditingId(owner.id);
+		setForm(owner);
+		setIsOpen(true);
 	};
-	const handleDelete = (id) => {
-		toast$2({ title: "Proprietário excluído com sucesso" });
+	const handleSave = () => {
+		if (editingId) {
+			updateOwner({ ...form });
+			toast$2({ title: "Proprietário alterado com sucesso" });
+		} else {
+			addOwner({
+				...form,
+				id: `owner-${Date.now()}`,
+				name: form.name || "Novo Proprietário",
+				status: "active",
+				role: "property_owner"
+			});
+			toast$2({ title: "Proprietário incluído com sucesso" });
+		}
+		setIsOpen(false);
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex justify-between items-center",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-slate-900",
-				children: t("sidebar.owners") || "Proprietários"
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-muted-foreground",
-				children: "Manage your property owners."
-			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-				open: isAddOpen,
-				onOpenChange: setIsAddOpen,
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						className: "bg-trust-blue gap-2 text-white",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Proprietário" }) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-4 py-4",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								placeholder: "Nome",
-								value: form.name,
-								onChange: (e) => setForm({
-									...form,
-									name: e.target.value
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								placeholder: "Email",
-								value: form.email,
-								onChange: (e) => setForm({
-									...form,
-									email: e.target.value
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								placeholder: "Telefone",
-								value: form.phone,
-								onChange: (e) => setForm({
-									...form,
-									phone: e.target.value
-								})
-							})
-						]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						onClick: handleAdd,
-						children: "Salvar"
-					}) })
-				] })]
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-			className: "border-slate-200 shadow-sm bg-white",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-				className: "p-0 overflow-auto",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
-					className: "bg-slate-50",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Email" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.phone") || "Telefone" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Location" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") || "Status" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: "Ações"
-						})
-					] })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [owners$1.map((owner) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
-					className: "hover:bg-slate-50",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex justify-between items-center",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold tracking-tight text-slate-900",
+					children: t("sidebar.owners") || "Proprietários"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-muted-foreground",
+					children: "Manage your property owners."
+				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: handleOpenAdd,
+					className: "bg-trust-blue gap-2 text-white",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: isOpen,
+				onOpenChange: setIsOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "max-w-4xl max-h-[90vh] overflow-y-auto",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "font-medium text-slate-900",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.email }) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.phone }) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: owner.city ? `${owner.city}, ${owner.state}` : "-" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: owner.status === "active" ? "default" : "secondary",
-							children: owner.status
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex justify-end gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-									open: editingRecord?.id === owner.id,
-									onOpenChange: (open) => !open && setEditingRecord(null),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-										asChild: true,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-											variant: "outline",
-											size: "sm",
-											onClick: () => {
-												setEditingRecord(owner);
-												setForm({
-													name: owner.name,
-													email: owner.email,
-													phone: owner.phone
-												});
-											},
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingId ? "Alterar Proprietário" : "Incluir Proprietário" }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+							defaultValue: "personal",
+							className: "w-full mt-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+									className: "grid w-full grid-cols-3 mb-4",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+											value: "personal",
+											children: "Dados Pessoais"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+											value: "contact",
+											children: "Contato e Endereço"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+											value: "documents",
+											children: "Documentos"
 										})
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Proprietário" }) }),
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+									value: "personal",
+									className: "grid grid-cols-1 md:grid-cols-2 gap-4",
+									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "space-y-4 py-4",
-											children: [
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Nome",
-													value: form.name,
-													onChange: (e) => setForm({
-														...form,
-														name: e.target.value
-													})
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nome Completo / Razão Social" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: form.name || "",
+												onChange: (e) => setForm({
+													...form,
+													name: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "email",
+												value: form.email || "",
+												onChange: (e) => setForm({
+													...form,
+													email: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CPF / CNPJ" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												maxLength: 18,
+												value: form.cpfCnpj || "",
+												onChange: (e) => setForm({
+													...form,
+													cpfCnpj: applyDocumentMask(e.target.value, "BR")
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "RG" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: form.rg || "",
+												onChange: (e) => setForm({
+													...form,
+													rg: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nascimento / Fundação" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "date",
+												value: form.dob || "",
+												onChange: (e) => setForm({
+													...form,
+													dob: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nacionalidade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: form.nationality || "",
+												onChange: (e) => setForm({
+													...form,
+													nationality: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Estado Civil" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+												value: form.maritalStatus || "",
+												onValueChange: (v) => setForm({
+													...form,
+													maritalStatus: v
 												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Email",
-													value: form.email,
-													onChange: (e) => setForm({
-														...form,
-														email: e.target.value
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "Solteiro",
+														children: "Solteiro(a)"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "Casado",
+														children: "Casado(a)"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "Divorciado",
+														children: "Divorciado(a)"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "Viuvo",
+														children: "Viúvo(a)"
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "Outro",
+														children: "Outro"
 													})
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Telefone",
-													value: form.phone,
+												] })]
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Profissão" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: form.profession || "",
+												onChange: (e) => setForm({
+													...form,
+													profession: e.target.value
+												})
+											})]
+										})
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+									value: "contact",
+									className: "space-y-6",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+										className: "text-sm font-medium mb-3 border-b pb-2",
+										children: "Contatos"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-1 md:grid-cols-3 gap-4",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone Principal" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+													value: form.phone || "",
 													onChange: (e) => setForm({
 														...form,
 														phone: e.target.value
+													}),
+													defaultCountry: "BR"
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Telefone Secundário" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+													value: form.secondaryPhone || "",
+													onChange: (e) => setForm({
+														...form,
+														secondaryPhone: e.target.value
+													}),
+													defaultCountry: "BR"
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "WhatsApp" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhoneInput, {
+													value: form.whatsapp || "",
+													onChange: (e) => setForm({
+														...form,
+														whatsapp: e.target.value
+													}),
+													defaultCountry: "BR"
+												})]
+											})
+										]
+									})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+										className: "text-sm font-medium mb-3 border-b pb-2",
+										children: "Endereço"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-1 md:grid-cols-4 gap-4",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "CEP" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													maxLength: 9,
+													value: form.zipCode || "",
+													onChange: (e) => setForm({
+														...form,
+														zipCode: applyZipCodeMask(e.target.value, "BR")
 													})
-												})
-											]
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Logradouro" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.address || "",
+													onChange: (e) => setForm({
+														...form,
+														address: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Número" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.addressNumber || "",
+													onChange: (e) => setForm({
+														...form,
+														addressNumber: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Complemento" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.complement || "",
+													onChange: (e) => setForm({
+														...form,
+														complement: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Bairro" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.neighborhood || "",
+													onChange: (e) => setForm({
+														...form,
+														neighborhood: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Cidade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.city || "",
+													onChange: (e) => setForm({
+														...form,
+														city: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-1 md:col-span-1",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Estado" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													value: form.state || "",
+													onChange: (e) => setForm({
+														...form,
+														state: e.target.value
+													})
+												})]
+											})
+										]
+									})] })]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+									value: "documents",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DocumentVault, {
+										documents: form.documents || [],
+										onUpdate: (docs) => setForm({
+											...form,
+											documents: docs
 										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-											onClick: handleEdit,
-											children: "Salvar"
-										}) })
-									] })]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-										variant: "destructive",
-										size: "sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+										canEdit: true,
+										entityContext: form.name ? {
+											id: editingId || "new",
+											name: form.name,
+											type: "owner"
+										} : void 0
 									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Proprietário" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-									onClick: () => handleDelete(owner.id),
-									children: "Excluir"
-								})] })] })] })]
-							})
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, {
+							className: "mt-6",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "outline",
+								onClick: () => setIsOpen(false),
+								children: "Cancelar"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								onClick: handleSave,
+								children: "Salvar"
+							})]
 						})
 					]
-				}, owner.id)), owners$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 6,
-					className: "text-center py-6 text-muted-foreground",
-					children: t("common.empty")
-				}) })] })] })
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+				className: "border-slate-200 shadow-sm bg-white",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+					className: "p-0 overflow-auto",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+						className: "bg-slate-50",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "CPF / CNPJ" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Email" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.phone") || "Telefone" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Localização" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") || "Status" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "text-right",
+								children: "Ações"
+							})
+						] })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [owners$1.map((owner) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+						className: "hover:bg-slate-50",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "font-medium text-slate-900",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.name })
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.cpfCnpj || "-" }) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.email }) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: owner.phone }) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: owner.city ? `${owner.city}, ${owner.state}` : "-" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+								variant: owner.status === "active" ? "default" : "secondary",
+								children: owner.status
+							}) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "text-right",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex justify-end gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "outline",
+										size: "sm",
+										onClick: () => handleOpenEdit(owner),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "destructive",
+											size: "sm",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Proprietário" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+										onClick: () => toast$2({ title: "Proprietário excluído com sucesso" }),
+										children: "Excluir"
+									})] })] })] })]
+								})
+							})
+						]
+					}, owner.id)), owners$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						colSpan: 7,
+						className: "text-center py-6 text-muted-foreground",
+						children: t("common.empty")
+					}) })] })] })
+				})
 			})
-		})]
+		]
 	});
 }
 function OwnerDetails() {
@@ -75962,221 +76714,6 @@ var useOwnerStore = () => {
 	};
 };
 var useOwnerStore_default = useOwnerStore;
-function DocumentVault({ documents, onUpdate, canEdit, title, description, entityContext }) {
-	const { t, language } = useLanguageStore_default();
-	const { toast: toast$2 } = useToast();
-	const docInputRef = (0, import_react.useRef)(null);
-	const [isUploading, setIsUploading] = (0, import_react.useState)(false);
-	const [uploadDialogOpen, setUploadDialogOpen] = (0, import_react.useState)(false);
-	const [selectedFile, setSelectedFile] = (0, import_react.useState)(null);
-	const [selectedCategory, setSelectedCategory] = (0, import_react.useState)("Other");
-	const [linkedEntity, setLinkedEntity] = (0, import_react.useState)(entityContext?.id || "");
-	const handleFileSelect = (e) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			setSelectedFile(file);
-			if (entityContext) setLinkedEntity(entityContext.id);
-			setUploadDialogOpen(true);
-		}
-	};
-	const handleConfirmUpload = () => {
-		if (!selectedFile) return;
-		setIsUploading(true);
-		setTimeout(() => {
-			const newDoc = {
-				id: `doc-${Date.now()}`,
-				name: selectedFile.name,
-				url: URL.createObjectURL(selectedFile),
-				date: (/* @__PURE__ */ new Date()).toISOString(),
-				type: selectedFile.type,
-				size: `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`,
-				category: selectedCategory,
-				linkedEntityId: linkedEntity || void 0,
-				linkedEntityName: linkedEntity === entityContext?.id ? entityContext.name : void 0,
-				linkedEntityType: linkedEntity === entityContext?.id ? entityContext.type : void 0
-			};
-			onUpdate([...documents || [], newDoc]);
-			setIsUploading(false);
-			setUploadDialogOpen(false);
-			setSelectedFile(null);
-			if (docInputRef.current) docInputRef.current.value = "";
-			toast$2({
-				title: t("common.success"),
-				description: t("common.upload") + " " + t("common.completed")
-			});
-		}, 1e3);
-	};
-	const handleRemoveDoc = (docId) => {
-		onUpdate((documents || []).filter((d) => d.id !== docId));
-		toast$2({
-			title: t("common.removed"),
-			description: t("common.delete_success")
-		});
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-		className: "flex flex-row items-center justify-between",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: title || t("common.documents") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: description || t("common.documents") })] }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-			type: "file",
-			ref: docInputRef,
-			className: "hidden",
-			accept: ".pdf,.doc,.docx,.txt,.jpg,.png",
-			onChange: handleFileSelect
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-			onClick: () => docInputRef.current?.click(),
-			className: "bg-trust-blue",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "mr-2 h-4 w-4" }), t("common.upload")]
-		})] })]
-	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
-		open: uploadDialogOpen,
-		onOpenChange: setUploadDialogOpen,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("common.upload") }) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-4 py-4",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.details") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "p-2 border rounded bg-muted text-sm flex items-center gap-2 text-black",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(File, { className: "h-4 w-4 text-blue-500" }), selectedFile?.name]
-						})]
-					}),
-					entityContext && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Link Document to Specific Person" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-							value: linkedEntity,
-							onValueChange: setLinkedEntity,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Person..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-								value: entityContext.id,
-								children: [
-									entityContext.name,
-									" (",
-									t(`roles.${entityContext.type}`),
-									")"
-								]
-							}) })]
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.category") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-							value: selectedCategory,
-							onValueChange: (v) => setSelectedCategory(v),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Contract",
-									children: t("common.contracts")
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-									value: "ID",
-									children: ["ID / ", t("common.tax_id")]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Passport",
-									children: "Passport"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "SSN",
-									children: "SSN / Tax ID"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Insurance",
-									children: "Insurance"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Deed",
-									children: "Deed"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Inspection",
-									children: "Inspection"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Other",
-									children: t("common.none")
-								})
-							] })]
-						})]
-					})
-				]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				variant: "outline",
-				onClick: () => setUploadDialogOpen(false),
-				children: t("common.cancel")
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				onClick: handleConfirmUpload,
-				disabled: isUploading,
-				children: isUploading ? "..." : t("common.confirm")
-			})] })
-		] })
-	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "space-y-4",
-		children: !documents || documents.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg",
-			children: t("common.empty")
-		}) : documents.map((doc) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "bg-blue-100 p-2 rounded-full",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-5 w-5 text-blue-600" })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "font-medium text-sm text-black",
-							children: doc.name
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: "secondary",
-							className: "text-xs",
-							children: doc.category
-						}),
-						doc.linkedEntityName && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
-							variant: "outline",
-							className: "text-xs",
-							children: ["Linked to: ", doc.linkedEntityName]
-						})
-					]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-					className: "text-xs text-muted-foreground text-black",
-					children: [
-						formatDate(doc.date, language),
-						" •",
-						" ",
-						doc.size || "Unknown size"
-					]
-				})] })]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-					href: doc.url,
-					download: doc.name,
-					target: "_blank",
-					rel: "noopener noreferrer",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						size: "icon",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" })
-					})
-				}), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						size: "icon",
-						className: "text-red-500 hover:text-red-700",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm_delete") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-					onClick: () => handleRemoveDoc(doc.id),
-					children: t("common.delete")
-				})] })] })] })]
-			})]
-		}, doc.id))
-	})] })] });
-}
 function CloseNegotiationDialog({ open, onOpenChange, onConfirm, currentValue }) {
 	const { t, language } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
@@ -81937,4 +82474,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BM5rf45-.js.map
+//# sourceMappingURL=index-83P9_Vup.js.map
