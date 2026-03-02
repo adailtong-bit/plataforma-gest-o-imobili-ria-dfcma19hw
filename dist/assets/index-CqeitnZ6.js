@@ -19364,6 +19364,13 @@ var FileText = createLucideIcon("file-text", [
 		key: "z1uh3a"
 	}]
 ]);
+var File = createLucideIcon("file", [["path", {
+	d: "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
+	key: "1oefj6"
+}], ["path", {
+	d: "M14 2v5a1 1 0 0 0 1 1h5",
+	key: "wfsgrz"
+}]]);
 var Funnel = createLucideIcon("funnel", [["path", {
 	d: "M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z",
 	key: "sc7q7i"
@@ -19753,6 +19760,13 @@ var Settings2 = createLucideIcon("settings-2", [
 		key: "dfmy0x"
 	}]
 ]);
+var ShieldCheck = createLucideIcon("shield-check", [["path", {
+	d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+	key: "oel41y"
+}], ["path", {
+	d: "m9 12 2 2 4-4",
+	key: "dzmm74"
+}]]);
 var ShieldX = createLucideIcon("shield-x", [
 	["path", {
 		d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
@@ -57571,11 +57585,22 @@ const AppProvider = ({ children }) => {
 		...x$2,
 		status: "blocked"
 	} : x$2));
-	const renewTenantContract = (id, end, val) => setTenants(tenants$1.map((x$2) => x$2.id === id ? {
-		...x$2,
-		leaseEnd: end,
-		rentValue: val
-	} : x$2));
+	const renewTenantContract = (id, end, val, start, contractDoc) => {
+		setTenants((prev) => prev.map((x$2) => {
+			if (x$2.id === id) {
+				const docs = contractDoc ? [...x$2.documents || [], contractDoc] : x$2.documents;
+				return {
+					...x$2,
+					leaseEnd: end,
+					rentValue: val,
+					leaseStart: start || x$2.leaseStart,
+					negotiationStatus: "closed",
+					documents: docs
+				};
+			}
+			return x$2;
+		}));
+	};
 	const updateTenantNegotiation = (id, d) => setTenants(tenants$1.map((x$2) => x$2.id === id ? {
 		...x$2,
 		...d
@@ -63259,7 +63284,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$50({ inst: {
+			cachedValue = useState$55({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -63273,7 +63298,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$20(function() {
+			useEffect$21(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -63296,7 +63321,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$50 = React$67.useState, useEffect$20 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$55 = React$67.useState, useEffect$21 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -75830,12 +75855,878 @@ function Workflows() {
 		]
 	});
 }
+var useOwnerStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("useOwnerStore must be used within AppProvider");
+	return {
+		owners: context.owners,
+		addOwner: context.addOwner,
+		updateOwner: context.updateOwner
+	};
+};
+var useOwnerStore_default = useOwnerStore;
+function DocumentVault({ documents, onUpdate, canEdit, title, description, entityContext }) {
+	const { t, language } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const docInputRef = (0, import_react.useRef)(null);
+	const [isUploading, setIsUploading] = (0, import_react.useState)(false);
+	const [uploadDialogOpen, setUploadDialogOpen] = (0, import_react.useState)(false);
+	const [selectedFile, setSelectedFile] = (0, import_react.useState)(null);
+	const [selectedCategory, setSelectedCategory] = (0, import_react.useState)("Other");
+	const [linkedEntity, setLinkedEntity] = (0, import_react.useState)(entityContext?.id || "");
+	const handleFileSelect = (e) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			setSelectedFile(file);
+			if (entityContext) setLinkedEntity(entityContext.id);
+			setUploadDialogOpen(true);
+		}
+	};
+	const handleConfirmUpload = () => {
+		if (!selectedFile) return;
+		setIsUploading(true);
+		setTimeout(() => {
+			const newDoc = {
+				id: `doc-${Date.now()}`,
+				name: selectedFile.name,
+				url: URL.createObjectURL(selectedFile),
+				date: (/* @__PURE__ */ new Date()).toISOString(),
+				type: selectedFile.type,
+				size: `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`,
+				category: selectedCategory,
+				linkedEntityId: linkedEntity || void 0,
+				linkedEntityName: linkedEntity === entityContext?.id ? entityContext.name : void 0,
+				linkedEntityType: linkedEntity === entityContext?.id ? entityContext.type : void 0
+			};
+			onUpdate([...documents || [], newDoc]);
+			setIsUploading(false);
+			setUploadDialogOpen(false);
+			setSelectedFile(null);
+			if (docInputRef.current) docInputRef.current.value = "";
+			toast$2({
+				title: t("common.success"),
+				description: t("common.upload") + " " + t("common.completed")
+			});
+		}, 1e3);
+	};
+	const handleRemoveDoc = (docId) => {
+		onUpdate((documents || []).filter((d) => d.id !== docId));
+		toast$2({
+			title: t("common.removed"),
+			description: t("common.delete_success")
+		});
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+		className: "flex flex-row items-center justify-between",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: title || t("common.documents") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: description || t("common.documents") })] }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+			type: "file",
+			ref: docInputRef,
+			className: "hidden",
+			accept: ".pdf,.doc,.docx,.txt,.jpg,.png",
+			onChange: handleFileSelect
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+			onClick: () => docInputRef.current?.click(),
+			className: "bg-trust-blue",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "mr-2 h-4 w-4" }), t("common.upload")]
+		})] })]
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+		open: uploadDialogOpen,
+		onOpenChange: setUploadDialogOpen,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("common.upload") }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid gap-4 py-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.details") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "p-2 border rounded bg-muted text-sm flex items-center gap-2 text-black",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(File, { className: "h-4 w-4 text-blue-500" }), selectedFile?.name]
+						})]
+					}),
+					entityContext && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Link Document to Specific Person" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: linkedEntity,
+							onValueChange: setLinkedEntity,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Person..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+								value: entityContext.id,
+								children: [
+									entityContext.name,
+									" (",
+									t(`roles.${entityContext.type}`),
+									")"
+								]
+							}) })]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.category") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: selectedCategory,
+							onValueChange: (v) => setSelectedCategory(v),
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Contract",
+									children: t("common.contracts")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+									value: "ID",
+									children: ["ID / ", t("common.tax_id")]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Passport",
+									children: "Passport"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "SSN",
+									children: "SSN / Tax ID"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Insurance",
+									children: "Insurance"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Deed",
+									children: "Deed"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Inspection",
+									children: "Inspection"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "Other",
+									children: t("common.none")
+								})
+							] })]
+						})]
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "outline",
+				onClick: () => setUploadDialogOpen(false),
+				children: t("common.cancel")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				onClick: handleConfirmUpload,
+				disabled: isUploading,
+				children: isUploading ? "..." : t("common.confirm")
+			})] })
+		] })
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "space-y-4",
+		children: !documents || documents.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg",
+			children: t("common.empty")
+		}) : documents.map((doc) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "bg-blue-100 p-2 rounded-full",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-5 w-5 text-blue-600" })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "font-medium text-sm text-black",
+							children: doc.name
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: "secondary",
+							className: "text-xs",
+							children: doc.category
+						}),
+						doc.linkedEntityName && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+							variant: "outline",
+							className: "text-xs",
+							children: ["Linked to: ", doc.linkedEntityName]
+						})
+					]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					className: "text-xs text-muted-foreground text-black",
+					children: [
+						formatDate(doc.date, language),
+						" •",
+						" ",
+						doc.size || "Unknown size"
+					]
+				})] })]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+					href: doc.url,
+					download: doc.name,
+					target: "_blank",
+					rel: "noopener noreferrer",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "ghost",
+						size: "icon",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" })
+					})
+				}), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "ghost",
+						size: "icon",
+						className: "text-red-500 hover:text-red-700",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm_delete") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+					onClick: () => handleRemoveDoc(doc.id),
+					children: t("common.delete")
+				})] })] })] })]
+			})]
+		}, doc.id))
+	})] })] });
+}
+function CloseNegotiationDialog({ open, onOpenChange, onConfirm, currentValue }) {
+	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [newValue, setNewValue] = (0, import_react.useState)(currentValue);
+	const [newStart, setNewStart] = (0, import_react.useState)("");
+	const [newEnd, setNewEnd] = (0, import_react.useState)("");
+	const [contractUrl, setContractUrl] = (0, import_react.useState)("");
+	const handleConfirm = () => {
+		if (!newStart || !newEnd || !contractUrl) {
+			toast$2({
+				title: t("common.error"),
+				description: "Por favor, preencha todos os campos e anexe o contrato.",
+				variant: "destructive"
+			});
+			return;
+		}
+		onConfirm({
+			newValue,
+			newStart,
+			newEnd,
+			contractUrl
+		});
+		onOpenChange(false);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+		open,
+		onOpenChange,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogTitle, { children: [t("renewals.close_negotiation"), " (Finalize Renewal)"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "Confirme os novos termos e anexe o contrato assinado para finalizar. O status será atualizado para \"Renewed\"." })] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid gap-4 py-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.new_value") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							type: "number",
+							value: newValue,
+							onChange: (e) => setNewValue(Number(e.target.value))
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-2 gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.new_start_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "date",
+								value: newStart,
+								onChange: (e) => setNewStart(e.target.value)
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.new_end_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "date",
+								value: newEnd,
+								onChange: (e) => setNewEnd(e.target.value)
+							})]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.contract_upload") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
+							value: contractUrl,
+							onChange: setContractUrl,
+							label: "Upload PDF/Doc",
+							accept: ".pdf,.doc,.docx"
+						})]
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "outline",
+				onClick: () => onOpenChange(false),
+				children: t("common.cancel")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				onClick: handleConfirm,
+				className: "bg-emerald-600 hover:bg-emerald-700 text-white",
+				children: t("common.confirm")
+			})] })
+		] })
+	});
+}
+function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant }) {
+	const [text, setText] = (0, import_react.useState)("");
+	const [proposed, setProposed] = (0, import_react.useState)(tenant.suggestedRenewalPrice?.toString() || "");
+	const [decision, setDecision] = (0, import_react.useState)(tenant.ownerDecision || "pending");
+	const handleSendProposal = () => {
+		const val = parseFloat(proposed);
+		onUpdateTenant({
+			suggestedRenewalPrice: val,
+			ownerDecision: decision
+		});
+		onSend(`Property Manager sent a proposal: ${formatCurrency(val)}. Status marked as: ${decision}`);
+	};
+	const formatTime = (iso) => {
+		try {
+			if (!iso) return "";
+			const date$1 = parseISO(iso);
+			if (isValid(date$1)) return format(date$1, "dd/MM HH:mm");
+			return iso;
+		} catch {
+			return iso;
+		}
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "mt-4 space-y-4",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+				className: "pb-2",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+					className: "text-sm",
+					children: "Pricing & Owner Approval"
+				})
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+				className: "grid gap-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex justify-between text-sm",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-muted-foreground",
+							children: "Current Rent Value:"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "font-bold",
+							children: formatCurrency(tenant.rentValue)
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-2 gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-1",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								className: "text-xs",
+								children: "Proposed Renewal Value"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "number",
+								value: proposed,
+								onChange: (e) => setProposed(e.target.value)
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-1",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								className: "text-xs",
+								children: "Owner Decision"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: decision,
+								onValueChange: setDecision,
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "pending",
+										children: "Pending"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "accepted",
+										children: "Accepted"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "counter",
+										children: "Counter-offer"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "rejected",
+										children: "Rejected"
+									})
+								] })]
+							})]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						size: "sm",
+						className: "w-full bg-trust-blue text-white",
+						onClick: handleSendProposal,
+						children: "Update Terms & Notify Owner"
+					})
+				]
+			})] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
+				className: "h-[250px] border rounded-md p-4 bg-white",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "flex flex-col gap-4",
+					children: history.map((msg, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: cn("flex flex-col max-w-[85%]", msg.senderId === "me" ? "self-end items-end" : "self-start items-start"),
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: cn("p-3 rounded-lg text-sm shadow-sm", msg.senderId === "me" ? "bg-trust-blue text-white rounded-br-none" : "bg-gray-100 border rounded-bl-none"),
+							children: msg.text
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-[10px] text-muted-foreground mt-1",
+							children: formatTime(msg.timestamp)
+						})]
+					}, idx))
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					placeholder: "Message to owner...",
+					value: text,
+					onChange: (e) => setText(e.target.value),
+					onKeyDown: (e) => e.key === "Enter" && !e.shiftKey && (onSend(text), setText(""))
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					size: "icon",
+					onClick: () => {
+						onSend(text);
+						setText("");
+					},
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Send, { className: "h-4 w-4" })
+				})]
+			})
+		]
+	});
+}
+function TenantNegotiationTab({ tenant, history, onSend, onUpdateTenant }) {
+	const [text, setText] = (0, import_react.useState)("");
+	const [decision, setDecision] = (0, import_react.useState)(tenant.tenantDecision || "pending");
+	const proposedRent = tenant.suggestedRenewalPrice || tenant.rentValue;
+	const ownerAccepted = tenant.ownerDecision === "accepted";
+	const handleSendProposal = () => {
+		onUpdateTenant({ tenantDecision: decision });
+		onSend(`Property Manager updated Tenant status to: ${decision}`);
+	};
+	const formatTime = (iso) => {
+		try {
+			if (!iso) return "";
+			const date$1 = parseISO(iso);
+			if (isValid(date$1)) return format(date$1, "dd/MM HH:mm");
+			return iso;
+		} catch {
+			return iso;
+		}
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "mt-4 space-y-4",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+				className: "pb-2",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+					className: "text-sm",
+					children: "Pricing & Tenant Approval"
+				})
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+				className: "grid gap-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex justify-between text-sm items-center",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "text-muted-foreground",
+						children: "New Rent Value (Preço de Renovação):"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "text-right",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "font-bold text-lg text-trust-blue",
+							children: formatCurrency(proposedRent)
+						}), !ownerAccepted && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "text-xs text-orange-600 font-medium",
+							children: "Pending Owner Approval"
+						})]
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+						className: "text-xs",
+						children: "Tenant Decision"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: decision,
+							onValueChange: setDecision,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+								className: "flex-1",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "pending",
+									children: "Pending"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "accepted",
+									children: "Accepted"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "counter",
+									children: "Counter-offer"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "rejected",
+									children: "Rejected"
+								})
+							] })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							size: "sm",
+							variant: "outline",
+							onClick: handleSendProposal,
+							children: "Save Decision"
+						})]
+					})]
+				})]
+			})] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
+				className: "h-[250px] border rounded-md p-4 bg-white",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "flex flex-col gap-4",
+					children: history.map((msg, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: cn("flex flex-col max-w-[85%]", msg.senderId === "me" ? "self-end items-end" : "self-start items-start"),
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: cn("p-3 rounded-lg text-sm shadow-sm", msg.senderId === "me" ? "bg-trust-blue text-white rounded-br-none" : "bg-gray-100 border rounded-bl-none"),
+							children: msg.text
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-[10px] text-muted-foreground mt-1",
+							children: formatTime(msg.timestamp)
+						})]
+					}, idx))
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					placeholder: "Message to tenant...",
+					value: text,
+					onChange: (e) => setText(e.target.value),
+					onKeyDown: (e) => e.key === "Enter" && !e.shiftKey && (onSend(text), setText(""))
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					size: "icon",
+					onClick: () => {
+						onSend(text);
+						setText("");
+					},
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Send, { className: "h-4 w-4" })
+				})]
+			})
+		]
+	});
+}
+function NegotiationSheet({ open, onOpenChange, tenantId }) {
+	const { tenants: tenants$1, updateTenant, updateTenantNegotiation, renewTenantContract } = useTenantStore_default();
+	const { properties: properties$1 } = usePropertyStore_default();
+	const { owners: owners$1 } = useOwnerStore_default();
+	const { messages: messages$1, sendMessage, startChat } = useMessageStore_default();
+	const { currentUser } = useAuthStore_default();
+	const { toast: toast$2 } = useToast();
+	const tenant = tenants$1.find((t) => t.id === tenantId);
+	const property$2 = tenant ? properties$1.find((p$1) => p$1.id === tenant.propertyId) : null;
+	const owner = property$2 ? owners$1.find((o) => o.id === property$2.ownerId) : null;
+	const [newLogNote, setNewLogNote] = (0, import_react.useState)("");
+	const [closeDialogOpen, setCloseDialogOpen] = (0, import_react.useState)(false);
+	(0, import_react.useEffect)(() => {
+		if (open && tenant) {
+			startChat(tenant.id);
+			if (owner) startChat(owner.id);
+		}
+	}, [
+		open,
+		tenant,
+		owner,
+		startChat
+	]);
+	const tenantMessages = (0, import_react.useMemo)(() => messages$1.find((m$1) => m$1.contactId === tenant?.id), [messages$1, tenant?.id]);
+	const ownerMessages = (0, import_react.useMemo)(() => messages$1.find((m$1) => m$1.contactId === owner?.id), [messages$1, owner?.id]);
+	const aggregatedHistory = (0, import_react.useMemo)(() => {
+		if (!tenant && !owner) return [];
+		const tHistory = tenantMessages?.history.map((msg) => ({
+			...msg,
+			role: msg.senderId === "me" ? "manager" : "tenant",
+			senderName: msg.senderId === "me" ? "Me" : tenant?.name || "Tenant",
+			origin: "tenant_chat"
+		})) || [];
+		const oHistory = ownerMessages?.history.map((msg) => ({
+			...msg,
+			role: msg.senderId === "me" ? "manager" : "owner",
+			senderName: msg.senderId === "me" ? "Me" : owner?.name || "Owner",
+			origin: "owner_chat"
+		})) || [];
+		return [...tHistory, ...oHistory].sort((a$1, b$1) => (isValid(parseISO(a$1.timestamp)) ? parseISO(a$1.timestamp).getTime() : 0) - (isValid(parseISO(b$1.timestamp)) ? parseISO(b$1.timestamp).getTime() : 0));
+	}, [
+		tenantMessages,
+		ownerMessages,
+		tenant,
+		owner
+	]);
+	if (!tenant) return null;
+	const handleSaveNotes = () => {
+		if (newLogNote.trim()) {
+			const log$1 = {
+				id: Date.now().toString(),
+				date: (/* @__PURE__ */ new Date()).toISOString(),
+				action: "Note",
+				note: newLogNote,
+				user: currentUser.name
+			};
+			updateTenantNegotiation(tenant.id, { log: log$1 });
+			setNewLogNote("");
+			toast$2({ title: "Note added" });
+		}
+	};
+	const initiateClose = () => {
+		if (tenant.ownerDecision !== "accepted" || tenant.tenantDecision !== "accepted") {
+			toast$2({
+				title: "Validation Error",
+				description: "Both Owner and Tenant must accept the terms before closing.",
+				variant: "destructive"
+			});
+			return;
+		}
+		setCloseDialogOpen(true);
+	};
+	const handleCloseConfirm = (data) => {
+		renewTenantContract(tenant.id, data.newEnd, data.newValue, data.newStart, {
+			id: `doc-${Date.now()}`,
+			name: "Renewal_Contract.pdf",
+			url: data.contractUrl,
+			date: (/* @__PURE__ */ new Date()).toISOString(),
+			category: "Contract",
+			linkedEntityId: tenant.id
+		});
+		toast$2({
+			title: "Renewal Finalized",
+			description: "Contract renewed successfully."
+		});
+		setCloseDialogOpen(false);
+		onOpenChange(false);
+	};
+	const formatTime = (iso) => {
+		try {
+			if (!iso) return "";
+			const date$1 = parseISO(iso);
+			if (isValid(date$1)) return format(date$1, "dd/MM HH:mm");
+			return iso;
+		} catch {
+			return iso;
+		}
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sheet, {
+		open,
+		onOpenChange,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetContent, {
+			className: "w-[400px] sm:w-[600px] overflow-y-auto pb-24",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetTitle, {
+					className: "flex items-center gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-5 w-5" }), " Negotiation Hub"]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetDescription, { children: "Manage multi-party lease renewals efficiently." })] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-4 py-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-2 gap-4 p-4 bg-muted/20 rounded-lg",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex flex-col gap-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+									className: "text-xs text-muted-foreground flex items-center gap-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }), " Tenant"]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "font-medium text-sm truncate flex items-center gap-2",
+									children: [tenant.name, /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2 w-2 rounded-full bg-blue-500" })]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex flex-col gap-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+									className: "text-xs text-muted-foreground flex items-center gap-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }), " Owner"]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "font-medium text-sm truncate flex items-center gap-2",
+									children: [owner?.name || "N/A", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2 w-2 rounded-full bg-green-500" })]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "col-span-2 flex flex-col gap-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+									className: "text-xs text-muted-foreground flex items-center gap-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-3 w-3" }), " Property"]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "font-medium text-sm truncate",
+									children: property$2?.name
+								})]
+							})
+						]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+						defaultValue: "owner",
+						className: "w-full",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+								className: "grid w-full grid-cols-5",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+										value: "owner",
+										className: "text-xs",
+										children: "Owner"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+										value: "tenant",
+										className: "text-xs",
+										children: "Tenant"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+										value: "aggregated",
+										className: "text-xs",
+										children: "Unified"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+										value: "documents",
+										className: "text-xs",
+										children: "Docs"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+										value: "internal",
+										className: "text-xs",
+										children: "Notes"
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+								value: "owner",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OwnerNegotiationTab, {
+									tenant,
+									owner,
+									history: ownerMessages?.history || [],
+									onSend: (text) => owner && sendMessage(owner.id, text),
+									onUpdateTenant: (data) => updateTenant({
+										...tenant,
+										...data
+									})
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+								value: "tenant",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TenantNegotiationTab, {
+									tenant,
+									history: tenantMessages?.history || [],
+									onSend: (text) => sendMessage(tenant.id, text),
+									onUpdateTenant: (data) => updateTenant({
+										...tenant,
+										...data
+									})
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+								value: "aggregated",
+								className: "mt-4 space-y-4",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded border border-yellow-200",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lock, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Confidential: Visible only to Property Managers." })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
+									className: "h-[300px] border rounded-md p-4 bg-slate-50",
+									children: aggregatedHistory.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "text-center text-muted-foreground text-sm pt-8",
+										children: "No messages yet."
+									}) : aggregatedHistory.map((msg, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "mb-4 text-sm",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex justify-between items-center mb-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+												className: "font-bold flex items-center gap-1 text-xs",
+												children: [
+													msg.role === "tenant" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 text-blue-500" }),
+													msg.role === "owner" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 text-green-500" }),
+													msg.role === "manager" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShieldCheck, { className: "h-3 w-3 text-purple-500" }),
+													msg.senderName
+												]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-[10px] text-muted-foreground",
+												children: formatTime(msg.timestamp)
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: cn("p-2 rounded-lg border text-sm", msg.role === "manager" && "bg-purple-50 border-purple-100 ml-8", msg.role === "tenant" && "bg-blue-50 border-blue-100 mr-8", msg.role === "owner" && "bg-green-50 border-green-100 mr-8"),
+											children: msg.text
+										})]
+									}, `${msg.id}-${idx}`))
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+								value: "documents",
+								className: "mt-4",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DocumentVault, {
+									documents: tenant.documents || [],
+									onUpdate: (docs) => updateTenant({
+										...tenant,
+										documents: docs
+									}),
+									canEdit: true,
+									title: "Lease Documents"
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+								value: "internal",
+								className: "mt-4 space-y-4",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
+									className: "h-[200px] border rounded-md p-4",
+									children: tenant.negotiationLogs?.map((log$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "text-sm flex flex-col gap-1 bg-muted/30 p-2 rounded mb-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex justify-between text-xs text-muted-foreground",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "font-semibold",
+												children: log$1.user
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: formatTime(log$1.date) })]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: log$1.note })]
+									}, log$1.id))
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "gap-2 flex flex-col",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Add Internal Note" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+											value: newLogNote,
+											onChange: (e) => setNewLogNote(e.target.value)
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											size: "sm",
+											onClick: handleSaveNotes,
+											className: "w-fit",
+											children: "Save Note"
+										})
+									]
+								})]
+							})
+						]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "absolute bottom-0 left-0 right-0 p-6 bg-white border-t flex justify-between gap-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "outline",
+						className: "flex-1",
+						onClick: () => updateTenant({
+							...tenant,
+							negotiationStatus: "vacating"
+						}),
+						children: "Mark as Vacating"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						className: "flex-1 bg-emerald-600 hover:bg-emerald-700",
+						onClick: initiateClose,
+						children: "Close Negotiation"
+					})]
+				})
+			]
+		})
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CloseNegotiationDialog, {
+		open: closeDialogOpen,
+		onOpenChange: setCloseDialogOpen,
+		onConfirm: handleCloseConfirm,
+		currentValue: tenant.suggestedRenewalPrice || tenant.rentValue
+	})] });
+}
 function Renewals() {
 	const { tenants: tenants$1 } = useTenantStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
 	const { t } = useLanguageStore_default();
 	const [searchTerm, setSearchTerm] = (0, import_react.useState)("");
 	const [statusFilter, setStatusFilter] = (0, import_react.useState)("all");
+	const [sheetOpen, setSheetOpen] = (0, import_react.useState)(false);
+	const [selectedTenant, setSelectedTenant] = (0, import_react.useState)(null);
 	const filteredTenants = tenants$1.filter((t$1) => t$1.status === "active" && t$1.leaseEnd).filter((tenant) => {
 		const matchesSearch = tenant.name.toLowerCase().includes(searchTerm.toLowerCase());
 		let matchesStatus = true;
@@ -75864,6 +76755,18 @@ function Renewals() {
 			children: [daysLeft, " days left"]
 		});
 	};
+	const getDecisionColor = (decision) => {
+		switch (decision) {
+			case "accepted": return "text-green-700 bg-green-100 border-green-300";
+			case "rejected": return "text-red-700 bg-red-100 border-red-300";
+			case "counter": return "text-yellow-700 bg-yellow-100 border-yellow-300";
+			default: return "text-slate-700 bg-slate-100 border-slate-300";
+		}
+	};
+	const handleManage = (id) => {
+		setSelectedTenant(id);
+		setSheetOpen(true);
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 h-[calc(100vh-6rem)]",
 		children: [
@@ -75871,10 +76774,10 @@ function Renewals() {
 				className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 					className: "text-3xl font-bold tracking-tight text-slate-900",
-					children: t("renewals.title")
+					children: "Contract Renewals"
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-muted-foreground",
-					children: t("renewals.subtitle")
+					children: "Manage multi-party negotiations and finalize leases."
 				})] })
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -75922,9 +76825,9 @@ function Renewals() {
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.property") }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("renewals.current_value") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Current/Proposed" }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.end_date") }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Negotiation Status" }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 								className: "text-right",
 								children: t("common.actions")
@@ -75933,7 +76836,8 @@ function Renewals() {
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [filteredTenants.map((tenant) => {
 						const property$2 = properties$1.find((p$1) => p$1.id === tenant.propertyId);
 						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
-							className: "hover:bg-slate-50",
+							className: "hover:bg-slate-50 cursor-pointer",
+							onClick: () => handleManage(tenant.id),
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 									className: "font-medium text-slate-900",
@@ -75943,22 +76847,61 @@ function Renewals() {
 									className: "text-slate-700",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: property$2?.name || tenant.propertyId })
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 									className: "font-medium",
-									children: ["$", tenant.rentValue?.toLocaleString()]
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex flex-col",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+											className: "text-slate-500 text-xs",
+											children: ["$", tenant.rentValue?.toLocaleString()]
+										}), tenant.suggestedRenewalPrice && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+											className: "text-trust-blue",
+											children: ["$", tenant.suggestedRenewalPrice.toLocaleString()]
+										})]
+									})
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "flex items-center gap-2 text-slate-700",
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-4 w-4 text-slate-400" }), format(new Date(tenant.leaseEnd), "MMM dd, yyyy")]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "mt-1",
+									children: getStatusBadge(tenant.leaseEnd)
+								})] }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: tenant.negotiationStatus === "closed" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+									variant: "outline",
+									className: "bg-green-100 text-green-800 border-green-300",
+									children: "Renewed"
+								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex flex-col gap-1 text-xs mt-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+										"Owner:",
+										" ",
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+											variant: "outline",
+											className: cn("text-[10px] capitalize", getDecisionColor(tenant.ownerDecision)),
+											children: tenant.ownerDecision || "pending"
+										})
+									] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+										"Tenant:",
+										" ",
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+											variant: "outline",
+											className: cn("text-[10px] capitalize", getDecisionColor(tenant.tenantDecision)),
+											children: tenant.tenantDecision || "pending"
+										})
+									] })]
 								}) }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: getStatusBadge(tenant.leaseEnd) }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 									className: "text-right",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 										variant: "outline",
 										size: "sm",
-										className: "gap-2 text-slate-700 hover:text-slate-900",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4" }), t("renewals.close_negotiation")]
+										className: "gap-2 text-trust-blue border-trust-blue hover:bg-blue-50",
+										onClick: (e) => {
+											e.stopPropagation();
+											handleManage(tenant.id);
+										},
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4" }), "Manage"]
 									})
 								})
 							]
@@ -75969,6 +76912,11 @@ function Renewals() {
 						children: t("renewals.no_results")
 					}) })] })] })
 				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(NegotiationSheet, {
+				open: sheetOpen,
+				onOpenChange: setSheetOpen,
+				tenantId: selectedTenant
 			})
 		]
 	});
@@ -80774,4 +81722,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-CiRHPsh0.js.map
+//# sourceMappingURL=index-CqeitnZ6.js.map

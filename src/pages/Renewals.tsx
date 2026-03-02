@@ -24,6 +24,8 @@ import useLanguageStore from '@/stores/useLanguageStore'
 import { format, differenceInDays } from 'date-fns'
 import { DataMask } from '@/components/DataMask'
 import { Search, Calendar, FileText } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { NegotiationSheet } from '@/components/renewals/NegotiationSheet'
 
 export default function Renewals() {
   const { tenants } = useTenantStore()
@@ -31,6 +33,9 @@ export default function Renewals() {
   const { t } = useLanguageStore()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [selectedTenant, setSelectedTenant] = useState<string | null>(null)
 
   const activeTenants = tenants.filter(
     (t) => t.status === 'active' && t.leaseEnd,
@@ -85,14 +90,34 @@ export default function Renewals() {
     )
   }
 
+  const getDecisionColor = (decision?: string) => {
+    switch (decision) {
+      case 'accepted':
+        return 'text-green-700 bg-green-100 border-green-300'
+      case 'rejected':
+        return 'text-red-700 bg-red-100 border-red-300'
+      case 'counter':
+        return 'text-yellow-700 bg-yellow-100 border-yellow-300'
+      default:
+        return 'text-slate-700 bg-slate-100 border-slate-300'
+    }
+  }
+
+  const handleManage = (id: string) => {
+    setSelectedTenant(id)
+    setSheetOpen(true)
+  }
+
   return (
     <div className="flex flex-col gap-6 h-[calc(100vh-6rem)]">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('renewals.title')}
+            Contract Renewals
           </h1>
-          <p className="text-muted-foreground">{t('renewals.subtitle')}</p>
+          <p className="text-muted-foreground">
+            Manage multi-party negotiations and finalize leases.
+          </p>
         </div>
       </div>
 
@@ -126,9 +151,9 @@ export default function Renewals() {
               <TableRow>
                 <TableHead>{t('common.name')}</TableHead>
                 <TableHead>{t('common.property')}</TableHead>
-                <TableHead>{t('renewals.current_value')}</TableHead>
+                <TableHead>Current/Proposed</TableHead>
                 <TableHead>{t('common.end_date')}</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
+                <TableHead>Negotiation Status</TableHead>
                 <TableHead className="text-right">
                   {t('common.actions')}
                 </TableHead>
@@ -140,7 +165,11 @@ export default function Renewals() {
                   (p) => p.id === tenant.propertyId,
                 )
                 return (
-                  <TableRow key={tenant.id} className="hover:bg-slate-50">
+                  <TableRow
+                    key={tenant.id}
+                    className="hover:bg-slate-50 cursor-pointer"
+                    onClick={() => handleManage(tenant.id)}
+                  >
                     <TableCell className="font-medium text-slate-900">
                       <DataMask>{tenant.name}</DataMask>
                     </TableCell>
@@ -148,23 +177,75 @@ export default function Renewals() {
                       <DataMask>{property?.name || tenant.propertyId}</DataMask>
                     </TableCell>
                     <TableCell className="font-medium">
-                      ${tenant.rentValue?.toLocaleString()}
+                      <div className="flex flex-col">
+                        <span className="text-slate-500 text-xs">
+                          ${tenant.rentValue?.toLocaleString()}
+                        </span>
+                        {tenant.suggestedRenewalPrice && (
+                          <span className="text-trust-blue">
+                            ${tenant.suggestedRenewalPrice.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 text-slate-700">
                         <Calendar className="h-4 w-4 text-slate-400" />
                         {format(new Date(tenant.leaseEnd!), 'MMM dd, yyyy')}
                       </div>
+                      <div className="mt-1">
+                        {getStatusBadge(tenant.leaseEnd!)}
+                      </div>
                     </TableCell>
-                    <TableCell>{getStatusBadge(tenant.leaseEnd!)}</TableCell>
+                    <TableCell>
+                      {tenant.negotiationStatus === 'closed' ? (
+                        <Badge
+                          variant="outline"
+                          className="bg-green-100 text-green-800 border-green-300"
+                        >
+                          Renewed
+                        </Badge>
+                      ) : (
+                        <div className="flex flex-col gap-1 text-xs mt-1">
+                          <span>
+                            Owner:{' '}
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                'text-[10px] capitalize',
+                                getDecisionColor(tenant.ownerDecision),
+                              )}
+                            >
+                              {tenant.ownerDecision || 'pending'}
+                            </Badge>
+                          </span>
+                          <span>
+                            Tenant:{' '}
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                'text-[10px] capitalize',
+                                getDecisionColor(tenant.tenantDecision),
+                              )}
+                            >
+                              {tenant.tenantDecision || 'pending'}
+                            </Badge>
+                          </span>
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="gap-2 text-slate-700 hover:text-slate-900"
+                        className="gap-2 text-trust-blue border-trust-blue hover:bg-blue-50"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleManage(tenant.id)
+                        }}
                       >
                         <FileText className="h-4 w-4" />
-                        {t('renewals.close_negotiation')}
+                        Manage
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -184,6 +265,12 @@ export default function Renewals() {
           </Table>
         </CardContent>
       </Card>
+
+      <NegotiationSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        tenantId={selectedTenant}
+      />
     </div>
   )
 }

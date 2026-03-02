@@ -658,12 +658,34 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setUsers(users.map((x) => (x.id === id ? { ...x, status: 'active' } : x)))
   const blockUser = (id: string) =>
     setUsers(users.map((x) => (x.id === id ? { ...x, status: 'blocked' } : x)))
-  const renewTenantContract = (id: string, end: string, val: number) =>
-    setTenants(
-      tenants.map((x) =>
-        x.id === id ? { ...x, leaseEnd: end, rentValue: val } : x,
-      ),
+
+  const renewTenantContract = (
+    id: string,
+    end: string,
+    val: number,
+    start?: string,
+    contractDoc?: GenericDocument,
+  ) => {
+    setTenants((prev) =>
+      prev.map((x) => {
+        if (x.id === id) {
+          const docs = contractDoc
+            ? [...(x.documents || []), contractDoc]
+            : x.documents
+          return {
+            ...x,
+            leaseEnd: end,
+            rentValue: val,
+            leaseStart: start || x.leaseStart,
+            negotiationStatus: 'closed',
+            documents: docs,
+          }
+        }
+        return x
+      }),
     )
+  }
+
   const updateTenantNegotiation = (id: string, d: any) =>
     setTenants(tenants.map((x) => (x.id === id ? { ...x, ...d } : x)))
   const addAdvertisement = (a: Advertisement) =>

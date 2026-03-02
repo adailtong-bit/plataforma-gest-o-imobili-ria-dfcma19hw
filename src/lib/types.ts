@@ -656,6 +656,8 @@ export interface Tenant {
   negotiationStatus?: NegotiationStatus
   negotiationLogs?: NegotiationLogEntry[]
   suggestedRenewalPrice?: number
+  ownerDecision?: 'pending' | 'accepted' | 'rejected' | 'counter'
+  tenantDecision?: 'pending' | 'accepted' | 'rejected' | 'counter'
   rentAdjustmentConfig?: {
     type: 'percentage' | 'fixed'
     value: number

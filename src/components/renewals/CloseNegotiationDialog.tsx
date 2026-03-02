@@ -62,9 +62,12 @@ export function CloseNegotiationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t('renewals.close_negotiation')}</DialogTitle>
+          <DialogTitle>
+            {t('renewals.close_negotiation')} (Finalize Renewal)
+          </DialogTitle>
           <DialogDescription>
             Confirme os novos termos e anexe o contrato assinado para finalizar.
+            O status será atualizado para "Renewed".
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -108,7 +111,10 @@ export function CloseNegotiationDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleConfirm} className="bg-trust-blue">
+          <Button
+            onClick={handleConfirm}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
             {t('common.confirm')}
           </Button>
         </DialogFooter>
