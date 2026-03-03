@@ -9,6 +9,8 @@ import { Task } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { MapPin, User, Calendar, DollarSign, FileText } from 'lucide-react'
+import useAuthStore from '@/stores/useAuthStore'
+import { formatCurrency } from '@/lib/utils'
 
 interface TaskDetailsSheetProps {
   task: Task | null
@@ -21,7 +23,23 @@ export function TaskDetailsSheet({
   open,
   onOpenChange,
 }: TaskDetailsSheetProps) {
+  const { currentUser } = useAuthStore()
+
   if (!task) return null
+
+  const role = currentUser?.role as string
+  const isAdminOrPM = [
+    'platform_owner',
+    'software_tenant',
+    'internal_user',
+  ].includes(role)
+  const isPartner = role === 'partner'
+  const isTeamMember = role === 'partner_employee'
+  const isOwner = role === 'property_owner'
+
+  const showOwnerPrice = isAdminOrPM || isOwner
+  const showPartnerPrice = isAdminOrPM || isPartner
+  const showTeamMemberPayout = isAdminOrPM || isPartner || isTeamMember
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -71,29 +89,37 @@ export function TaskDetailsSheet({
                 </p>
               </div>
             </div>
-            {(task.price !== undefined || task.laborCost !== undefined) && (
+
+            {(showOwnerPrice || showPartnerPrice || showTeamMemberPayout) && (
               <div className="flex items-start gap-3">
                 <DollarSign className="h-5 w-5 text-slate-500 mt-0.5" />
                 <div>
                   <p className="font-semibold text-sm">Financials</p>
-                  {task.price !== undefined && (
+                  {showOwnerPrice && task.price !== undefined && (
                     <p className="text-sm text-slate-700">
-                      Price: ${task.price}
+                      Owner Price: {formatCurrency(task.price)}
                     </p>
                   )}
-                  {task.laborCost !== undefined && (
+                  {showPartnerPrice && task.laborCost !== undefined && (
                     <p className="text-sm text-slate-700">
-                      Labor: ${task.laborCost}
+                      Partner Price: {formatCurrency(task.laborCost)}
                     </p>
                   )}
-                  {task.materialCost !== undefined && (
+                  {showTeamMemberPayout &&
+                    task.teamMemberPayout !== undefined && (
+                      <p className="text-sm text-slate-700">
+                        Member Payout: {formatCurrency(task.teamMemberPayout)}
+                      </p>
+                    )}
+                  {task.materialCost !== undefined && isAdminOrPM && (
                     <p className="text-sm text-slate-700">
-                      Material: ${task.materialCost}
+                      Material Cost: {formatCurrency(task.materialCost)}
                     </p>
                   )}
                 </div>
               </div>
             )}
+
             {task.description && (
               <div className="flex items-start gap-3">
                 <FileText className="h-5 w-5 text-slate-500 mt-0.5" />

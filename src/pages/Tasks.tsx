@@ -19,6 +19,7 @@ import {
   RotateCw,
   Check,
   X,
+  Receipt,
 } from 'lucide-react'
 import { TaskInvoiceDialog } from '@/components/financial/TaskInvoiceDialog'
 import {
@@ -54,16 +55,17 @@ export default function Tasks() {
   const { t } = useLanguageStore()
   const { currentUser } = useAuthStore()
   const { properties } = usePropertyStore()
+
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
+  const [invoiceTask, setInvoiceTask] = useState<Task | null>(null)
+
   const [filterType, setFilterType] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
 
-  // State for actions in List View
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
 
-  // Rejection Dialog State
   const [rejectOpen, setRejectOpen] = useState(false)
   const [taskToReject, setTaskToReject] = useState<string | null>(null)
 
@@ -76,14 +78,11 @@ export default function Tasks() {
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
-      // Role-based filtering
       if (isOwner) {
-        // Owners only see tasks for their properties
         const property = properties.find((p) => p.id === t.propertyId)
         if (property?.ownerId !== currentUser?.id) return false
       }
 
-      // Workflow Role Filtering
       if (t.assignedRole) {
         const isAdmin = ['platform_owner', 'software_tenant'].includes(
           currentUser?.role as any,
@@ -160,6 +159,11 @@ export default function Tasks() {
     setEditOpen(true)
   }
 
+  const openInvoice = (task: Task) => {
+    setInvoiceTask(task)
+    setInvoiceDialogOpen(true)
+  }
+
   const handleRejectClick = (taskId: string) => {
     setTaskToReject(taskId)
     setRejectOpen(true)
@@ -169,7 +173,6 @@ export default function Tasks() {
     let nextStatus: Task['status'] = task.status
     if (task.status === 'pending') nextStatus = 'in_progress'
     else if (task.status === 'in_progress') nextStatus = 'completed'
-    // Simplified flow for list view
     if (nextStatus !== task.status) {
       updateTaskStatus(task.id, nextStatus)
     }
@@ -190,7 +193,6 @@ export default function Tasks() {
 
   return (
     <div className="flex flex-col gap-6 h-[calc(100vh-6rem)] min-h-0">
-      {/* Dialogs for List View Actions */}
       {selectedTask && (
         <>
           <TaskDetailsSheet
@@ -262,7 +264,10 @@ export default function Tasks() {
               variant="outline"
               size="sm"
               className="gap-2 h-9 text-black border-slate-300 font-medium bg-white"
-              onClick={() => setInvoiceDialogOpen(true)}
+              onClick={() => {
+                setInvoiceTask(null)
+                setInvoiceDialogOpen(true)
+              }}
             >
               <FileText className="h-4 w-4" />{' '}
               {t('automation.generate_invoice')}
@@ -273,8 +278,12 @@ export default function Tasks() {
       </div>
 
       <TaskInvoiceDialog
+        task={invoiceTask}
         open={invoiceDialogOpen}
-        onOpenChange={setInvoiceDialogOpen}
+        onOpenChange={(open) => {
+          setInvoiceDialogOpen(open)
+          if (!open) setInvoiceTask(null)
+        }}
       />
 
       <Tabs
@@ -300,7 +309,6 @@ export default function Tasks() {
 
         <TabsContent value="board" className="flex-1 min-h-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
-            {/* Approval Column */}
             <div className="bg-orange-50 p-4 rounded-lg flex flex-col gap-4 border border-orange-100 h-full">
               <div className="flex items-center justify-between pb-2 border-b border-orange-200 shrink-0">
                 <h3 className="font-bold text-sm uppercase text-orange-900">
@@ -325,7 +333,6 @@ export default function Tasks() {
               </div>
             </div>
 
-            {/* Pending Column */}
             <div className="bg-slate-50 p-4 rounded-lg flex flex-col gap-4 border border-slate-200 h-full">
               <div className="flex items-center justify-between pb-2 border-b border-slate-200 shrink-0">
                 <h3 className="font-bold text-sm uppercase text-black">
@@ -353,7 +360,6 @@ export default function Tasks() {
               </div>
             </div>
 
-            {/* In Progress Column */}
             <div className="bg-blue-50 p-4 rounded-lg flex flex-col gap-4 border border-blue-100 h-full">
               <div className="flex items-center justify-between pb-2 border-b border-blue-200 shrink-0">
                 <h3 className="font-bold text-sm uppercase text-blue-900">
@@ -379,7 +385,6 @@ export default function Tasks() {
               </div>
             </div>
 
-            {/* Completed Column */}
             <div className="bg-green-50 p-4 rounded-lg flex flex-col gap-4 border border-green-100 h-full">
               <div className="flex items-center justify-between pb-2 border-b border-green-200 shrink-0">
                 <h3 className="font-bold text-sm uppercase text-green-900">
@@ -487,7 +492,14 @@ export default function Tasks() {
                               </Button>
                             </>
                           )}
-
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openInvoice(task)}
+                            title={t('automation.generate_invoice')}
+                          >
+                            <Receipt className="h-4 w-4" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"

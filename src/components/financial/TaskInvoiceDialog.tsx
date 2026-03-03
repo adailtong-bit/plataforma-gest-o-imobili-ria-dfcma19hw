@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -10,18 +10,53 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import useFinancialStore from '@/stores/useFinancialStore'
+import useAuthStore from '@/stores/useAuthStore'
 import { useToast } from '@/hooks/use-toast'
+import { Task } from '@/lib/types'
 
 export function TaskInvoiceDialog({
+  task,
   open,
   onOpenChange,
 }: {
+  task?: Task | null
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
   const { addInvoice } = useFinancialStore()
+  const { currentUser } = useAuthStore()
   const { toast } = useToast()
   const [form, setForm] = useState({ description: '', amount: '' })
+
+  useEffect(() => {
+    if (task && open) {
+      let amt = 0
+      let desc = `Invoice for ${task.title}`
+      const role = currentUser?.role
+
+      if (
+        ['platform_owner', 'software_tenant', 'internal_user'].includes(
+          role as string,
+        )
+      ) {
+        amt = task.price || 0
+        desc = `PM Invoice to Owner for ${task.title}`
+      } else if (role === 'partner') {
+        amt = task.laborCost || 0
+        desc = `Partner Invoice to PM for ${task.title}`
+      } else if (role === 'partner_employee') {
+        amt = task.teamMemberPayout || 0
+        desc = `Team Member Invoice to Partner for ${task.title}`
+      } else if (role === 'property_owner') {
+        amt = task.price || 0
+        desc = `Owner Invoice record for ${task.title}`
+      }
+
+      setForm({ description: desc, amount: amt.toString() })
+    } else if (open && !task) {
+      setForm({ description: '', amount: '' })
+    }
+  }, [task, open, currentUser])
 
   const handleSave = () => {
     if (!form.description || !form.amount) {
@@ -38,6 +73,8 @@ export function TaskInvoiceDialog({
       amount: Number(form.amount),
       status: 'pending',
       date: new Date().toISOString(),
+      propertyId: task?.propertyId,
+      bookingId: task?.bookingId,
     })
     toast({ title: 'Invoice Generated' })
     onOpenChange(false)

@@ -19586,6 +19586,20 @@ var Printer = createLucideIcon("printer", [
 		key: "1ue0tg"
 	}]
 ]);
+var Receipt = createLucideIcon("receipt", [
+	["path", {
+		d: "M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z",
+		key: "q3az6g"
+	}],
+	["path", {
+		d: "M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8",
+		key: "1h4pet"
+	}],
+	["path", {
+		d: "M12 17.5v-11",
+		key: "1jc1ny"
+	}]
+]);
 var Repeat = createLucideIcon("repeat", [
 	["path", {
 		d: "m17 2 4 4-4 4",
@@ -62491,7 +62505,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$22(function() {
+			useEffect$23(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -62514,7 +62528,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$54 = React$67.useState, useEffect$22 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$54 = React$67.useState, useEffect$23 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -66036,7 +66050,19 @@ var usePartnerStore = () => {
 };
 var usePartnerStore_default = usePartnerStore;
 function TaskDetailsSheet({ task, open, onOpenChange }) {
+	const { currentUser } = useAuthStore_default();
 	if (!task) return null;
+	const role = currentUser?.role;
+	const isAdminOrPM = [
+		"platform_owner",
+		"software_tenant",
+		"internal_user"
+	].includes(role);
+	const isPartner = role === "partner";
+	const isTeamMember = role === "partner_employee";
+	const showOwnerPrice = isAdminOrPM || role === "property_owner";
+	const showPartnerPrice = isAdminOrPM || isPartner;
+	const showTeamMemberPayout = isAdminOrPM || isPartner || isTeamMember;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sheet, {
 		open,
 		onOpenChange,
@@ -66110,24 +66136,28 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 									children: format(new Date(task.date), "PPP")
 								})] })]
 							}),
-							(task.price !== void 0 || task.laborCost !== void 0) && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							(showOwnerPrice || showPartnerPrice || showTeamMemberPayout) && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex items-start gap-3",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-5 w-5 text-slate-500 mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 										className: "font-semibold text-sm",
 										children: "Financials"
 									}),
-									task.price !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+									showOwnerPrice && task.price !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 										className: "text-sm text-slate-700",
-										children: ["Price: $", task.price]
+										children: ["Owner Price: ", formatCurrency(task.price)]
 									}),
-									task.laborCost !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+									showPartnerPrice && task.laborCost !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 										className: "text-sm text-slate-700",
-										children: ["Labor: $", task.laborCost]
+										children: ["Partner Price: ", formatCurrency(task.laborCost)]
 									}),
-									task.materialCost !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+									showTeamMemberPayout && task.teamMemberPayout !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 										className: "text-sm text-slate-700",
-										children: ["Material: $", task.materialCost]
+										children: ["Member Payout: ", formatCurrency(task.teamMemberPayout)]
+									}),
+									task.materialCost !== void 0 && isAdminOrPM && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+										className: "text-sm text-slate-700",
+										children: ["Material Cost: ", formatCurrency(task.materialCost)]
 									})
 								] })]
 							}),
@@ -66567,7 +66597,15 @@ function CreateTaskDialog() {
 	const { addTask } = useTaskStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
 	const { partners: partners$1 } = usePartnerStore_default();
+	const { currentUser } = useAuthStore_default();
 	const { toast: toast$2 } = useToast();
+	const isAdminOrPM = [
+		"platform_owner",
+		"software_tenant",
+		"internal_user"
+	].includes(currentUser?.role);
+	const isPartner = currentUser?.role === "partner";
+	const availablePartners = isAdminOrPM ? partners$1 : isPartner ? partners$1.filter((p$1) => p$1.id === currentUser?.id) : [];
 	const [form, setForm] = (0, import_react.useState)({
 		title: "",
 		propertyId: "",
@@ -66575,8 +66613,11 @@ function CreateTaskDialog() {
 		priority: "medium",
 		assigneeId: "",
 		partnerEmployeeId: "",
-		assigneeName: "",
-		date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+		date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+		pricingModel: "pm_driven",
+		price: 0,
+		laborCost: 0,
+		teamMemberPayout: 0
 	});
 	const handleSave = () => {
 		if (!form.title || !form.propertyId || !form.type) {
@@ -66588,6 +66629,11 @@ function CreateTaskDialog() {
 			return;
 		}
 		const prop = properties$1.find((p$1) => p$1.id === form.propertyId);
+		const partner = partners$1.find((p$1) => p$1.id === form.assigneeId);
+		const emp = partner?.employees?.find((e) => e.id === form.partnerEmployeeId);
+		let assigneeName = "Unassigned";
+		if (emp) assigneeName = `${emp.name} - ${partner?.name}`;
+		else if (partner) assigneeName = partner.name;
 		addTask({
 			id: `task-${Date.now()}`,
 			title: form.title,
@@ -66600,7 +66646,11 @@ function CreateTaskDialog() {
 			date: form.date,
 			assigneeId: form.assigneeId || void 0,
 			partnerEmployeeId: form.partnerEmployeeId || void 0,
-			assignee: form.assigneeName || "Unassigned",
+			assignee: assigneeName,
+			pricingModel: form.pricingModel,
+			price: form.price,
+			laborCost: form.laborCost,
+			teamMemberPayout: form.teamMemberPayout,
 			source: "manual"
 		});
 		toast$2({ title: "Task created successfully" });
@@ -66612,8 +66662,11 @@ function CreateTaskDialog() {
 			priority: "medium",
 			assigneeId: "",
 			partnerEmployeeId: "",
-			assigneeName: "",
-			date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+			date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+			pricingModel: "pm_driven",
+			price: 0,
+			laborCost: 0,
+			teamMemberPayout: 0
 		});
 	};
 	const requiredSkills = form.type ? {
@@ -66628,47 +66681,13 @@ function CreateTaskDialog() {
 			"pest_control"
 		]
 	}[form.type] || [] : [];
-	const assignableStaff = partners$1.flatMap((partner) => {
-		return (partner.employees || []).map((emp) => ({
-			id: emp.id,
-			name: emp.name,
-			partnerId: partner.id,
-			partnerName: partner.name,
-			skills: emp.skills || []
-		}));
-	});
-	const recommendedStaff = assignableStaff.filter((s$1) => s$1.skills.some((sk) => requiredSkills.includes(sk)));
-	const otherStaff = assignableStaff.filter((s$1) => !s$1.skills.some((sk) => requiredSkills.includes(sk)));
-	const currentAssigneeVal = form.partnerEmployeeId ? `employee:${form.partnerEmployeeId}` : form.assigneeId ? `partner:${form.assigneeId}` : "none";
-	const handleAssigneeChange = (val) => {
-		if (val === "none") {
-			setForm((prev) => ({
-				...prev,
-				assigneeId: "",
-				partnerEmployeeId: "",
-				assigneeName: ""
-			}));
-			return;
-		}
-		const [type, id] = val.split(":");
-		if (type === "employee") {
-			const staff = assignableStaff.find((s$1) => s$1.id === id);
-			if (staff) setForm((prev) => ({
-				...prev,
-				assigneeId: staff.partnerId,
-				partnerEmployeeId: staff.id,
-				assigneeName: `${staff.name} - ${staff.partnerName}`
-			}));
-		} else if (type === "partner") {
-			const partner = partners$1.find((p$1) => p$1.id === id);
-			if (partner) setForm((prev) => ({
-				...prev,
-				assigneeId: partner.id,
-				partnerEmployeeId: "",
-				assigneeName: partner.name
-			}));
-		}
-	};
+	const availableEmployees = partners$1.find((p$1) => p$1.id === form.assigneeId)?.employees || [];
+	const recommendedStaff = availableEmployees.filter((s$1) => s$1.skills?.some((sk) => requiredSkills.includes(sk)));
+	const otherStaff = availableEmployees.filter((s$1) => !s$1.skills?.some((sk) => requiredSkills.includes(sk)));
+	const canSetPricingModel = isAdminOrPM;
+	const canSetOwnerPrice = isAdminOrPM;
+	const canSetPartnerPrice = isAdminOrPM || isPartner && form.pricingModel === "partner_driven";
+	const canSetTeamMemberPayout = isAdminOrPM || isPartner;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 		open,
 		onOpenChange: setOpen,
@@ -66679,7 +66698,7 @@ function CreateTaskDialog() {
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " New Task"]
 			})
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-			className: "bg-white",
+			className: "bg-white max-h-[90vh] overflow-y-auto",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Create New Task" }) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -66765,52 +66784,148 @@ function CreateTaskDialog() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid grid-cols-2 gap-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Assignee" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: currentAssigneeVal,
-									onValueChange: handleAssigneeChange,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Unassigned" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Partner Company" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: form.assigneeId || "none",
+										onValueChange: (v) => setForm({
+											...form,
+											assigneeId: v === "none" ? "" : v,
+											partnerEmployeeId: ""
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Unassigned" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "none",
 											children: "Unassigned"
+										}), availablePartners.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: p$1.id,
+											children: p$1.name
+										}, p$1.id))] })]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Assigned Team Member" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: form.partnerEmployeeId || "none",
+										onValueChange: (v) => setForm({
+											...form,
+											partnerEmployeeId: v === "none" ? "" : v
 										}),
-										recommendedStaff.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, {
-											className: "text-trust-blue",
-											children: "Recommended Staff (Matches Skill)"
-										}), recommendedStaff.map((staff) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-											value: `employee:${staff.id}`,
+										disabled: !form.assigneeId,
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: form.assigneeId ? "Select Member" : "Select Partner First" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "none",
+												children: "Any / Unassigned"
+											}),
+											recommendedStaff.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, {
+												className: "text-trust-blue",
+												children: "Recommended Staff (Matches Skill)"
+											}), recommendedStaff.map((staff) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: staff.id,
+												children: staff.name
+											}, staff.id))] }),
+											otherStaff.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, { children: "Other Staff" }), otherStaff.map((staff) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: staff.id,
+												children: staff.name
+											}, staff.id))] })
+										] })]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										type: "date",
+										value: form.date,
+										onChange: (e) => setForm({
+											...form,
+											date: e.target.value
+										})
+									})]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-4 border-t pt-4 mt-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+									className: "font-semibold text-sm",
+									children: "Financials & Pricing"
+								}),
+								canSetPricingModel && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Pricing Model" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: form.pricingModel || "pm_driven",
+										onValueChange: (v) => setForm({
+											...form,
+											pricingModel: v
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "pm_driven",
+											children: "PM Driven (Fixed by PM)"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "partner_driven",
+											children: "Partner Driven (Set by Partner)"
+										})] })]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-1 md:grid-cols-3 gap-4",
+									children: [
+										canSetOwnerPrice && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2",
 											children: [
-												staff.name,
-												" - ",
-												staff.partnerName
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Owner Price ($)" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+													value: form.price || 0,
+													onChange: (v) => setForm({
+														...form,
+														price: v
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "text-xs text-muted-foreground",
+													children: "Charged to Owner."
+												})
 											]
-										}, `emp-${staff.id}`))] }),
-										otherStaff.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, { children: "Other Staff" }), otherStaff.map((staff) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-											value: `employee:${staff.id}`,
+										}),
+										canSetPartnerPrice && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2",
 											children: [
-												staff.name,
-												" - ",
-												staff.partnerName
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Partner Price ($)" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+													value: form.laborCost || 0,
+													onChange: (v) => setForm({
+														...form,
+														laborCost: v
+													}),
+													disabled: !isAdminOrPM && form.pricingModel === "pm_driven"
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "text-xs text-muted-foreground",
+													children: "Paid to Partner."
+												})
 											]
-										}, `emp-${staff.id}`))] }),
-										partners$1.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, { children: "Partners (Agencies)" }), partners$1.map((partner) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: `partner:${partner.id}`,
-											children: partner.name
-										}, `pat-${partner.id}`))] })
-									] })]
-								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									type: "date",
-									value: form.date,
-									onChange: (e) => setForm({
-										...form,
-										date: e.target.value
-									})
-								})]
-							})]
+										}),
+										canSetTeamMemberPayout && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Member Payout ($)" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+													value: form.teamMemberPayout || 0,
+													onChange: (v) => setForm({
+														...form,
+														teamMemberPayout: v
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "text-xs text-muted-foreground",
+													children: "Paid to Staff."
+												})
+											]
+										})
+									]
+								})
+							]
 						})
 					]
 				}),
@@ -66827,13 +66942,49 @@ function CreateTaskDialog() {
 		})]
 	});
 }
-function TaskInvoiceDialog({ open, onOpenChange }) {
+function TaskInvoiceDialog({ task, open, onOpenChange }) {
 	const { addInvoice } = useFinancialStore_default();
+	const { currentUser } = useAuthStore_default();
 	const { toast: toast$2 } = useToast();
 	const [form, setForm] = (0, import_react.useState)({
 		description: "",
 		amount: ""
 	});
+	(0, import_react.useEffect)(() => {
+		if (task && open) {
+			let amt = 0;
+			let desc = `Invoice for ${task.title}`;
+			const role = currentUser?.role;
+			if ([
+				"platform_owner",
+				"software_tenant",
+				"internal_user"
+			].includes(role)) {
+				amt = task.price || 0;
+				desc = `PM Invoice to Owner for ${task.title}`;
+			} else if (role === "partner") {
+				amt = task.laborCost || 0;
+				desc = `Partner Invoice to PM for ${task.title}`;
+			} else if (role === "partner_employee") {
+				amt = task.teamMemberPayout || 0;
+				desc = `Team Member Invoice to Partner for ${task.title}`;
+			} else if (role === "property_owner") {
+				amt = task.price || 0;
+				desc = `Owner Invoice record for ${task.title}`;
+			}
+			setForm({
+				description: desc,
+				amount: amt.toString()
+			});
+		} else if (open && !task) setForm({
+			description: "",
+			amount: ""
+		});
+	}, [
+		task,
+		open,
+		currentUser
+	]);
 	const handleSave = () => {
 		if (!form.description || !form.amount) {
 			toast$2({
@@ -66848,7 +66999,9 @@ function TaskInvoiceDialog({ open, onOpenChange }) {
 			description: form.description,
 			amount: Number(form.amount),
 			status: "pending",
-			date: (/* @__PURE__ */ new Date()).toISOString()
+			date: (/* @__PURE__ */ new Date()).toISOString(),
+			propertyId: task?.propertyId,
+			bookingId: task?.bookingId
 		});
 		toast$2({ title: "Invoice Generated" });
 		onOpenChange(false);
@@ -66950,23 +67103,43 @@ TableCaption.displayName = "TableCaption";
 function EditTaskDialog({ task, open, onOpenChange }) {
 	const { updateTask } = useTaskStore_default();
 	const { partners: partners$1 } = usePartnerStore_default();
+	const { currentUser } = useAuthStore_default();
 	const { toast: toast$2 } = useToast();
 	const [form, setForm] = (0, import_react.useState)({});
+	const isAdminOrPM = [
+		"platform_owner",
+		"software_tenant",
+		"internal_user"
+	].includes(currentUser?.role);
+	const isPartner = currentUser?.role === "partner";
+	const availablePartners = isAdminOrPM ? partners$1 : isPartner ? partners$1.filter((p$1) => p$1.id === currentUser?.id) : [];
 	(0, import_react.useEffect)(() => {
-		if (task) setForm(task);
+		if (task) setForm({
+			...task,
+			pricingModel: task.pricingModel || "pm_driven",
+			price: task.price || 0,
+			laborCost: task.laborCost || 0,
+			teamMemberPayout: task.teamMemberPayout || 0
+		});
 	}, [task]);
 	const handleSave = () => {
 		if (task) {
+			const partner = partners$1.find((p$1) => p$1.id === form.assigneeId);
+			const emp = partner?.employees?.find((e) => e.id === form.partnerEmployeeId);
+			let assigneeName = "Unassigned";
+			if (emp) assigneeName = `${emp.name} - ${partner?.name}`;
+			else if (partner) assigneeName = partner.name;
 			updateTask({
 				...task,
-				...form
+				...form,
+				assignee: assigneeName
 			});
 			toast$2({ title: "Task updated successfully" });
 			onOpenChange(false);
 		}
 	};
 	if (!task) return null;
-	const requiredSkills = task.type ? {
+	const requiredSkills = form.type ? {
 		cleaning: ["cleaning", "deep_cleaning"],
 		maintenance: [
 			"plumbing",
@@ -66977,48 +67150,14 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 			"pool",
 			"pest_control"
 		]
-	}[task.type] || [] : [];
-	const assignableStaff = partners$1.flatMap((partner) => {
-		return (partner.employees || []).map((emp) => ({
-			id: emp.id,
-			name: emp.name,
-			partnerId: partner.id,
-			partnerName: partner.name,
-			skills: emp.skills || []
-		}));
-	});
-	const recommendedStaff = assignableStaff.filter((s$1) => s$1.skills.some((sk) => requiredSkills.includes(sk)));
-	const otherStaff = assignableStaff.filter((s$1) => !s$1.skills.some((sk) => requiredSkills.includes(sk)));
-	const currentAssigneeVal = form.partnerEmployeeId ? `employee:${form.partnerEmployeeId}` : form.assigneeId ? `partner:${form.assigneeId}` : "none";
-	const handleAssigneeChange = (val) => {
-		if (val === "none") {
-			setForm((prev) => ({
-				...prev,
-				assigneeId: void 0,
-				partnerEmployeeId: void 0,
-				assignee: "Unassigned"
-			}));
-			return;
-		}
-		const [type, id] = val.split(":");
-		if (type === "employee") {
-			const staff = assignableStaff.find((s$1) => s$1.id === id);
-			if (staff) setForm((prev) => ({
-				...prev,
-				assigneeId: staff.partnerId,
-				partnerEmployeeId: staff.id,
-				assignee: `${staff.name} - ${staff.partnerName}`
-			}));
-		} else if (type === "partner") {
-			const partner = partners$1.find((p$1) => p$1.id === id);
-			if (partner) setForm((prev) => ({
-				...prev,
-				assigneeId: partner.id,
-				partnerEmployeeId: void 0,
-				assignee: partner.name
-			}));
-		}
-	};
+	}[form.type] || [] : [];
+	const availableEmployees = partners$1.find((p$1) => p$1.id === form.assigneeId)?.employees || [];
+	const recommendedStaff = availableEmployees.filter((s$1) => s$1.skills?.some((sk) => requiredSkills.includes(sk)));
+	const otherStaff = availableEmployees.filter((s$1) => !s$1.skills?.some((sk) => requiredSkills.includes(sk)));
+	const canSetPricingModel = isAdminOrPM;
+	const canSetOwnerPrice = isAdminOrPM;
+	const canSetPartnerPrice = isAdminOrPM || isPartner && form.pricingModel === "partner_driven";
+	const canSetTeamMemberPayout = isAdminOrPM || isPartner;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open,
 		onOpenChange,
@@ -67093,74 +67232,170 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid grid-cols-2 gap-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: form.status,
-									onValueChange: (v) => setForm({
-										...form,
-										status: v
-									}),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "pending",
-											children: "Pending"
+							className: "grid grid-cols-1 md:grid-cols-3 gap-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: form.status,
+										onValueChange: (v) => setForm({
+											...form,
+											status: v
 										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "in_progress",
-											children: "In Progress"
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "pending",
+												children: "Pending"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "in_progress",
+												children: "In Progress"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "completed",
+												children: "Completed"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "pending_approval",
+												children: "Pending Approval"
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "rejected",
+												children: "Rejected"
+											})
+										] })]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Partner Company" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: form.assigneeId || "none",
+										onValueChange: (v) => setForm({
+											...form,
+											assigneeId: v === "none" ? void 0 : v,
+											partnerEmployeeId: void 0
 										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "completed",
-											children: "Completed"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "pending_approval",
-											children: "Pending Approval"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "rejected",
-											children: "Rejected"
-										})
-									] })]
-								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Assignee (Staff / Partner)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: currentAssigneeVal,
-									onValueChange: handleAssigneeChange,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Assignee" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Unassigned" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "none",
 											children: "Unassigned"
+										}), availablePartners.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: p$1.id,
+											children: p$1.name
+										}, p$1.id))] })]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Assigned Member" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: form.partnerEmployeeId || "none",
+										onValueChange: (v) => setForm({
+											...form,
+											partnerEmployeeId: v === "none" ? void 0 : v
 										}),
-										recommendedStaff.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, {
-											className: "text-trust-blue",
-											children: "Recommended Staff (Matches Skill)"
-										}), recommendedStaff.map((staff) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-											value: `employee:${staff.id}`,
+										disabled: !form.assigneeId,
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: form.assigneeId ? "Select Member" : "Select Partner First" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "none",
+												children: "Any / Unassigned"
+											}),
+											recommendedStaff.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, {
+												className: "text-trust-blue",
+												children: "Recommended Staff (Matches Skill)"
+											}), recommendedStaff.map((staff) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: staff.id,
+												children: staff.name
+											}, staff.id))] }),
+											otherStaff.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, { children: "Other Staff" }), otherStaff.map((staff) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: staff.id,
+												children: staff.name
+											}, staff.id))] })
+										] })]
+									})]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-4 border-t pt-4 mt-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+									className: "font-semibold text-sm",
+									children: "Financials & Pricing"
+								}),
+								canSetPricingModel && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Pricing Model" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: form.pricingModel || "pm_driven",
+										onValueChange: (v) => setForm({
+											...form,
+											pricingModel: v
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "pm_driven",
+											children: "PM Driven (Fixed by PM)"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "partner_driven",
+											children: "Partner Driven (Set by Partner)"
+										})] })]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-1 md:grid-cols-3 gap-4",
+									children: [
+										canSetOwnerPrice && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2",
 											children: [
-												staff.name,
-												" - ",
-												staff.partnerName
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Owner Price ($)" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+													value: form.price || 0,
+													onChange: (v) => setForm({
+														...form,
+														price: v
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "text-xs text-muted-foreground",
+													children: "Charged to Owner."
+												})
 											]
-										}, `emp-${staff.id}`))] }),
-										otherStaff.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, { children: "Other Staff" }), otherStaff.map((staff) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-											value: `employee:${staff.id}`,
+										}),
+										canSetPartnerPrice && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2",
 											children: [
-												staff.name,
-												" - ",
-												staff.partnerName
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Partner Price ($)" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+													value: form.laborCost || 0,
+													onChange: (v) => setForm({
+														...form,
+														laborCost: v
+													}),
+													disabled: !isAdminOrPM && form.pricingModel === "pm_driven"
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "text-xs text-muted-foreground",
+													children: "Paid to Partner."
+												})
 											]
-										}, `emp-${staff.id}`))] }),
-										partners$1.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, { children: "Partners (Agencies)" }), partners$1.map((partner) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: `partner:${partner.id}`,
-											children: partner.name
-										}, `pat-${partner.id}`))] })
-									] })]
-								})]
-							})]
+										}),
+										canSetTeamMemberPayout && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Member Payout ($)" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+													value: form.teamMemberPayout || 0,
+													onChange: (v) => setForm({
+														...form,
+														teamMemberPayout: v
+													})
+												}),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+													className: "text-xs text-muted-foreground",
+													children: "Paid to Staff."
+												})
+											]
+										})
+									]
+								})
+							]
 						})
 					]
 				}),
@@ -67241,6 +67476,7 @@ function Tasks() {
 	const { currentUser } = useAuthStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = (0, import_react.useState)(false);
+	const [invoiceTask, setInvoiceTask] = (0, import_react.useState)(null);
 	const [filterType, setFilterType] = (0, import_react.useState)("all");
 	const [filterStatus, setFilterStatus] = (0, import_react.useState)("all");
 	const [selectedTask, setSelectedTask] = (0, import_react.useState)(null);
@@ -67305,6 +67541,10 @@ function Tasks() {
 	const openEdit = (task) => {
 		setSelectedTask(task);
 		setEditOpen(true);
+	};
+	const openInvoice = (task) => {
+		setInvoiceTask(task);
+		setInvoiceDialogOpen(true);
 	};
 	const handleRejectClick = (taskId) => {
 		setTaskToReject(taskId);
@@ -67409,7 +67649,10 @@ function Tasks() {
 							variant: "outline",
 							size: "sm",
 							className: "gap-2 h-9 text-black border-slate-300 font-medium bg-white",
-							onClick: () => setInvoiceDialogOpen(true),
+							onClick: () => {
+								setInvoiceTask(null);
+								setInvoiceDialogOpen(true);
+							},
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-4 w-4" }),
 								" ",
@@ -67421,8 +67664,12 @@ function Tasks() {
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskInvoiceDialog, {
+				task: invoiceTask,
 				open: invoiceDialogOpen,
-				onOpenChange: setInvoiceDialogOpen
+				onOpenChange: (open) => {
+					setInvoiceDialogOpen(open);
+					if (!open) setInvoiceTask(null);
+				}
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
 				defaultValue: "board",
@@ -67613,6 +67860,13 @@ function Tasks() {
 														title: t("common.reject"),
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" }), t("common.reject")]
 													})] }),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+														variant: "ghost",
+														size: "icon",
+														onClick: () => openInvoice(task),
+														title: t("automation.generate_invoice"),
+														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Receipt, { className: "h-4 w-4" })
+													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 														variant: "ghost",
 														size: "icon",
@@ -80306,4 +80560,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-DVT_4KKt.js.map
+//# sourceMappingURL=index-CvV5wPaR.js.map

@@ -23,14 +23,30 @@ import { Plus } from 'lucide-react'
 import useTaskStore from '@/stores/useTaskStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import usePartnerStore from '@/stores/usePartnerStore'
+import useAuthStore from '@/stores/useAuthStore'
 import { useToast } from '@/hooks/use-toast'
+import { CurrencyInput } from '@/components/ui/currency-input'
 
 export function CreateTaskDialog() {
   const [open, setOpen] = useState(false)
   const { addTask } = useTaskStore()
   const { properties } = usePropertyStore()
   const { partners } = usePartnerStore()
+  const { currentUser } = useAuthStore()
   const { toast } = useToast()
+
+  const isAdminOrPM = [
+    'platform_owner',
+    'software_tenant',
+    'internal_user',
+  ].includes(currentUser?.role as string)
+  const isPartner = currentUser?.role === 'partner'
+
+  const availablePartners = isAdminOrPM
+    ? partners
+    : isPartner
+      ? partners.filter((p) => p.id === currentUser?.id)
+      : []
 
   const [form, setForm] = useState({
     title: '',
@@ -39,8 +55,11 @@ export function CreateTaskDialog() {
     priority: 'medium',
     assigneeId: '',
     partnerEmployeeId: '',
-    assigneeName: '',
     date: new Date().toISOString().split('T')[0],
+    pricingModel: 'pm_driven' as 'pm_driven' | 'partner_driven',
+    price: 0,
+    laborCost: 0,
+    teamMemberPayout: 0,
   })
 
   const handleSave = () => {
@@ -54,6 +73,12 @@ export function CreateTaskDialog() {
     }
 
     const prop = properties.find((p) => p.id === form.propertyId)
+    const partner = partners.find((p) => p.id === form.assigneeId)
+    const emp = partner?.employees?.find((e) => e.id === form.partnerEmployeeId)
+
+    let assigneeName = 'Unassigned'
+    if (emp) assigneeName = `${emp.name} - ${partner?.name}`
+    else if (partner) assigneeName = partner.name
 
     addTask({
       id: `task-${Date.now()}`,
@@ -67,7 +92,11 @@ export function CreateTaskDialog() {
       date: form.date,
       assigneeId: form.assigneeId || undefined,
       partnerEmployeeId: form.partnerEmployeeId || undefined,
-      assignee: form.assigneeName || 'Unassigned',
+      assignee: assigneeName,
+      pricingModel: form.pricingModel,
+      price: form.price,
+      laborCost: form.laborCost,
+      teamMemberPayout: form.teamMemberPayout,
       source: 'manual',
     })
 
@@ -80,8 +109,11 @@ export function CreateTaskDialog() {
       priority: 'medium',
       assigneeId: '',
       partnerEmployeeId: '',
-      assigneeName: '',
       date: new Date().toISOString().split('T')[0],
+      pricingModel: 'pm_driven',
+      price: 0,
+      laborCost: 0,
+      teamMemberPayout: 0,
     })
   }
 
@@ -99,64 +131,21 @@ export function CreateTaskDialog() {
   }
 
   const requiredSkills = form.type ? taskTypeToSkills[form.type] || [] : []
+  const selectedPartner = partners.find((p) => p.id === form.assigneeId)
+  const availableEmployees = selectedPartner?.employees || []
 
-  const assignableStaff = partners.flatMap((partner) => {
-    return (partner.employees || []).map((emp) => ({
-      id: emp.id,
-      name: emp.name,
-      partnerId: partner.id,
-      partnerName: partner.name,
-      skills: emp.skills || [],
-    }))
-  })
-
-  const recommendedStaff = assignableStaff.filter((s) =>
-    s.skills.some((sk) => requiredSkills.includes(sk)),
+  const recommendedStaff = availableEmployees.filter((s) =>
+    s.skills?.some((sk) => requiredSkills.includes(sk)),
   )
-  const otherStaff = assignableStaff.filter(
-    (s) => !s.skills.some((sk) => requiredSkills.includes(sk)),
+  const otherStaff = availableEmployees.filter(
+    (s) => !s.skills?.some((sk) => requiredSkills.includes(sk)),
   )
 
-  const currentAssigneeVal = form.partnerEmployeeId
-    ? `employee:${form.partnerEmployeeId}`
-    : form.assigneeId
-      ? `partner:${form.assigneeId}`
-      : 'none'
-
-  const handleAssigneeChange = (val: string) => {
-    if (val === 'none') {
-      setForm((prev) => ({
-        ...prev,
-        assigneeId: '',
-        partnerEmployeeId: '',
-        assigneeName: '',
-      }))
-      return
-    }
-
-    const [type, id] = val.split(':')
-    if (type === 'employee') {
-      const staff = assignableStaff.find((s) => s.id === id)
-      if (staff) {
-        setForm((prev) => ({
-          ...prev,
-          assigneeId: staff.partnerId,
-          partnerEmployeeId: staff.id,
-          assigneeName: `${staff.name} - ${staff.partnerName}`,
-        }))
-      }
-    } else if (type === 'partner') {
-      const partner = partners.find((p) => p.id === id)
-      if (partner) {
-        setForm((prev) => ({
-          ...prev,
-          assigneeId: partner.id,
-          partnerEmployeeId: '',
-          assigneeName: partner.name,
-        }))
-      }
-    }
-  }
+  const canSetPricingModel = isAdminOrPM
+  const canSetOwnerPrice = isAdminOrPM
+  const canSetPartnerPrice =
+    isAdminOrPM || (isPartner && form.pricingModel === 'partner_driven')
+  const canSetTeamMemberPayout = isAdminOrPM || isPartner
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -165,7 +154,7 @@ export function CreateTaskDialog() {
           <Plus className="h-4 w-4" /> New Task
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-white">
+      <DialogContent className="bg-white max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Task</DialogTitle>
         </DialogHeader>
@@ -232,56 +221,66 @@ export function CreateTaskDialog() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Assignee</Label>
+              <Label>Partner Company</Label>
               <Select
-                value={currentAssigneeVal}
-                onValueChange={handleAssigneeChange}
+                value={form.assigneeId || 'none'}
+                onValueChange={(v) =>
+                  setForm({
+                    ...form,
+                    assigneeId: v === 'none' ? '' : v,
+                    partnerEmployeeId: '',
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Unassigned" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Unassigned</SelectItem>
-
+                  {availablePartners.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Assigned Team Member</Label>
+              <Select
+                value={form.partnerEmployeeId || 'none'}
+                onValueChange={(v) =>
+                  setForm({ ...form, partnerEmployeeId: v === 'none' ? '' : v })
+                }
+                disabled={!form.assigneeId}
+              >
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={
+                      form.assigneeId ? 'Select Member' : 'Select Partner First'
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Any / Unassigned</SelectItem>
                   {recommendedStaff.length > 0 && (
                     <SelectGroup>
                       <SelectLabel className="text-trust-blue">
                         Recommended Staff (Matches Skill)
                       </SelectLabel>
                       {recommendedStaff.map((staff) => (
-                        <SelectItem
-                          key={`emp-${staff.id}`}
-                          value={`employee:${staff.id}`}
-                        >
-                          {staff.name} - {staff.partnerName}
+                        <SelectItem key={staff.id} value={staff.id}>
+                          {staff.name}
                         </SelectItem>
                       ))}
                     </SelectGroup>
                   )}
-
                   {otherStaff.length > 0 && (
                     <SelectGroup>
                       <SelectLabel>Other Staff</SelectLabel>
                       {otherStaff.map((staff) => (
-                        <SelectItem
-                          key={`emp-${staff.id}`}
-                          value={`employee:${staff.id}`}
-                        >
-                          {staff.name} - {staff.partnerName}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  )}
-
-                  {partners.length > 0 && (
-                    <SelectGroup>
-                      <SelectLabel>Partners (Agencies)</SelectLabel>
-                      {partners.map((partner) => (
-                        <SelectItem
-                          key={`pat-${partner.id}`}
-                          value={`partner:${partner.id}`}
-                        >
-                          {partner.name}
+                        <SelectItem key={staff.id} value={staff.id}>
+                          {staff.name}
                         </SelectItem>
                       ))}
                     </SelectGroup>
@@ -296,6 +295,75 @@ export function CreateTaskDialog() {
                 value={form.date}
                 onChange={(e) => setForm({ ...form, date: e.target.value })}
               />
+            </div>
+          </div>
+
+          {/* Financials Section */}
+          <div className="space-y-4 border-t pt-4 mt-4">
+            <h4 className="font-semibold text-sm">Financials & Pricing</h4>
+
+            {canSetPricingModel && (
+              <div className="space-y-2">
+                <Label>Pricing Model</Label>
+                <Select
+                  value={form.pricingModel || 'pm_driven'}
+                  onValueChange={(v: any) =>
+                    setForm({ ...form, pricingModel: v })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pm_driven">
+                      PM Driven (Fixed by PM)
+                    </SelectItem>
+                    <SelectItem value="partner_driven">
+                      Partner Driven (Set by Partner)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {canSetOwnerPrice && (
+                <div className="space-y-2">
+                  <Label>Owner Price ($)</Label>
+                  <CurrencyInput
+                    value={form.price || 0}
+                    onChange={(v) => setForm({ ...form, price: v })}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Charged to Owner.
+                  </p>
+                </div>
+              )}
+              {canSetPartnerPrice && (
+                <div className="space-y-2">
+                  <Label>Partner Price ($)</Label>
+                  <CurrencyInput
+                    value={form.laborCost || 0}
+                    onChange={(v) => setForm({ ...form, laborCost: v })}
+                    disabled={!isAdminOrPM && form.pricingModel === 'pm_driven'}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Paid to Partner.
+                  </p>
+                </div>
+              )}
+              {canSetTeamMemberPayout && (
+                <div className="space-y-2">
+                  <Label>Member Payout ($)</Label>
+                  <CurrencyInput
+                    value={form.teamMemberPayout || 0}
+                    onChange={(v) => setForm({ ...form, teamMemberPayout: v })}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Paid to Staff.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

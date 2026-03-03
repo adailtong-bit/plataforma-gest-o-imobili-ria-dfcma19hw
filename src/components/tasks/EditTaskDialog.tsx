@@ -21,7 +21,9 @@ import {
 import { Task } from '@/lib/types'
 import useTaskStore from '@/stores/useTaskStore'
 import usePartnerStore from '@/stores/usePartnerStore'
+import useAuthStore from '@/stores/useAuthStore'
 import { useToast } from '@/hooks/use-toast'
+import { CurrencyInput } from '@/components/ui/currency-input'
 
 export function EditTaskDialog({
   task,
@@ -34,16 +36,47 @@ export function EditTaskDialog({
 }) {
   const { updateTask } = useTaskStore()
   const { partners } = usePartnerStore()
+  const { currentUser } = useAuthStore()
   const { toast } = useToast()
   const [form, setForm] = useState<Partial<Task>>({})
 
+  const isAdminOrPM = [
+    'platform_owner',
+    'software_tenant',
+    'internal_user',
+  ].includes(currentUser?.role as string)
+  const isPartner = currentUser?.role === 'partner'
+
+  const availablePartners = isAdminOrPM
+    ? partners
+    : isPartner
+      ? partners.filter((p) => p.id === currentUser?.id)
+      : []
+
   useEffect(() => {
-    if (task) setForm(task)
+    if (task) {
+      setForm({
+        ...task,
+        pricingModel: task.pricingModel || 'pm_driven',
+        price: task.price || 0,
+        laborCost: task.laborCost || 0,
+        teamMemberPayout: task.teamMemberPayout || 0,
+      })
+    }
   }, [task])
 
   const handleSave = () => {
     if (task) {
-      updateTask({ ...task, ...form } as Task)
+      const partner = partners.find((p) => p.id === form.assigneeId)
+      const emp = partner?.employees?.find(
+        (e) => e.id === form.partnerEmployeeId,
+      )
+
+      let assigneeName = 'Unassigned'
+      if (emp) assigneeName = `${emp.name} - ${partner?.name}`
+      else if (partner) assigneeName = partner.name
+
+      updateTask({ ...task, ...form, assignee: assigneeName } as Task)
       toast({ title: 'Task updated successfully' })
       onOpenChange(false)
     }
@@ -64,65 +97,22 @@ export function EditTaskDialog({
     ],
   }
 
-  const requiredSkills = task.type ? taskTypeToSkills[task.type] || [] : []
+  const requiredSkills = form.type ? taskTypeToSkills[form.type] || [] : []
+  const selectedPartner = partners.find((p) => p.id === form.assigneeId)
+  const availableEmployees = selectedPartner?.employees || []
 
-  const assignableStaff = partners.flatMap((partner) => {
-    return (partner.employees || []).map((emp) => ({
-      id: emp.id,
-      name: emp.name,
-      partnerId: partner.id,
-      partnerName: partner.name,
-      skills: emp.skills || [],
-    }))
-  })
-
-  const recommendedStaff = assignableStaff.filter((s) =>
-    s.skills.some((sk) => requiredSkills.includes(sk)),
+  const recommendedStaff = availableEmployees.filter((s) =>
+    s.skills?.some((sk) => requiredSkills.includes(sk)),
   )
-  const otherStaff = assignableStaff.filter(
-    (s) => !s.skills.some((sk) => requiredSkills.includes(sk)),
+  const otherStaff = availableEmployees.filter(
+    (s) => !s.skills?.some((sk) => requiredSkills.includes(sk)),
   )
 
-  const currentAssigneeVal = form.partnerEmployeeId
-    ? `employee:${form.partnerEmployeeId}`
-    : form.assigneeId
-      ? `partner:${form.assigneeId}`
-      : 'none'
-
-  const handleAssigneeChange = (val: string) => {
-    if (val === 'none') {
-      setForm((prev) => ({
-        ...prev,
-        assigneeId: undefined,
-        partnerEmployeeId: undefined,
-        assignee: 'Unassigned',
-      }))
-      return
-    }
-
-    const [type, id] = val.split(':')
-    if (type === 'employee') {
-      const staff = assignableStaff.find((s) => s.id === id)
-      if (staff) {
-        setForm((prev) => ({
-          ...prev,
-          assigneeId: staff.partnerId,
-          partnerEmployeeId: staff.id,
-          assignee: `${staff.name} - ${staff.partnerName}`,
-        }))
-      }
-    } else if (type === 'partner') {
-      const partner = partners.find((p) => p.id === id)
-      if (partner) {
-        setForm((prev) => ({
-          ...prev,
-          assigneeId: partner.id,
-          partnerEmployeeId: undefined,
-          assignee: partner.name,
-        }))
-      }
-    }
-  }
+  const canSetPricingModel = isAdminOrPM
+  const canSetOwnerPrice = isAdminOrPM
+  const canSetPartnerPrice =
+    isAdminOrPM || (isPartner && form.pricingModel === 'partner_driven')
+  const canSetTeamMemberPayout = isAdminOrPM || isPartner
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -184,7 +174,7 @@ export function EditTaskDialog({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label>Status</Label>
               <Select
@@ -206,62 +196,144 @@ export function EditTaskDialog({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Assignee (Staff / Partner)</Label>
+              <Label>Partner Company</Label>
               <Select
-                value={currentAssigneeVal}
-                onValueChange={handleAssigneeChange}
+                value={form.assigneeId || 'none'}
+                onValueChange={(v) =>
+                  setForm({
+                    ...form,
+                    assigneeId: v === 'none' ? undefined : v,
+                    partnerEmployeeId: undefined,
+                  })
+                }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select Assignee" />
+                  <SelectValue placeholder="Unassigned" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Unassigned</SelectItem>
-
+                  {availablePartners.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Assigned Member</Label>
+              <Select
+                value={form.partnerEmployeeId || 'none'}
+                onValueChange={(v) =>
+                  setForm({
+                    ...form,
+                    partnerEmployeeId: v === 'none' ? undefined : v,
+                  })
+                }
+                disabled={!form.assigneeId}
+              >
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={
+                      form.assigneeId ? 'Select Member' : 'Select Partner First'
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Any / Unassigned</SelectItem>
                   {recommendedStaff.length > 0 && (
                     <SelectGroup>
                       <SelectLabel className="text-trust-blue">
                         Recommended Staff (Matches Skill)
                       </SelectLabel>
                       {recommendedStaff.map((staff) => (
-                        <SelectItem
-                          key={`emp-${staff.id}`}
-                          value={`employee:${staff.id}`}
-                        >
-                          {staff.name} - {staff.partnerName}
+                        <SelectItem key={staff.id} value={staff.id}>
+                          {staff.name}
                         </SelectItem>
                       ))}
                     </SelectGroup>
                   )}
-
                   {otherStaff.length > 0 && (
                     <SelectGroup>
                       <SelectLabel>Other Staff</SelectLabel>
                       {otherStaff.map((staff) => (
-                        <SelectItem
-                          key={`emp-${staff.id}`}
-                          value={`employee:${staff.id}`}
-                        >
-                          {staff.name} - {staff.partnerName}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  )}
-
-                  {partners.length > 0 && (
-                    <SelectGroup>
-                      <SelectLabel>Partners (Agencies)</SelectLabel>
-                      {partners.map((partner) => (
-                        <SelectItem
-                          key={`pat-${partner.id}`}
-                          value={`partner:${partner.id}`}
-                        >
-                          {partner.name}
+                        <SelectItem key={staff.id} value={staff.id}>
+                          {staff.name}
                         </SelectItem>
                       ))}
                     </SelectGroup>
                   )}
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          {/* Financials Section */}
+          <div className="space-y-4 border-t pt-4 mt-4">
+            <h4 className="font-semibold text-sm">Financials & Pricing</h4>
+
+            {canSetPricingModel && (
+              <div className="space-y-2">
+                <Label>Pricing Model</Label>
+                <Select
+                  value={form.pricingModel || 'pm_driven'}
+                  onValueChange={(v: any) =>
+                    setForm({ ...form, pricingModel: v })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pm_driven">
+                      PM Driven (Fixed by PM)
+                    </SelectItem>
+                    <SelectItem value="partner_driven">
+                      Partner Driven (Set by Partner)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {canSetOwnerPrice && (
+                <div className="space-y-2">
+                  <Label>Owner Price ($)</Label>
+                  <CurrencyInput
+                    value={form.price || 0}
+                    onChange={(v) => setForm({ ...form, price: v })}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Charged to Owner.
+                  </p>
+                </div>
+              )}
+              {canSetPartnerPrice && (
+                <div className="space-y-2">
+                  <Label>Partner Price ($)</Label>
+                  <CurrencyInput
+                    value={form.laborCost || 0}
+                    onChange={(v) => setForm({ ...form, laborCost: v })}
+                    disabled={!isAdminOrPM && form.pricingModel === 'pm_driven'}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Paid to Partner.
+                  </p>
+                </div>
+              )}
+              {canSetTeamMemberPayout && (
+                <div className="space-y-2">
+                  <Label>Member Payout ($)</Label>
+                  <CurrencyInput
+                    value={form.teamMemberPayout || 0}
+                    onChange={(v) => setForm({ ...form, teamMemberPayout: v })}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Paid to Staff.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

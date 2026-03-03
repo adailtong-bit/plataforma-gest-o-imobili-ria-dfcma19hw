@@ -900,6 +900,7 @@ export interface Task {
   materialCost?: number
   billableAmount?: number
   teamMemberPayout?: number
+  pricingModel?: 'partner_driven' | 'pm_driven'
   backToBack?: boolean
   recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
   bookingId?: string
