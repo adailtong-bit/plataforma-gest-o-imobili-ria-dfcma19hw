@@ -834,6 +834,17 @@ export interface Partner {
   linkedPropertyIds?: string[]
   documents?: GenericDocument[]
   isDemo?: boolean
+  cpfCnpj?: string
+  rg?: string
+  dob?: string
+  nationality?: string
+  maritalStatus?: string
+  profession?: string
+  secondaryPhone?: string
+  whatsapp?: string
+  addressNumber?: string
+  complement?: string
+  neighborhood?: string
 }
 
 export interface Evidence {
@@ -1210,3 +1221,4 @@ export interface PMSpecificPricing {
   pmId: string
   fixedRate: number
 }
+
