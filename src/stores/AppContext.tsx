@@ -305,6 +305,22 @@ interface AppContextType {
   prevStep: () => void
   openVideo: (videoUrl: string) => void
   closeVideo: () => void
+
+  addTenant: (t: Tenant) => void
+  updateTenant: (t: Tenant) => void
+  addOwner: (o: Owner) => void
+  updateOwner: (o: Owner) => void
+  addPartner: (p: Partner) => void
+  updatePartner: (p: Partner) => void
+  deletePartner: (id: string) => void
+  addBooking: (b: Booking) => void
+  updateBooking: (b: Booking) => void
+  deleteBooking: (id: string) => void
+  addCalendarBlock: (b: CalendarBlock) => void
+  deleteCalendarBlock: (id: string) => void
+  addMessageTemplate: (t: MessageTemplate) => void
+  updateMessageTemplate: (t: MessageTemplate) => void
+  deleteMessageTemplate: (id: string) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -603,6 +619,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const addPartner = (p: Partner) => setPartners([...partners, p])
   const updatePartner = (p: Partner) =>
     setPartners(partners.map((x) => (x.id === p.id ? p : x)))
+  const deletePartner = (id: string) =>
+    setPartners(partners.filter((x) => x.id !== id))
   const addBooking = (b: Booking) => setBookings([...bookings, b])
   const updateBooking = (b: Booking) =>
     setBookings(bookings.map((x) => (x.id === b.id ? b : x)))
@@ -1072,6 +1090,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateOwner,
         addPartner,
         updatePartner,
+        deletePartner,
         addBooking,
         updateBooking,
         deleteBooking,

@@ -55,7 +55,7 @@ export function MultiSelect({
             className,
           )}
         >
-          <div className="flex gap-1 flex-wrap">
+          <div className="flex gap-1 flex-wrap py-1">
             {selected.length === 0 && (
               <span className="text-muted-foreground font-normal">
                 {placeholder}
@@ -65,7 +65,7 @@ export function MultiSelect({
               <Badge
                 variant="secondary"
                 key={item}
-                className="mr-1 mb-1"
+                className="mr-1 mb-1 font-normal"
                 onClick={(e) => {
                   e.stopPropagation()
                   handleUnselect(item)
@@ -112,7 +112,7 @@ export function MultiSelect({
                         ? selected.filter((item) => item !== option.value)
                         : [...selected, option.value],
                     )
-                    setOpen(true)
+                    // Keep open to allow multiple selections
                   }}
                 >
                   <Check

@@ -804,6 +804,7 @@ export interface PartnerEmployee {
   documents?: GenericDocument[]
   status: 'active' | 'inactive'
   schedule?: { date: string; slots: string[]; value?: number }[]
+  skills?: string[]
 }
 
 export interface Partner {
@@ -811,6 +812,7 @@ export interface Partner {
   name: string
   type: 'agent' | 'cleaning' | 'maintenance' | string
   companyName?: string
+  entityType?: 'individual' | 'company'
   teams?: string
   email: string
   phone: string

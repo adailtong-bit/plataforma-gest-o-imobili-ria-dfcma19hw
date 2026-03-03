@@ -8,7 +8,7 @@ import {
   CardDescription,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { FileText, Download, Trash2, Plus, Upload } from 'lucide-react'
+import { FileText, Download, Trash2, Upload } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import {
@@ -51,14 +51,15 @@ export function PartnerDocuments({
           date: new Date().toISOString(),
           type: file.type,
           size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+          category: 'Other' as any,
         }
         const currentDocs = partner.documents || []
         onUpdate({ ...partner, documents: [...currentDocs, newDoc] })
         setIsUploading(false)
         if (docInputRef.current) docInputRef.current.value = ''
         toast({
-          title: 'Sucesso',
-          description: 'Documento anexado ao parceiro.',
+          title: 'Success',
+          description: 'Document attached to partner.',
         })
       }, 1000)
     }
@@ -69,18 +70,18 @@ export function PartnerDocuments({
     const newDocs = currentDocs.filter((d) => d.id !== docId)
     onUpdate({ ...partner, documents: newDocs })
     toast({
-      title: 'Removido',
-      description: 'Documento excluído.',
+      title: 'Removed',
+      description: 'Document deleted.',
     })
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+    <Card className="border-slate-200 shadow-sm bg-white">
+      <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
         <div>
-          <CardTitle>Repositório de Documentos</CardTitle>
+          <CardTitle>Document Repository</CardTitle>
           <CardDescription>
-            Contratos, certificações e outros arquivos.
+            Contracts, certifications, W9, and other files.
           </CardDescription>
         </div>
         {canEdit && (
@@ -95,32 +96,35 @@ export function PartnerDocuments({
             <Button
               onClick={() => docInputRef.current?.click()}
               disabled={isUploading}
+              className="bg-trust-blue text-white"
             >
               <Upload className="mr-2 h-4 w-4" />
-              {isUploading ? 'Enviando...' : 'Adicionar Documento'}
+              {isUploading ? 'Uploading...' : 'Add Document'}
             </Button>
           </div>
         )}
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <div className="space-y-4">
           {!partner.documents || partner.documents.length === 0 ? (
-            <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
-              Nenhum documento anexado.
+            <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50">
+              No documents attached.
             </div>
           ) : (
             partner.documents.map((doc) => (
               <div
                 key={doc.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className="bg-blue-100 p-2 rounded-full">
+                  <div className="bg-blue-100 p-3 rounded-full">
                     <FileText className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm">{doc.name}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="font-medium text-sm text-slate-900">
+                      {doc.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
                       {new Date(doc.date).toLocaleDateString()} •{' '}
                       {doc.size || 'Unknown size'}
                     </p>
@@ -143,25 +147,26 @@ export function PartnerDocuments({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-red-500 hover:text-red-700"
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir Documento</AlertDialogTitle>
+                          <AlertDialogTitle>Delete Document</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Tem certeza que deseja excluir o documento "
+                            Are you sure you want to delete the document "
                             {doc.name}"?
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleRemoveDoc(doc.id)}
+                            className="bg-red-600 hover:bg-red-700 text-white"
                           >
-                            Excluir
+                            Delete
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
