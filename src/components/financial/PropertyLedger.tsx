@@ -8,16 +8,17 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { LedgerEntry } from '@/lib/types'
-import { formatCurrency, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate, exportToCSV } from '@/lib/utils'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { DataMask } from '@/components/DataMask'
 import {
   ArrowDown,
   ArrowUp,
-  FileText,
   AlertCircle,
   CheckCircle2,
+  Download,
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface PropertyLedgerProps {
   propertyId: string
@@ -27,29 +28,68 @@ interface PropertyLedgerProps {
 export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
   const { t, language } = useLanguageStore()
 
-  const sortedEntries = [...entries].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  const sortedAsc = [...entries].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   )
 
-  const balance = sortedEntries.reduce((acc, entry) => {
-    return entry.type === 'income' ? acc + entry.amount : acc - entry.amount
-  }, 0)
+  let currentBalance = 0
+  const entriesWithBalance = sortedAsc
+    .map((entry) => {
+      currentBalance += entry.type === 'income' ? entry.amount : -entry.amount
+      return { ...entry, runningBalance: currentBalance }
+    })
+    .reverse()
+
+  const balance = currentBalance
+
+  const handleExport = () => {
+    const headers = [
+      t('common.date') || 'Date',
+      t('common.type') || 'Type',
+      t('common.category') || 'Category',
+      t('common.description') || 'Description',
+      t('common.value') || 'Value',
+      'Running Balance',
+      t('common.status') || 'Status',
+    ]
+    const rows = entriesWithBalance.map((e) => [
+      formatDate(e.date, language),
+      e.type,
+      e.category,
+      `"${e.description.replace(/"/g, '""')}"`,
+      e.amount.toFixed(2),
+      e.runningBalance.toFixed(2),
+      e.status,
+    ])
+    exportToCSV(`property_${propertyId}_ledger.csv`, headers, rows)
+  }
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap gap-4">
         <h3 className="text-lg font-bold text-slate-900">
-          {t('financial.title')} - {t('common.history')}
+          {t('financial.title') || 'Financial'} -{' '}
+          {t('common.history') || 'History'}
         </h3>
-        <div className="text-right">
-          <span className="text-sm text-slate-500 mr-2">
-            {t('common.total')}:
-          </span>
-          <span
-            className={`text-xl font-bold ${balance >= 0 ? 'text-green-700' : 'text-red-700'}`}
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <span className="text-sm text-slate-500 mr-2">
+              {t('common.total') || 'Total'}:
+            </span>
+            <span
+              className={`text-xl font-bold ${balance >= 0 ? 'text-green-700' : 'text-red-700'}`}
+            >
+              <DataMask>{formatCurrency(balance, language)}</DataMask>
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            className="gap-2"
           >
-            <DataMask>{formatCurrency(balance, language)}</DataMask>
-          </span>
+            <Download className="h-4 w-4" /> Export for Accounting
+          </Button>
         </div>
       </div>
 
@@ -57,26 +97,31 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50">
-              <TableHead>{t('common.date')}</TableHead>
-              <TableHead>{t('common.type')}</TableHead>
-              <TableHead>{t('common.category')}</TableHead>
-              <TableHead>{t('common.description')}</TableHead>
-              <TableHead className="text-right">{t('common.value')}</TableHead>
-              <TableHead className="text-right">{t('common.status')}</TableHead>
+              <TableHead>{t('common.date') || 'Date'}</TableHead>
+              <TableHead>{t('common.type') || 'Type'}</TableHead>
+              <TableHead>{t('common.category') || 'Category'}</TableHead>
+              <TableHead>{t('common.description') || 'Description'}</TableHead>
+              <TableHead className="text-right">
+                {t('common.value') || 'Amount'}
+              </TableHead>
+              <TableHead className="text-right">Running Balance</TableHead>
+              <TableHead className="text-right">
+                {t('common.status') || 'Status'}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedEntries.length === 0 ? (
+            {entriesWithBalance.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="text-center py-8 text-slate-500"
                 >
-                  {t('common.empty')}
+                  {t('common.empty') || 'No records found.'}
                 </TableCell>
               </TableRow>
             ) : (
-              sortedEntries.map((entry) => (
+              entriesWithBalance.map((entry) => (
                 <TableRow key={entry.id} className="hover:bg-slate-50">
                   <TableCell className="font-medium text-slate-900">
                     {formatDate(entry.date, language)}
@@ -90,8 +135,8 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                       )}
                       <span className="capitalize text-sm">
                         {entry.type === 'income'
-                          ? t('analytics.revenue')
-                          : t('analytics.expenses')}
+                          ? t('analytics.revenue') || 'Revenue'
+                          : t('analytics.expenses') || 'Expense'}
                       </span>
                     </div>
                   </TableCell>
@@ -107,6 +152,13 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                       {formatCurrency(entry.amount, language)}
                     </DataMask>
                   </TableCell>
+                  <TableCell
+                    className={`text-right font-bold ${entry.runningBalance >= 0 ? 'text-blue-700' : 'text-red-700'}`}
+                  >
+                    <DataMask>
+                      {formatCurrency(entry.runningBalance, language)}
+                    </DataMask>
+                  </TableCell>
                   <TableCell className="text-right">
                     {entry.status === 'cleared' || entry.status === 'paid' ? (
                       <Badge
@@ -114,7 +166,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                         className="bg-green-50 text-green-700 border-green-200"
                       >
                         <CheckCircle2 className="h-3 w-3 mr-1" />
-                        {t('common.paid')}
+                        {t('common.paid') || 'Paid'}
                       </Badge>
                     ) : (
                       <Badge
@@ -122,7 +174,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                         className="bg-yellow-50 text-yellow-800 border-yellow-200"
                       >
                         <AlertCircle className="h-3 w-3 mr-1" />
-                        {t('common.pending')}
+                        {t('common.pending') || 'Pending'}
                       </Badge>
                     )}
                   </TableCell>

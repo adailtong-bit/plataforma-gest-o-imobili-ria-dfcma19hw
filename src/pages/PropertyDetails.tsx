@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Pencil, Trash2, Save, X } from 'lucide-react'
@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useCondominiumStore from '@/stores/useCondominiumStore'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { AppContext } from '@/stores/AppContext'
 import { Property } from '@/lib/types'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -25,12 +26,14 @@ import { PropertyOverview } from '@/components/properties/PropertyOverview'
 import { PropertyLocation } from '@/components/properties/PropertyLocation'
 import { PropertyFeatures } from '@/components/properties/PropertyFeatures'
 import { PropertyMedia } from '@/components/properties/PropertyMedia'
+import { PropertyFinancials } from '@/components/properties/PropertyFinancials'
 
 export default function PropertyDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { properties, updateProperty, deleteProperty } = usePropertyStore()
   const { condominiums } = useCondominiumStore()
+  const { owners, partners } = useContext(AppContext)!
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
@@ -197,11 +200,11 @@ export default function PropertyDetails() {
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 md:w-[400px]">
+        <TabsList className="grid w-full grid-cols-4 md:w-[500px]">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="location">Location</TabsTrigger>
-          <TabsTrigger value="features">Features</TabsTrigger>
-          <TabsTrigger value="media">Media</TabsTrigger>
+          <TabsTrigger value="management">Management</TabsTrigger>
+          <TabsTrigger value="financials">Financials</TabsTrigger>
+          <TabsTrigger value="details">Details</TabsTrigger>
         </TabsList>
         <div className="mt-6">
           <TabsContent value="overview">
@@ -211,23 +214,40 @@ export default function PropertyDetails() {
               canEdit={isEditing}
             />
           </TabsContent>
-          <TabsContent value="location">
+          <TabsContent value="management">
+            <div className="bg-white p-8 text-center rounded-lg border shadow-sm flex flex-col items-center justify-center min-h-[300px]">
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
+                Management Workspace
+              </h3>
+              <p className="text-slate-500 max-w-md">
+                Access property maintenance workflows, calendars, and active
+                tasks here. Modules are synchronized with the central
+                operational dashboard.
+              </p>
+            </div>
+          </TabsContent>
+          <TabsContent value="financials">
+            <PropertyFinancials
+              data={formData}
+              onChange={handleChange}
+              canEdit={isEditing}
+              owners={owners}
+              partners={partners}
+            />
+          </TabsContent>
+          <TabsContent value="details" className="space-y-6">
             <PropertyLocation
               data={formData}
               onChange={handleChange}
               canEdit={isEditing}
               condominiums={condominiums}
             />
-          </TabsContent>
-          <TabsContent value="features">
             <PropertyFeatures
               data={formData}
               onChange={handleChange}
               canEdit={isEditing}
               condominium={condo}
             />
-          </TabsContent>
-          <TabsContent value="media">
             <PropertyMedia
               data={formData}
               onChange={handleChange}

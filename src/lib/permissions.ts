@@ -107,6 +107,7 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     dashboard: ['view'],
     portal: ['view'],
     properties: ['view'],
+    owners: ['view'],
     financial: ['view'],
     messages: ['view', 'create'],
     short_term: ['view'],

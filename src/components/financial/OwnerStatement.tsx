@@ -27,13 +27,14 @@ import {
   endOfYear,
   subYears,
   getYear,
-  isWithinInterval,
 } from 'date-fns'
 import { useToast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
 import { Link } from 'react-router-dom'
 import useTaskStore from '@/stores/useTaskStore'
 import { TaskDetailsSheet } from '@/components/tasks/TaskDetailsSheet'
+import useLanguageStore from '@/stores/useLanguageStore'
+import { exportToCSV } from '@/lib/utils'
 
 interface OwnerStatementProps {
   ownerId: string
@@ -48,7 +49,8 @@ export function OwnerStatement({
 }: OwnerStatementProps) {
   const { toast } = useToast()
   const { tasks } = useTaskStore()
-  const [period, setPeriod] = useState('current') // current, last, last3, semester, year, prevYear
+  const { t } = useLanguageStore()
+  const [period, setPeriod] = useState('current')
   const [selectedPropertyId, setSelectedPropertyId] = useState('all')
   const [viewingTask, setViewingTask] = useState<Task | null>(null)
 
@@ -90,6 +92,18 @@ export function OwnerStatement({
     return date >= range.start && date <= range.end
   })
 
+  const sortedAsc = [...filteredEntries].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+  )
+
+  let runningBal = 0
+  const entriesWithBalance = sortedAsc
+    .map((entry) => {
+      runningBal += entry.type === 'income' ? entry.amount : -entry.amount
+      return { ...entry, runningBalance: runningBal }
+    })
+    .reverse()
+
   const totalIncome = filteredEntries
     .filter((e) => e.type === 'income')
     .reduce((sum, e) => sum + e.amount, 0)
@@ -100,10 +114,34 @@ export function OwnerStatement({
 
   const netIncome = totalIncome - totalExpenses
 
-  const handleDownload = () => {
+  const handleDownloadCSV = () => {
+    const headers = [
+      'Date',
+      'Property',
+      'Description',
+      'Category',
+      'Type',
+      'Status',
+      'Amount',
+      'Running Balance',
+    ]
+    const rows = entriesWithBalance.map((e) => {
+      const prop = properties.find((p) => p.id === e.propertyId)
+      return [
+        format(new Date(e.date), 'yyyy-MM-dd'),
+        prop ? `"${prop.name}"` : 'N/A',
+        `"${e.description.replace(/"/g, '""')}"`,
+        e.category,
+        e.type,
+        e.status,
+        e.amount.toFixed(2),
+        e.runningBalance.toFixed(2),
+      ]
+    })
+    exportToCSV(`owner_${ownerId}_accounting.csv`, headers, rows)
     toast({
-      title: 'Download iniciado',
-      description: 'O extrato (PDF) está sendo gerado e baixado.',
+      title: 'Export Successful',
+      description: 'Accounting report CSV downloaded successfully.',
     })
   }
 
@@ -118,17 +156,21 @@ export function OwnerStatement({
       />
 
       <CardHeader className="flex flex-col md:flex-row items-center justify-between gap-4">
-        <CardTitle>Extrato do Proprietário</CardTitle>
+        <CardTitle>
+          {t('financial.owner_statement') || 'Owner Statement'}
+        </CardTitle>
         <div className="flex gap-2 flex-wrap justify-end">
           <Select
             value={selectedPropertyId}
             onValueChange={setSelectedPropertyId}
           >
             <SelectTrigger className="w-[180px] text-black">
-              <SelectValue placeholder="Propriedade" />
+              <SelectValue placeholder={t('common.property') || 'Property'} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todas as Propriedades</SelectItem>
+              <SelectItem value="all">
+                {t('common.all_properties') || 'Total Portfolio Balance'}
+              </SelectItem>
               {ownerProperties.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   {p.name}
@@ -142,37 +184,58 @@ export function OwnerStatement({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="current">Este Mês</SelectItem>
-              <SelectItem value="last">Mês Passado</SelectItem>
-              <SelectItem value="last3">Últimos 3 Meses</SelectItem>
-              <SelectItem value="semester">Semestre</SelectItem>
-              <SelectItem value="year">Ano Atual ({currentYear})</SelectItem>
+              <SelectItem value="current">
+                {t('financial.this_month') || 'This Month'}
+              </SelectItem>
+              <SelectItem value="last">
+                {t('financial.last_month') || 'Last Month'}
+              </SelectItem>
+              <SelectItem value="last3">
+                {t('financial.last_3_months') || 'Last 3 Months'}
+              </SelectItem>
+              <SelectItem value="semester">
+                {t('financial.semester') || 'Semester'}
+              </SelectItem>
+              <SelectItem value="year">
+                {t('financial.current_year') || 'Current Year'} ({currentYear})
+              </SelectItem>
               <SelectItem value="prevYear">
-                Ano Anterior ({currentYear - 1})
+                {t('financial.previous_year') || 'Previous Year'} (
+                {currentYear - 1})
               </SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" onClick={handleDownload}>
-            <Download className="mr-2 h-4 w-4" /> PDF
+          <Button
+            variant="outline"
+            onClick={handleDownloadCSV}
+            className="gap-2"
+          >
+            <Download className="h-4 w-4" /> Export for Accounting
           </Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
           <div className="p-4 bg-green-50 rounded-lg border border-green-100">
-            <p className="text-sm text-slate-600 font-medium">Receita Bruta</p>
+            <p className="text-sm text-slate-600 font-medium">
+              {t('financial.gross_revenue') || 'Gross Revenue'}
+            </p>
             <p className="text-2xl font-bold text-green-700">
               ${totalIncome.toFixed(2)}
             </p>
           </div>
           <div className="p-4 bg-red-50 rounded-lg border border-red-100">
-            <p className="text-sm text-slate-600 font-medium">Despesas</p>
+            <p className="text-sm text-slate-600 font-medium">
+              {t('financial.total_expenses') || 'Expenses'}
+            </p>
             <p className="text-2xl font-bold text-red-700">
               ${totalExpenses.toFixed(2)}
             </p>
           </div>
           <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-            <p className="text-sm text-slate-600 font-medium">Líquido (Net)</p>
+            <p className="text-sm text-slate-600 font-medium">
+              {t('financial.net_income') || 'Net Income'}
+            </p>
             <p className="text-2xl font-bold text-blue-700">
               ${netIncome.toFixed(2)}
             </p>
@@ -182,30 +245,41 @@ export function OwnerStatement({
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50 border-b-2 border-slate-200">
-              <TableHead className="font-bold text-black">Data</TableHead>
               <TableHead className="font-bold text-black">
-                Propriedade
+                {t('common.date') || 'Date'}
               </TableHead>
-              <TableHead className="font-bold text-black">Descrição</TableHead>
-              <TableHead className="font-bold text-black">Categoria</TableHead>
-              <TableHead className="font-bold text-black">Pagamento</TableHead>
+              <TableHead className="font-bold text-black">
+                {t('common.property') || 'Property'}
+              </TableHead>
+              <TableHead className="font-bold text-black">
+                {t('common.description') || 'Description'}
+              </TableHead>
+              <TableHead className="font-bold text-black">
+                {t('common.category') || 'Category'}
+              </TableHead>
+              <TableHead className="font-bold text-black">
+                {t('common.status') || 'Status'}
+              </TableHead>
               <TableHead className="text-right font-bold text-black">
-                Valor
+                {t('common.value') || 'Amount'}
+              </TableHead>
+              <TableHead className="text-right font-bold text-black">
+                Running Balance
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredEntries.length === 0 ? (
+            {entriesWithBalance.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="text-center py-8 text-slate-500"
                 >
-                  Nenhum lançamento no período.
+                  {t('common.empty') || 'No entries found.'}
                 </TableCell>
               </TableRow>
             ) : (
-              filteredEntries.map((entry) => {
+              entriesWithBalance.map((entry) => {
                 const prop = properties.find((p) => p.id === entry.propertyId)
                 const associatedTask = tasks.find(
                   (t) => t.id === entry.referenceId,
@@ -238,7 +312,7 @@ export function OwnerStatement({
                             onClick={() => setViewingTask(associatedTask)}
                           >
                             <ClipboardList className="h-3 w-3" />
-                            Ver Tarefa
+                            View Task
                           </div>
                         )}
                       </div>
@@ -250,19 +324,16 @@ export function OwnerStatement({
                     </TableCell>
                     <TableCell>
                       {entry.status === 'cleared' ? (
-                        <Badge className="bg-green-600">Pago</Badge>
+                        <Badge className="bg-green-600">
+                          {t('common.paid') || 'Paid'}
+                        </Badge>
                       ) : (
                         <Badge
                           variant="outline"
                           className="text-black border-slate-300"
                         >
-                          Pendente
+                          {t('common.pending') || 'Pending'}
                         </Badge>
-                      )}
-                      {entry.paymentDate && (
-                        <span className="text-xs text-slate-600 ml-2 font-medium">
-                          {format(new Date(entry.paymentDate), 'dd/MM')}
-                        </span>
                       )}
                     </TableCell>
                     <TableCell
@@ -274,6 +345,15 @@ export function OwnerStatement({
                     >
                       {entry.type === 'income' ? '+' : '-'}$
                       {entry.amount.toFixed(2)}
+                    </TableCell>
+                    <TableCell
+                      className={`text-right font-bold ${
+                        entry.runningBalance >= 0
+                          ? 'text-blue-700'
+                          : 'text-red-700'
+                      }`}
+                    >
+                      ${entry.runningBalance.toFixed(2)}
                     </TableCell>
                   </TableRow>
                 )

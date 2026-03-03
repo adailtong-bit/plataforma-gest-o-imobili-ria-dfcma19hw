@@ -18912,6 +18912,13 @@ var Activity = createLucideIcon("activity", [["path", {
 	d: "M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2",
 	key: "169zse"
 }]]);
+var ArrowDown = createLucideIcon("arrow-down", [["path", {
+	d: "M12 5v14",
+	key: "s699le"
+}], ["path", {
+	d: "m19 12-7 7-7-7",
+	key: "1idqje"
+}]]);
 var ArrowLeft = createLucideIcon("arrow-left", [["path", {
 	d: "m12 19-7-7 7-7",
 	key: "1l729n"
@@ -18925,6 +18932,13 @@ var ArrowRight = createLucideIcon("arrow-right", [["path", {
 }], ["path", {
 	d: "m12 5 7 7-7 7",
 	key: "xquz4c"
+}]]);
+var ArrowUp = createLucideIcon("arrow-up", [["path", {
+	d: "m5 12 7-7 7 7",
+	key: "hav0vg"
+}], ["path", {
+	d: "M12 19V5",
+	key: "x0mq9r"
 }]]);
 var Bell = createLucideIcon("bell", [["path", {
 	d: "M10.268 21a2 2 0 0 0 3.464 0",
@@ -19079,6 +19093,28 @@ var ChevronsUpDown = createLucideIcon("chevrons-up-down", [["path", {
 	d: "m7 9 5-5 5 5",
 	key: "sgt6xg"
 }]]);
+var CircleAlert = createLucideIcon("circle-alert", [
+	["circle", {
+		cx: "12",
+		cy: "12",
+		r: "10",
+		key: "1mglay"
+	}],
+	["line", {
+		x1: "12",
+		x2: "12",
+		y1: "8",
+		y2: "12",
+		key: "1pkeuh"
+	}],
+	["line", {
+		x1: "12",
+		x2: "12.01",
+		y1: "16",
+		y2: "16",
+		key: "4dfq90"
+	}]
+]);
 var CircleCheck = createLucideIcon("circle-check", [["circle", {
 	cx: "12",
 	cy: "12",
@@ -19137,6 +19173,37 @@ var Circle = createLucideIcon("circle", [["circle", {
 	r: "10",
 	key: "1mglay"
 }]]);
+var ClipboardList = createLucideIcon("clipboard-list", [
+	["rect", {
+		width: "8",
+		height: "4",
+		x: "8",
+		y: "2",
+		rx: "1",
+		ry: "1",
+		key: "tgr4d6"
+	}],
+	["path", {
+		d: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2",
+		key: "116196"
+	}],
+	["path", {
+		d: "M12 11h4",
+		key: "1jrz19"
+	}],
+	["path", {
+		d: "M12 16h4",
+		key: "n85exb"
+	}],
+	["path", {
+		d: "M8 11h.01",
+		key: "1dfujw"
+	}],
+	["path", {
+		d: "M8 16h.01",
+		key: "18s6g9"
+	}]
+]);
 var CreditCard = createLucideIcon("credit-card", [["rect", {
 	width: "20",
 	height: "14",
@@ -19212,6 +19279,20 @@ var Ellipsis = createLucideIcon("ellipsis", [
 		key: "1pcz8c"
 	}]
 ]);
+var ExternalLink = createLucideIcon("external-link", [
+	["path", {
+		d: "M15 3h6v6",
+		key: "1q9fwt"
+	}],
+	["path", {
+		d: "M10 14 21 3",
+		key: "gplh6r"
+	}],
+	["path", {
+		d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
+		key: "a6xqqp"
+	}]
+]);
 var Eye = createLucideIcon("eye", [["path", {
 	d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
 	key: "1nclc0"
@@ -19221,6 +19302,20 @@ var Eye = createLucideIcon("eye", [["path", {
 	r: "3",
 	key: "1v7zrd"
 }]]);
+var FileCheck = createLucideIcon("file-check", [
+	["path", {
+		d: "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
+		key: "1oefj6"
+	}],
+	["path", {
+		d: "M14 2v5a1 1 0 0 0 1 1h5",
+		key: "wfsgrz"
+	}],
+	["path", {
+		d: "m9 15 2 2 4-4",
+		key: "1grp1n"
+	}]
+]);
 var FileText = createLucideIcon("file-text", [
 	["path", {
 		d: "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
@@ -19549,6 +19644,10 @@ var PanelLeft = createLucideIcon("panel-left", [["rect", {
 }], ["path", {
 	d: "M9 3v18",
 	key: "fh3hqa"
+}]]);
+var Pen = createLucideIcon("pen", [["path", {
+	d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
+	key: "1a8usu"
 }]]);
 var Pencil = createLucideIcon("pencil", [["path", {
 	d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
@@ -22882,11 +22981,22 @@ function setMonth(date$1, month, options$1) {
 	_date.setMonth(month, Math.min(day, daysInMonth));
 	return _date;
 }
+function setDate(date$1, dayOfMonth, options$1) {
+	const _date = toDate(date$1, options$1?.in);
+	_date.setDate(dayOfMonth);
+	return _date;
+}
 function setYear(date$1, year, options$1) {
 	const date_ = toDate(date$1, options$1?.in);
 	if (isNaN(+date_)) return constructFrom(options$1?.in || date$1, NaN);
 	date_.setFullYear(year);
 	return date_;
+}
+function subMonths(date$1, amount, options$1) {
+	return addMonths(date$1, -amount, options$1);
+}
+function subYears(date$1, amount, options$1) {
+	return addYears(date$1, -amount, options$1);
 }
 var formatDistanceLocale$1 = {
 	lessThanXSeconds: {
@@ -23882,6 +23992,23 @@ const applyZipCodeMask = (value, country) => {
 	}
 	if (country === "ES" || country === "Spain") return digits.slice(0, 5);
 	return value;
+};
+const exportToCSV = (filename, headers, rows) => {
+	const csvContent = [headers.join(","), ...rows.map((row) => row.map((cell) => {
+		if (cell === null || cell === void 0) return "";
+		const stringCell = String(cell);
+		if (stringCell.includes(",") || stringCell.includes("\"") || stringCell.includes("\n")) return `"${stringCell.replace(/"/g, "\"\"")}"`;
+		return stringCell;
+	}).join(","))].join("\n");
+	const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+	const url = URL.createObjectURL(blob);
+	const link = document.createElement("a");
+	link.setAttribute("href", url);
+	link.setAttribute("download", filename.endsWith(".csv") ? filename : `${filename}.csv`);
+	link.style.visibility = "hidden";
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
 };
 const getCurrencyLocale = (currency) => {
 	return {
@@ -56648,6 +56775,7 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 		dashboard: ["view"],
 		portal: ["view"],
 		properties: ["view"],
+		owners: ["view"],
 		financial: ["view"],
 		messages: ["view", "create"],
 		short_term: ["view"],
@@ -59143,7 +59271,7 @@ function Index() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DashboardContent, {});
 }
 function DashboardContent() {
-	const [date$1, setDate] = (0, import_react.useState)(/* @__PURE__ */ new Date());
+	const [date$1, setDate$1] = (0, import_react.useState)(/* @__PURE__ */ new Date());
 	const { tasks: tasks$1, approveTask } = useTaskStore_default();
 	const { ledgerEntries: ledgerEntries$1, financials: financials$1, formatCurrency: formatCurrency$1 } = useFinancialStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
@@ -59509,7 +59637,7 @@ function DashboardContent() {
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, {
 							mode: "single",
 							selected: date$1,
-							onSelect: setDate,
+							onSelect: setDate$1,
 							className: "rounded-md border border-slate-200 text-black font-medium"
 						})
 					})]
@@ -62491,7 +62619,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$54({ inst: {
+			cachedValue = useState$57({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -62505,7 +62633,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$23(function() {
+			useEffect$24(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -62528,7 +62656,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$54 = React$67.useState, useEffect$23 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$57 = React$67.useState, useEffect$24 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -65141,11 +65269,763 @@ function PropertyMedia({ data }) {
 		}) })]
 	});
 }
+var Table = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+	className: "relative w-full overflow-auto",
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("table", {
+		ref,
+		className: cn("w-full caption-bottom text-sm bg-white", className),
+		...props
+	})
+}));
+Table.displayName = "Table";
+var TableHeader = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("thead", {
+	ref,
+	className: cn("[&_tr]:border-b bg-white", className),
+	...props
+}));
+TableHeader.displayName = "TableHeader";
+var TableBody = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("tbody", {
+	ref,
+	className: cn("[&_tr:last-child]:border-0 bg-white", className),
+	...props
+}));
+TableBody.displayName = "TableBody";
+var TableFooter = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("tfoot", {
+	ref,
+	className: cn("border-t bg-muted/50 font-medium [&>tr]:last:border-b-0", className),
+	...props
+}));
+TableFooter.displayName = "TableFooter";
+var TableRow = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("tr", {
+	ref,
+	className: cn("border-b transition-colors hover:bg-slate-50 data-[state=selected]:bg-muted bg-white text-black", className),
+	...props
+}));
+TableRow.displayName = "TableRow";
+var TableHead = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
+	ref,
+	className: cn("h-12 px-4 text-left align-middle font-bold text-black [&:has([role=checkbox])]:pr-0", className),
+	...props
+}));
+TableHead.displayName = "TableHead";
+var TableCell = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
+	ref,
+	className: cn("p-4 align-middle text-black [&:has([role=checkbox])]:pr-0", className),
+	...props
+}));
+TableCell.displayName = "TableCell";
+var TableCaption = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("caption", {
+	ref,
+	className: cn("mt-4 text-sm text-muted-foreground", className),
+	...props
+}));
+TableCaption.displayName = "TableCaption";
+function PropertyLedger({ propertyId, entries }) {
+	const { t, language } = useLanguageStore_default();
+	const sortedAsc = [...entries].sort((a$1, b$1) => new Date(a$1.date).getTime() - new Date(b$1.date).getTime());
+	let currentBalance = 0;
+	const entriesWithBalance = sortedAsc.map((entry) => {
+		currentBalance += entry.type === "income" ? entry.amount : -entry.amount;
+		return {
+			...entry,
+			runningBalance: currentBalance
+		};
+	}).reverse();
+	const balance = currentBalance;
+	const handleExport = () => {
+		const headers = [
+			t("common.date") || "Date",
+			t("common.type") || "Type",
+			t("common.category") || "Category",
+			t("common.description") || "Description",
+			t("common.value") || "Value",
+			"Running Balance",
+			t("common.status") || "Status"
+		];
+		const rows = entriesWithBalance.map((e) => [
+			formatDate(e.date, language),
+			e.type,
+			e.category,
+			`"${e.description.replace(/"/g, "\"\"")}"`,
+			e.amount.toFixed(2),
+			e.runningBalance.toFixed(2),
+			e.status
+		]);
+		exportToCSV(`property_${propertyId}_ledger.csv`, headers, rows);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "space-y-4",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex justify-between items-center flex-wrap gap-4",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+				className: "text-lg font-bold text-slate-900",
+				children: [
+					t("financial.title") || "Financial",
+					" -",
+					" ",
+					t("common.history") || "History"
+				]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "text-right",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+						className: "text-sm text-slate-500 mr-2",
+						children: [t("common.total") || "Total", ":"]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: `text-xl font-bold ${balance >= 0 ? "text-green-700" : "text-red-700"}`,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(balance, language) })
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					variant: "outline",
+					size: "sm",
+					onClick: handleExport,
+					className: "gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" }), " Export for Accounting"]
+				})]
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "border rounded-md overflow-hidden bg-white",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+				className: "bg-slate-50",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.date") || "Date" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.type") || "Type" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.category") || "Category" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.description") || "Description" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "text-right",
+						children: t("common.value") || "Amount"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "text-right",
+						children: "Running Balance"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "text-right",
+						children: t("common.status") || "Status"
+					})
+				]
+			}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: entriesWithBalance.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				colSpan: 7,
+				className: "text-center py-8 text-slate-500",
+				children: t("common.empty") || "No records found."
+			}) }) : entriesWithBalance.map((entry) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+				className: "hover:bg-slate-50",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: "font-medium text-slate-900",
+						children: formatDate(entry.date, language)
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-1",
+						children: [entry.type === "income" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowUp, { className: "h-4 w-4 text-green-600" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowDown, { className: "h-4 w-4 text-red-600" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "capitalize text-sm",
+							children: entry.type === "income" ? t("analytics.revenue") || "Revenue" : t("analytics.expenses") || "Expense"
+						})]
+					}) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: entry.category }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: "max-w-[250px] truncate text-slate-700",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: entry.description })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: `text-right font-bold ${entry.type === "income" ? "text-green-700" : "text-red-700"}`,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [entry.type === "income" ? "+" : "-", formatCurrency(entry.amount, language)] })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: `text-right font-bold ${entry.runningBalance >= 0 ? "text-blue-700" : "text-red-700"}`,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(entry.runningBalance, language) })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						className: "text-right",
+						children: entry.status === "cleared" || entry.status === "paid" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+							variant: "outline",
+							className: "bg-green-50 text-green-700 border-green-200",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-3 w-3 mr-1" }), t("common.paid") || "Paid"]
+						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+							variant: "secondary",
+							className: "bg-yellow-50 text-yellow-800 border-yellow-200",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { className: "h-3 w-3 mr-1" }), t("common.pending") || "Pending"]
+						})
+					})
+				]
+			}, entry.id)) })] })
+		})]
+	});
+}
+function FileUpload({ value, onChange, label, accept, disabled }) {
+	const { t } = useLanguageStore_default();
+	const inputRef = (0, import_react.useRef)(null);
+	const handleFileChange = (e) => {
+		const file = e.target.files?.[0];
+		if (file) onChange(URL.createObjectURL(file));
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col gap-2",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: label || t("common.upload") }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex gap-2 items-center",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+					type: "file",
+					ref: inputRef,
+					className: "hidden",
+					accept,
+					onChange: handleFileChange,
+					disabled
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					type: "button",
+					variant: "outline",
+					onClick: () => inputRef.current?.click(),
+					disabled,
+					className: "w-full bg-white hover:bg-slate-50 border-slate-200 shadow-sm",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "h-4 w-4 mr-2" }),
+						" ",
+						t("common.upload")
+					]
+				})]
+			}),
+			value && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "text-xs text-emerald-600 truncate mt-1 flex items-center gap-1 font-medium",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-1.5 rounded-full bg-emerald-500" }), t("common.success")]
+			})
+		]
+	});
+}
+function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partners: partners$1 }) {
+	const { toast: toast$2 } = useToast();
+	const { t, language } = useLanguageStore_default();
+	const { properties: properties$1, updateProperty } = usePropertyStore_default();
+	const { ledgerEntries: ledgerEntries$1, addLedgerEntry, updateLedgerEntry, deleteLedgerEntry, currency } = useFinancialStore_default();
+	const [openExpense, setOpenExpense] = (0, import_react.useState)(false);
+	const [confirmActionOpen, setConfirmActionOpen] = (0, import_react.useState)(false);
+	const [actionType, setActionType] = (0, import_react.useState)("add");
+	const [currentExpenseId, setCurrentExpenseId] = (0, import_react.useState)(null);
+	const [formData, setFormData] = (0, import_react.useState)({
+		name: "",
+		provider: "",
+		accountNumber: "",
+		amount: 0,
+		paymentDate: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+		receiptUrl: "",
+		contractStartDate: "",
+		contractEndDate: "",
+		recurringValue: 0
+	});
+	const currentProperty = properties$1.find((p$1) => p$1.id === data.id) || data;
+	const propertyEntries = ledgerEntries$1.filter((e) => e.propertyId === data.id);
+	const handleOpenAdd = () => {
+		setFormData({
+			name: "",
+			provider: "",
+			accountNumber: "",
+			amount: 0,
+			paymentDate: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+			receiptUrl: "",
+			contractStartDate: "",
+			contractEndDate: "",
+			recurringValue: 0
+		});
+		setCurrentExpenseId(null);
+		setActionType("add");
+		setOpenExpense(true);
+	};
+	const handleOpenEdit = (expense) => {
+		const today = /* @__PURE__ */ new Date();
+		const daysInMonth = getDaysInMonth(today);
+		const estimatedDate = setDate(today, Math.min(expense.dueDay, daysInMonth)).toISOString().split("T")[0];
+		setFormData({
+			name: expense.name,
+			provider: expense.provider || "",
+			accountNumber: expense.accountNumber || "",
+			amount: expense.amount,
+			paymentDate: estimatedDate,
+			receiptUrl: "",
+			contractStartDate: expense.contractStartDate || "",
+			contractEndDate: expense.contractEndDate || "",
+			recurringValue: expense.recurringValue || expense.amount
+		});
+		setCurrentExpenseId(expense.id);
+		setActionType("edit");
+		setOpenExpense(true);
+	};
+	const validateForm = () => {
+		if (!formData.name || !formData.amount || !formData.provider || !formData.paymentDate) {
+			toast$2({
+				title: t("common.error"),
+				description: t("common.required"),
+				variant: "destructive"
+			});
+			return false;
+		}
+		return true;
+	};
+	const handlePreSubmit = () => {
+		if (!validateForm()) return;
+		if (actionType === "add") executeSave();
+		else setConfirmActionOpen(true);
+	};
+	const getNextDueDate = (currentDate, fixedDay) => {
+		const nextMonth = addMonths(currentDate, 1);
+		const daysInNext = getDaysInMonth(nextMonth);
+		return setDate(nextMonth, Math.min(fixedDay, daysInNext));
+	};
+	const executeSave = () => {
+		const parts = formData.paymentDate.split("-");
+		const dueDay = parseInt(parts[2]);
+		const initialDate = new Date(formData.paymentDate);
+		const expense = {
+			id: currentExpenseId || `fe-${Date.now()}`,
+			name: formData.name,
+			amount: formData.amount,
+			dueDay,
+			frequency: "monthly",
+			provider: formData.provider,
+			accountNumber: formData.accountNumber,
+			contractStartDate: formData.contractStartDate,
+			contractEndDate: formData.contractEndDate,
+			recurringValue: formData.recurringValue || formData.amount
+		};
+		let updatedExpenses = [...currentProperty.fixedExpenses || []];
+		if (actionType === "add") {
+			updatedExpenses.push(expense);
+			const isPaid = !!formData.receiptUrl;
+			addLedgerEntry({
+				id: `auto-fe-${expense.id}-${Date.now()}`,
+				propertyId: data.id,
+				date: (/* @__PURE__ */ new Date()).toISOString(),
+				dueDate: initialDate.toISOString(),
+				type: "expense",
+				category: expense.name,
+				amount: expense.amount,
+				description: `${expense.name} - ${expense.provider || ""}`,
+				referenceId: expense.id,
+				status: isPaid ? "cleared" : "pending",
+				paymentDate: isPaid ? initialDate.toISOString() : void 0,
+				attachments: formData.receiptUrl ? [{
+					name: t("common.documents"),
+					url: formData.receiptUrl
+				}] : [],
+				payee: expense.provider
+			});
+			if (isPaid) {
+				const nextDate = getNextDueDate(initialDate, dueDay);
+				const nextEntry = {
+					id: `auto-fe-${expense.id}-${Date.now() + 1}`,
+					propertyId: data.id,
+					date: (/* @__PURE__ */ new Date()).toISOString(),
+					dueDate: nextDate.toISOString(),
+					type: "expense",
+					category: expense.name,
+					amount: expense.amount,
+					description: `${expense.name} - ${expense.provider || ""} (${t("common.automation")})`,
+					referenceId: expense.id,
+					status: "pending",
+					payee: expense.provider
+				};
+				setTimeout(() => addLedgerEntry(nextEntry), 100);
+			}
+			toast$2({
+				title: t("common.success"),
+				description: t("common.save")
+			});
+		} else {
+			updatedExpenses = updatedExpenses.map((e) => e.id === expense.id ? expense : e);
+			ledgerEntries$1.filter((e) => e.referenceId === expense.id && e.status === "pending").forEach((entry) => {
+				const entryDate = parseISO(entry.dueDate || entry.date);
+				const daysInMonth = getDaysInMonth(entryDate);
+				const newDueDate = setDate(entryDate, Math.min(dueDay, daysInMonth));
+				updateLedgerEntry({
+					...entry,
+					category: expense.name,
+					amount: expense.amount,
+					description: `${expense.name} - ${expense.provider || ""}`,
+					dueDate: newDueDate.toISOString(),
+					payee: expense.provider
+				});
+			});
+			toast$2({
+				title: t("common.success"),
+				description: t("common.save")
+			});
+		}
+		updateProperty({
+			...currentProperty,
+			fixedExpenses: updatedExpenses
+		});
+		setConfirmActionOpen(false);
+		setOpenExpense(false);
+	};
+	const handleRemoveExpense = (id) => {
+		const updatedExpenses = (currentProperty.fixedExpenses || []).filter((e) => e.id !== id);
+		updateProperty({
+			...currentProperty,
+			fixedExpenses: updatedExpenses
+		});
+		ledgerEntries$1.filter((e) => e.referenceId === id && e.status === "pending").forEach((entry) => deleteLedgerEntry(entry.id));
+		toast$2({
+			title: t("common.removed"),
+			description: t("common.delete_success")
+		});
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "space-y-6",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("properties.tabs.financial") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+				className: "grid grid-cols-1 md:grid-cols-2 gap-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.owners") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: data.ownerId,
+							onValueChange: (v) => onChange("ownerId", v),
+							disabled: !canEdit,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: owners$1.map((o) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: o.id,
+								children: o.name
+							}, o.id)) })]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("partners.agent") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: data.agentId || "none",
+							onValueChange: (v) => onChange("agentId", v === "none" ? void 0 : v),
+							disabled: !canEdit,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "none",
+								children: t("common.none")
+							}), partners$1.filter((p$1) => p$1.type === "agent").map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: p$1.id,
+								children: p$1.name
+							}, p$1.id))] })]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "grid gap-2 md:col-span-2 pt-4",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+							className: "font-semibold text-sm",
+							children: t("properties.hoa_fee")
+						})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.hoa_fee") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+							value: data.hoaValue || 0,
+							onChange: (val) => onChange("hoaValue", val),
+							disabled: !canEdit,
+							currency,
+							locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US"
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.hoa_freq") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: data.hoaFrequency || "monthly",
+							onValueChange: (v) => onChange("hoaFrequency", v),
+							disabled: !canEdit,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "monthly",
+									children: t("properties.monthly")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "quarterly",
+									children: t("properties.quarterly")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+									value: "semi-annually",
+									children: [t("properties.annually"), " (2x)"]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "annually",
+									children: t("properties.annually")
+								})
+							] })]
+						})]
+					})
+				]
+			})] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+				className: "flex flex-row items-center justify-between",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("common.financial") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: handleOpenAdd,
+					className: "bg-trust-blue gap-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+						" ",
+						t("common.add_title")
+					]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.description") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.provider") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.contracts") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.value") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.due_date") }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+					className: "text-right",
+					children: t("common.actions")
+				})
+			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [(!currentProperty.fixedExpenses || currentProperty.fixedExpenses.length === 0) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				colSpan: 6,
+				className: "text-center py-6 text-muted-foreground",
+				children: t("common.empty")
+			}) }), currentProperty.fixedExpenses?.map((expense) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "font-medium",
+					children: expense.name
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: expense.provider || "-" }) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: expense.contractEndDate ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "text-xs",
+					children: formatDate(expense.contractEndDate, language)
+				}) : "-" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatCurrency(expense.amount, currency) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: expense.dueDay }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "text-right",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex justify-end gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							size: "icon",
+							onClick: () => handleOpenEdit(expense),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-4 w-4" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+							asChild: true,
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								className: "text-red-500",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+							onClick: () => handleRemoveExpense(expense.id),
+							children: t("common.delete")
+						})] })] })] })]
+					})
+				})
+			] }, expense.id))] })] }) })] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+				className: "pt-6",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyLedger, {
+					propertyId: data.id,
+					entries: propertyEntries
+				})
+			}) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: openExpense,
+				onOpenChange: setOpenExpense,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "max-w-xl",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: actionType === "add" ? t("common.new") : t("common.edit") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: t("common.details") })] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-4 py-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+										t("common.name"),
+										" ",
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "text-red-500",
+											children: "*"
+										})
+									] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: formData.name,
+										onChange: (e) => setFormData({
+											...formData,
+											name: e.target.value
+										}),
+										placeholder: t("properties.financial_fields.name_placeholder")
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-2 gap-4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+											t("common.provider"),
+											" ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-red-500",
+												children: "*"
+											})
+										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+											className: "w-full block",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: formData.provider,
+												onChange: (e) => setFormData({
+													...formData,
+													provider: e.target.value
+												}),
+												placeholder: t("properties.financial_fields.provider_placeholder")
+											})
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.account_number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
+											className: "w-full block",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: formData.accountNumber,
+												onChange: (e) => setFormData({
+													...formData,
+													accountNumber: e.target.value
+												}),
+												placeholder: t("properties.financial_fields.account_placeholder")
+											})
+										})]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid grid-cols-2 gap-4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+											t("common.value"),
+											" ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-red-500",
+												children: "*"
+											})
+										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+											value: formData.amount,
+											onChange: (val) => setFormData({
+												...formData,
+												amount: val,
+												recurringValue: val
+											}),
+											currency,
+											locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US"
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+											t("common.date"),
+											" ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-red-500",
+												children: "*"
+											})
+										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "date",
+											value: formData.paymentDate,
+											onChange: (e) => setFormData({
+												...formData,
+												paymentDate: e.target.value
+											})
+										})]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "border-t pt-4 mt-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+										className: "text-sm font-medium mb-3",
+										children: t("common.contracts")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.start_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													type: "date",
+													value: formData.contractStartDate,
+													onChange: (e) => setFormData({
+														...formData,
+														contractStartDate: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.end_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													type: "date",
+													value: formData.contractEndDate,
+													onChange: (e) => setFormData({
+														...formData,
+														contractEndDate: e.target.value
+													})
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "grid gap-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.recurring") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+													value: formData.recurringValue,
+													onChange: (val) => setFormData({
+														...formData,
+														recurringValue: val
+													}),
+													currency,
+													locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US"
+												})]
+											})
+										]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2 pt-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+											className: "flex items-center gap-2",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "h-4 w-4" }),
+												" ",
+												t("common.upload")
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
+											value: formData.receiptUrl,
+											onChange: (url) => setFormData({
+												...formData,
+												receiptUrl: url
+											}),
+											accept: ".pdf,.jpg,.png,.jpeg",
+											label: t("common.upload")
+										}),
+										actionType === "add" && formData.receiptUrl && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "bg-green-50 text-green-700 p-2 rounded text-xs flex items-center gap-2 border border-green-200",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileCheck, { className: "h-4 w-4" }), t("common.success")]
+										})
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "outline",
+							onClick: () => setOpenExpense(false),
+							children: t("common.cancel")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							onClick: handlePreSubmit,
+							className: "bg-trust-blue",
+							children: t("common.save")
+						})] })
+					]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialog, {
+				open: confirmActionOpen,
+				onOpenChange: setConfirmActionOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.confirm") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, {
+					onClick: () => setConfirmActionOpen(false),
+					children: t("common.cancel")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+					onClick: executeSave,
+					children: t("common.confirm")
+				})] })] })
+			})
+		]
+	});
+}
 function PropertyDetails() {
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const { properties: properties$1, updateProperty, deleteProperty } = usePropertyStore_default();
 	const { condominiums: condominiums$1 } = useCondominiumStore_default();
+	const { owners: owners$1, partners: partners$1 } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const [isLoading, setIsLoading] = (0, import_react.useState)(true);
@@ -65289,23 +66169,23 @@ function PropertyDetails() {
 			defaultValue: "overview",
 			className: "w-full",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
-				className: "grid w-full grid-cols-4 md:w-[400px]",
+				className: "grid w-full grid-cols-4 md:w-[500px]",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 						value: "overview",
 						children: "Overview"
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-						value: "location",
-						children: "Location"
+						value: "management",
+						children: "Management"
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-						value: "features",
-						children: "Features"
+						value: "financials",
+						children: "Financials"
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-						value: "media",
-						children: "Media"
+						value: "details",
+						children: "Details"
 					})
 				]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -65320,30 +66200,50 @@ function PropertyDetails() {
 						})
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
-						value: "location",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyLocation, {
-							data: formData,
-							onChange: handleChange,
-							canEdit: isEditing,
-							condominiums: condominiums$1
+						value: "management",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "bg-white p-8 text-center rounded-lg border shadow-sm flex flex-col items-center justify-center min-h-[300px]",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+								className: "text-xl font-bold text-slate-800 mb-2",
+								children: "Management Workspace"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-slate-500 max-w-md",
+								children: "Access property maintenance workflows, calendars, and active tasks here. Modules are synchronized with the central operational dashboard."
+							})]
 						})
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
-						value: "features",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyFeatures, {
+						value: "financials",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyFinancials, {
 							data: formData,
 							onChange: handleChange,
 							canEdit: isEditing,
-							condominium: condo
+							owners: owners$1,
+							partners: partners$1
 						})
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
-						value: "media",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyMedia, {
-							data: formData,
-							onChange: handleChange,
-							canEdit: isEditing
-						})
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+						value: "details",
+						className: "space-y-6",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyLocation, {
+								data: formData,
+								onChange: handleChange,
+								canEdit: isEditing,
+								condominiums: condominiums$1
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyFeatures, {
+								data: formData,
+								onChange: handleChange,
+								canEdit: isEditing,
+								condominium: condo
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyMedia, {
+								data: formData,
+								onChange: handleChange,
+								canEdit: isEditing
+							})
+						]
 					})
 				]
 			})]
@@ -66193,7 +67093,7 @@ function TaskDetailsSheet({ task, open, onOpenChange }) {
 	});
 }
 function CalendarPage() {
-	const [date$1, setDate] = (0, import_react.useState)(/* @__PURE__ */ new Date());
+	const [date$1, setDate$1] = (0, import_react.useState)(/* @__PURE__ */ new Date());
 	const { tasks: tasks$1 } = useTaskStore_default();
 	const { tenants: tenants$1 } = useTenantStore_default();
 	const { ledgerEntries: ledgerEntries$1 } = useFinancialStore_default();
@@ -66349,7 +67249,7 @@ function CalendarPage() {
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar$1, {
 							mode: "single",
 							selected: date$1,
-							onSelect: setDate,
+							onSelect: setDate$1,
 							locale: dateLocale,
 							className: "rounded-md border shadow-sm w-full h-full text-slate-900",
 							classNames: {
@@ -67049,57 +67949,6 @@ function TaskInvoiceDialog({ task, open, onOpenChange }) {
 		] })
 	});
 }
-var Table = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-	className: "relative w-full overflow-auto",
-	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("table", {
-		ref,
-		className: cn("w-full caption-bottom text-sm bg-white", className),
-		...props
-	})
-}));
-Table.displayName = "Table";
-var TableHeader = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("thead", {
-	ref,
-	className: cn("[&_tr]:border-b bg-white", className),
-	...props
-}));
-TableHeader.displayName = "TableHeader";
-var TableBody = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("tbody", {
-	ref,
-	className: cn("[&_tr:last-child]:border-0 bg-white", className),
-	...props
-}));
-TableBody.displayName = "TableBody";
-var TableFooter = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("tfoot", {
-	ref,
-	className: cn("border-t bg-muted/50 font-medium [&>tr]:last:border-b-0", className),
-	...props
-}));
-TableFooter.displayName = "TableFooter";
-var TableRow = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("tr", {
-	ref,
-	className: cn("border-b transition-colors hover:bg-slate-50 data-[state=selected]:bg-muted bg-white text-black", className),
-	...props
-}));
-TableRow.displayName = "TableRow";
-var TableHead = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
-	ref,
-	className: cn("h-12 px-4 text-left align-middle font-bold text-black [&:has([role=checkbox])]:pr-0", className),
-	...props
-}));
-TableHead.displayName = "TableHead";
-var TableCell = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
-	ref,
-	className: cn("p-4 align-middle text-black [&:has([role=checkbox])]:pr-0", className),
-	...props
-}));
-TableCell.displayName = "TableCell";
-var TableCaption = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("caption", {
-	ref,
-	className: cn("mt-4 text-sm text-muted-foreground", className),
-	...props
-}));
-TableCaption.displayName = "TableCaption";
 function EditTaskDialog({ task, open, onOpenChange }) {
 	const { updateTask } = useTaskStore_default();
 	const { partners: partners$1 } = usePartnerStore_default();
@@ -70103,13 +70952,464 @@ function Owners() {
 		]
 	});
 }
+var useOwnerStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("useOwnerStore must be used within AppProvider");
+	return {
+		owners: context.owners,
+		addOwner: context.addOwner,
+		updateOwner: context.updateOwner
+	};
+};
+var useOwnerStore_default = useOwnerStore;
+function OwnerStatement({ ownerId, properties: properties$1, ledgerEntries: ledgerEntries$1 }) {
+	const { toast: toast$2 } = useToast();
+	const { tasks: tasks$1 } = useTaskStore_default();
+	const { t } = useLanguageStore_default();
+	const [period, setPeriod] = (0, import_react.useState)("current");
+	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("all");
+	const [viewingTask, setViewingTask] = (0, import_react.useState)(null);
+	const ownerProperties = properties$1.filter((p$1) => p$1.ownerId === ownerId);
+	const ownerPropertyIds = ownerProperties.map((p$1) => p$1.id);
+	const getDateRange = () => {
+		const now$2 = /* @__PURE__ */ new Date();
+		if (period === "current") return {
+			start: startOfMonth(now$2),
+			end: endOfMonth(now$2)
+		};
+		else if (period === "last") {
+			const last$2 = subMonths(now$2, 1);
+			return {
+				start: startOfMonth(last$2),
+				end: endOfMonth(last$2)
+			};
+		} else if (period === "last3") return {
+			start: startOfMonth(subMonths(now$2, 3)),
+			end: endOfMonth(now$2)
+		};
+		else if (period === "semester") return {
+			start: startOfMonth(subMonths(now$2, 6)),
+			end: endOfMonth(now$2)
+		};
+		else if (period === "year") return {
+			start: startOfYear(now$2),
+			end: endOfYear(now$2)
+		};
+		else if (period === "prevYear") {
+			const prev = subYears(now$2, 1);
+			return {
+				start: startOfYear(prev),
+				end: endOfYear(prev)
+			};
+		} else return {
+			start: startOfMonth(now$2),
+			end: endOfMonth(now$2)
+		};
+	};
+	const range$5 = getDateRange();
+	const filteredEntries = ledgerEntries$1.filter((entry) => {
+		if (!(selectedPropertyId === "all" ? ownerPropertyIds.includes(entry.propertyId) : entry.propertyId === selectedPropertyId)) return false;
+		const date$1 = new Date(entry.date);
+		return date$1 >= range$5.start && date$1 <= range$5.end;
+	});
+	const sortedAsc = [...filteredEntries].sort((a$1, b$1) => new Date(a$1.date).getTime() - new Date(b$1.date).getTime());
+	let runningBal = 0;
+	const entriesWithBalance = sortedAsc.map((entry) => {
+		runningBal += entry.type === "income" ? entry.amount : -entry.amount;
+		return {
+			...entry,
+			runningBalance: runningBal
+		};
+	}).reverse();
+	const totalIncome = filteredEntries.filter((e) => e.type === "income").reduce((sum, e) => sum + e.amount, 0);
+	const totalExpenses = filteredEntries.filter((e) => e.type === "expense").reduce((sum, e) => sum + e.amount, 0);
+	const netIncome = totalIncome - totalExpenses;
+	const handleDownloadCSV = () => {
+		const headers = [
+			"Date",
+			"Property",
+			"Description",
+			"Category",
+			"Type",
+			"Status",
+			"Amount",
+			"Running Balance"
+		];
+		const rows = entriesWithBalance.map((e) => {
+			const prop = properties$1.find((p$1) => p$1.id === e.propertyId);
+			return [
+				format(new Date(e.date), "yyyy-MM-dd"),
+				prop ? `"${prop.name}"` : "N/A",
+				`"${e.description.replace(/"/g, "\"\"")}"`,
+				e.category,
+				e.type,
+				e.status,
+				e.amount.toFixed(2),
+				e.runningBalance.toFixed(2)
+			];
+		});
+		exportToCSV(`owner_${ownerId}_accounting.csv`, headers, rows);
+		toast$2({
+			title: "Export Successful",
+			description: "Accounting report CSV downloaded successfully."
+		});
+	};
+	const currentYear = getYear(/* @__PURE__ */ new Date());
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskDetailsSheet, {
+			task: viewingTask,
+			open: !!viewingTask,
+			onOpenChange: (open) => !open && setViewingTask(null)
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+			className: "flex flex-col md:flex-row items-center justify-between gap-4",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("financial.owner_statement") || "Owner Statement" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex gap-2 flex-wrap justify-end",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: selectedPropertyId,
+						onValueChange: setSelectedPropertyId,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+							className: "w-[180px] text-black",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.property") || "Property" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+							value: "all",
+							children: t("common.all_properties") || "Total Portfolio Balance"
+						}), ownerProperties.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+							value: p$1.id,
+							children: p$1.name
+						}, p$1.id))] })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: period,
+						onValueChange: setPeriod,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+							className: "w-[180px] text-black",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "current",
+								children: t("financial.this_month") || "This Month"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "last",
+								children: t("financial.last_month") || "Last Month"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "last3",
+								children: t("financial.last_3_months") || "Last 3 Months"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "semester",
+								children: t("financial.semester") || "Semester"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+								value: "year",
+								children: [
+									t("financial.current_year") || "Current Year",
+									" (",
+									currentYear,
+									")"
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+								value: "prevYear",
+								children: [
+									t("financial.previous_year") || "Previous Year",
+									" (",
+									currentYear - 1,
+									")"
+								]
+							})
+						] })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						variant: "outline",
+						onClick: handleDownloadCSV,
+						className: "gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" }), " Export for Accounting"]
+					})
+				]
+			})]
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+			className: "space-y-6",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid grid-cols-1 md:grid-cols-3 gap-4 text-center",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "p-4 bg-green-50 rounded-lg border border-green-100",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-slate-600 font-medium",
+							children: t("financial.gross_revenue") || "Gross Revenue"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+							className: "text-2xl font-bold text-green-700",
+							children: ["$", totalIncome.toFixed(2)]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "p-4 bg-red-50 rounded-lg border border-red-100",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-slate-600 font-medium",
+							children: t("financial.total_expenses") || "Expenses"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+							className: "text-2xl font-bold text-red-700",
+							children: ["$", totalExpenses.toFixed(2)]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "p-4 bg-blue-50 rounded-lg border border-blue-100",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-slate-600 font-medium",
+							children: t("financial.net_income") || "Net Income"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+							className: "text-2xl font-bold text-blue-700",
+							children: ["$", netIncome.toFixed(2)]
+						})]
+					})
+				]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+				className: "bg-slate-50 border-b-2 border-slate-200",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-black",
+						children: t("common.date") || "Date"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-black",
+						children: t("common.property") || "Property"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-black",
+						children: t("common.description") || "Description"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-black",
+						children: t("common.category") || "Category"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "font-bold text-black",
+						children: t("common.status") || "Status"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "text-right font-bold text-black",
+						children: t("common.value") || "Amount"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "text-right font-bold text-black",
+						children: "Running Balance"
+					})
+				]
+			}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: entriesWithBalance.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				colSpan: 7,
+				className: "text-center py-8 text-slate-500",
+				children: t("common.empty") || "No entries found."
+			}) }) : entriesWithBalance.map((entry) => {
+				const prop = properties$1.find((p$1) => p$1.id === entry.propertyId);
+				const associatedTask = tasks$1.find((t$1) => t$1.id === entry.referenceId);
+				return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+					className: "hover:bg-slate-50",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-black",
+							children: format(new Date(entry.date), "dd/MM/yyyy")
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "font-medium text-black",
+							children: prop ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+								to: `/properties/${prop.id}`,
+								className: "flex items-center gap-2 hover:text-blue-600 hover:underline",
+								children: [prop.name, /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "h-3 w-3 opacity-50" })]
+							}) : "N/A"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+							className: "text-black",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex flex-col",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: entry.description }), associatedTask && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-1 text-xs text-blue-600 cursor-pointer hover:text-blue-800 mt-0.5 w-fit font-medium",
+									onClick: () => setViewingTask(associatedTask),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ClipboardList, { className: "h-3 w-3" }), "View Task"]
+								})]
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "capitalize text-black",
+							children: entry.category
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: entry.status === "cleared" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							className: "bg-green-600",
+							children: t("common.paid") || "Paid"
+						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: "outline",
+							className: "text-black border-slate-300",
+							children: t("common.pending") || "Pending"
+						}) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+							className: `text-right font-bold ${entry.type === "income" ? "text-green-700" : "text-red-700"}`,
+							children: [
+								entry.type === "income" ? "+" : "-",
+								"$",
+								entry.amount.toFixed(2)
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+							className: `text-right font-bold ${entry.runningBalance >= 0 ? "text-blue-700" : "text-red-700"}`,
+							children: ["$", entry.runningBalance.toFixed(2)]
+						})
+					]
+				}, entry.id);
+			}) })] })]
+		})
+	] });
+}
 function OwnerDetails() {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "p-6",
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Owner Details" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-slate-600",
-			children: "Details module under construction."
-		}) })] })
+	const { id } = useParams();
+	const navigate = useNavigate();
+	const { owners: owners$1 } = useOwnerStore_default();
+	const { properties: properties$1 } = usePropertyStore_default();
+	const { ledgerEntries: ledgerEntries$1 } = useFinancialStore_default();
+	const [isLoading, setIsLoading] = (0, import_react.useState)(true);
+	const [owner, setOwner] = (0, import_react.useState)(null);
+	(0, import_react.useEffect)(() => {
+		setIsLoading(true);
+		const timer = setTimeout(() => {
+			const found = owners$1.find((o) => o.id === id);
+			if (found) setOwner(found);
+			setIsLoading(false);
+		}, 400);
+		return () => clearTimeout(timer);
+	}, [id, owners$1]);
+	if (isLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "p-6 space-y-6 max-w-6xl mx-auto",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-20 w-full" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-[400px] w-full" })]
+	});
+	if (!owner) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "p-6 text-center max-w-6xl mx-auto flex flex-col items-center justify-center min-h-[60vh]",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+			className: "text-2xl font-bold text-slate-900 mb-2",
+			children: "Owner Not Found"
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+			onClick: () => navigate("/owners"),
+			className: "mt-4 bg-trust-blue text-white",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "mr-2 h-4 w-4" }), " Back to Owners"]
+		})]
+	});
+	const ownerProperties = properties$1.filter((p$1) => p$1.ownerId === owner.id);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "p-6 flex flex-col gap-6 max-w-6xl mx-auto animate-in fade-in duration-500",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "flex items-center justify-between bg-white p-4 rounded-lg border shadow-sm",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "outline",
+					size: "icon",
+					onClick: () => navigate("/owners"),
+					className: "border-slate-300",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-4 w-4 text-slate-700" })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-3",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center border",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-6 w-6 text-slate-600" })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+						className: "text-2xl font-bold tracking-tight text-slate-900",
+						children: owner.name
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-sm text-slate-500 font-medium",
+						children: "Owner Portfolio"
+					})] })]
+				})]
+			})
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+			defaultValue: "overview",
+			className: "w-full",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+					className: "grid w-full grid-cols-2 md:w-[400px] mb-6",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: "overview",
+						children: "Overview"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: "financials",
+						children: "Financials"
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "overview",
+					className: "space-y-6",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-1 md:grid-cols-3 gap-6",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+							className: "md:col-span-1 shadow-sm border-slate-200",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-lg",
+								children: "Contact Info"
+							}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+								className: "space-y-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center gap-3 text-sm text-slate-700",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, { className: "h-4 w-4 text-slate-400" }),
+											" ",
+											owner.email
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center gap-3 text-sm text-slate-700",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Phone, { className: "h-4 w-4 text-slate-400" }),
+											" ",
+											owner.phone
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center gap-3 text-sm text-slate-700",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-4 w-4 text-slate-400" }), owner.city ? `${owner.city}, ${owner.state || ""}` : owner.country || "N/A"]
+									})
+								]
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+							className: "md:col-span-2 shadow-sm border-slate-200",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+								className: "text-lg",
+								children: [
+									"Owned Properties (",
+									ownerProperties.length,
+									")"
+								]
+							}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
+								children: [ownerProperties.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-slate-500",
+									children: "No properties assigned to this owner."
+								}), ownerProperties.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-start gap-3 p-3 rounded-lg border bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors",
+									onClick: () => navigate(`/properties/${p$1.id}`),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-5 w-5 text-blue-600 mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "font-medium text-sm text-slate-900",
+										children: p$1.name
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-xs text-slate-500 truncate max-w-[200px]",
+										children: p$1.address
+									})] })]
+								}, p$1.id))]
+							}) })]
+						})]
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "financials",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OwnerStatement, {
+						ownerId: owner.id,
+						properties: properties$1,
+						ledgerEntries: ledgerEntries$1
+					})
+				})
+			]
+		})]
 	});
 }
 function Partners() {
@@ -80560,4 +81860,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-CvV5wPaR.js.map
+//# sourceMappingURL=index-C4IJUuoL.js.map
