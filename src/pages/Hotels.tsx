@@ -247,7 +247,7 @@ export default function Hotels() {
                   </Label>
                   <Input
                     placeholder="E.g. Grand Heritage Hotel"
-                    value={form.name}
+                    value={form.name ?? ''}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
                 </div>
@@ -256,7 +256,7 @@ export default function Hotels() {
                     <Label>{t('common.manager')}</Label>
                     <Input
                       placeholder={t('common.manager')}
-                      value={form.managerName}
+                      value={form.managerName ?? ''}
                       onChange={(e) =>
                         setForm({ ...form, managerName: e.target.value })
                       }
@@ -266,7 +266,7 @@ export default function Hotels() {
                     <Label>{t('common.phone')}</Label>
                     <Input
                       placeholder="+1 (555) 000-0000"
-                      value={form.managerPhone}
+                      value={form.managerPhone ?? ''}
                       onChange={(e) =>
                         setForm({ ...form, managerPhone: e.target.value })
                       }
@@ -277,7 +277,7 @@ export default function Hotels() {
                   <Label>{t('common.email')}</Label>
                   <Input
                     placeholder="manager@hotel.com"
-                    value={form.managerEmail}
+                    value={form.managerEmail ?? ''}
                     onChange={(e) =>
                       setForm({ ...form, managerEmail: e.target.value })
                     }
@@ -289,7 +289,7 @@ export default function Hotels() {
                 <div className="grid gap-2">
                   <Label>{t('common.country')}</Label>
                   <Select
-                    value={form.country}
+                    value={form.country ?? 'US'}
                     onValueChange={(val) => setForm({ ...form, country: val })}
                   >
                     <SelectTrigger>
@@ -307,7 +307,7 @@ export default function Hotels() {
                     <Label>Street Address</Label>
                     <Input
                       placeholder="Street name"
-                      value={form.address}
+                      value={form.address ?? ''}
                       onChange={(e) =>
                         setForm({ ...form, address: e.target.value })
                       }
@@ -317,7 +317,7 @@ export default function Hotels() {
                     <Label>Number</Label>
                     <Input
                       placeholder="No."
-                      value={form.number}
+                      value={form.number ?? ''}
                       onChange={(e) =>
                         setForm({ ...form, number: e.target.value })
                       }
@@ -329,7 +329,7 @@ export default function Hotels() {
                     <Label>Neighborhood</Label>
                     <Input
                       placeholder="Neighborhood"
-                      value={form.neighborhood}
+                      value={form.neighborhood ?? ''}
                       onChange={(e) =>
                         setForm({ ...form, neighborhood: e.target.value })
                       }
@@ -341,7 +341,7 @@ export default function Hotels() {
                     </Label>
                     <Input
                       placeholder="City"
-                      value={form.city}
+                      value={form.city ?? ''}
                       onChange={(e) =>
                         setForm({ ...form, city: e.target.value })
                       }
@@ -353,7 +353,7 @@ export default function Hotels() {
                     <Label>State / Province</Label>
                     <Input
                       placeholder="State"
-                      value={form.state}
+                      value={form.state ?? ''}
                       onChange={(e) =>
                         setForm({ ...form, state: e.target.value })
                       }
@@ -363,7 +363,7 @@ export default function Hotels() {
                     <Label>Zip Code</Label>
                     <Input
                       placeholder="Zip Code"
-                      value={form.zipCode}
+                      value={form.zipCode ?? ''}
                       onChange={(e) =>
                         setForm({ ...form, zipCode: e.target.value })
                       }
@@ -387,7 +387,7 @@ export default function Hotels() {
                     .map((t, i) => (
                       <div key={t.id} className="flex gap-2 items-center">
                         <Input
-                          value={t.name}
+                          value={t.name ?? ''}
                           onChange={(e) => {
                             const val = e.target.value
                             setForm((prev) => ({

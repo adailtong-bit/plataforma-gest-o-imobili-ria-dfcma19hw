@@ -18,7 +18,7 @@ var __copyProps = (to, from, except, desc) => {
 	if (from && typeof from === "object" || typeof from === "function") for (var keys$6 = __getOwnPropNames(from), i = 0, n = keys$6.length, key; i < n; i++) {
 		key = keys$6[i];
 		if (!__hasOwnProp.call(to, key) && key !== except) __defProp(to, key, {
-			get: ((k$3) => from[k$3]).bind(null, key),
+			get: ((k$1) => from[k$1]).bind(null, key),
 			enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable
 		});
 	}
@@ -57,250 +57,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 		fetch(link.href, fetchOpts);
 	}
 })();
-/**
-* @license React
-* scheduler.development.js
-*
-* Copyright (c) Meta Platforms, Inc. and affiliates.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-var require_scheduler_development = /* @__PURE__ */ __commonJSMin(((exports) => {
-	(function() {
-		function performWorkUntilDeadline() {
-			needsPaint = !1;
-			if (isMessageLoopRunning) {
-				var currentTime = exports.unstable_now();
-				startTime = currentTime;
-				var hasMoreWork = !0;
-				try {
-					a: {
-						isHostCallbackScheduled = !1;
-						isHostTimeoutScheduled && (isHostTimeoutScheduled = !1, localClearTimeout(taskTimeoutID), taskTimeoutID = -1);
-						isPerformingWork = !0;
-						var previousPriorityLevel = currentPriorityLevel;
-						try {
-							b: {
-								advanceTimers(currentTime);
-								for (currentTask = peek(taskQueue); null !== currentTask && !(currentTask.expirationTime > currentTime && shouldYieldToHost());) {
-									var callback = currentTask.callback;
-									if ("function" === typeof callback) {
-										currentTask.callback = null;
-										currentPriorityLevel = currentTask.priorityLevel;
-										var continuationCallback = callback(currentTask.expirationTime <= currentTime);
-										currentTime = exports.unstable_now();
-										if ("function" === typeof continuationCallback) {
-											currentTask.callback = continuationCallback;
-											advanceTimers(currentTime);
-											hasMoreWork = !0;
-											break b;
-										}
-										currentTask === peek(taskQueue) && pop(taskQueue);
-										advanceTimers(currentTime);
-									} else pop(taskQueue);
-									currentTask = peek(taskQueue);
-								}
-								if (null !== currentTask) hasMoreWork = !0;
-								else {
-									var firstTimer = peek(timerQueue);
-									null !== firstTimer && requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
-									hasMoreWork = !1;
-								}
-							}
-							break a;
-						} finally {
-							currentTask = null, currentPriorityLevel = previousPriorityLevel, isPerformingWork = !1;
-						}
-						hasMoreWork = void 0;
-					}
-				} finally {
-					hasMoreWork ? schedulePerformWorkUntilDeadline() : isMessageLoopRunning = !1;
-				}
-			}
-		}
-		function push(heap, node) {
-			var index$1 = heap.length;
-			heap.push(node);
-			a: for (; 0 < index$1;) {
-				var parentIndex = index$1 - 1 >>> 1, parent = heap[parentIndex];
-				if (0 < compare(parent, node)) heap[parentIndex] = node, heap[index$1] = parent, index$1 = parentIndex;
-				else break a;
-			}
-		}
-		function peek(heap) {
-			return 0 === heap.length ? null : heap[0];
-		}
-		function pop(heap) {
-			if (0 === heap.length) return null;
-			var first = heap[0], last$2 = heap.pop();
-			if (last$2 !== first) {
-				heap[0] = last$2;
-				a: for (var index$1 = 0, length = heap.length, halfLength = length >>> 1; index$1 < halfLength;) {
-					var leftIndex = 2 * (index$1 + 1) - 1, left = heap[leftIndex], rightIndex = leftIndex + 1, right = heap[rightIndex];
-					if (0 > compare(left, last$2)) rightIndex < length && 0 > compare(right, left) ? (heap[index$1] = right, heap[rightIndex] = last$2, index$1 = rightIndex) : (heap[index$1] = left, heap[leftIndex] = last$2, index$1 = leftIndex);
-					else if (rightIndex < length && 0 > compare(right, last$2)) heap[index$1] = right, heap[rightIndex] = last$2, index$1 = rightIndex;
-					else break a;
-				}
-			}
-			return first;
-		}
-		function compare(a$1, b$1) {
-			var diff = a$1.sortIndex - b$1.sortIndex;
-			return 0 !== diff ? diff : a$1.id - b$1.id;
-		}
-		function advanceTimers(currentTime) {
-			for (var timer = peek(timerQueue); null !== timer;) {
-				if (null === timer.callback) pop(timerQueue);
-				else if (timer.startTime <= currentTime) pop(timerQueue), timer.sortIndex = timer.expirationTime, push(taskQueue, timer);
-				else break;
-				timer = peek(timerQueue);
-			}
-		}
-		function handleTimeout(currentTime) {
-			isHostTimeoutScheduled = !1;
-			advanceTimers(currentTime);
-			if (!isHostCallbackScheduled) if (null !== peek(taskQueue)) isHostCallbackScheduled = !0, isMessageLoopRunning || (isMessageLoopRunning = !0, schedulePerformWorkUntilDeadline());
-			else {
-				var firstTimer = peek(timerQueue);
-				null !== firstTimer && requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
-			}
-		}
-		function shouldYieldToHost() {
-			return needsPaint ? !0 : exports.unstable_now() - startTime < frameInterval ? !1 : !0;
-		}
-		function requestHostTimeout(callback, ms) {
-			taskTimeoutID = localSetTimeout(function() {
-				callback(exports.unstable_now());
-			}, ms);
-		}
-		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		exports.unstable_now = void 0;
-		if ("object" === typeof performance && "function" === typeof performance.now) {
-			var localPerformance = performance;
-			exports.unstable_now = function() {
-				return localPerformance.now();
-			};
-		} else {
-			var localDate$1 = Date, initialTime = localDate$1.now();
-			exports.unstable_now = function() {
-				return localDate$1.now() - initialTime;
-			};
-		}
-		var taskQueue = [], timerQueue = [], taskIdCounter = 1, currentTask = null, currentPriorityLevel = 3, isPerformingWork = !1, isHostCallbackScheduled = !1, isHostTimeoutScheduled = !1, needsPaint = !1, localSetTimeout = "function" === typeof setTimeout ? setTimeout : null, localClearTimeout = "function" === typeof clearTimeout ? clearTimeout : null, localSetImmediate = "undefined" !== typeof setImmediate ? setImmediate : null, isMessageLoopRunning = !1, taskTimeoutID = -1, frameInterval = 5, startTime = -1;
-		if ("function" === typeof localSetImmediate) var schedulePerformWorkUntilDeadline = function() {
-			localSetImmediate(performWorkUntilDeadline);
-		};
-		else if ("undefined" !== typeof MessageChannel) {
-			var channel = new MessageChannel(), port = channel.port2;
-			channel.port1.onmessage = performWorkUntilDeadline;
-			schedulePerformWorkUntilDeadline = function() {
-				port.postMessage(null);
-			};
-		} else schedulePerformWorkUntilDeadline = function() {
-			localSetTimeout(performWorkUntilDeadline, 0);
-		};
-		exports.unstable_IdlePriority = 5;
-		exports.unstable_ImmediatePriority = 1;
-		exports.unstable_LowPriority = 4;
-		exports.unstable_NormalPriority = 3;
-		exports.unstable_Profiling = null;
-		exports.unstable_UserBlockingPriority = 2;
-		exports.unstable_cancelCallback = function(task) {
-			task.callback = null;
-		};
-		exports.unstable_forceFrameRate = function(fps) {
-			0 > fps || 125 < fps ? console.error("forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported") : frameInterval = 0 < fps ? Math.floor(1e3 / fps) : 5;
-		};
-		exports.unstable_getCurrentPriorityLevel = function() {
-			return currentPriorityLevel;
-		};
-		exports.unstable_next = function(eventHandler) {
-			switch (currentPriorityLevel) {
-				case 1:
-				case 2:
-				case 3:
-					var priorityLevel = 3;
-					break;
-				default: priorityLevel = currentPriorityLevel;
-			}
-			var previousPriorityLevel = currentPriorityLevel;
-			currentPriorityLevel = priorityLevel;
-			try {
-				return eventHandler();
-			} finally {
-				currentPriorityLevel = previousPriorityLevel;
-			}
-		};
-		exports.unstable_requestPaint = function() {
-			needsPaint = !0;
-		};
-		exports.unstable_runWithPriority = function(priorityLevel, eventHandler) {
-			switch (priorityLevel) {
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-				case 5: break;
-				default: priorityLevel = 3;
-			}
-			var previousPriorityLevel = currentPriorityLevel;
-			currentPriorityLevel = priorityLevel;
-			try {
-				return eventHandler();
-			} finally {
-				currentPriorityLevel = previousPriorityLevel;
-			}
-		};
-		exports.unstable_scheduleCallback = function(priorityLevel, callback, options$1) {
-			var currentTime = exports.unstable_now();
-			"object" === typeof options$1 && null !== options$1 ? (options$1 = options$1.delay, options$1 = "number" === typeof options$1 && 0 < options$1 ? currentTime + options$1 : currentTime) : options$1 = currentTime;
-			switch (priorityLevel) {
-				case 1:
-					var timeout = -1;
-					break;
-				case 2:
-					timeout = 250;
-					break;
-				case 5:
-					timeout = 1073741823;
-					break;
-				case 4:
-					timeout = 1e4;
-					break;
-				default: timeout = 5e3;
-			}
-			timeout = options$1 + timeout;
-			priorityLevel = {
-				id: taskIdCounter++,
-				callback,
-				priorityLevel,
-				startTime: options$1,
-				expirationTime: timeout,
-				sortIndex: -1
-			};
-			options$1 > currentTime ? (priorityLevel.sortIndex = options$1, push(timerQueue, priorityLevel), null === peek(taskQueue) && priorityLevel === peek(timerQueue) && (isHostTimeoutScheduled ? (localClearTimeout(taskTimeoutID), taskTimeoutID = -1) : isHostTimeoutScheduled = !0, requestHostTimeout(handleTimeout, options$1 - currentTime))) : (priorityLevel.sortIndex = timeout, push(taskQueue, priorityLevel), isHostCallbackScheduled || isPerformingWork || (isHostCallbackScheduled = !0, isMessageLoopRunning || (isMessageLoopRunning = !0, schedulePerformWorkUntilDeadline())));
-			return priorityLevel;
-		};
-		exports.unstable_shouldYield = shouldYieldToHost;
-		exports.unstable_wrapCallback = function(callback) {
-			var parentPriorityLevel = currentPriorityLevel;
-			return function() {
-				var previousPriorityLevel = currentPriorityLevel;
-				currentPriorityLevel = parentPriorityLevel;
-				try {
-					return callback.apply(this, arguments);
-				} finally {
-					currentPriorityLevel = previousPriorityLevel;
-				}
-			};
-		};
-		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
-	})();
-}));
-var require_scheduler = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	module.exports = require_scheduler_development();
-}));
 /**
 * @license React
 * react.development.js
@@ -1060,6 +816,250 @@ var require_react_development = /* @__PURE__ */ __commonJSMin(((exports, module)
 }));
 var require_react = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	module.exports = require_react_development();
+}));
+/**
+* @license React
+* scheduler.development.js
+*
+* Copyright (c) Meta Platforms, Inc. and affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+var require_scheduler_development = /* @__PURE__ */ __commonJSMin(((exports) => {
+	(function() {
+		function performWorkUntilDeadline() {
+			needsPaint = !1;
+			if (isMessageLoopRunning) {
+				var currentTime = exports.unstable_now();
+				startTime = currentTime;
+				var hasMoreWork = !0;
+				try {
+					a: {
+						isHostCallbackScheduled = !1;
+						isHostTimeoutScheduled && (isHostTimeoutScheduled = !1, localClearTimeout(taskTimeoutID), taskTimeoutID = -1);
+						isPerformingWork = !0;
+						var previousPriorityLevel = currentPriorityLevel;
+						try {
+							b: {
+								advanceTimers(currentTime);
+								for (currentTask = peek(taskQueue); null !== currentTask && !(currentTask.expirationTime > currentTime && shouldYieldToHost());) {
+									var callback = currentTask.callback;
+									if ("function" === typeof callback) {
+										currentTask.callback = null;
+										currentPriorityLevel = currentTask.priorityLevel;
+										var continuationCallback = callback(currentTask.expirationTime <= currentTime);
+										currentTime = exports.unstable_now();
+										if ("function" === typeof continuationCallback) {
+											currentTask.callback = continuationCallback;
+											advanceTimers(currentTime);
+											hasMoreWork = !0;
+											break b;
+										}
+										currentTask === peek(taskQueue) && pop(taskQueue);
+										advanceTimers(currentTime);
+									} else pop(taskQueue);
+									currentTask = peek(taskQueue);
+								}
+								if (null !== currentTask) hasMoreWork = !0;
+								else {
+									var firstTimer = peek(timerQueue);
+									null !== firstTimer && requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
+									hasMoreWork = !1;
+								}
+							}
+							break a;
+						} finally {
+							currentTask = null, currentPriorityLevel = previousPriorityLevel, isPerformingWork = !1;
+						}
+						hasMoreWork = void 0;
+					}
+				} finally {
+					hasMoreWork ? schedulePerformWorkUntilDeadline() : isMessageLoopRunning = !1;
+				}
+			}
+		}
+		function push(heap, node) {
+			var index$1 = heap.length;
+			heap.push(node);
+			a: for (; 0 < index$1;) {
+				var parentIndex = index$1 - 1 >>> 1, parent = heap[parentIndex];
+				if (0 < compare(parent, node)) heap[parentIndex] = node, heap[index$1] = parent, index$1 = parentIndex;
+				else break a;
+			}
+		}
+		function peek(heap) {
+			return 0 === heap.length ? null : heap[0];
+		}
+		function pop(heap) {
+			if (0 === heap.length) return null;
+			var first = heap[0], last$2 = heap.pop();
+			if (last$2 !== first) {
+				heap[0] = last$2;
+				a: for (var index$1 = 0, length = heap.length, halfLength = length >>> 1; index$1 < halfLength;) {
+					var leftIndex = 2 * (index$1 + 1) - 1, left = heap[leftIndex], rightIndex = leftIndex + 1, right = heap[rightIndex];
+					if (0 > compare(left, last$2)) rightIndex < length && 0 > compare(right, left) ? (heap[index$1] = right, heap[rightIndex] = last$2, index$1 = rightIndex) : (heap[index$1] = left, heap[leftIndex] = last$2, index$1 = leftIndex);
+					else if (rightIndex < length && 0 > compare(right, last$2)) heap[index$1] = right, heap[rightIndex] = last$2, index$1 = rightIndex;
+					else break a;
+				}
+			}
+			return first;
+		}
+		function compare(a$1, b$1) {
+			var diff = a$1.sortIndex - b$1.sortIndex;
+			return 0 !== diff ? diff : a$1.id - b$1.id;
+		}
+		function advanceTimers(currentTime) {
+			for (var timer = peek(timerQueue); null !== timer;) {
+				if (null === timer.callback) pop(timerQueue);
+				else if (timer.startTime <= currentTime) pop(timerQueue), timer.sortIndex = timer.expirationTime, push(taskQueue, timer);
+				else break;
+				timer = peek(timerQueue);
+			}
+		}
+		function handleTimeout(currentTime) {
+			isHostTimeoutScheduled = !1;
+			advanceTimers(currentTime);
+			if (!isHostCallbackScheduled) if (null !== peek(taskQueue)) isHostCallbackScheduled = !0, isMessageLoopRunning || (isMessageLoopRunning = !0, schedulePerformWorkUntilDeadline());
+			else {
+				var firstTimer = peek(timerQueue);
+				null !== firstTimer && requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
+			}
+		}
+		function shouldYieldToHost() {
+			return needsPaint ? !0 : exports.unstable_now() - startTime < frameInterval ? !1 : !0;
+		}
+		function requestHostTimeout(callback, ms) {
+			taskTimeoutID = localSetTimeout(function() {
+				callback(exports.unstable_now());
+			}, ms);
+		}
+		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
+		exports.unstable_now = void 0;
+		if ("object" === typeof performance && "function" === typeof performance.now) {
+			var localPerformance = performance;
+			exports.unstable_now = function() {
+				return localPerformance.now();
+			};
+		} else {
+			var localDate$1 = Date, initialTime = localDate$1.now();
+			exports.unstable_now = function() {
+				return localDate$1.now() - initialTime;
+			};
+		}
+		var taskQueue = [], timerQueue = [], taskIdCounter = 1, currentTask = null, currentPriorityLevel = 3, isPerformingWork = !1, isHostCallbackScheduled = !1, isHostTimeoutScheduled = !1, needsPaint = !1, localSetTimeout = "function" === typeof setTimeout ? setTimeout : null, localClearTimeout = "function" === typeof clearTimeout ? clearTimeout : null, localSetImmediate = "undefined" !== typeof setImmediate ? setImmediate : null, isMessageLoopRunning = !1, taskTimeoutID = -1, frameInterval = 5, startTime = -1;
+		if ("function" === typeof localSetImmediate) var schedulePerformWorkUntilDeadline = function() {
+			localSetImmediate(performWorkUntilDeadline);
+		};
+		else if ("undefined" !== typeof MessageChannel) {
+			var channel = new MessageChannel(), port = channel.port2;
+			channel.port1.onmessage = performWorkUntilDeadline;
+			schedulePerformWorkUntilDeadline = function() {
+				port.postMessage(null);
+			};
+		} else schedulePerformWorkUntilDeadline = function() {
+			localSetTimeout(performWorkUntilDeadline, 0);
+		};
+		exports.unstable_IdlePriority = 5;
+		exports.unstable_ImmediatePriority = 1;
+		exports.unstable_LowPriority = 4;
+		exports.unstable_NormalPriority = 3;
+		exports.unstable_Profiling = null;
+		exports.unstable_UserBlockingPriority = 2;
+		exports.unstable_cancelCallback = function(task) {
+			task.callback = null;
+		};
+		exports.unstable_forceFrameRate = function(fps) {
+			0 > fps || 125 < fps ? console.error("forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported") : frameInterval = 0 < fps ? Math.floor(1e3 / fps) : 5;
+		};
+		exports.unstable_getCurrentPriorityLevel = function() {
+			return currentPriorityLevel;
+		};
+		exports.unstable_next = function(eventHandler) {
+			switch (currentPriorityLevel) {
+				case 1:
+				case 2:
+				case 3:
+					var priorityLevel = 3;
+					break;
+				default: priorityLevel = currentPriorityLevel;
+			}
+			var previousPriorityLevel = currentPriorityLevel;
+			currentPriorityLevel = priorityLevel;
+			try {
+				return eventHandler();
+			} finally {
+				currentPriorityLevel = previousPriorityLevel;
+			}
+		};
+		exports.unstable_requestPaint = function() {
+			needsPaint = !0;
+		};
+		exports.unstable_runWithPriority = function(priorityLevel, eventHandler) {
+			switch (priorityLevel) {
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+				case 5: break;
+				default: priorityLevel = 3;
+			}
+			var previousPriorityLevel = currentPriorityLevel;
+			currentPriorityLevel = priorityLevel;
+			try {
+				return eventHandler();
+			} finally {
+				currentPriorityLevel = previousPriorityLevel;
+			}
+		};
+		exports.unstable_scheduleCallback = function(priorityLevel, callback, options$1) {
+			var currentTime = exports.unstable_now();
+			"object" === typeof options$1 && null !== options$1 ? (options$1 = options$1.delay, options$1 = "number" === typeof options$1 && 0 < options$1 ? currentTime + options$1 : currentTime) : options$1 = currentTime;
+			switch (priorityLevel) {
+				case 1:
+					var timeout = -1;
+					break;
+				case 2:
+					timeout = 250;
+					break;
+				case 5:
+					timeout = 1073741823;
+					break;
+				case 4:
+					timeout = 1e4;
+					break;
+				default: timeout = 5e3;
+			}
+			timeout = options$1 + timeout;
+			priorityLevel = {
+				id: taskIdCounter++,
+				callback,
+				priorityLevel,
+				startTime: options$1,
+				expirationTime: timeout,
+				sortIndex: -1
+			};
+			options$1 > currentTime ? (priorityLevel.sortIndex = options$1, push(timerQueue, priorityLevel), null === peek(taskQueue) && priorityLevel === peek(timerQueue) && (isHostTimeoutScheduled ? (localClearTimeout(taskTimeoutID), taskTimeoutID = -1) : isHostTimeoutScheduled = !0, requestHostTimeout(handleTimeout, options$1 - currentTime))) : (priorityLevel.sortIndex = timeout, push(taskQueue, priorityLevel), isHostCallbackScheduled || isPerformingWork || (isHostCallbackScheduled = !0, isMessageLoopRunning || (isMessageLoopRunning = !0, schedulePerformWorkUntilDeadline())));
+			return priorityLevel;
+		};
+		exports.unstable_shouldYield = shouldYieldToHost;
+		exports.unstable_wrapCallback = function(callback) {
+			var parentPriorityLevel = currentPriorityLevel;
+			return function() {
+				var previousPriorityLevel = currentPriorityLevel;
+				currentPriorityLevel = parentPriorityLevel;
+				try {
+					return callback.apply(this, arguments);
+				} finally {
+					currentPriorityLevel = previousPriorityLevel;
+				}
+			};
+		};
+		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
+	})();
+}));
+var require_scheduler = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	module.exports = require_scheduler_development();
 }));
 /**
 * @license React
@@ -2476,7 +2476,7 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			return indentation(indent) + describeTextNode(clientText, maxLength) + "\n";
 		}
 		function objectName(object) {
-			return Object.prototype.toString.call(object).replace(/^\[object (.*)\]$/, function(m$1, p0) {
+			return Object.prototype.toString.call(object).replace(/^\[object (.*)\]$/, function(m, p0) {
 				return p0;
 			});
 		}
@@ -5130,8 +5130,8 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 		function findFirstSuspended(row) {
 			for (var node = row; null !== node;) {
 				if (13 === node.tag) {
-					var state = node.memoizedState;
-					if (null !== state && (state = state.dehydrated, null === state || isSuspenseInstancePending(state) || isSuspenseInstanceFallback(state))) return node;
+					var state$1 = node.memoizedState;
+					if (null !== state$1 && (state$1 = state$1.dehydrated, null === state$1 || isSuspenseInstancePending(state$1) || isSuspenseInstanceFallback(state$1))) return node;
 				} else if (19 === node.tag && ("forwards" === node.memoizedProps.revealOrder || "backwards" === node.memoizedProps.revealOrder || "unstable_legacy-backwards" === node.memoizedProps.revealOrder || "together" === node.memoizedProps.revealOrder)) {
 					if (0 !== (node.flags & 128)) return node;
 				} else if (null !== node.child) {
@@ -5373,8 +5373,8 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			memoCache.index++;
 			return updateQueue;
 		}
-		function basicStateReducer(state, action) {
-			return "function" === typeof action ? action(state) : action;
+		function basicStateReducer(state$1, action) {
+			return "function" === typeof action ? action(state$1) : action;
 		}
 		function mountReducer(reducer$1, initialArg, init) {
 			var hook = mountWorkInProgressHook();
@@ -5778,17 +5778,17 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			currentStateHook = updateReducerImpl(stateHook, currentStateHook, actionStateReducer)[0];
 			stateHook = updateReducer(basicStateReducer)[0];
 			if ("object" === typeof currentStateHook && null !== currentStateHook && "function" === typeof currentStateHook.then) try {
-				var state = useThenable(currentStateHook);
+				var state$1 = useThenable(currentStateHook);
 			} catch (x$2) {
 				if (x$2 === SuspenseException) throw SuspenseActionException;
 				throw x$2;
 			}
-			else state = currentStateHook;
+			else state$1 = currentStateHook;
 			currentStateHook = updateWorkInProgressHook();
 			var actionQueue = currentStateHook.queue, dispatch$1 = actionQueue.dispatch;
 			action !== currentStateHook.memoizedState && (currentlyRenderingFiber.flags |= 2048, pushSimpleEffect(HasEffect | Passive, { destroy: void 0 }, actionStateActionEffect.bind(null, actionQueue, action), null));
 			return [
-				state,
+				state$1,
 				dispatch$1,
 				stateHook
 			];
@@ -6578,8 +6578,8 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 		function updateClassComponent(current$1, workInProgress$1, Component$3, nextProps, renderLanes$1) {
 			switch (shouldErrorImpl(workInProgress$1)) {
 				case !1:
-					var _instance = workInProgress$1.stateNode, state = new workInProgress$1.type(workInProgress$1.memoizedProps, _instance.context).state;
-					_instance.updater.enqueueSetState(_instance, state, null);
+					var _instance = workInProgress$1.stateNode, state$1 = new workInProgress$1.type(workInProgress$1.memoizedProps, _instance.context).state;
+					_instance.updater.enqueueSetState(_instance, state$1, null);
 					break;
 				case !0:
 					workInProgress$1.flags |= 128;
@@ -6587,81 +6587,81 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 					_instance = Error("Simulated error coming from DevTools");
 					var lane = renderLanes$1 & -renderLanes$1;
 					workInProgress$1.lanes |= lane;
-					state = workInProgressRoot;
-					if (null === state) throw Error("Expected a work-in-progress root. This is a bug in React. Please file an issue.");
+					state$1 = workInProgressRoot;
+					if (null === state$1) throw Error("Expected a work-in-progress root. This is a bug in React. Please file an issue.");
 					lane = createClassErrorUpdate(lane);
-					initializeClassErrorUpdate(lane, state, workInProgress$1, createCapturedValueAtFiber(_instance, workInProgress$1));
+					initializeClassErrorUpdate(lane, state$1, workInProgress$1, createCapturedValueAtFiber(_instance, workInProgress$1));
 					enqueueCapturedUpdate(workInProgress$1, lane);
 			}
 			prepareToReadContext(workInProgress$1);
 			if (null === workInProgress$1.stateNode) {
-				state = emptyContextObject;
+				state$1 = emptyContextObject;
 				_instance = Component$3.contextType;
 				"contextType" in Component$3 && null !== _instance && (void 0 === _instance || _instance.$$typeof !== REACT_CONTEXT_TYPE) && !didWarnAboutInvalidateContextType.has(Component$3) && (didWarnAboutInvalidateContextType.add(Component$3), lane = void 0 === _instance ? " However, it is set to undefined. This can be caused by a typo or by mixing up named and default imports. This can also happen due to a circular dependency, so try moving the createContext() call to a separate file." : "object" !== typeof _instance ? " However, it is set to a " + typeof _instance + "." : _instance.$$typeof === REACT_CONSUMER_TYPE ? " Did you accidentally pass the Context.Consumer instead?" : " However, it is set to an object with keys {" + Object.keys(_instance).join(", ") + "}.", console.error("%s defines an invalid contextType. contextType should point to the Context object returned by React.createContext().%s", getComponentNameFromType(Component$3) || "Component", lane));
-				"object" === typeof _instance && null !== _instance && (state = readContext(_instance));
-				_instance = new Component$3(nextProps, state);
+				"object" === typeof _instance && null !== _instance && (state$1 = readContext(_instance));
+				_instance = new Component$3(nextProps, state$1);
 				if (workInProgress$1.mode & StrictLegacyMode) {
 					setIsStrictModeForDevtools(!0);
 					try {
-						_instance = new Component$3(nextProps, state);
+						_instance = new Component$3(nextProps, state$1);
 					} finally {
 						setIsStrictModeForDevtools(!1);
 					}
 				}
-				state = workInProgress$1.memoizedState = null !== _instance.state && void 0 !== _instance.state ? _instance.state : null;
+				state$1 = workInProgress$1.memoizedState = null !== _instance.state && void 0 !== _instance.state ? _instance.state : null;
 				_instance.updater = classComponentUpdater;
 				workInProgress$1.stateNode = _instance;
 				_instance._reactInternals = workInProgress$1;
 				_instance._reactInternalInstance = fakeInternalInstance;
-				"function" === typeof Component$3.getDerivedStateFromProps && null === state && (state = getComponentNameFromType(Component$3) || "Component", didWarnAboutUninitializedState.has(state) || (didWarnAboutUninitializedState.add(state), console.error("`%s` uses `getDerivedStateFromProps` but its initial state is %s. This is not recommended. Instead, define the initial state by assigning an object to `this.state` in the constructor of `%s`. This ensures that `getDerivedStateFromProps` arguments have a consistent shape.", state, null === _instance.state ? "null" : "undefined", state)));
+				"function" === typeof Component$3.getDerivedStateFromProps && null === state$1 && (state$1 = getComponentNameFromType(Component$3) || "Component", didWarnAboutUninitializedState.has(state$1) || (didWarnAboutUninitializedState.add(state$1), console.error("`%s` uses `getDerivedStateFromProps` but its initial state is %s. This is not recommended. Instead, define the initial state by assigning an object to `this.state` in the constructor of `%s`. This ensures that `getDerivedStateFromProps` arguments have a consistent shape.", state$1, null === _instance.state ? "null" : "undefined", state$1)));
 				if ("function" === typeof Component$3.getDerivedStateFromProps || "function" === typeof _instance.getSnapshotBeforeUpdate) {
-					var foundWillUpdateName = lane = state = null;
-					"function" === typeof _instance.componentWillMount && !0 !== _instance.componentWillMount.__suppressDeprecationWarning ? state = "componentWillMount" : "function" === typeof _instance.UNSAFE_componentWillMount && (state = "UNSAFE_componentWillMount");
+					var foundWillUpdateName = lane = state$1 = null;
+					"function" === typeof _instance.componentWillMount && !0 !== _instance.componentWillMount.__suppressDeprecationWarning ? state$1 = "componentWillMount" : "function" === typeof _instance.UNSAFE_componentWillMount && (state$1 = "UNSAFE_componentWillMount");
 					"function" === typeof _instance.componentWillReceiveProps && !0 !== _instance.componentWillReceiveProps.__suppressDeprecationWarning ? lane = "componentWillReceiveProps" : "function" === typeof _instance.UNSAFE_componentWillReceiveProps && (lane = "UNSAFE_componentWillReceiveProps");
 					"function" === typeof _instance.componentWillUpdate && !0 !== _instance.componentWillUpdate.__suppressDeprecationWarning ? foundWillUpdateName = "componentWillUpdate" : "function" === typeof _instance.UNSAFE_componentWillUpdate && (foundWillUpdateName = "UNSAFE_componentWillUpdate");
-					if (null !== state || null !== lane || null !== foundWillUpdateName) {
+					if (null !== state$1 || null !== lane || null !== foundWillUpdateName) {
 						_instance = getComponentNameFromType(Component$3) || "Component";
 						var newApiName = "function" === typeof Component$3.getDerivedStateFromProps ? "getDerivedStateFromProps()" : "getSnapshotBeforeUpdate()";
-						didWarnAboutLegacyLifecyclesAndDerivedState.has(_instance) || (didWarnAboutLegacyLifecyclesAndDerivedState.add(_instance), console.error("Unsafe legacy lifecycles will not be called for components using new component APIs.\n\n%s uses %s but also contains the following legacy lifecycles:%s%s%s\n\nThe above lifecycles should be removed. Learn more about this warning here:\nhttps://react.dev/link/unsafe-component-lifecycles", _instance, newApiName, null !== state ? "\n  " + state : "", null !== lane ? "\n  " + lane : "", null !== foundWillUpdateName ? "\n  " + foundWillUpdateName : ""));
+						didWarnAboutLegacyLifecyclesAndDerivedState.has(_instance) || (didWarnAboutLegacyLifecyclesAndDerivedState.add(_instance), console.error("Unsafe legacy lifecycles will not be called for components using new component APIs.\n\n%s uses %s but also contains the following legacy lifecycles:%s%s%s\n\nThe above lifecycles should be removed. Learn more about this warning here:\nhttps://react.dev/link/unsafe-component-lifecycles", _instance, newApiName, null !== state$1 ? "\n  " + state$1 : "", null !== lane ? "\n  " + lane : "", null !== foundWillUpdateName ? "\n  " + foundWillUpdateName : ""));
 					}
 				}
 				_instance = workInProgress$1.stateNode;
-				state = getComponentNameFromType(Component$3) || "Component";
-				_instance.render || (Component$3.prototype && "function" === typeof Component$3.prototype.render ? console.error("No `render` method found on the %s instance: did you accidentally return an object from the constructor?", state) : console.error("No `render` method found on the %s instance: you may have forgotten to define `render`.", state));
-				!_instance.getInitialState || _instance.getInitialState.isReactClassApproved || _instance.state || console.error("getInitialState was defined on %s, a plain JavaScript class. This is only supported for classes created using React.createClass. Did you mean to define a state property instead?", state);
-				_instance.getDefaultProps && !_instance.getDefaultProps.isReactClassApproved && console.error("getDefaultProps was defined on %s, a plain JavaScript class. This is only supported for classes created using React.createClass. Use a static property to define defaultProps instead.", state);
-				_instance.contextType && console.error("contextType was defined as an instance property on %s. Use a static property to define contextType instead.", state);
-				Component$3.childContextTypes && !didWarnAboutChildContextTypes.has(Component$3) && (didWarnAboutChildContextTypes.add(Component$3), console.error("%s uses the legacy childContextTypes API which was removed in React 19. Use React.createContext() instead. (https://react.dev/link/legacy-context)", state));
-				Component$3.contextTypes && !didWarnAboutContextTypes$1.has(Component$3) && (didWarnAboutContextTypes$1.add(Component$3), console.error("%s uses the legacy contextTypes API which was removed in React 19. Use React.createContext() with static contextType instead. (https://react.dev/link/legacy-context)", state));
-				"function" === typeof _instance.componentShouldUpdate && console.error("%s has a method called componentShouldUpdate(). Did you mean shouldComponentUpdate()? The name is phrased as a question because the function is expected to return a value.", state);
+				state$1 = getComponentNameFromType(Component$3) || "Component";
+				_instance.render || (Component$3.prototype && "function" === typeof Component$3.prototype.render ? console.error("No `render` method found on the %s instance: did you accidentally return an object from the constructor?", state$1) : console.error("No `render` method found on the %s instance: you may have forgotten to define `render`.", state$1));
+				!_instance.getInitialState || _instance.getInitialState.isReactClassApproved || _instance.state || console.error("getInitialState was defined on %s, a plain JavaScript class. This is only supported for classes created using React.createClass. Did you mean to define a state property instead?", state$1);
+				_instance.getDefaultProps && !_instance.getDefaultProps.isReactClassApproved && console.error("getDefaultProps was defined on %s, a plain JavaScript class. This is only supported for classes created using React.createClass. Use a static property to define defaultProps instead.", state$1);
+				_instance.contextType && console.error("contextType was defined as an instance property on %s. Use a static property to define contextType instead.", state$1);
+				Component$3.childContextTypes && !didWarnAboutChildContextTypes.has(Component$3) && (didWarnAboutChildContextTypes.add(Component$3), console.error("%s uses the legacy childContextTypes API which was removed in React 19. Use React.createContext() instead. (https://react.dev/link/legacy-context)", state$1));
+				Component$3.contextTypes && !didWarnAboutContextTypes$1.has(Component$3) && (didWarnAboutContextTypes$1.add(Component$3), console.error("%s uses the legacy contextTypes API which was removed in React 19. Use React.createContext() with static contextType instead. (https://react.dev/link/legacy-context)", state$1));
+				"function" === typeof _instance.componentShouldUpdate && console.error("%s has a method called componentShouldUpdate(). Did you mean shouldComponentUpdate()? The name is phrased as a question because the function is expected to return a value.", state$1);
 				Component$3.prototype && Component$3.prototype.isPureReactComponent && "undefined" !== typeof _instance.shouldComponentUpdate && console.error("%s has a method called shouldComponentUpdate(). shouldComponentUpdate should not be used when extending React.PureComponent. Please extend React.Component if shouldComponentUpdate is used.", getComponentNameFromType(Component$3) || "A pure component");
-				"function" === typeof _instance.componentDidUnmount && console.error("%s has a method called componentDidUnmount(). But there is no such lifecycle method. Did you mean componentWillUnmount()?", state);
-				"function" === typeof _instance.componentDidReceiveProps && console.error("%s has a method called componentDidReceiveProps(). But there is no such lifecycle method. If you meant to update the state in response to changing props, use componentWillReceiveProps(). If you meant to fetch data or run side-effects or mutations after React has updated the UI, use componentDidUpdate().", state);
-				"function" === typeof _instance.componentWillRecieveProps && console.error("%s has a method called componentWillRecieveProps(). Did you mean componentWillReceiveProps()?", state);
-				"function" === typeof _instance.UNSAFE_componentWillRecieveProps && console.error("%s has a method called UNSAFE_componentWillRecieveProps(). Did you mean UNSAFE_componentWillReceiveProps()?", state);
+				"function" === typeof _instance.componentDidUnmount && console.error("%s has a method called componentDidUnmount(). But there is no such lifecycle method. Did you mean componentWillUnmount()?", state$1);
+				"function" === typeof _instance.componentDidReceiveProps && console.error("%s has a method called componentDidReceiveProps(). But there is no such lifecycle method. If you meant to update the state in response to changing props, use componentWillReceiveProps(). If you meant to fetch data or run side-effects or mutations after React has updated the UI, use componentDidUpdate().", state$1);
+				"function" === typeof _instance.componentWillRecieveProps && console.error("%s has a method called componentWillRecieveProps(). Did you mean componentWillReceiveProps()?", state$1);
+				"function" === typeof _instance.UNSAFE_componentWillRecieveProps && console.error("%s has a method called UNSAFE_componentWillRecieveProps(). Did you mean UNSAFE_componentWillReceiveProps()?", state$1);
 				lane = _instance.props !== nextProps;
-				void 0 !== _instance.props && lane && console.error("When calling super() in `%s`, make sure to pass up the same props that your component's constructor was passed.", state);
-				_instance.defaultProps && console.error("Setting defaultProps as an instance property on %s is not supported and will be ignored. Instead, define defaultProps as a static property on %s.", state, state);
+				void 0 !== _instance.props && lane && console.error("When calling super() in `%s`, make sure to pass up the same props that your component's constructor was passed.", state$1);
+				_instance.defaultProps && console.error("Setting defaultProps as an instance property on %s is not supported and will be ignored. Instead, define defaultProps as a static property on %s.", state$1, state$1);
 				"function" !== typeof _instance.getSnapshotBeforeUpdate || "function" === typeof _instance.componentDidUpdate || didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.has(Component$3) || (didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.add(Component$3), console.error("%s: getSnapshotBeforeUpdate() should be used with componentDidUpdate(). This component defines getSnapshotBeforeUpdate() only.", getComponentNameFromType(Component$3)));
-				"function" === typeof _instance.getDerivedStateFromProps && console.error("%s: getDerivedStateFromProps() is defined as an instance method and will be ignored. Instead, declare it as a static method.", state);
-				"function" === typeof _instance.getDerivedStateFromError && console.error("%s: getDerivedStateFromError() is defined as an instance method and will be ignored. Instead, declare it as a static method.", state);
-				"function" === typeof Component$3.getSnapshotBeforeUpdate && console.error("%s: getSnapshotBeforeUpdate() is defined as a static method and will be ignored. Instead, declare it as an instance method.", state);
-				(lane = _instance.state) && ("object" !== typeof lane || isArrayImpl(lane)) && console.error("%s.state: must be set to an object or null", state);
-				"function" === typeof _instance.getChildContext && "object" !== typeof Component$3.childContextTypes && console.error("%s.getChildContext(): childContextTypes must be defined in order to use getChildContext().", state);
+				"function" === typeof _instance.getDerivedStateFromProps && console.error("%s: getDerivedStateFromProps() is defined as an instance method and will be ignored. Instead, declare it as a static method.", state$1);
+				"function" === typeof _instance.getDerivedStateFromError && console.error("%s: getDerivedStateFromError() is defined as an instance method and will be ignored. Instead, declare it as a static method.", state$1);
+				"function" === typeof Component$3.getSnapshotBeforeUpdate && console.error("%s: getSnapshotBeforeUpdate() is defined as a static method and will be ignored. Instead, declare it as an instance method.", state$1);
+				(lane = _instance.state) && ("object" !== typeof lane || isArrayImpl(lane)) && console.error("%s.state: must be set to an object or null", state$1);
+				"function" === typeof _instance.getChildContext && "object" !== typeof Component$3.childContextTypes && console.error("%s.getChildContext(): childContextTypes must be defined in order to use getChildContext().", state$1);
 				_instance = workInProgress$1.stateNode;
 				_instance.props = nextProps;
 				_instance.state = workInProgress$1.memoizedState;
 				_instance.refs = {};
 				initializeUpdateQueue(workInProgress$1);
-				state = Component$3.contextType;
-				_instance.context = "object" === typeof state && null !== state ? readContext(state) : emptyContextObject;
-				_instance.state === nextProps && (state = getComponentNameFromType(Component$3) || "Component", didWarnAboutDirectlyAssigningPropsToState.has(state) || (didWarnAboutDirectlyAssigningPropsToState.add(state), console.error("%s: It is not recommended to assign props directly to state because updates to props won't be reflected in state. In most cases, it is better to use props directly.", state)));
+				state$1 = Component$3.contextType;
+				_instance.context = "object" === typeof state$1 && null !== state$1 ? readContext(state$1) : emptyContextObject;
+				_instance.state === nextProps && (state$1 = getComponentNameFromType(Component$3) || "Component", didWarnAboutDirectlyAssigningPropsToState.has(state$1) || (didWarnAboutDirectlyAssigningPropsToState.add(state$1), console.error("%s: It is not recommended to assign props directly to state because updates to props won't be reflected in state. In most cases, it is better to use props directly.", state$1)));
 				workInProgress$1.mode & StrictLegacyMode && ReactStrictModeWarnings.recordLegacyContextWarning(workInProgress$1, _instance);
 				ReactStrictModeWarnings.recordUnsafeLifecycleWarnings(workInProgress$1, _instance);
 				_instance.state = workInProgress$1.memoizedState;
-				state = Component$3.getDerivedStateFromProps;
-				"function" === typeof state && (applyDerivedStateFromProps(workInProgress$1, Component$3, state, nextProps), _instance.state = workInProgress$1.memoizedState);
-				"function" === typeof Component$3.getDerivedStateFromProps || "function" === typeof _instance.getSnapshotBeforeUpdate || "function" !== typeof _instance.UNSAFE_componentWillMount && "function" !== typeof _instance.componentWillMount || (state = _instance.state, "function" === typeof _instance.componentWillMount && _instance.componentWillMount(), "function" === typeof _instance.UNSAFE_componentWillMount && _instance.UNSAFE_componentWillMount(), state !== _instance.state && (console.error("%s.componentWillMount(): Assigning directly to this.state is deprecated (except inside a component's constructor). Use setState instead.", getComponentNameFromFiber(workInProgress$1) || "Component"), classComponentUpdater.enqueueReplaceState(_instance, _instance.state, null)), processUpdateQueue(workInProgress$1, nextProps, _instance, renderLanes$1), suspendIfUpdateReadFromEntangledAsyncAction(), _instance.state = workInProgress$1.memoizedState);
+				state$1 = Component$3.getDerivedStateFromProps;
+				"function" === typeof state$1 && (applyDerivedStateFromProps(workInProgress$1, Component$3, state$1, nextProps), _instance.state = workInProgress$1.memoizedState);
+				"function" === typeof Component$3.getDerivedStateFromProps || "function" === typeof _instance.getSnapshotBeforeUpdate || "function" !== typeof _instance.UNSAFE_componentWillMount && "function" !== typeof _instance.componentWillMount || (state$1 = _instance.state, "function" === typeof _instance.componentWillMount && _instance.componentWillMount(), "function" === typeof _instance.UNSAFE_componentWillMount && _instance.UNSAFE_componentWillMount(), state$1 !== _instance.state && (console.error("%s.componentWillMount(): Assigning directly to this.state is deprecated (except inside a component's constructor). Use setState instead.", getComponentNameFromFiber(workInProgress$1) || "Component"), classComponentUpdater.enqueueReplaceState(_instance, _instance.state, null)), processUpdateQueue(workInProgress$1, nextProps, _instance, renderLanes$1), suspendIfUpdateReadFromEntangledAsyncAction(), _instance.state = workInProgress$1.memoizedState);
 				"function" === typeof _instance.componentDidMount && (workInProgress$1.flags |= 4194308);
 				(workInProgress$1.mode & StrictEffectsMode) !== NoMode && (workInProgress$1.flags |= 134217728);
 				_instance = !0;
@@ -6672,24 +6672,24 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 				_instance.props = lane;
 				var oldContext = _instance.context;
 				foundWillUpdateName = Component$3.contextType;
-				state = emptyContextObject;
-				"object" === typeof foundWillUpdateName && null !== foundWillUpdateName && (state = readContext(foundWillUpdateName));
+				state$1 = emptyContextObject;
+				"object" === typeof foundWillUpdateName && null !== foundWillUpdateName && (state$1 = readContext(foundWillUpdateName));
 				newApiName = Component$3.getDerivedStateFromProps;
 				foundWillUpdateName = "function" === typeof newApiName || "function" === typeof _instance.getSnapshotBeforeUpdate;
 				unresolvedOldProps = workInProgress$1.pendingProps !== unresolvedOldProps;
-				foundWillUpdateName || "function" !== typeof _instance.UNSAFE_componentWillReceiveProps && "function" !== typeof _instance.componentWillReceiveProps || (unresolvedOldProps || oldContext !== state) && callComponentWillReceiveProps(workInProgress$1, _instance, nextProps, state);
+				foundWillUpdateName || "function" !== typeof _instance.UNSAFE_componentWillReceiveProps && "function" !== typeof _instance.componentWillReceiveProps || (unresolvedOldProps || oldContext !== state$1) && callComponentWillReceiveProps(workInProgress$1, _instance, nextProps, state$1);
 				hasForceUpdate = !1;
 				var oldState = workInProgress$1.memoizedState;
 				_instance.state = oldState;
 				processUpdateQueue(workInProgress$1, nextProps, _instance, renderLanes$1);
 				suspendIfUpdateReadFromEntangledAsyncAction();
 				oldContext = workInProgress$1.memoizedState;
-				unresolvedOldProps || oldState !== oldContext || hasForceUpdate ? ("function" === typeof newApiName && (applyDerivedStateFromProps(workInProgress$1, Component$3, newApiName, nextProps), oldContext = workInProgress$1.memoizedState), (lane = hasForceUpdate || checkShouldComponentUpdate(workInProgress$1, Component$3, lane, nextProps, oldState, oldContext, state)) ? (foundWillUpdateName || "function" !== typeof _instance.UNSAFE_componentWillMount && "function" !== typeof _instance.componentWillMount || ("function" === typeof _instance.componentWillMount && _instance.componentWillMount(), "function" === typeof _instance.UNSAFE_componentWillMount && _instance.UNSAFE_componentWillMount()), "function" === typeof _instance.componentDidMount && (workInProgress$1.flags |= 4194308), (workInProgress$1.mode & StrictEffectsMode) !== NoMode && (workInProgress$1.flags |= 134217728)) : ("function" === typeof _instance.componentDidMount && (workInProgress$1.flags |= 4194308), (workInProgress$1.mode & StrictEffectsMode) !== NoMode && (workInProgress$1.flags |= 134217728), workInProgress$1.memoizedProps = nextProps, workInProgress$1.memoizedState = oldContext), _instance.props = nextProps, _instance.state = oldContext, _instance.context = state, _instance = lane) : ("function" === typeof _instance.componentDidMount && (workInProgress$1.flags |= 4194308), (workInProgress$1.mode & StrictEffectsMode) !== NoMode && (workInProgress$1.flags |= 134217728), _instance = !1);
+				unresolvedOldProps || oldState !== oldContext || hasForceUpdate ? ("function" === typeof newApiName && (applyDerivedStateFromProps(workInProgress$1, Component$3, newApiName, nextProps), oldContext = workInProgress$1.memoizedState), (lane = hasForceUpdate || checkShouldComponentUpdate(workInProgress$1, Component$3, lane, nextProps, oldState, oldContext, state$1)) ? (foundWillUpdateName || "function" !== typeof _instance.UNSAFE_componentWillMount && "function" !== typeof _instance.componentWillMount || ("function" === typeof _instance.componentWillMount && _instance.componentWillMount(), "function" === typeof _instance.UNSAFE_componentWillMount && _instance.UNSAFE_componentWillMount()), "function" === typeof _instance.componentDidMount && (workInProgress$1.flags |= 4194308), (workInProgress$1.mode & StrictEffectsMode) !== NoMode && (workInProgress$1.flags |= 134217728)) : ("function" === typeof _instance.componentDidMount && (workInProgress$1.flags |= 4194308), (workInProgress$1.mode & StrictEffectsMode) !== NoMode && (workInProgress$1.flags |= 134217728), workInProgress$1.memoizedProps = nextProps, workInProgress$1.memoizedState = oldContext), _instance.props = nextProps, _instance.state = oldContext, _instance.context = state$1, _instance = lane) : ("function" === typeof _instance.componentDidMount && (workInProgress$1.flags |= 4194308), (workInProgress$1.mode & StrictEffectsMode) !== NoMode && (workInProgress$1.flags |= 134217728), _instance = !1);
 			} else {
 				_instance = workInProgress$1.stateNode;
 				cloneUpdateQueue(current$1, workInProgress$1);
-				state = workInProgress$1.memoizedProps;
-				foundWillUpdateName = resolveClassComponentProps(Component$3, state);
+				state$1 = workInProgress$1.memoizedProps;
+				foundWillUpdateName = resolveClassComponentProps(Component$3, state$1);
 				_instance.props = foundWillUpdateName;
 				newApiName = workInProgress$1.pendingProps;
 				oldState = _instance.context;
@@ -6697,22 +6697,22 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 				lane = emptyContextObject;
 				"object" === typeof oldContext && null !== oldContext && (lane = readContext(oldContext));
 				unresolvedOldProps = Component$3.getDerivedStateFromProps;
-				(oldContext = "function" === typeof unresolvedOldProps || "function" === typeof _instance.getSnapshotBeforeUpdate) || "function" !== typeof _instance.UNSAFE_componentWillReceiveProps && "function" !== typeof _instance.componentWillReceiveProps || (state !== newApiName || oldState !== lane) && callComponentWillReceiveProps(workInProgress$1, _instance, nextProps, lane);
+				(oldContext = "function" === typeof unresolvedOldProps || "function" === typeof _instance.getSnapshotBeforeUpdate) || "function" !== typeof _instance.UNSAFE_componentWillReceiveProps && "function" !== typeof _instance.componentWillReceiveProps || (state$1 !== newApiName || oldState !== lane) && callComponentWillReceiveProps(workInProgress$1, _instance, nextProps, lane);
 				hasForceUpdate = !1;
 				oldState = workInProgress$1.memoizedState;
 				_instance.state = oldState;
 				processUpdateQueue(workInProgress$1, nextProps, _instance, renderLanes$1);
 				suspendIfUpdateReadFromEntangledAsyncAction();
 				var newState = workInProgress$1.memoizedState;
-				state !== newApiName || oldState !== newState || hasForceUpdate || null !== current$1 && null !== current$1.dependencies && checkIfContextChanged(current$1.dependencies) ? ("function" === typeof unresolvedOldProps && (applyDerivedStateFromProps(workInProgress$1, Component$3, unresolvedOldProps, nextProps), newState = workInProgress$1.memoizedState), (foundWillUpdateName = hasForceUpdate || checkShouldComponentUpdate(workInProgress$1, Component$3, foundWillUpdateName, nextProps, oldState, newState, lane) || null !== current$1 && null !== current$1.dependencies && checkIfContextChanged(current$1.dependencies)) ? (oldContext || "function" !== typeof _instance.UNSAFE_componentWillUpdate && "function" !== typeof _instance.componentWillUpdate || ("function" === typeof _instance.componentWillUpdate && _instance.componentWillUpdate(nextProps, newState, lane), "function" === typeof _instance.UNSAFE_componentWillUpdate && _instance.UNSAFE_componentWillUpdate(nextProps, newState, lane)), "function" === typeof _instance.componentDidUpdate && (workInProgress$1.flags |= 4), "function" === typeof _instance.getSnapshotBeforeUpdate && (workInProgress$1.flags |= 1024)) : ("function" !== typeof _instance.componentDidUpdate || state === current$1.memoizedProps && oldState === current$1.memoizedState || (workInProgress$1.flags |= 4), "function" !== typeof _instance.getSnapshotBeforeUpdate || state === current$1.memoizedProps && oldState === current$1.memoizedState || (workInProgress$1.flags |= 1024), workInProgress$1.memoizedProps = nextProps, workInProgress$1.memoizedState = newState), _instance.props = nextProps, _instance.state = newState, _instance.context = lane, _instance = foundWillUpdateName) : ("function" !== typeof _instance.componentDidUpdate || state === current$1.memoizedProps && oldState === current$1.memoizedState || (workInProgress$1.flags |= 4), "function" !== typeof _instance.getSnapshotBeforeUpdate || state === current$1.memoizedProps && oldState === current$1.memoizedState || (workInProgress$1.flags |= 1024), _instance = !1);
+				state$1 !== newApiName || oldState !== newState || hasForceUpdate || null !== current$1 && null !== current$1.dependencies && checkIfContextChanged(current$1.dependencies) ? ("function" === typeof unresolvedOldProps && (applyDerivedStateFromProps(workInProgress$1, Component$3, unresolvedOldProps, nextProps), newState = workInProgress$1.memoizedState), (foundWillUpdateName = hasForceUpdate || checkShouldComponentUpdate(workInProgress$1, Component$3, foundWillUpdateName, nextProps, oldState, newState, lane) || null !== current$1 && null !== current$1.dependencies && checkIfContextChanged(current$1.dependencies)) ? (oldContext || "function" !== typeof _instance.UNSAFE_componentWillUpdate && "function" !== typeof _instance.componentWillUpdate || ("function" === typeof _instance.componentWillUpdate && _instance.componentWillUpdate(nextProps, newState, lane), "function" === typeof _instance.UNSAFE_componentWillUpdate && _instance.UNSAFE_componentWillUpdate(nextProps, newState, lane)), "function" === typeof _instance.componentDidUpdate && (workInProgress$1.flags |= 4), "function" === typeof _instance.getSnapshotBeforeUpdate && (workInProgress$1.flags |= 1024)) : ("function" !== typeof _instance.componentDidUpdate || state$1 === current$1.memoizedProps && oldState === current$1.memoizedState || (workInProgress$1.flags |= 4), "function" !== typeof _instance.getSnapshotBeforeUpdate || state$1 === current$1.memoizedProps && oldState === current$1.memoizedState || (workInProgress$1.flags |= 1024), workInProgress$1.memoizedProps = nextProps, workInProgress$1.memoizedState = newState), _instance.props = nextProps, _instance.state = newState, _instance.context = lane, _instance = foundWillUpdateName) : ("function" !== typeof _instance.componentDidUpdate || state$1 === current$1.memoizedProps && oldState === current$1.memoizedState || (workInProgress$1.flags |= 4), "function" !== typeof _instance.getSnapshotBeforeUpdate || state$1 === current$1.memoizedProps && oldState === current$1.memoizedState || (workInProgress$1.flags |= 1024), _instance = !1);
 			}
 			lane = _instance;
 			markRef(current$1, workInProgress$1);
-			state = 0 !== (workInProgress$1.flags & 128);
-			if (lane || state) {
+			state$1 = 0 !== (workInProgress$1.flags & 128);
+			if (lane || state$1) {
 				lane = workInProgress$1.stateNode;
 				setCurrentFiber(workInProgress$1);
-				if (state && "function" !== typeof Component$3.getDerivedStateFromError) Component$3 = null, profilerStartTime = -1;
+				if (state$1 && "function" !== typeof Component$3.getDerivedStateFromError) Component$3 = null, profilerStartTime = -1;
 				else if (Component$3 = callRenderInDEV(lane), workInProgress$1.mode & StrictLegacyMode) {
 					setIsStrictModeForDevtools(!0);
 					try {
@@ -6722,7 +6722,7 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 					}
 				}
 				workInProgress$1.flags |= 1;
-				null !== current$1 && state ? (workInProgress$1.child = reconcileChildFibers(workInProgress$1, current$1.child, null, renderLanes$1), workInProgress$1.child = reconcileChildFibers(workInProgress$1, null, Component$3, renderLanes$1)) : reconcileChildren(current$1, workInProgress$1, Component$3, renderLanes$1);
+				null !== current$1 && state$1 ? (workInProgress$1.child = reconcileChildFibers(workInProgress$1, current$1.child, null, renderLanes$1), workInProgress$1.child = reconcileChildFibers(workInProgress$1, null, Component$3, renderLanes$1)) : reconcileChildren(current$1, workInProgress$1, Component$3, renderLanes$1);
 				workInProgress$1.memoizedState = lane.state;
 				current$1 = workInProgress$1.child;
 			} else current$1 = bailoutOnAlreadyFinishedWork(current$1, workInProgress$1, renderLanes$1);
@@ -11931,11 +11931,11 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 				precedence: null
 			});
 		}
-		function preloadStylesheet(ownerDocument, key, preloadProps, state) {
-			ownerDocument.querySelector("link[rel=\"preload\"][as=\"style\"][" + key + "]") ? state.loading = Loaded : (key = ownerDocument.createElement("link"), state.preload = key, key.addEventListener("load", function() {
-				return state.loading |= Loaded;
+		function preloadStylesheet(ownerDocument, key, preloadProps, state$1) {
+			ownerDocument.querySelector("link[rel=\"preload\"][as=\"style\"][" + key + "]") ? state$1.loading = Loaded : (key = ownerDocument.createElement("link"), state$1.preload = key, key.addEventListener("load", function() {
+				return state$1.loading |= Loaded;
 			}), key.addEventListener("error", function() {
-				return state.loading |= Errored;
+				return state$1.loading |= Errored;
 			}), setInitialProperties(key, "link", preloadProps), markNodeAsHoistable(key), ownerDocument.head.appendChild(key));
 		}
 		function getScriptKey(src) {
@@ -12085,13 +12085,13 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 		function preloadResource(resource) {
 			return "stylesheet" === resource.type && (resource.state.loading & Settled) === NotLoaded ? !1 : !0;
 		}
-		function suspendResource(state, hoistableRoot, resource, props) {
+		function suspendResource(state$1, hoistableRoot, resource, props) {
 			if ("stylesheet" === resource.type && ("string" !== typeof props.media || !1 !== matchMedia(props.media).matches) && (resource.state.loading & Inserted) === NotLoaded) {
 				if (null === resource.instance) {
 					var key = getStyleKey(props.href), instance = hoistableRoot.querySelector(getStylesheetSelectorFromKey(key));
 					if (instance) {
 						hoistableRoot = instance._p;
-						null !== hoistableRoot && "object" === typeof hoistableRoot && "function" === typeof hoistableRoot.then && (state.count++, state = onUnsuspend.bind(state), hoistableRoot.then(state, state));
+						null !== hoistableRoot && "object" === typeof hoistableRoot && "function" === typeof hoistableRoot.then && (state$1.count++, state$1 = onUnsuspend.bind(state$1), hoistableRoot.then(state$1, state$1));
 						resource.state.loading |= Inserted;
 						resource.instance = instance;
 						markNodeAsHoistable(instance);
@@ -12110,34 +12110,34 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 					setInitialProperties(instance, "link", props);
 					resource.instance = instance;
 				}
-				null === state.stylesheets && (state.stylesheets = /* @__PURE__ */ new Map());
-				state.stylesheets.set(resource, hoistableRoot);
-				(hoistableRoot = resource.state.preload) && (resource.state.loading & Settled) === NotLoaded && (state.count++, resource = onUnsuspend.bind(state), hoistableRoot.addEventListener("load", resource), hoistableRoot.addEventListener("error", resource));
+				null === state$1.stylesheets && (state$1.stylesheets = /* @__PURE__ */ new Map());
+				state$1.stylesheets.set(resource, hoistableRoot);
+				(hoistableRoot = resource.state.preload) && (resource.state.loading & Settled) === NotLoaded && (state$1.count++, resource = onUnsuspend.bind(state$1), hoistableRoot.addEventListener("load", resource), hoistableRoot.addEventListener("error", resource));
 			}
 		}
-		function waitForCommitToBeReady(state, timeoutOffset) {
-			state.stylesheets && 0 === state.count && insertSuspendedStylesheets(state, state.stylesheets);
-			return 0 < state.count || 0 < state.imgCount ? function(commit) {
+		function waitForCommitToBeReady(state$1, timeoutOffset) {
+			state$1.stylesheets && 0 === state$1.count && insertSuspendedStylesheets(state$1, state$1.stylesheets);
+			return 0 < state$1.count || 0 < state$1.imgCount ? function(commit) {
 				var stylesheetTimer = setTimeout(function() {
-					state.stylesheets && insertSuspendedStylesheets(state, state.stylesheets);
-					if (state.unsuspend) {
-						var unsuspend = state.unsuspend;
-						state.unsuspend = null;
+					state$1.stylesheets && insertSuspendedStylesheets(state$1, state$1.stylesheets);
+					if (state$1.unsuspend) {
+						var unsuspend = state$1.unsuspend;
+						state$1.unsuspend = null;
 						unsuspend();
 					}
 				}, SUSPENSEY_STYLESHEET_TIMEOUT + timeoutOffset);
-				0 < state.imgBytes && 0 === estimatedBytesWithinLimit && (estimatedBytesWithinLimit = 125 * estimateBandwidth() * SUSPENSEY_IMAGE_TIME_ESTIMATE);
+				0 < state$1.imgBytes && 0 === estimatedBytesWithinLimit && (estimatedBytesWithinLimit = 125 * estimateBandwidth() * SUSPENSEY_IMAGE_TIME_ESTIMATE);
 				var imgTimer = setTimeout(function() {
-					state.waitingForImages = !1;
-					if (0 === state.count && (state.stylesheets && insertSuspendedStylesheets(state, state.stylesheets), state.unsuspend)) {
-						var unsuspend = state.unsuspend;
-						state.unsuspend = null;
+					state$1.waitingForImages = !1;
+					if (0 === state$1.count && (state$1.stylesheets && insertSuspendedStylesheets(state$1, state$1.stylesheets), state$1.unsuspend)) {
+						var unsuspend = state$1.unsuspend;
+						state$1.unsuspend = null;
 						unsuspend();
 					}
-				}, (state.imgBytes > estimatedBytesWithinLimit ? 50 : SUSPENSEY_IMAGE_TIMEOUT) + timeoutOffset);
-				state.unsuspend = commit;
+				}, (state$1.imgBytes > estimatedBytesWithinLimit ? 50 : SUSPENSEY_IMAGE_TIMEOUT) + timeoutOffset);
+				state$1.unsuspend = commit;
 				return function() {
-					state.unsuspend = null;
+					state$1.unsuspend = null;
 					clearTimeout(stylesheetTimer);
 					clearTimeout(imgTimer);
 				};
@@ -12154,9 +12154,9 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 				}
 			}
 		}
-		function insertSuspendedStylesheets(state, resources) {
-			state.stylesheets = null;
-			null !== state.unsuspend && (state.count++, precedencesByRoot = /* @__PURE__ */ new Map(), resources.forEach(insertStylesheetIntoRoot, state), precedencesByRoot = null, onUnsuspend.call(state));
+		function insertSuspendedStylesheets(state$1, resources) {
+			state$1.stylesheets = null;
+			null !== state$1.unsuspend && (state$1.count++, precedencesByRoot = /* @__PURE__ */ new Map(), resources.forEach(insertStylesheetIntoRoot, state$1), precedencesByRoot = null, onUnsuspend.call(state$1));
 		}
 		function insertStylesheetIntoRoot(root$4, resource) {
 			if (!(resource.state.loading & Inserted)) {
@@ -15134,11 +15134,11 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 					precedence = precedence || "default";
 					var resource = styles.get(key);
 					if (!resource) {
-						var state = {
+						var state$1 = {
 							loading: NotLoaded,
 							preload: null
 						};
-						if (resource = ownerDocument.querySelector(getStylesheetSelectorFromKey(key))) state.loading = Loaded | Inserted;
+						if (resource = ownerDocument.querySelector(getStylesheetSelectorFromKey(key))) state$1.loading = Loaded | Inserted;
 						else {
 							href = assign$1({
 								rel: "stylesheet",
@@ -15154,19 +15154,19 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 								link.onerror = reject;
 							});
 							link.addEventListener("load", function() {
-								state.loading |= Loaded;
+								state$1.loading |= Loaded;
 							});
 							link.addEventListener("error", function() {
-								state.loading |= Errored;
+								state$1.loading |= Errored;
 							});
-							state.loading |= Inserted;
+							state$1.loading |= Inserted;
 							insertStylesheet(resource, precedence, ownerDocument);
 						}
 						resource = {
 							type: "stylesheet",
 							instance: resource,
 							count: 1,
-							state
+							state: state$1
 						};
 						styles.set(key, resource);
 					}
@@ -15361,9 +15361,10 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
 }));
-var require_client = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+var import_client = (/* @__PURE__ */ __commonJSMin(((exports, module) => {
 	module.exports = require_react_dom_client_development();
-}));
+})))();
+var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 var scriptRel = "modulepreload";
 var assetsURL = function(dep) {
 	return "/" + dep;
@@ -15376,7 +15377,7 @@ const __vitePreload = function preload(baseModule, deps, importerUrl) {
 		const cspNonceMeta = document.querySelector("meta[property=csp-nonce]");
 		const cspNonce = cspNonceMeta?.nonce || cspNonceMeta?.getAttribute("nonce");
 		function allSettled(promises$2) {
-			return Promise.all(promises$2.map((p$1) => Promise.resolve(p$1).then((value$1) => ({
+			return Promise.all(promises$2.map((p) => Promise.resolve(p).then((value$1) => ({
 				status: "fulfilled",
 				value: value$1
 			}), (reason) => ({
@@ -15422,7 +15423,6 @@ const __vitePreload = function preload(baseModule, deps, importerUrl) {
 		return baseModule().catch(handlePreloadError);
 	});
 };
-var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 var PopStateEventType = "popstate";
 function createBrowserHistory(options$1 = {}) {
 	function createBrowserLocation(window2, globalHistory) {
@@ -15459,13 +15459,13 @@ function getHistoryState(location, index$1) {
 		idx: index$1
 	};
 }
-function createLocation(current, to, state = null, key) {
+function createLocation(current, to, state$1 = null, key) {
 	return {
 		pathname: typeof current === "string" ? current : current.pathname,
 		search: "",
 		hash: "",
 		...typeof to === "string" ? parsePath(to) : to,
-		state,
+		state: state$1,
 		key: to && to.key || key || createKey()
 	};
 }
@@ -15518,9 +15518,9 @@ function getUrlBasedHistory(getLocation, createHref2, validateLocation, options$
 			delta
 		});
 	}
-	function push(to, state) {
+	function push(to, state$1) {
 		action = "PUSH";
-		let location = createLocation(history.location, to, state);
+		let location = createLocation(history.location, to, state$1);
 		if (validateLocation) validateLocation(location, to);
 		index$1 = getIndex() + 1;
 		let historyState = getHistoryState(location, index$1);
@@ -15537,9 +15537,9 @@ function getUrlBasedHistory(getLocation, createHref2, validateLocation, options$
 			delta: 1
 		});
 	}
-	function replace2(to, state) {
+	function replace2(to, state$1) {
 		action = "REPLACE";
-		let location = createLocation(history.location, to, state);
+		let location = createLocation(history.location, to, state$1);
 		if (validateLocation) validateLocation(location, to);
 		index$1 = getIndex();
 		let historyState = getHistoryState(location, index$1);
@@ -15874,7 +15874,7 @@ function isRouteErrorResponse(error) {
 	return error != null && typeof error.status === "number" && typeof error.statusText === "string" && typeof error.internal === "boolean" && "data" in error;
 }
 function getRoutePattern(matches) {
-	return matches.map((m$1) => m$1.route.path).filter(Boolean).join("/").replace(/\/\/*/g, "/") || "/";
+	return matches.map((m) => m.route.path).filter(Boolean).join("/").replace(/\/\/*/g, "/") || "/";
 }
 var isBrowser = typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined";
 function parseToInfo(_to, basename) {
@@ -16100,16 +16100,16 @@ var RenderErrorBoundary = class extends import_react.Component {
 	static getDerivedStateFromError(error) {
 		return { error };
 	}
-	static getDerivedStateFromProps(props, state) {
-		if (state.location !== props.location || state.revalidation !== "idle" && props.revalidation === "idle") return {
+	static getDerivedStateFromProps(props, state$1) {
+		if (state$1.location !== props.location || state$1.revalidation !== "idle" && props.revalidation === "idle") return {
 			error: props.error,
 			location: props.location,
 			revalidation: props.revalidation
 		};
 		return {
-			error: props.error !== void 0 ? props.error : state.error,
-			location: state.location,
-			revalidation: props.revalidation || state.revalidation
+			error: props.error !== void 0 ? props.error : state$1.error,
+			location: state$1.location,
+			revalidation: props.revalidation || state$1.revalidation
 		};
 	}
 	componentDidCatch(error, errorInfo) {
@@ -16169,7 +16169,7 @@ function _renderMatches(matches, parentMatches = [], dataRouterState = null, onE
 	let renderedMatches = matches;
 	let errors = dataRouterState?.errors;
 	if (errors != null) {
-		let errorIndex = renderedMatches.findIndex((m$1) => m$1.route.id && errors?.[m$1.route.id] !== void 0);
+		let errorIndex = renderedMatches.findIndex((m) => m.route.id && errors?.[m.route.id] !== void 0);
 		invariant$1(errorIndex >= 0, `Could not find a matching route for errors on route IDs: ${Object.keys(errors).join(",")}`);
 		renderedMatches = renderedMatches.slice(0, Math.min(renderedMatches.length, errorIndex + 1));
 	}
@@ -16258,9 +16258,9 @@ function useDataRouterContext(hookName) {
 	return ctx;
 }
 function useDataRouterState(hookName) {
-	let state = import_react.useContext(DataRouterStateContext);
-	invariant$1(state, getDataRouterConsoleError(hookName));
-	return state;
+	let state$1 = import_react.useContext(DataRouterStateContext);
+	invariant$1(state$1, getDataRouterConsoleError(hookName));
+	return state$1;
 }
 function useRouteContext(hookName) {
 	let route = import_react.useContext(RouteContext);
@@ -16281,14 +16281,14 @@ function useNavigation() {
 }
 function useMatches() {
 	let { matches, loaderData } = useDataRouterState("useMatches");
-	return import_react.useMemo(() => matches.map((m$1) => convertRouteMatchToUiMatch(m$1, loaderData)), [matches, loaderData]);
+	return import_react.useMemo(() => matches.map((m) => convertRouteMatchToUiMatch(m, loaderData)), [matches, loaderData]);
 }
 function useRouteError() {
 	let error = import_react.useContext(RouteErrorContext);
-	let state = useDataRouterState("useRouteError");
+	let state$1 = useDataRouterState("useRouteError");
 	let routeId = useCurrentRouteId("useRouteError");
 	if (error !== void 0) return error;
-	return state.errors?.[routeId];
+	return state$1.errors?.[routeId];
 }
 function useNavigateStable() {
 	let { router } = useDataRouterContext("useNavigate");
@@ -16316,10 +16316,10 @@ function warningOnce(key, cond, message$1) {
 }
 import_react.useOptimistic;
 import_react.memo(DataRoutes);
-function DataRoutes({ routes, future, state, onError }) {
-	return useRoutesImpl(routes, void 0, state, onError, future);
+function DataRoutes({ routes, future, state: state$1, onError }) {
+	return useRoutesImpl(routes, void 0, state$1, onError, future);
 }
-function Navigate({ to, replace: replace2, state, relative }) {
+function Navigate({ to, replace: replace2, state: state$1, relative }) {
 	invariant$1(useInRouterContext(), `<Navigate> may be used only in the context of a <Router> component.`);
 	let { static: isStatic } = import_react.useContext(NavigationContext);
 	warning(!isStatic, `<Navigate> must not be used on the initial render in a <StaticRouter>. This is a no-op, but you should modify your code so the <Navigate> is only ever rendered in response to some user interaction or state change.`);
@@ -16331,7 +16331,7 @@ function Navigate({ to, replace: replace2, state, relative }) {
 	import_react.useEffect(() => {
 		navigate(JSON.parse(jsonPath), {
 			replace: replace2,
-			state,
+			state: state$1,
 			relative
 		});
 	}, [
@@ -16339,7 +16339,7 @@ function Navigate({ to, replace: replace2, state, relative }) {
 		jsonPath,
 		relative,
 		replace2,
-		state
+		state$1
 	]);
 	return null;
 }
@@ -16365,7 +16365,7 @@ function Router({ basename: basenameProp = "/", children = null, location: locat
 		unstable_useTransitions
 	]);
 	if (typeof locationProp === "string") locationProp = parsePath(locationProp);
-	let { pathname = "/", search = "", hash = "", state = null, key = "default" } = locationProp;
+	let { pathname = "/", search = "", hash = "", state: state$1 = null, key = "default" } = locationProp;
 	let locationContext = import_react.useMemo(() => {
 		let trailingPathname = stripBasename(pathname, basename);
 		if (trailingPathname == null) return null;
@@ -16374,7 +16374,7 @@ function Router({ basename: basenameProp = "/", children = null, location: locat
 				pathname: trailingPathname,
 				search,
 				hash,
-				state,
+				state: state$1,
 				key
 			},
 			navigationType
@@ -16384,7 +16384,7 @@ function Router({ basename: basenameProp = "/", children = null, location: locat
 		pathname,
 		search,
 		hash,
-		state,
+		state$1,
 		key,
 		navigationType
 	]);
@@ -16791,16 +16791,16 @@ function PrefetchPageLinksImpl({ page, matches: nextMatches, ...linkProps }) {
 		if (page === location.pathname + location.search + location.hash) return [];
 		let routesParams = /* @__PURE__ */ new Set();
 		let foundOptOutRoute = false;
-		nextMatches.forEach((m$1) => {
-			let manifestRoute = manifest.routes[m$1.route.id];
+		nextMatches.forEach((m) => {
+			let manifestRoute = manifest.routes[m.route.id];
 			if (!manifestRoute || !manifestRoute.hasLoader) return;
-			if (!newMatchesForData.some((m2) => m2.route.id === m$1.route.id) && m$1.route.id in loaderData && routeModules[m$1.route.id]?.shouldRevalidate) foundOptOutRoute = true;
+			if (!newMatchesForData.some((m2) => m2.route.id === m.route.id) && m.route.id in loaderData && routeModules[m.route.id]?.shouldRevalidate) foundOptOutRoute = true;
 			else if (manifestRoute.hasClientLoader) foundOptOutRoute = true;
-			else routesParams.add(m$1.route.id);
+			else routesParams.add(m.route.id);
 		});
 		if (routesParams.size === 0) return [];
 		let url = singleFetchUrl(page, basename, future.unstable_trailingSlashAwareDataRequests, "data");
-		if (foundOptOutRoute && routesParams.size > 0) url.searchParams.set("_routes", nextMatches.filter((m$1) => routesParams.has(m$1.route.id)).map((m$1) => m$1.route.id).join(","));
+		if (foundOptOutRoute && routesParams.size > 0) url.searchParams.set("_routes", nextMatches.filter((m) => routesParams.has(m.route.id)).map((m) => m.route.id).join(","));
 		return [url.pathname + url.search];
 	}, [
 		basename,
@@ -16851,7 +16851,7 @@ function BrowserRouter({ basename, children, unstable_useTransitions, window: wi
 		v5Compat: true
 	});
 	let history = historyRef.current;
-	let [state, setStateImpl] = import_react.useState({
+	let [state$1, setStateImpl] = import_react.useState({
 		action: history.action,
 		location: history.location
 	});
@@ -16863,14 +16863,14 @@ function BrowserRouter({ basename, children, unstable_useTransitions, window: wi
 	return /* @__PURE__ */ import_react.createElement(Router, {
 		basename,
 		children,
-		location: state.location,
-		navigationType: state.action,
+		location: state$1.location,
+		navigationType: state$1.action,
 		navigator: history,
 		unstable_useTransitions
 	});
 }
 function HistoryRouter({ basename, children, history, unstable_useTransitions }) {
-	let [state, setStateImpl] = import_react.useState({
+	let [state$1, setStateImpl] = import_react.useState({
 		action: history.action,
 		location: history.location
 	});
@@ -16882,15 +16882,15 @@ function HistoryRouter({ basename, children, history, unstable_useTransitions })
 	return /* @__PURE__ */ import_react.createElement(Router, {
 		basename,
 		children,
-		location: state.location,
-		navigationType: state.action,
+		location: state$1.location,
+		navigationType: state$1.action,
 		navigator: history,
 		unstable_useTransitions
 	});
 }
 HistoryRouter.displayName = "unstable_HistoryRouter";
 var ABSOLUTE_URL_REGEX2 = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
-var Link = import_react.forwardRef(function LinkWithRef({ onClick, discover = "render", prefetch = "none", relative, reloadDocument, replace: replace2, state, target, to, preventScrollReset, viewTransition, unstable_defaultShouldRevalidate, ...rest }, forwardedRef) {
+var Link = import_react.forwardRef(function LinkWithRef({ onClick, discover = "render", prefetch = "none", relative, reloadDocument, replace: replace2, state: state$1, target, to, preventScrollReset, viewTransition, unstable_defaultShouldRevalidate, ...rest }, forwardedRef) {
 	let { basename, unstable_useTransitions } = import_react.useContext(NavigationContext);
 	let isAbsolute = typeof to === "string" && ABSOLUTE_URL_REGEX2.test(to);
 	let parsed = parseToInfo(to, basename);
@@ -16899,7 +16899,7 @@ var Link = import_react.forwardRef(function LinkWithRef({ onClick, discover = "r
 	let [shouldPrefetch, prefetchRef, prefetchHandlers] = usePrefetchBehavior(prefetch, rest);
 	let internalOnClick = useLinkClickHandler(to, {
 		replace: replace2,
-		state,
+		state: state$1,
 		target,
 		preventScrollReset,
 		relative,
@@ -16967,7 +16967,7 @@ var NavLink = import_react.forwardRef(function NavLinkWithRef({ "aria-current": 
 	}, typeof children === "function" ? children(renderProps) : children);
 });
 NavLink.displayName = "NavLink";
-var Form = import_react.forwardRef(({ discover = "render", fetcherKey, navigate, reloadDocument, replace: replace2, state, method = defaultMethod, action, onSubmit, relative, preventScrollReset, viewTransition, unstable_defaultShouldRevalidate, ...props }, forwardedRef) => {
+var Form = import_react.forwardRef(({ discover = "render", fetcherKey, navigate, reloadDocument, replace: replace2, state: state$1, method = defaultMethod, action, onSubmit, relative, preventScrollReset, viewTransition, unstable_defaultShouldRevalidate, ...props }, forwardedRef) => {
 	let { unstable_useTransitions } = import_react.useContext(NavigationContext);
 	let submit = useSubmit();
 	let formAction = useFormAction(action, { relative });
@@ -16984,7 +16984,7 @@ var Form = import_react.forwardRef(({ discover = "render", fetcherKey, navigate,
 			method: submitMethod,
 			navigate,
 			replace: replace2,
-			state,
+			state: state$1,
 			relative,
 			preventScrollReset,
 			viewTransition,
@@ -17047,11 +17047,11 @@ function useDataRouterContext3(hookName) {
 	return ctx;
 }
 function useDataRouterState2(hookName) {
-	let state = import_react.useContext(DataRouterStateContext);
-	invariant$1(state, getDataRouterConsoleError2(hookName));
-	return state;
+	let state$1 = import_react.useContext(DataRouterStateContext);
+	invariant$1(state$1, getDataRouterConsoleError2(hookName));
+	return state$1;
 }
-function useLinkClickHandler(to, { target, replace: replaceProp, state, preventScrollReset, relative, viewTransition, unstable_defaultShouldRevalidate, unstable_useTransitions } = {}) {
+function useLinkClickHandler(to, { target, replace: replaceProp, state: state$1, preventScrollReset, relative, viewTransition, unstable_defaultShouldRevalidate, unstable_useTransitions } = {}) {
 	let navigate = useNavigate();
 	let location = useLocation();
 	let path$1 = useResolvedPath(to, { relative });
@@ -17061,7 +17061,7 @@ function useLinkClickHandler(to, { target, replace: replaceProp, state, preventS
 			let replace2 = replaceProp !== void 0 ? replaceProp : createPath(location) === createPath(path$1);
 			let doNavigate = () => navigate(to, {
 				replace: replace2,
-				state,
+				state: state$1,
 				preventScrollReset,
 				relative,
 				viewTransition,
@@ -17075,7 +17075,7 @@ function useLinkClickHandler(to, { target, replace: replaceProp, state, preventS
 		navigate,
 		path$1,
 		replaceProp,
-		state,
+		state$1,
 		target,
 		to,
 		preventScrollReset,
@@ -17251,7 +17251,6 @@ function useViewTransitionState(to, { relative } = {}) {
 	let nextPath = stripBasename(vtContext.nextLocation.pathname, basename) || vtContext.nextLocation.pathname;
 	return matchPath(path$1.pathname, nextPath) != null || matchPath(path$1.pathname, currentPath) != null;
 }
-var import_client = require_client();
 var TOAST_LIMIT = 1;
 var TOAST_REMOVE_DELAY = 1e6;
 var count$2 = 0;
@@ -17271,15 +17270,15 @@ var addToRemoveQueue = (toastId) => {
 	}, TOAST_REMOVE_DELAY);
 	toastTimeouts.set(toastId, timeout);
 };
-const reducer = (state, action) => {
+const reducer = (state$1, action) => {
 	switch (action.type) {
 		case "ADD_TOAST": return {
-			...state,
-			toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT)
+			...state$1,
+			toasts: [action.toast, ...state$1.toasts].slice(0, TOAST_LIMIT)
 		};
 		case "UPDATE_TOAST": return {
-			...state,
-			toasts: state.toasts.map((t) => t.id === action.toast.id ? {
+			...state$1,
+			toasts: state$1.toasts.map((t) => t.id === action.toast.id ? {
 				...t,
 				...action.toast
 			} : t)
@@ -17287,12 +17286,12 @@ const reducer = (state, action) => {
 		case "DISMISS_TOAST": {
 			const { toastId } = action;
 			if (toastId) addToRemoveQueue(toastId);
-			else state.toasts.forEach((toast$2) => {
+			else state$1.toasts.forEach((toast$2) => {
 				addToRemoveQueue(toast$2.id);
 			});
 			return {
-				...state,
-				toasts: state.toasts.map((t) => t.id === toastId || toastId === void 0 ? {
+				...state$1,
+				toasts: state$1.toasts.map((t) => t.id === toastId || toastId === void 0 ? {
 					...t,
 					open: false
 				} : t)
@@ -17300,12 +17299,12 @@ const reducer = (state, action) => {
 		}
 		case "REMOVE_TOAST":
 			if (action.toastId === void 0) return {
-				...state,
+				...state$1,
 				toasts: []
 			};
 			return {
-				...state,
-				toasts: state.toasts.filter((t) => t.id !== action.toastId)
+				...state$1,
+				toasts: state$1.toasts.filter((t) => t.id !== action.toastId)
 			};
 	}
 };
@@ -17348,16 +17347,16 @@ function toast$1({ ...props }) {
 	};
 }
 function useToast() {
-	const [state, setState] = import_react.useState(memoryState);
+	const [state$1, setState] = import_react.useState(memoryState);
 	import_react.useEffect(() => {
 		listeners$2.push(setState);
 		return () => {
 			const index$1 = listeners$2.indexOf(setState);
 			if (index$1 > -1) listeners$2.splice(index$1, 1);
 		};
-	}, [state]);
+	}, [state$1]);
 	return {
-		...state,
+		...state$1,
 		toast: toast$1,
 		dismiss: (toastId) => dispatch({
 			type: "DISMISS_TOAST",
@@ -17550,8 +17549,8 @@ var require_react_jsx_runtime_development = /* @__PURE__ */ __commonJSMin(((expo
 			else validateChildKeys(children);
 			if (hasOwnProperty$12.call(config, "key")) {
 				children = getComponentNameFromType(type);
-				var keys$6 = Object.keys(config).filter(function(k$3) {
-					return "key" !== k$3;
+				var keys$6 = Object.keys(config).filter(function(k$1) {
+					return "key" !== k$1;
 				});
 				isStaticChildren = 0 < keys$6.length ? "{key: someKey, " + keys$6.join(": ..., ") + ": ...}" : "{key: someKey}";
 				didWarnAboutKeySpread[children + isStaticChildren] || (keys$6 = 0 < keys$6.length ? "{" + keys$6.join(": ..., ") + ": ...}" : "{}", console.error("A props object containing a \"key\" prop is being spread into JSX:\n  let props = %s;\n  <%s {...props} />\nReact keys must be passed directly to JSX without using spread:\n  let props = %s;\n  <%s key={someKey} {...props} />", isStaticChildren, children, keys$6, children), didWarnAboutKeySpread[children + isStaticChildren] = !0);
@@ -17857,10 +17856,10 @@ var Primitive = [
 	"svg",
 	"ul"
 ].reduce((primitive, node) => {
-	const Slot$5 = /* @__PURE__ */ createSlot(`Primitive.${node}`);
+	const Slot$4 = /* @__PURE__ */ createSlot(`Primitive.${node}`);
 	const Node$1 = import_react.forwardRef((props, forwardedRef) => {
 		const { asChild, ...primitiveProps } = props;
-		const Comp = asChild ? Slot$5 : node;
+		const Comp = asChild ? Slot$4 : node;
 		if (typeof window !== "undefined") window[Symbol.for("radix-ui")] = true;
 		return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Comp, {
 			...primitiveProps,
@@ -18065,11 +18064,11 @@ function handleAndDispatchCustomEvent$1(name, handler, detail, { discrete }) {
 	if (discrete) dispatchDiscreteCustomEvent(target, event);
 	else target.dispatchEvent(event);
 }
-var Root$12 = DismissableLayer;
+var Root$11 = DismissableLayer;
 var Branch = DismissableLayerBranch;
 var useLayoutEffect2 = globalThis?.document ? import_react.useLayoutEffect : () => {};
 var import_react_dom$6 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
-var PORTAL_NAME$7 = "Portal";
+var PORTAL_NAME$6 = "Portal";
 var Portal = import_react.forwardRef((props, forwardedRef) => {
 	const { container: containerProp, ...portalProps } = props;
 	const [mounted, setMounted] = import_react.useState(false);
@@ -18080,10 +18079,10 @@ var Portal = import_react.forwardRef((props, forwardedRef) => {
 		ref: forwardedRef
 	}), container) : null;
 });
-Portal.displayName = PORTAL_NAME$7;
+Portal.displayName = PORTAL_NAME$6;
 function useStateMachine$1(initialState, machine) {
-	return import_react.useReducer((state, event) => {
-		return machine[state][event] ?? state;
+	return import_react.useReducer((state$1, event) => {
+		return machine[state$1][event] ?? state$1;
 	}, initialState);
 }
 var Presence = (props) => {
@@ -18099,7 +18098,7 @@ function usePresence(present) {
 	const stylesRef = import_react.useRef(null);
 	const prevPresentRef = import_react.useRef(present);
 	const prevAnimationNameRef = import_react.useRef("none");
-	const [state, send] = useStateMachine$1(present ? "mounted" : "unmounted", {
+	const [state$1, send] = useStateMachine$1(present ? "mounted" : "unmounted", {
 		mounted: {
 			UNMOUNT: "unmounted",
 			ANIMATION_OUT: "unmountSuspended"
@@ -18112,8 +18111,8 @@ function usePresence(present) {
 	});
 	import_react.useEffect(() => {
 		const currentAnimationName = getAnimationName(stylesRef.current);
-		prevAnimationNameRef.current = state === "mounted" ? currentAnimationName : "none";
-	}, [state]);
+		prevAnimationNameRef.current = state$1 === "mounted" ? currentAnimationName : "none";
+	}, [state$1]);
 	useLayoutEffect2(() => {
 		const styles = stylesRef.current;
 		const wasPresent = prevPresentRef.current;
@@ -18159,7 +18158,7 @@ function usePresence(present) {
 		} else send("ANIMATION_END");
 	}, [node, send]);
 	return {
-		isPresent: ["mounted", "unmountSuspended"].includes(state),
+		isPresent: ["mounted", "unmountSuspended"].includes(state$1),
 		ref: import_react.useCallback((node2) => {
 			stylesRef.current = node2 ? getComputedStyle(node2) : null;
 			setNode(node2);
@@ -18256,7 +18255,7 @@ var VisuallyHidden$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 VisuallyHidden$1.displayName = NAME$3;
-var Root$11 = VisuallyHidden$1;
+var Root$10 = VisuallyHidden$1;
 var import_react_dom$5 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
 var PROVIDER_NAME$1 = "ToastProvider";
 var [Collection$3, useCollection$3, createCollectionScope$3] = createCollection("Toast");
@@ -18555,7 +18554,7 @@ var ToastImpl = import_react.forwardRef((props, forwardedRef) => {
 		onClose: handleClose,
 		children: import_react_dom$5.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection$3.ItemSlot, {
 			scope: __scopeToast,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$12, {
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$11, {
 				asChild: true,
 				onEscapeKeyDown: composeEventHandlers(onEscapeKeyDown, () => {
 					if (!context.isFocusedToastEscapeKeyDownRef.current) handleClose();
@@ -18693,10 +18692,10 @@ var ToastAction$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 ToastAction$1.displayName = ACTION_NAME$1;
-var CLOSE_NAME$2 = "ToastClose";
+var CLOSE_NAME$1 = "ToastClose";
 var ToastClose$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeToast, ...closeProps } = props;
-	const interactiveContext = useToastInteractiveContext(CLOSE_NAME$2, __scopeToast);
+	const interactiveContext = useToastInteractiveContext(CLOSE_NAME$1, __scopeToast);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ToastAnnounceExclude, {
 		asChild: true,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
@@ -18707,7 +18706,7 @@ var ToastClose$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-ToastClose$1.displayName = CLOSE_NAME$2;
+ToastClose$1.displayName = CLOSE_NAME$1;
 var ToastAnnounceExclude = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeToast, altText, ...announceExcludeProps } = props;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
@@ -18785,7 +18784,7 @@ function focusFirst$3(candidates) {
 }
 var Provider$1 = ToastProvider$1;
 var Viewport$2 = ToastViewport$1;
-var Root2$7 = Toast$2;
+var Root2$6 = Toast$2;
 var Title$1 = ToastTitle$1;
 var Description$1 = ToastDescription$1;
 var Action$1 = ToastAction$1;
@@ -18941,28 +18940,6 @@ var BookOpen = createLucideIcon("book-open", [["path", {
 	d: "M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z",
 	key: "ruj8y"
 }]]);
-var BriefcaseBusiness = createLucideIcon("briefcase-business", [
-	["path", {
-		d: "M12 12h.01",
-		key: "1mp3jc"
-	}],
-	["path", {
-		d: "M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2",
-		key: "1ksdt3"
-	}],
-	["path", {
-		d: "M22 13a18.15 18.15 0 0 1-20 0",
-		key: "12hx5q"
-	}],
-	["rect", {
-		width: "20",
-		height: "14",
-		x: "2",
-		y: "6",
-		rx: "2",
-		key: "i6l2r4"
-	}]
-]);
 var Briefcase = createLucideIcon("briefcase", [["path", {
 	d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16",
 	key: "jecpp"
@@ -19046,52 +19023,6 @@ var Building = createLucideIcon("building", [
 		key: "1uxh74"
 	}]
 ]);
-var CalendarDays = createLucideIcon("calendar-days", [
-	["path", {
-		d: "M8 2v4",
-		key: "1cmpym"
-	}],
-	["path", {
-		d: "M16 2v4",
-		key: "4m81vk"
-	}],
-	["rect", {
-		width: "18",
-		height: "18",
-		x: "3",
-		y: "4",
-		rx: "2",
-		key: "1hopcy"
-	}],
-	["path", {
-		d: "M3 10h18",
-		key: "8toen8"
-	}],
-	["path", {
-		d: "M8 14h.01",
-		key: "6423bh"
-	}],
-	["path", {
-		d: "M12 14h.01",
-		key: "1etili"
-	}],
-	["path", {
-		d: "M16 14h.01",
-		key: "1gbofw"
-	}],
-	["path", {
-		d: "M8 18h.01",
-		key: "lrp35t"
-	}],
-	["path", {
-		d: "M12 18h.01",
-		key: "mhygvu"
-	}],
-	["path", {
-		d: "M16 18h.01",
-		key: "kzsmim"
-	}]
-]);
 var Calendar = createLucideIcon("calendar", [
 	["path", {
 		d: "M8 2v4",
@@ -19112,20 +19043,6 @@ var Calendar = createLucideIcon("calendar", [
 	["path", {
 		d: "M3 10h18",
 		key: "8toen8"
-	}]
-]);
-var ChartNoAxesColumn = createLucideIcon("chart-no-axes-column", [
-	["path", {
-		d: "M5 21v-6",
-		key: "1hz6c0"
-	}],
-	["path", {
-		d: "M12 21V3",
-		key: "1lcnhd"
-	}],
-	["path", {
-		d: "M19 21V9",
-		key: "unv183"
 	}]
 ]);
 var ChartPie = createLucideIcon("chart-pie", [["path", {
@@ -19161,13 +19078,6 @@ var ChevronsUpDown = createLucideIcon("chevrons-up-down", [["path", {
 }], ["path", {
 	d: "m7 9 5-5 5 5",
 	key: "sgt6xg"
-}]]);
-var CircleCheckBig = createLucideIcon("circle-check-big", [["path", {
-	d: "M21.801 10A10 10 0 1 1 17 3.335",
-	key: "yps3ct"
-}], ["path", {
-	d: "m9 11 3 3L22 4",
-	key: "1pflzl"
 }]]);
 var CircleCheck = createLucideIcon("circle-check", [["circle", {
 	cx: "12",
@@ -19209,37 +19119,6 @@ var Circle = createLucideIcon("circle", [["circle", {
 	r: "10",
 	key: "1mglay"
 }]]);
-var ClipboardList = createLucideIcon("clipboard-list", [
-	["rect", {
-		width: "8",
-		height: "4",
-		x: "8",
-		y: "2",
-		rx: "1",
-		ry: "1",
-		key: "tgr4d6"
-	}],
-	["path", {
-		d: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2",
-		key: "116196"
-	}],
-	["path", {
-		d: "M12 11h4",
-		key: "1jrz19"
-	}],
-	["path", {
-		d: "M12 16h4",
-		key: "n85exb"
-	}],
-	["path", {
-		d: "M8 11h.01",
-		key: "1dfujw"
-	}],
-	["path", {
-		d: "M8 16h.01",
-		key: "18s6g9"
-	}]
-]);
 var CreditCard = createLucideIcon("credit-card", [["rect", {
 	width: "20",
 	height: "14",
@@ -19315,24 +19194,6 @@ var Ellipsis = createLucideIcon("ellipsis", [
 		key: "1pcz8c"
 	}]
 ]);
-var EyeOff = createLucideIcon("eye-off", [
-	["path", {
-		d: "M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49",
-		key: "ct8e1f"
-	}],
-	["path", {
-		d: "M14.084 14.158a3 3 0 0 1-4.242-4.242",
-		key: "151rxh"
-	}],
-	["path", {
-		d: "M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143",
-		key: "13bj9a"
-	}],
-	["path", {
-		d: "m2 2 20 20",
-		key: "1ooewy"
-	}]
-]);
 var Eye = createLucideIcon("eye", [["path", {
 	d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
 	key: "1nclc0"
@@ -19364,39 +19225,10 @@ var FileText = createLucideIcon("file-text", [
 		key: "z1uh3a"
 	}]
 ]);
-var File = createLucideIcon("file", [["path", {
-	d: "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
-	key: "1oefj6"
-}], ["path", {
-	d: "M14 2v5a1 1 0 0 0 1 1h5",
-	key: "wfsgrz"
-}]]);
 var Funnel = createLucideIcon("funnel", [["path", {
 	d: "M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z",
 	key: "sc7q7i"
 }]]);
-var Gift = createLucideIcon("gift", [
-	["rect", {
-		x: "3",
-		y: "8",
-		width: "18",
-		height: "4",
-		rx: "1",
-		key: "bkv52"
-	}],
-	["path", {
-		d: "M12 8v13",
-		key: "1c76mn"
-	}],
-	["path", {
-		d: "M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7",
-		key: "6wjy6b"
-	}],
-	["path", {
-		d: "M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5",
-		key: "1ihvrl"
-	}]
-]);
 var Globe = createLucideIcon("globe", [
 	["circle", {
 		cx: "12",
@@ -19411,6 +19243,78 @@ var Globe = createLucideIcon("globe", [
 	["path", {
 		d: "M2 12h20",
 		key: "9i4pu4"
+	}]
+]);
+var HardHat = createLucideIcon("hard-hat", [
+	["path", {
+		d: "M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5",
+		key: "1p9q5i"
+	}],
+	["path", {
+		d: "M14 6a6 6 0 0 1 6 6v3",
+		key: "1hnv84"
+	}],
+	["path", {
+		d: "M4 15v-3a6 6 0 0 1 6-6",
+		key: "9ciidu"
+	}],
+	["rect", {
+		x: "2",
+		y: "15",
+		width: "20",
+		height: "4",
+		rx: "1",
+		key: "g3x8cw"
+	}]
+]);
+var HeartHandshake = createLucideIcon("heart-handshake", [["path", {
+	d: "M19.414 14.414C21 12.828 22 11.5 22 9.5a5.5 5.5 0 0 0-9.591-3.676.6.6 0 0 1-.818.001A5.5 5.5 0 0 0 2 9.5c0 2.3 1.5 4 3 5.5l5.535 5.362a2 2 0 0 0 2.879.052 2.12 2.12 0 0 0-.004-3 2.124 2.124 0 1 0 3-3 2.124 2.124 0 0 0 3.004 0 2 2 0 0 0 0-2.828l-1.881-1.882a2.41 2.41 0 0 0-3.409 0l-1.71 1.71a2 2 0 0 1-2.828 0 2 2 0 0 1 0-2.828l2.823-2.762",
+	key: "17lmqv"
+}]]);
+var Hotel = createLucideIcon("hotel", [
+	["path", {
+		d: "M10 22v-6.57",
+		key: "1wmca3"
+	}],
+	["path", {
+		d: "M12 11h.01",
+		key: "z322tv"
+	}],
+	["path", {
+		d: "M12 7h.01",
+		key: "1ivr5q"
+	}],
+	["path", {
+		d: "M14 15.43V22",
+		key: "1q2vjd"
+	}],
+	["path", {
+		d: "M15 16a5 5 0 0 0-6 0",
+		key: "o9wqvi"
+	}],
+	["path", {
+		d: "M16 11h.01",
+		key: "xkw8gn"
+	}],
+	["path", {
+		d: "M16 7h.01",
+		key: "1kdx03"
+	}],
+	["path", {
+		d: "M8 11h.01",
+		key: "1dfujw"
+	}],
+	["path", {
+		d: "M8 7h.01",
+		key: "1vti4s"
+	}],
+	["rect", {
+		x: "4",
+		y: "2",
+		width: "16",
+		height: "20",
+		rx: "2",
+		key: "1uxh74"
 	}]
 ]);
 var House = createLucideIcon("house", [["path", {
@@ -19517,32 +19421,6 @@ var LayoutGrid = createLucideIcon("layout-grid", [
 		key: "1bb6yr"
 	}]
 ]);
-var LayoutTemplate = createLucideIcon("layout-template", [
-	["rect", {
-		width: "18",
-		height: "7",
-		x: "3",
-		y: "3",
-		rx: "1",
-		key: "f1a2em"
-	}],
-	["rect", {
-		width: "9",
-		height: "7",
-		x: "3",
-		y: "14",
-		rx: "1",
-		key: "jqznyg"
-	}],
-	["rect", {
-		width: "5",
-		height: "7",
-		x: "16",
-		y: "14",
-		rx: "1",
-		key: "q5h2i8"
-	}]
-]);
 var List = createLucideIcon("list", [
 	["path", {
 		d: "M3 5h.01",
@@ -19573,29 +19451,20 @@ var LoaderCircle = createLucideIcon("loader-circle", [["path", {
 	d: "M21 12a9 9 0 1 1-6.219-8.56",
 	key: "13zald"
 }]]);
-var Lock = createLucideIcon("lock", [["rect", {
-	width: "18",
-	height: "11",
-	x: "3",
-	y: "11",
-	rx: "2",
-	ry: "2",
-	key: "1w4ew1"
-}], ["path", {
-	d: "M7 11V7a5 5 0 0 1 10 0v4",
-	key: "fwvmzm"
-}]]);
-var Mail = createLucideIcon("mail", [["path", {
-	d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7",
-	key: "132q7q"
-}], ["rect", {
-	x: "2",
-	y: "4",
-	width: "20",
-	height: "16",
-	rx: "2",
-	key: "izxlao"
-}]]);
+var LogOut = createLucideIcon("log-out", [
+	["path", {
+		d: "m16 17 5-5-5-5",
+		key: "1bji2h"
+	}],
+	["path", {
+		d: "M21 12H9",
+		key: "dn1m92"
+	}],
+	["path", {
+		d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4",
+		key: "1uf3rs"
+	}]
+]);
 var MapPin = createLucideIcon("map-pin", [["path", {
 	d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0",
 	key: "1r0f0z"
@@ -19627,6 +19496,20 @@ var MessageSquare = createLucideIcon("message-square", [["path", {
 	d: "M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z",
 	key: "18887p"
 }]]);
+var MoonStar = createLucideIcon("moon-star", [
+	["path", {
+		d: "M18 5h4",
+		key: "1lhgn2"
+	}],
+	["path", {
+		d: "M20 3v4",
+		key: "1olli1"
+	}],
+	["path", {
+		d: "M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401",
+		key: "kfwtm"
+	}]
+]);
 var PanelLeft = createLucideIcon("panel-left", [["rect", {
 	width: "18",
 	height: "18",
@@ -19637,10 +19520,6 @@ var PanelLeft = createLucideIcon("panel-left", [["rect", {
 }], ["path", {
 	d: "M9 3v18",
 	key: "fh3hqa"
-}]]);
-var Pen = createLucideIcon("pen", [["path", {
-	d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
-	key: "1a8usu"
 }]]);
 var Pencil = createLucideIcon("pencil", [["path", {
 	d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
@@ -19674,22 +19553,22 @@ var Printer = createLucideIcon("printer", [
 		key: "1ue0tg"
 	}]
 ]);
-var RefreshCw = createLucideIcon("refresh-cw", [
+var Repeat = createLucideIcon("repeat", [
 	["path", {
-		d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8",
-		key: "v9h5vc"
+		d: "m17 2 4 4-4 4",
+		key: "nntrym"
 	}],
 	["path", {
-		d: "M21 3v5h-5",
-		key: "1q7to0"
+		d: "M3 11v-1a4 4 0 0 1 4-4h14",
+		key: "84bu3i"
 	}],
 	["path", {
-		d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16",
-		key: "3uifl3"
+		d: "m7 22-4-4 4-4",
+		key: "1wqhfi"
 	}],
 	["path", {
-		d: "M8 16H3v5",
-		key: "1cv678"
+		d: "M21 13v1a4 4 0 0 1-4 4H3",
+		key: "1rx37r"
 	}]
 ]);
 var RotateCw = createLucideIcon("rotate-cw", [["path", {
@@ -19760,6 +19639,20 @@ var Settings2 = createLucideIcon("settings-2", [
 		key: "dfmy0x"
 	}]
 ]);
+var ShieldAlert = createLucideIcon("shield-alert", [
+	["path", {
+		d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+		key: "oel41y"
+	}],
+	["path", {
+		d: "M12 8v4",
+		key: "1got3b"
+	}],
+	["path", {
+		d: "M12 16h.01",
+		key: "1drbdi"
+	}]
+]);
 var ShieldCheck = createLucideIcon("shield-check", [["path", {
 	d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
 	key: "oel41y"
@@ -19785,20 +19678,6 @@ var Shield = createLucideIcon("shield", [["path", {
 	d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
 	key: "oel41y"
 }]]);
-var ShoppingBag = createLucideIcon("shopping-bag", [
-	["path", {
-		d: "M16 10a4 4 0 0 1-8 0",
-		key: "1ltviw"
-	}],
-	["path", {
-		d: "M3.103 6.034h17.794",
-		key: "awc11p"
-	}],
-	["path", {
-		d: "M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z",
-		key: "o988cm"
-	}]
-]);
 var ShoppingCart = createLucideIcon("shopping-cart", [
 	["circle", {
 		cx: "8",
@@ -19821,23 +19700,6 @@ var Star = createLucideIcon("star", [["path", {
 	d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z",
 	key: "r04s7s"
 }]]);
-var Tags = createLucideIcon("tags", [
-	["path", {
-		d: "M13.172 2a2 2 0 0 1 1.414.586l6.71 6.71a2.4 2.4 0 0 1 0 3.408l-4.592 4.592a2.4 2.4 0 0 1-3.408 0l-6.71-6.71A2 2 0 0 1 6 9.172V3a1 1 0 0 1 1-1z",
-		key: "16rjxf"
-	}],
-	["path", {
-		d: "M2 7v6.172a2 2 0 0 0 .586 1.414l6.71 6.71a2.4 2.4 0 0 0 3.191.193",
-		key: "178nd4"
-	}],
-	["circle", {
-		cx: "10.5",
-		cy: "6.5",
-		r: ".5",
-		fill: "currentColor",
-		key: "12ikhr"
-	}]
-]);
 var Trash2 = createLucideIcon("trash-2", [
 	["path", {
 		d: "M10 11v6",
@@ -19935,22 +19797,6 @@ var Upload = createLucideIcon("upload", [
 		key: "ih7n3h"
 	}]
 ]);
-var UserCheck = createLucideIcon("user-check", [
-	["path", {
-		d: "m16 11 2 2 4-4",
-		key: "9rsbq5"
-	}],
-	["path", {
-		d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2",
-		key: "1yyitq"
-	}],
-	["circle", {
-		cx: "9",
-		cy: "7",
-		r: "4",
-		key: "nufk8"
-	}]
-]);
 var User = createLucideIcon("user", [["path", {
 	d: "M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2",
 	key: "975kel"
@@ -19980,42 +19826,10 @@ var Users$1 = createLucideIcon("users", [
 		key: "nufk8"
 	}]
 ]);
-var Waves = createLucideIcon("waves", [
-	["path", {
-		d: "M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1",
-		key: "knzxuh"
-	}],
-	["path", {
-		d: "M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1",
-		key: "2jd2cc"
-	}],
-	["path", {
-		d: "M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1",
-		key: "rd2r6e"
-	}]
-]);
-var Workflow = createLucideIcon("workflow", [
-	["rect", {
-		width: "8",
-		height: "8",
-		x: "3",
-		y: "3",
-		rx: "2",
-		key: "by2w9f"
-	}],
-	["path", {
-		d: "M7 11v4a2 2 0 0 0 2 2h4",
-		key: "xkn7yn"
-	}],
-	["rect", {
-		width: "8",
-		height: "8",
-		x: "13",
-		y: "13",
-		rx: "2",
-		key: "1cgmvn"
-	}]
-]);
+var Wrench = createLucideIcon("wrench", [["path", {
+	d: "M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z",
+	key: "1ngwbx"
+}]]);
 var X = createLucideIcon("x", [["path", {
 	d: "M18 6 6 18",
 	key: "1bl5f8"
@@ -20266,8 +20080,8 @@ var toValue = (mix) => {
 	if (typeof mix === "string") return mix;
 	let resolvedValue;
 	let string = "";
-	for (let k$3 = 0; k$3 < mix.length; k$3++) if (mix[k$3]) {
-		if (resolvedValue = toValue(mix[k$3])) {
+	for (let k$1 = 0; k$1 < mix.length; k$1++) if (mix[k$1]) {
+		if (resolvedValue = toValue(mix[k$1])) {
 			string && (string += " ");
 			string += resolvedValue;
 		}
@@ -24047,7 +23861,7 @@ const formatDate = (date$1, language = "en") => {
 const getCurrentPrice = (basePrice, prices) => {
 	if (!prices || prices.length === 0) return basePrice;
 	const today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
-	const active = prices.find((p$1) => p$1.startDate && p$1.endDate && p$1.startDate.split("T")[0] <= today && today <= p$1.endDate.split("T")[0]);
+	const active = prices.find((p) => p.startDate && p.endDate && p.startDate.split("T")[0] <= today && today <= p.endDate.split("T")[0]);
 	return active ? active.price : basePrice;
 };
 var ToastProvider = Provider$1;
@@ -24065,13 +23879,13 @@ var toastVariants = cva("group pointer-events-auto relative flex w-full items-ce
 	defaultVariants: { variant: "default" }
 });
 var Toast$1 = import_react.forwardRef(({ className, variant, ...props }, ref) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$7, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$6, {
 		ref,
 		className: cn(toastVariants({ variant }), className),
 		...props
 	});
 });
-Toast$1.displayName = Root2$7.displayName;
+Toast$1.displayName = Root2$6.displayName;
 var ToastAction = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Action$1, {
 	ref,
 	className: cn("inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive", className),
@@ -24114,12 +23928,12 @@ function Toaster() {
 		}, id);
 	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ToastViewport, {})] });
 }
-var M = (e, i, s$1, u$1, m$1, a$1, l, h) => {
+var M = (e, i, s$1, u, m, a$1, l, h) => {
 	let d = document.documentElement, w = ["light", "dark"];
-	function p$1(n) {
+	function p(n) {
 		(Array.isArray(e) ? e : [e]).forEach((y$1) => {
-			let k$3 = y$1 === "class", S = k$3 && a$1 ? m$1.map((f) => a$1[f] || f) : m$1;
-			k$3 ? (d.classList.remove(...S), d.classList.add(a$1 && a$1[n] ? a$1[n] : n)) : d.setAttribute(y$1, n);
+			let k$1 = y$1 === "class", S = k$1 && a$1 ? m.map((f) => a$1[f] || f) : m;
+			k$1 ? (d.classList.remove(...S), d.classList.add(a$1 && a$1[n] ? a$1[n] : n)) : d.setAttribute(y$1, n);
 		}), R(n);
 	}
 	function R(n) {
@@ -24128,34 +23942,34 @@ var M = (e, i, s$1, u$1, m$1, a$1, l, h) => {
 	function c$1() {
 		return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 	}
-	if (u$1) p$1(u$1);
+	if (u) p(u);
 	else try {
 		let n = localStorage.getItem(i) || s$1;
-		p$1(l && n === "system" ? c$1() : n);
+		p(l && n === "system" ? c$1() : n);
 	} catch (n) {}
-}, x$1 = import_react.createContext(void 0), U$1 = {
+}, x$1 = import_react.createContext(void 0), U = {
 	setTheme: (e) => {},
 	themes: []
 }, z = () => {
 	var e;
-	return (e = import_react.useContext(x$1)) != null ? e : U$1;
+	return (e = import_react.useContext(x$1)) != null ? e : U;
 };
-import_react.memo(({ forcedTheme: e, storageKey: i, attribute: s$1, enableSystem: u$1, enableColorScheme: m$1, defaultTheme: a$1, value: l, themes: h, nonce: d, scriptProps: w }) => {
-	let p$1 = JSON.stringify([
+import_react.memo(({ forcedTheme: e, storageKey: i, attribute: s$1, enableSystem: u, enableColorScheme: m, defaultTheme: a$1, value: l, themes: h, nonce: d, scriptProps: w }) => {
+	let p = JSON.stringify([
 		s$1,
 		i,
 		a$1,
 		e,
 		h,
 		l,
-		u$1,
-		m$1
+		u,
+		m
 	]).slice(1, -1);
 	return import_react.createElement("script", {
 		...w,
 		suppressHydrationWarning: !0,
 		nonce: typeof window == "undefined" ? d : "",
-		dangerouslySetInnerHTML: { __html: `(${M.toString()})(${p$1})` }
+		dangerouslySetInnerHTML: { __html: `(${M.toString()})(${p})` }
 	});
 });
 var import_react_dom$4 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
@@ -24380,10 +24194,10 @@ var Observer = class {
 				message: data.loading,
 				description: typeof data.description !== "function" ? data.description : void 0
 			});
-			const p$1 = Promise.resolve(promise instanceof Function ? promise() : promise);
+			const p = Promise.resolve(promise instanceof Function ? promise() : promise);
 			let shouldDismiss = id !== void 0;
 			let result;
-			const originalPromise = p$1.then(async (response) => {
+			const originalPromise = p.then(async (response) => {
 				result = ["resolve", response];
 				if (import_react.isValidElement(response)) {
 					shouldDismiss = false;
@@ -24451,10 +24265,10 @@ var Observer = class {
 			if (typeof id !== "string" && typeof id !== "number") return { unwrap };
 			else return Object.assign(id, { unwrap });
 		};
-		this.custom = (jsx$33, data) => {
+		this.custom = (jsx$31, data) => {
 			const id = (data == null ? void 0 : data.id) || toastsCounter++;
 			this.create({
-				jsx: jsx$33(id),
+				jsx: jsx$31(id),
 				id,
 				...data
 			});
@@ -25320,11 +25134,11 @@ var computePosition$1 = async (reference, floating, config) => {
 		middlewareData
 	};
 };
-async function detectOverflow$1(state, options$1) {
+async function detectOverflow$1(state$1, options$1) {
 	var _await$platform$isEle;
 	if (options$1 === void 0) options$1 = {};
-	const { x: x$2, y: y$1, platform: platform$1, rects, elements, strategy } = state;
-	const { boundary = "clippingAncestors", rootBoundary = "viewport", elementContext = "floating", altBoundary = false, padding = 0 } = evaluate(options$1, state);
+	const { x: x$2, y: y$1, platform: platform$1, rects, elements, strategy } = state$1;
+	const { boundary = "clippingAncestors", rootBoundary = "viewport", elementContext = "floating", altBoundary = false, padding = 0 } = evaluate(options$1, state$1);
 	const paddingObject = getPaddingObject(padding);
 	const element = elements[altBoundary ? elementContext === "floating" ? "reference" : "floating" : elementContext];
 	const clippingClientRect = rectToClientRect(await platform$1.getClippingRect({
@@ -25363,9 +25177,9 @@ async function detectOverflow$1(state, options$1) {
 var arrow$2 = (options$1) => ({
 	name: "arrow",
 	options: options$1,
-	async fn(state) {
-		const { x: x$2, y: y$1, placement, rects, platform: platform$1, elements, middlewareData } = state;
-		const { element, padding = 0 } = evaluate(options$1, state) || {};
+	async fn(state$1) {
+		const { x: x$2, y: y$1, placement, rects, platform: platform$1, elements, middlewareData } = state$1;
+		const { element, padding = 0 } = evaluate(options$1, state$1) || {};
 		if (element == null) return {};
 		const paddingObject = getPaddingObject(padding);
 		const coords = {
@@ -25410,10 +25224,10 @@ var flip$2 = function(options$1) {
 	return {
 		name: "flip",
 		options: options$1,
-		async fn(state) {
+		async fn(state$1) {
 			var _middlewareData$arrow, _middlewareData$flip;
-			const { placement, middlewareData, rects, initialPlacement, platform: platform$1, elements } = state;
-			const { mainAxis: checkMainAxis = true, crossAxis: checkCrossAxis = true, fallbackPlacements: specifiedFallbackPlacements, fallbackStrategy = "bestFit", fallbackAxisSideDirection = "none", flipAlignment = true, ...detectOverflowOptions } = evaluate(options$1, state);
+			const { placement, middlewareData, rects, initialPlacement, platform: platform$1, elements } = state$1;
+			const { mainAxis: checkMainAxis = true, crossAxis: checkCrossAxis = true, fallbackPlacements: specifiedFallbackPlacements, fallbackStrategy = "bestFit", fallbackAxisSideDirection = "none", flipAlignment = true, ...detectOverflowOptions } = evaluate(options$1, state$1);
 			if ((_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) return {};
 			const side = getSide(placement);
 			const initialSideAxis = getSideAxis(initialPlacement);
@@ -25423,7 +25237,7 @@ var flip$2 = function(options$1) {
 			const hasFallbackAxisSideDirection = fallbackAxisSideDirection !== "none";
 			if (!specifiedFallbackPlacements && hasFallbackAxisSideDirection) fallbackPlacements.push(...getOppositeAxisPlacements(initialPlacement, flipAlignment, fallbackAxisSideDirection, rtl));
 			const placements$1 = [initialPlacement, ...fallbackPlacements];
-			const overflow = await detectOverflow$1(state, detectOverflowOptions);
+			const overflow = await detectOverflow$1(state$1, detectOverflowOptions);
 			const overflows = [];
 			let overflowsData = ((_middlewareData$flip = middlewareData.flip) == null ? void 0 : _middlewareData$flip.overflows) || [];
 			if (checkMainAxis) overflows.push(overflow[side]);
@@ -25488,12 +25302,12 @@ var hide$2 = function(options$1) {
 	return {
 		name: "hide",
 		options: options$1,
-		async fn(state) {
-			const { rects } = state;
-			const { strategy = "referenceHidden", ...detectOverflowOptions } = evaluate(options$1, state);
+		async fn(state$1) {
+			const { rects } = state$1;
+			const { strategy = "referenceHidden", ...detectOverflowOptions } = evaluate(options$1, state$1);
 			switch (strategy) {
 				case "referenceHidden": {
-					const offsets = getSideOffsets(await detectOverflow$1(state, {
+					const offsets = getSideOffsets(await detectOverflow$1(state$1, {
 						...detectOverflowOptions,
 						elementContext: "reference"
 					}), rects.reference);
@@ -25503,7 +25317,7 @@ var hide$2 = function(options$1) {
 					} };
 				}
 				case "escaped": {
-					const offsets = getSideOffsets(await detectOverflow$1(state, {
+					const offsets = getSideOffsets(await detectOverflow$1(state$1, {
 						...detectOverflowOptions,
 						altBoundary: true
 					}), rects.floating);
@@ -25518,15 +25332,15 @@ var hide$2 = function(options$1) {
 	};
 };
 var originSides = /* @__PURE__ */ new Set(["left", "top"]);
-async function convertValueToCoords(state, options$1) {
-	const { placement, platform: platform$1, elements } = state;
+async function convertValueToCoords(state$1, options$1) {
+	const { placement, platform: platform$1, elements } = state$1;
 	const rtl = await (platform$1.isRTL == null ? void 0 : platform$1.isRTL(elements.floating));
 	const side = getSide(placement);
 	const alignment = getAlignment(placement);
 	const isVertical = getSideAxis(placement) === "y";
 	const mainAxisMulti = originSides.has(side) ? -1 : 1;
 	const crossAxisMulti = rtl && isVertical ? -1 : 1;
-	const rawValue = evaluate(options$1, state);
+	const rawValue = evaluate(options$1, state$1);
 	let { mainAxis, crossAxis, alignmentAxis } = typeof rawValue === "number" ? {
 		mainAxis: rawValue,
 		crossAxis: 0,
@@ -25550,10 +25364,10 @@ var offset$2 = function(options$1) {
 	return {
 		name: "offset",
 		options: options$1,
-		async fn(state) {
+		async fn(state$1) {
 			var _middlewareData$offse, _middlewareData$arrow;
-			const { x: x$2, y: y$1, placement, middlewareData } = state;
-			const diffCoords = await convertValueToCoords(state, options$1);
+			const { x: x$2, y: y$1, placement, middlewareData } = state$1;
+			const diffCoords = await convertValueToCoords(state$1, options$1);
 			if (placement === ((_middlewareData$offse = middlewareData.offset) == null ? void 0 : _middlewareData$offse.placement) && (_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) return {};
 			return {
 				x: x$2 + diffCoords.x,
@@ -25571,20 +25385,20 @@ var shift$2 = function(options$1) {
 	return {
 		name: "shift",
 		options: options$1,
-		async fn(state) {
-			const { x: x$2, y: y$1, placement } = state;
+		async fn(state$1) {
+			const { x: x$2, y: y$1, placement } = state$1;
 			const { mainAxis: checkMainAxis = true, crossAxis: checkCrossAxis = false, limiter = { fn: (_ref) => {
 				let { x: x$3, y: y$2 } = _ref;
 				return {
 					x: x$3,
 					y: y$2
 				};
-			} }, ...detectOverflowOptions } = evaluate(options$1, state);
+			} }, ...detectOverflowOptions } = evaluate(options$1, state$1);
 			const coords = {
 				x: x$2,
 				y: y$1
 			};
-			const overflow = await detectOverflow$1(state, detectOverflowOptions);
+			const overflow = await detectOverflow$1(state$1, detectOverflowOptions);
 			const crossAxis = getSideAxis(getSide(placement));
 			const mainAxis = getOppositeAxis(crossAxis);
 			let mainAxisCoord = coords[mainAxis];
@@ -25604,7 +25418,7 @@ var shift$2 = function(options$1) {
 				crossAxisCoord = clamp$1(min$5, crossAxisCoord, max$6);
 			}
 			const limitedCoords = limiter.fn({
-				...state,
+				...state$1,
 				[mainAxis]: mainAxisCoord,
 				[crossAxis]: crossAxisCoord
 			});
@@ -25626,9 +25440,9 @@ var limitShift$2 = function(options$1) {
 	if (options$1 === void 0) options$1 = {};
 	return {
 		options: options$1,
-		fn(state) {
-			const { x: x$2, y: y$1, placement, rects, middlewareData } = state;
-			const { offset: offset$3 = 0, mainAxis: checkMainAxis = true, crossAxis: checkCrossAxis = true } = evaluate(options$1, state);
+		fn(state$1) {
+			const { x: x$2, y: y$1, placement, rects, middlewareData } = state$1;
+			const { offset: offset$3 = 0, mainAxis: checkMainAxis = true, crossAxis: checkCrossAxis = true } = evaluate(options$1, state$1);
 			const coords = {
 				x: x$2,
 				y: y$1
@@ -25637,7 +25451,7 @@ var limitShift$2 = function(options$1) {
 			const mainAxis = getOppositeAxis(crossAxis);
 			let mainAxisCoord = coords[mainAxis];
 			let crossAxisCoord = coords[crossAxis];
-			const rawOffset = evaluate(offset$3, state);
+			const rawOffset = evaluate(offset$3, state$1);
 			const computedOffset = typeof rawOffset === "number" ? {
 				mainAxis: rawOffset,
 				crossAxis: 0
@@ -25674,11 +25488,11 @@ var size$2 = function(options$1) {
 	return {
 		name: "size",
 		options: options$1,
-		async fn(state) {
+		async fn(state$1) {
 			var _state$middlewareData, _state$middlewareData2;
-			const { placement, rects, platform: platform$1, elements } = state;
-			const { apply: apply$2 = () => {}, ...detectOverflowOptions } = evaluate(options$1, state);
-			const overflow = await detectOverflow$1(state, detectOverflowOptions);
+			const { placement, rects, platform: platform$1, elements } = state$1;
+			const { apply: apply$2 = () => {}, ...detectOverflowOptions } = evaluate(options$1, state$1);
+			const overflow = await detectOverflow$1(state$1, detectOverflowOptions);
 			const side = getSide(placement);
 			const alignment = getAlignment(placement);
 			const isYAxis = getSideAxis(placement) === "y";
@@ -25696,11 +25510,11 @@ var size$2 = function(options$1) {
 			const maximumClippingWidth = width - overflow.left - overflow.right;
 			const overflowAvailableHeight = min$4(height - overflow[heightSide], maximumClippingHeight);
 			const overflowAvailableWidth = min$4(width - overflow[widthSide], maximumClippingWidth);
-			const noShift = !state.middlewareData.shift;
+			const noShift = !state$1.middlewareData.shift;
 			let availableHeight = overflowAvailableHeight;
 			let availableWidth = overflowAvailableWidth;
-			if ((_state$middlewareData = state.middlewareData.shift) != null && _state$middlewareData.enabled.x) availableWidth = maximumClippingWidth;
-			if ((_state$middlewareData2 = state.middlewareData.shift) != null && _state$middlewareData2.enabled.y) availableHeight = maximumClippingHeight;
+			if ((_state$middlewareData = state$1.middlewareData.shift) != null && _state$middlewareData.enabled.x) availableWidth = maximumClippingWidth;
+			if ((_state$middlewareData2 = state$1.middlewareData.shift) != null && _state$middlewareData2.enabled.y) availableHeight = maximumClippingHeight;
 			if (noShift && !alignment) {
 				const xMin = max$5(overflow.left, 0);
 				const xMax = max$5(overflow.right, 0);
@@ -25710,7 +25524,7 @@ var size$2 = function(options$1) {
 				else availableHeight = height - 2 * (yMin !== 0 || yMax !== 0 ? yMin + yMax : max$5(overflow.top, overflow.bottom));
 			}
 			await apply$2({
-				...state,
+				...state$1,
 				availableWidth,
 				availableHeight
 			});
@@ -25769,7 +25583,7 @@ function isTopLayer(element) {
 	return topLayerSelectors.some((selector) => {
 		try {
 			return element.matches(selector);
-		} catch (_e$1) {
+		} catch (_e) {
 			return false;
 		}
 	});
@@ -25886,9 +25700,9 @@ function getScale(element) {
 	const domElement = unwrapElement(element);
 	if (!isHTMLElement(domElement)) return createCoords(1);
 	const rect = domElement.getBoundingClientRect();
-	const { width, height, $: $$1 } = getCssDimensions(domElement);
-	let x$2 = ($$1 ? round(rect.width) : rect.width) / width;
-	let y$1 = ($$1 ? round(rect.height) : rect.height) / height;
+	const { width, height, $ } = getCssDimensions(domElement);
+	let x$2 = ($ ? round(rect.width) : rect.width) / width;
+	let y$1 = ($ ? round(rect.height) : rect.height) / height;
 	if (!x$2 || !Number.isFinite(x$2)) x$2 = 1;
 	if (!y$1 || !Number.isFinite(y$1)) y$1 = 1;
 	return {
@@ -26257,7 +26071,7 @@ function observeMove(element, onMove) {
 				...options$1,
 				root: root$3.ownerDocument
 			});
-		} catch (_e$1) {
+		} catch (_e) {
 			io = new IntersectionObserver(handleObserve, options$1);
 		}
 		io.observe(element);
@@ -26531,19 +26345,19 @@ var arrow$1$1 = (options$1) => {
 	return {
 		name: "arrow",
 		options: options$1,
-		fn(state) {
-			const { element, padding } = typeof options$1 === "function" ? options$1(state) : options$1;
+		fn(state$1) {
+			const { element, padding } = typeof options$1 === "function" ? options$1(state$1) : options$1;
 			if (element && isRef(element)) {
 				if (element.current != null) return arrow$1({
 					element: element.current,
 					padding
-				}).fn(state);
+				}).fn(state$1);
 				return {};
 			}
 			if (element) return arrow$1({
 				element,
 				padding
-			}).fn(state);
+			}).fn(state$1);
 			return {};
 		}
 	};
@@ -26590,7 +26404,7 @@ var Arrow$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 Arrow$1.displayName = NAME$2;
-var Root$10 = Arrow$1;
+var Root$9 = Arrow$1;
 function useSize(element) {
 	const [size$3, setSize] = import_react.useState(void 0);
 	useLayoutEffect2(() => {
@@ -26639,10 +26453,10 @@ var Popper = (props) => {
 	});
 };
 Popper.displayName = POPPER_NAME;
-var ANCHOR_NAME$2 = "PopperAnchor";
+var ANCHOR_NAME$1 = "PopperAnchor";
 var PopperAnchor = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopePopper, virtualRef, ...anchorProps } = props;
-	const context = usePopperContext(ANCHOR_NAME$2, __scopePopper);
+	const context = usePopperContext(ANCHOR_NAME$1, __scopePopper);
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, ref);
 	const anchorRef = import_react.useRef(null);
@@ -26656,12 +26470,12 @@ var PopperAnchor = import_react.forwardRef((props, forwardedRef) => {
 		ref: composedRefs
 	});
 });
-PopperAnchor.displayName = ANCHOR_NAME$2;
-var CONTENT_NAME$9 = "PopperContent";
-var [PopperContentProvider, useContentContext] = createPopperContext(CONTENT_NAME$9);
+PopperAnchor.displayName = ANCHOR_NAME$1;
+var CONTENT_NAME$7 = "PopperContent";
+var [PopperContentProvider, useContentContext] = createPopperContext(CONTENT_NAME$7);
 var PopperContent = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopePopper, side = "bottom", sideOffset = 0, align = "center", alignOffset = 0, arrowPadding = 0, avoidCollisions = true, collisionBoundary = [], collisionPadding: collisionPaddingProp = 0, sticky = "partial", hideWhenDetached = false, updatePositionStrategy = "optimized", onPlaced, ...contentProps } = props;
-	const context = usePopperContext(CONTENT_NAME$9, __scopePopper);
+	const context = usePopperContext(CONTENT_NAME$7, __scopePopper);
 	const [content, setContent] = import_react.useState(null);
 	const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
 	const [arrow$3, setArrow] = import_react.useState(null);
@@ -26774,8 +26588,8 @@ var PopperContent = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-PopperContent.displayName = CONTENT_NAME$9;
-var ARROW_NAME$5 = "PopperArrow";
+PopperContent.displayName = CONTENT_NAME$7;
+var ARROW_NAME$4 = "PopperArrow";
 var OPPOSITE_SIDE = {
 	top: "bottom",
 	right: "left",
@@ -26784,7 +26598,7 @@ var OPPOSITE_SIDE = {
 };
 var PopperArrow = import_react.forwardRef(function PopperArrow2(props, forwardedRef) {
 	const { __scopePopper, ...arrowProps } = props;
-	const contentContext = useContentContext(ARROW_NAME$5, __scopePopper);
+	const contentContext = useContentContext(ARROW_NAME$4, __scopePopper);
 	const baseSide = OPPOSITE_SIDE[contentContext.placedSide];
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 		ref: contentContext.onArrowChange,
@@ -26807,7 +26621,7 @@ var PopperArrow = import_react.forwardRef(function PopperArrow2(props, forwarded
 			}[contentContext.placedSide],
 			visibility: contentContext.shouldHideArrow ? "hidden" : void 0
 		},
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$10, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$9, {
 			...arrowProps,
 			ref: forwardedRef,
 			style: {
@@ -26817,7 +26631,7 @@ var PopperArrow = import_react.forwardRef(function PopperArrow2(props, forwarded
 		})
 	});
 });
-PopperArrow.displayName = ARROW_NAME$5;
+PopperArrow.displayName = ARROW_NAME$4;
 function isNotNull(value) {
 	return value !== null;
 }
@@ -26862,12 +26676,12 @@ function getSideAndAlignFromPlacement(placement) {
 	const [side, align = "center"] = placement.split("-");
 	return [side, align];
 }
-var Root2$6 = Popper;
+var Root2$5 = Popper;
 var Anchor = PopperAnchor;
 var Content$2 = PopperContent;
 var Arrow = PopperArrow;
 var [createTooltipContext, createTooltipScope] = createContextScope("Tooltip", [createPopperScope]);
-var usePopperScope$3 = createPopperScope();
+var usePopperScope$2 = createPopperScope();
 var PROVIDER_NAME = "TooltipProvider";
 var DEFAULT_DELAY_DURATION = 700;
 var TOOLTIP_OPEN = "tooltip.open";
@@ -26907,7 +26721,7 @@ var [TooltipContextProvider, useTooltipContext] = createTooltipContext(TOOLTIP_N
 var Tooltip$2 = (props) => {
 	const { __scopeTooltip, children, open: openProp, defaultOpen, onOpenChange, disableHoverableContent: disableHoverableContentProp, delayDuration: delayDurationProp } = props;
 	const providerContext = useTooltipProviderContext(TOOLTIP_NAME, props.__scopeTooltip);
-	const popperScope = usePopperScope$3(__scopeTooltip);
+	const popperScope = usePopperScope$2(__scopeTooltip);
 	const [trigger, setTrigger] = import_react.useState(null);
 	const contentId = useId();
 	const openTimerRef = import_react.useRef(0);
@@ -26956,7 +26770,7 @@ var Tooltip$2 = (props) => {
 			}
 		};
 	}, []);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$6, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$5, {
 		...popperScope,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipContextProvider, {
 			scope: __scopeTooltip,
@@ -26988,12 +26802,12 @@ var Tooltip$2 = (props) => {
 	});
 };
 Tooltip$2.displayName = TOOLTIP_NAME;
-var TRIGGER_NAME$8 = "TooltipTrigger";
+var TRIGGER_NAME$6 = "TooltipTrigger";
 var TooltipTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTooltip, ...triggerProps } = props;
-	const context = useTooltipContext(TRIGGER_NAME$8, __scopeTooltip);
-	const providerContext = useTooltipProviderContext(TRIGGER_NAME$8, __scopeTooltip);
-	const popperScope = usePopperScope$3(__scopeTooltip);
+	const context = useTooltipContext(TRIGGER_NAME$6, __scopeTooltip);
+	const providerContext = useTooltipProviderContext(TRIGGER_NAME$6, __scopeTooltip);
+	const popperScope = usePopperScope$2(__scopeTooltip);
 	const composedRefs = useComposedRefs(forwardedRef, import_react.useRef(null), context.onTriggerChange);
 	const isPointerDownRef = import_react.useRef(false);
 	const hasPointerMoveOpenedRef = import_react.useRef(false);
@@ -27033,13 +26847,13 @@ var TooltipTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-TooltipTrigger$1.displayName = TRIGGER_NAME$8;
-var PORTAL_NAME$6 = "TooltipPortal";
-var [PortalProvider$3, usePortalContext$3] = createTooltipContext(PORTAL_NAME$6, { forceMount: void 0 });
+TooltipTrigger$1.displayName = TRIGGER_NAME$6;
+var PORTAL_NAME$5 = "TooltipPortal";
+var [PortalProvider$2, usePortalContext$2] = createTooltipContext(PORTAL_NAME$5, { forceMount: void 0 });
 var TooltipPortal = (props) => {
 	const { __scopeTooltip, forceMount, children, container } = props;
-	const context = useTooltipContext(PORTAL_NAME$6, __scopeTooltip);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PortalProvider$3, {
+	const context = useTooltipContext(PORTAL_NAME$5, __scopeTooltip);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PortalProvider$2, {
 		scope: __scopeTooltip,
 		forceMount,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
@@ -27052,12 +26866,12 @@ var TooltipPortal = (props) => {
 		})
 	});
 };
-TooltipPortal.displayName = PORTAL_NAME$6;
-var CONTENT_NAME$8 = "TooltipContent";
+TooltipPortal.displayName = PORTAL_NAME$5;
+var CONTENT_NAME$6 = "TooltipContent";
 var TooltipContent$1 = import_react.forwardRef((props, forwardedRef) => {
-	const portalContext = usePortalContext$3(CONTENT_NAME$8, props.__scopeTooltip);
+	const portalContext = usePortalContext$2(CONTENT_NAME$6, props.__scopeTooltip);
 	const { forceMount = portalContext.forceMount, side = "top", ...contentProps } = props;
-	const context = useTooltipContext(CONTENT_NAME$8, props.__scopeTooltip);
+	const context = useTooltipContext(CONTENT_NAME$6, props.__scopeTooltip);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || context.open,
 		children: context.disableHoverableContent ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipContentImpl, {
@@ -27072,8 +26886,8 @@ var TooltipContent$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 var TooltipContentHoverable = import_react.forwardRef((props, forwardedRef) => {
-	const context = useTooltipContext(CONTENT_NAME$8, props.__scopeTooltip);
-	const providerContext = useTooltipProviderContext(CONTENT_NAME$8, props.__scopeTooltip);
+	const context = useTooltipContext(CONTENT_NAME$6, props.__scopeTooltip);
+	const providerContext = useTooltipProviderContext(CONTENT_NAME$6, props.__scopeTooltip);
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, ref);
 	const [pointerGraceArea, setPointerGraceArea] = import_react.useState(null);
@@ -27150,8 +26964,8 @@ var [VisuallyHiddenContentContextProvider, useVisuallyHiddenContentContext] = cr
 var Slottable$1 = /* @__PURE__ */ createSlottable("TooltipContent");
 var TooltipContentImpl = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTooltip, children, "aria-label": ariaLabel, onEscapeKeyDown, onPointerDownOutside, ...contentProps } = props;
-	const context = useTooltipContext(CONTENT_NAME$8, __scopeTooltip);
-	const popperScope = usePopperScope$3(__scopeTooltip);
+	const context = useTooltipContext(CONTENT_NAME$6, __scopeTooltip);
+	const popperScope = usePopperScope$2(__scopeTooltip);
 	const { onClose } = context;
 	import_react.useEffect(() => {
 		document.addEventListener(TOOLTIP_OPEN, onClose);
@@ -27189,7 +27003,7 @@ var TooltipContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Slottable$1, { children }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VisuallyHiddenContentContextProvider, {
 				scope: __scopeTooltip,
 				isInside: true,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$11, {
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$10, {
 					id: context.contentId,
 					role: "tooltip",
 					children: ariaLabel || children
@@ -27198,18 +27012,18 @@ var TooltipContentImpl = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-TooltipContent$1.displayName = CONTENT_NAME$8;
-var ARROW_NAME$4 = "TooltipArrow";
+TooltipContent$1.displayName = CONTENT_NAME$6;
+var ARROW_NAME$3 = "TooltipArrow";
 var TooltipArrow = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTooltip, ...arrowProps } = props;
-	const popperScope = usePopperScope$3(__scopeTooltip);
-	return useVisuallyHiddenContentContext(ARROW_NAME$4, __scopeTooltip).isInside ? null : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Arrow, {
+	const popperScope = usePopperScope$2(__scopeTooltip);
+	return useVisuallyHiddenContentContext(ARROW_NAME$3, __scopeTooltip).isInside ? null : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Arrow, {
 		...popperScope,
 		...arrowProps,
 		ref: forwardedRef
 	});
 });
-TooltipArrow.displayName = ARROW_NAME$4;
+TooltipArrow.displayName = ARROW_NAME$3;
 function getExitSideFromRect(point$3, rect) {
 	const top = Math.abs(rect.top - point$3.y);
 	const bottom = Math.abs(rect.bottom - point$3.y);
@@ -27315,42 +27129,42 @@ function getHullPresorted(points) {
 	if (points.length <= 1) return points.slice();
 	const upperHull = [];
 	for (let i = 0; i < points.length; i++) {
-		const p$1 = points[i];
+		const p = points[i];
 		while (upperHull.length >= 2) {
 			const q = upperHull[upperHull.length - 1];
 			const r$1 = upperHull[upperHull.length - 2];
-			if ((q.x - r$1.x) * (p$1.y - r$1.y) >= (q.y - r$1.y) * (p$1.x - r$1.x)) upperHull.pop();
+			if ((q.x - r$1.x) * (p.y - r$1.y) >= (q.y - r$1.y) * (p.x - r$1.x)) upperHull.pop();
 			else break;
 		}
-		upperHull.push(p$1);
+		upperHull.push(p);
 	}
 	upperHull.pop();
 	const lowerHull = [];
 	for (let i = points.length - 1; i >= 0; i--) {
-		const p$1 = points[i];
+		const p = points[i];
 		while (lowerHull.length >= 2) {
 			const q = lowerHull[lowerHull.length - 1];
 			const r$1 = lowerHull[lowerHull.length - 2];
-			if ((q.x - r$1.x) * (p$1.y - r$1.y) >= (q.y - r$1.y) * (p$1.x - r$1.x)) lowerHull.pop();
+			if ((q.x - r$1.x) * (p.y - r$1.y) >= (q.y - r$1.y) * (p.x - r$1.x)) lowerHull.pop();
 			else break;
 		}
-		lowerHull.push(p$1);
+		lowerHull.push(p);
 	}
 	lowerHull.pop();
 	if (upperHull.length === 1 && lowerHull.length === 1 && upperHull[0].x === lowerHull[0].x && upperHull[0].y === lowerHull[0].y) return upperHull;
 	else return upperHull.concat(lowerHull);
 }
 var Provider = TooltipProvider$1;
-var Portal$5 = TooltipPortal;
-var Content2$5 = TooltipContent$1;
+var Portal$4 = TooltipPortal;
+var Content2$4 = TooltipContent$1;
 var TooltipProvider = Provider;
-var TooltipContent = import_react.forwardRef(({ className, sideOffset = 4, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal$5, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2$5, {
+var TooltipContent = import_react.forwardRef(({ className, sideOffset = 4, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal$4, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2$4, {
 	ref,
 	sideOffset,
 	className: cn("z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-tooltip-content-transform-origin]", className),
 	...props
 }) }));
-TooltipContent.displayName = Content2$5.displayName;
+TooltipContent.displayName = Content2$4.displayName;
 var Card = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 	ref,
 	className: cn("rounded-lg border bg-card text-card-foreground shadow-sm", className),
@@ -28035,7 +27849,7 @@ function PreviousMonthButton(props) {
 	const { components } = useDayPicker();
 	return import_react.createElement(components.Button, { ...props });
 }
-function Root$9(props) {
+function Root$8(props) {
 	const { rootRef, ...rest } = props;
 	return import_react.createElement("div", {
 		...rest,
@@ -28087,7 +27901,7 @@ var custom_components_exports = /* @__PURE__ */ __export({
 	NextMonthButton: () => NextMonthButton,
 	Option: () => Option,
 	PreviousMonthButton: () => PreviousMonthButton,
-	Root: () => Root$9,
+	Root: () => Root$8,
 	Select: () => Select$2,
 	Week: () => Week,
 	WeekNumber: () => WeekNumber,
@@ -29251,25 +29065,25 @@ function DayPicker(initialProps) {
 		nextMonth,
 		onNextClick
 	]);
-	const handleDayClick = (0, import_react.useCallback)((day, m$1) => (e) => {
+	const handleDayClick = (0, import_react.useCallback)((day, m) => (e) => {
 		e.preventDefault();
 		e.stopPropagation();
 		setFocused(day);
-		if (m$1.disabled) return;
-		select?.(day.date, m$1, e);
-		onDayClick?.(day.date, m$1, e);
+		if (m.disabled) return;
+		select?.(day.date, m, e);
+		onDayClick?.(day.date, m, e);
 	}, [
 		select,
 		onDayClick,
 		setFocused
 	]);
-	const handleDayFocus = (0, import_react.useCallback)((day, m$1) => (e) => {
+	const handleDayFocus = (0, import_react.useCallback)((day, m) => (e) => {
 		setFocused(day);
-		onDayFocus?.(day.date, m$1, e);
+		onDayFocus?.(day.date, m, e);
 	}, [onDayFocus, setFocused]);
-	const handleDayBlur = (0, import_react.useCallback)((day, m$1) => (e) => {
+	const handleDayBlur = (0, import_react.useCallback)((day, m) => (e) => {
 		blur();
-		onDayBlur?.(day.date, m$1, e);
+		onDayBlur?.(day.date, m, e);
 	}, [blur, onDayBlur]);
 	const handleDayKeyDown = (0, import_react.useCallback)((day, modifiers) => (e) => {
 		const keyMap = {
@@ -29598,7 +29412,7 @@ function createSlot$1(ownerName) {
 	Slot2.displayName = `${ownerName}.Slot`;
 	return Slot2;
 }
-var Slot$3 = /* @__PURE__ */ createSlot$1("Slot");
+var Slot$2 = /* @__PURE__ */ createSlot$1("Slot");
 /* @__NO_SIDE_EFFECTS__ */
 function createSlotClone(ownerName) {
 	const SlotClone = import_react.forwardRef((props, forwardedRef) => {
@@ -29674,7 +29488,7 @@ var buttonVariants = cva("inline-flex items-center justify-center gap-2 whitespa
 	}
 });
 var Button = import_react.forwardRef(({ className, variant, size: size$3, asChild = false, ...props }, ref) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(asChild ? Slot$3 : "button", {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(asChild ? Slot$2 : "button", {
 		className: cn(buttonVariants({
 			variant,
 			size: size$3,
@@ -30355,9 +30169,9 @@ var require_react_is_development$1 = /* @__PURE__ */ __commonJSMin(((exports) =>
 		var Fragment$5 = REACT_FRAGMENT_TYPE;
 		var Lazy = REACT_LAZY_TYPE$1;
 		var Memo = REACT_MEMO_TYPE;
-		var Portal$6 = REACT_PORTAL_TYPE;
+		var Portal$5 = REACT_PORTAL_TYPE;
 		var Profiler = REACT_PROFILER_TYPE;
-		var StrictMode = REACT_STRICT_MODE_TYPE;
+		var StrictMode$1 = REACT_STRICT_MODE_TYPE;
 		var Suspense = REACT_SUSPENSE_TYPE;
 		var SuspenseList = REACT_SUSPENSE_LIST_TYPE;
 		var hasWarnedAboutDeprecatedIsAsyncMode = false;
@@ -30419,9 +30233,9 @@ var require_react_is_development$1 = /* @__PURE__ */ __commonJSMin(((exports) =>
 		exports.Fragment = Fragment$5;
 		exports.Lazy = Lazy;
 		exports.Memo = Memo;
-		exports.Portal = Portal$6;
+		exports.Portal = Portal$5;
 		exports.Profiler = Profiler;
-		exports.StrictMode = StrictMode;
+		exports.StrictMode = StrictMode$1;
 		exports.Suspense = Suspense;
 		exports.SuspenseList = SuspenseList;
 		exports.isAsyncMode = isAsyncMode;
@@ -31547,10 +31361,10 @@ function appendRound(digits) {
 	let d = Math.floor(digits);
 	if (!(d >= 0)) throw new Error(`invalid digits: ${digits}`);
 	if (d > 15) return append;
-	const k$3 = 10 ** d;
+	const k$1 = 10 ** d;
 	return function(strings) {
 		this._ += strings[0];
-		for (let i = 1, n = strings.length; i < n; ++i) this._ += Math.round(arguments[i] * k$3) / k$3 + strings[i];
+		for (let i = 1, n = strings.length; i < n; ++i) this._ += Math.round(arguments[i] * k$1) / k$1 + strings[i];
 	};
 }
 var Path = class {
@@ -31664,11 +31478,11 @@ Linear.prototype = {
 function linear_default(context) {
 	return new Linear(context);
 }
-function x(p$1) {
-	return p$1[0];
+function x(p) {
+	return p[0];
 }
-function y(p$1) {
-	return p$1[1];
+function y(p) {
+	return p[1];
 }
 function line_default(x$2, y$1) {
 	var defined$1 = constant_default$1(true), context = null, curve = linear_default, output = null, path$1 = withPath(line);
@@ -31707,7 +31521,7 @@ function area_default(x0, y0, y1) {
 	y0 = typeof y0 === "function" ? y0 : y0 === void 0 ? constant_default$1(0) : constant_default$1(+y0);
 	y1 = typeof y1 === "function" ? y1 : y1 === void 0 ? y : constant_default$1(+y1);
 	function area(data) {
-		var i, j, k$3, n = (data = array_default(data)).length, d, defined0 = false, buffer, x0z = new Array(n), y0z = new Array(n);
+		var i, j, k$1, n = (data = array_default(data)).length, d, defined0 = false, buffer, x0z = new Array(n), y0z = new Array(n);
 		if (context == null) output = curve(buffer = path$1());
 		for (i = 0; i <= n; ++i) {
 			if (!(i < n && defined$1(d = data[i], i, data)) === defined0) if (defined0 = !defined0) {
@@ -31717,7 +31531,7 @@ function area_default(x0, y0, y1) {
 			} else {
 				output.lineEnd();
 				output.lineStart();
-				for (k$3 = i - 1; k$3 >= j; --k$3) output.point(x0z[k$3], y0z[k$3]);
+				for (k$1 = i - 1; k$1 >= j; --k$1) output.point(x0z[k$1], y0z[k$1]);
 				output.lineEnd();
 				output.areaEnd();
 			}
@@ -31876,12 +31690,12 @@ var triangle_default = { draw(context, size$3) {
 } };
 var c = -.5;
 var s = sqrt$1(3) / 2;
-var k$2 = 1 / sqrt$1(12);
-var a = (k$2 / 2 + 1) * 3;
+var k = 1 / sqrt$1(12);
+var a = (k / 2 + 1) * 3;
 var wye_default = { draw(context, size$3) {
 	const r$1 = sqrt$1(size$3 / a);
-	const x0 = r$1 / 2, y0 = r$1 * k$2;
-	const x1 = x0, y1 = r$1 * k$2 + r$1;
+	const x0 = r$1 / 2, y0 = r$1 * k;
+	const x1 = x0, y1 = r$1 * k + r$1;
 	const x2 = -x1, y2 = y1;
 	context.moveTo(x0, y0);
 	context.lineTo(x1, y1);
@@ -32091,8 +31905,8 @@ function sign(x$2) {
 	return x$2 < 0 ? -1 : 1;
 }
 function slope3(that, x2, y2) {
-	var h0 = that._x1 - that._x0, h1 = x2 - that._x1, s0 = (that._y1 - that._y0) / (h0 || h1 < 0 && -0), s1 = (y2 - that._y1) / (h1 || h0 < 0 && -0), p$1 = (s0 * h1 + s1 * h0) / (h0 + h1);
-	return (sign(s0) + sign(s1)) * Math.min(Math.abs(s0), Math.abs(s1), .5 * Math.abs(p$1)) || 0;
+	var h0 = that._x1 - that._x0, h1 = x2 - that._x1, s0 = (that._y1 - that._y0) / (h0 || h1 < 0 && -0), s1 = (y2 - that._y1) / (h1 || h0 < 0 && -0), p = (s0 * h1 + s1 * h0) / (h0 + h1);
+	return (sign(s0) + sign(s1)) * Math.min(Math.abs(s0), Math.abs(s1), .5 * Math.abs(p)) || 0;
 }
 function slope2(that, t) {
 	var h = that._x1 - that._x0;
@@ -32216,11 +32030,11 @@ Natural.prototype = {
 	}
 };
 function controlPoints(x$2) {
-	var i, n = x$2.length - 1, m$1, a$1 = new Array(n), b$1 = new Array(n), r$1 = new Array(n);
+	var i, n = x$2.length - 1, m, a$1 = new Array(n), b$1 = new Array(n), r$1 = new Array(n);
 	a$1[0] = 0, b$1[0] = 2, r$1[0] = x$2[0] + 2 * x$2[1];
 	for (i = 1; i < n - 1; ++i) a$1[i] = 1, b$1[i] = 4, r$1[i] = 4 * x$2[i] + 2 * x$2[i + 1];
 	a$1[n - 1] = 2, b$1[n - 1] = 7, r$1[n - 1] = 8 * x$2[n - 1] + x$2[n];
-	for (i = 1; i < n; ++i) m$1 = a$1[i] / b$1[i - 1], b$1[i] -= m$1, r$1[i] -= m$1 * r$1[i - 1];
+	for (i = 1; i < n; ++i) m = a$1[i] / b$1[i - 1], b$1[i] -= m, r$1[i] -= m * r$1[i - 1];
 	a$1[n - 1] = r$1[n - 1] / b$1[n - 1];
 	for (i = n - 2; i >= 0; --i) a$1[i] = (r$1[i] - a$1[i + 1]) / b$1[i];
 	b$1[n - 1] = (x$2[n] + a$1[n - 1]) / 2;
@@ -32283,9 +32097,9 @@ function stepAfter(context) {
 }
 function none_default(series, order) {
 	if (!((n = series.length) > 1)) return;
-	for (var i = 1, j, s0, s1 = series[order[0]], n, m$1 = s1.length; i < n; ++i) {
+	for (var i = 1, j, s0, s1 = series[order[0]], n, m = s1.length; i < n; ++i) {
 		s0 = s1, s1 = series[order[i]];
-		for (j = 0; j < m$1; ++j) s1[j][1] += s1[j][0] = isNaN(s0[j][1]) ? s0[j][0] : s0[j][1];
+		for (j = 0; j < m; ++j) s1[j][1] += s1[j][0] = isNaN(s0[j][1]) ? s0[j][0] : s0[j][1];
 	}
 }
 function none_default$1(series) {
@@ -32326,7 +32140,7 @@ function stack_default() {
 }
 function expand_default(series, order) {
 	if (!((n = series.length) > 0)) return;
-	for (var i, n, j = 0, m$1 = series[0].length, y$1; j < m$1; ++j) {
+	for (var i, n, j = 0, m = series[0].length, y$1; j < m; ++j) {
 		for (y$1 = i = 0; i < n; ++i) y$1 += series[i][j][1] || 0;
 		if (y$1) for (i = 0; i < n; ++i) series[i][j][1] /= y$1;
 	}
@@ -32334,19 +32148,19 @@ function expand_default(series, order) {
 }
 function silhouette_default(series, order) {
 	if (!((n = series.length) > 0)) return;
-	for (var j = 0, s0 = series[order[0]], n, m$1 = s0.length; j < m$1; ++j) {
+	for (var j = 0, s0 = series[order[0]], n, m = s0.length; j < m; ++j) {
 		for (var i = 0, y$1 = 0; i < n; ++i) y$1 += series[i][j][1] || 0;
 		s0[j][1] += s0[j][0] = -y$1 / 2;
 	}
 	none_default(series, order);
 }
 function wiggle_default(series, order) {
-	if (!((n = series.length) > 0) || !((m$1 = (s0 = series[order[0]]).length) > 0)) return;
-	for (var y$1 = 0, j = 1, s0, m$1, n; j < m$1; ++j) {
+	if (!((n = series.length) > 0) || !((m = (s0 = series[order[0]]).length) > 0)) return;
+	for (var y$1 = 0, j = 1, s0, m, n; j < m; ++j) {
 		for (var i = 0, s1 = 0, s2 = 0; i < n; ++i) {
 			var si = series[order[i]], sij0 = si[j][1] || 0, s3 = (sij0 - (si[j - 1][1] || 0)) / 2;
-			for (var k$3 = 0; k$3 < i; ++k$3) {
-				var sk = series[order[k$3]], skj0 = sk[j][1] || 0, skj1 = sk[j - 1][1] || 0;
+			for (var k$1 = 0; k$1 < i; ++k$1) {
+				var sk = series[order[k$1]], skj0 = sk[j][1] || 0, skj1 = sk[j - 1][1] || 0;
 				s3 += skj0 - skj1;
 			}
 			s1 += sij0, s2 += s3 * sij0;
@@ -32596,12 +32410,12 @@ function _inherits$21(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$21(subClass, superClass);
 }
-function _setPrototypeOf$21(o, p$1) {
-	_setPrototypeOf$21 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$21(o, p) {
+	_setPrototypeOf$21 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$21(o, p$1);
+	return _setPrototypeOf$21(o, p);
 }
 function _defineProperty$45(obj, key, value) {
 	key = _toPropertyKey$46(key);
@@ -33597,12 +33411,12 @@ function _inherits$20(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$20(subClass, superClass);
 }
-function _setPrototypeOf$20(o, p$1) {
-	_setPrototypeOf$20 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$20(o, p) {
+	_setPrototypeOf$20 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$20(o, p$1);
+	return _setPrototypeOf$20(o, p);
 }
 function _defineProperty$44(obj, key, value) {
 	key = _toPropertyKey$45(key);
@@ -34068,7 +33882,7 @@ function _arrayLikeToArray$21(arr, len) {
 function _iterableToArrayLimit$12(r$1, l) {
 	var t = null == r$1 ? null : "undefined" != typeof Symbol && r$1[Symbol.iterator] || r$1["@@iterator"];
 	if (null != t) {
-		var e, n, i, u$1, a$1 = [], f = !0, o = !1;
+		var e, n, i, u, a$1 = [], f = !0, o = !1;
 		try {
 			if (i = (t = t.call(r$1)).next, 0 === l) {
 				if (Object(t) !== t) return;
@@ -34078,7 +33892,7 @@ function _iterableToArrayLimit$12(r$1, l) {
 			o = !0, n = r$2;
 		} finally {
 			try {
-				if (!f && null != t["return"] && (u$1 = t["return"](), Object(u$1) !== u$1)) return;
+				if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
 			} finally {
 				if (o) throw n;
 			}
@@ -34384,12 +34198,12 @@ function _inherits$19(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$19(subClass, superClass);
 }
-function _setPrototypeOf$19(o, p$1) {
-	_setPrototypeOf$19 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$19(o, p) {
+	_setPrototypeOf$19 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$19(o, p$1);
+	return _setPrototypeOf$19(o, p);
 }
 function _defineProperty$41(obj, key, value) {
 	key = _toPropertyKey$42(key);
@@ -34532,8 +34346,8 @@ var Global = {
 		if (typeof key === "string") Global[key] = value;
 		else {
 			var keys$6 = Object.keys(key);
-			if (keys$6 && keys$6.length) keys$6.forEach(function(k$3) {
-				Global[k$3] = key[k$3];
+			if (keys$6 && keys$6.length) keys$6.forEach(function(k$1) {
+				Global[k$1] = key[k$1];
 			});
 		}
 	}
@@ -34621,12 +34435,12 @@ function _inherits$18(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$18(subClass, superClass);
 }
-function _setPrototypeOf$18(o, p$1) {
-	_setPrototypeOf$18 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$18(o, p) {
+	_setPrototypeOf$18 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$18(o, p$1);
+	return _setPrototypeOf$18(o, p);
 }
 function _defineProperty$40(obj, key, value) {
 	key = _toPropertyKey$41(key);
@@ -34946,7 +34760,7 @@ function _arrayLikeToArray$20(arr, len) {
 function _iterableToArrayLimit$11(r$1, l) {
 	var t = null == r$1 ? null : "undefined" != typeof Symbol && r$1[Symbol.iterator] || r$1["@@iterator"];
 	if (null != t) {
-		var e, n, i, u$1, a$1 = [], f = !0, o = !1;
+		var e, n, i, u, a$1 = [], f = !0, o = !1;
 		try {
 			if (i = (t = t.call(r$1)).next, 0 === l) {
 				if (Object(t) !== t) return;
@@ -34956,7 +34770,7 @@ function _iterableToArrayLimit$11(r$1, l) {
 			o = !0, n = r$2;
 		} finally {
 			try {
-				if (!f && null != t["return"] && (u$1 = t["return"](), Object(u$1) !== u$1)) return;
+				if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
 			} finally {
 				if (o) throw n;
 			}
@@ -35224,7 +35038,7 @@ function _arrayLikeToArray$19(arr, len) {
 function _iterableToArrayLimit$10(r$1, l) {
 	var t = null == r$1 ? null : "undefined" != typeof Symbol && r$1[Symbol.iterator] || r$1["@@iterator"];
 	if (null != t) {
-		var e, n, i, u$1, a$1 = [], f = !0, o = !1;
+		var e, n, i, u, a$1 = [], f = !0, o = !1;
 		try {
 			if (i = (t = t.call(r$1)).next, 0 === l) {
 				if (Object(t) !== t) return;
@@ -35234,7 +35048,7 @@ function _iterableToArrayLimit$10(r$1, l) {
 			o = !0, n = r$2;
 		} finally {
 			try {
-				if (!f && null != t["return"] && (u$1 = t["return"](), Object(u$1) !== u$1)) return;
+				if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
 			} finally {
 				if (o) throw n;
 			}
@@ -35486,7 +35300,7 @@ function _arrayLikeToArray$18(arr, len) {
 function _iterableToArrayLimit$9(r$1, l) {
 	var t = null == r$1 ? null : "undefined" != typeof Symbol && r$1[Symbol.iterator] || r$1["@@iterator"];
 	if (null != t) {
-		var e, n, i, u$1, a$1 = [], f = !0, o = !1;
+		var e, n, i, u, a$1 = [], f = !0, o = !1;
 		try {
 			if (i = (t = t.call(r$1)).next, 0 === l) {
 				if (Object(t) !== t) return;
@@ -35496,7 +35310,7 @@ function _iterableToArrayLimit$9(r$1, l) {
 			o = !0, n = r$2;
 		} finally {
 			try {
-				if (!f && null != t["return"] && (u$1 = t["return"](), Object(u$1) !== u$1)) return;
+				if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
 			} finally {
 				if (o) throw n;
 			}
@@ -35858,27 +35672,27 @@ function min$2(values, valueof) {
 	}
 	return min$5;
 }
-function quickselect(array, k$3, left = 0, right = Infinity, compare) {
-	k$3 = Math.floor(k$3);
+function quickselect(array, k$1, left = 0, right = Infinity, compare) {
+	k$1 = Math.floor(k$1);
 	left = Math.floor(Math.max(0, left));
 	right = Math.floor(Math.min(array.length - 1, right));
-	if (!(left <= k$3 && k$3 <= right)) return array;
+	if (!(left <= k$1 && k$1 <= right)) return array;
 	compare = compare === void 0 ? ascendingDefined : compareDefined(compare);
 	while (right > left) {
 		if (right - left > 600) {
 			const n = right - left + 1;
-			const m$1 = k$3 - left + 1;
+			const m = k$1 - left + 1;
 			const z$1 = Math.log(n);
 			const s$1 = .5 * Math.exp(2 * z$1 / 3);
-			const sd = .5 * Math.sqrt(z$1 * s$1 * (n - s$1) / n) * (m$1 - n / 2 < 0 ? -1 : 1);
-			const newLeft = Math.max(left, Math.floor(k$3 - m$1 * s$1 / n + sd));
-			const newRight = Math.min(right, Math.floor(k$3 + (n - m$1) * s$1 / n + sd));
-			quickselect(array, k$3, newLeft, newRight, compare);
+			const sd = .5 * Math.sqrt(z$1 * s$1 * (n - s$1) / n) * (m - n / 2 < 0 ? -1 : 1);
+			const newLeft = Math.max(left, Math.floor(k$1 - m * s$1 / n + sd));
+			const newRight = Math.min(right, Math.floor(k$1 + (n - m) * s$1 / n + sd));
+			quickselect(array, k$1, newLeft, newRight, compare);
 		}
-		const t = array[k$3];
+		const t = array[k$1];
 		let i = left;
 		let j = right;
-		swap(array, left, k$3);
+		swap(array, left, k$1);
 		if (compare(array[right], t) > 0) swap(array, left, right);
 		while (i < j) {
 			swap(array, i, j), ++i, --j;
@@ -35887,8 +35701,8 @@ function quickselect(array, k$3, left = 0, right = Infinity, compare) {
 		}
 		if (compare(array[left], t) === 0) swap(array, left, j);
 		else ++j, swap(array, j, right);
-		if (j <= k$3) left = j + 1;
-		if (k$3 <= j) right = j - 1;
+		if (j <= k$1) left = j + 1;
+		if (k$1 <= j) right = j - 1;
 	}
 	return array;
 }
@@ -35897,19 +35711,19 @@ function swap(array, i, j) {
 	array[i] = array[j];
 	array[j] = t;
 }
-function quantile(values, p$1, valueof) {
+function quantile(values, p, valueof) {
 	values = Float64Array.from(numbers(values, valueof));
-	if (!(n = values.length) || isNaN(p$1 = +p$1)) return;
-	if (p$1 <= 0 || n < 2) return min$2(values);
-	if (p$1 >= 1) return max$3(values);
-	var n, i = (n - 1) * p$1, i0 = Math.floor(i), value0 = max$3(quickselect(values, i0).subarray(0, i0 + 1));
+	if (!(n = values.length) || isNaN(p = +p)) return;
+	if (p <= 0 || n < 2) return min$2(values);
+	if (p >= 1) return max$3(values);
+	var n, i = (n - 1) * p, i0 = Math.floor(i), value0 = max$3(quickselect(values, i0).subarray(0, i0 + 1));
 	return value0 + (min$2(values.subarray(i0 + 1)) - value0) * (i - i0);
 }
-function quantileSorted(values, p$1, valueof = number$2) {
-	if (!(n = values.length) || isNaN(p$1 = +p$1)) return;
-	if (p$1 <= 0 || n < 2) return +valueof(values[0], 0, values);
-	if (p$1 >= 1) return +valueof(values[n - 1], n - 1, values);
-	var n, i = (n - 1) * p$1, i0 = Math.floor(i), value0 = +valueof(values[i0], i0, values);
+function quantileSorted(values, p, valueof = number$2) {
+	if (!(n = values.length) || isNaN(p = +p)) return;
+	if (p <= 0 || n < 2) return +valueof(values[0], 0, values);
+	if (p >= 1) return +valueof(values[n - 1], n - 1, values);
+	var n, i = (n - 1) * p, i0 = Math.floor(i), value0 = +valueof(values[i0], i0, values);
 	return value0 + (+valueof(values[i0 + 1], i0 + 1, values) - value0) * (i - i0);
 }
 function range$4(start, stop, step) {
@@ -36230,9 +36044,9 @@ function color_formatRgb() {
 	return this.rgb().formatRgb();
 }
 function color(format$2) {
-	var m$1, l;
+	var m, l;
 	format$2 = (format$2 + "").trim().toLowerCase();
-	return (m$1 = reHex.exec(format$2)) ? (l = m$1[1].length, m$1 = parseInt(m$1[1], 16), l === 6 ? rgbn(m$1) : l === 3 ? new Rgb(m$1 >> 8 & 15 | m$1 >> 4 & 240, m$1 >> 4 & 15 | m$1 & 240, (m$1 & 15) << 4 | m$1 & 15, 1) : l === 8 ? rgba(m$1 >> 24 & 255, m$1 >> 16 & 255, m$1 >> 8 & 255, (m$1 & 255) / 255) : l === 4 ? rgba(m$1 >> 12 & 15 | m$1 >> 8 & 240, m$1 >> 8 & 15 | m$1 >> 4 & 240, m$1 >> 4 & 15 | m$1 & 240, ((m$1 & 15) << 4 | m$1 & 15) / 255) : null) : (m$1 = reRgbInteger.exec(format$2)) ? new Rgb(m$1[1], m$1[2], m$1[3], 1) : (m$1 = reRgbPercent.exec(format$2)) ? new Rgb(m$1[1] * 255 / 100, m$1[2] * 255 / 100, m$1[3] * 255 / 100, 1) : (m$1 = reRgbaInteger.exec(format$2)) ? rgba(m$1[1], m$1[2], m$1[3], m$1[4]) : (m$1 = reRgbaPercent.exec(format$2)) ? rgba(m$1[1] * 255 / 100, m$1[2] * 255 / 100, m$1[3] * 255 / 100, m$1[4]) : (m$1 = reHslPercent.exec(format$2)) ? hsla(m$1[1], m$1[2] / 100, m$1[3] / 100, 1) : (m$1 = reHslaPercent.exec(format$2)) ? hsla(m$1[1], m$1[2] / 100, m$1[3] / 100, m$1[4]) : named.hasOwnProperty(format$2) ? rgbn(named[format$2]) : format$2 === "transparent" ? new Rgb(NaN, NaN, NaN, 0) : null;
+	return (m = reHex.exec(format$2)) ? (l = m[1].length, m = parseInt(m[1], 16), l === 6 ? rgbn(m) : l === 3 ? new Rgb(m >> 8 & 15 | m >> 4 & 240, m >> 4 & 15 | m & 240, (m & 15) << 4 | m & 15, 1) : l === 8 ? rgba(m >> 24 & 255, m >> 16 & 255, m >> 8 & 255, (m & 255) / 255) : l === 4 ? rgba(m >> 12 & 15 | m >> 8 & 240, m >> 8 & 15 | m >> 4 & 240, m >> 4 & 15 | m & 240, ((m & 15) << 4 | m & 15) / 255) : null) : (m = reRgbInteger.exec(format$2)) ? new Rgb(m[1], m[2], m[3], 1) : (m = reRgbPercent.exec(format$2)) ? new Rgb(m[1] * 255 / 100, m[2] * 255 / 100, m[3] * 255 / 100, 1) : (m = reRgbaInteger.exec(format$2)) ? rgba(m[1], m[2], m[3], m[4]) : (m = reRgbaPercent.exec(format$2)) ? rgba(m[1] * 255 / 100, m[2] * 255 / 100, m[3] * 255 / 100, m[4]) : (m = reHslPercent.exec(format$2)) ? hsla(m[1], m[2] / 100, m[3] / 100, 1) : (m = reHslaPercent.exec(format$2)) ? hsla(m[1], m[2] / 100, m[3] / 100, m[4]) : named.hasOwnProperty(format$2) ? rgbn(named[format$2]) : format$2 === "transparent" ? new Rgb(NaN, NaN, NaN, 0) : null;
 }
 function rgbn(n) {
 	return new Rgb(n >> 16 & 255, n >> 8 & 255, n & 255, 1);
@@ -36257,13 +36071,13 @@ function Rgb(r$1, g, b$1, opacity) {
 	this.opacity = +opacity;
 }
 define_default(Rgb, rgb, extend(Color, {
-	brighter(k$3) {
-		k$3 = k$3 == null ? brighter : Math.pow(brighter, k$3);
-		return new Rgb(this.r * k$3, this.g * k$3, this.b * k$3, this.opacity);
+	brighter(k$1) {
+		k$1 = k$1 == null ? brighter : Math.pow(brighter, k$1);
+		return new Rgb(this.r * k$1, this.g * k$1, this.b * k$1, this.opacity);
 	},
-	darker(k$3) {
-		k$3 = k$3 == null ? darker : Math.pow(darker, k$3);
-		return new Rgb(this.r * k$3, this.g * k$3, this.b * k$3, this.opacity);
+	darker(k$1) {
+		k$1 = k$1 == null ? darker : Math.pow(darker, k$1);
+		return new Rgb(this.r * k$1, this.g * k$1, this.b * k$1, this.opacity);
 	},
 	rgb() {
 		return this;
@@ -36332,13 +36146,13 @@ function Hsl(h, s$1, l, opacity) {
 	this.opacity = +opacity;
 }
 define_default(Hsl, hsl, extend(Color, {
-	brighter(k$3) {
-		k$3 = k$3 == null ? brighter : Math.pow(brighter, k$3);
-		return new Hsl(this.h, this.s, this.l * k$3, this.opacity);
+	brighter(k$1) {
+		k$1 = k$1 == null ? brighter : Math.pow(brighter, k$1);
+		return new Hsl(this.h, this.s, this.l * k$1, this.opacity);
 	},
-	darker(k$3) {
-		k$3 = k$3 == null ? darker : Math.pow(darker, k$3);
-		return new Hsl(this.h, this.s, this.l * k$3, this.opacity);
+	darker(k$1) {
+		k$1 = k$1 == null ? darker : Math.pow(darker, k$1);
+		return new Hsl(this.h, this.s, this.l * k$1, this.opacity);
 	},
 	rgb() {
 		var h = this.h % 360 + (this.h < 0) * 360, s$1 = isNaN(h) || isNaN(this.s) ? 0 : this.s, l = this.l, m2 = l + (l < .5 ? l : 1 - l) * s$1, m1 = 2 * l - m2;
@@ -36473,13 +36287,13 @@ function number_default(a$1, b$1) {
 	};
 }
 function object_default(a$1, b$1) {
-	var i = {}, c$1 = {}, k$3;
+	var i = {}, c$1 = {}, k$1;
 	if (a$1 === null || typeof a$1 !== "object") a$1 = {};
 	if (b$1 === null || typeof b$1 !== "object") b$1 = {};
-	for (k$3 in b$1) if (k$3 in a$1) i[k$3] = value_default(a$1[k$3], b$1[k$3]);
-	else c$1[k$3] = b$1[k$3];
+	for (k$1 in b$1) if (k$1 in a$1) i[k$1] = value_default(a$1[k$1], b$1[k$1]);
+	else c$1[k$1] = b$1[k$1];
 	return function(t) {
-		for (k$3 in i) c$1[k$3] = i[k$3](t);
+		for (k$1 in i) c$1[k$1] = i[k$1](t);
 		return c$1;
 	};
 }
@@ -36625,8 +36439,8 @@ function transformer$2() {
 	scale.unknown = function(_$1) {
 		return arguments.length ? (unknown = _$1, scale) : unknown;
 	};
-	return function(t, u$1) {
-		transform = t, untransform = u$1;
+	return function(t, u) {
+		transform = t, untransform = u;
 		return rescale();
 	};
 }
@@ -36636,9 +36450,9 @@ function continuous() {
 function formatDecimal_default(x$2) {
 	return Math.abs(x$2 = Math.round(x$2)) >= 1e21 ? x$2.toLocaleString("en").replace(/,/g, "") : x$2.toString(10);
 }
-function formatDecimalParts(x$2, p$1) {
+function formatDecimalParts(x$2, p) {
 	if (!isFinite(x$2) || x$2 === 0) return null;
-	var i = (x$2 = p$1 ? x$2.toExponential(p$1 - 1) : x$2.toExponential()).indexOf("e"), coefficient = x$2.slice(0, i);
+	var i = (x$2 = p ? x$2.toExponential(p - 1) : x$2.toExponential()).indexOf("e"), coefficient = x$2.slice(0, i);
 	return [coefficient.length > 1 ? coefficient[0] + coefficient.slice(2) : coefficient, +x$2.slice(i + 1)];
 }
 function exponent_default(x$2) {
@@ -36713,28 +36527,28 @@ function formatTrim_default(s$1) {
 	return i0 > 0 ? s$1.slice(0, i0) + s$1.slice(i1 + 1) : s$1;
 }
 var prefixExponent;
-function formatPrefixAuto_default(x$2, p$1) {
-	var d = formatDecimalParts(x$2, p$1);
-	if (!d) return prefixExponent = void 0, x$2.toPrecision(p$1);
+function formatPrefixAuto_default(x$2, p) {
+	var d = formatDecimalParts(x$2, p);
+	if (!d) return prefixExponent = void 0, x$2.toPrecision(p);
 	var coefficient = d[0], exponent = d[1], i = exponent - (prefixExponent = Math.max(-8, Math.min(8, Math.floor(exponent / 3))) * 3) + 1, n = coefficient.length;
-	return i === n ? coefficient : i > n ? coefficient + new Array(i - n + 1).join("0") : i > 0 ? coefficient.slice(0, i) + "." + coefficient.slice(i) : "0." + new Array(1 - i).join("0") + formatDecimalParts(x$2, Math.max(0, p$1 + i - 1))[0];
+	return i === n ? coefficient : i > n ? coefficient + new Array(i - n + 1).join("0") : i > 0 ? coefficient.slice(0, i) + "." + coefficient.slice(i) : "0." + new Array(1 - i).join("0") + formatDecimalParts(x$2, Math.max(0, p + i - 1))[0];
 }
-function formatRounded_default(x$2, p$1) {
-	var d = formatDecimalParts(x$2, p$1);
+function formatRounded_default(x$2, p) {
+	var d = formatDecimalParts(x$2, p);
 	if (!d) return x$2 + "";
 	var coefficient = d[0], exponent = d[1];
 	return exponent < 0 ? "0." + new Array(-exponent).join("0") + coefficient : coefficient.length > exponent + 1 ? coefficient.slice(0, exponent + 1) + "." + coefficient.slice(exponent + 1) : coefficient + new Array(exponent - coefficient.length + 2).join("0");
 }
 var formatTypes_default = {
-	"%": (x$2, p$1) => (x$2 * 100).toFixed(p$1),
+	"%": (x$2, p) => (x$2 * 100).toFixed(p),
 	"b": (x$2) => Math.round(x$2).toString(2),
 	"c": (x$2) => x$2 + "",
 	"d": formatDecimal_default,
-	"e": (x$2, p$1) => x$2.toExponential(p$1),
-	"f": (x$2, p$1) => x$2.toFixed(p$1),
-	"g": (x$2, p$1) => x$2.toPrecision(p$1),
+	"e": (x$2, p) => x$2.toExponential(p),
+	"f": (x$2, p) => x$2.toFixed(p),
+	"g": (x$2, p) => x$2.toPrecision(p),
 	"o": (x$2) => Math.round(x$2).toString(8),
-	"p": (x$2, p$1) => formatRounded_default(x$2 * 100, p$1),
+	"p": (x$2, p) => formatRounded_default(x$2 * 100, p),
 	"r": formatRounded_default,
 	"s": formatPrefixAuto_default,
 	"X": (x$2) => Math.round(x$2).toString(16).toUpperCase(),
@@ -36820,9 +36634,9 @@ function locale_default(locale$2) {
 		return format$2;
 	}
 	function formatPrefix$1(specifier, value) {
-		var e = Math.max(-8, Math.min(8, Math.floor(exponent_default(value) / 3))) * 3, k$3 = Math.pow(10, -e), f = newFormat((specifier = formatSpecifier(specifier), specifier.type = "f", specifier), { suffix: prefixes[8 + e / 3] });
+		var e = Math.max(-8, Math.min(8, Math.floor(exponent_default(value) / 3))) * 3, k$1 = Math.pow(10, -e), f = newFormat((specifier = formatSpecifier(specifier), specifier.type = "f", specifier), { suffix: prefixes[8 + e / 3] });
 		return function(value$1) {
-			return f(k$3 * value$1);
+			return f(k$1 * value$1);
 		};
 	}
 	return {
@@ -36978,7 +36792,7 @@ function logp(base) {
 	return base === Math.E ? Math.log : base === 10 && Math.log10 || base === 2 && Math.log2 || (base = Math.log(base), (x$2) => Math.log(x$2) / base);
 }
 function reflect(f) {
-	return (x$2, k$3) => -f(-x$2, k$3);
+	return (x$2, k$1) => -f(-x$2, k$1);
 }
 function loggish(transform) {
 	const scale = transform(transformLog, transformExp);
@@ -37002,31 +36816,31 @@ function loggish(transform) {
 	};
 	scale.ticks = (count$3) => {
 		const d = domain();
-		let u$1 = d[0];
+		let u = d[0];
 		let v = d[d.length - 1];
-		const r$1 = v < u$1;
-		if (r$1) [u$1, v] = [v, u$1];
-		let i = logs(u$1);
+		const r$1 = v < u;
+		if (r$1) [u, v] = [v, u];
+		let i = logs(u);
 		let j = logs(v);
-		let k$3;
+		let k$1;
 		let t;
 		const n = count$3 == null ? 10 : +count$3;
 		let z$1 = [];
 		if (!(base % 1) && j - i < n) {
 			i = Math.floor(i), j = Math.ceil(j);
-			if (u$1 > 0) for (; i <= j; ++i) for (k$3 = 1; k$3 < base; ++k$3) {
-				t = i < 0 ? k$3 / pows(-i) : k$3 * pows(i);
-				if (t < u$1) continue;
+			if (u > 0) for (; i <= j; ++i) for (k$1 = 1; k$1 < base; ++k$1) {
+				t = i < 0 ? k$1 / pows(-i) : k$1 * pows(i);
+				if (t < u) continue;
 				if (t > v) break;
 				z$1.push(t);
 			}
-			else for (; i <= j; ++i) for (k$3 = base - 1; k$3 >= 1; --k$3) {
-				t = i > 0 ? k$3 / pows(-i) : k$3 * pows(i);
-				if (t < u$1) continue;
+			else for (; i <= j; ++i) for (k$1 = base - 1; k$1 >= 1; --k$1) {
+				t = i > 0 ? k$1 / pows(-i) : k$1 * pows(i);
+				if (t < u) continue;
 				if (t > v) break;
 				z$1.push(t);
 			}
-			if (z$1.length * 2 < n) z$1 = ticks(u$1, v, n);
+			if (z$1.length * 2 < n) z$1 = ticks(u, v, n);
 		} else z$1 = ticks(i, j, Math.min(j - i, n)).map(pows);
 		return r$1 ? z$1.reverse() : z$1;
 	};
@@ -37038,11 +36852,11 @@ function loggish(transform) {
 			specifier = format$1(specifier);
 		}
 		if (count$3 === Infinity) return specifier;
-		const k$3 = Math.max(1, base * count$3 / scale.ticks().length);
+		const k$1 = Math.max(1, base * count$3 / scale.ticks().length);
 		return (d) => {
 			let i = d / pows(Math.round(logs(d)));
 			if (i * base < base - .5) i *= base;
-			return i <= k$3 ? specifier(d) : "";
+			return i <= k$1 ? specifier(d) : "";
 		};
 	};
 	scale.nice = () => {
@@ -37300,16 +37114,16 @@ const millisecond = timeInterval(() => {}, (date$1, step) => {
 }, (start, end) => {
 	return end - start;
 });
-millisecond.every = (k$3) => {
-	k$3 = Math.floor(k$3);
-	if (!isFinite(k$3) || !(k$3 > 0)) return null;
-	if (!(k$3 > 1)) return millisecond;
+millisecond.every = (k$1) => {
+	k$1 = Math.floor(k$1);
+	if (!isFinite(k$1) || !(k$1 > 0)) return null;
+	if (!(k$1 > 1)) return millisecond;
 	return timeInterval((date$1) => {
-		date$1.setTime(Math.floor(date$1 / k$3) * k$3);
+		date$1.setTime(Math.floor(date$1 / k$1) * k$1);
 	}, (date$1, step) => {
-		date$1.setTime(+date$1 + step * k$3);
+		date$1.setTime(+date$1 + step * k$1);
 	}, (start, end) => {
-		return (end - start) / k$3;
+		return (end - start) / k$1;
 	});
 };
 millisecond.range;
@@ -37472,13 +37286,13 @@ const timeYear = timeInterval((date$1) => {
 }, (date$1) => {
 	return date$1.getFullYear();
 });
-timeYear.every = (k$3) => {
-	return !isFinite(k$3 = Math.floor(k$3)) || !(k$3 > 0) ? null : timeInterval((date$1) => {
-		date$1.setFullYear(Math.floor(date$1.getFullYear() / k$3) * k$3);
+timeYear.every = (k$1) => {
+	return !isFinite(k$1 = Math.floor(k$1)) || !(k$1 > 0) ? null : timeInterval((date$1) => {
+		date$1.setFullYear(Math.floor(date$1.getFullYear() / k$1) * k$1);
 		date$1.setMonth(0, 1);
 		date$1.setHours(0, 0, 0, 0);
 	}, (date$1, step) => {
-		date$1.setFullYear(date$1.getFullYear() + step * k$3);
+		date$1.setFullYear(date$1.getFullYear() + step * k$1);
 	});
 };
 timeYear.range;
@@ -37492,13 +37306,13 @@ const utcYear = timeInterval((date$1) => {
 }, (date$1) => {
 	return date$1.getUTCFullYear();
 });
-utcYear.every = (k$3) => {
-	return !isFinite(k$3 = Math.floor(k$3)) || !(k$3 > 0) ? null : timeInterval((date$1) => {
-		date$1.setUTCFullYear(Math.floor(date$1.getUTCFullYear() / k$3) * k$3);
+utcYear.every = (k$1) => {
+	return !isFinite(k$1 = Math.floor(k$1)) || !(k$1 > 0) ? null : timeInterval((date$1) => {
+		date$1.setUTCFullYear(Math.floor(date$1.getUTCFullYear() / k$1) * k$1);
 		date$1.setUTCMonth(0, 1);
 		date$1.setUTCHours(0, 0, 0, 0);
 	}, (date$1, step) => {
-		date$1.setUTCFullYear(date$1.getUTCFullYear() + step * k$3);
+		date$1.setUTCFullYear(date$1.getUTCFullYear() + step * k$1);
 	});
 };
 utcYear.range;
@@ -37630,10 +37444,10 @@ function utcDate(d) {
 	}
 	return new Date(Date.UTC(d.y, d.m, d.d, d.H, d.M, d.S, d.L));
 }
-function newDate(y$1, m$1, d) {
+function newDate(y$1, m, d) {
 	return {
 		y: y$1,
-		m: m$1,
+		m,
 		d,
 		H: 0,
 		M: 0,
@@ -37768,13 +37582,13 @@ function formatLocale(locale$2) {
 			return string.join("");
 		};
 	}
-	function newParse(specifier, Z$1) {
+	function newParse(specifier, Z) {
 		return function(string) {
 			var d = newDate(1900, void 0, 1), i = parseSpecifier(d, specifier, string += "", 0), week, day;
 			if (i != string.length) return null;
 			if ("Q" in d) return new Date(d.Q);
 			if ("s" in d) return new Date(d.s * 1e3 + ("L" in d ? d.L : 0));
-			if (Z$1 && !("Z" in d)) d.Z = 0;
+			if (Z && !("Z" in d)) d.Z = 0;
 			if ("p" in d) d.H = d.H % 12 + d.p * 12;
 			if (d.m === void 0) d.m = "q" in d ? d.q : 0;
 			if ("V" in d) {
@@ -37810,9 +37624,9 @@ function formatLocale(locale$2) {
 		};
 	}
 	function parseSpecifier(d, specifier, string, j) {
-		var i = 0, n = specifier.length, m$1 = string.length, c$1, parse$1;
+		var i = 0, n = specifier.length, m = string.length, c$1, parse$1;
 		while (i < n) {
-			if (j >= m$1) return -1;
+			if (j >= m) return -1;
 			c$1 = specifier.charCodeAt(i++);
 			if (c$1 === 37) {
 				c$1 = specifier.charAt(i++);
@@ -37896,11 +37710,11 @@ function formatLocale(locale$2) {
 			return f;
 		},
 		parse: function(specifier) {
-			var p$1 = newParse(specifier += "", false);
-			p$1.toString = function() {
+			var p = newParse(specifier += "", false);
+			p.toString = function() {
 				return specifier;
 			};
-			return p$1;
+			return p;
 		},
 		utcFormat: function(specifier) {
 			var f = newFormat(specifier += "", utcFormats);
@@ -37910,11 +37724,11 @@ function formatLocale(locale$2) {
 			return f;
 		},
 		utcParse: function(specifier) {
-			var p$1 = newParse(specifier += "", true);
-			p$1.toString = function() {
+			var p = newParse(specifier += "", true);
+			p.toString = function() {
 				return specifier;
 			};
-			return p$1;
+			return p;
 		}
 	};
 }
@@ -38016,135 +37830,135 @@ function parseUnixTimestampSeconds(d, string, i) {
 	var n = numberRe.exec(string.slice(i));
 	return n ? (d.s = +n[0], i + n[0].length) : -1;
 }
-function formatDayOfMonth(d, p$1) {
-	return pad(d.getDate(), p$1, 2);
+function formatDayOfMonth(d, p) {
+	return pad(d.getDate(), p, 2);
 }
-function formatHour24(d, p$1) {
-	return pad(d.getHours(), p$1, 2);
+function formatHour24(d, p) {
+	return pad(d.getHours(), p, 2);
 }
-function formatHour12(d, p$1) {
-	return pad(d.getHours() % 12 || 12, p$1, 2);
+function formatHour12(d, p) {
+	return pad(d.getHours() % 12 || 12, p, 2);
 }
-function formatDayOfYear(d, p$1) {
-	return pad(1 + timeDay.count(timeYear(d), d), p$1, 3);
+function formatDayOfYear(d, p) {
+	return pad(1 + timeDay.count(timeYear(d), d), p, 3);
 }
-function formatMilliseconds(d, p$1) {
-	return pad(d.getMilliseconds(), p$1, 3);
+function formatMilliseconds(d, p) {
+	return pad(d.getMilliseconds(), p, 3);
 }
-function formatMicroseconds(d, p$1) {
-	return formatMilliseconds(d, p$1) + "000";
+function formatMicroseconds(d, p) {
+	return formatMilliseconds(d, p) + "000";
 }
-function formatMonthNumber(d, p$1) {
-	return pad(d.getMonth() + 1, p$1, 2);
+function formatMonthNumber(d, p) {
+	return pad(d.getMonth() + 1, p, 2);
 }
-function formatMinutes(d, p$1) {
-	return pad(d.getMinutes(), p$1, 2);
+function formatMinutes(d, p) {
+	return pad(d.getMinutes(), p, 2);
 }
-function formatSeconds(d, p$1) {
-	return pad(d.getSeconds(), p$1, 2);
+function formatSeconds(d, p) {
+	return pad(d.getSeconds(), p, 2);
 }
 function formatWeekdayNumberMonday(d) {
 	var day = d.getDay();
 	return day === 0 ? 7 : day;
 }
-function formatWeekNumberSunday(d, p$1) {
-	return pad(timeSunday.count(timeYear(d) - 1, d), p$1, 2);
+function formatWeekNumberSunday(d, p) {
+	return pad(timeSunday.count(timeYear(d) - 1, d), p, 2);
 }
 function dISO(d) {
 	var day = d.getDay();
 	return day >= 4 || day === 0 ? timeThursday(d) : timeThursday.ceil(d);
 }
-function formatWeekNumberISO(d, p$1) {
+function formatWeekNumberISO(d, p) {
 	d = dISO(d);
-	return pad(timeThursday.count(timeYear(d), d) + (timeYear(d).getDay() === 4), p$1, 2);
+	return pad(timeThursday.count(timeYear(d), d) + (timeYear(d).getDay() === 4), p, 2);
 }
 function formatWeekdayNumberSunday(d) {
 	return d.getDay();
 }
-function formatWeekNumberMonday(d, p$1) {
-	return pad(timeMonday.count(timeYear(d) - 1, d), p$1, 2);
+function formatWeekNumberMonday(d, p) {
+	return pad(timeMonday.count(timeYear(d) - 1, d), p, 2);
 }
-function formatYear(d, p$1) {
-	return pad(d.getFullYear() % 100, p$1, 2);
+function formatYear(d, p) {
+	return pad(d.getFullYear() % 100, p, 2);
 }
-function formatYearISO(d, p$1) {
+function formatYearISO(d, p) {
 	d = dISO(d);
-	return pad(d.getFullYear() % 100, p$1, 2);
+	return pad(d.getFullYear() % 100, p, 2);
 }
-function formatFullYear(d, p$1) {
-	return pad(d.getFullYear() % 1e4, p$1, 4);
+function formatFullYear(d, p) {
+	return pad(d.getFullYear() % 1e4, p, 4);
 }
-function formatFullYearISO(d, p$1) {
+function formatFullYearISO(d, p) {
 	var day = d.getDay();
 	d = day >= 4 || day === 0 ? timeThursday(d) : timeThursday.ceil(d);
-	return pad(d.getFullYear() % 1e4, p$1, 4);
+	return pad(d.getFullYear() % 1e4, p, 4);
 }
 function formatZone(d) {
 	var z$1 = d.getTimezoneOffset();
 	return (z$1 > 0 ? "-" : (z$1 *= -1, "+")) + pad(z$1 / 60 | 0, "0", 2) + pad(z$1 % 60, "0", 2);
 }
-function formatUTCDayOfMonth(d, p$1) {
-	return pad(d.getUTCDate(), p$1, 2);
+function formatUTCDayOfMonth(d, p) {
+	return pad(d.getUTCDate(), p, 2);
 }
-function formatUTCHour24(d, p$1) {
-	return pad(d.getUTCHours(), p$1, 2);
+function formatUTCHour24(d, p) {
+	return pad(d.getUTCHours(), p, 2);
 }
-function formatUTCHour12(d, p$1) {
-	return pad(d.getUTCHours() % 12 || 12, p$1, 2);
+function formatUTCHour12(d, p) {
+	return pad(d.getUTCHours() % 12 || 12, p, 2);
 }
-function formatUTCDayOfYear(d, p$1) {
-	return pad(1 + utcDay.count(utcYear(d), d), p$1, 3);
+function formatUTCDayOfYear(d, p) {
+	return pad(1 + utcDay.count(utcYear(d), d), p, 3);
 }
-function formatUTCMilliseconds(d, p$1) {
-	return pad(d.getUTCMilliseconds(), p$1, 3);
+function formatUTCMilliseconds(d, p) {
+	return pad(d.getUTCMilliseconds(), p, 3);
 }
-function formatUTCMicroseconds(d, p$1) {
-	return formatUTCMilliseconds(d, p$1) + "000";
+function formatUTCMicroseconds(d, p) {
+	return formatUTCMilliseconds(d, p) + "000";
 }
-function formatUTCMonthNumber(d, p$1) {
-	return pad(d.getUTCMonth() + 1, p$1, 2);
+function formatUTCMonthNumber(d, p) {
+	return pad(d.getUTCMonth() + 1, p, 2);
 }
-function formatUTCMinutes(d, p$1) {
-	return pad(d.getUTCMinutes(), p$1, 2);
+function formatUTCMinutes(d, p) {
+	return pad(d.getUTCMinutes(), p, 2);
 }
-function formatUTCSeconds(d, p$1) {
-	return pad(d.getUTCSeconds(), p$1, 2);
+function formatUTCSeconds(d, p) {
+	return pad(d.getUTCSeconds(), p, 2);
 }
 function formatUTCWeekdayNumberMonday(d) {
 	var dow = d.getUTCDay();
 	return dow === 0 ? 7 : dow;
 }
-function formatUTCWeekNumberSunday(d, p$1) {
-	return pad(utcSunday.count(utcYear(d) - 1, d), p$1, 2);
+function formatUTCWeekNumberSunday(d, p) {
+	return pad(utcSunday.count(utcYear(d) - 1, d), p, 2);
 }
 function UTCdISO(d) {
 	var day = d.getUTCDay();
 	return day >= 4 || day === 0 ? utcThursday(d) : utcThursday.ceil(d);
 }
-function formatUTCWeekNumberISO(d, p$1) {
+function formatUTCWeekNumberISO(d, p) {
 	d = UTCdISO(d);
-	return pad(utcThursday.count(utcYear(d), d) + (utcYear(d).getUTCDay() === 4), p$1, 2);
+	return pad(utcThursday.count(utcYear(d), d) + (utcYear(d).getUTCDay() === 4), p, 2);
 }
 function formatUTCWeekdayNumberSunday(d) {
 	return d.getUTCDay();
 }
-function formatUTCWeekNumberMonday(d, p$1) {
-	return pad(utcMonday.count(utcYear(d) - 1, d), p$1, 2);
+function formatUTCWeekNumberMonday(d, p) {
+	return pad(utcMonday.count(utcYear(d) - 1, d), p, 2);
 }
-function formatUTCYear(d, p$1) {
-	return pad(d.getUTCFullYear() % 100, p$1, 2);
+function formatUTCYear(d, p) {
+	return pad(d.getUTCFullYear() % 100, p, 2);
 }
-function formatUTCYearISO(d, p$1) {
+function formatUTCYearISO(d, p) {
 	d = UTCdISO(d);
-	return pad(d.getUTCFullYear() % 100, p$1, 2);
+	return pad(d.getUTCFullYear() % 100, p, 2);
 }
-function formatUTCFullYear(d, p$1) {
-	return pad(d.getUTCFullYear() % 1e4, p$1, 4);
+function formatUTCFullYear(d, p) {
+	return pad(d.getUTCFullYear() % 1e4, p, 4);
 }
-function formatUTCFullYearISO(d, p$1) {
+function formatUTCFullYearISO(d, p) {
 	var day = d.getUTCDay();
 	d = day >= 4 || day === 0 ? utcThursday(d) : utcThursday.ceil(d);
-	return pad(d.getUTCFullYear() % 1e4, p$1, 4);
+	return pad(d.getUTCFullYear() % 1e4, p, 4);
 }
 function formatUTCZone() {
 	return "+0000";
@@ -38527,13 +38341,13 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			toExpNeg: -7,
 			toExpPos: 21,
 			LN10: "2.302585092994045684017991454684364207601101488628772976033327900967572609677352480235997205089598298341967784042286"
-		}, external = true, decimalError = "[DecimalError] ", invalidArgument = decimalError + "Invalid argument: ", exponentOutOfRange = decimalError + "Exponent out of range: ", mathfloor = Math.floor, mathpow = Math.pow, isDecimal = /^(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?$/i, ONE, BASE = 1e7, LOG_BASE = 7, MAX_SAFE_INTEGER$2 = 9007199254740991, MAX_E = mathfloor(MAX_SAFE_INTEGER$2 / LOG_BASE), P$1 = {};
-		P$1.absoluteValue = P$1.abs = function() {
+		}, external = true, decimalError = "[DecimalError] ", invalidArgument = decimalError + "Invalid argument: ", exponentOutOfRange = decimalError + "Exponent out of range: ", mathfloor = Math.floor, mathpow = Math.pow, isDecimal = /^(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?$/i, ONE, BASE = 1e7, LOG_BASE = 7, MAX_SAFE_INTEGER$2 = 9007199254740991, MAX_E = mathfloor(MAX_SAFE_INTEGER$2 / LOG_BASE), P = {};
+		P.absoluteValue = P.abs = function() {
 			var x$2 = new this.constructor(this);
 			if (x$2.s) x$2.s = 1;
 			return x$2;
 		};
-		P$1.comparedTo = P$1.cmp = function(y$1) {
+		P.comparedTo = P.cmp = function(y$1) {
 			var i, j, xdL, ydL, x$2 = this;
 			y$1 = new x$2.constructor(y$1);
 			if (x$2.s !== y$1.s) return x$2.s || -y$1.s;
@@ -38543,50 +38357,50 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			for (i = 0, j = xdL < ydL ? xdL : ydL; i < j; ++i) if (x$2.d[i] !== y$1.d[i]) return x$2.d[i] > y$1.d[i] ^ x$2.s < 0 ? 1 : -1;
 			return xdL === ydL ? 0 : xdL > ydL ^ x$2.s < 0 ? 1 : -1;
 		};
-		P$1.decimalPlaces = P$1.dp = function() {
+		P.decimalPlaces = P.dp = function() {
 			var x$2 = this, w = x$2.d.length - 1, dp = (w - x$2.e) * LOG_BASE;
 			w = x$2.d[w];
 			if (w) for (; w % 10 == 0; w /= 10) dp--;
 			return dp < 0 ? 0 : dp;
 		};
-		P$1.dividedBy = P$1.div = function(y$1) {
+		P.dividedBy = P.div = function(y$1) {
 			return divide(this, new this.constructor(y$1));
 		};
-		P$1.dividedToIntegerBy = P$1.idiv = function(y$1) {
+		P.dividedToIntegerBy = P.idiv = function(y$1) {
 			var x$2 = this, Ctor = x$2.constructor;
 			return round$1(divide(x$2, new Ctor(y$1), 0, 1), Ctor.precision);
 		};
-		P$1.equals = P$1.eq = function(y$1) {
+		P.equals = P.eq = function(y$1) {
 			return !this.cmp(y$1);
 		};
-		P$1.exponent = function() {
+		P.exponent = function() {
 			return getBase10Exponent(this);
 		};
-		P$1.greaterThan = P$1.gt = function(y$1) {
+		P.greaterThan = P.gt = function(y$1) {
 			return this.cmp(y$1) > 0;
 		};
-		P$1.greaterThanOrEqualTo = P$1.gte = function(y$1) {
+		P.greaterThanOrEqualTo = P.gte = function(y$1) {
 			return this.cmp(y$1) >= 0;
 		};
-		P$1.isInteger = P$1.isint = function() {
+		P.isInteger = P.isint = function() {
 			return this.e > this.d.length - 2;
 		};
-		P$1.isNegative = P$1.isneg = function() {
+		P.isNegative = P.isneg = function() {
 			return this.s < 0;
 		};
-		P$1.isPositive = P$1.ispos = function() {
+		P.isPositive = P.ispos = function() {
 			return this.s > 0;
 		};
-		P$1.isZero = function() {
+		P.isZero = function() {
 			return this.s === 0;
 		};
-		P$1.lessThan = P$1.lt = function(y$1) {
+		P.lessThan = P.lt = function(y$1) {
 			return this.cmp(y$1) < 0;
 		};
-		P$1.lessThanOrEqualTo = P$1.lte = function(y$1) {
+		P.lessThanOrEqualTo = P.lte = function(y$1) {
 			return this.cmp(y$1) < 1;
 		};
-		P$1.logarithm = P$1.log = function(base) {
+		P.logarithm = P.log = function(base) {
 			var r$1, x$2 = this, Ctor = x$2.constructor, pr = Ctor.precision, wpr = pr + 5;
 			if (base === void 0) base = new Ctor(10);
 			else {
@@ -38600,12 +38414,12 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			external = true;
 			return round$1(r$1, pr);
 		};
-		P$1.minus = P$1.sub = function(y$1) {
+		P.minus = P.sub = function(y$1) {
 			var x$2 = this;
 			y$1 = new x$2.constructor(y$1);
 			return x$2.s == y$1.s ? subtract(x$2, y$1) : add(x$2, (y$1.s = -y$1.s, y$1));
 		};
-		P$1.modulo = P$1.mod = function(y$1) {
+		P.modulo = P.mod = function(y$1) {
 			var q, x$2 = this, Ctor = x$2.constructor, pr = Ctor.precision;
 			y$1 = new Ctor(y$1);
 			if (!y$1.s) throw Error(decimalError + "NaN");
@@ -38615,23 +38429,23 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			external = true;
 			return x$2.minus(q);
 		};
-		P$1.naturalExponential = P$1.exp = function() {
+		P.naturalExponential = P.exp = function() {
 			return exp(this);
 		};
-		P$1.naturalLogarithm = P$1.ln = function() {
+		P.naturalLogarithm = P.ln = function() {
 			return ln(this);
 		};
-		P$1.negated = P$1.neg = function() {
+		P.negated = P.neg = function() {
 			var x$2 = new this.constructor(this);
 			x$2.s = -x$2.s || 0;
 			return x$2;
 		};
-		P$1.plus = P$1.add = function(y$1) {
+		P.plus = P.add = function(y$1) {
 			var x$2 = this;
 			y$1 = new x$2.constructor(y$1);
 			return x$2.s == y$1.s ? add(x$2, y$1) : subtract(x$2, (y$1.s = -y$1.s, y$1));
 		};
-		P$1.precision = P$1.sd = function(z$1) {
+		P.precision = P.sd = function(z$1) {
 			var e, sd, w, x$2 = this;
 			if (z$1 !== void 0 && z$1 !== !!z$1 && z$1 !== 1 && z$1 !== 0) throw Error(invalidArgument + z$1);
 			e = getBase10Exponent(x$2) + 1;
@@ -38644,7 +38458,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			}
 			return z$1 && e > sd ? e : sd;
 		};
-		P$1.squareRoot = P$1.sqrt = function() {
+		P.squareRoot = P.sqrt = function() {
 			var e, n, pr, r$1, s$1, t, wpr, x$2 = this, Ctor = x$2.constructor;
 			if (x$2.s < 1) {
 				if (!x$2.s) return new Ctor(0);
@@ -38685,8 +38499,8 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			external = true;
 			return round$1(r$1, pr);
 		};
-		P$1.times = P$1.mul = function(y$1) {
-			var carry, e, i, k$3, r$1, rL, t, xdL, ydL, x$2 = this, Ctor = x$2.constructor, xd = x$2.d, yd = (y$1 = new Ctor(y$1)).d;
+		P.times = P.mul = function(y$1) {
+			var carry, e, i, k$1, r$1, rL, t, xdL, ydL, x$2 = this, Ctor = x$2.constructor, xd = x$2.d, yd = (y$1 = new Ctor(y$1)).d;
 			if (!x$2.s || !y$1.s) return new Ctor(0);
 			y$1.s *= x$2.s;
 			e = x$2.e + y$1.e;
@@ -38705,12 +38519,12 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			for (i = rL; i--;) r$1.push(0);
 			for (i = ydL; --i >= 0;) {
 				carry = 0;
-				for (k$3 = xdL + i; k$3 > i;) {
-					t = r$1[k$3] + yd[i] * xd[k$3 - i - 1] + carry;
-					r$1[k$3--] = t % BASE | 0;
+				for (k$1 = xdL + i; k$1 > i;) {
+					t = r$1[k$1] + yd[i] * xd[k$1 - i - 1] + carry;
+					r$1[k$1--] = t % BASE | 0;
 					carry = t / BASE | 0;
 				}
-				r$1[k$3] = (r$1[k$3] + carry) % BASE | 0;
+				r$1[k$1] = (r$1[k$1] + carry) % BASE | 0;
 			}
 			for (; !r$1[--rL];) r$1.pop();
 			if (carry) ++e;
@@ -38719,7 +38533,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			y$1.e = e;
 			return external ? round$1(y$1, Ctor.precision) : y$1;
 		};
-		P$1.toDecimalPlaces = P$1.todp = function(dp, rm) {
+		P.toDecimalPlaces = P.todp = function(dp, rm) {
 			var x$2 = this, Ctor = x$2.constructor;
 			x$2 = new Ctor(x$2);
 			if (dp === void 0) return x$2;
@@ -38728,7 +38542,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			else checkInt32(rm, 0, 8);
 			return round$1(x$2, dp + getBase10Exponent(x$2) + 1, rm);
 		};
-		P$1.toExponential = function(dp, rm) {
+		P.toExponential = function(dp, rm) {
 			var str, x$2 = this, Ctor = x$2.constructor;
 			if (dp === void 0) str = toString$4(x$2, true);
 			else {
@@ -38740,7 +38554,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			}
 			return str;
 		};
-		P$1.toFixed = function(dp, rm) {
+		P.toFixed = function(dp, rm) {
 			var str, y$1, x$2 = this, Ctor = x$2.constructor;
 			if (dp === void 0) return toString$4(x$2);
 			checkInt32(dp, 0, MAX_DIGITS);
@@ -38750,15 +38564,15 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			str = toString$4(y$1.abs(), false, dp + getBase10Exponent(y$1) + 1);
 			return x$2.isneg() && !x$2.isZero() ? "-" + str : str;
 		};
-		P$1.toInteger = P$1.toint = function() {
+		P.toInteger = P.toint = function() {
 			var x$2 = this, Ctor = x$2.constructor;
 			return round$1(new Ctor(x$2), getBase10Exponent(x$2) + 1, Ctor.rounding);
 		};
-		P$1.toNumber = function() {
+		P.toNumber = function() {
 			return +this;
 		};
-		P$1.toPower = P$1.pow = function(y$1) {
-			var e, k$3, pr, r$1, sign$1, yIsInt, x$2 = this, Ctor = x$2.constructor, guard = 12, yn = +(y$1 = new Ctor(y$1));
+		P.toPower = P.pow = function(y$1) {
+			var e, k$1, pr, r$1, sign$1, yIsInt, x$2 = this, Ctor = x$2.constructor, guard = 12, yn = +(y$1 = new Ctor(y$1));
 			if (!y$1.s) return new Ctor(ONE);
 			x$2 = new Ctor(x$2);
 			if (!x$2.s) {
@@ -38769,29 +38583,29 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			pr = Ctor.precision;
 			if (y$1.eq(ONE)) return round$1(x$2, pr);
 			e = y$1.e;
-			k$3 = y$1.d.length - 1;
-			yIsInt = e >= k$3;
+			k$1 = y$1.d.length - 1;
+			yIsInt = e >= k$1;
 			sign$1 = x$2.s;
 			if (!yIsInt) {
 				if (sign$1 < 0) throw Error(decimalError + "NaN");
-			} else if ((k$3 = yn < 0 ? -yn : yn) <= MAX_SAFE_INTEGER$2) {
+			} else if ((k$1 = yn < 0 ? -yn : yn) <= MAX_SAFE_INTEGER$2) {
 				r$1 = new Ctor(ONE);
 				e = Math.ceil(pr / LOG_BASE + 4);
 				external = false;
 				for (;;) {
-					if (k$3 % 2) {
+					if (k$1 % 2) {
 						r$1 = r$1.times(x$2);
 						truncate(r$1.d, e);
 					}
-					k$3 = mathfloor(k$3 / 2);
-					if (k$3 === 0) break;
+					k$1 = mathfloor(k$1 / 2);
+					if (k$1 === 0) break;
 					x$2 = x$2.times(x$2);
 					truncate(x$2.d, e);
 				}
 				external = true;
 				return y$1.s < 0 ? new Ctor(ONE).div(r$1) : round$1(r$1, pr);
 			}
-			sign$1 = sign$1 < 0 && y$1.d[Math.max(e, k$3)] & 1 ? -1 : 1;
+			sign$1 = sign$1 < 0 && y$1.d[Math.max(e, k$1)] & 1 ? -1 : 1;
 			x$2.s = 1;
 			external = false;
 			r$1 = y$1.times(ln(x$2, pr + guard));
@@ -38800,7 +38614,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			r$1.s = sign$1;
 			return r$1;
 		};
-		P$1.toPrecision = function(sd, rm) {
+		P.toPrecision = function(sd, rm) {
 			var e, str, x$2 = this, Ctor = x$2.constructor;
 			if (sd === void 0) {
 				e = getBase10Exponent(x$2);
@@ -38815,7 +38629,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			}
 			return str;
 		};
-		P$1.toSignificantDigits = P$1.tosd = function(sd, rm) {
+		P.toSignificantDigits = P.tosd = function(sd, rm) {
 			var x$2 = this, Ctor = x$2.constructor;
 			if (sd === void 0) {
 				sd = Ctor.precision;
@@ -38827,22 +38641,22 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			}
 			return round$1(new Ctor(x$2), sd, rm);
 		};
-		P$1.toString = P$1.valueOf = P$1.val = P$1.toJSON = function() {
+		P.toString = P.valueOf = P.val = P.toJSON = function() {
 			var x$2 = this, e = getBase10Exponent(x$2), Ctor = x$2.constructor;
 			return toString$4(x$2, e <= Ctor.toExpNeg || e >= Ctor.toExpPos);
 		};
 		function add(x$2, y$1) {
-			var carry, d, e, i, k$3, len, xd, yd, Ctor = x$2.constructor, pr = Ctor.precision;
+			var carry, d, e, i, k$1, len, xd, yd, Ctor = x$2.constructor, pr = Ctor.precision;
 			if (!x$2.s || !y$1.s) {
 				if (!y$1.s) y$1 = new Ctor(x$2);
 				return external ? round$1(y$1, pr) : y$1;
 			}
 			xd = x$2.d;
 			yd = y$1.d;
-			k$3 = x$2.e;
+			k$1 = x$2.e;
 			e = y$1.e;
 			xd = xd.slice();
-			i = k$3 - e;
+			i = k$1 - e;
 			if (i) {
 				if (i < 0) {
 					d = xd;
@@ -38850,11 +38664,11 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 					len = yd.length;
 				} else {
 					d = yd;
-					e = k$3;
+					e = k$1;
 					len = xd.length;
 				}
-				k$3 = Math.ceil(pr / LOG_BASE);
-				len = k$3 > len ? k$3 + 1 : len + 1;
+				k$1 = Math.ceil(pr / LOG_BASE);
+				len = k$1 > len ? k$1 + 1 : len + 1;
 				if (i > len) {
 					i = len;
 					d.length = 1;
@@ -38888,28 +38702,28 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			if (i !== ~~i || i < min$5 || i > max$6) throw Error(invalidArgument + i);
 		}
 		function digitsToString(d) {
-			var i, k$3, ws, indexOfLastWord = d.length - 1, str = "", w = d[0];
+			var i, k$1, ws, indexOfLastWord = d.length - 1, str = "", w = d[0];
 			if (indexOfLastWord > 0) {
 				str += w;
 				for (i = 1; i < indexOfLastWord; i++) {
 					ws = d[i] + "";
-					k$3 = LOG_BASE - ws.length;
-					if (k$3) str += getZeroString(k$3);
+					k$1 = LOG_BASE - ws.length;
+					if (k$1) str += getZeroString(k$1);
 					str += ws;
 				}
 				w = d[i];
 				ws = w + "";
-				k$3 = LOG_BASE - ws.length;
-				if (k$3) str += getZeroString(k$3);
+				k$1 = LOG_BASE - ws.length;
+				if (k$1) str += getZeroString(k$1);
 			} else if (w === 0) return "0";
 			for (; w % 10 === 0;) w /= 10;
 			return str + w;
 		}
 		var divide = (function() {
-			function multiplyInteger(x$2, k$3) {
+			function multiplyInteger(x$2, k$1) {
 				var temp, carry = 0, i = x$2.length;
 				for (x$2 = x$2.slice(); i--;) {
-					temp = x$2[i] * k$3 + carry;
+					temp = x$2[i] * k$1 + carry;
 					x$2[i] = temp % BASE | 0;
 					carry = temp / BASE | 0;
 				}
@@ -38935,7 +38749,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 				for (; !a$1[0] && a$1.length > 1;) a$1.shift();
 			}
 			return function(x$2, y$1, pr, dp) {
-				var cmp, e, i, k$3, prod, prodL, q, qd, rem, remL, rem0, sd, t, xi, xL, yd0, yL, yz, Ctor = x$2.constructor, sign$1 = x$2.s == y$1.s ? 1 : -1, xd = x$2.d, yd = y$1.d;
+				var cmp, e, i, k$1, prod, prodL, q, qd, rem, remL, rem0, sd, t, xi, xL, yd0, yL, yz, Ctor = x$2.constructor, sign$1 = x$2.s == y$1.s ? 1 : -1, xd = x$2.d, yd = y$1.d;
 				if (!x$2.s) return new Ctor(x$2);
 				if (!y$1.s) throw Error(decimalError + "Division by zero");
 				e = x$2.e - y$1.e;
@@ -38952,19 +38766,19 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 				sd = sd / LOG_BASE + 2 | 0;
 				i = 0;
 				if (yL == 1) {
-					k$3 = 0;
+					k$1 = 0;
 					yd = yd[0];
 					sd++;
-					for (; (i < xL || k$3) && sd--; i++) {
-						t = k$3 * BASE + (xd[i] || 0);
+					for (; (i < xL || k$1) && sd--; i++) {
+						t = k$1 * BASE + (xd[i] || 0);
 						qd[i] = t / yd | 0;
-						k$3 = t % yd | 0;
+						k$1 = t % yd | 0;
 					}
 				} else {
-					k$3 = BASE / (yd[0] + 1) | 0;
-					if (k$3 > 1) {
-						yd = multiplyInteger(yd, k$3);
-						xd = multiplyInteger(xd, k$3);
+					k$1 = BASE / (yd[0] + 1) | 0;
+					if (k$1 > 1) {
+						yd = multiplyInteger(yd, k$1);
+						xd = multiplyInteger(xd, k$1);
 						yL = yd.length;
 						xL = xd.length;
 					}
@@ -38977,24 +38791,24 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 					yd0 = yd[0];
 					if (yd[1] >= BASE / 2) ++yd0;
 					do {
-						k$3 = 0;
+						k$1 = 0;
 						cmp = compare(yd, rem, yL, remL);
 						if (cmp < 0) {
 							rem0 = rem[0];
 							if (yL != remL) rem0 = rem0 * BASE + (rem[1] || 0);
-							k$3 = rem0 / yd0 | 0;
-							if (k$3 > 1) {
-								if (k$3 >= BASE) k$3 = BASE - 1;
-								prod = multiplyInteger(yd, k$3);
+							k$1 = rem0 / yd0 | 0;
+							if (k$1 > 1) {
+								if (k$1 >= BASE) k$1 = BASE - 1;
+								prod = multiplyInteger(yd, k$1);
 								prodL = prod.length;
 								remL = rem.length;
 								cmp = compare(prod, rem, prodL, remL);
 								if (cmp == 1) {
-									k$3--;
+									k$1--;
 									subtract$1(prod, yL < prodL ? yz : yd, prodL);
 								}
 							} else {
-								if (k$3 == 0) cmp = k$3 = 1;
+								if (k$1 == 0) cmp = k$1 = 1;
 								prod = yd.slice();
 							}
 							prodL = prod.length;
@@ -39004,16 +38818,16 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 								remL = rem.length;
 								cmp = compare(yd, rem, yL, remL);
 								if (cmp < 1) {
-									k$3++;
+									k$1++;
 									subtract$1(rem, yL < remL ? yz : yd, remL);
 								}
 							}
 							remL = rem.length;
 						} else if (cmp === 0) {
-							k$3++;
+							k$1++;
 							rem = [0];
 						}
-						qd[i++] = k$3;
+						qd[i++] = k$1;
 						if (cmp && rem[0]) rem[remL++] = xd[xi] || 0;
 						else {
 							rem = [xd[xi]];
@@ -39027,7 +38841,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			};
 		})();
 		function exp(x$2, sd) {
-			var denominator, guard, pow$1, sum, t, wpr, i = 0, k$3 = 0, Ctor = x$2.constructor, pr = Ctor.precision;
+			var denominator, guard, pow$1, sum, t, wpr, i = 0, k$1 = 0, Ctor = x$2.constructor, pr = Ctor.precision;
 			if (getBase10Exponent(x$2) > 16) throw Error(exponentOutOfRange + getBase10Exponent(x$2));
 			if (!x$2.s) return new Ctor(ONE);
 			if (sd == null) {
@@ -39037,9 +38851,9 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			t = new Ctor(.03125);
 			while (x$2.abs().gte(.1)) {
 				x$2 = x$2.times(t);
-				k$3 += 5;
+				k$1 += 5;
 			}
-			guard = Math.log(mathpow(2, k$3)) / Math.LN10 * 2 + 5 | 0;
+			guard = Math.log(mathpow(2, k$1)) / Math.LN10 * 2 + 5 | 0;
 			wpr += guard;
 			denominator = pow$1 = sum = new Ctor(ONE);
 			Ctor.precision = wpr;
@@ -39048,7 +38862,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 				denominator = denominator.times(++i);
 				t = sum.plus(divide(pow$1, denominator, wpr));
 				if (digitsToString(t.d).slice(0, wpr) === digitsToString(sum.d).slice(0, wpr)) {
-					while (k$3--) sum = round$1(sum.times(sum), wpr);
+					while (k$1--) sum = round$1(sum.times(sum), wpr);
 					Ctor.precision = pr;
 					return sd == null ? (external = true, round$1(sum, pr)) : sum;
 				}
@@ -39068,9 +38882,9 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			}
 			return round$1(new Ctor(Ctor.LN10), sd);
 		}
-		function getZeroString(k$3) {
+		function getZeroString(k$1) {
 			var zs = "";
-			for (; k$3--;) zs += "0";
+			for (; k$1--;) zs += "0";
 			return zs;
 		}
 		function ln(y$1, sd) {
@@ -39160,8 +38974,8 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			return x$2;
 		}
 		function round$1(x$2, sd, rm) {
-			var i, j, k$3, n, rd, doRound, w, xdi, xd = x$2.d;
-			for (n = 1, k$3 = xd[0]; k$3 >= 10; k$3 /= 10) n++;
+			var i, j, k$1, n, rd, doRound, w, xdi, xd = x$2.d;
+			for (n = 1, k$1 = xd[0]; k$1 >= 10; k$1 /= 10) n++;
 			i = sd - n;
 			if (i < 0) {
 				i += LOG_BASE;
@@ -39169,24 +38983,24 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 				w = xd[xdi = 0];
 			} else {
 				xdi = Math.ceil((i + 1) / LOG_BASE);
-				k$3 = xd.length;
-				if (xdi >= k$3) return x$2;
-				w = k$3 = xd[xdi];
-				for (n = 1; k$3 >= 10; k$3 /= 10) n++;
+				k$1 = xd.length;
+				if (xdi >= k$1) return x$2;
+				w = k$1 = xd[xdi];
+				for (n = 1; k$1 >= 10; k$1 /= 10) n++;
 				i %= LOG_BASE;
 				j = i - LOG_BASE + n;
 			}
 			if (rm !== void 0) {
-				k$3 = mathpow(10, n - j - 1);
-				rd = w / k$3 % 10 | 0;
-				doRound = sd < 0 || xd[xdi + 1] !== void 0 || w % k$3;
+				k$1 = mathpow(10, n - j - 1);
+				rd = w / k$1 % 10 | 0;
+				doRound = sd < 0 || xd[xdi + 1] !== void 0 || w % k$1;
 				doRound = rm < 4 ? (rd || doRound) && (rm == 0 || rm == (x$2.s < 0 ? 3 : 2)) : rd > 5 || rd == 5 && (rm == 4 || doRound || rm == 6 && (i > 0 ? j > 0 ? w / mathpow(10, n - j) : 0 : xd[xdi - 1]) % 10 & 1 || rm == (x$2.s < 0 ? 8 : 7));
 			}
 			if (sd < 1 || !xd[0]) {
 				if (doRound) {
-					k$3 = getBase10Exponent(x$2);
+					k$1 = getBase10Exponent(x$2);
 					xd.length = 1;
-					sd = sd - k$3 - 1;
+					sd = sd - k$1 - 1;
 					xd[0] = mathpow(10, (LOG_BASE - sd % LOG_BASE) % LOG_BASE);
 					x$2.e = mathfloor(-sd / LOG_BASE) || 0;
 				} else {
@@ -39197,31 +39011,31 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			}
 			if (i == 0) {
 				xd.length = xdi;
-				k$3 = 1;
+				k$1 = 1;
 				xdi--;
 			} else {
 				xd.length = xdi + 1;
-				k$3 = mathpow(10, LOG_BASE - i);
-				xd[xdi] = j > 0 ? (w / mathpow(10, n - j) % mathpow(10, j) | 0) * k$3 : 0;
+				k$1 = mathpow(10, LOG_BASE - i);
+				xd[xdi] = j > 0 ? (w / mathpow(10, n - j) % mathpow(10, j) | 0) * k$1 : 0;
 			}
 			if (doRound) for (;;) if (xdi == 0) {
-				if ((xd[0] += k$3) == BASE) {
+				if ((xd[0] += k$1) == BASE) {
 					xd[0] = 1;
 					++x$2.e;
 				}
 				break;
 			} else {
-				xd[xdi] += k$3;
+				xd[xdi] += k$1;
 				if (xd[xdi] != BASE) break;
 				xd[xdi--] = 0;
-				k$3 = 1;
+				k$1 = 1;
 			}
 			for (i = xd.length; xd[--i] === 0;) xd.pop();
 			if (external && (x$2.e > MAX_E || x$2.e < -MAX_E)) throw Error(exponentOutOfRange + getBase10Exponent(x$2));
 			return x$2;
 		}
 		function subtract(x$2, y$1) {
-			var d, e, i, j, k$3, len, xd, xe$1, xLTy, yd, Ctor = x$2.constructor, pr = Ctor.precision;
+			var d, e, i, j, k$1, len, xd, xe, xLTy, yd, Ctor = x$2.constructor, pr = Ctor.precision;
 			if (!x$2.s || !y$1.s) {
 				if (y$1.s) y$1.s = -y$1.s;
 				else y$1 = new Ctor(x$2);
@@ -39230,27 +39044,27 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			xd = x$2.d;
 			yd = y$1.d;
 			e = y$1.e;
-			xe$1 = x$2.e;
+			xe = x$2.e;
 			xd = xd.slice();
-			k$3 = xe$1 - e;
-			if (k$3) {
-				xLTy = k$3 < 0;
+			k$1 = xe - e;
+			if (k$1) {
+				xLTy = k$1 < 0;
 				if (xLTy) {
 					d = xd;
-					k$3 = -k$3;
+					k$1 = -k$1;
 					len = yd.length;
 				} else {
 					d = yd;
-					e = xe$1;
+					e = xe;
 					len = xd.length;
 				}
 				i = Math.max(Math.ceil(pr / LOG_BASE), len) + 2;
-				if (k$3 > i) {
-					k$3 = i;
+				if (k$1 > i) {
+					k$1 = i;
 					d.length = 1;
 				}
 				d.reverse();
-				for (i = k$3; i--;) d.push(0);
+				for (i = k$1; i--;) d.push(0);
 				d.reverse();
 			} else {
 				i = xd.length;
@@ -39261,7 +39075,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 					xLTy = xd[i] < yd[i];
 					break;
 				}
-				k$3 = 0;
+				k$1 = 0;
 			}
 			if (xLTy) {
 				d = xd;
@@ -39271,7 +39085,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			}
 			len = xd.length;
 			for (i = yd.length - len; i > 0; --i) xd[len++] = 0;
-			for (i = yd.length; i > k$3;) {
+			for (i = yd.length; i > k$1;) {
 				if (xd[--i] < yd[i]) {
 					for (j = i; j && xd[--j] === 0;) xd[j] = BASE - 1;
 					--xd[j];
@@ -39287,22 +39101,22 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			return external ? round$1(y$1, pr) : y$1;
 		}
 		function toString$4(x$2, isExp, sd) {
-			var k$3, e = getBase10Exponent(x$2), str = digitsToString(x$2.d), len = str.length;
+			var k$1, e = getBase10Exponent(x$2), str = digitsToString(x$2.d), len = str.length;
 			if (isExp) {
-				if (sd && (k$3 = sd - len) > 0) str = str.charAt(0) + "." + str.slice(1) + getZeroString(k$3);
+				if (sd && (k$1 = sd - len) > 0) str = str.charAt(0) + "." + str.slice(1) + getZeroString(k$1);
 				else if (len > 1) str = str.charAt(0) + "." + str.slice(1);
 				str = str + (e < 0 ? "e" : "e+") + e;
 			} else if (e < 0) {
 				str = "0." + getZeroString(-e - 1) + str;
-				if (sd && (k$3 = sd - len) > 0) str += getZeroString(k$3);
+				if (sd && (k$1 = sd - len) > 0) str += getZeroString(k$1);
 			} else if (e >= len) {
 				str += getZeroString(e + 1 - len);
-				if (sd && (k$3 = sd - e - 1) > 0) str = str + "." + getZeroString(k$3);
+				if (sd && (k$1 = sd - e - 1) > 0) str = str + "." + getZeroString(k$1);
 			} else {
-				if ((k$3 = e + 1) < len) str = str.slice(0, k$3) + "." + str.slice(k$3);
-				if (sd && (k$3 = sd - len) > 0) {
+				if ((k$1 = e + 1) < len) str = str.slice(0, k$1) + "." + str.slice(k$1);
+				if (sd && (k$1 = sd - len) > 0) {
 					if (e + 1 === len) str += ".";
-					str += getZeroString(k$3);
+					str += getZeroString(k$1);
 				}
 			}
 			return x$2.s < 0 ? "-" + str : str;
@@ -39314,7 +39128,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			}
 		}
 		function clone(obj) {
-			var i, p$1, ps;
+			var i, p, ps;
 			function Decimal$3(value) {
 				var x$2 = this;
 				if (!(x$2 instanceof Decimal$3)) return new Decimal$3(value);
@@ -39351,7 +39165,7 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 				if (isDecimal.test(value)) parseDecimal(x$2, value);
 				else throw Error(invalidArgument + value);
 			}
-			Decimal$3.prototype = P$1;
+			Decimal$3.prototype = P;
 			Decimal$3.ROUND_UP = 0;
 			Decimal$3.ROUND_DOWN = 1;
 			Decimal$3.ROUND_CEIL = 2;
@@ -39372,14 +39186,14 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 					"toExpPos",
 					"LN10"
 				];
-				for (i = 0; i < ps.length;) if (!obj.hasOwnProperty(p$1 = ps[i++])) obj[p$1] = this[p$1];
+				for (i = 0; i < ps.length;) if (!obj.hasOwnProperty(p = ps[i++])) obj[p] = this[p];
 			}
 			Decimal$3.config(obj);
 			return Decimal$3;
 		}
 		function config(obj) {
 			if (!obj || typeof obj !== "object") throw Error(decimalError + "Object expected");
-			var i, p$1, v, ps = [
+			var i, p, v, ps = [
 				"precision",
 				1,
 				MAX_DIGITS,
@@ -39393,10 +39207,10 @@ var require_decimal = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 				0,
 				Infinity
 			];
-			for (i = 0; i < ps.length; i += 3) if ((v = obj[p$1 = ps[i]]) !== void 0) if (mathfloor(v) === v && v >= ps[i + 1] && v <= ps[i + 2]) this[p$1] = v;
-			else throw Error(invalidArgument + p$1 + ": " + v);
-			if ((v = obj[p$1 = "LN10"]) !== void 0) if (v == Math.LN10) this[p$1] = new this(v);
-			else throw Error(invalidArgument + p$1 + ": " + v);
+			for (i = 0; i < ps.length; i += 3) if ((v = obj[p = ps[i]]) !== void 0) if (mathfloor(v) === v && v >= ps[i + 1] && v <= ps[i + 2]) this[p] = v;
+			else throw Error(invalidArgument + p + ": " + v);
+			if ((v = obj[p = "LN10"]) !== void 0) if (v == Math.LN10) this[p] = new this(v);
+			else throw Error(invalidArgument + p + ": " + v);
 			return this;
 		}
 		Decimal$2 = clone(Decimal$2);
@@ -39583,7 +39397,7 @@ function _iterableToArrayLimit$8(arr, i) {
 	var _arr = [];
 	var _n = true;
 	var _d = false;
-	var _e$1 = void 0;
+	var _e = void 0;
 	try {
 		for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
 			_arr.push(_s.value);
@@ -39591,12 +39405,12 @@ function _iterableToArrayLimit$8(arr, i) {
 		}
 	} catch (err) {
 		_d = true;
-		_e$1 = err;
+		_e = err;
 	} finally {
 		try {
 			if (!_n && _i["return"] != null) _i["return"]();
 		} finally {
-			if (_d) throw _e$1;
+			if (_d) throw _e;
 		}
 	}
 	return _arr;
@@ -39774,7 +39588,7 @@ function _arrayLikeToArray$15(arr, len) {
 function _iterableToArrayLimit$7(r$1, l) {
 	var t = null == r$1 ? null : "undefined" != typeof Symbol && r$1[Symbol.iterator] || r$1["@@iterator"];
 	if (null != t) {
-		var e, n, i, u$1, a$1 = [], f = !0, o = !1;
+		var e, n, i, u, a$1 = [], f = !0, o = !1;
 		try {
 			if (i = (t = t.call(r$1)).next, 0 === l) {
 				if (Object(t) !== t) return;
@@ -39784,7 +39598,7 @@ function _iterableToArrayLimit$7(r$1, l) {
 			o = !0, n = r$2;
 		} finally {
 			try {
-				if (!f && null != t["return"] && (u$1 = t["return"](), Object(u$1) !== u$1)) return;
+				if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
 			} finally {
 				if (o) throw n;
 			}
@@ -39873,12 +39687,12 @@ function _inherits$17(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$17(subClass, superClass);
 }
-function _setPrototypeOf$17(o, p$1) {
-	_setPrototypeOf$17 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$17(o, p) {
+	_setPrototypeOf$17 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$17(o, p$1);
+	return _setPrototypeOf$17(o, p);
 }
 function _defineProperty$37(obj, key, value) {
 	key = _toPropertyKey$37(key);
@@ -40407,8 +40221,8 @@ var getDomainOfErrorBars = function getDomainOfErrorBars$1(data, item, dataKey, 
 			var entryValue = getValueByDataKey(entry, dataKey);
 			if ((0, import_isNil$9.default)(entryValue)) return result;
 			var mainValue = Array.isArray(entryValue) ? [(0, import_min.default)(entryValue), (0, import_max$1.default)(entryValue)] : [entryValue, entryValue];
-			var errorDomain = keys$6.reduce(function(prevErrorArr, k$3) {
-				var errorValue = getValueByDataKey(entry, k$3, 0);
+			var errorDomain = keys$6.reduce(function(prevErrorArr, k$1) {
+				var errorValue = getValueByDataKey(entry, k$1, 0);
 				var lowerValue = mainValue[0] - Math.abs(Array.isArray(errorValue) ? errorValue[0] : errorValue);
 				var upperValue = mainValue[1] + Math.abs(Array.isArray(errorValue) ? errorValue[1] : errorValue);
 				return [Math.min(lowerValue, prevErrorArr[0]), Math.max(upperValue, prevErrorArr[1])];
@@ -40585,7 +40399,7 @@ var STACK_OFFSET_MAP = {
 	sign: function offsetSign$1(series) {
 		var n = series.length;
 		if (n <= 0) return;
-		for (var j = 0, m$1 = series[0].length; j < m$1; ++j) {
+		for (var j = 0, m = series[0].length; j < m; ++j) {
 			var positive = 0;
 			var negative = 0;
 			for (var i = 0; i < n; ++i) {
@@ -40609,7 +40423,7 @@ var STACK_OFFSET_MAP = {
 	positive: function offsetPositive$1(series) {
 		var n = series.length;
 		if (n <= 0) return;
-		for (var j = 0, m$1 = series[0].length; j < m$1; ++j) {
+		for (var j = 0, m = series[0].length; j < m; ++j) {
 			var positive = 0;
 			for (var i = 0; i < n; ++i) {
 				var value = (0, import_isNaN$1.default)(series[i][j][1]) ? series[i][j][0] : series[i][j][1];
@@ -40886,7 +40700,7 @@ function _arrayLikeToArray$13(arr, len) {
 function _iterableToArrayLimit$6(r$1, l) {
 	var t = null == r$1 ? null : "undefined" != typeof Symbol && r$1[Symbol.iterator] || r$1["@@iterator"];
 	if (null != t) {
-		var e, n, i, u$1, a$1 = [], f = !0, o = !1;
+		var e, n, i, u, a$1 = [], f = !0, o = !1;
 		try {
 			if (i = (t = t.call(r$1)).next, 0 === l) {
 				if (Object(t) !== t) return;
@@ -40896,7 +40710,7 @@ function _iterableToArrayLimit$6(r$1, l) {
 			o = !0, n = r$2;
 		} finally {
 			try {
-				if (!f && null != t["return"] && (u$1 = t["return"](), Object(u$1) !== u$1)) return;
+				if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
 			} finally {
 				if (o) throw n;
 			}
@@ -41915,14 +41729,14 @@ var CURVE_FACTORIES = {
 	curveStepAfter: stepAfter,
 	curveStepBefore: stepBefore
 };
-var defined = function defined$1(p$1) {
-	return p$1.x === +p$1.x && p$1.y === +p$1.y;
+var defined = function defined$1(p) {
+	return p.x === +p.x && p.y === +p.y;
 };
-var getX = function getX$1(p$1) {
-	return p$1.x;
+var getX = function getX$1(p) {
+	return p.x;
 };
-var getY = function getY$1(p$1) {
-	return p$1.y;
+var getY = function getY$1(p) {
+	return p.y;
 };
 var getCurveFactory = function getCurveFactory$1(type, layout) {
 	if ((0, import_isFunction$15.default)(type)) return type;
@@ -42039,9 +41853,9 @@ var require_react_is_development = /* @__PURE__ */ __commonJSMin(((exports) => {
 		var Fragment$5 = REACT_FRAGMENT_TYPE;
 		var Lazy = REACT_LAZY_TYPE$1;
 		var Memo = REACT_MEMO_TYPE;
-		var Portal$6 = REACT_PORTAL_TYPE;
+		var Portal$5 = REACT_PORTAL_TYPE;
 		var Profiler = REACT_PROFILER_TYPE;
-		var StrictMode = REACT_STRICT_MODE_TYPE;
+		var StrictMode$1 = REACT_STRICT_MODE_TYPE;
 		var Suspense = REACT_SUSPENSE_TYPE;
 		var hasWarnedAboutDeprecatedIsAsyncMode = false;
 		function isAsyncMode(object) {
@@ -42096,9 +41910,9 @@ var require_react_is_development = /* @__PURE__ */ __commonJSMin(((exports) => {
 		exports.Fragment = Fragment$5;
 		exports.Lazy = Lazy;
 		exports.Memo = Memo;
-		exports.Portal = Portal$6;
+		exports.Portal = Portal$5;
 		exports.Profiler = Profiler;
-		exports.StrictMode = StrictMode;
+		exports.StrictMode = StrictMode$1;
 		exports.Suspense = Suspense;
 		exports.isAsyncMode = isAsyncMode;
 		exports.isConcurrentMode = isConcurrentMode;
@@ -42533,20 +42347,20 @@ var require_prop_types = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 var { getOwnPropertyNames, getOwnPropertySymbols } = Object;
 var { hasOwnProperty: hasOwnProperty$1 } = Object.prototype;
 function combineComparators(comparatorA, comparatorB) {
-	return function isEqual$8(a$1, b$1, state) {
-		return comparatorA(a$1, b$1, state) && comparatorB(a$1, b$1, state);
+	return function isEqual$8(a$1, b$1, state$1) {
+		return comparatorA(a$1, b$1, state$1) && comparatorB(a$1, b$1, state$1);
 	};
 }
 function createIsCircular(areItemsEqual) {
-	return function isCircular(a$1, b$1, state) {
-		if (!a$1 || !b$1 || typeof a$1 !== "object" || typeof b$1 !== "object") return areItemsEqual(a$1, b$1, state);
-		const { cache } = state;
+	return function isCircular(a$1, b$1, state$1) {
+		if (!a$1 || !b$1 || typeof a$1 !== "object" || typeof b$1 !== "object") return areItemsEqual(a$1, b$1, state$1);
+		const { cache } = state$1;
 		const cachedA = cache.get(a$1);
 		const cachedB = cache.get(b$1);
 		if (cachedA && cachedB) return cachedA === b$1 && cachedB === a$1;
 		cache.set(a$1, b$1);
 		cache.set(b$1, a$1);
-		const result = areItemsEqual(a$1, b$1, state);
+		const result = areItemsEqual(a$1, b$1, state$1);
 		cache.delete(a$1);
 		cache.delete(b$1);
 		return result;
@@ -42569,10 +42383,10 @@ var { getOwnPropertyDescriptor, keys: keys$1 } = Object;
 function areArrayBuffersEqual(a$1, b$1) {
 	return a$1.byteLength === b$1.byteLength && areTypedArraysEqual(new Uint8Array(a$1), new Uint8Array(b$1));
 }
-function areArraysEqual(a$1, b$1, state) {
+function areArraysEqual(a$1, b$1, state$1) {
 	let index$1 = a$1.length;
 	if (b$1.length !== index$1) return false;
-	while (index$1-- > 0) if (!state.equals(a$1[index$1], b$1[index$1], index$1, index$1, a$1, b$1, state)) return false;
+	while (index$1-- > 0) if (!state$1.equals(a$1[index$1], b$1[index$1], index$1, index$1, a$1, b$1, state$1)) return false;
 	return true;
 }
 function areDataViewsEqual(a$1, b$1) {
@@ -42587,7 +42401,7 @@ function areErrorsEqual(a$1, b$1) {
 function areFunctionsEqual(a$1, b$1) {
 	return a$1 === b$1;
 }
-function areMapsEqual(a$1, b$1, state) {
+function areMapsEqual(a$1, b$1, state$1) {
 	const size$3 = a$1.size;
 	if (size$3 !== b$1.size) return false;
 	if (!size$3) return true;
@@ -42609,7 +42423,7 @@ function areMapsEqual(a$1, b$1, state) {
 			}
 			const aEntry = aResult.value;
 			const bEntry = bResult.value;
-			if (state.equals(aEntry[0], bEntry[0], index$1, matchIndex, a$1, b$1, state) && state.equals(aEntry[1], bEntry[1], aEntry[0], bEntry[0], a$1, b$1, state)) {
+			if (state$1.equals(aEntry[0], bEntry[0], index$1, matchIndex, a$1, b$1, state$1) && state$1.equals(aEntry[1], bEntry[1], aEntry[0], bEntry[0], a$1, b$1, state$1)) {
 				hasMatch = matchedIndices[matchIndex] = true;
 				break;
 			}
@@ -42621,14 +42435,14 @@ function areMapsEqual(a$1, b$1, state) {
 	return true;
 }
 var areNumbersEqual = sameValueZeroEqual;
-function areObjectsEqual(a$1, b$1, state) {
+function areObjectsEqual(a$1, b$1, state$1) {
 	const properties$1 = keys$1(a$1);
 	let index$1 = properties$1.length;
 	if (keys$1(b$1).length !== index$1) return false;
-	while (index$1-- > 0) if (!isPropertyEqual(a$1, b$1, state, properties$1[index$1])) return false;
+	while (index$1-- > 0) if (!isPropertyEqual(a$1, b$1, state$1, properties$1[index$1])) return false;
 	return true;
 }
-function areObjectsEqualStrict(a$1, b$1, state) {
+function areObjectsEqualStrict(a$1, b$1, state$1) {
 	const properties$1 = getStrictProperties(a$1);
 	let index$1 = properties$1.length;
 	if (getStrictProperties(b$1).length !== index$1) return false;
@@ -42637,7 +42451,7 @@ function areObjectsEqualStrict(a$1, b$1, state) {
 	let descriptorB;
 	while (index$1-- > 0) {
 		property$2 = properties$1[index$1];
-		if (!isPropertyEqual(a$1, b$1, state, property$2)) return false;
+		if (!isPropertyEqual(a$1, b$1, state$1, property$2)) return false;
 		descriptorA = getOwnPropertyDescriptor(a$1, property$2);
 		descriptorB = getOwnPropertyDescriptor(b$1, property$2);
 		if ((descriptorA || descriptorB) && (!descriptorA || !descriptorB || descriptorA.configurable !== descriptorB.configurable || descriptorA.enumerable !== descriptorB.enumerable || descriptorA.writable !== descriptorB.writable)) return false;
@@ -42650,7 +42464,7 @@ function arePrimitiveWrappersEqual(a$1, b$1) {
 function areRegExpsEqual(a$1, b$1) {
 	return a$1.source === b$1.source && a$1.flags === b$1.flags;
 }
-function areSetsEqual(a$1, b$1, state) {
+function areSetsEqual(a$1, b$1, state$1) {
 	const size$3 = a$1.size;
 	if (size$3 !== b$1.size) return false;
 	if (!size$3) return true;
@@ -42665,7 +42479,7 @@ function areSetsEqual(a$1, b$1, state) {
 		let matchIndex = 0;
 		while (bResult = bIterable.next()) {
 			if (bResult.done) break;
-			if (!matchedIndices[matchIndex] && state.equals(aResult.value, bResult.value, aResult.value, bResult.value, a$1, b$1, state)) {
+			if (!matchedIndices[matchIndex] && state$1.equals(aResult.value, bResult.value, aResult.value, bResult.value, a$1, b$1, state$1)) {
 				hasMatch = matchedIndices[matchIndex] = true;
 				break;
 			}
@@ -42684,9 +42498,9 @@ function areTypedArraysEqual(a$1, b$1) {
 function areUrlsEqual(a$1, b$1) {
 	return a$1.hostname === b$1.hostname && a$1.pathname === b$1.pathname && a$1.protocol === b$1.protocol && a$1.port === b$1.port && a$1.hash === b$1.hash && a$1.username === b$1.username && a$1.password === b$1.password;
 }
-function isPropertyEqual(a$1, b$1, state, property$2) {
+function isPropertyEqual(a$1, b$1, state$1, property$2) {
 	if ((property$2 === REACT_OWNER || property$2 === PREACT_OWNER || property$2 === PREACT_VNODE) && (a$1.$$typeof || b$1.$$typeof)) return true;
-	return hasOwn(b$1, property$2) && state.equals(a$1[property$2], b$1[property$2], property$2, property$2, a$1, b$1, state);
+	return hasOwn(b$1, property$2) && state$1.equals(a$1[property$2], b$1[property$2], property$2, property$2, a$1, b$1, state$1);
 }
 var ARRAY_BUFFER_TAG = "[object ArrayBuffer]";
 var ARGUMENTS_TAG = "[object Arguments]";
@@ -42717,44 +42531,44 @@ var TYPED_ARRAY_TAGS = {
 var URL_TAG = "[object URL]";
 var toString = Object.prototype.toString;
 function createEqualityComparator({ areArrayBuffersEqual: areArrayBuffersEqual$1, areArraysEqual: areArraysEqual$1, areDataViewsEqual: areDataViewsEqual$1, areDatesEqual: areDatesEqual$1, areErrorsEqual: areErrorsEqual$1, areFunctionsEqual: areFunctionsEqual$1, areMapsEqual: areMapsEqual$1, areNumbersEqual: areNumbersEqual$1, areObjectsEqual: areObjectsEqual$1, arePrimitiveWrappersEqual: arePrimitiveWrappersEqual$1, areRegExpsEqual: areRegExpsEqual$1, areSetsEqual: areSetsEqual$1, areTypedArraysEqual: areTypedArraysEqual$1, areUrlsEqual: areUrlsEqual$1, unknownTagComparators }) {
-	return function comparator(a$1, b$1, state) {
+	return function comparator(a$1, b$1, state$1) {
 		if (a$1 === b$1) return true;
 		if (a$1 == null || b$1 == null) return false;
 		const type = typeof a$1;
 		if (type !== typeof b$1) return false;
 		if (type !== "object") {
-			if (type === "number") return areNumbersEqual$1(a$1, b$1, state);
-			if (type === "function") return areFunctionsEqual$1(a$1, b$1, state);
+			if (type === "number") return areNumbersEqual$1(a$1, b$1, state$1);
+			if (type === "function") return areFunctionsEqual$1(a$1, b$1, state$1);
 			return false;
 		}
 		const constructor = a$1.constructor;
 		if (constructor !== b$1.constructor) return false;
-		if (constructor === Object) return areObjectsEqual$1(a$1, b$1, state);
-		if (Array.isArray(a$1)) return areArraysEqual$1(a$1, b$1, state);
-		if (constructor === Date) return areDatesEqual$1(a$1, b$1, state);
-		if (constructor === RegExp) return areRegExpsEqual$1(a$1, b$1, state);
-		if (constructor === Map) return areMapsEqual$1(a$1, b$1, state);
-		if (constructor === Set) return areSetsEqual$1(a$1, b$1, state);
+		if (constructor === Object) return areObjectsEqual$1(a$1, b$1, state$1);
+		if (Array.isArray(a$1)) return areArraysEqual$1(a$1, b$1, state$1);
+		if (constructor === Date) return areDatesEqual$1(a$1, b$1, state$1);
+		if (constructor === RegExp) return areRegExpsEqual$1(a$1, b$1, state$1);
+		if (constructor === Map) return areMapsEqual$1(a$1, b$1, state$1);
+		if (constructor === Set) return areSetsEqual$1(a$1, b$1, state$1);
 		const tag = toString.call(a$1);
-		if (tag === DATE_TAG) return areDatesEqual$1(a$1, b$1, state);
-		if (tag === REG_EXP_TAG) return areRegExpsEqual$1(a$1, b$1, state);
-		if (tag === MAP_TAG) return areMapsEqual$1(a$1, b$1, state);
-		if (tag === SET_TAG) return areSetsEqual$1(a$1, b$1, state);
-		if (tag === OBJECT_TAG) return typeof a$1.then !== "function" && typeof b$1.then !== "function" && areObjectsEqual$1(a$1, b$1, state);
-		if (tag === URL_TAG) return areUrlsEqual$1(a$1, b$1, state);
-		if (tag === ERROR_TAG) return areErrorsEqual$1(a$1, b$1, state);
-		if (tag === ARGUMENTS_TAG) return areObjectsEqual$1(a$1, b$1, state);
-		if (TYPED_ARRAY_TAGS[tag]) return areTypedArraysEqual$1(a$1, b$1, state);
-		if (tag === ARRAY_BUFFER_TAG) return areArrayBuffersEqual$1(a$1, b$1, state);
-		if (tag === DATA_VIEW_TAG) return areDataViewsEqual$1(a$1, b$1, state);
-		if (tag === BOOLEAN_TAG || tag === NUMBER_TAG || tag === STRING_TAG) return arePrimitiveWrappersEqual$1(a$1, b$1, state);
+		if (tag === DATE_TAG) return areDatesEqual$1(a$1, b$1, state$1);
+		if (tag === REG_EXP_TAG) return areRegExpsEqual$1(a$1, b$1, state$1);
+		if (tag === MAP_TAG) return areMapsEqual$1(a$1, b$1, state$1);
+		if (tag === SET_TAG) return areSetsEqual$1(a$1, b$1, state$1);
+		if (tag === OBJECT_TAG) return typeof a$1.then !== "function" && typeof b$1.then !== "function" && areObjectsEqual$1(a$1, b$1, state$1);
+		if (tag === URL_TAG) return areUrlsEqual$1(a$1, b$1, state$1);
+		if (tag === ERROR_TAG) return areErrorsEqual$1(a$1, b$1, state$1);
+		if (tag === ARGUMENTS_TAG) return areObjectsEqual$1(a$1, b$1, state$1);
+		if (TYPED_ARRAY_TAGS[tag]) return areTypedArraysEqual$1(a$1, b$1, state$1);
+		if (tag === ARRAY_BUFFER_TAG) return areArrayBuffersEqual$1(a$1, b$1, state$1);
+		if (tag === DATA_VIEW_TAG) return areDataViewsEqual$1(a$1, b$1, state$1);
+		if (tag === BOOLEAN_TAG || tag === NUMBER_TAG || tag === STRING_TAG) return arePrimitiveWrappersEqual$1(a$1, b$1, state$1);
 		if (unknownTagComparators) {
 			let unknownTagComparator = unknownTagComparators[tag];
 			if (!unknownTagComparator) {
 				const shortTag = getShortTag(a$1);
 				if (shortTag) unknownTagComparator = unknownTagComparators[shortTag];
 			}
-			if (unknownTagComparator) return unknownTagComparator(a$1, b$1, state);
+			if (unknownTagComparator) return unknownTagComparator(a$1, b$1, state$1);
 		}
 		return false;
 	};
@@ -42793,8 +42607,8 @@ function createEqualityComparatorConfig({ circular, createCustomConfig, strict }
 	return config;
 }
 function createInternalEqualityComparator(compare) {
-	return function(a$1, b$1, _indexOrKeyA, _indexOrKeyB, _parentA, _parentB, state) {
-		return compare(a$1, b$1, state);
+	return function(a$1, b$1, _indexOrKeyA, _indexOrKeyB, _parentA, _parentB, state$1) {
+		return compare(a$1, b$1, state$1);
 	};
 }
 function createIsEqual({ circular, comparator, createState, equals, strict }) {
@@ -42815,14 +42629,14 @@ function createIsEqual({ circular, comparator, createState, equals, strict }) {
 			strict
 		});
 	};
-	const state = {
+	const state$1 = {
 		cache: void 0,
 		equals,
 		meta: void 0,
 		strict
 	};
 	return function isEqual$8(a$1, b$1) {
-		return comparator(a$1, b$1, state);
+		return comparator(a$1, b$1, state$1);
 	};
 }
 var deepEqual = createCustomEqual();
@@ -43056,7 +42870,7 @@ function _nonIterableRest$5() {
 function _iterableToArrayLimit$5(r$1, l) {
 	var t = null == r$1 ? null : "undefined" != typeof Symbol && r$1[Symbol.iterator] || r$1["@@iterator"];
 	if (null != t) {
-		var e, n, i, u$1, a$1 = [], f = !0, o = !1;
+		var e, n, i, u, a$1 = [], f = !0, o = !1;
 		try {
 			if (i = (t = t.call(r$1)).next, 0 === l) {
 				if (Object(t) !== t) return;
@@ -43066,7 +42880,7 @@ function _iterableToArrayLimit$5(r$1, l) {
 			o = !0, n = r$2;
 		} finally {
 			try {
-				if (!f && null != t.return && (u$1 = t.return(), Object(u$1) !== u$1)) return;
+				if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return;
 			} finally {
 				if (o) throw n;
 			}
@@ -43326,7 +43140,7 @@ function _arrayLikeToArray$8(arr, len) {
 function _iterableToArrayLimit$4(r$1, l) {
 	var t = null == r$1 ? null : "undefined" != typeof Symbol && r$1[Symbol.iterator] || r$1["@@iterator"];
 	if (null != t) {
-		var e, n, i, u$1, a$1 = [], f = !0, o = !1;
+		var e, n, i, u, a$1 = [], f = !0, o = !1;
 		try {
 			if (i = (t = t.call(r$1)).next, 0 === l) {
 				if (Object(t) !== t) return;
@@ -43336,7 +43150,7 @@ function _iterableToArrayLimit$4(r$1, l) {
 			o = !0, n = r$2;
 		} finally {
 			try {
-				if (!f && null != t.return && (u$1 = t.return(), Object(u$1) !== u$1)) return;
+				if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return;
 			} finally {
 				if (o) throw n;
 			}
@@ -43347,8 +43161,8 @@ function _iterableToArrayLimit$4(r$1, l) {
 function _arrayWithHoles$4(arr) {
 	if (Array.isArray(arr)) return arr;
 }
-var alpha = function alpha$1(begin, end, k$3) {
-	return begin + (end - begin) * k$3;
+var alpha = function alpha$1(begin, end, k$1) {
+	return begin + (end - begin) * k$1;
 };
 var needContinue = function needContinue$1(_ref) {
 	return _ref.from !== _ref.to;
@@ -43578,12 +43392,12 @@ function _inherits$16(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$16(subClass, superClass);
 }
-function _setPrototypeOf$16(o, p$1) {
-	_setPrototypeOf$16 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$16(o, p) {
+	_setPrototypeOf$16 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$16(o, p$1);
+	return _setPrototypeOf$16(o, p);
 }
 function _createSuper(Derived) {
 	var hasNativeReflectConstruct = _isNativeReflectConstruct$16();
@@ -43901,7 +43715,7 @@ function _arrayLikeToArray$6(arr, len) {
 function _iterableToArrayLimit$3(r$1, l) {
 	var t = null == r$1 ? null : "undefined" != typeof Symbol && r$1[Symbol.iterator] || r$1["@@iterator"];
 	if (null != t) {
-		var e, n, i, u$1, a$1 = [], f = !0, o = !1;
+		var e, n, i, u, a$1 = [], f = !0, o = !1;
 		try {
 			if (i = (t = t.call(r$1)).next, 0 === l) {
 				if (Object(t) !== t) return;
@@ -43911,7 +43725,7 @@ function _iterableToArrayLimit$3(r$1, l) {
 			o = !0, n = r$2;
 		} finally {
 			try {
-				if (!f && null != t["return"] && (u$1 = t["return"](), Object(u$1) !== u$1)) return;
+				if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
 			} finally {
 				if (o) throw n;
 			}
@@ -44480,12 +44294,12 @@ function _inherits$15(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$15(subClass, superClass);
 }
-function _setPrototypeOf$15(o, p$1) {
-	_setPrototypeOf$15 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$15(o, p) {
+	_setPrototypeOf$15 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$15(o, p$1);
+	return _setPrototypeOf$15(o, p);
 }
 function _defineProperty$24(obj, key, value) {
 	key = _toPropertyKey$24(key);
@@ -44738,12 +44552,12 @@ function _inherits$14(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$14(subClass, superClass);
 }
-function _setPrototypeOf$14(o, p$1) {
-	_setPrototypeOf$14 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$14(o, p) {
+	_setPrototypeOf$14 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$14(o, p$1);
+	return _setPrototypeOf$14(o, p);
 }
 function _defineProperty$23(obj, key, value) {
 	key = _toPropertyKey$23(key);
@@ -44951,7 +44765,7 @@ function _arrayLikeToArray$4(arr, len) {
 function _iterableToArrayLimit$2(r$1, l) {
 	var t = null == r$1 ? null : "undefined" != typeof Symbol && r$1[Symbol.iterator] || r$1["@@iterator"];
 	if (null != t) {
-		var e, n, i, u$1, a$1 = [], f = !0, o = !1;
+		var e, n, i, u, a$1 = [], f = !0, o = !1;
 		try {
 			if (i = (t = t.call(r$1)).next, 0 === l) {
 				if (Object(t) !== t) return;
@@ -44961,7 +44775,7 @@ function _iterableToArrayLimit$2(r$1, l) {
 			o = !0, n = r$2;
 		} finally {
 			try {
-				if (!f && null != t["return"] && (u$1 = t["return"](), Object(u$1) !== u$1)) return;
+				if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
 			} finally {
 				if (o) throw n;
 			}
@@ -45388,12 +45202,12 @@ function _inherits$13(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$13(subClass, superClass);
 }
-function _setPrototypeOf$13(o, p$1) {
-	_setPrototypeOf$13 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$13(o, p) {
+	_setPrototypeOf$13 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$13(o, p$1);
+	return _setPrototypeOf$13(o, p);
 }
 function _defineProperty$20(obj, key, value) {
 	key = _toPropertyKey$20(key);
@@ -46015,12 +45829,12 @@ function _inherits$12(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$12(subClass, superClass);
 }
-function _setPrototypeOf$12(o, p$1) {
-	_setPrototypeOf$12 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$12(o, p) {
+	_setPrototypeOf$12 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$12(o, p$1);
+	return _setPrototypeOf$12(o, p);
 }
 function _defineProperty$18(obj, key, value) {
 	key = _toPropertyKey$18(key);
@@ -46827,12 +46641,12 @@ function _inherits$11(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$11(subClass, superClass);
 }
-function _setPrototypeOf$11(o, p$1) {
-	_setPrototypeOf$11 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$11(o, p) {
+	_setPrototypeOf$11 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$11(o, p$1);
+	return _setPrototypeOf$11(o, p);
 }
 function _defineProperty$16(obj, key, value) {
 	key = _toPropertyKey$16(key);
@@ -47611,12 +47425,12 @@ function _inherits$10(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$10(subClass, superClass);
 }
-function _setPrototypeOf$10(o, p$1) {
-	_setPrototypeOf$10 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$10(o, p) {
+	_setPrototypeOf$10 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$10(o, p$1);
+	return _setPrototypeOf$10(o, p);
 }
 function ownKeys$10(e, r$1) {
 	var t = Object.keys(e);
@@ -47686,7 +47500,7 @@ function _arrayLikeToArray$3(arr, len) {
 function _iterableToArrayLimit$1(r$1, l) {
 	var t = null == r$1 ? null : "undefined" != typeof Symbol && r$1[Symbol.iterator] || r$1["@@iterator"];
 	if (null != t) {
-		var e, n, i, u$1, a$1 = [], f = !0, o = !1;
+		var e, n, i, u, a$1 = [], f = !0, o = !1;
 		try {
 			if (i = (t = t.call(r$1)).next, 0 === l) {
 				if (Object(t) !== t) return;
@@ -47696,7 +47510,7 @@ function _iterableToArrayLimit$1(r$1, l) {
 			o = !0, n = r$2;
 		} finally {
 			try {
-				if (!f && null != t["return"] && (u$1 = t["return"](), Object(u$1) !== u$1)) return;
+				if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
 			} finally {
 				if (o) throw n;
 			}
@@ -47753,11 +47567,11 @@ var getEndPoints = function getEndPoints$1(scales, isFixedX, isFixedY, isSegment
 		return xAxisOrientation === "top" ? _points.reverse() : _points;
 	}
 	if (isSegment) {
-		var _points2 = props.segment.map(function(p$1) {
-			return scales.apply(p$1, { position });
+		var _points2 = props.segment.map(function(p) {
+			return scales.apply(p, { position });
 		});
-		if (ifOverflowMatches(props, "discard") && (0, import_some.default)(_points2, function(p$1) {
-			return !scales.isInRange(p$1);
+		if (ifOverflowMatches(props, "discard") && (0, import_some.default)(_points2, function(p) {
+			return !scales.isInRange(p);
 		})) return null;
 		return _points2;
 	}
@@ -47909,12 +47723,12 @@ function _inherits$9(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$9(subClass, superClass);
 }
-function _setPrototypeOf$9(o, p$1) {
-	_setPrototypeOf$9 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$9(o, p) {
+	_setPrototypeOf$9 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$9(o, p$1);
+	return _setPrototypeOf$9(o, p);
 }
 function _defineProperty$13(obj, key, value) {
 	key = _toPropertyKey$13(key);
@@ -48102,12 +47916,12 @@ function _inherits$8(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$8(subClass, superClass);
 }
-function _setPrototypeOf$8(o, p$1) {
-	_setPrototypeOf$8 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$8(o, p) {
+	_setPrototypeOf$8 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$8(o, p$1);
+	return _setPrototypeOf$8(o, p);
 }
 function _defineProperty$12(obj, key, value) {
 	key = _toPropertyKey$12(key);
@@ -48529,12 +48343,12 @@ function _inherits$7(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$7(subClass, superClass);
 }
-function _setPrototypeOf$7(o, p$1) {
-	_setPrototypeOf$7 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$7(o, p) {
+	_setPrototypeOf$7 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$7(o, p$1);
+	return _setPrototypeOf$7(o, p);
 }
 function _defineProperty$10(obj, key, value) {
 	key = _toPropertyKey$10(key);
@@ -49264,12 +49078,12 @@ function _inherits$6(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$6(subClass, superClass);
 }
-function _setPrototypeOf$6(o, p$1) {
-	_setPrototypeOf$6 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$6(o, p) {
+	_setPrototypeOf$6 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$6(o, p$1);
+	return _setPrototypeOf$6(o, p);
 }
 function _defineProperty$8(obj, key, value) {
 	key = _toPropertyKey$8(key);
@@ -49767,12 +49581,12 @@ function _inherits$5(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$5(subClass, superClass);
 }
-function _setPrototypeOf$5(o, p$1) {
-	_setPrototypeOf$5 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$5(o, p) {
+	_setPrototypeOf$5 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$5(o, p$1);
+	return _setPrototypeOf$5(o, p);
 }
 function _defineProperty$7(obj, key, value) {
 	key = _toPropertyKey$7(key);
@@ -50221,12 +50035,12 @@ function _inherits$4(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$4(subClass, superClass);
 }
-function _setPrototypeOf$4(o, p$1) {
-	_setPrototypeOf$4 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$4(o, p) {
+	_setPrototypeOf$4 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$4(o, p$1);
+	return _setPrototypeOf$4(o, p);
 }
 function _defineProperty$6(obj, key, value) {
 	key = _toPropertyKey$6(key);
@@ -50417,12 +50231,12 @@ function _inherits$3(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$3(subClass, superClass);
 }
-function _setPrototypeOf$3(o, p$1) {
-	_setPrototypeOf$3 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$3(o, p) {
+	_setPrototypeOf$3 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$3(o, p$1);
+	return _setPrototypeOf$3(o, p);
 }
 function _defineProperty$5(obj, key, value) {
 	key = _toPropertyKey$5(key);
@@ -50794,12 +50608,12 @@ function _inherits$2(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$2(subClass, superClass);
 }
-function _setPrototypeOf$2(o, p$1) {
-	_setPrototypeOf$2 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$2(o, p) {
+	_setPrototypeOf$2 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$2(o, p$1);
+	return _setPrototypeOf$2(o, p);
 }
 function _defineProperty$4(obj, key, value) {
 	key = _toPropertyKey$4(key);
@@ -50950,12 +50764,12 @@ function _inherits$1(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf$1(subClass, superClass);
 }
-function _setPrototypeOf$1(o, p$1) {
-	_setPrototypeOf$1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf$1(o, p) {
+	_setPrototypeOf$1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf$1(o, p$1);
+	return _setPrototypeOf$1(o, p);
 }
 function _defineProperty$3(obj, key, value) {
 	key = _toPropertyKey$3(key);
@@ -51141,8 +50955,8 @@ var eventCenter = new (/* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((
 		var evt = prefix ? prefix + event : event, handlers = this._events[evt];
 		if (!handlers) return [];
 		if (handlers.fn) return [handlers.fn];
-		for (var i = 0, l = handlers.length, ee$1 = new Array(l); i < l; i++) ee$1[i] = handlers[i].fn;
-		return ee$1;
+		for (var i = 0, l = handlers.length, ee = new Array(l); i < l; i++) ee[i] = handlers[i].fn;
+		return ee;
 	};
 	EventEmitter$1.prototype.listenerCount = function listenerCount(event) {
 		var evt = prefix ? prefix + event : event, listeners$3 = this._events[evt];
@@ -51549,7 +51363,7 @@ function _nonIterableRest() {
 function _iterableToArrayLimit(r$1, l) {
 	var t = null == r$1 ? null : "undefined" != typeof Symbol && r$1[Symbol.iterator] || r$1["@@iterator"];
 	if (null != t) {
-		var e, n, i, u$1, a$1 = [], f = !0, o = !1;
+		var e, n, i, u, a$1 = [], f = !0, o = !1;
 		try {
 			if (i = (t = t.call(r$1)).next, 0 === l) {
 				if (Object(t) !== t) return;
@@ -51559,7 +51373,7 @@ function _iterableToArrayLimit(r$1, l) {
 			o = !0, n = r$2;
 		} finally {
 			try {
-				if (!f && null != t["return"] && (u$1 = t["return"](), Object(u$1) !== u$1)) return;
+				if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
 			} finally {
 				if (o) throw n;
 			}
@@ -51648,12 +51462,12 @@ function _inherits(subClass, superClass) {
 	Object.defineProperty(subClass, "prototype", { writable: false });
 	if (superClass) _setPrototypeOf(subClass, superClass);
 }
-function _setPrototypeOf(o, p$1) {
-	_setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$2) {
-		o$1.__proto__ = p$2;
+function _setPrototypeOf(o, p) {
+	_setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf$22(o$1, p$1) {
+		o$1.__proto__ = p$1;
 		return o$1;
 	};
-	return _setPrototypeOf(o, p$1);
+	return _setPrototypeOf(o, p);
 }
 function _toConsumableArray(arr) {
 	return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
@@ -51791,14 +51605,14 @@ var getDisplayedData = function getDisplayedData$1(data, _ref) {
 function getDefaultDomainByAxisType(axisType) {
 	return axisType === "number" ? [0, "auto"] : void 0;
 }
-var getTooltipContent = function getTooltipContent$1(state, chartData, activeIndex, activeLabel) {
-	var graphicalItems = state.graphicalItems, tooltipAxis = state.tooltipAxis;
-	var displayedData = getDisplayedData(chartData, state);
+var getTooltipContent = function getTooltipContent$1(state$1, chartData, activeIndex, activeLabel) {
+	var graphicalItems = state$1.graphicalItems, tooltipAxis = state$1.tooltipAxis;
+	var displayedData = getDisplayedData(chartData, state$1);
 	if (activeIndex < 0 || !graphicalItems || !graphicalItems.length || activeIndex >= displayedData.length) return null;
 	return graphicalItems.reduce(function(result, child) {
 		var _child$props$data;
 		var data = (_child$props$data = child.props.data) !== null && _child$props$data !== void 0 ? _child$props$data : chartData;
-		if (data && state.dataStartIndex + state.dataEndIndex !== 0 && state.dataEndIndex - state.dataStartIndex >= activeIndex) data = data.slice(state.dataStartIndex, state.dataEndIndex + 1);
+		if (data && state$1.dataStartIndex + state$1.dataEndIndex !== 0 && state$1.dataEndIndex - state$1.dataStartIndex >= activeIndex) data = data.slice(state$1.dataStartIndex, state$1.dataEndIndex + 1);
 		var payload;
 		if (tooltipAxis.dataKey && !tooltipAxis.allowDuplicatedCategory) payload = findEntryInArray(data === void 0 ? displayedData : data, tooltipAxis.dataKey, activeLabel);
 		else payload = data && data[activeIndex] || displayedData[activeIndex];
@@ -51806,20 +51620,20 @@ var getTooltipContent = function getTooltipContent$1(state, chartData, activeInd
 		return [].concat(_toConsumableArray(result), [getTooltipItem(child, payload)]);
 	}, []);
 };
-var getTooltipData = function getTooltipData$1(state, chartData, layout, rangeObj) {
+var getTooltipData = function getTooltipData$1(state$1, chartData, layout, rangeObj) {
 	var rangeData = rangeObj || {
-		x: state.chartX,
-		y: state.chartY
+		x: state$1.chartX,
+		y: state$1.chartY
 	};
 	var pos = calculateTooltipPos(rangeData, layout);
-	var ticks$1 = state.orderedTooltipTicks, axis = state.tooltipAxis, tooltipTicks = state.tooltipTicks;
+	var ticks$1 = state$1.orderedTooltipTicks, axis = state$1.tooltipAxis, tooltipTicks = state$1.tooltipTicks;
 	var activeIndex = calculateActiveTickIndex(pos, ticks$1, tooltipTicks, axis);
 	if (activeIndex >= 0 && tooltipTicks) {
 		var activeLabel = tooltipTicks[activeIndex] && tooltipTicks[activeIndex].value;
 		return {
 			activeTooltipIndex: activeIndex,
 			activeLabel,
-			activePayload: getTooltipContent(state, chartData, activeIndex, activeLabel),
+			activePayload: getTooltipContent(state$1, chartData, activeIndex, activeLabel),
 			activeCoordinate: getActiveCoordinate(layout, ticks$1, activeIndex, rangeData)
 		};
 	}
@@ -53277,335 +53091,39 @@ function Badge({ className, variant, ...props }) {
 		...props
 	});
 }
-function seedRandom(seed) {
-	let current = seed;
-	return function() {
-		current = (current * 9301 + 49297) % 233280;
-		return current / 233280;
-	};
-}
-var rng = seedRandom(42);
-var rnd = (min$5, max$6) => Math.floor(rng() * (max$6 - min$5 + 1)) + min$5;
-var rndItem = (arr) => arr[rnd(0, arr.length - 1)];
-var rndDateStr = (start, end) => new Date(start.getTime() + rng() * (end.getTime() - start.getTime())).toISOString().split("T")[0];
-var rndDateTimeStr = (start, end) => new Date(start.getTime() + rng() * (end.getTime() - start.getTime())).toISOString();
-var _firstNames = [
-	"James",
-	"Mary",
-	"John",
-	"Patricia",
-	"Robert",
-	"Jennifer",
-	"Michael",
-	"Linda",
-	"William",
-	"Elizabeth",
-	"David",
-	"Barbara",
-	"Richard",
-	"Susan",
-	"Joseph",
-	"Jessica",
-	"Thomas",
-	"Sarah",
-	"Charles",
-	"Karen"
-];
-var _lastNames = [
-	"Smith",
-	"Johnson",
-	"Williams",
-	"Brown",
-	"Jones",
-	"Garcia",
-	"Miller",
-	"Davis",
-	"Rodriguez",
-	"Martinez",
-	"Hernandez",
-	"Lopez",
-	"Gonzalez",
-	"Wilson",
-	"Anderson",
-	"Thomas",
-	"Taylor",
-	"Moore",
-	"Jackson",
-	"Martin"
-];
-var _cities = [
-	"Miami",
-	"Orlando",
-	"Tampa",
-	"Fort Lauderdale",
-	"Jacksonville",
-	"Boca Raton",
-	"West Palm Beach",
-	"Naples",
-	"Sarasota",
-	"Clearwater"
-];
-var _streets = [
-	"Ocean Drive",
-	"Collins Ave",
-	"Lincoln Road",
-	"Brickell Ave",
-	"Las Olas Blvd",
-	"Biscayne Blvd",
-	"Washington Ave",
-	"Ponce de Leon Blvd",
-	"Miracle Mile",
-	"Worth Ave"
-];
-const systemUsers = [
-	{
-		id: "u1",
-		name: "Admin User",
-		email: "admin@corepm.com",
-		role: "platform_owner",
-		avatar: "https://img.usecurling.com/ppl/medium?gender=male",
-		permissions: [],
-		status: "active",
-		isFirstLogin: false
-	},
-	{
-		id: "u2",
-		name: "Hotel Manager",
-		email: "pm@corepm.com",
-		role: "software_tenant",
-		avatar: "https://img.usecurling.com/ppl/medium?gender=female",
-		permissions: [],
-		status: "active",
-		isFirstLogin: false
-	},
-	{
-		id: "u3",
-		name: "Staff Member",
-		email: "staff@corepm.com",
-		role: "internal_user",
-		avatar: "https://img.usecurling.com/ppl/medium?gender=male&seed=2",
-		status: "active",
-		isFirstLogin: false
-	}
-];
-const owners = [{
-	id: "owner1",
-	name: "John Smith",
-	email: "owner@demo.com",
-	phone: "(555) 123-4567",
-	country: "US",
-	status: "active",
-	role: "property_owner",
-	avatar: "https://img.usecurling.com/ppl/medium?gender=male&seed=3",
-	address: "123 Owner Lane",
-	city: "Miami",
-	state: "FL",
-	zipCode: "33101"
-}];
-const tenants = [{
-	id: "t1",
-	name: "Sarah Johnson",
-	email: "tenant@demo.com",
-	phone: "(555) 987-6543",
-	country: "US",
-	propertyId: "p1",
-	rentValue: 3500,
-	leaseStart: "2024-01-01",
-	leaseEnd: "2024-12-31",
-	status: "active",
-	role: "tenant",
-	avatar: "https://img.usecurling.com/ppl/medium?gender=female&seed=4"
-}];
-const partners = [{
-	id: "partner1",
-	name: "Best Cleaning Co",
-	type: "cleaning",
-	companyName: "Best Cleaning Co",
-	email: "partner@demo.com",
-	phone: "(555) 555-5555",
-	country: "US",
-	status: "active",
-	role: "partner",
-	avatar: "https://img.usecurling.com/ppl/medium?gender=female&seed=5",
-	paymentInfo: {
-		bankName: "Chase",
-		routingNumber: "123456789",
-		accountNumber: "987654321"
-	}
-}];
-const hotels = [{
-	id: "h1",
-	name: "Grand Heritage Hotel",
-	address: "1500 Collins Ave",
-	city: "Miami Beach",
-	state: "FL",
-	country: "US",
-	zipCode: "33139",
-	description: "Luxury oceanfront hotel with two distinct towers: Torre Norte and Torre Sul.",
-	managerName: "Elena Rodriguez",
-	managerEmail: "elena.r@grandheritage.com",
-	managerPhone: "+1 (305) 555-0199",
-	amenities: [
-		"Ocean View",
-		"Spa",
-		"Pool",
-		"Fine Dining",
-		"Concierge"
-	],
-	policies: [
-		"Check-in: 3 PM",
-		"Check-out: 11 AM",
-		"No Smoking"
-	],
-	contacts: [],
-	towers: ["t1", "t2"]
-}];
-const towers = [{
-	id: "t1",
-	hotelId: "h1",
-	name: "Torre Norte",
-	description: "Heritage wing with classic decor and ocean views.",
-	floors: 10
+const mockAdvertisers = [{
+	id: "adv1",
+	name: "Home Services LLC",
+	email: "contact@homeservices.com",
+	phone: "555-1234",
+	address: "123 Main St",
+	createdAt: "2023-01-01T00:00:00Z"
 }, {
-	id: "t2",
-	hotelId: "h1",
-	name: "Torre Sul",
-	description: "Modern wing with contemporary suites and city views.",
-	floors: 15
+	id: "adv2",
+	name: "Orlando Cleaners",
+	email: "sales@orlandoclean.com",
+	phone: "555-5678",
+	address: "456 Oak Ave",
+	createdAt: "2023-02-15T00:00:00Z"
 }];
-const properties = [
-	{
-		id: "stock_main",
-		name: "Grand Heritage Storage",
-		address: "Basement Level",
-		type: "Storage",
-		profileType: "short_term",
-		status: "available",
-		community: "Grand Heritage",
-		hotelId: "h1",
-		ownerId: "system",
-		image: "",
-		bedrooms: 0,
-		bathrooms: 0,
-		guests: 0,
-		inventory: [
-			{
-				id: "inv_coke",
-				name: "Cola",
-				category: "Minibar",
-				quantity: 150,
-				condition: "New"
-			},
-			{
-				id: "inv_chips",
-				name: "Chips",
-				category: "Minibar",
-				quantity: 200,
-				condition: "New"
-			},
-			{
-				id: "inv_water",
-				name: "Water",
-				category: "Minibar",
-				quantity: 300,
-				condition: "New"
-			},
-			{
-				id: "inv_towel",
-				name: "Towel",
-				category: "Linens",
-				quantity: 500,
-				condition: "Good"
-			},
-			{
-				id: "inv_soap",
-				name: "Soap",
-				category: "Amenities",
-				quantity: 1e3,
-				condition: "New"
-			}
-		]
-	},
-	{
-		id: "p1",
-		hotelId: "h1",
-		towerId: "t1",
-		name: "Suite 101 (Norte)",
-		roomNumber: "101",
-		type: "Hotel Room",
-		profileType: "short_term",
-		status: "available",
-		listingPrice: 350,
-		bedrooms: 1,
-		bathrooms: 1,
-		guests: 2,
-		amenities: [
-			"Wi-Fi",
-			"TV",
-			"Balcony",
-			"Minibar"
-		],
-		image: "https://img.usecurling.com/p/400/300?q=hotel%20room",
-		ownerId: "owner1",
-		community: "Grand Heritage",
-		address: "1500 Collins Ave, Miami Beach, FL",
-		roomCharacteristics: {
-			bedType: "King",
-			view: "Sea View",
-			hasBalcony: true,
-			maxOccupancy: 2,
-			sizeSqFt: 500
-		}
-	},
-	{
-		id: "p2",
-		hotelId: "h1",
-		towerId: "t2",
-		name: "Suite 205 (Sul)",
-		roomNumber: "205",
-		type: "Hotel Room",
-		profileType: "short_term",
-		status: "occupied",
-		listingPrice: 420,
-		bedrooms: 1,
-		bathrooms: 1,
-		guests: 2,
-		amenities: [
-			"Wi-Fi",
-			"TV",
-			"City View",
-			"Minibar"
-		],
-		image: "https://img.usecurling.com/p/400/300?q=modern%20suite",
-		ownerId: "owner1",
-		community: "Grand Heritage",
-		address: "1500 Collins Ave, Miami Beach, FL",
-		roomCharacteristics: {
-			bedType: "Queen",
-			view: "City View",
-			hasBalcony: false,
-			maxOccupancy: 2,
-			sizeSqFt: 450
-		}
+const mockAdPricing = {
+	weekly: 50,
+	biWeekly: 90,
+	monthly: 150,
+	placementModifiers: {
+		home_top: 20,
+		home_bottom: 10,
+		partner_page: 5,
+		tenant_page: 15,
+		performance: 25
 	}
-];
-const financials = {
-	revenue: [],
-	expenses: [],
-	invoices: [],
-	payments: []
-};
-const defaultPaymentIntegrations = {
-	stripe: { enabled: true },
-	paypal: { enabled: false },
-	bill_com: { enabled: false }
 };
 const defaultFinancialSettings = {
-	companyName: "COREPM",
-	ein: "",
-	bankName: "",
-	routingNumber: "",
-	accountNumber: "",
+	companyName: "COREPM Inc",
+	ein: "12-3456789",
+	bankName: "Chase",
+	routingNumber: "122000248",
+	accountNumber: "1234567890",
 	gatewayProvider: "stripe",
 	gateways: {
 		stripe: { enabled: true },
@@ -53615,873 +53133,259 @@ const defaultFinancialSettings = {
 	isProduction: false,
 	globalCurrency: "USD"
 };
-const condominiums = [];
-const mockBankStatements = [];
-const ledgerEntries = [
+const systemUsers = [
 	{
-		id: "le1",
-		propertyId: "p1",
-		date: "2024-05-01",
-		type: "income",
-		category: "Room",
-		amount: 1400,
-		description: "Booking BK1 Payment",
-		status: "cleared"
+		id: "user1",
+		name: "Admin User",
+		email: "admin@corepm.com",
+		role: "platform_owner",
+		status: "active",
+		isFirstLogin: false
 	},
 	{
-		id: "le2",
-		propertyId: "p2",
-		date: "2024-05-02",
-		type: "income",
-		category: "Room",
-		amount: 1200,
-		description: "Booking BK2 Payment",
-		status: "cleared"
+		id: "user2",
+		name: "Property Manager",
+		email: "pm@corepm.com",
+		role: "software_tenant",
+		status: "active",
+		isFirstLogin: false
 	},
 	{
-		id: "le3",
-		propertyId: "p1",
-		date: "2024-05-05",
-		type: "income",
-		category: "F&B",
-		amount: 50,
-		description: "Minibar Charge",
-		status: "cleared"
-	},
-	{
-		id: "le4",
-		propertyId: "p2",
-		date: "2024-05-06",
-		type: "income",
-		category: "Services",
-		amount: 120,
-		description: "Spa Service",
-		status: "cleared"
+		id: "owner1",
+		name: "John Investor",
+		email: "john@investor.com",
+		role: "property_owner",
+		status: "active",
+		isFirstLogin: false
 	}
 ];
+const condominiums = [{
+	id: "condo1",
+	name: "Sunset Villas",
+	address: "123 Sunset Blvd",
+	city: "Orlando",
+	state: "FL",
+	country: "US",
+	managerName: "Mike Johnson",
+	managerPhone: "+1 555-0192",
+	accessCredentials: {
+		gate: "1234",
+		poolCode: "9988"
+	}
+}];
+const hotels = [{
+	id: "hotel1",
+	name: "Grand Resort Orlando",
+	address: "1000 Resort Way",
+	city: "Orlando",
+	state: "FL",
+	zipCode: "32819",
+	country: "US",
+	managerName: "Sarah Resort",
+	towers: ["t1", "t2"]
+}];
+const towers = [{
+	id: "t1",
+	hotelId: "hotel1",
+	name: "North Tower",
+	floors: 15
+}, {
+	id: "t2",
+	hotelId: "hotel1",
+	name: "South Tower",
+	floors: 12
+}];
+const properties = [{
+	id: "p1",
+	name: "Villa 101 - Sunset Resort",
+	address: "101 Resort Way",
+	city: "Orlando",
+	state: "FL",
+	zipCode: "32819",
+	country: "US",
+	type: "House",
+	profileType: "short_term",
+	community: "Sunset Villas",
+	condominiumId: "condo1",
+	status: "available",
+	bedrooms: 4,
+	bathrooms: 3,
+	guests: 8,
+	ownerId: "owner1",
+	image: "https://img.usecurling.com/p/600/400?q=villa",
+	listingPrice: 250,
+	hoaValue: 400
+}, {
+	id: "p2",
+	name: "Room 501 - Grand Resort",
+	address: "1000 Resort Way",
+	city: "Orlando",
+	state: "FL",
+	zipCode: "32819",
+	country: "US",
+	type: "Hotel Room",
+	profileType: "short_term",
+	community: "Grand Resort Orlando",
+	hotelId: "hotel1",
+	towerId: "t1",
+	roomNumber: "501",
+	status: "occupied",
+	bedrooms: 1,
+	bathrooms: 1,
+	guests: 2,
+	ownerId: "owner1",
+	image: "https://img.usecurling.com/p/600/400?q=hotel%20room",
+	listingPrice: 150,
+	hoaValue: 0
+}];
+const tenants = [{
+	id: "t1",
+	name: "Alice Smith",
+	email: "alice@example.com",
+	phone: "555-0101",
+	status: "active",
+	role: "tenant",
+	rentValue: 2e3,
+	leaseEnd: "2024-12-31"
+}];
+const owners = [{
+	id: "owner1",
+	name: "John Investor",
+	email: "john@investor.com",
+	phone: "555-0202",
+	status: "active",
+	role: "property_owner"
+}];
+const partners = [{
+	id: "partner1",
+	name: "Elite Cleaning",
+	type: "cleaning",
+	email: "contact@eliteclean.com",
+	phone: "555-0303",
+	status: "active",
+	role: "partner"
+}];
+const tasks = [{
+	id: "task1",
+	title: "Post-Checkout Cleaning",
+	propertyId: "p1",
+	propertyName: "Villa 101 - Sunset Resort",
+	status: "pending",
+	type: "cleaning",
+	assignee: "Elite Cleaning",
+	assigneeId: "partner1",
+	date: (/* @__PURE__ */ new Date()).toISOString(),
+	priority: "high"
+}];
+const ledgerEntries = [{
+	id: "le1",
+	propertyId: "p1",
+	date: (/* @__PURE__ */ new Date()).toISOString(),
+	type: "income",
+	category: "Rent",
+	amount: 2500,
+	description: "Monthly Rent - Alice",
+	status: "cleared"
+}];
+const financials = {
+	revenue: [
+		{
+			month: "Jan",
+			value: 5e3
+		},
+		{
+			month: "Feb",
+			value: 5500
+		},
+		{
+			month: "Mar",
+			value: 6e3
+		}
+	],
+	expenses: [
+		{
+			category: "Maintenance",
+			value: 1200,
+			fill: "#ef4444"
+		},
+		{
+			category: "Cleaning",
+			value: 800,
+			fill: "#3b82f6"
+		},
+		{
+			category: "Taxes",
+			value: 400,
+			fill: "#eab308"
+		}
+	],
+	invoices: [],
+	payments: []
+};
+const messages = [{
+	id: "m1",
+	contact: "Alice Smith",
+	contactId: "t1",
+	ownerId: "user1",
+	lastMessage: "Thanks for the quick fix!",
+	time: (/* @__PURE__ */ new Date()).toISOString(),
+	unread: 0,
+	avatar: "",
+	history: []
+}];
+const defaultPaymentIntegrations = [];
+const mockBankStatements = [];
 const auditLogs = [];
 const genericServiceRates = [];
 const notifications = [];
 const advertisements = [];
-const mockAdvertisers = [];
-const mockAdPricing = {
-	weekly: 50,
-	biWeekly: 90,
-	monthly: 150
-};
-const bookings = [{
-	id: "bk1",
-	propertyId: "p1",
-	guestName: "Alice Wonderland",
-	guestEmail: "alice@example.com",
-	checkIn: "2024-06-01",
-	checkOut: "2024-06-05",
-	status: "checked_in",
-	totalAmount: 1400,
-	baseAmount: 1400,
-	paid: true,
-	platform: "direct",
-	propertyName: "Suite 101 (Norte)"
-}, {
-	id: "bk2",
-	propertyId: "p2",
-	guestName: "Bob Builder",
-	guestEmail: "bob@example.com",
-	checkIn: "2024-06-10",
-	checkOut: "2024-06-15",
-	status: "confirmed",
-	totalAmount: 1200,
-	baseAmount: 1200,
-	paid: true,
-	platform: "booking.com",
-	propertyName: "Suite 205 (Sul)"
-}];
+const bookings = [];
 const calendarBlocks = [];
 const messageTemplates = [];
-const serviceCategories = [{
-	id: "sc1",
-	name: "Cleaning",
-	color: "#3b82f6"
-}, {
-	id: "sc2",
-	name: "Maintenance",
-	color: "#f59e0b"
-}];
+const serviceCategories = [];
 const visits = [];
 const workflows = [];
-const automationRules = [];
 const tourSteps = [];
-const guestServices = [{
-	id: "s1",
-	name: "Airport Transfer",
-	description: "Luxury van pickup from MIA airport",
-	price: 80,
-	category: "transport",
-	active: true
-}, {
-	id: "s2",
-	name: "Breakfast Buffet",
-	description: "Daily buffet breakfast",
-	price: 25,
-	category: "dining",
-	active: true
-}];
-const posItems = [
-	{
-		id: "pos1",
-		name: "Cola",
-		price: 5,
-		category: "minibar",
-		active: true
-	},
-	{
-		id: "pos2",
-		name: "Chips",
-		price: 4,
-		category: "minibar",
-		active: true
-	},
-	{
-		id: "pos3",
-		name: "Laundry Service",
-		price: 30,
-		category: "laundry",
-		active: true
-	}
-];
+const guestServices = [];
+const posItems = [];
 const posTransactions = [];
+const promotions = [];
+const campaigns = [];
 const serviceOrders = [];
-const promotions = [{
-	id: "promo1",
-	code: "SUMMER2024",
-	type: "percentage",
-	value: 15,
-	startDate: "2024-06-01",
-	endDate: "2024-08-31",
-	active: true,
-	usageCount: 12,
-	totalDiscountApplied: 450,
-	description: "15% off summer bookings",
-	targetType: "all",
-	scope: "global"
-}, {
-	id: "promo2",
-	code: "EARLYBIRD",
-	type: "percentage",
-	value: 10,
-	startDate: "2024-01-01",
-	endDate: "2024-12-31",
-	active: true,
-	usageCount: 5,
-	totalDiscountApplied: 200,
-	description: "Early bird special",
-	targetType: "hotel",
-	targetId: "h1",
-	scope: "global"
-}];
-const campaigns = [{
-	id: "camp1",
-	name: "Summer Sale",
-	status: "active",
-	startDate: "2024-06-01",
-	endDate: "2024-08-31",
-	promotions: ["promo1"],
-	targetAudience: "all"
-}];
-const marketAnalysisData = {
-	marketTrends: [
-		{
-			month: "Jan",
-			occupancy: 74,
-			rate: 138
-		},
-		{
-			month: "Feb",
-			occupancy: 72,
-			rate: 135
-		},
-		{
-			month: "Mar",
-			occupancy: 80,
-			rate: 145
-		},
-		{
-			month: "Apr",
-			occupancy: 76,
-			rate: 140
-		},
-		{
-			month: "May",
-			occupancy: 82,
-			rate: 148
-		},
-		{
-			month: "Jun",
-			occupancy: 78,
-			rate: 142
-		}
-	],
-	competitors: [
-		{
-			name: "Grand Hotel",
-			rate: 155
-		},
-		{
-			name: "Ocean View",
-			rate: 145
-		},
-		{
-			name: "Our Property",
-			rate: 142
-		},
-		{
-			name: "City Inn",
-			rate: 130
-		}
-	],
-	demandForecast: [
-		{
-			date: "2024-07-01",
-			demand: "High"
-		},
-		{
-			date: "2024-07-02",
-			demand: "High"
-		},
-		{
-			date: "2024-07-03",
-			demand: "Medium"
-		}
-	]
-};
-const feedbacks = [{
-	id: "f1",
-	bookingId: "bk1",
-	propertyId: "p1",
-	guestName: "Alice Wonderland",
-	rating: 5,
-	comment: "Amazing stay! The ocean view was breathtaking.",
-	date: "2024-06-05T10:00:00Z",
-	status: "new"
-}];
+const feedbacks = [];
 const channelMappings = [];
-const marketingWorkflows = [{
-	id: "mw1",
-	name: "Welcome Email",
-	trigger: "booking_confirmed",
-	offsetTime: 0,
-	templateId: "et1",
-	active: true
-}];
-const emailTemplates = [{
-	id: "et1",
-	name: "Welcome Confirmation",
-	subject: "Booking Confirmed!",
-	body: "Hi {guest_name}, thank you for booking {property_name}. See you soon!"
-}];
-const tasks = [];
-const messages = [];
-for (let i = 0; i < 5; i++) condominiums.push({
-	id: `condo_gen_${i}`,
-	name: `Condominium ${i + 1} (${rndItem(_cities)})`,
-	address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
-	city: rndItem(_cities),
-	state: "FL",
-	zipCode: `33${rnd(100, 999)}`,
-	country: "US",
-	managerName: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
-	managerPhone: `(555) ${rnd(100, 999)}-${rnd(1e3, 9999)}`,
-	managerEmail: `mgr_${i}@condo.com`
-});
-for (let i = 0; i < 100; i++) owners.push({
-	id: `owner_gen_${i}`,
-	name: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
-	email: `owner_gen_${i}@demo.com`,
-	phone: `(555) ${rnd(100, 999)}-${rnd(1e3, 9999)}`,
-	country: "US",
-	status: "active",
-	role: "property_owner",
-	avatar: `https://img.usecurling.com/ppl/medium?gender=${rndItem(["male", "female"])}&seed=${i + 10}`,
-	address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
-	city: rndItem(_cities),
-	state: "FL",
-	zipCode: `33${rnd(100, 999)}`
-});
-for (let i = 0; i < 50; i++) {
-	const pId = `partner_gen_${i}`;
-	partners.push({
-		id: pId,
-		name: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
-		type: rndItem([
-			"cleaning",
-			"maintenance",
-			"agent"
-		]),
-		companyName: `${rndItem(_lastNames)} Services LLC`,
-		email: `partner_gen_${i}@demo.com`,
-		phone: `(555) ${rnd(100, 999)}-${rnd(1e3, 9999)}`,
-		country: "US",
-		status: "active",
-		role: "partner",
-		avatar: `https://img.usecurling.com/ppl/medium?gender=${rndItem(["male", "female"])}&seed=${i + 150}`,
-		linkedPropertyIds: [],
-		serviceRates: [{
-			id: `sr_${i}`,
-			serviceName: "Standard Service",
-			servicePrice: rnd(100, 300),
-			partnerPayment: rnd(50, 200),
-			pmValue: 50,
-			productPrice: rnd(100, 300),
-			validFrom: "2024-01-01"
-		}]
-	});
-}
-for (let i = 0; i < 20; i++) {
-	const hId = `hotel_gen_${i}`;
-	hotels.push({
-		id: hId,
-		name: `${rndItem([
-			"Grand",
-			"Royal",
-			"Ocean",
-			"Sunset"
-		])} ${rndItem(_lastNames)} Resort`,
-		address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
-		city: rndItem(_cities),
-		state: "FL",
-		country: "US",
-		zipCode: `33${rnd(100, 999)}`,
-		description: "Luxury resort with premium amenities.",
-		managerName: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
-		managerEmail: `mgr_${i}@hotel.com`,
-		managerPhone: `(555) ${rnd(100, 999)}-${rnd(1e3, 9999)}`,
-		amenities: [
-			"Pool",
-			"Spa",
-			"Gym",
-			"Restaurant"
-		],
-		policies: ["Check-in 3PM", "No Smoking"],
-		contacts: [],
-		towers: [`tower_gen_${i}_1`, `tower_gen_${i}_2`]
-	});
-	towers.push({
-		id: `tower_gen_${i}_1`,
-		hotelId: hId,
-		name: "North Tower",
-		floors: rnd(5, 20)
-	});
-	towers.push({
-		id: `tower_gen_${i}_2`,
-		hotelId: hId,
-		name: "South Tower",
-		floors: rnd(5, 20)
-	});
-}
-for (let i = 0; i < 300; i++) {
-	const typeRand = rnd(1, 3);
-	const ownerId = rndItem(owners).id;
-	const pId = `prop_gen_${i}`;
-	const pType = typeRand === 1 ? "House" : typeRand === 2 ? "Hotel Room" : "Apartment";
-	const profile = typeRand === 1 ? "long_term" : "short_term";
-	const status = rndItem([
-		"available",
-		"rented",
-		"occupied",
-		"maintenance",
-		"cleaning"
-	]);
-	const condoId = typeRand === 1 ? rndItem(condominiums)?.id : void 0;
-	let hotelId;
-	let towerId;
-	if (pType === "Hotel Room") {
-		const h = rndItem(hotels);
-		hotelId = h.id;
-		const hTowers = towers.filter((t) => t.hotelId === h.id);
-		if (hTowers.length > 0) towerId = rndItem(hTowers).id;
-	}
-	properties.push({
-		id: pId,
-		name: pType === "Hotel Room" ? `Room ${rnd(100, 999)}` : `${rnd(1, 5)}BR ${pType} in ${rndItem(_cities)}`,
-		address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
-		city: rndItem(_cities),
-		state: "FL",
-		zipCode: `33${rnd(100, 999)}`,
-		country: "US",
-		type: pType,
-		profileType: profile,
-		community: pType === "Hotel Room" ? "Hotel Resort" : rndItem([
-			"Sunny Isles",
-			"Brickell Village",
-			"Coral Way"
-		]),
-		condominiumId: condoId,
-		hotelId,
-		towerId,
-		roomNumber: pType === "Hotel Room" ? `${rnd(100, 999)}` : void 0,
-		status,
-		listingPrice: rnd(100, 5e3),
-		bedrooms: rnd(1, 5),
-		bathrooms: rnd(1, 4),
-		guests: rnd(2, 10),
-		image: `https://img.usecurling.com/p/400/300?q=${pType === "Hotel Room" ? "hotel%20room" : "house"}`,
-		ownerId,
-		gallery: []
-	});
-}
-partners.forEach((p$1) => {
-	p$1.linkedPropertyIds = [rndItem(properties)?.id || "", rndItem(properties)?.id || ""];
-});
-var ltProps = properties.filter((p$1) => p$1.profileType === "long_term");
-for (let i = 0; i < 150; i++) {
-	const prop = ltProps[i % ltProps.length];
-	const leaseEndOptions = [
-		(/* @__PURE__ */ new Date(Date.now() - 14400 * 60 * 1e3)).toISOString().split("T")[0],
-		new Date(Date.now() + 360 * 60 * 60 * 1e3).toISOString().split("T")[0],
-		new Date(Date.now() + 1080 * 60 * 60 * 1e3).toISOString().split("T")[0],
-		new Date(Date.now() + 1800 * 60 * 60 * 1e3).toISOString().split("T")[0],
-		new Date(Date.now() + 4800 * 60 * 60 * 1e3).toISOString().split("T")[0]
-	];
-	const leaseEnd = leaseEndOptions[i % leaseEndOptions.length];
-	let negStatus = "closed";
-	if (i % 5 === 0) negStatus = "vacating";
-	else if (i % 5 === 1) negStatus = rndItem(["negotiating", "tenant_contacted"]);
-	else if (i % 5 === 2) negStatus = "owner_contacted";
-	else if (i % 5 === 3) negStatus = "negotiating";
-	tenants.push({
-		id: `tenant_gen_${i}`,
-		name: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
-		email: `tenant_gen_${i}@demo.com`,
-		phone: `(555) ${rnd(100, 999)}-${rnd(1e3, 9999)}`,
-		country: "US",
-		propertyId: prop.id,
-		rentValue: prop.listingPrice || rnd(1e3, 5e3),
-		leaseStart: rndDateStr(new Date(2023, 0, 1), new Date(2024, 0, 1)),
-		leaseEnd,
-		status: rndItem(["active", "past"]),
-		role: "tenant",
-		avatar: `https://img.usecurling.com/ppl/medium?gender=${rndItem(["male", "female"])}&seed=${i + 250}`,
-		negotiationStatus: negStatus,
-		suggestedRenewalPrice: (prop.listingPrice || rnd(1e3, 5e3)) * 1.1,
-		negotiationLogs: [{
-			id: `log_${i}`,
-			date: (/* @__PURE__ */ new Date()).toISOString(),
-			action: "Status Update",
-			note: `System auto-flagged for renewal negotiation`,
-			user: "System"
-		}]
-	});
-}
-for (let i = 0; i < 500; i++) {
-	const prop = rndItem(properties);
-	const partner = rndItem(partners);
-	tasks.push({
-		id: `task_gen_${i}`,
-		title: `${rndItem([
-			"Fix",
-			"Clean",
-			"Inspect",
-			"Replace"
-		])} ${rndItem([
-			"AC",
-			"Plumbing",
-			"Window",
-			"Floor"
-		])}`,
-		propertyId: prop.id,
-		propertyName: prop.name,
-		status: rndItem([
-			"pending",
-			"in_progress",
-			"completed",
-			"pending_approval"
-		]),
-		type: rndItem([
-			"cleaning",
-			"maintenance",
-			"inspection"
-		]),
-		assignee: partner.name,
-		assigneeId: partner.id,
-		date: rndDateTimeStr(new Date(2024, 0, 1), new Date(2024, 11, 31)),
-		priority: rndItem([
-			"low",
-			"medium",
-			"high",
-			"critical"
-		]),
-		price: rnd(50, 500),
-		createdBy: "u1"
-	});
-}
-var stProps = properties.filter((p$1) => p$1.profileType === "short_term");
-for (let i = 0; i < 300; i++) {
-	const prop = rndItem(stProps);
-	const cIn = rndDateStr(new Date(2024, 0, 1), new Date(2024, 11, 1));
-	const cOut = rndDateStr(new Date(2024, 11, 2), new Date(2024, 11, 31));
-	const amt = rnd(200, 2e3);
-	bookings.push({
-		id: `booking_gen_${i}`,
-		propertyId: prop.id,
-		propertyName: prop.name,
-		guestName: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
-		guestEmail: `guest_${i}@demo.com`,
-		checkIn: cIn,
-		checkOut: cOut,
-		status: rndItem([
-			"confirmed",
-			"checked_in",
-			"checked_out",
-			"cancelled"
-		]),
-		totalAmount: amt,
-		baseAmount: amt,
-		paid: rnd(0, 1) === 1,
-		platform: rndItem([
-			"airbnb",
-			"vrbo",
-			"direct",
-			"booking.com"
-		])
-	});
-	calendarBlocks.push({
-		id: `block_bk_${i}`,
-		propertyId: prop.id,
-		startDate: cIn,
-		endDate: cOut,
-		type: "external_sync",
-		notes: `Booking Sync`
-	});
-}
-for (let i = 0; i < 50; i++) financials.invoices.push({
-	id: `inv_gen_${i}`,
-	description: `Service Invoice ${i}`,
-	amount: rnd(100, 1e3),
-	status: rndItem([
-		"paid",
-		"pending",
-		"approved"
-	]),
-	date: new Date(Date.now() - rnd(0, 1e10)).toISOString(),
-	fromId: "u1",
-	toId: rndItem(owners)?.id,
-	propertyId: rndItem(properties)?.id,
-	type: "generic"
-});
-automationRules.push({
-	id: "ar1",
-	type: "auto_approve_task",
-	enabled: true,
-	threshold: 500
-}, {
-	id: "ar2",
+const marketingWorkflows = [];
+const emailTemplates = [];
+const automationRules = [{
+	id: "rule1",
 	type: "auto_generate_invoice",
 	enabled: true,
 	event: "task_completion"
-}, {
-	id: "ar3",
-	type: "rent_reminder",
-	enabled: true,
-	daysBefore: 5
-});
-workflows.push({
-	id: "wf_demo_1",
-	name: "Standard Checkout Cleaning",
-	description: "Auto assign cleaning when guest checks out",
-	trigger: "after_checkout",
-	active: true,
-	steps: [{
-		id: "step1",
-		name: "Clean Property",
-		role: "partner",
-		actionType: "task"
-	}]
-});
-for (let i = 0; i < 50; i++) auditLogs.push({
-	id: `al_${i}`,
-	timestamp: new Date(Date.now() - rnd(0, 1e10)).toISOString(),
-	userId: "u1",
-	userName: "Admin User",
-	action: rndItem([
-		"update",
-		"create",
-		"approve",
-		"login"
-	]),
-	entity: rndItem([
-		"Task",
-		"Booking",
-		"Tenant",
-		"Property"
-	]),
-	details: `Simulated action ${i} on system record`
-});
-for (let i = 0; i < 20; i++) visits.push({
-	id: `vis_${i}`,
-	propertyId: properties[i]?.id || "",
-	propertyName: properties[i]?.name || "",
-	clientName: `${rndItem(_firstNames)} ${rndItem(_lastNames)}`,
-	date: new Date(Date.now() + rnd(-1e9, 1e9)).toISOString(),
-	status: rndItem([
-		"scheduled",
-		"completed",
-		"canceled"
-	]),
-	registeredBy: "u1",
-	assignedTo: "u1",
-	assignedRole: "platform_owner",
-	reason: rndItem(["showing", "inspection"])
-});
-for (let i = 0; i < 30; i++) {
-	const advId = `adv_gen_${i}`;
-	mockAdvertisers.push({
-		id: advId,
-		name: `${rndItem(_lastNames)} Marketing`,
-		email: `ads_${i}@marketing.com`,
-		phone: `(555) ${rnd(100, 999)}-${rnd(1e3, 9999)}`,
-		address: `${rnd(100, 9999)} ${rndItem(_streets)}`,
-		city: rndItem(_cities),
-		state: "FL",
-		country: "US",
-		createdAt: (/* @__PURE__ */ new Date()).toISOString()
-	});
-	for (let j = 0; j < 2; j++) advertisements.push({
-		id: `ad_gen_${i}_${j}`,
-		title: `Special Offer ${i}-${j}`,
-		imageUrl: `/placeholder.svg`,
-		linkUrl: `https://example.com/offer/${i}`,
-		active: true,
-		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
-		advertiserId: advId,
-		placement: rndItem([
-			"home_top",
-			"tenant_page",
-			"partner_page",
-			"sidebar",
-			"header",
-			"footer",
-			"performance"
-		])
-	});
-}
-if (mockAdvertisers.length > 0) {
-	const advId = mockAdvertisers[0].id;
-	advertisements.push({
-		id: "ad_header_1",
-		title: "Premium Management",
-		description: "Upgrade your plan today and get 20% off!",
-		imageUrl: "https://img.usecurling.com/p/1200/100?q=banner&color=blue",
-		linkUrl: "#",
-		active: true,
-		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
-		advertiserId: advId,
-		placement: "header"
-	}, {
-		id: "ad_header_2",
-		title: "Winter Discount",
-		description: "Special seasonal pricing on all features.",
-		imageUrl: "https://img.usecurling.com/p/1200/100?q=snow&color=cyan",
-		linkUrl: "#",
-		active: true,
-		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
-		advertiserId: advId,
-		placement: "header"
-	});
-	for (let k$3 = 1; k$3 <= 6; k$3++) advertisements.push({
-		id: `ad_footer_${k$3}`,
-		title: `Footer Partner ${k$3}`,
-		description: `Find top-rated services in area ${k$3}`,
-		imageUrl: `https://img.usecurling.com/p/400/200?q=realestate&seed=${k$3}`,
-		linkUrl: "#",
-		active: true,
-		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
-		advertiserId: advId,
-		placement: "footer"
-	});
-	advertisements.push({
-		id: "ad_sidebar_1",
-		title: "Smart Home Integration",
-		description: "Control properties remotely",
-		imageUrl: "https://img.usecurling.com/p/300/300?q=smarthome&color=green",
-		linkUrl: "#",
-		active: true,
-		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
-		advertiserId: advId,
-		placement: "sidebar"
-	}, {
-		id: "ad_sidebar_2",
-		title: "Property Insurance",
-		description: "Protect your assets with our partners",
-		imageUrl: "https://img.usecurling.com/p/300/300?q=insurance&color=blue",
-		linkUrl: "#",
-		active: true,
-		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
-		advertiserId: advId,
-		placement: "sidebar"
-	}, {
-		id: "ad_sidebar_3",
-		title: "Legal Services",
-		description: "Get compliant fast",
-		imageUrl: "https://img.usecurling.com/p/300/300?q=law&color=gray",
-		linkUrl: "#",
-		active: true,
-		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
-		advertiserId: advId,
-		placement: "sidebar"
-	});
-	for (let k$3 = 1; k$3 <= 5; k$3++) advertisements.push({
-		id: `ad_perf_${k$3}`,
-		title: `Analytics Boost ${k$3}`,
-		description: `Supercharge your data with tool ${k$3}`,
-		imageUrl: `https://img.usecurling.com/p/600/200?q=analytics&seed=${k$3}`,
-		linkUrl: "#",
-		active: true,
-		createdAt: (/* @__PURE__ */ new Date()).toISOString(),
-		advertiserId: advId,
-		placement: "performance"
-	});
-}
-for (let i = 0; i < 50; i++) {
-	const tenant = rndItem(tenants);
-	messages.push({
-		id: `msg_thread_${i}`,
-		contact: tenant.name,
-		contactId: tenant.id,
-		ownerId: "u1",
-		lastMessage: "Sure, I will check the property soon.",
-		time: rndDateTimeStr(new Date(2024, 0, 1), /* @__PURE__ */ new Date()),
-		unread: rnd(0, 3),
-		avatar: tenant.avatar || "",
-		history: [{
-			id: `hist_${i}_1`,
-			text: "Hello, is the maintenance scheduled?",
-			senderId: tenant.id,
-			timestamp: (/* @__PURE__ */ new Date()).toISOString()
-		}, {
-			id: `hist_${i}_2`,
-			text: "Yes, our partner is coming tomorrow.",
-			senderId: "u1",
-			timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-			read: true
-		}]
-	});
-}
-for (let i = 0; i < 1e3; i++) ledgerEntries.push({
-	id: `le_gen_${i}`,
-	propertyId: rndItem(properties).id,
-	date: rndDateStr(new Date(2024, 0, 1), /* @__PURE__ */ new Date()),
-	type: rndItem(["income", "expense"]),
-	category: rndItem([
-		"Room",
-		"Maintenance",
-		"Cleaning",
-		"F&B",
-		"Services"
-	]),
-	amount: rnd(50, 2e3),
-	description: `Auto generated entry ${i}`,
-	status: rndItem(["cleared", "pending"])
-});
-for (let i = 0; i < 300; i++) {
-	const item = rndItem(posItems);
-	const qty = rnd(1, 5);
-	const total = item.price * qty;
-	posTransactions.push({
-		id: `pos_gen_${i}`,
-		bookingId: rndItem(bookings).id,
-		items: [{
-			itemId: item.id,
-			name: item.name,
-			quantity: qty,
-			price: item.price
-		}],
-		totalAmount: total,
-		timestamp: rndDateTimeStr(new Date(2024, 0, 1), /* @__PURE__ */ new Date()),
-		status: rndItem(["charged", "paid"])
-	});
-}
-for (let i = 0; i < 100; i++) calendarBlocks.push({
-	id: `block_gen_${i}`,
-	propertyId: rndItem(properties).id,
-	startDate: rndDateStr(new Date(2024, 0, 1), new Date(2024, 11, 1)),
-	endDate: rndDateStr(new Date(2024, 11, 2), new Date(2024, 11, 31)),
-	type: rndItem(["manual_block", "maintenance"]),
-	notes: "Generated block for testing"
-});
-for (let i = 0; i < 20; i++) campaigns.push({
-	id: `camp_gen_${i}`,
-	name: `Marketing Campaign ${i}`,
-	status: rndItem([
-		"active",
-		"completed",
-		"draft"
-	]),
-	startDate: rndDateStr(new Date(2024, 0, 1), new Date(2024, 6, 1)),
-	endDate: rndDateStr(new Date(2024, 6, 2), new Date(2025, 0, 1)),
-	promotions: [rndItem(promotions).id],
-	targetAudience: rndItem([
-		"all",
-		"past_guests",
-		"leads"
-	])
-});
-for (let i = 0; i < 30; i++) promotions.push({
-	id: `promo_gen_${i}`,
-	code: `PROMO${i}${rnd(100, 999)}`,
-	type: rndItem(["percentage", "fixed_amount"]),
-	value: rnd(10, 50),
-	startDate: rndDateStr(new Date(2024, 0, 1), new Date(2024, 6, 1)),
-	endDate: rndDateStr(new Date(2024, 6, 2), new Date(2025, 0, 1)),
-	active: true,
-	usageCount: rnd(0, 100),
-	description: `Generated promotion ${i}`,
-	targetType: "all",
-	scope: "global"
-});
-const tutorialModules = [
+}];
+const marketAnalysisData = { marketTrends: [
 	{
-		key: "dashboard-overview",
-		title: "Dashboard Overview & Metrics",
-		description: "Learn how to navigate the dashboard, interpret key performance indicators (KPIs), and monitor your portfolio health.",
-		category: "System",
-		videoUrl: "https://www.youtube.com/embed/LXb3EKWsInQ"
+		month: "Jan",
+		rate: 120,
+		occupancy: 65
 	},
 	{
-		key: "properties-management",
-		title: "Property Management",
-		description: "Comprehensive guide to listing properties, managing units, setting up amenities, and tracking inventory.",
-		category: "Operational",
-		videoUrl: "https://www.youtube.com/embed/EngW7tLk6R8"
+		month: "Feb",
+		rate: 130,
+		occupancy: 70
 	},
 	{
-		key: "leads-crm",
-		title: "Leads & CRM Strategy",
-		description: "Master customer relationship management, track leads from different sources, and manage conversion pipelines.",
-		category: "CRM",
-		videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ"
-	},
-	{
-		key: "financial-invoices",
-		title: "Financials & Invoicing",
-		description: "How to generate invoices, track payments, manage owners statements, and handle expense reconciliation.",
-		category: "Financial",
-		videoUrl: "https://www.youtube.com/embed/YE7VzlLtp-4"
-	},
-	{
-		key: "system-settings",
-		title: "System Configuration",
-		description: "Setting up user roles, permissions, automation rules, and global platform preferences.",
-		category: "Settings",
-		videoUrl: "https://www.youtube.com/embed/jNQXAC9IVRw"
-	},
-	{
-		key: "maintenance-workflows",
-		title: "Maintenance Workflows",
-		description: "Automating maintenance requests, assigning tasks to partners, and tracking completion evidence.",
-		category: "Operational",
-		videoUrl: "https://www.youtube.com/embed/ScMzIvxBSi4"
+		month: "Mar",
+		rate: 145,
+		occupancy: 80
 	}
-];
+] };
+const tutorialModules = [{
+	key: "dashboard_overview",
+	title: "Dashboard Overview",
+	description: "Learn how to read your key performance indicators.",
+	category: "Operational",
+	videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+}];
 const translations = {
 	pt: {
 		sync: {
@@ -54555,7 +53459,7 @@ const translations = {
 				save_ad: "Salvar Anúncio",
 				delete_confirm: "Tem certeza que deseja excluir este anúncio?",
 				delete_success: "Anúncio excluído.",
-				update_success: "Anúncio atualizado com sucesso.",
+				update_success: "Anuncio atualizado com sucesso.",
 				add_success: "Anúncio criado com sucesso.",
 				validation_error: "Título, URL da Imagem e Anunciante são obrigatórios.",
 				link: "Link",
@@ -54781,7 +53685,8 @@ const translations = {
 			reports: "Relatórios"
 		},
 		service_pricing: {
-			title: "Preços de Serviços",
+			title: "Catálogo de Preços",
+			desc: "Catálogo de preços para serviços e produtos genéricos.",
 			subtitle: "Gerencie custos e preços de venda.",
 			catalog_tab: "Catálogo de Preços",
 			analytics_tab: "Relatórios",
@@ -54789,7 +53694,8 @@ const translations = {
 			service_name: "Nome do Serviço",
 			partner_payment: "Pagamento Parceiro",
 			pm_value: "Valor PM",
-			product_price: "Preço Final",
+			product_price: "Preço de Venda",
+			cost_price: "Preço de Custo",
 			valid_from: "Válido De",
 			valid_to: "Válido Até",
 			margin: "Margem",
@@ -55859,7 +54765,8 @@ const translations = {
 			reports: "Reports"
 		},
 		service_pricing: {
-			title: "Service Pricing",
+			title: "Price Catalog",
+			desc: "Price catalog for generic services and products.",
 			subtitle: "Manage costs and sales prices.",
 			catalog_tab: "Price Catalog",
 			analytics_tab: "Reports",
@@ -55867,7 +54774,8 @@ const translations = {
 			service_name: "Service Name",
 			partner_payment: "Partner Payment",
 			pm_value: "PM Value",
-			product_price: "Final Price",
+			product_price: "Sale Price",
+			cost_price: "Cost Price",
 			valid_from: "Valid From",
 			valid_to: "Valid To",
 			margin: "Margin",
@@ -56938,7 +55846,8 @@ const translations = {
 			reports: "Informes"
 		},
 		service_pricing: {
-			title: "Precios de Servicios",
+			title: "Catálogo de Precios",
+			desc: "Catálogo de precios para servicios y productos genéricos.",
 			subtitle: "Gestione costos y precios de venta.",
 			catalog_tab: "Catálogo de Preços",
 			analytics_tab: "Informes",
@@ -56946,7 +55855,8 @@ const translations = {
 			service_name: "Nombre del Servicio",
 			partner_payment: "Pago Socio",
 			pm_value: "Valor PM",
-			product_price: "Precio Final",
+			product_price: "Precio de Venta",
+			cost_price: "Precio de Costo",
 			valid_from: "Válido Desde",
 			valid_to: "Válido Hasta",
 			margin: "Margen",
@@ -57040,7 +55950,7 @@ const translations = {
 			account: "Cuenta",
 			payment_history: "Historial de Pagos",
 			financial_report: "Informe Financiero",
-			inspection: "Inspección"
+			inspección: "Inspección"
 		},
 		invoices: {
 			title: "Facturas",
@@ -57501,7 +56411,8 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 		performance: FULL_ACCESS,
 		guest_services: FULL_ACCESS,
 		pos: FULL_ACCESS,
-		marketing: FULL_ACCESS
+		marketing: FULL_ACCESS,
+		service_pricing: FULL_ACCESS
 	},
 	software_tenant: {
 		dashboard: FULL_ACCESS,
@@ -57532,7 +56443,8 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 		performance: FULL_ACCESS,
 		guest_services: FULL_ACCESS,
 		pos: FULL_ACCESS,
-		marketing: FULL_ACCESS
+		marketing: FULL_ACCESS,
+		service_pricing: FULL_ACCESS
 	},
 	internal_user: {
 		dashboard: ["view"],
@@ -57554,7 +56466,8 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 		pos: FULL_ACCESS,
 		financial: FULL_ACCESS,
 		automation: ["view"],
-		settings: ["view", "edit"]
+		settings: ["view", "edit"],
+		service_pricing: FULL_ACCESS
 	},
 	partner: {
 		dashboard: ["view"],
@@ -57600,9 +56513,6 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 		automation: ["view"],
 		settings: ["view", "edit"]
 	}
-};
-const getRoleLabel = (role, t) => {
-	return t(`roles.${role}`);
 };
 const AppContext = (0, import_react.createContext)(void 0);
 var getRoleName = (role) => {
@@ -57705,8 +56615,8 @@ const AppProvider = ({ children }) => {
 		localStorage.setItem("app_language", lang);
 	};
 	const t = (0, import_react.useCallback)((key, params) => {
-		const resolveKey = (dict, k$3) => {
-			const parts = k$3.split(".");
+		const resolveKey = (dict, k$1) => {
+			const parts = k$1.split(".");
 			let current = dict;
 			for (const part of parts) {
 				if (current === void 0 || current === null) return void 0;
@@ -57724,7 +56634,7 @@ const AppProvider = ({ children }) => {
 		return formatCurrency(value, currency);
 	}, [currency]);
 	const login = (email) => {
-		const user = allUsers.find((u$1) => u$1.email.toLowerCase() === email.toLowerCase());
+		const user = allUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
 		if (user) {
 			setCurrentUserObj(user);
 			setIsAuthenticated(true);
@@ -57734,11 +56644,11 @@ const AppProvider = ({ children }) => {
 	};
 	const logout = () => setIsAuthenticated(false);
 	const setCurrentUser = (id) => {
-		const u$1 = allUsers.find((u$2) => u$2.id === id);
-		if (u$1) setCurrentUserObj(u$1);
+		const u = allUsers.find((u$1) => u$1.id === id);
+		if (u) setCurrentUserObj(u);
 	};
-	const addProperty = (p$1) => setProperties([...properties$1, p$1]);
-	const updateProperty = (p$1) => setProperties(properties$1.map((x$2) => x$2.id === p$1.id ? p$1 : x$2));
+	const addProperty = (p) => setProperties([...properties$1, p]);
+	const updateProperty = (p) => setProperties(properties$1.map((x$2) => x$2.id === p.id ? p : x$2));
 	const deleteProperty = (id) => setProperties(properties$1.filter((x$2) => x$2.id !== id));
 	const addCondominium = (c$1) => setCondominiums([...condominiums$1, c$1]);
 	const updateCondominium = (c$1) => setCondominiums(condominiums$1.map((x$2) => x$2.id === c$1.id ? c$1 : x$2));
@@ -57778,8 +56688,8 @@ const AppProvider = ({ children }) => {
 	const updatePosItem = (i) => setPosItems(posItems$1.map((x$2) => x$2.id === i.id ? i : x$2));
 	const deletePosItem = (id) => setPosItems(posItems$1.filter((x$2) => x$2.id !== id));
 	const addPosTransaction = (t$1) => setPosTransactions([...posTransactions$1, t$1]);
-	const addPromotion = (p$1) => setPromotions([...promotions$1, p$1]);
-	const updatePromotion = (p$1) => setPromotions(promotions$1.map((x$2) => x$2.id === p$1.id ? p$1 : x$2));
+	const addPromotion = (p) => setPromotions([...promotions$1, p]);
+	const updatePromotion = (p) => setPromotions(promotions$1.map((x$2) => x$2.id === p.id ? p : x$2));
 	const deletePromotion = (id) => setPromotions(promotions$1.filter((x$2) => x$2.id !== id));
 	const addCampaign = (c$1) => setCampaigns([...campaigns$1, c$1]);
 	const updateCampaign = (c$1) => setCampaigns(campaigns$1.map((x$2) => x$2.id === c$1.id ? c$1 : x$2));
@@ -57788,8 +56698,8 @@ const AppProvider = ({ children }) => {
 	const updateTenant = (t$1) => setTenants(tenants$1.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
 	const addOwner = (o) => setOwners([...owners$1, o]);
 	const updateOwner = (o) => setOwners(owners$1.map((x$2) => x$2.id === o.id ? o : x$2));
-	const addPartner = (p$1) => setPartners([...partners$1, p$1]);
-	const updatePartner = (p$1) => setPartners(partners$1.map((x$2) => x$2.id === p$1.id ? p$1 : x$2));
+	const addPartner = (p) => setPartners([...partners$1, p]);
+	const updatePartner = (p) => setPartners(partners$1.map((x$2) => x$2.id === p.id ? p : x$2));
 	const addBooking = (b$1) => setBookings([...bookings$1, b$1]);
 	const updateBooking = (b$1) => setBookings(bookings$1.map((x$2) => x$2.id === b$1.id ? b$1 : x$2));
 	const deleteBooking = (id) => setBookings(bookings$1.filter((x$2) => x$2.id !== id));
@@ -57799,8 +56709,8 @@ const AppProvider = ({ children }) => {
 	const updateMessageTemplate = (t$1) => setMessageTemplates(messageTemplates$1.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
 	const deleteMessageTemplate = (id) => setMessageTemplates(messageTemplates$1.filter((x$2) => x$2.id !== id));
 	const updateAutomationRule = (r$1) => setAutomationRules(automationRules$1.map((x$2) => x$2.id === r$1.id ? r$1 : x$2));
-	const addUser = (u$1) => setUsers([...users, u$1]);
-	const updateUser = (u$1) => setUsers(users.map((x$2) => x$2.id === u$1.id ? u$1 : x$2));
+	const addUser = (u) => setUsers([...users, u]);
+	const updateUser = (u) => setUsers(users.map((x$2) => x$2.id === u.id ? u : x$2));
 	const deleteUser = (id) => setUsers(users.filter((x$2) => x$2.id !== id));
 	const updatePaymentIntegration = (i) => setPaymentIntegrations(paymentIntegrations.map((x$2) => x$2.provider === i.provider ? i : x$2));
 	const updateFinancialSettings = (s$1) => setFinancialSettings(s$1);
@@ -57863,7 +56773,7 @@ const AppProvider = ({ children }) => {
 	const addAdvertiser = (a$1) => setAdvertisers([...advertisers, a$1]);
 	const updateAdvertiser = (a$1) => setAdvertisements(advertisers.map((x$2) => x$2.id === a$1.id ? a$1 : x$2));
 	const deleteAdvertiser = (id) => setAdvertisers(advertisers.filter((x$2) => x$2.id !== id));
-	const updateAdPricing = (p$1) => setAdPricingState(p$1);
+	const updateAdPricing = (p) => setAdPricingState(p);
 	const addVisit = (v) => setVisits([...visits$1, v]);
 	const updateVisit = (v) => setVisits(visits$1.map((x$2) => x$2.id === v.id ? v : x$2));
 	const deleteVisit = (id) => setVisits(visits$1.filter((x$2) => x$2.id !== id));
@@ -57878,18 +56788,18 @@ const AppProvider = ({ children }) => {
 	const setTyping = () => {};
 	const startChat = () => {};
 	const sendMessage = (contactId, text) => {
-		setAllMessages((prev) => prev.map((m$1) => m$1.contactId === contactId ? {
-			...m$1,
+		setAllMessages((prev) => prev.map((m) => m.contactId === contactId ? {
+			...m,
 			lastMessage: text,
 			time: (/* @__PURE__ */ new Date()).toISOString(),
-			history: [...m$1.history, {
+			history: [...m.history, {
 				id: `hist_${Date.now()}`,
 				text,
 				senderId: currentUser.id,
 				timestamp: (/* @__PURE__ */ new Date()).toISOString(),
 				read: true
 			}]
-		} : m$1));
+		} : m));
 	};
 	const markAsRead = () => {};
 	const startTour = () => setIsTourOpen(true);
@@ -57900,8 +56810,8 @@ const AppProvider = ({ children }) => {
 	const closeVideo = () => setActiveVideo(null);
 	const addFeedback = (f) => setFeedbacks([...feedbacks$1, f]);
 	const updateFeedback = (f) => setFeedbacks(feedbacks$1.map((x$2) => x$2.id === f.id ? f : x$2));
-	const addChannelMapping = (m$1) => setChannelMappings([...channelMappings$1, m$1]);
-	const updateChannelMapping = (m$1) => setChannelMappings(channelMappings$1.map((x$2) => x$2.id === m$1.id ? m$1 : x$2));
+	const addChannelMapping = (m) => setChannelMappings([...channelMappings$1, m]);
+	const updateChannelMapping = (m) => setChannelMappings(channelMappings$1.map((x$2) => x$2.id === m.id ? m : x$2));
 	const deleteChannelMapping = (id) => setChannelMappings(channelMappings$1.filter((x$2) => x$2.id !== id));
 	const addMarketingWorkflow = (w) => setMarketingWorkflows([...marketingWorkflows$1, w]);
 	const updateMarketingWorkflow = (w) => setMarketingWorkflows(marketingWorkflows$1.map((x$2) => x$2.id === w.id ? w : x$2));
@@ -57909,7 +56819,7 @@ const AppProvider = ({ children }) => {
 	const addEmailTemplate = (t$1) => setEmailTemplates([...emailTemplates$1, t$1]);
 	const updateEmailTemplate = (t$1) => setEmailTemplates(emailTemplates$1.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
 	const deleteEmailTemplate = (id) => setEmailTemplates(emailTemplates$1.filter((x$2) => x$2.id !== id));
-	const visibleMessages = (0, import_react.useMemo)(() => allMessages.filter((m$1) => m$1.ownerId === currentUser.id), [allMessages, currentUser.id]);
+	const visibleMessages = (0, import_react.useMemo)(() => allMessages.filter((m) => m.ownerId === currentUser.id), [allMessages, currentUser.id]);
 	const allUsers = (0, import_react.useMemo)(() => [
 		...users,
 		...owners$1,
@@ -57933,7 +56843,7 @@ const AppProvider = ({ children }) => {
 	const checkPermission = (0, import_react.useCallback)(async (user, resource, action) => {
 		if (!user || !user.role) return false;
 		if (user.permissions && user.permissions.length > 0) {
-			const override = user.permissions.find((p$1) => p$1.resource === resource);
+			const override = user.permissions.find((p) => p.resource === resource);
 			if (override) return override.actions.includes(action);
 		}
 		const rolePerms = rolePermissions[user.role];
@@ -57945,7 +56855,7 @@ const AppProvider = ({ children }) => {
 	const hasPermissionSync = (0, import_react.useCallback)((user, resource, action) => {
 		if (!user || !user.role) return false;
 		if (user.permissions && user.permissions.length > 0) {
-			const override = user.permissions.find((p$1) => p$1.resource === resource);
+			const override = user.permissions.find((p) => p.resource === resource);
 			if (override) return override.actions.includes(action);
 		}
 		const rolePerms = rolePermissions[user.role];
@@ -57959,14 +56869,14 @@ const AppProvider = ({ children }) => {
 		if (propertyIds.length === 0) return;
 		let tasksCreated = 0;
 		propertyIds.forEach((propertyId) => {
-			const property$2 = properties$1.find((p$1) => p$1.id === propertyId);
+			const property$2 = properties$1.find((p) => p.id === propertyId);
 			if (!property$2) return;
 			workflow.steps.forEach((step, index$1) => {
 				if (step.actionType === "task") {
 					let assigneeName = getRoleName(step.role);
 					let assigneeId = void 0;
 					let assignedRole = step.role;
-					const linkedPartner = partners$1.find((p$1) => p$1.linkedPropertyIds?.includes(propertyId) && (step.name.toLowerCase().includes("clean") ? p$1.type === "cleaning" : p$1.type === "maintenance"));
+					const linkedPartner = partners$1.find((p) => p.linkedPropertyIds?.includes(propertyId) && (step.name.toLowerCase().includes("clean") ? p.type === "cleaning" : p.type === "maintenance"));
 					if (linkedPartner) {
 						assigneeName = linkedPartner.name;
 						assigneeId = linkedPartner.id;
@@ -58216,15 +57126,14 @@ var useTaskStore = () => {
 	if (!context) throw new Error("useTaskStore must be used within AppProvider");
 	return {
 		tasks: context.tasks,
-		updateTaskStatus: context.updateTaskStatus,
-		updateTask: context.updateTask,
 		addTask: context.addTask,
+		updateTask: context.updateTask,
 		deleteTask: context.deleteTask,
+		updateTaskStatus: context.updateTaskStatus,
 		approveTask: context.approveTask,
 		rejectTask: context.rejectTask,
 		addTaskImage: context.addTaskImage,
-		addTaskEvidence: context.addTaskEvidence,
-		notifySupplier: context.notifySupplier
+		addTaskEvidence: context.addTaskEvidence
 	};
 };
 var useTaskStore_default = useTaskStore;
@@ -58269,13 +57178,11 @@ var usePropertyStore = () => {
 	if (!context) throw new Error("usePropertyStore must be used within AppProvider");
 	return {
 		properties: context.properties,
-		channelMappings: context.channelMappings,
+		selectedPropertyId: context.selectedPropertyId,
+		setSelectedPropertyId: context.setSelectedPropertyId,
 		addProperty: context.addProperty,
 		updateProperty: context.updateProperty,
-		deleteProperty: context.deleteProperty,
-		addChannelMapping: context.addChannelMapping,
-		updateChannelMapping: context.updateChannelMapping,
-		deleteChannelMapping: context.deleteChannelMapping
+		deleteProperty: context.deleteProperty
 	};
 };
 var usePropertyStore_default = usePropertyStore;
@@ -58293,55 +57200,11 @@ var useVisitStore_default = useVisitStore;
 var useShortTermStore = () => {
 	const context = (0, import_react.useContext)(AppContext);
 	if (!context) throw new Error("useShortTermStore must be used within AppProvider");
-	const performCheckIn = (bookingId, data) => {
-		const booking = context.bookings.find((b$1) => b$1.id === bookingId);
-		if (booking) context.updateBooking({
-			...booking,
-			status: "checked_in",
-			checkedInAt: (/* @__PURE__ */ new Date()).toISOString(),
-			guestSignature: data.signature,
-			estimatedArrival: data.arrivalTime
-		});
-	};
-	const performCheckOut = (bookingId) => {
-		const booking = context.bookings.find((b$1) => b$1.id === bookingId);
-		if (booking) {
-			context.updateBooking({
-				...booking,
-				status: "checked_out",
-				checkedOutAt: (/* @__PURE__ */ new Date()).toISOString()
-			});
-			const property$2 = context.properties.find((p$1) => p$1.id === booking.propertyId);
-			if (property$2) {
-				context.updateProperty({
-					...property$2,
-					status: "cleaning"
-				});
-				context.runWorkflows("after_checkout", {
-					booking,
-					property: property$2
-				});
-			}
-		}
-	};
 	return {
 		bookings: context.bookings,
-		calendarBlocks: context.calendarBlocks,
-		messageTemplates: context.messageTemplates,
-		feedbacks: context.feedbacks,
-		posTransactions: context.posTransactions,
 		addBooking: context.addBooking,
 		updateBooking: context.updateBooking,
-		deleteBooking: context.deleteBooking,
-		addCalendarBlock: context.addCalendarBlock,
-		deleteCalendarBlock: context.deleteCalendarBlock,
-		addMessageTemplate: context.addMessageTemplate,
-		updateMessageTemplate: context.updateMessageTemplate,
-		deleteMessageTemplate: context.deleteMessageTemplate,
-		addFeedback: context.addFeedback,
-		updateFeedback: context.updateFeedback,
-		performCheckIn,
-		performCheckOut
+		deleteBooking: context.deleteBooking
 	};
 };
 var useShortTermStore_default = useShortTermStore;
@@ -58559,7 +57422,7 @@ var __assign = function() {
 	__assign = Object.assign || function __assign$1(t) {
 		for (var s$1, i = 1, n = arguments.length; i < n; i++) {
 			s$1 = arguments[i];
-			for (var p$1 in s$1) if (Object.prototype.hasOwnProperty.call(s$1, p$1)) t[p$1] = s$1[p$1];
+			for (var p in s$1) if (Object.prototype.hasOwnProperty.call(s$1, p)) t[p] = s$1[p];
 		}
 		return t;
 	};
@@ -58567,9 +57430,9 @@ var __assign = function() {
 };
 function __rest(s$1, e) {
 	var t = {};
-	for (var p$1 in s$1) if (Object.prototype.hasOwnProperty.call(s$1, p$1) && e.indexOf(p$1) < 0) t[p$1] = s$1[p$1];
+	for (var p in s$1) if (Object.prototype.hasOwnProperty.call(s$1, p) && e.indexOf(p) < 0) t[p] = s$1[p];
 	if (s$1 != null && typeof Object.getOwnPropertySymbols === "function") {
-		for (var i = 0, p$1 = Object.getOwnPropertySymbols(s$1); i < p$1.length; i++) if (e.indexOf(p$1[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s$1, p$1[i])) t[p$1[i]] = s$1[p$1[i]];
+		for (var i = 0, p = Object.getOwnPropertySymbols(s$1); i < p.length; i++) if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s$1, p[i])) t[p[i]] = s$1[p[i]];
 	}
 	return t;
 }
@@ -59275,29 +58138,29 @@ var Dialog$1 = (props) => {
 	});
 };
 Dialog$1.displayName = DIALOG_NAME;
-var TRIGGER_NAME$7 = "DialogTrigger";
+var TRIGGER_NAME$5 = "DialogTrigger";
 var DialogTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDialog, ...triggerProps } = props;
-	const context = useDialogContext(TRIGGER_NAME$7, __scopeDialog);
+	const context = useDialogContext(TRIGGER_NAME$5, __scopeDialog);
 	const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
 		type: "button",
 		"aria-haspopup": "dialog",
 		"aria-expanded": context.open,
 		"aria-controls": context.contentId,
-		"data-state": getState$5(context.open),
+		"data-state": getState$3(context.open),
 		...triggerProps,
 		ref: composedTriggerRef,
 		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
 	});
 });
-DialogTrigger$1.displayName = TRIGGER_NAME$7;
-var PORTAL_NAME$5 = "DialogPortal";
-var [PortalProvider$2, usePortalContext$2] = createDialogContext(PORTAL_NAME$5, { forceMount: void 0 });
+DialogTrigger$1.displayName = TRIGGER_NAME$5;
+var PORTAL_NAME$4 = "DialogPortal";
+var [PortalProvider$1, usePortalContext$1] = createDialogContext(PORTAL_NAME$4, { forceMount: void 0 });
 var DialogPortal$1 = (props) => {
 	const { __scopeDialog, forceMount, children, container } = props;
-	const context = useDialogContext(PORTAL_NAME$5, __scopeDialog);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PortalProvider$2, {
+	const context = useDialogContext(PORTAL_NAME$4, __scopeDialog);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PortalProvider$1, {
 		scope: __scopeDialog,
 		forceMount,
 		children: import_react.Children.map(children, (child) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
@@ -59310,10 +58173,10 @@ var DialogPortal$1 = (props) => {
 		}))
 	});
 };
-DialogPortal$1.displayName = PORTAL_NAME$5;
+DialogPortal$1.displayName = PORTAL_NAME$4;
 var OVERLAY_NAME$1 = "DialogOverlay";
 var DialogOverlay$1 = import_react.forwardRef((props, forwardedRef) => {
-	const portalContext = usePortalContext$2(OVERLAY_NAME$1, props.__scopeDialog);
+	const portalContext = usePortalContext$1(OVERLAY_NAME$1, props.__scopeDialog);
 	const { forceMount = portalContext.forceMount, ...overlayProps } = props;
 	const context = useDialogContext(OVERLAY_NAME$1, props.__scopeDialog);
 	return context.modal ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
@@ -59325,16 +58188,16 @@ var DialogOverlay$1 = import_react.forwardRef((props, forwardedRef) => {
 	}) : null;
 });
 DialogOverlay$1.displayName = OVERLAY_NAME$1;
-var Slot$4 = /* @__PURE__ */ createSlot("DialogOverlay.RemoveScroll");
+var Slot$3 = /* @__PURE__ */ createSlot("DialogOverlay.RemoveScroll");
 var DialogOverlayImpl = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDialog, ...overlayProps } = props;
 	const context = useDialogContext(OVERLAY_NAME$1, __scopeDialog);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Combination_default, {
-		as: Slot$4,
+		as: Slot$3,
 		allowPinchZoom: true,
 		shards: [context.contentRef],
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-			"data-state": getState$5(context.open),
+			"data-state": getState$3(context.open),
 			...overlayProps,
 			ref: forwardedRef,
 			style: {
@@ -59344,11 +58207,11 @@ var DialogOverlayImpl = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-var CONTENT_NAME$7 = "DialogContent";
+var CONTENT_NAME$5 = "DialogContent";
 var DialogContent$1 = import_react.forwardRef((props, forwardedRef) => {
-	const portalContext = usePortalContext$2(CONTENT_NAME$7, props.__scopeDialog);
+	const portalContext = usePortalContext$1(CONTENT_NAME$5, props.__scopeDialog);
 	const { forceMount = portalContext.forceMount, ...contentProps } = props;
-	const context = useDialogContext(CONTENT_NAME$7, props.__scopeDialog);
+	const context = useDialogContext(CONTENT_NAME$5, props.__scopeDialog);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || context.open,
 		children: context.modal ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogContentModal, {
@@ -59360,9 +58223,9 @@ var DialogContent$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-DialogContent$1.displayName = CONTENT_NAME$7;
+DialogContent$1.displayName = CONTENT_NAME$5;
 var DialogContentModal = import_react.forwardRef((props, forwardedRef) => {
-	const context = useDialogContext(CONTENT_NAME$7, props.__scopeDialog);
+	const context = useDialogContext(CONTENT_NAME$5, props.__scopeDialog);
 	const contentRef = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, context.contentRef, contentRef);
 	import_react.useEffect(() => {
@@ -59387,7 +58250,7 @@ var DialogContentModal = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 var DialogContentNonModal = import_react.forwardRef((props, forwardedRef) => {
-	const context = useDialogContext(CONTENT_NAME$7, props.__scopeDialog);
+	const context = useDialogContext(CONTENT_NAME$5, props.__scopeDialog);
 	const hasInteractedOutsideRef = import_react.useRef(false);
 	const hasPointerDownOutsideRef = import_react.useRef(false);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogContentImpl, {
@@ -59418,7 +58281,7 @@ var DialogContentNonModal = import_react.forwardRef((props, forwardedRef) => {
 });
 var DialogContentImpl = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDialog, trapFocus, onOpenAutoFocus, onCloseAutoFocus, ...contentProps } = props;
-	const context = useDialogContext(CONTENT_NAME$7, __scopeDialog);
+	const context = useDialogContext(CONTENT_NAME$5, __scopeDialog);
 	const contentRef = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, contentRef);
 	useFocusGuards();
@@ -59433,7 +58296,7 @@ var DialogContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			id: context.contentId,
 			"aria-describedby": context.descriptionId,
 			"aria-labelledby": context.titleId,
-			"data-state": getState$5(context.open),
+			"data-state": getState$3(context.open),
 			...contentProps,
 			ref: composedRefs,
 			onDismiss: () => context.onOpenChange(false)
@@ -59465,10 +58328,10 @@ var DialogDescription$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 DialogDescription$1.displayName = DESCRIPTION_NAME$1;
-var CLOSE_NAME$1 = "DialogClose";
+var CLOSE_NAME = "DialogClose";
 var DialogClose$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDialog, ...closeProps } = props;
-	const context = useDialogContext(CLOSE_NAME$1, __scopeDialog);
+	const context = useDialogContext(CLOSE_NAME, __scopeDialog);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
 		type: "button",
 		...closeProps,
@@ -59476,13 +58339,13 @@ var DialogClose$1 = import_react.forwardRef((props, forwardedRef) => {
 		onClick: composeEventHandlers(props.onClick, () => context.onOpenChange(false))
 	});
 });
-DialogClose$1.displayName = CLOSE_NAME$1;
-function getState$5(open) {
+DialogClose$1.displayName = CLOSE_NAME;
+function getState$3(open) {
 	return open ? "open" : "closed";
 }
 var TITLE_WARNING_NAME = "DialogTitleWarning";
 var [WarningProvider, useWarningContext] = createContext2(TITLE_WARNING_NAME, {
-	contentName: CONTENT_NAME$7,
+	contentName: CONTENT_NAME$5,
 	titleName: TITLE_NAME$1,
 	docsSlug: "dialog"
 });
@@ -59515,25 +58378,25 @@ var DescriptionWarning$1 = ({ contentRef, descriptionId }) => {
 	]);
 	return null;
 };
-var Root$8 = Dialog$1;
-var Trigger$4 = DialogTrigger$1;
-var Portal$4 = DialogPortal$1;
+var Root$7 = Dialog$1;
+var Trigger$3 = DialogTrigger$1;
+var Portal$3 = DialogPortal$1;
 var Overlay = DialogOverlay$1;
 var Content$1 = DialogContent$1;
 var Title = DialogTitle$1;
 var Description = DialogDescription$1;
 var Close = DialogClose$1;
-var VisuallyHidden = import_react.forwardRef(({ className, ...props }, ref) => {
+const VisuallyHidden = import_react.forwardRef(({ className, ...props }, ref) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 		ref,
-		className: cn("absolute w-[1px] h-[1px] p-0 -m-[1px] overflow-hidden clip-[rect(0,0,0,0)] whitespace-nowrap border-0", className),
+		className: cn("absolute w-[1px] h-[1px] p-0 -m-[1px] overflow-hidden whitespace-nowrap border-0 [clip:rect(0,0,0,0)]", className),
 		...props
 	});
 });
 VisuallyHidden.displayName = "VisuallyHidden";
-var Dialog = Root$8;
-var DialogTrigger = Trigger$4;
-var DialogPortal = Portal$4;
+var Dialog = Root$7;
+var DialogTrigger = Trigger$3;
+var DialogPortal = Portal$3;
 var DialogOverlay = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Overlay, {
 	ref,
 	className: cn("fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0", className),
@@ -59629,9 +58492,9 @@ function CheckboxProvider(props) {
 		children: isFunction(internal_do_not_use_render) ? internal_do_not_use_render(context) : children
 	});
 }
-var TRIGGER_NAME$6 = "CheckboxTrigger";
+var TRIGGER_NAME$4 = "CheckboxTrigger";
 var CheckboxTrigger = import_react.forwardRef(({ __scopeCheckbox, onKeyDown, onClick, ...checkboxProps }, forwardedRef) => {
-	const { control, value, disabled, checked, required, setControl, setChecked, hasConsumerStoppedPropagationRef, isFormControl, bubbleInput } = useCheckboxContext(TRIGGER_NAME$6, __scopeCheckbox);
+	const { control, value, disabled, checked, required, setControl, setChecked, hasConsumerStoppedPropagationRef, isFormControl, bubbleInput } = useCheckboxContext(TRIGGER_NAME$4, __scopeCheckbox);
 	const composedRefs = useComposedRefs(forwardedRef, setControl);
 	const initialCheckedStateRef = import_react.useRef(checked);
 	import_react.useEffect(() => {
@@ -59647,7 +58510,7 @@ var CheckboxTrigger = import_react.forwardRef(({ __scopeCheckbox, onKeyDown, onC
 		role: "checkbox",
 		"aria-checked": isIndeterminate$1(checked) ? "mixed" : checked,
 		"aria-required": required,
-		"data-state": getState$4(checked),
+		"data-state": getState$2(checked),
 		"data-disabled": disabled ? "" : void 0,
 		disabled,
 		value,
@@ -59665,7 +58528,7 @@ var CheckboxTrigger = import_react.forwardRef(({ __scopeCheckbox, onKeyDown, onC
 		})
 	});
 });
-CheckboxTrigger.displayName = TRIGGER_NAME$6;
+CheckboxTrigger.displayName = TRIGGER_NAME$4;
 var Checkbox$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeCheckbox, name, checked, defaultChecked, required, disabled, value, onCheckedChange, form, ...checkboxProps } = props;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CheckboxProvider, {
@@ -59693,7 +58556,7 @@ var CheckboxIndicator = import_react.forwardRef((props, forwardedRef) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || isIndeterminate$1(context.checked) || context.checked === true,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
-			"data-state": getState$4(context.checked),
+			"data-state": getState$2(context.checked),
 			"data-disabled": context.disabled ? "" : void 0,
 			...indicatorProps,
 			ref: forwardedRef,
@@ -59760,7 +58623,7 @@ function isFunction(value) {
 function isIndeterminate$1(checked) {
 	return checked === "indeterminate";
 }
-function getState$4(checked) {
+function getState$2(checked) {
 	return isIndeterminate$1(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
 }
 var Checkbox = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox$1, {
@@ -59793,10 +58656,10 @@ var Primitive$1 = [
 	"svg",
 	"ul"
 ].reduce((primitive, node) => {
-	const Slot$5 = /* @__PURE__ */ createSlot$1(`Primitive.${node}`);
+	const Slot$4 = /* @__PURE__ */ createSlot$1(`Primitive.${node}`);
 	const Node$1 = import_react.forwardRef((props, forwardedRef) => {
 		const { asChild, ...primitiveProps } = props;
-		const Comp = asChild ? Slot$5 : node;
+		const Comp = asChild ? Slot$4 : node;
 		if (typeof window !== "undefined") window[Symbol.for("radix-ui")] = true;
 		return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Comp, {
 			...primitiveProps,
@@ -59822,14 +58685,14 @@ var Label$3 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 Label$3.displayName = NAME$1;
-var Root$7 = Label$3;
+var Root$6 = Label$3;
 var labelVariants = cva("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-black");
-var Label = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$7, {
+var Label = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$6, {
 	ref,
 	className: cn(labelVariants(), className),
 	...props
 }));
-Label.displayName = Root$7.displayName;
+Label.displayName = Root$6.displayName;
 function createContextScope$1(scopeName, createContextScopeDeps = []) {
 	let defaultContexts = [];
 	function createContext3(rootComponentName, defaultContext) {
@@ -59962,9 +58825,9 @@ function getInvalidValueError(propValue, componentName) {
 
 Defaulting to \`null\`.`;
 }
-var Root$6 = Progress$1;
+var Root$5 = Progress$1;
 var Indicator$1 = ProgressIndicator;
-var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$6, {
+var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$5, {
 	ref,
 	className: cn("relative h-4 w-full overflow-hidden rounded-full bg-secondary", className),
 	...props,
@@ -59973,7 +58836,7 @@ var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => 
 		style: { transform: `translateX(-${100 - (value || 0)}%)` }
 	})
 }));
-Progress.displayName = Root$6.displayName;
+Progress.displayName = Root$5.displayName;
 var privacyEnabled = false;
 var listeners$1 = /* @__PURE__ */ new Set();
 const togglePrivacy = () => {
@@ -60008,210 +58871,103 @@ function DataMask({ children, className, blur }) {
 		children
 	});
 }
-var NAME = "Separator";
-var DEFAULT_ORIENTATION = "horizontal";
-var ORIENTATIONS = ["horizontal", "vertical"];
-var Separator$3 = import_react.forwardRef((props, forwardedRef) => {
-	const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
-	const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
-	const ariaOrientation = orientation === "vertical" ? orientation : void 0;
-	const semanticProps = decorative ? { role: "none" } : {
-		"aria-orientation": ariaOrientation,
-		role: "separator"
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
-		"data-orientation": orientation,
-		...semanticProps,
-		...domProps,
-		ref: forwardedRef
-	});
-});
-Separator$3.displayName = NAME;
-function isValidOrientation(orientation) {
-	return ORIENTATIONS.includes(orientation);
-}
-var Root$5 = Separator$3;
-var Separator = import_react.forwardRef(({ className, orientation = "horizontal", decorative = true, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$5, {
-	ref,
-	decorative,
-	orientation,
-	className: cn("shrink-0 bg-border", orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]", className),
-	...props
-}));
-Separator.displayName = Root$5.displayName;
 function InvoiceViewer({ open, onOpenChange, invoice }) {
-	const { t, language } = useLanguageStore_default();
-	const { bookings: bookings$1, promotions: promotions$1, currency } = (0, import_react.useContext)(AppContext);
+	const { formatCurrency: formatCurrency$1 } = useFinancialStore_default();
 	if (!invoice) return null;
-	const booking = invoice.bookingId ? bookings$1.find((b$1) => b$1.id === invoice.bookingId) : null;
-	const promotion = booking?.promotionId ? promotions$1.find((p$1) => p$1.id === booking.promotionId) : null;
-	const subtotal = booking?.baseAmount || invoice.amount;
-	const discount = booking?.discountAmount || 0;
-	const finalTotal = invoice.amount;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open,
 		onOpenChange,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-			className: "max-w-2xl bg-white text-black",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("invoices.invoice_viewer.title") }) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "p-6 border rounded-md shadow-sm bg-white",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex justify-between mb-8",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
-								className: "text-2xl font-bold tracking-tight text-navy",
-								children: "INVOICE"
+			className: "max-w-2xl bg-white text-black p-0 overflow-hidden",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "p-4 border-b bg-slate-50 flex justify-between items-center",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Invoice Details" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						variant: "outline",
+						size: "sm",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Printer, { className: "h-4 w-4 mr-2" }), " Print"]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						variant: "outline",
+						size: "sm",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4 mr-2" }), " PDF"]
+					})]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "p-8 space-y-8",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex justify-between items-start",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+							className: "text-2xl font-bold text-trust-blue",
+							children: "INVOICE"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+							className: "text-sm text-slate-500 mt-1",
+							children: ["#", invoice.id]
+						})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "text-right text-sm",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "font-semibold",
+								children: "Date"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: format(new Date(invoice.date), "MMMM dd, yyyy") })]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "border-t border-b py-4",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4 text-sm",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "font-semibold text-slate-500 mb-1",
+								children: "Bill To:"
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "text-sm text-slate-500 font-medium",
-								children: "COREPM Inc."
+								className: "font-medium",
+								children: "Client / Property Owner"
 							})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "text-right",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-										className: "text-sm text-slate-500",
-										children: t("invoices.invoice_viewer.invoice_no")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-										className: "font-bold text-lg",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["#", invoice.id.slice(-6).toUpperCase()] })
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-										className: "text-sm text-slate-500 mt-1",
-										children: [
-											t("invoices.invoice_viewer.date"),
-											":",
-											" ",
-											formatDate(invoice.date, language)
-										]
-									})
-								]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "font-semibold text-slate-500 mb-1",
+									children: "Status:"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "uppercase font-bold text-slate-800",
+									children: invoice.status
+								})]
 							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "mb-8",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-								className: "text-sm text-slate-500 mb-1",
-								children: [t("invoices.invoice_viewer.bill_to"), ":"]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "font-bold text-lg",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: booking ? booking.guestName : "Cliente" })
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "border-t border-b py-4 mb-4",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-4 font-bold text-sm mb-2 text-slate-900",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "col-span-2",
-											children: t("invoices.invoice_viewer.description")
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "text-right",
-											children: t("invoices.invoice_viewer.quantity")
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "text-right",
-											children: t("invoices.invoice_viewer.amount")
-										})
-									]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-4 text-sm text-slate-700 py-2",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "col-span-2",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: invoice.description })
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "text-right",
-											children: "1"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "text-right font-medium",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(subtotal, currency) })
-										})
-									]
-								}),
-								promotion && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-4 text-sm text-green-700 py-2",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "col-span-2 flex flex-col",
-											children: [
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Discount Applied" }),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-													className: "text-xs font-medium",
-													children: ["Code: ", promotion.code]
-												}),
-												promotion.description && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-													className: "text-xs opacity-80",
-													children: promotion.description
-												})
-											]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "text-right",
-											children: "1"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: "text-right font-medium",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["-", formatCurrency(discount, currency)] })
-										})
-									]
-								})
-							]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "flex justify-end",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "w-1/2 space-y-2",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex justify-between text-sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("invoices.invoice_viewer.subtotal") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(subtotal, currency) }) })]
-									}),
-									promotion && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex justify-between text-sm text-green-700",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Discount" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["-", formatCurrency(discount, currency)] }) })]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex justify-between font-bold text-lg text-slate-900",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("invoices.invoice_viewer.total") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatCurrency(finalTotal, currency) }) })]
-									})
-								]
-							})
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "mt-8 pt-4 border-t text-center text-sm text-slate-500",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "font-medium",
-								children: t("invoices.invoice_viewer.thank_you")
-							})
 						})
-					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-					variant: "outline",
-					onClick: () => window.print(),
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Printer, { className: "h-4 w-4 mr-2" }),
-						" ",
-						t("invoices.invoice_viewer.print")
-					]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-					className: "bg-trust-blue text-white",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4 mr-2" }),
-						" ",
-						t("invoices.invoice_viewer.download")
-					]
-				})] })
-			]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("table", {
+						className: "w-full text-sm",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
+								className: "border-b border-slate-200",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
+									className: "text-left py-2 font-semibold text-slate-600",
+									children: "Description"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
+									className: "text-right py-2 font-semibold text-slate-600",
+									children: "Amount"
+								})]
+							}) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("tbody", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
+								className: "py-4 text-slate-800",
+								children: invoice.description
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
+								className: "py-4 text-right font-medium",
+								children: formatCurrency$1(invoice.amount)
+							})] }) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("tfoot", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
+								className: "border-t-2 border-slate-800",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
+									className: "py-4 text-right font-bold text-slate-600",
+									children: "Total"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
+									className: "py-4 text-right font-bold text-lg text-trust-blue",
+									children: formatCurrency$1(invoice.amount)
+								})]
+							}) })
+						]
+					})
+				]
+			})]
 		})
 	});
 }
@@ -60273,10 +59029,10 @@ function DashboardContent() {
 		}
 	};
 	properties$1.length;
-	properties$1.filter((p$1) => p$1.status === "available").length;
+	properties$1.filter((p) => p.status === "available").length;
 	visits$1.filter((v) => v.status === "scheduled").length;
-	const totalRooms = properties$1.filter((p$1) => p$1.profileType === "short_term").length;
-	const occupiedRooms = properties$1.filter((p$1) => p$1.profileType === "short_term" && p$1.status === "occupied").length;
+	const totalRooms = properties$1.filter((p) => p.profileType === "short_term").length;
+	const occupiedRooms = properties$1.filter((p) => p.profileType === "short_term" && p.status === "occupied").length;
 	const occupancyRate = totalRooms > 0 ? Math.round(occupiedRooms / totalRooms * 100) : 0;
 	const confirmedBookings = bookings$1.filter((b$1) => b$1.status !== "cancelled");
 	const totalBookingRevenue = confirmedBookings.reduce((acc, b$1) => acc + b$1.totalAmount, 0);
@@ -60286,8 +59042,8 @@ function DashboardContent() {
 	}, 0);
 	const adr = totalNights > 0 ? totalBookingRevenue / totalNights : 0;
 	const revPar = totalRooms > 0 ? totalBookingRevenue / (totalRooms * 30) : 0;
-	const relevantProperties = selectedPropertyId === "all" ? properties$1 : properties$1.filter((p$1) => p$1.id === selectedPropertyId);
-	const avgHealthScore = relevantProperties.reduce((acc, p$1) => acc + (p$1.healthScore || 80), 0) / (relevantProperties.length || 1);
+	const relevantProperties = selectedPropertyId === "all" ? properties$1 : properties$1.filter((p) => p.id === selectedPropertyId);
+	const avgHealthScore = relevantProperties.reduce((acc, p) => acc + (p.healthScore || 80), 0) / (relevantProperties.length || 1);
 	const toggleWidget = (key) => {
 		setWidgets((prev) => ({
 			...prev,
@@ -60818,20 +59574,51 @@ var Input = import_react.forwardRef(({ className, type, ...props }, ref) => {
 	});
 });
 Input.displayName = "Input";
-var Sheet = Root$8;
-var SheetPortal = Portal$4;
+var NAME = "Separator";
+var DEFAULT_ORIENTATION = "horizontal";
+var ORIENTATIONS = ["horizontal", "vertical"];
+var Separator$3 = import_react.forwardRef((props, forwardedRef) => {
+	const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
+	const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
+	const ariaOrientation = orientation === "vertical" ? orientation : void 0;
+	const semanticProps = decorative ? { role: "none" } : {
+		"aria-orientation": ariaOrientation,
+		role: "separator"
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
+		"data-orientation": orientation,
+		...semanticProps,
+		...domProps,
+		ref: forwardedRef
+	});
+});
+Separator$3.displayName = NAME;
+function isValidOrientation(orientation) {
+	return ORIENTATIONS.includes(orientation);
+}
+var Root$4 = Separator$3;
+var Separator$2 = import_react.forwardRef(({ className, orientation = "horizontal", decorative = true, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
+	ref,
+	decorative,
+	orientation,
+	className: cn("shrink-0 bg-border", orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]", className),
+	...props
+}));
+Separator$2.displayName = Root$4.displayName;
+var Sheet = Root$7;
+var SheetPortal = Portal$3;
 var SheetOverlay = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Overlay, {
 	className: cn("fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0", className),
 	...props,
 	ref
 }));
 SheetOverlay.displayName = Overlay.displayName;
-var sheetVariants = cva("fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500", {
+var sheetVariants = cva("fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out", {
 	variants: { side: {
 		top: "inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
 		bottom: "inset-x-0 bottom-0 border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
 		left: "inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm",
-		right: "inset-y-0 right-0 h-full w-3/4  border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm"
+		right: "inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm"
 	} },
 	defaultVariants: { side: "right" }
 });
@@ -60839,17 +59626,13 @@ var SheetContent = import_react.forwardRef(({ side = "right", className, childre
 	ref,
 	className: cn(sheetVariants({ side }), className),
 	...props,
-	children: [
-		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(VisuallyHidden, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Title, { children: "Sheet Content" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Description, { children: "Sheet Content Description" })] }),
-		children,
-		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Close, {
-			className: "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-				className: "sr-only",
-				children: "Close"
-			})]
-		})
-	]
+	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Close, {
+		className: "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+			className: "sr-only",
+			children: "Close"
+		})]
+	}), children]
 })] }));
 SheetContent.displayName = Content$1.displayName;
 var SheetHeader = ({ className, ...props }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -60921,9 +59704,9 @@ var SidebarProvider = import_react.forwardRef(({ defaultOpen = true, open: openP
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [toggleSidebar]);
-	const state = open ? "expanded" : "collapsed";
+	const state$1 = open ? "expanded" : "collapsed";
 	const contextValue = import_react.useMemo(() => ({
-		state,
+		state: state$1,
 		open,
 		setOpen,
 		isMobile,
@@ -60931,7 +59714,7 @@ var SidebarProvider = import_react.forwardRef(({ defaultOpen = true, open: openP
 		setOpenMobile,
 		toggleSidebar
 	}), [
-		state,
+		state$1,
 		open,
 		setOpen,
 		isMobile,
@@ -60956,7 +59739,7 @@ var SidebarProvider = import_react.forwardRef(({ defaultOpen = true, open: openP
 });
 SidebarProvider.displayName = "SidebarProvider";
 var Sidebar = import_react.forwardRef(({ side = "left", variant = "sidebar", collapsible = "offcanvas", className, children, ...props }, ref) => {
-	const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+	const { isMobile, state: state$1, openMobile, setOpenMobile } = useSidebar();
 	if (collapsible === "none") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: cn("flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground", className),
 		ref,
@@ -60985,8 +59768,8 @@ var Sidebar = import_react.forwardRef(({ side = "left", variant = "sidebar", col
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		ref,
 		className: "group peer hidden text-sidebar-foreground md:block",
-		"data-state": state,
-		"data-collapsible": state === "collapsed" ? collapsible : "",
+		"data-state": state$1,
+		"data-collapsible": state$1 === "collapsed" ? collapsible : "",
 		"data-variant": variant,
 		"data-side": side,
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: cn("relative w-[--sidebar-width] bg-transparent transition-[width] duration-200 ease-linear", "group-data-[collapsible=offcanvas]:w-0", "group-data-[side=right]:rotate-180", variant === "floating" || variant === "inset" ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]" : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -61071,7 +59854,7 @@ var SidebarFooter = import_react.forwardRef(({ className, ...props }, ref) => {
 });
 SidebarFooter.displayName = "SidebarFooter";
 var SidebarSeparator = import_react.forwardRef(({ className, ...props }, ref) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator$2, {
 		ref,
 		"data-sidebar": "separator",
 		className: cn("mx-2 w-auto bg-sidebar-border", className),
@@ -61098,7 +59881,7 @@ var SidebarGroup = import_react.forwardRef(({ className, ...props }, ref) => {
 });
 SidebarGroup.displayName = "SidebarGroup";
 var SidebarGroupLabel = import_react.forwardRef(({ className, asChild = false, ...props }, ref) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(asChild ? Slot$3 : "div", {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(asChild ? Slot$2 : "div", {
 		ref,
 		"data-sidebar": "group-label",
 		className: cn("flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0", "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0", className),
@@ -61107,7 +59890,7 @@ var SidebarGroupLabel = import_react.forwardRef(({ className, asChild = false, .
 });
 SidebarGroupLabel.displayName = "SidebarGroupLabel";
 var SidebarGroupAction = import_react.forwardRef(({ className, asChild = false, ...props }, ref) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(asChild ? Slot$3 : "button", {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(asChild ? Slot$2 : "button", {
 		ref,
 		"data-sidebar": "group-action",
 		className: cn("absolute right-3 top-3.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0", "after:absolute after:-inset-2 after:md:hidden", "group-data-[collapsible=icon]:hidden", className),
@@ -61154,8 +59937,8 @@ var sidebarMenuButtonVariants = cva("peer/menu-button flex w-full items-center g
 	}
 });
 var SidebarMenuButton = import_react.forwardRef(({ asChild = false, isActive = false, variant = "default", size: size$3 = "default", tooltip, className, ...props }, ref) => {
-	const Comp = asChild ? Slot$3 : "button";
-	const { isMobile, state } = useSidebar();
+	const Comp = asChild ? Slot$2 : "button";
+	const { isMobile, state: state$1 } = useSidebar();
 	const titleStr = tooltip ? typeof tooltip === "string" ? tooltip : tooltip.children : void 0;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Comp, {
 		ref,
@@ -61166,13 +59949,13 @@ var SidebarMenuButton = import_react.forwardRef(({ asChild = false, isActive = f
 			variant,
 			size: size$3
 		}), className),
-		title: state === "collapsed" && !isMobile && titleStr ? titleStr : void 0,
+		title: state$1 === "collapsed" && !isMobile && titleStr ? titleStr : void 0,
 		...props
 	});
 });
 SidebarMenuButton.displayName = "SidebarMenuButton";
 var SidebarMenuAction = import_react.forwardRef(({ className, asChild = false, showOnHover = false, ...props }, ref) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(asChild ? Slot$3 : "button", {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(asChild ? Slot$2 : "button", {
 		ref,
 		"data-sidebar": "menu-action",
 		className: cn("absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0", "after:absolute after:-inset-2 after:md:hidden", "peer-data-[size=sm]/menu-button:top-1", "peer-data-[size=default]/menu-button:top-1.5", "peer-data-[size=lg]/menu-button:top-2.5", "group-data-[collapsible=icon]:hidden", showOnHover && "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0", className),
@@ -61220,7 +60003,7 @@ var SidebarMenuSubItem = import_react.forwardRef(({ ...props }, ref) => /* @__PU
 }));
 SidebarMenuSubItem.displayName = "SidebarMenuSubItem";
 var SidebarMenuSubButton = import_react.forwardRef(({ asChild = false, size: size$3 = "md", isActive, className, ...props }, ref) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(asChild ? Slot$3 : "a", {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(asChild ? Slot$2 : "a", {
 		ref,
 		"data-sidebar": "menu-sub-button",
 		"data-size": size$3,
@@ -61415,7 +60198,7 @@ function focusFirst$1(candidates, preventScroll = false) {
 function wrapArray$2(array, startIndex) {
 	return array.map((_$1, index$1) => array[(startIndex + index$1) % array.length]);
 }
-var Root$4 = RovingFocusGroup;
+var Root$3 = RovingFocusGroup;
 var Item$1 = RovingFocusGroupItem;
 var SELECTION_KEYS$1 = ["Enter", " "];
 var FIRST_KEYS = [
@@ -61444,13 +60227,13 @@ var [createMenuContext, createMenuScope] = createContextScope(MENU_NAME, [
 	createPopperScope,
 	createRovingFocusGroupScope
 ]);
-var usePopperScope$2 = createPopperScope();
+var usePopperScope$1 = createPopperScope();
 var useRovingFocusGroupScope$2 = createRovingFocusGroupScope();
 var [MenuProvider, useMenuContext] = createMenuContext(MENU_NAME);
 var [MenuRootProvider, useMenuRootContext] = createMenuContext(MENU_NAME);
 var Menu = (props) => {
 	const { __scopeMenu, open = false, children, dir, onOpenChange, modal = true } = props;
-	const popperScope = usePopperScope$2(__scopeMenu);
+	const popperScope = usePopperScope$1(__scopeMenu);
 	const [content, setContent] = import_react.useState(null);
 	const isUsingKeyboardRef = import_react.useRef(false);
 	const handleOpenChange = useCallbackRef(onOpenChange);
@@ -61475,7 +60258,7 @@ var Menu = (props) => {
 			document.removeEventListener("pointermove", handlePointer, { capture: true });
 		};
 	}, []);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$6, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$5, {
 		...popperScope,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MenuProvider, {
 			scope: __scopeMenu,
@@ -61495,23 +60278,23 @@ var Menu = (props) => {
 	});
 };
 Menu.displayName = MENU_NAME;
-var ANCHOR_NAME$1 = "MenuAnchor";
+var ANCHOR_NAME = "MenuAnchor";
 var MenuAnchor = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeMenu, ...anchorProps } = props;
-	const popperScope = usePopperScope$2(__scopeMenu);
+	const popperScope = usePopperScope$1(__scopeMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Anchor, {
 		...popperScope,
 		...anchorProps,
 		ref: forwardedRef
 	});
 });
-MenuAnchor.displayName = ANCHOR_NAME$1;
-var PORTAL_NAME$4 = "MenuPortal";
-var [PortalProvider$1, usePortalContext$1] = createMenuContext(PORTAL_NAME$4, { forceMount: void 0 });
+MenuAnchor.displayName = ANCHOR_NAME;
+var PORTAL_NAME$3 = "MenuPortal";
+var [PortalProvider, usePortalContext] = createMenuContext(PORTAL_NAME$3, { forceMount: void 0 });
 var MenuPortal = (props) => {
 	const { __scopeMenu, forceMount, children, container } = props;
-	const context = useMenuContext(PORTAL_NAME$4, __scopeMenu);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PortalProvider$1, {
+	const context = useMenuContext(PORTAL_NAME$3, __scopeMenu);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PortalProvider, {
 		scope: __scopeMenu,
 		forceMount,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
@@ -61524,14 +60307,14 @@ var MenuPortal = (props) => {
 		})
 	});
 };
-MenuPortal.displayName = PORTAL_NAME$4;
-var CONTENT_NAME$6 = "MenuContent";
-var [MenuContentProvider, useMenuContentContext] = createMenuContext(CONTENT_NAME$6);
+MenuPortal.displayName = PORTAL_NAME$3;
+var CONTENT_NAME$4 = "MenuContent";
+var [MenuContentProvider, useMenuContentContext] = createMenuContext(CONTENT_NAME$4);
 var MenuContent = import_react.forwardRef((props, forwardedRef) => {
-	const portalContext = usePortalContext$1(CONTENT_NAME$6, props.__scopeMenu);
+	const portalContext = usePortalContext(CONTENT_NAME$4, props.__scopeMenu);
 	const { forceMount = portalContext.forceMount, ...contentProps } = props;
-	const context = useMenuContext(CONTENT_NAME$6, props.__scopeMenu);
-	const rootContext = useMenuRootContext(CONTENT_NAME$6, props.__scopeMenu);
+	const context = useMenuContext(CONTENT_NAME$4, props.__scopeMenu);
+	const rootContext = useMenuRootContext(CONTENT_NAME$4, props.__scopeMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection$1.Provider, {
 		scope: props.__scopeMenu,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
@@ -61550,7 +60333,7 @@ var MenuContent = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 var MenuRootContentModal = import_react.forwardRef((props, forwardedRef) => {
-	const context = useMenuContext(CONTENT_NAME$6, props.__scopeMenu);
+	const context = useMenuContext(CONTENT_NAME$4, props.__scopeMenu);
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, ref);
 	import_react.useEffect(() => {
@@ -61568,7 +60351,7 @@ var MenuRootContentModal = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 var MenuRootContentNonModal = import_react.forwardRef((props, forwardedRef) => {
-	const context = useMenuContext(CONTENT_NAME$6, props.__scopeMenu);
+	const context = useMenuContext(CONTENT_NAME$4, props.__scopeMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MenuContentImpl, {
 		...props,
 		ref: forwardedRef,
@@ -61578,12 +60361,12 @@ var MenuRootContentNonModal = import_react.forwardRef((props, forwardedRef) => {
 		onDismiss: () => context.onOpenChange(false)
 	});
 });
-var Slot$2 = /* @__PURE__ */ createSlot("MenuContent.ScrollLock");
+var Slot$1 = /* @__PURE__ */ createSlot("MenuContent.ScrollLock");
 var MenuContentImpl = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeMenu, loop = false, trapFocus, onOpenAutoFocus, onCloseAutoFocus, disableOutsidePointerEvents, onEntryFocus, onEscapeKeyDown, onPointerDownOutside, onFocusOutside, onInteractOutside, onDismiss, disableOutsideScroll, ...contentProps } = props;
-	const context = useMenuContext(CONTENT_NAME$6, __scopeMenu);
-	const rootContext = useMenuRootContext(CONTENT_NAME$6, __scopeMenu);
-	const popperScope = usePopperScope$2(__scopeMenu);
+	const context = useMenuContext(CONTENT_NAME$4, __scopeMenu);
+	const rootContext = useMenuRootContext(CONTENT_NAME$4, __scopeMenu);
+	const popperScope = usePopperScope$1(__scopeMenu);
 	const rovingFocusGroupScope = useRovingFocusGroupScope$2(__scopeMenu);
 	const getItems = useCollection$1(__scopeMenu);
 	const [currentItemId, setCurrentItemId] = import_react.useState(null);
@@ -61597,7 +60380,7 @@ var MenuContentImpl = import_react.forwardRef((props, forwardedRef) => {
 	const lastPointerXRef = import_react.useRef(0);
 	const ScrollLockWrapper = disableOutsideScroll ? Combination_default : import_react.Fragment;
 	const scrollLockWrapperProps = disableOutsideScroll ? {
-		as: Slot$2,
+		as: Slot$1,
 		allowPinchZoom: true
 	} : void 0;
 	const handleTypeaheadSearch = (key) => {
@@ -61657,7 +60440,7 @@ var MenuContentImpl = import_react.forwardRef((props, forwardedRef) => {
 					onFocusOutside,
 					onInteractOutside,
 					onDismiss,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
 						asChild: true,
 						...rovingFocusGroupScope,
 						dir: rootContext.dir,
@@ -61719,7 +60502,7 @@ var MenuContentImpl = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-MenuContent.displayName = CONTENT_NAME$6;
+MenuContent.displayName = CONTENT_NAME$4;
 var GROUP_NAME$2 = "MenuGroup";
 var MenuGroup = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeMenu, ...groupProps } = props;
@@ -61906,23 +60689,23 @@ var MenuSeparator = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 MenuSeparator.displayName = SEPARATOR_NAME$2;
-var ARROW_NAME$3 = "MenuArrow";
+var ARROW_NAME$2 = "MenuArrow";
 var MenuArrow = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeMenu, ...arrowProps } = props;
-	const popperScope = usePopperScope$2(__scopeMenu);
+	const popperScope = usePopperScope$1(__scopeMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Arrow, {
 		...popperScope,
 		...arrowProps,
 		ref: forwardedRef
 	});
 });
-MenuArrow.displayName = ARROW_NAME$3;
+MenuArrow.displayName = ARROW_NAME$2;
 var SUB_NAME = "MenuSub";
 var [MenuSubProvider, useMenuSubContext] = createMenuContext(SUB_NAME);
 var MenuSub = (props) => {
 	const { __scopeMenu, children, open = false, onOpenChange } = props;
 	const parentMenuContext = useMenuContext(SUB_NAME, __scopeMenu);
-	const popperScope = usePopperScope$2(__scopeMenu);
+	const popperScope = usePopperScope$1(__scopeMenu);
 	const [trigger, setTrigger] = import_react.useState(null);
 	const [content, setContent] = import_react.useState(null);
 	const handleOpenChange = useCallbackRef(onOpenChange);
@@ -61930,7 +60713,7 @@ var MenuSub = (props) => {
 		if (parentMenuContext.open === false) handleOpenChange(false);
 		return () => handleOpenChange(false);
 	}, [parentMenuContext.open, handleOpenChange]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$6, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$5, {
 		...popperScope,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MenuProvider, {
 			scope: __scopeMenu,
@@ -62056,10 +60839,10 @@ var MenuSubTrigger = import_react.forwardRef((props, forwardedRef) => {
 MenuSubTrigger.displayName = SUB_TRIGGER_NAME$1;
 var SUB_CONTENT_NAME$1 = "MenuSubContent";
 var MenuSubContent = import_react.forwardRef((props, forwardedRef) => {
-	const portalContext = usePortalContext$1(CONTENT_NAME$6, props.__scopeMenu);
+	const portalContext = usePortalContext(CONTENT_NAME$4, props.__scopeMenu);
 	const { forceMount = portalContext.forceMount, ...subContentProps } = props;
-	const context = useMenuContext(CONTENT_NAME$6, props.__scopeMenu);
-	const rootContext = useMenuRootContext(CONTENT_NAME$6, props.__scopeMenu);
+	const context = useMenuContext(CONTENT_NAME$4, props.__scopeMenu);
+	const rootContext = useMenuRootContext(CONTENT_NAME$4, props.__scopeMenu);
 	const subContext = useMenuSubContext(SUB_CONTENT_NAME$1, props.__scopeMenu);
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, ref);
@@ -62160,8 +60943,8 @@ function whenMouse(handler) {
 }
 var Root3 = Menu;
 var Anchor2 = MenuAnchor;
-var Portal$3 = MenuPortal;
-var Content2$4 = MenuContent;
+var Portal$2 = MenuPortal;
+var Content2$3 = MenuContent;
 var Group$1 = MenuGroup;
 var Label$2 = MenuLabel;
 var Item2$2 = MenuItem;
@@ -62169,7 +60952,7 @@ var CheckboxItem = MenuCheckboxItem;
 var RadioGroup$2 = MenuRadioGroup;
 var RadioItem = MenuRadioItem;
 var ItemIndicator$1 = MenuItemIndicator;
-var Separator$2 = MenuSeparator;
+var Separator$1 = MenuSeparator;
 var Arrow2 = MenuArrow;
 var SubTrigger = MenuSubTrigger;
 var SubContent = MenuSubContent;
@@ -62207,10 +60990,10 @@ var DropdownMenu$1 = (props) => {
 	});
 };
 DropdownMenu$1.displayName = DROPDOWN_MENU_NAME;
-var TRIGGER_NAME$5 = "DropdownMenuTrigger";
+var TRIGGER_NAME$3 = "DropdownMenuTrigger";
 var DropdownMenuTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, disabled = false, ...triggerProps } = props;
-	const context = useDropdownMenuContext(TRIGGER_NAME$5, __scopeDropdownMenu);
+	const context = useDropdownMenuContext(TRIGGER_NAME$3, __scopeDropdownMenu);
 	const menuScope = useMenuScope(__scopeDropdownMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Anchor2, {
 		asChild: true,
@@ -62245,24 +61028,24 @@ var DropdownMenuTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-DropdownMenuTrigger$1.displayName = TRIGGER_NAME$5;
-var PORTAL_NAME$3 = "DropdownMenuPortal";
+DropdownMenuTrigger$1.displayName = TRIGGER_NAME$3;
+var PORTAL_NAME$2 = "DropdownMenuPortal";
 var DropdownMenuPortal$1 = (props) => {
 	const { __scopeDropdownMenu, ...portalProps } = props;
 	const menuScope = useMenuScope(__scopeDropdownMenu);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal$3, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal$2, {
 		...menuScope,
 		...portalProps
 	});
 };
-DropdownMenuPortal$1.displayName = PORTAL_NAME$3;
-var CONTENT_NAME$5 = "DropdownMenuContent";
+DropdownMenuPortal$1.displayName = PORTAL_NAME$2;
+var CONTENT_NAME$3 = "DropdownMenuContent";
 var DropdownMenuContent$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...contentProps } = props;
-	const context = useDropdownMenuContext(CONTENT_NAME$5, __scopeDropdownMenu);
+	const context = useDropdownMenuContext(CONTENT_NAME$3, __scopeDropdownMenu);
 	const menuScope = useMenuScope(__scopeDropdownMenu);
 	const hasInteractedOutsideRef = import_react.useRef(false);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2$4, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2$3, {
 		id: context.contentId,
 		"aria-labelledby": context.triggerId,
 		...menuScope,
@@ -62289,7 +61072,7 @@ var DropdownMenuContent$1 = import_react.forwardRef((props, forwardedRef) => {
 		}
 	});
 });
-DropdownMenuContent$1.displayName = CONTENT_NAME$5;
+DropdownMenuContent$1.displayName = CONTENT_NAME$3;
 var GROUP_NAME$1 = "DropdownMenuGroup";
 var DropdownMenuGroup$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...groupProps } = props;
@@ -62371,14 +61154,14 @@ var SEPARATOR_NAME$1 = "DropdownMenuSeparator";
 var DropdownMenuSeparator$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...separatorProps } = props;
 	const menuScope = useMenuScope(__scopeDropdownMenu);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator$2, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator$1, {
 		...menuScope,
 		...separatorProps,
 		ref: forwardedRef
 	});
 });
 DropdownMenuSeparator$1.displayName = SEPARATOR_NAME$1;
-var ARROW_NAME$2 = "DropdownMenuArrow";
+var ARROW_NAME$1 = "DropdownMenuArrow";
 var DropdownMenuArrow = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...arrowProps } = props;
 	const menuScope = useMenuScope(__scopeDropdownMenu);
@@ -62388,7 +61171,7 @@ var DropdownMenuArrow = import_react.forwardRef((props, forwardedRef) => {
 		ref: forwardedRef
 	});
 });
-DropdownMenuArrow.displayName = ARROW_NAME$2;
+DropdownMenuArrow.displayName = ARROW_NAME$1;
 var SUB_TRIGGER_NAME = "DropdownMenuSubTrigger";
 var DropdownMenuSubTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...subTriggerProps } = props;
@@ -62419,10 +61202,11 @@ var DropdownMenuSubContent$1 = import_react.forwardRef((props, forwardedRef) => 
 	});
 });
 DropdownMenuSubContent$1.displayName = SUB_CONTENT_NAME;
-var Root2$5 = DropdownMenu$1;
-var Trigger$3 = DropdownMenuTrigger$1;
+var Root2$4 = DropdownMenu$1;
+var Trigger$2 = DropdownMenuTrigger$1;
 var Portal2$1 = DropdownMenuPortal$1;
-var Content2$3 = DropdownMenuContent$1;
+var Content2$2 = DropdownMenuContent$1;
+var Group2 = DropdownMenuGroup$1;
 var Label2 = DropdownMenuLabel$1;
 var Item2$1 = DropdownMenuItem$1;
 var CheckboxItem2 = DropdownMenuCheckboxItem$1;
@@ -62431,8 +61215,9 @@ var ItemIndicator2 = DropdownMenuItemIndicator;
 var Separator2 = DropdownMenuSeparator$1;
 var SubTrigger2 = DropdownMenuSubTrigger$1;
 var SubContent2 = DropdownMenuSubContent$1;
-var DropdownMenu = Root2$5;
-var DropdownMenuTrigger = Trigger$3;
+var DropdownMenu = Root2$4;
+var DropdownMenuTrigger = Trigger$2;
+var DropdownMenuGroup = Group2;
 var DropdownMenuSubTrigger = import_react.forwardRef(({ className, inset, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SubTrigger2, {
 	ref,
 	className: cn("flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent data-[state=open]:bg-accent [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0", inset && "pl-8", className),
@@ -62446,13 +61231,13 @@ var DropdownMenuSubContent = import_react.forwardRef(({ className, ...props }, r
 	...props
 }));
 DropdownMenuSubContent.displayName = SubContent2.displayName;
-var DropdownMenuContent = import_react.forwardRef(({ className, sideOffset = 4, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal2$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2$3, {
+var DropdownMenuContent = import_react.forwardRef(({ className, sideOffset = 4, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal2$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2$2, {
 	ref,
 	sideOffset,
 	className: cn("z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin]", className),
 	...props
 }) }));
-DropdownMenuContent.displayName = Content2$3.displayName;
+DropdownMenuContent.displayName = Content2$2.displayName;
 var DropdownMenuItem = import_react.forwardRef(({ className, inset, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Item2$1, {
 	ref,
 	className: cn("relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0", inset && "pl-8", className),
@@ -62513,12 +61298,12 @@ var SELECTION_KEYS = [" ", "Enter"];
 var SELECT_NAME = "Select";
 var [Collection, useCollection, createCollectionScope] = createCollection(SELECT_NAME);
 var [createSelectContext, createSelectScope] = createContextScope(SELECT_NAME, [createCollectionScope, createPopperScope]);
-var usePopperScope$1 = createPopperScope();
+var usePopperScope = createPopperScope();
 var [SelectProvider, useSelectContext] = createSelectContext(SELECT_NAME);
 var [SelectNativeOptionsProvider, useSelectNativeOptionsContext] = createSelectContext(SELECT_NAME);
 var Select$1 = (props) => {
 	const { __scopeSelect, children, open: openProp, defaultOpen, onOpenChange, value: valueProp, defaultValue, onValueChange, dir, name, autoComplete, disabled, required, form } = props;
-	const popperScope = usePopperScope$1(__scopeSelect);
+	const popperScope = usePopperScope(__scopeSelect);
 	const [trigger, setTrigger] = import_react.useState(null);
 	const [valueNode, setValueNode] = import_react.useState(null);
 	const [valueNodeHasChildren, setValueNodeHasChildren] = import_react.useState(false);
@@ -62539,7 +61324,7 @@ var Select$1 = (props) => {
 	const isFormControl = trigger ? form || !!trigger.closest("form") : true;
 	const [nativeOptionsSet, setNativeOptionsSet] = import_react.useState(/* @__PURE__ */ new Set());
 	const nativeSelectKey = Array.from(nativeOptionsSet).map((option) => option.props.value).join(";");
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$6, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$5, {
 		...popperScope,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectProvider, {
 			required,
@@ -62590,11 +61375,11 @@ var Select$1 = (props) => {
 	});
 };
 Select$1.displayName = SELECT_NAME;
-var TRIGGER_NAME$4 = "SelectTrigger";
+var TRIGGER_NAME$2 = "SelectTrigger";
 var SelectTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, disabled = false, ...triggerProps } = props;
-	const popperScope = usePopperScope$1(__scopeSelect);
-	const context = useSelectContext(TRIGGER_NAME$4, __scopeSelect);
+	const popperScope = usePopperScope(__scopeSelect);
+	const context = useSelectContext(TRIGGER_NAME$2, __scopeSelect);
 	const isDisabled = context.disabled || disabled;
 	const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
 	const getItems = useCollection(__scopeSelect);
@@ -62656,7 +61441,7 @@ var SelectTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-SelectTrigger$1.displayName = TRIGGER_NAME$4;
+SelectTrigger$1.displayName = TRIGGER_NAME$2;
 var VALUE_NAME = "SelectValue";
 var SelectValue$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, className, style, children, placeholder = "", ...valueProps } = props;
@@ -62686,17 +61471,17 @@ var SelectIcon = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 SelectIcon.displayName = ICON_NAME;
-var PORTAL_NAME$2 = "SelectPortal";
+var PORTAL_NAME$1 = "SelectPortal";
 var SelectPortal = (props) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal, {
 		asChild: true,
 		...props
 	});
 };
-SelectPortal.displayName = PORTAL_NAME$2;
-var CONTENT_NAME$4 = "SelectContent";
+SelectPortal.displayName = PORTAL_NAME$1;
+var CONTENT_NAME$2 = "SelectContent";
 var SelectContent$1 = import_react.forwardRef((props, forwardedRef) => {
-	const context = useSelectContext(CONTENT_NAME$4, props.__scopeSelect);
+	const context = useSelectContext(CONTENT_NAME$2, props.__scopeSelect);
 	const [fragment, setFragment] = import_react.useState();
 	useLayoutEffect2(() => {
 		setFragment(new DocumentFragment());
@@ -62716,14 +61501,14 @@ var SelectContent$1 = import_react.forwardRef((props, forwardedRef) => {
 		ref: forwardedRef
 	});
 });
-SelectContent$1.displayName = CONTENT_NAME$4;
+SelectContent$1.displayName = CONTENT_NAME$2;
 var CONTENT_MARGIN = 10;
-var [SelectContentProvider, useSelectContentContext] = createSelectContext(CONTENT_NAME$4);
+var [SelectContentProvider, useSelectContentContext] = createSelectContext(CONTENT_NAME$2);
 var CONTENT_IMPL_NAME = "SelectContentImpl";
-var Slot$1 = /* @__PURE__ */ createSlot("SelectContent.RemoveScroll");
+var Slot = /* @__PURE__ */ createSlot("SelectContent.RemoveScroll");
 var SelectContentImpl = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, position = "item-aligned", onCloseAutoFocus, onEscapeKeyDown, onPointerDownOutside, side, sideOffset, align, alignOffset, arrowPadding, collisionBoundary, collisionPadding, sticky, hideWhenDetached, avoidCollisions, ...contentProps } = props;
-	const context = useSelectContext(CONTENT_NAME$4, __scopeSelect);
+	const context = useSelectContext(CONTENT_NAME$2, __scopeSelect);
 	const [content, setContent] = import_react.useState(null);
 	const [viewport, setViewport] = import_react.useState(null);
 	const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
@@ -62847,7 +61632,7 @@ var SelectContentImpl = import_react.forwardRef((props, forwardedRef) => {
 		isPositioned,
 		searchRef,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Combination_default, {
-			as: Slot$1,
+			as: Slot,
 			allowPinchZoom: true,
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FocusScope, {
 				asChild: true,
@@ -62913,8 +61698,8 @@ SelectContentImpl.displayName = CONTENT_IMPL_NAME;
 var ITEM_ALIGNED_POSITION_NAME = "SelectItemAlignedPosition";
 var SelectItemAlignedPosition = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, onPlaced, ...popperProps } = props;
-	const context = useSelectContext(CONTENT_NAME$4, __scopeSelect);
-	const contentContext = useSelectContentContext(CONTENT_NAME$4, __scopeSelect);
+	const context = useSelectContext(CONTENT_NAME$2, __scopeSelect);
+	const contentContext = useSelectContentContext(CONTENT_NAME$2, __scopeSelect);
 	const [contentWrapper, setContentWrapper] = import_react.useState(null);
 	const [content, setContent] = import_react.useState(null);
 	const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
@@ -63039,7 +61824,7 @@ SelectItemAlignedPosition.displayName = ITEM_ALIGNED_POSITION_NAME;
 var POPPER_POSITION_NAME = "SelectPopperPosition";
 var SelectPopperPosition = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, align = "start", collisionPadding = CONTENT_MARGIN, ...popperProps } = props;
-	const popperScope = usePopperScope$1(__scopeSelect);
+	const popperScope = usePopperScope(__scopeSelect);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content$2, {
 		...popperScope,
 		...popperProps,
@@ -63058,7 +61843,7 @@ var SelectPopperPosition = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 SelectPopperPosition.displayName = POPPER_POSITION_NAME;
-var [SelectViewportProvider, useSelectViewportContext] = createSelectContext(CONTENT_NAME$4, {});
+var [SelectViewportProvider, useSelectViewportContext] = createSelectContext(CONTENT_NAME$2, {});
 var VIEWPORT_NAME$1 = "SelectViewport";
 var SelectViewport = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, nonce, ...viewportProps } = props;
@@ -63358,19 +62143,19 @@ var SelectSeparator$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 SelectSeparator$1.displayName = SEPARATOR_NAME;
-var ARROW_NAME$1 = "SelectArrow";
+var ARROW_NAME = "SelectArrow";
 var SelectArrow = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, ...arrowProps } = props;
-	const popperScope = usePopperScope$1(__scopeSelect);
-	const context = useSelectContext(ARROW_NAME$1, __scopeSelect);
-	const contentContext = useSelectContentContext(ARROW_NAME$1, __scopeSelect);
+	const popperScope = usePopperScope(__scopeSelect);
+	const context = useSelectContext(ARROW_NAME, __scopeSelect);
+	const contentContext = useSelectContentContext(ARROW_NAME, __scopeSelect);
 	return context.open && contentContext.position === "popper" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Arrow, {
 		...popperScope,
 		...arrowProps,
 		ref: forwardedRef
 	}) : null;
 });
-SelectArrow.displayName = ARROW_NAME$1;
+SelectArrow.displayName = ARROW_NAME;
 var BUBBLE_INPUT_NAME$2 = "SelectBubbleInput";
 var SelectBubbleInput = import_react.forwardRef(({ __scopeSelect, value, ...props }, forwardedRef) => {
 	const ref = import_react.useRef(null);
@@ -63438,12 +62223,12 @@ function findNextItem(items, search, currentItem) {
 function wrapArray(array, startIndex) {
 	return array.map((_$1, index$1) => array[(startIndex + index$1) % array.length]);
 }
-var Root2$4 = Select$1;
-var Trigger$2 = SelectTrigger$1;
+var Root2$3 = Select$1;
+var Trigger$1 = SelectTrigger$1;
 var Value = SelectValue$1;
 var Icon = SelectIcon;
-var Portal$2 = SelectPortal;
-var Content2$2 = SelectContent$1;
+var Portal$1 = SelectPortal;
+var Content2$1 = SelectContent$1;
 var Viewport$1 = SelectViewport;
 var Label$1 = SelectLabel$1;
 var Item = SelectItem$1;
@@ -63451,10 +62236,10 @@ var ItemText = SelectItemText;
 var ItemIndicator = SelectItemIndicator;
 var ScrollUpButton = SelectScrollUpButton$1;
 var ScrollDownButton = SelectScrollDownButton$1;
-var Separator$1 = SelectSeparator$1;
-var Select = Root2$4;
+var Separator = SelectSeparator$1;
+var Select = Root2$3;
 var SelectValue = Value;
-var SelectTrigger = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Trigger$2, {
+var SelectTrigger = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Trigger$1, {
 	ref,
 	className: cn("flex h-10 w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm text-black ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-100 [&>span]:line-clamp-1 shadow-none", "disabled:text-black disabled:bg-white", className),
 	...props,
@@ -63463,7 +62248,7 @@ var SelectTrigger = import_react.forwardRef(({ className, children, ...props }, 
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronDown, { className: "h-4 w-4 opacity-50 text-black" })
 	})]
 }));
-SelectTrigger.displayName = Trigger$2.displayName;
+SelectTrigger.displayName = Trigger$1.displayName;
 var SelectScrollUpButton = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollUpButton, {
 	ref,
 	className: cn("flex cursor-default items-center justify-center py-1 bg-white", className),
@@ -63478,7 +62263,7 @@ var SelectScrollDownButton = import_react.forwardRef(({ className, ...props }, r
 	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronDown, { className: "h-4 w-4 text-black" })
 }));
 SelectScrollDownButton.displayName = ScrollDownButton.displayName;
-var SelectContent = import_react.forwardRef(({ className, children, position = "popper", ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal$2, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Content2$2, {
+var SelectContent = import_react.forwardRef(({ className, children, position = "popper", ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Content2$1, {
 	ref,
 	className: cn("relative z-50 max-h-[--radix-select-content-available-height] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-white text-black shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-select-content-transform-origin]", position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1", className),
 	position,
@@ -63492,7 +62277,7 @@ var SelectContent = import_react.forwardRef(({ className, children, position = "
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectScrollDownButton, {})
 	]
 }) }));
-SelectContent.displayName = Content2$2.displayName;
+SelectContent.displayName = Content2$1.displayName;
 var SelectLabel = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, {
 	ref,
 	className: cn("py-1.5 pl-8 pr-2 text-sm font-semibold text-black", className),
@@ -63509,12 +62294,12 @@ var SelectItem = import_react.forwardRef(({ className, children, ...props }, ref
 	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ItemText, { children })]
 }));
 SelectItem.displayName = Item.displayName;
-var SelectSeparator = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator$1, {
+var SelectSeparator = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {
 	ref,
 	className: cn("-mx-1 my-1 h-px bg-slate-200", className),
 	...props
 }));
-SelectSeparator.displayName = Separator$1.displayName;
+SelectSeparator.displayName = Separator.displayName;
 /**
 * @license React
 * use-sync-external-store-shim.development.js
@@ -63536,7 +62321,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$55({ inst: {
+			cachedValue = useState$51({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -63550,7 +62335,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$24(function() {
+			useEffect$22(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -63573,7 +62358,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$55 = React$67.useState, useEffect$24 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$51 = React$67.useState, useEffect$22 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -63680,15 +62465,15 @@ function useImageLoadingStatus(src, { referrerPolicy, crossOrigin }) {
 	]);
 	return loadingStatus;
 }
-var Root$3 = Avatar$1;
+var Root$2 = Avatar$1;
 var Image$1 = AvatarImage$1;
 var Fallback = AvatarFallback$1;
-var Avatar = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
+var Avatar = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$2, {
 	ref,
 	className: cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", className),
 	...props
 }));
-Avatar.displayName = Root$3.displayName;
+Avatar.displayName = Root$2.displayName;
 var AvatarImage = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image$1, {
 	ref,
 	className: cn("aspect-square h-full w-full", className),
@@ -63703,815 +62488,728 @@ var AvatarFallback = import_react.forwardRef(({ className, ...props }, ref) => /
 AvatarFallback.displayName = Fallback.displayName;
 function AppHeader() {
 	const { language, setLanguage, t } = useLanguageStore_default();
-	const { properties: properties$1, selectedPropertyId, setSelectedPropertyId, currentUser, allUsers, setCurrentUser, logout, notifications: notifications$1 } = (0, import_react.useContext)(AppContext);
+	const { currentUser, allUsers, setCurrentUser } = useAuthStore_default();
+	const { isMobile } = useSidebar();
 	const navigate = useNavigate();
+	const { selectedPropertyId, setSelectedPropertyId, properties: properties$1 } = usePropertyStore_default();
 	const { isPrivate, togglePrivacy: togglePrivacy$1 } = usePrivacyStore();
-	const unreadCount = notifications$1.filter((n) => !n.read).length;
+	const handleDemoUserChange = (userId) => {
+		setCurrentUser(userId);
+		navigate("/");
+	};
+	const accessibleProperties = properties$1.filter((p) => {
+		if (currentUser?.role === "property_owner") return p.ownerId === currentUser.id;
+		return true;
+	});
+	const demoUsers = allUsers.filter((u) => u.isDemo);
+	const regularUsers = allUsers.filter((u) => !u.isDemo && u.id !== currentUser?.id);
+	const isPortalUser = [
+		"tenant",
+		"property_owner",
+		"partner",
+		"partner_employee"
+	].includes(currentUser?.role || "");
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
-		className: "sticky top-0 z-40 flex h-16 w-full items-center gap-4 border-b bg-white px-6 shadow-sm",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex items-center gap-4 flex-1",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarTrigger, { className: "shrink-0 md:hidden text-slate-700" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "relative w-full max-w-sm hidden md:flex",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					type: "search",
-					placeholder: t("common.search") || "Search properties...",
-					className: "w-full rounded-md bg-slate-50 pl-9 border-slate-200 text-sm focus-visible:ring-trust-blue"
-				})]
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex items-center gap-2 shrink-0 ml-auto",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "hidden sm:flex items-center gap-2 mr-2",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-						value: selectedPropertyId,
-						onValueChange: setSelectedPropertyId,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "w-[180px] h-9 bg-slate-50 border-slate-200",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.all") || "All Properties" })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: "all",
-							children: t("common.all") || "All Properties"
-						}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: p$1.id,
-							children: p$1.name
-						}, p$1.id))] })]
-					})
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					variant: "ghost",
-					size: "icon",
-					className: "relative text-slate-700 hover:bg-slate-100",
-					title: t("analytics.privacy_mode"),
-					onClick: togglePrivacy$1,
-					children: isPrivate ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EyeOff, { className: "h-5 w-5 text-blue-600" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-5 w-5" })
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+		className: "sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-slate-200 bg-white px-6 shadow-sm shrink-0",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarTrigger, { className: "text-slate-600 hover:text-slate-900" }),
+			!isMobile && !isPortalUser && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex-1 max-w-xl",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "relative",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+						type: "search",
+						placeholder: t("common.search") || "Search anything...",
+						className: "w-full bg-slate-50 border-slate-200 pl-9 focus-visible:ring-trust-blue"
+					})]
+				})
+			}),
+			isMobile && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "flex-1" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-3 ml-auto shrink-0",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 						variant: "ghost",
 						size: "icon",
-						className: "relative text-slate-700 hover:bg-slate-100",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, { className: "h-5 w-5" }), unreadCount > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-							className: "absolute top-1.5 right-1.5 flex h-2 w-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "relative inline-flex rounded-full h-2 w-2 bg-red-500" })]
-						})]
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
-					align: "end",
-					className: "w-80",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, { children: t("common.notifications") || "Notifications" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
-						notifications$1.slice(0, 5).map((n) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
-							className: "flex flex-col items-start gap-1 p-3",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center justify-between w-full",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "font-semibold",
-									children: n.title
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "text-[10px] text-muted-foreground",
-									children: new Date(n.timestamp).toLocaleTimeString()
-								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-xs text-muted-foreground line-clamp-2",
-								children: n.message
-							})]
-						}, n.id)),
-						notifications$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "p-4 text-center text-sm text-muted-foreground",
-							children: "No new notifications"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-							className: "justify-center text-blue-600 font-medium cursor-pointer",
-							children: "View all"
+						onClick: togglePrivacy$1,
+						className: isPrivate ? "text-trust-blue bg-blue-50" : "text-slate-500",
+						title: t("common.analytics.privacy_mode"),
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShieldAlert, { className: "h-4 w-4" })
+					}),
+					!isPortalUser && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "hidden md:block w-[200px]",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: selectedPropertyId,
+							onValueChange: setSelectedPropertyId,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+								className: "h-9 bg-slate-50 border-slate-200 text-sm",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "All Properties" })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "all",
+								children: "All Properties"
+							}), accessibleProperties.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: p.id,
+								children: p.name
+							}, p.id))] })]
 						})
-					]
-				})] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						variant: "ghost",
 						size: "icon",
-						className: "text-slate-700 hover:bg-slate-100",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-5 w-5" })
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
-					align: "end",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-							onClick: () => setLanguage("en"),
-							children: "English"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-							onClick: () => setLanguage("es"),
-							children: "Español"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-							onClick: () => setLanguage("pt"),
-							children: "Português"
+						className: "relative text-slate-600 hover:bg-slate-100",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, { className: "h-5 w-5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 border-2 border-white" })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							variant: "ghost",
+							size: "icon",
+							className: "text-slate-600 hover:bg-slate-100 uppercase font-bold text-xs",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Globe, { className: "h-4 w-4 mr-1" }), language]
 						})
-					]
-				})] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						className: "relative h-9 w-9 rounded-full ml-2 border border-slate-200 p-0",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
-							className: "h-9 w-9",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, {
-								src: currentUser?.avatar,
-								alt: "Avatar"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
-								className: "bg-slate-100 text-slate-700 font-bold",
-								children: currentUser?.name?.charAt(0) || "U"
-							})]
-						})
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
-					align: "end",
-					className: "w-56",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "flex items-center justify-start gap-2 p-2",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex flex-col space-y-1 leading-none",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-										className: "font-medium",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: currentUser?.name })
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-										className: "w-[200px] truncate text-xs text-muted-foreground",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: currentUser?.email })
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-										variant: "secondary",
-										className: "w-fit mt-1 text-[10px]",
-										children: currentUser?.role ? getRoleLabel(currentUser.role, t) : "Unknown"
-									})
-								]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
+						align: "end",
+						className: "w-32 bg-white",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+								onClick: () => setLanguage("en"),
+								className: language === "en" ? "bg-slate-50 font-bold" : "",
+								children: "English"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+								onClick: () => setLanguage("pt"),
+								className: language === "pt" ? "bg-slate-50 font-bold" : "",
+								children: "Português"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+								onClick: () => setLanguage("es"),
+								className: language === "es" ? "bg-slate-50 font-bold" : "",
+								children: "Español"
 							})
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-							onClick: () => navigate("/settings"),
-							children: t("common.profile") || "Profile"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-							onClick: () => navigate("/settings"),
-							children: t("sidebar.settings") || "Settings"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
-							className: "text-xs text-slate-500",
-							children: t("header.demo_profiles") || "Demo Profiles"
-						}),
-						allUsers.filter((u$1) => u$1.id !== currentUser?.id).slice(0, 5).map((u$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
-							onClick: () => setCurrentUser(u$1.id),
-							className: "flex items-center gap-2 cursor-pointer",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
-								className: "h-6 w-6",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, { src: u$1.avatar }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
-									className: "text-[10px]",
-									children: u$1.name.charAt(0)
+						]
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "ghost",
+						size: "icon",
+						className: "text-slate-600 hover:bg-slate-100 hidden sm:flex",
+						onClick: () => navigate("/help"),
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "h-5 w-5" })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							className: "relative h-9 w-9 rounded-full ml-2 ring-2 ring-transparent hover:ring-slate-200 transition-all",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
+								className: "h-9 w-9",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, {
+									src: currentUser?.avatar,
+									alt: currentUser?.name
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
+									className: "bg-trust-blue text-white text-xs",
+									children: currentUser?.name?.charAt(0)
 								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex flex-col",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "text-sm font-medium",
-									children: u$1.name
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "text-[10px] text-muted-foreground capitalize",
-									children: u$1.role.replace("_", " ")
-								})]
-							})]
-						}, u$1.id)),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-							className: "text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer",
-							onClick: () => {
-								logout();
-								navigate("/login");
-							},
-							children: t("common.logout") || "Log out"
+							})
 						})
-					]
-				})] })
-			]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
+						align: "end",
+						className: "w-64 bg-white p-2",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
+								className: "font-normal border-b pb-2 mb-2",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex flex-col space-y-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-sm font-bold leading-none text-slate-900",
+										children: currentUser?.name
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-xs leading-none text-slate-500 font-medium",
+										children: t(`roles.${currentUser?.role}`) || currentUser?.role
+									})]
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
+								className: "text-xs text-slate-500 uppercase font-bold tracking-wider",
+								children: t("header.demo_profiles")
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "max-h-[200px] overflow-y-auto custom-scrollbar pr-1",
+								children: demoUsers.map((u) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
+									onClick: () => handleDemoUserChange(u.id),
+									className: `flex items-center gap-2 cursor-pointer rounded-md ${currentUser?.id === u.id ? "bg-blue-50 text-trust-blue" : ""}`,
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
+											className: "h-6 w-6",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, { src: u.avatar }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
+												className: "text-[10px]",
+												children: u.name.charAt(0)
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex flex-col",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-sm font-medium",
+												children: u.name
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-[10px] text-slate-500",
+												children: t(`roles.${u.role}`) || u.role
+											})]
+										}),
+										u.isDemo && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+											variant: "outline",
+											className: "ml-auto text-[8px] h-4 px-1",
+											children: "DEMO"
+										})
+									]
+								}, u.id))
+							}),
+							regularUsers.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
+									className: "text-xs text-slate-500 uppercase font-bold tracking-wider",
+									children: t("header.other_users")
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "max-h-[150px] overflow-y-auto custom-scrollbar pr-1",
+									children: regularUsers.map((u) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
+										onClick: () => handleDemoUserChange(u.id),
+										className: "flex items-center gap-2 cursor-pointer rounded-md",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
+											className: "h-6 w-6",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, { src: u.avatar }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
+												className: "text-[10px]",
+												children: u.name.charAt(0)
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex flex-col",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-sm font-medium",
+												children: u.name
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-[10px] text-slate-500",
+												children: t(`roles.${u.role}`) || u.role
+											})]
+										})]
+									}, u.id))
+								})
+							] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
+								onClick: () => {
+									navigate("/login");
+								},
+								className: "text-red-600 focus:bg-red-50 focus:text-red-700 font-medium cursor-pointer",
+								children: t("common.logout")
+							})
+						]
+					})] })
+				]
+			})
+		]
+	});
+}
+function Logo({ className }) {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: cn("flex items-center gap-2 font-bold", className),
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "bg-trust-blue rounded p-1",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", {
+				xmlns: "http://www.w3.org/2000/svg",
+				viewBox: "0 0 24 24",
+				fill: "none",
+				stroke: "currentColor",
+				strokeWidth: "2",
+				strokeLinecap: "round",
+				strokeLinejoin: "round",
+				className: "h-5 w-5 text-white",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("polyline", { points: "9 22 9 12 15 12 15 22" })]
+			})
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+			className: "text-xl tracking-tight",
+			children: "COREPM"
 		})]
 	});
 }
-var useMessageStore = () => {
-	const context = (0, import_react.useContext)(AppContext);
-	if (!context) throw new Error("useMessageStore must be used within AppProvider");
-	return {
-		messages: context.messages,
-		typingStatus: context.typingStatus,
-		sendMessage: context.sendMessage,
-		markAsRead: context.markAsRead,
-		startChat: context.startChat,
-		setTyping: context.setTyping
+function NavUser({ user }) {
+	const navigate = useNavigate();
+	const { logout } = useAuthStore_default();
+	const handleLogout = () => {
+		logout();
+		navigate("/login");
 	};
-};
-var useMessageStore_default = useMessageStore;
-var usePublicityStore = () => {
-	const context = (0, import_react.useContext)(AppContext);
-	if (!context) throw new Error("usePublicityStore must be used within AppProvider");
-	return {
-		advertisements: context.advertisements,
-		advertisers: context.advertisers,
-		adPricing: context.adPricing,
-		addAdvertisement: context.addAdvertisement,
-		updateAdvertisement: context.updateAdvertisement,
-		deleteAdvertisement: context.deleteAdvertisement,
-		addAdvertiser: context.addAdvertiser,
-		updateAdvertiser: context.updateAdvertiser,
-		deleteAdvertiser: context.deleteAdvertiser,
-		updateAdPricing: context.updateAdPricing
-	};
-};
-var usePublicityStore_default = usePublicityStore;
-var logo_estilizado_default = "/assets/logo-estilizado-C6i8Yrt2.jpg";
-function useAdRotation(ads, limit = 1, intervalSeconds = 8) {
-	const [currentIndex, setCurrentIndex] = (0, import_react.useState)(0);
-	(0, import_react.useEffect)(() => {
-		if (!ads || ads.length <= limit) {
-			setCurrentIndex(0);
-			return;
-		}
-		const timer = setInterval(() => {
-			setCurrentIndex((prev) => (prev + limit) % ads.length);
-		}, intervalSeconds * 1e3);
-		return () => clearInterval(timer);
-	}, [
-		ads,
-		limit,
-		intervalSeconds
-	]);
-	if (!ads || ads.length === 0) return [];
-	if (ads.length <= limit) return ads;
-	const visibleAds = [];
-	for (let i = 0; i < limit; i++) visibleAds.push(ads[(currentIndex + i) % ads.length]);
-	return visibleAds;
-}
-var COLLAPSIBLE_NAME = "Collapsible";
-var [createCollapsibleContext, createCollapsibleScope] = createContextScope(COLLAPSIBLE_NAME);
-var [CollapsibleProvider, useCollapsibleContext] = createCollapsibleContext(COLLAPSIBLE_NAME);
-var Collapsible$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeCollapsible, open: openProp, defaultOpen, disabled, onOpenChange, ...collapsibleProps } = props;
-	const [open, setOpen] = useControllableState({
-		prop: openProp,
-		defaultProp: defaultOpen ?? false,
-		onChange: onOpenChange,
-		caller: COLLAPSIBLE_NAME
-	});
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleProvider, {
-		scope: __scopeCollapsible,
-		disabled,
-		contentId: useId(),
-		open,
-		onOpenToggle: import_react.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen]),
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-			"data-state": getState$3(open),
-			"data-disabled": disabled ? "" : void 0,
-			...collapsibleProps,
-			ref: forwardedRef
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenu, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
+		asChild: true,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenuButton, {
+			size: "lg",
+			className: "data-[state=open]:bg-slate-800 data-[state=open]:text-white hover:bg-slate-800",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
+					className: "h-8 w-8 rounded-lg border border-slate-700",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, {
+						src: user.avatar,
+						alt: user.name
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
+						className: "rounded-lg bg-slate-800 text-slate-300",
+						children: user.name?.charAt(0) || "U"
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid flex-1 text-left text-sm leading-tight",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "truncate font-semibold text-slate-200",
+						children: user.name
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "truncate text-xs text-slate-500",
+						children: user.email
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronsUpDown, { className: "ml-auto size-4 text-slate-500" })
+			]
 		})
-	});
-});
-Collapsible$1.displayName = COLLAPSIBLE_NAME;
-var TRIGGER_NAME$3 = "CollapsibleTrigger";
-var CollapsibleTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeCollapsible, ...triggerProps } = props;
-	const context = useCollapsibleContext(TRIGGER_NAME$3, __scopeCollapsible);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
-		type: "button",
-		"aria-controls": context.contentId,
-		"aria-expanded": context.open || false,
-		"data-state": getState$3(context.open),
-		"data-disabled": context.disabled ? "" : void 0,
-		disabled: context.disabled,
-		...triggerProps,
-		ref: forwardedRef,
-		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
-	});
-});
-CollapsibleTrigger$1.displayName = TRIGGER_NAME$3;
-var CONTENT_NAME$3 = "CollapsibleContent";
-var CollapsibleContent$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { forceMount, ...contentProps } = props;
-	const context = useCollapsibleContext(CONTENT_NAME$3, props.__scopeCollapsible);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
-		present: forceMount || context.open,
-		children: ({ present }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleContentImpl, {
-			...contentProps,
-			ref: forwardedRef,
-			present
-		})
-	});
-});
-CollapsibleContent$1.displayName = CONTENT_NAME$3;
-var CollapsibleContentImpl = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeCollapsible, present, children, ...contentProps } = props;
-	const context = useCollapsibleContext(CONTENT_NAME$3, __scopeCollapsible);
-	const [isPresent, setIsPresent] = import_react.useState(present);
-	const ref = import_react.useRef(null);
-	const composedRefs = useComposedRefs(forwardedRef, ref);
-	const heightRef = import_react.useRef(0);
-	const height = heightRef.current;
-	const widthRef = import_react.useRef(0);
-	const width = widthRef.current;
-	const isOpen = context.open || isPresent;
-	const isMountAnimationPreventedRef = import_react.useRef(isOpen);
-	const originalStylesRef = import_react.useRef(void 0);
-	import_react.useEffect(() => {
-		const rAF = requestAnimationFrame(() => isMountAnimationPreventedRef.current = false);
-		return () => cancelAnimationFrame(rAF);
-	}, []);
-	useLayoutEffect2(() => {
-		const node = ref.current;
-		if (node) {
-			originalStylesRef.current = originalStylesRef.current || {
-				transitionDuration: node.style.transitionDuration,
-				animationName: node.style.animationName
-			};
-			node.style.transitionDuration = "0s";
-			node.style.animationName = "none";
-			const rect = node.getBoundingClientRect();
-			heightRef.current = rect.height;
-			widthRef.current = rect.width;
-			if (!isMountAnimationPreventedRef.current) {
-				node.style.transitionDuration = originalStylesRef.current.transitionDuration;
-				node.style.animationName = originalStylesRef.current.animationName;
-			}
-			setIsPresent(present);
-		}
-	}, [context.open, present]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-		"data-state": getState$3(context.open),
-		"data-disabled": context.disabled ? "" : void 0,
-		id: context.contentId,
-		hidden: !isOpen,
-		...contentProps,
-		ref: composedRefs,
-		style: {
-			[`--radix-collapsible-content-height`]: height ? `${height}px` : void 0,
-			[`--radix-collapsible-content-width`]: width ? `${width}px` : void 0,
-			...props.style
-		},
-		children: isOpen && children
-	});
-});
-function getState$3(open) {
-	return open ? "open" : "closed";
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
+		className: "w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg bg-white text-slate-900 border-slate-200",
+		side: "bottom",
+		align: "end",
+		sideOffset: 4,
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, {
+				className: "p-0 font-normal",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-2 px-1 py-1.5 text-left text-sm",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
+						className: "h-8 w-8 rounded-lg",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, {
+							src: user.avatar,
+							alt: user.name
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
+							className: "rounded-lg bg-slate-100 text-slate-900",
+							children: user.name?.charAt(0) || "U"
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid flex-1 text-left text-sm leading-tight",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "truncate font-semibold",
+							children: user.name
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "truncate text-xs text-slate-500",
+							children: user.email
+						})]
+					})]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, { className: "bg-slate-100" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuGroup, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
+					onClick: () => navigate("/settings"),
+					className: "cursor-pointer focus:bg-slate-100",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "mr-2 h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Profile" })]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
+					onClick: () => navigate("/settings"),
+					className: "cursor-pointer focus:bg-slate-100",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings$1, { className: "mr-2 h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Settings" })]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
+					className: "cursor-pointer focus:bg-slate-100",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, { className: "mr-2 h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Notifications" })]
+				})
+			] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, { className: "bg-slate-100" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
+				onClick: handleLogout,
+				className: "cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LogOut, { className: "mr-2 h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Log out" })]
+			})
+		]
+	})] }) }) });
 }
-var Collapsible = Collapsible$1;
-var CollapsibleTrigger = CollapsibleTrigger$1;
-var CollapsibleContent = CollapsibleContent$1;
 function AppSidebar() {
-	const pathname = useLocation().pathname;
+	const location = useLocation();
+	const { currentUser, checkPermission, hasPermissionSync } = useAuthStore_default();
 	const { t } = useLanguageStore_default();
-	const { currentUser, hasPermissionSync: authHasPermission } = useAuthStore_default();
-	const { messages: messages$1 } = useMessageStore_default();
-	const { advertisements: advertisements$1 } = usePublicityStore_default();
-	const { setOpenMobile, isMobile } = useSidebar();
-	const handleLinkClick = () => {
-		if (isMobile) setOpenMobile(false);
-	};
-	const unreadMessagesCount = messages$1.reduce((acc, msg) => acc + (msg.unread || 0), 0);
-	const visibleSidebarAds = useAdRotation((0, import_react.useMemo)(() => advertisements$1.filter((a$1) => a$1.active && a$1.placement === "sidebar"), [advertisements$1]), 1, 15);
-	const adToShow = visibleSidebarAds.length > 0 ? visibleSidebarAds[0] : null;
-	const visibleMenuItems = [
+	const mainNavItems = [
 		{
-			title: t("sidebar.dashboard") || "Dashboard",
+			title: t("sidebar.dashboard"),
 			url: "/",
 			icon: House,
 			resource: "dashboard"
 		},
 		{
-			title: t("sidebar.performance") || "Performance",
-			url: "/performance",
-			icon: Activity,
-			resource: "performance"
+			title: t("sidebar.units"),
+			url: "/properties",
+			icon: Building2,
+			resource: "properties"
 		},
 		{
-			title: t("common.short_term") || "Short Term",
-			url: "/short-term",
-			icon: BriefcaseBusiness,
-			resource: "short_term"
+			title: t("hotels.title"),
+			url: "/hotels",
+			icon: Hotel,
+			resource: "hotels"
 		},
 		{
-			title: t("sidebar.guest_services") || "Guest Services",
-			url: "/guest-services",
-			icon: ShoppingBag,
-			resource: "guest_services"
+			title: t("sidebar.condominiums"),
+			url: "/condominiums",
+			icon: MapPin,
+			resource: "condominiums"
 		},
 		{
-			title: t("sidebar.pos") || "POS",
-			url: "/pos",
-			icon: CreditCard,
-			resource: "pos"
+			title: t("sidebar.owners"),
+			url: "/owners",
+			icon: Briefcase,
+			resource: "owners"
 		},
 		{
-			title: t("sidebar.marketing") || "Marketing",
-			url: "/marketing",
-			icon: Gift,
-			resource: "marketing"
-		},
-		{
-			title: t("common.renewals") || "Renovações",
-			url: "/renewals",
-			icon: RefreshCw,
-			resource: "renewals"
-		},
-		{
-			title: t("market_analysis.title") || "Análise de Mercado",
-			url: "/market-analysis",
-			icon: TrendingUp,
-			resource: "market_analysis"
-		},
-		{
-			title: t("sidebar.reports") || "Relatórios",
-			url: "/reports",
-			icon: ChartPie,
-			resource: "reports"
-		},
-		{
-			title: t("sidebar.tenants") || "Inquilinos",
+			title: t("sidebar.tenants"),
 			url: "/tenants",
 			icon: Users$1,
 			resource: "tenants"
 		},
 		{
-			title: t("sidebar.owners") || "Proprietários",
-			url: "/owners",
-			icon: UserCheck,
-			resource: "owners"
-		},
-		{
-			title: t("common.partners") || "Parceiros",
-			url: "/partners",
-			icon: Briefcase,
-			resource: "partners"
-		},
-		{
-			title: t("common.service_pricing") || "Price Catalog",
-			url: "/service-pricing",
-			icon: Tags,
-			resource: "settings"
-		},
-		{
-			title: t("common.calendar") || "Calendário",
+			title: t("sidebar.calendar"),
 			url: "/calendar",
 			icon: Calendar,
 			resource: "calendar"
 		},
 		{
-			title: t("common.visits") || "Visitas",
-			url: "/visits",
-			icon: CalendarDays,
-			resource: "visits"
-		},
-		{
-			title: t("common.tasks") || "Tarefas",
-			url: "/tasks",
-			icon: ClipboardList,
-			resource: "tasks"
-		},
-		{
-			title: t("common.workflows") || "Workflows",
-			url: "/workflows",
-			icon: Workflow,
-			resource: "workflows"
-		},
-		{
-			title: t("common.financial") || "Financeiro",
+			title: t("sidebar.financial"),
 			url: "/financial",
 			icon: DollarSign,
 			resource: "financial"
 		},
 		{
-			title: t("common.invoices") || "Faturas",
+			title: t("common.invoices"),
 			url: "/invoices",
 			icon: FileText,
 			resource: "financial"
 		},
 		{
-			title: t("common.messages") || "Mensagens",
+			title: t("common.short_term"),
+			url: "/short-term",
+			icon: Building2,
+			resource: "short_term"
+		},
+		{
+			title: t("common.visits"),
+			url: "/visits",
+			icon: MapPin,
+			resource: "visits"
+		},
+		{
+			title: t("common.renewals"),
+			url: "/renewals",
+			icon: Repeat,
+			resource: "renewals"
+		},
+		{
+			title: t("sidebar.reports"),
+			url: "/reports",
+			icon: FileText,
+			resource: "reports"
+		},
+		{
+			title: t("common.market_analysis"),
+			url: "/market-analysis",
+			icon: ChartPie,
+			resource: "market_analysis"
+		}
+	];
+	const operationsItems = [
+		{
+			title: t("sidebar.performance"),
+			url: "/performance",
+			icon: Activity,
+			resource: "performance"
+		},
+		{
+			title: t("sidebar.guest_services"),
+			url: "/guest-services",
+			icon: HeartHandshake,
+			resource: "guest_services"
+		},
+		{
+			title: t("sidebar.pos"),
+			url: "/pos",
+			icon: ShoppingCart,
+			resource: "pos"
+		},
+		{
+			title: t("sidebar.marketing"),
+			url: "/marketing",
+			icon: Zap,
+			resource: "marketing"
+		},
+		{
+			title: t("common.tasks"),
+			url: "/tasks",
+			icon: Wrench,
+			resource: "tasks"
+		},
+		{
+			title: "Housekeeping",
+			url: "/housekeeping",
+			icon: HardHat,
+			resource: "tasks"
+		},
+		{
+			title: "Night Audit",
+			url: "/night-audit",
+			icon: MoonStar,
+			resource: "financial"
+		},
+		{
+			title: t("sidebar.partners"),
+			url: "/partners",
+			icon: HardHat,
+			resource: "partners"
+		},
+		{
+			title: t("common.messages"),
 			url: "/messages",
 			icon: MessageSquare,
-			resource: "messages",
-			badge: unreadMessagesCount > 0 ? unreadMessagesCount : void 0
+			resource: "messages"
+		},
+		{
+			title: t("common.workflows"),
+			url: "/workflows",
+			icon: Repeat,
+			resource: "workflows"
 		}
-	].filter((item) => authHasPermission(currentUser, item.resource, "view"));
-	const isActive = (url) => {
-		if (url === "/" && pathname === "/") return true;
-		if (url !== "/" && pathname.startsWith(url)) return true;
-		return false;
-	};
-	const showMigration = authHasPermission(currentUser, "migration", "view");
-	const showPublicity = authHasPermission(currentUser, "publicity", "view");
-	const showUsers = authHasPermission(currentUser, "users", "view");
-	const showSettings = authHasPermission(currentUser, "settings", "view");
-	const showAnalytics = authHasPermission(currentUser, "analytics", "view");
-	const showAutomation = authHasPermission(currentUser, "automation", "view");
-	const hasPortfolioAccess = authHasPermission(currentUser, "properties", "view") || authHasPermission(currentUser, "hotels", "view") || authHasPermission(currentUser, "condominiums", "view");
-	const isTenant = currentUser?.role === "tenant";
-	const isOwner = currentUser?.role === "property_owner";
-	const isPartner = currentUser?.role === "partner" || currentUser?.role === "partner_employee";
+	];
+	const systemItems = [
+		{
+			title: t("sidebar.settings"),
+			url: "/settings",
+			icon: Settings$1,
+			resource: "settings"
+		},
+		{
+			title: t("common.service_pricing"),
+			url: "/service-pricing",
+			icon: DollarSign,
+			resource: "service_pricing"
+		},
+		{
+			title: t("sidebar.users"),
+			url: "/users",
+			icon: Users$1,
+			resource: "users"
+		},
+		{
+			title: t("sidebar.publicity_admin"),
+			url: "/admin/publicity",
+			icon: Megaphone,
+			resource: "publicity"
+		},
+		{
+			title: t("sidebar.migration_hub"),
+			url: "/admin/migration",
+			icon: Database,
+			resource: "migration"
+		},
+		{
+			title: t("common.advanced_analytics"),
+			url: "/admin/analytics",
+			icon: ChartPie,
+			resource: "analytics"
+		},
+		{
+			title: t("common.automation_rules"),
+			url: "/admin/automation",
+			icon: Zap,
+			resource: "automation"
+		}
+	];
+	const portalItems = [
+		{
+			title: t("sidebar.tenant_portal"),
+			url: "/portal/tenant",
+			icon: House,
+			resource: "portal",
+			role: "tenant"
+		},
+		{
+			title: t("sidebar.owner_portal"),
+			url: "/portal/owner",
+			icon: Briefcase,
+			resource: "portal",
+			role: "property_owner"
+		},
+		{
+			title: t("sidebar.partner_portal"),
+			url: "/portal/partner",
+			icon: HardHat,
+			resource: "portal",
+			role: "partner"
+		},
+		{
+			title: t("sidebar.partner_portal"),
+			url: "/portal/partner",
+			icon: HardHat,
+			resource: "portal",
+			role: "partner_employee"
+		}
+	];
+	const filteredMain = mainNavItems.filter((item) => hasPermissionSync(currentUser, item.resource, "view"));
+	const filteredOps = operationsItems.filter((item) => hasPermissionSync(currentUser, item.resource, "view"));
+	const filteredSystem = systemItems.filter((item) => hasPermissionSync(currentUser, item.resource, "view"));
+	const isPortalUser = currentUser?.role === "tenant" || currentUser?.role === "property_owner" || currentUser?.role === "partner" || currentUser?.role === "partner_employee";
+	const activePortalItem = portalItems.find((item) => item.role === currentUser?.role);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Sidebar, {
-		collapsible: "icon",
-		className: "bg-white border-r z-50 fixed left-0 top-0 h-screen shadow-md",
+		className: "bg-slate-900 border-r-slate-800 text-slate-300",
 		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarHeader, {
-				className: "h-16 flex items-center px-4 border-b bg-white",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-					to: "/",
-					className: "flex items-center gap-2 font-bold text-xl text-black font-display overflow-hidden hover:opacity-80 transition-opacity",
-					onClick: handleLinkClick,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-						src: logo_estilizado_default,
-						alt: "COREPM Logo",
-						className: "h-8 w-8 rounded-md shrink-0 object-contain"
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "truncate tracking-tight group-data-[collapsible=icon]:hidden text-black",
-						children: "COREPM"
-					})]
-				})
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarContent, {
-				className: "bg-white",
-				id: "sidebar-menu",
-				children: [
-					(isTenant || isOwner || isPartner) && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
-						className: cn(isMobile && "text-black", "text-black font-bold"),
-						children: t("common.portal")
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenu, { children: [
-						isTenant && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-							asChild: true,
-							isActive: isActive("/portal/tenant"),
-							className: "text-black font-medium hover:bg-slate-100",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-								to: "/portal/tenant",
-								onClick: handleLinkClick,
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutTemplate, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.tenant_portal") })]
-							})
-						}) }),
-						isOwner && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-							asChild: true,
-							isActive: isActive("/portal/owner"),
-							className: "text-black font-medium hover:bg-slate-100",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-								to: "/portal/owner",
-								onClick: handleLinkClick,
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutTemplate, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.owner_portal") })]
-							})
-						}) }),
-						isPartner && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-							asChild: true,
-							isActive: isActive("/portal/partner"),
-							className: "text-black font-medium hover:bg-slate-100",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-								to: "/portal/partner",
-								onClick: handleLinkClick,
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutTemplate, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.partner_portal") })]
-							})
-						}) })
-					] }) })] }),
-					visibleMenuItems.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
-						className: cn(isMobile && "text-black", "text-black font-bold"),
-						children: t("sidebar.main_menu")
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenu, { children: [
-						visibleMenuItems.filter((item) => item.url === "/").map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-							asChild: true,
-							isActive: isActive(item.url),
-							tooltip: item.title,
-							className: "text-black font-medium hover:bg-slate-100",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-								to: item.url,
-								onClick: handleLinkClick,
-								className: "flex justify-between items-center w-full",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex items-center gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.title })]
-								}), item.badge !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-									variant: "destructive",
-									className: "h-5 min-w-5 px-1 flex items-center justify-center text-[10px]",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: item.badge })
-								})]
-							})
-						}) }, item.title)),
-						hasPortfolioAccess && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collapsible, {
-							defaultOpen: true,
-							className: "group/collapsible",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenuItem, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleTrigger, {
-								asChild: true,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenuButton, {
-									tooltip: t("sidebar.portfolio"),
-									className: "text-black font-medium hover:bg-slate-100",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, { className: "text-black" }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("sidebar.portfolio") }) }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronRight, { className: "ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90 text-black" })
-									]
-								})
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapsibleContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenuSub, { children: [
-								authHasPermission(currentUser, "properties", "view") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubButton, {
-									asChild: true,
-									isActive: isActive("/properties"),
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-										to: "/properties",
-										onClick: handleLinkClick,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("sidebar.units") }) })
-									})
-								}) }),
-								authHasPermission(currentUser, "hotels", "view") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubButton, {
-									asChild: true,
-									isActive: isActive("/hotels"),
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-										to: "/hotels",
-										onClick: handleLinkClick,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("hotels.title") }) })
-									})
-								}) }),
-								authHasPermission(currentUser, "condominiums", "view") && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuSubButton, {
-									asChild: true,
-									isActive: isActive("/condominiums"),
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-										to: "/condominiums",
-										onClick: handleLinkClick,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: t("sidebar.condominiums") }) })
-									})
-								}) })
-							] }) })] })
-						}),
-						visibleMenuItems.filter((item) => item.url !== "/").map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-							asChild: true,
-							isActive: isActive(item.url),
-							tooltip: item.title,
-							className: "text-black font-medium hover:bg-slate-100",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-								to: item.url,
-								onClick: handleLinkClick,
-								className: "flex justify-between items-center w-full",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex items-center gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.title })]
-								}), item.badge !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-									variant: "destructive",
-									className: "h-5 min-w-5 px-1 flex items-center justify-center text-[10px]",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: item.badge })
-								})]
-							})
-						}) }, item.title))
-					] }) })] }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, {
-						className: "mt-auto",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
-							className: cn(isMobile && "text-black", "text-black font-bold"),
-							children: t("sidebar.system")
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenu, { children: [
-							showMigration && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-								asChild: true,
-								isActive: isActive("/admin/migration"),
-								tooltip: t("sidebar.migration_hub"),
-								className: "text-black font-medium hover:bg-slate-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-									to: "/admin/migration",
-									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Database, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.migration_hub") })]
-								})
-							}) }),
-							showPublicity && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-								asChild: true,
-								isActive: isActive("/admin/publicity"),
-								tooltip: t("sidebar.publicity_admin"),
-								className: "text-black font-medium hover:bg-slate-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-									to: "/admin/publicity",
-									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Megaphone, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("sidebar.publicity_admin") })]
-								})
-							}) }),
-							showAnalytics && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-								asChild: true,
-								isActive: isActive("/admin/analytics"),
-								tooltip: t("common.advanced_analytics") || "Advanced Analytics",
-								className: "text-black font-medium hover:bg-slate-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-									to: "/admin/analytics",
-									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChartNoAxesColumn, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("common.advanced_analytics") || "Advanced Analytics" })]
-								})
-							}) }),
-							showAutomation && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-								asChild: true,
-								isActive: isActive("/admin/automation"),
-								tooltip: t("common.automation_rules") || "Automation Rules",
-								className: "text-black font-medium hover:bg-slate-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-									to: "/admin/automation",
-									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Zap, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("common.automation_rules") || "Automation Rules" })]
-								})
-							}) }),
-							showUsers && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-								asChild: true,
-								isActive: isActive("/users"),
-								tooltip: "Usuários",
-								className: "text-black font-medium hover:bg-slate-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-									to: "/users",
-									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Usuários" })]
-								})
-							}) }),
-							showSettings && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-								asChild: true,
-								isActive: isActive("/settings"),
-								tooltip: "Configurações",
-								className: "text-black font-medium hover:bg-slate-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-									to: "/settings",
-									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings$1, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Configurações" })]
-								})
-							}) }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
-								asChild: true,
-								isActive: isActive("/help"),
-								tooltip: t("common.help_hub"),
-								className: "text-black font-medium hover:bg-slate-100",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
-									to: "/help",
-									onClick: handleLinkClick,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("common.help_hub") })]
-								})
-							}) })
-						] }) })]
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarHeader, {
+				className: "p-4 pt-6 pb-2 shrink-0",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Logo, { className: "w-32 mx-auto text-white mb-2" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "text-center mt-2",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "text-[10px] font-bold uppercase tracking-widest text-slate-500 bg-slate-800 px-2 py-1 rounded-full",
+						children: t(`roles.${currentUser?.role}`) || currentUser?.role
 					})
-				]
+				})]
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarFooter, {
-				className: "bg-white",
-				children: [adToShow && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "p-3 mx-2 mb-2 bg-slate-50 rounded-lg border group-data-[collapsible=icon]:hidden relative overflow-hidden group animate-in fade-in duration-500",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-[10px] text-muted-foreground uppercase font-bold mb-1",
-							children: "Sponsored"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "relative h-24 mb-2 rounded-md overflow-hidden",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-								src: adToShow.imageUrl,
-								alt: adToShow.title,
-								crossOrigin: "anonymous",
-								onError: (e) => {
-									e.currentTarget.src = "/placeholder.svg";
-									e.currentTarget.onerror = null;
-								},
-								className: "w-full h-full object-cover transition-transform group-hover:scale-105"
-							})
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-xs font-bold text-slate-900 line-clamp-1",
-							children: adToShow.title
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-							href: adToShow.linkUrl,
-							target: "_blank",
-							rel: "noreferrer",
-							className: "text-xs text-blue-600 hover:underline mt-1 block",
-							children: "Learn more"
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarContent, {
+				className: "custom-scrollbar",
+				children: isPortalUser ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
+					className: "text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2",
+					children: "Portal"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenu, { children: [
+					activePortalItem && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+						asChild: true,
+						isActive: location.pathname === activePortalItem.url || location.pathname === "/",
+						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							to: activePortalItem.url,
+							className: "px-4 py-2.5",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(activePortalItem.icon, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-medium text-sm",
+								children: activePortalItem.title
+							})]
 						})
-					]
-				}, adToShow.id), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenu, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2 p-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
-						className: "h-8 w-8 border border-slate-200",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, { src: currentUser?.avatar }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
-							className: "bg-slate-100 text-black font-bold",
-							children: currentUser?.name?.charAt(0)
-						})]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: cn("flex flex-col text-sm leading-tight group-data-[collapsible=icon]:hidden"),
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "font-bold truncate w-32 text-black",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: currentUser?.name })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: cn("text-xs text-black truncate w-32 font-medium"),
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: currentUser?.email })
-						})]
-					})]
-				}) }) })]
+					}) }),
+					currentUser.role === "property_owner" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+						asChild: true,
+						isActive: location.pathname === "/messages",
+						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							to: "/messages",
+							className: "px-4 py-2.5",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-medium text-sm",
+								children: t("common.messages")
+							})]
+						})
+					}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+						asChild: true,
+						isActive: location.pathname === "/financial",
+						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							to: "/financial",
+							className: "px-4 py-2.5",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-medium text-sm",
+								children: t("sidebar.financial")
+							})]
+						})
+					}) })] }),
+					currentUser.role === "tenant" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+						asChild: true,
+						isActive: location.pathname === "/messages",
+						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							to: "/messages",
+							className: "px-4 py-2.5",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-medium text-sm",
+								children: t("common.messages")
+							})]
+						})
+					}) }),
+					(currentUser.role === "partner" || currentUser.role === "partner_employee") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+						asChild: true,
+						isActive: location.pathname === "/tasks",
+						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							to: "/tasks",
+							className: "px-4 py-2.5",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Wrench, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-medium text-sm",
+								children: t("common.tasks")
+							})]
+						})
+					}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+						asChild: true,
+						isActive: location.pathname === "/messages",
+						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							to: "/messages",
+							className: "px-4 py-2.5",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-medium text-sm",
+								children: t("common.messages")
+							})]
+						})
+					}) })] })
+				] }) })] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+					filteredMain.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
+						className: "text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2",
+						children: t("sidebar.main_menu")
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenu, { children: filteredMain.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+						asChild: true,
+						isActive: location.pathname === item.url,
+						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							to: item.url,
+							className: "px-4 py-2.5",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-medium text-sm",
+								children: item.title
+							})]
+						})
+					}) }, item.title)) }) })] }),
+					filteredOps.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, {
+						className: "mt-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
+							className: "text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2",
+							children: t("common.operations")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenu, { children: filteredOps.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+							asChild: true,
+							isActive: location.pathname === item.url,
+							className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+								to: item.url,
+								className: "px-4 py-2.5",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "font-medium text-sm",
+									children: item.title
+								})]
+							})
+						}) }, item.title)) }) })]
+					}),
+					filteredSystem.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarGroup, {
+						className: "mt-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupLabel, {
+							className: "text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2",
+							children: t("sidebar.system")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarGroupContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenu, { children: filteredSystem.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuButton, {
+							asChild: true,
+							isActive: location.pathname === item.url,
+							className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+								to: item.url,
+								className: "px-4 py-2.5",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "font-medium text-sm",
+									children: item.title
+								})]
+							})
+						}) }, item.title)) }) })]
+					})
+				] })
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarRail, {})
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarFooter, {
+				className: "border-t border-slate-800 p-4 shrink-0 bg-slate-900 z-10",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NavUser, { user: currentUser })
+			})
 		]
 	});
 }
@@ -64602,34 +63300,34 @@ var useDialogScope = createDialogScope();
 var AlertDialog$1 = (props) => {
 	const { __scopeAlertDialog, ...alertDialogProps } = props;
 	const dialogScope = useDialogScope(__scopeAlertDialog);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$8, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$7, {
 		...dialogScope,
 		...alertDialogProps,
 		modal: true
 	});
 };
 AlertDialog$1.displayName = ROOT_NAME;
-var TRIGGER_NAME$2 = "AlertDialogTrigger";
+var TRIGGER_NAME$1 = "AlertDialogTrigger";
 var AlertDialogTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeAlertDialog, ...triggerProps } = props;
 	const dialogScope = useDialogScope(__scopeAlertDialog);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trigger$4, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trigger$3, {
 		...dialogScope,
 		...triggerProps,
 		ref: forwardedRef
 	});
 });
-AlertDialogTrigger$1.displayName = TRIGGER_NAME$2;
-var PORTAL_NAME$1 = "AlertDialogPortal";
+AlertDialogTrigger$1.displayName = TRIGGER_NAME$1;
+var PORTAL_NAME = "AlertDialogPortal";
 var AlertDialogPortal$1 = (props) => {
 	const { __scopeAlertDialog, ...portalProps } = props;
 	const dialogScope = useDialogScope(__scopeAlertDialog);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal$4, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal$3, {
 		...dialogScope,
 		...portalProps
 	});
 };
-AlertDialogPortal$1.displayName = PORTAL_NAME$1;
+AlertDialogPortal$1.displayName = PORTAL_NAME;
 var OVERLAY_NAME = "AlertDialogOverlay";
 var AlertDialogOverlay$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeAlertDialog, ...overlayProps } = props;
@@ -64641,8 +63339,8 @@ var AlertDialogOverlay$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 AlertDialogOverlay$1.displayName = OVERLAY_NAME;
-var CONTENT_NAME$2 = "AlertDialogContent";
-var [AlertDialogContentProvider, useAlertDialogContentContext] = createAlertDialogContext(CONTENT_NAME$2);
+var CONTENT_NAME$1 = "AlertDialogContent";
+var [AlertDialogContentProvider, useAlertDialogContentContext] = createAlertDialogContext(CONTENT_NAME$1);
 var Slottable = /* @__PURE__ */ createSlottable("AlertDialogContent");
 var AlertDialogContent$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeAlertDialog, children, ...contentProps } = props;
@@ -64651,7 +63349,7 @@ var AlertDialogContent$1 = import_react.forwardRef((props, forwardedRef) => {
 	const composedRefs = useComposedRefs(forwardedRef, contentRef);
 	const cancelRef = import_react.useRef(null);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(WarningProvider, {
-		contentName: CONTENT_NAME$2,
+		contentName: CONTENT_NAME$1,
 		titleName: TITLE_NAME,
 		docsSlug: "alert-dialog",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogContentProvider, {
@@ -64673,7 +63371,7 @@ var AlertDialogContent$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-AlertDialogContent$1.displayName = CONTENT_NAME$2;
+AlertDialogContent$1.displayName = CONTENT_NAME$1;
 var TITLE_NAME = "AlertDialogTitle";
 var AlertDialogTitle$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeAlertDialog, ...titleProps } = props;
@@ -64721,11 +63419,11 @@ var AlertDialogCancel$1 = import_react.forwardRef((props, forwardedRef) => {
 });
 AlertDialogCancel$1.displayName = CANCEL_NAME;
 var DescriptionWarning = ({ contentRef }) => {
-	const MESSAGE = `\`${CONTENT_NAME$2}\` requires a description for the component to be accessible for screen reader users.
+	const MESSAGE = `\`${CONTENT_NAME$1}\` requires a description for the component to be accessible for screen reader users.
 
-You can add a description to the \`${CONTENT_NAME$2}\` by passing a \`${DESCRIPTION_NAME}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
+You can add a description to the \`${CONTENT_NAME$1}\` by passing a \`${DESCRIPTION_NAME}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
 
-Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in \`${CONTENT_NAME$2}\`. If the description is confusing or duplicative for sighted users, you can use the \`@radix-ui/react-visually-hidden\` primitive as a wrapper around your description component.
+Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in \`${CONTENT_NAME$1}\`. If the description is confusing or duplicative for sighted users, you can use the \`@radix-ui/react-visually-hidden\` primitive as a wrapper around your description component.
 
 For more information, see https://radix-ui.com/primitives/docs/components/alert-dialog`;
 	import_react.useEffect(() => {
@@ -64733,16 +63431,16 @@ For more information, see https://radix-ui.com/primitives/docs/components/alert-
 	}, [MESSAGE, contentRef]);
 	return null;
 };
-var Root2$3 = AlertDialog$1;
+var Root2$2 = AlertDialog$1;
 var Trigger2 = AlertDialogTrigger$1;
 var Portal2 = AlertDialogPortal$1;
 var Overlay2 = AlertDialogOverlay$1;
-var Content2$1 = AlertDialogContent$1;
+var Content2 = AlertDialogContent$1;
 var Action = AlertDialogAction$1;
 var Cancel = AlertDialogCancel$1;
 var Title2 = AlertDialogTitle$1;
 var Description2 = AlertDialogDescription$1;
-var AlertDialog = Root2$3;
+var AlertDialog = Root2$2;
 var AlertDialogTrigger = Trigger2;
 var AlertDialogPortal = Portal2;
 var AlertDialogOverlay = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Overlay2, {
@@ -64751,12 +63449,12 @@ var AlertDialogOverlay = import_react.forwardRef(({ className, ...props }, ref) 
 	ref
 }));
 AlertDialogOverlay.displayName = Overlay2.displayName;
-var AlertDialogContent = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogPortal, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogOverlay, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2$1, {
+var AlertDialogContent = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogPortal, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogOverlay, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2, {
 	ref,
 	className: cn("fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg", className),
 	...props
 })] }));
-AlertDialogContent.displayName = Content2$1.displayName;
+AlertDialogContent.displayName = Content2.displayName;
 var AlertDialogHeader = ({ className, ...props }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 	className: cn("flex flex-col space-y-2 text-center sm:text-left", className),
 	...props
@@ -64808,7 +63506,7 @@ var Radio = import_react.forwardRef((props, forwardedRef) => {
 			type: "button",
 			role: "radio",
 			"aria-checked": checked,
-			"data-state": getState$2(checked),
+			"data-state": getState$1(checked),
 			"data-disabled": disabled ? "" : void 0,
 			disabled,
 			value,
@@ -64842,7 +63540,7 @@ var RadioIndicator = import_react.forwardRef((props, forwardedRef) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || context.checked,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
-			"data-state": getState$2(context.checked),
+			"data-state": getState$1(context.checked),
 			"data-disabled": context.disabled ? "" : void 0,
 			...indicatorProps,
 			ref: forwardedRef
@@ -64889,7 +63587,7 @@ var RadioBubbleInput = import_react.forwardRef(({ __scopeRadio, control, checked
 	});
 });
 RadioBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
-function getState$2(checked) {
+function getState$1(checked) {
 	return checked ? "checked" : "unchecked";
 }
 var ARROW_KEYS = [
@@ -64920,7 +63618,7 @@ var RadioGroup$1 = import_react.forwardRef((props, forwardedRef) => {
 		disabled,
 		value,
 		onValueChange: setValue,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
 			asChild: true,
 			...rovingFocusGroupScope,
 			orientation,
@@ -64996,17 +63694,17 @@ var RadioGroupIndicator = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 RadioGroupIndicator.displayName = INDICATOR_NAME2;
-var Root2$2 = RadioGroup$1;
+var Root2$1 = RadioGroup$1;
 var Item2 = RadioGroupItem$1;
 var Indicator = RadioGroupIndicator;
 var RadioGroup = import_react.forwardRef(({ className, ...props }, ref) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$2, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$1, {
 		className: cn("grid gap-2", className),
 		...props,
 		ref
 	});
 });
-RadioGroup.displayName = Root2$2.displayName;
+RadioGroup.displayName = Root2$1.displayName;
 var RadioGroupItem = import_react.forwardRef(({ className, ...props }, ref) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Item2, {
 		ref,
@@ -65019,896 +63717,69 @@ var RadioGroupItem = import_react.forwardRef(({ className, ...props }, ref) => {
 	});
 });
 RadioGroupItem.displayName = Item2.displayName;
-var U = 1, Y$1 = .9, H = .8, J = .17, p = .1, u = .999, $ = .9999;
-var k$1 = .99, m = /[\\\/_+.#"@\[\(\{&]/, B$1 = /[\\\/_+.#"@\[\(\{&]/g, K$1 = /[\s-]/, X$1 = /[\s-]/g;
-function G(_$1, C, h, P$1, A, f, O$1) {
-	if (f === C.length) return A === _$1.length ? U : k$1;
-	var T$1 = `${A},${f}`;
-	if (O$1[T$1] !== void 0) return O$1[T$1];
-	for (var L$1 = P$1.charAt(f), c$1 = h.indexOf(L$1, A), S = 0, E$1, N$2, R, M$1; c$1 >= 0;) E$1 = G(_$1, C, h, P$1, c$1 + 1, f + 1, O$1), E$1 > S && (c$1 === A ? E$1 *= U : m.test(_$1.charAt(c$1 - 1)) ? (E$1 *= H, R = _$1.slice(A, c$1 - 1).match(B$1), R && A > 0 && (E$1 *= Math.pow(u, R.length))) : K$1.test(_$1.charAt(c$1 - 1)) ? (E$1 *= Y$1, M$1 = _$1.slice(A, c$1 - 1).match(X$1), M$1 && A > 0 && (E$1 *= Math.pow(u, M$1.length))) : (E$1 *= J, A > 0 && (E$1 *= Math.pow(u, c$1 - A))), _$1.charAt(c$1) !== C.charAt(f) && (E$1 *= $)), (E$1 < p && h.charAt(c$1 - 1) === P$1.charAt(f + 1) || P$1.charAt(f + 1) === P$1.charAt(f) && h.charAt(c$1 - 1) !== P$1.charAt(f)) && (N$2 = G(_$1, C, h, P$1, c$1 + 1, f + 2, O$1), N$2 * p > E$1 && (E$1 = N$2 * p)), E$1 > S && (S = E$1), c$1 = h.indexOf(L$1, c$1 + 1);
-	return O$1[T$1] = S, S;
-}
-function D(_$1) {
-	return _$1.toLowerCase().replace(X$1, " ");
-}
-function W(_$1, C, h) {
-	return _$1 = h && h.length > 0 ? `${_$1 + " " + h.join(" ")}` : _$1, G(_$1, C, D(_$1), D(C), 0, 0, {});
-}
-var N = "[cmdk-group=\"\"]", Y = "[cmdk-group-items=\"\"]", be = "[cmdk-group-heading=\"\"]", le = "[cmdk-item=\"\"]", ce = `${le}:not([aria-disabled="true"])`, Z = "cmdk-item-select", T = "data-value", Re = (r$1, o, n) => W(r$1, o, n), ue = import_react.createContext(void 0), K = () => import_react.useContext(ue), de = import_react.createContext(void 0), ee = () => import_react.useContext(de), fe = import_react.createContext(void 0), me = import_react.forwardRef((r$1, o) => {
-	let n = L(() => {
-		var e, a$1;
-		return {
-			search: "",
-			value: (a$1 = (e = r$1.value) != null ? e : r$1.defaultValue) != null ? a$1 : "",
-			selectedItemId: void 0,
-			filtered: {
-				count: 0,
-				items: /* @__PURE__ */ new Map(),
-				groups: /* @__PURE__ */ new Set()
-			}
-		};
-	}), u$1 = L(() => /* @__PURE__ */ new Set()), c$1 = L(() => /* @__PURE__ */ new Map()), d = L(() => /* @__PURE__ */ new Map()), f = L(() => /* @__PURE__ */ new Set()), p$1 = pe(r$1), { label: b$1, children: m$1, value: R, onValueChange: x$2, filter: C, shouldFilter: S, loop: A, disablePointerSelection: ge = !1, vimBindings: j = !0, ...O$1 } = r$1, $$1 = useId(), q = useId(), _$1 = useId(), I$1 = import_react.useRef(null), v = ke();
-	k(() => {
-		if (R !== void 0) {
-			let e = R.trim();
-			n.current.value = e, E$1.emit();
+function AddressInput({ onAddressSelect, placeholder = "Search address..." }) {
+	const [query, setQuery] = (0, import_react.useState)("");
+	const [results, setResults] = (0, import_react.useState)([]);
+	const [isOpen, setIsOpen] = (0, import_react.useState)(false);
+	const wrapperRef = (0, import_react.useRef)(null);
+	(0, import_react.useEffect)(() => {
+		function handleClickOutside(event) {
+			if (wrapperRef.current && !wrapperRef.current.contains(event.target)) setIsOpen(false);
 		}
-	}, [R]), k(() => {
-		v(6, ne);
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
-	let E$1 = import_react.useMemo(() => ({
-		subscribe: (e) => (f.current.add(e), () => f.current.delete(e)),
-		snapshot: () => n.current,
-		setState: (e, a$1, s$1) => {
-			var i, l, g, y$1;
-			if (!Object.is(n.current[e], a$1)) {
-				if (n.current[e] = a$1, e === "search") J$2(), z$1(), v(1, W$2);
-				else if (e === "value") {
-					if (document.activeElement.hasAttribute("cmdk-input") || document.activeElement.hasAttribute("cmdk-root")) {
-						let h = document.getElementById(_$1);
-						h ? h.focus() : (i = document.getElementById($$1)) == null || i.focus();
-					}
-					if (v(7, () => {
-						var h;
-						n.current.selectedItemId = (h = M$1()) == null ? void 0 : h.id, E$1.emit();
-					}), s$1 || v(5, ne), ((l = p$1.current) == null ? void 0 : l.value) !== void 0) {
-						let h = a$1 != null ? a$1 : "";
-						(y$1 = (g = p$1.current).onValueChange) == null || y$1.call(g, h);
-						return;
-					}
-				}
-				E$1.emit();
-			}
-		},
-		emit: () => {
-			f.current.forEach((e) => e());
-		}
-	}), []), U$2 = import_react.useMemo(() => ({
-		value: (e, a$1, s$1) => {
-			var i;
-			a$1 !== ((i = d.current.get(e)) == null ? void 0 : i.value) && (d.current.set(e, {
-				value: a$1,
-				keywords: s$1
-			}), n.current.filtered.items.set(e, te(a$1, s$1)), v(2, () => {
-				z$1(), E$1.emit();
-			}));
-		},
-		item: (e, a$1) => (u$1.current.add(e), a$1 && (c$1.current.has(a$1) ? c$1.current.get(a$1).add(e) : c$1.current.set(a$1, new Set([e]))), v(3, () => {
-			J$2(), z$1(), n.current.value || W$2(), E$1.emit();
-		}), () => {
-			d.current.delete(e), u$1.current.delete(e), n.current.filtered.items.delete(e);
-			let s$1 = M$1();
-			v(4, () => {
-				J$2(), (s$1 == null ? void 0 : s$1.getAttribute("id")) === e && W$2(), E$1.emit();
-			});
-		}),
-		group: (e) => (c$1.current.has(e) || c$1.current.set(e, /* @__PURE__ */ new Set()), () => {
-			d.current.delete(e), c$1.current.delete(e);
-		}),
-		filter: () => p$1.current.shouldFilter,
-		label: b$1 || r$1["aria-label"],
-		getDisablePointerSelection: () => p$1.current.disablePointerSelection,
-		listId: $$1,
-		inputId: _$1,
-		labelId: q,
-		listInnerRef: I$1
-	}), []);
-	function te(e, a$1) {
-		var i, l;
-		let s$1 = (l = (i = p$1.current) == null ? void 0 : i.filter) != null ? l : Re;
-		return e ? s$1(e, n.current.search, a$1) : 0;
-	}
-	function z$1() {
-		if (!n.current.search || p$1.current.shouldFilter === !1) return;
-		let e = n.current.filtered.items, a$1 = [];
-		n.current.filtered.groups.forEach((i) => {
-			let l = c$1.current.get(i), g = 0;
-			l.forEach((y$1) => {
-				let h = e.get(y$1);
-				g = Math.max(h, g);
-			}), a$1.push([i, g]);
-		});
-		let s$1 = I$1.current;
-		V$1().sort((i, l) => {
-			var h, F;
-			let g = i.getAttribute("id"), y$1 = l.getAttribute("id");
-			return ((h = e.get(y$1)) != null ? h : 0) - ((F = e.get(g)) != null ? F : 0);
-		}).forEach((i) => {
-			let l = i.closest(Y);
-			l ? l.appendChild(i.parentElement === l ? i : i.closest(`${Y} > *`)) : s$1.appendChild(i.parentElement === s$1 ? i : i.closest(`${Y} > *`));
-		}), a$1.sort((i, l) => l[1] - i[1]).forEach((i) => {
-			var g;
-			let l = (g = I$1.current) == null ? void 0 : g.querySelector(`${N}[${T}="${encodeURIComponent(i[0])}"]`);
-			l?.parentElement.appendChild(l);
-		});
-	}
-	function W$2() {
-		let e = V$1().find((s$1) => s$1.getAttribute("aria-disabled") !== "true"), a$1 = e == null ? void 0 : e.getAttribute(T);
-		E$1.setState("value", a$1 || void 0);
-	}
-	function J$2() {
-		var a$1, s$1, i, l;
-		if (!n.current.search || p$1.current.shouldFilter === !1) {
-			n.current.filtered.count = u$1.current.size;
+	const searchAddress = async (text) => {
+		setQuery(text);
+		if (text.length < 3) {
+			setResults([]);
+			setIsOpen(false);
 			return;
 		}
-		n.current.filtered.groups = /* @__PURE__ */ new Set();
-		let e = 0;
-		for (let g of u$1.current) {
-			let F = te((s$1 = (a$1 = d.current.get(g)) == null ? void 0 : a$1.value) != null ? s$1 : "", (l = (i = d.current.get(g)) == null ? void 0 : i.keywords) != null ? l : []);
-			n.current.filtered.items.set(g, F), F > 0 && e++;
+		try {
+			setResults(await (await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(text)}&addressdetails=1&limit=5`)).json());
+			setIsOpen(true);
+		} catch (error) {
+			console.error("Address search error", error);
 		}
-		for (let [g, y$1] of c$1.current) for (let h of y$1) if (n.current.filtered.items.get(h) > 0) {
-			n.current.filtered.groups.add(g);
-			break;
-		}
-		n.current.filtered.count = e;
-	}
-	function ne() {
-		var a$1, s$1, i;
-		let e = M$1();
-		e && (((a$1 = e.parentElement) == null ? void 0 : a$1.firstChild) === e && ((i = (s$1 = e.closest(N)) == null ? void 0 : s$1.querySelector(be)) == null || i.scrollIntoView({ block: "nearest" })), e.scrollIntoView({ block: "nearest" }));
-	}
-	function M$1() {
-		var e;
-		return (e = I$1.current) == null ? void 0 : e.querySelector(`${le}[aria-selected="true"]`);
-	}
-	function V$1() {
-		var e;
-		return Array.from(((e = I$1.current) == null ? void 0 : e.querySelectorAll(ce)) || []);
-	}
-	function X$2(e) {
-		let s$1 = V$1()[e];
-		s$1 && E$1.setState("value", s$1.getAttribute(T));
-	}
-	function Q(e) {
-		var g;
-		let a$1 = M$1(), s$1 = V$1(), i = s$1.findIndex((y$1) => y$1 === a$1), l = s$1[i + e];
-		(g = p$1.current) != null && g.loop && (l = i + e < 0 ? s$1[s$1.length - 1] : i + e === s$1.length ? s$1[0] : s$1[i + e]), l && E$1.setState("value", l.getAttribute(T));
-	}
-	function re$2(e) {
-		let a$1 = M$1(), s$1 = a$1 == null ? void 0 : a$1.closest(N), i;
-		for (; s$1 && !i;) s$1 = e > 0 ? we(s$1, N) : De(s$1, N), i = s$1 == null ? void 0 : s$1.querySelector(ce);
-		i ? E$1.setState("value", i.getAttribute(T)) : Q(e);
-	}
-	let oe = () => X$2(V$1().length - 1), ie = (e) => {
-		e.preventDefault(), e.metaKey ? oe() : e.altKey ? re$2(1) : Q(1);
-	}, se = (e) => {
-		e.preventDefault(), e.metaKey ? X$2(0) : e.altKey ? re$2(-1) : Q(-1);
 	};
-	return import_react.createElement(Primitive$1.div, {
-		ref: o,
-		tabIndex: -1,
-		...O$1,
-		"cmdk-root": "",
-		onKeyDown: (e) => {
-			var s$1;
-			(s$1 = O$1.onKeyDown) == null || s$1.call(O$1, e);
-			let a$1 = e.nativeEvent.isComposing || e.keyCode === 229;
-			if (!(e.defaultPrevented || a$1)) switch (e.key) {
-				case "n":
-				case "j":
-					j && e.ctrlKey && ie(e);
-					break;
-				case "ArrowDown":
-					ie(e);
-					break;
-				case "p":
-				case "k":
-					j && e.ctrlKey && se(e);
-					break;
-				case "ArrowUp":
-					se(e);
-					break;
-				case "Home":
-					e.preventDefault(), X$2(0);
-					break;
-				case "End":
-					e.preventDefault(), oe();
-					break;
-				case "Enter": {
-					e.preventDefault();
-					let i = M$1();
-					if (i) {
-						let l = new Event(Z);
-						i.dispatchEvent(l);
-					}
+	const handleSelect = (item) => {
+		const addr = item.address;
+		const data = {
+			street: addr.road || addr.pedestrian || addr.suburb || "",
+			city: addr.city || addr.town || addr.village || "",
+			state: addr.state || "",
+			zipCode: addr.postcode || "",
+			country: addr.country || ""
+		};
+		if (data.country === "United States" || data.country === "Estados Unidos") data.country = "USA";
+		if (data.country === "Brasil") data.country = "Brazil";
+		if (data.country === "España") data.country = "Spain";
+		setQuery(item.display_name);
+		setIsOpen(false);
+		onAddressSelect(data);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		ref: wrapperRef,
+		className: "relative w-full",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "relative",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-3 top-2.5 h-4 w-4 text-slate-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+				value: query,
+				onChange: (e) => searchAddress(e.target.value),
+				placeholder,
+				className: "pl-9 bg-white text-black",
+				onFocus: () => {
+					if (results.length > 0) setIsOpen(true);
 				}
-			}
-		}
-	}, import_react.createElement("label", {
-		"cmdk-label": "",
-		htmlFor: U$2.inputId,
-		id: U$2.labelId,
-		style: Te
-	}, b$1), B(r$1, (e) => import_react.createElement(de.Provider, { value: E$1 }, import_react.createElement(ue.Provider, { value: U$2 }, e))));
-}), he = import_react.forwardRef((r$1, o) => {
-	var _$1, I$1;
-	let n = useId(), u$1 = import_react.useRef(null), c$1 = import_react.useContext(fe), d = K(), f = pe(r$1), p$1 = (I$1 = (_$1 = f.current) == null ? void 0 : _$1.forceMount) != null ? I$1 : c$1 == null ? void 0 : c$1.forceMount;
-	k(() => {
-		if (!p$1) return d.item(n, c$1 == null ? void 0 : c$1.id);
-	}, [p$1]);
-	let b$1 = ve(n, u$1, [
-		r$1.value,
-		r$1.children,
-		u$1
-	], r$1.keywords), m$1 = ee(), R = P((v) => v.value && v.value === b$1.current), x$2 = P((v) => p$1 || d.filter() === !1 ? !0 : v.search ? v.filtered.items.get(n) > 0 : !0);
-	import_react.useEffect(() => {
-		let v = u$1.current;
-		if (!(!v || r$1.disabled)) return v.addEventListener(Z, C), () => v.removeEventListener(Z, C);
-	}, [
-		x$2,
-		r$1.onSelect,
-		r$1.disabled
-	]);
-	function C() {
-		var v, E$1;
-		S(), (E$1 = (v = f.current).onSelect) == null || E$1.call(v, b$1.current);
-	}
-	function S() {
-		m$1.setState("value", b$1.current, !0);
-	}
-	if (!x$2) return null;
-	let { disabled: A, value: ge, onSelect: j, forceMount: O$1, keywords: $$1, ...q } = r$1;
-	return import_react.createElement(Primitive$1.div, {
-		ref: composeRefs(u$1, o),
-		...q,
-		id: n,
-		"cmdk-item": "",
-		role: "option",
-		"aria-disabled": !!A,
-		"aria-selected": !!R,
-		"data-disabled": !!A,
-		"data-selected": !!R,
-		onPointerMove: A || d.getDisablePointerSelection() ? void 0 : S,
-		onClick: A ? void 0 : C
-	}, r$1.children);
-}), Ee = import_react.forwardRef((r$1, o) => {
-	let { heading: n, children: u$1, forceMount: c$1, ...d } = r$1, f = useId(), p$1 = import_react.useRef(null), b$1 = import_react.useRef(null), m$1 = useId(), R = K(), x$2 = P((S) => c$1 || R.filter() === !1 ? !0 : S.search ? S.filtered.groups.has(f) : !0);
-	k(() => R.group(f), []), ve(f, p$1, [
-		r$1.value,
-		r$1.heading,
-		b$1
-	]);
-	let C = import_react.useMemo(() => ({
-		id: f,
-		forceMount: c$1
-	}), [c$1]);
-	return import_react.createElement(Primitive$1.div, {
-		ref: composeRefs(p$1, o),
-		...d,
-		"cmdk-group": "",
-		role: "presentation",
-		hidden: x$2 ? void 0 : !0
-	}, n && import_react.createElement("div", {
-		ref: b$1,
-		"cmdk-group-heading": "",
-		"aria-hidden": !0,
-		id: m$1
-	}, n), B(r$1, (S) => import_react.createElement("div", {
-		"cmdk-group-items": "",
-		role: "group",
-		"aria-labelledby": n ? m$1 : void 0
-	}, import_react.createElement(fe.Provider, { value: C }, S))));
-}), ye = import_react.forwardRef((r$1, o) => {
-	let { alwaysRender: n, ...u$1 } = r$1, c$1 = import_react.useRef(null), d = P((f) => !f.search);
-	return !n && !d ? null : import_react.createElement(Primitive$1.div, {
-		ref: composeRefs(c$1, o),
-		...u$1,
-		"cmdk-separator": "",
-		role: "separator"
-	});
-}), Se = import_react.forwardRef((r$1, o) => {
-	let { onValueChange: n, ...u$1 } = r$1, c$1 = r$1.value != null, d = ee(), f = P((m$1) => m$1.search), p$1 = P((m$1) => m$1.selectedItemId), b$1 = K();
-	return import_react.useEffect(() => {
-		r$1.value != null && d.setState("search", r$1.value);
-	}, [r$1.value]), import_react.createElement(Primitive$1.input, {
-		ref: o,
-		...u$1,
-		"cmdk-input": "",
-		autoComplete: "off",
-		autoCorrect: "off",
-		spellCheck: !1,
-		"aria-autocomplete": "list",
-		role: "combobox",
-		"aria-expanded": !0,
-		"aria-controls": b$1.listId,
-		"aria-labelledby": b$1.labelId,
-		"aria-activedescendant": p$1,
-		id: b$1.inputId,
-		type: "text",
-		value: c$1 ? r$1.value : f,
-		onChange: (m$1) => {
-			c$1 || d.setState("search", m$1.target.value), n?.(m$1.target.value);
-		}
-	});
-}), Ce = import_react.forwardRef((r$1, o) => {
-	let { children: n, label: u$1 = "Suggestions", ...c$1 } = r$1, d = import_react.useRef(null), f = import_react.useRef(null), p$1 = P((m$1) => m$1.selectedItemId), b$1 = K();
-	return import_react.useEffect(() => {
-		if (f.current && d.current) {
-			let m$1 = f.current, R = d.current, x$2, C = new ResizeObserver(() => {
-				x$2 = requestAnimationFrame(() => {
-					let S = m$1.offsetHeight;
-					R.style.setProperty("--cmdk-list-height", S.toFixed(1) + "px");
-				});
-			});
-			return C.observe(m$1), () => {
-				cancelAnimationFrame(x$2), C.unobserve(m$1);
-			};
-		}
-	}, []), import_react.createElement(Primitive$1.div, {
-		ref: composeRefs(d, o),
-		...c$1,
-		"cmdk-list": "",
-		role: "listbox",
-		tabIndex: -1,
-		"aria-activedescendant": p$1,
-		"aria-label": u$1,
-		id: b$1.listId
-	}, B(r$1, (m$1) => import_react.createElement("div", {
-		ref: composeRefs(f, b$1.listInnerRef),
-		"cmdk-list-sizer": ""
-	}, m$1)));
-}), xe = import_react.forwardRef((r$1, o) => {
-	let { open: n, onOpenChange: u$1, overlayClassName: c$1, contentClassName: d, container: f, ...p$1 } = r$1;
-	return import_react.createElement(Root$8, {
-		open: n,
-		onOpenChange: u$1
-	}, import_react.createElement(Portal$4, { container: f }, import_react.createElement(Overlay, {
-		"cmdk-overlay": "",
-		className: c$1
-	}), import_react.createElement(Content$1, {
-		"aria-label": r$1.label,
-		"cmdk-dialog": "",
-		className: d
-	}, import_react.createElement(me, {
-		ref: o,
-		...p$1
-	}))));
-}), Ie = import_react.forwardRef((r$1, o) => P((u$1) => u$1.filtered.count === 0) ? import_react.createElement(Primitive$1.div, {
-	ref: o,
-	...r$1,
-	"cmdk-empty": "",
-	role: "presentation"
-}) : null), Pe = import_react.forwardRef((r$1, o) => {
-	let { progress: n, children: u$1, label: c$1 = "Loading...", ...d } = r$1;
-	return import_react.createElement(Primitive$1.div, {
-		ref: o,
-		...d,
-		"cmdk-loading": "",
-		role: "progressbar",
-		"aria-valuenow": n,
-		"aria-valuemin": 0,
-		"aria-valuemax": 100,
-		"aria-label": c$1
-	}, B(r$1, (f) => import_react.createElement("div", { "aria-hidden": !0 }, f)));
-}), _e = Object.assign(me, {
-	List: Ce,
-	Item: he,
-	Input: Se,
-	Group: Ee,
-	Separator: ye,
-	Dialog: xe,
-	Empty: Ie,
-	Loading: Pe
-});
-function we(r$1, o) {
-	let n = r$1.nextElementSibling;
-	for (; n;) {
-		if (n.matches(o)) return n;
-		n = n.nextElementSibling;
-	}
-}
-function De(r$1, o) {
-	let n = r$1.previousElementSibling;
-	for (; n;) {
-		if (n.matches(o)) return n;
-		n = n.previousElementSibling;
-	}
-}
-function pe(r$1) {
-	let o = import_react.useRef(r$1);
-	return k(() => {
-		o.current = r$1;
-	}), o;
-}
-var k = typeof window == "undefined" ? import_react.useEffect : import_react.useLayoutEffect;
-function L(r$1) {
-	let o = import_react.useRef();
-	return o.current === void 0 && (o.current = r$1()), o;
-}
-function P(r$1) {
-	let o = ee(), n = () => r$1(o.snapshot());
-	return import_react.useSyncExternalStore(o.subscribe, n, n);
-}
-function ve(r$1, o, n, u$1 = []) {
-	let c$1 = import_react.useRef(), d = K();
-	return k(() => {
-		var b$1;
-		let f = (() => {
-			var m$1;
-			for (let R of n) {
-				if (typeof R == "string") return R.trim();
-				if (typeof R == "object" && "current" in R) return R.current ? (m$1 = R.current.textContent) == null ? void 0 : m$1.trim() : c$1.current;
-			}
-		})(), p$1 = u$1.map((m$1) => m$1.trim());
-		d.value(r$1, f, p$1), (b$1 = o.current) == null || b$1.setAttribute(T, f), c$1.current = f;
-	}), c$1;
-}
-var ke = () => {
-	let [r$1, o] = import_react.useState(), n = L(() => /* @__PURE__ */ new Map());
-	return k(() => {
-		n.current.forEach((u$1) => u$1()), n.current = /* @__PURE__ */ new Map();
-	}, [r$1]), (u$1, c$1) => {
-		n.current.set(u$1, c$1), o({});
-	};
-};
-function Me(r$1) {
-	let o = r$1.type;
-	return typeof o == "function" ? o(r$1.props) : "render" in o ? o.render(r$1.props) : r$1;
-}
-function B({ asChild: r$1, children: o }, n) {
-	return r$1 && import_react.isValidElement(o) ? import_react.cloneElement(Me(o), { ref: o.ref }, n(o.props.children)) : n(o);
-}
-var Te = {
-	position: "absolute",
-	width: "1px",
-	height: "1px",
-	padding: "0",
-	margin: "-1px",
-	overflow: "hidden",
-	clip: "rect(0, 0, 0, 0)",
-	whiteSpace: "nowrap",
-	borderWidth: "0"
-};
-var Command = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(_e, {
-	ref,
-	className: cn("flex h-full w-full flex-col overflow-hidden rounded-md bg-white text-popover-foreground", className),
-	...props
-}));
-Command.displayName = _e.displayName;
-var CommandInput = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-	className: "flex items-center border-b px-3",
-	"cmdk-input-wrapper": "",
-	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "mr-2 h-4 w-4 shrink-0 opacity-50 text-black" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(_e.Input, {
-		ref,
-		className: cn("flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 text-black", className),
-		...props
-	})]
-}));
-CommandInput.displayName = _e.Input.displayName;
-var CommandList = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(_e.List, {
-	ref,
-	className: cn("max-h-[300px] overflow-y-auto overflow-x-hidden bg-white", className),
-	...props
-}));
-CommandList.displayName = _e.List.displayName;
-var CommandEmpty = import_react.forwardRef((props, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(_e.Empty, {
-	ref,
-	className: "py-6 text-center text-sm text-black",
-	...props
-}));
-CommandEmpty.displayName = _e.Empty.displayName;
-var CommandGroup = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(_e.Group, {
-	ref,
-	className: cn("overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground", className),
-	...props
-}));
-CommandGroup.displayName = _e.Group.displayName;
-var CommandSeparator = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(_e.Separator, {
-	ref,
-	className: cn("-mx-1 h-px bg-slate-200", className),
-	...props
-}));
-CommandSeparator.displayName = _e.Separator.displayName;
-var CommandItem = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(_e.Item, {
-	ref,
-	className: cn("relative flex cursor-default gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected='true']:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-black hover:bg-slate-100 data-[selected='true']:bg-slate-100", className),
-	...props
-}));
-CommandItem.displayName = _e.Item.displayName;
-var CommandShortcut = ({ className, ...props }) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-		className: cn("ml-auto text-xs tracking-widest text-muted-foreground", className),
-		...props
-	});
-};
-CommandShortcut.displayName = "CommandShortcut";
-var POPOVER_NAME = "Popover";
-var [createPopoverContext, createPopoverScope] = createContextScope(POPOVER_NAME, [createPopperScope]);
-var usePopperScope = createPopperScope();
-var [PopoverProvider, usePopoverContext] = createPopoverContext(POPOVER_NAME);
-var Popover$1 = (props) => {
-	const { __scopePopover, children, open: openProp, defaultOpen, onOpenChange, modal = false } = props;
-	const popperScope = usePopperScope(__scopePopover);
-	const triggerRef = import_react.useRef(null);
-	const [hasCustomAnchor, setHasCustomAnchor] = import_react.useState(false);
-	const [open, setOpen] = useControllableState({
-		prop: openProp,
-		defaultProp: defaultOpen ?? false,
-		onChange: onOpenChange,
-		caller: POPOVER_NAME
-	});
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$6, {
-		...popperScope,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverProvider, {
-			scope: __scopePopover,
-			contentId: useId(),
-			triggerRef,
-			open,
-			onOpenChange: setOpen,
-			onOpenToggle: import_react.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen]),
-			hasCustomAnchor,
-			onCustomAnchorAdd: import_react.useCallback(() => setHasCustomAnchor(true), []),
-			onCustomAnchorRemove: import_react.useCallback(() => setHasCustomAnchor(false), []),
-			modal,
-			children
-		})
-	});
-};
-Popover$1.displayName = POPOVER_NAME;
-var ANCHOR_NAME = "PopoverAnchor";
-var PopoverAnchor = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopePopover, ...anchorProps } = props;
-	const context = usePopoverContext(ANCHOR_NAME, __scopePopover);
-	const popperScope = usePopperScope(__scopePopover);
-	const { onCustomAnchorAdd, onCustomAnchorRemove } = context;
-	import_react.useEffect(() => {
-		onCustomAnchorAdd();
-		return () => onCustomAnchorRemove();
-	}, [onCustomAnchorAdd, onCustomAnchorRemove]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Anchor, {
-		...popperScope,
-		...anchorProps,
-		ref: forwardedRef
-	});
-});
-PopoverAnchor.displayName = ANCHOR_NAME;
-var TRIGGER_NAME$1 = "PopoverTrigger";
-var PopoverTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopePopover, ...triggerProps } = props;
-	const context = usePopoverContext(TRIGGER_NAME$1, __scopePopover);
-	const popperScope = usePopperScope(__scopePopover);
-	const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
-	const trigger = /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
-		type: "button",
-		"aria-haspopup": "dialog",
-		"aria-expanded": context.open,
-		"aria-controls": context.contentId,
-		"data-state": getState$1(context.open),
-		...triggerProps,
-		ref: composedTriggerRef,
-		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
-	});
-	return context.hasCustomAnchor ? trigger : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Anchor, {
-		asChild: true,
-		...popperScope,
-		children: trigger
-	});
-});
-PopoverTrigger$1.displayName = TRIGGER_NAME$1;
-var PORTAL_NAME = "PopoverPortal";
-var [PortalProvider, usePortalContext] = createPopoverContext(PORTAL_NAME, { forceMount: void 0 });
-var PopoverPortal = (props) => {
-	const { __scopePopover, forceMount, children, container } = props;
-	const context = usePopoverContext(PORTAL_NAME, __scopePopover);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PortalProvider, {
-		scope: __scopePopover,
-		forceMount,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
-			present: forceMount || context.open,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal, {
-				asChild: true,
-				container,
-				children
-			})
-		})
-	});
-};
-PopoverPortal.displayName = PORTAL_NAME;
-var CONTENT_NAME$1 = "PopoverContent";
-var PopoverContent$1 = import_react.forwardRef((props, forwardedRef) => {
-	const portalContext = usePortalContext(CONTENT_NAME$1, props.__scopePopover);
-	const { forceMount = portalContext.forceMount, ...contentProps } = props;
-	const context = usePopoverContext(CONTENT_NAME$1, props.__scopePopover);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
-		present: forceMount || context.open,
-		children: context.modal ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContentModal, {
-			...contentProps,
-			ref: forwardedRef
-		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContentNonModal, {
-			...contentProps,
-			ref: forwardedRef
-		})
-	});
-});
-PopoverContent$1.displayName = CONTENT_NAME$1;
-var Slot = /* @__PURE__ */ createSlot("PopoverContent.RemoveScroll");
-var PopoverContentModal = import_react.forwardRef((props, forwardedRef) => {
-	const context = usePopoverContext(CONTENT_NAME$1, props.__scopePopover);
-	const contentRef = import_react.useRef(null);
-	const composedRefs = useComposedRefs(forwardedRef, contentRef);
-	const isRightClickOutsideRef = import_react.useRef(false);
-	import_react.useEffect(() => {
-		const content = contentRef.current;
-		if (content) return hideOthers(content);
-	}, []);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Combination_default, {
-		as: Slot,
-		allowPinchZoom: true,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContentImpl, {
-			...props,
-			ref: composedRefs,
-			trapFocus: context.open,
-			disableOutsidePointerEvents: true,
-			onCloseAutoFocus: composeEventHandlers(props.onCloseAutoFocus, (event) => {
-				event.preventDefault();
-				if (!isRightClickOutsideRef.current) context.triggerRef.current?.focus();
-			}),
-			onPointerDownOutside: composeEventHandlers(props.onPointerDownOutside, (event) => {
-				const originalEvent = event.detail.originalEvent;
-				const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-				isRightClickOutsideRef.current = originalEvent.button === 2 || ctrlLeftClick;
-			}, { checkForDefaultPrevented: false }),
-			onFocusOutside: composeEventHandlers(props.onFocusOutside, (event) => event.preventDefault(), { checkForDefaultPrevented: false })
-		})
-	});
-});
-var PopoverContentNonModal = import_react.forwardRef((props, forwardedRef) => {
-	const context = usePopoverContext(CONTENT_NAME$1, props.__scopePopover);
-	const hasInteractedOutsideRef = import_react.useRef(false);
-	const hasPointerDownOutsideRef = import_react.useRef(false);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContentImpl, {
-		...props,
-		ref: forwardedRef,
-		trapFocus: false,
-		disableOutsidePointerEvents: false,
-		onCloseAutoFocus: (event) => {
-			props.onCloseAutoFocus?.(event);
-			if (!event.defaultPrevented) {
-				if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
-				event.preventDefault();
-			}
-			hasInteractedOutsideRef.current = false;
-			hasPointerDownOutsideRef.current = false;
-		},
-		onInteractOutside: (event) => {
-			props.onInteractOutside?.(event);
-			if (!event.defaultPrevented) {
-				hasInteractedOutsideRef.current = true;
-				if (event.detail.originalEvent.type === "pointerdown") hasPointerDownOutsideRef.current = true;
-			}
-			const target = event.target;
-			if (context.triggerRef.current?.contains(target)) event.preventDefault();
-			if (event.detail.originalEvent.type === "focusin" && hasPointerDownOutsideRef.current) event.preventDefault();
-		}
-	});
-});
-var PopoverContentImpl = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopePopover, trapFocus, onOpenAutoFocus, onCloseAutoFocus, disableOutsidePointerEvents, onEscapeKeyDown, onPointerDownOutside, onFocusOutside, onInteractOutside, ...contentProps } = props;
-	const context = usePopoverContext(CONTENT_NAME$1, __scopePopover);
-	const popperScope = usePopperScope(__scopePopover);
-	useFocusGuards();
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FocusScope, {
-		asChild: true,
-		loop: true,
-		trapped: trapFocus,
-		onMountAutoFocus: onOpenAutoFocus,
-		onUnmountAutoFocus: onCloseAutoFocus,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DismissableLayer, {
-			asChild: true,
-			disableOutsidePointerEvents,
-			onInteractOutside,
-			onEscapeKeyDown,
-			onPointerDownOutside,
-			onFocusOutside,
-			onDismiss: () => context.onOpenChange(false),
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content$2, {
-				"data-state": getState$1(context.open),
-				role: "dialog",
-				id: context.contentId,
-				...popperScope,
-				...contentProps,
-				ref: forwardedRef,
-				style: {
-					...contentProps.style,
-					"--radix-popover-content-transform-origin": "var(--radix-popper-transform-origin)",
-					"--radix-popover-content-available-width": "var(--radix-popper-available-width)",
-					"--radix-popover-content-available-height": "var(--radix-popper-available-height)",
-					"--radix-popover-trigger-width": "var(--radix-popper-anchor-width)",
-					"--radix-popover-trigger-height": "var(--radix-popper-anchor-height)"
-				}
-			})
-		})
-	});
-});
-var CLOSE_NAME = "PopoverClose";
-var PopoverClose = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopePopover, ...closeProps } = props;
-	const context = usePopoverContext(CLOSE_NAME, __scopePopover);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
-		type: "button",
-		...closeProps,
-		ref: forwardedRef,
-		onClick: composeEventHandlers(props.onClick, () => context.onOpenChange(false))
-	});
-});
-PopoverClose.displayName = CLOSE_NAME;
-var ARROW_NAME = "PopoverArrow";
-var PopoverArrow = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopePopover, ...arrowProps } = props;
-	const popperScope = usePopperScope(__scopePopover);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Arrow, {
-		...popperScope,
-		...arrowProps,
-		ref: forwardedRef
-	});
-});
-PopoverArrow.displayName = ARROW_NAME;
-function getState$1(open) {
-	return open ? "open" : "closed";
-}
-var Root2$1 = Popover$1;
-var Trigger$1 = PopoverTrigger$1;
-var Portal$1 = PopoverPortal;
-var Content2 = PopoverContent$1;
-var Popover = Root2$1;
-var PopoverTrigger = Trigger$1;
-var PopoverContent = import_react.forwardRef(({ className, align = "center", sideOffset = 4, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2, {
-	ref,
-	align,
-	sideOffset,
-	className: cn("z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-popover-content-transform-origin]", className),
-	...props
-}) }));
-PopoverContent.displayName = Content2.displayName;
-var MOCK_ADDRESSES = [
-	{
-		label: "123 Palm Street, Orlando, FL",
-		data: {
-			street: "123 Palm Street",
-			city: "Orlando",
-			state: "FL",
-			zipCode: "32801",
-			country: "USA",
-			community: "Sunny Isles",
-			neighborhood: "Downtown"
-		}
-	},
-	{
-		label: "450 Brickell Ave, Miami, FL",
-		data: {
-			street: "450 Brickell Ave",
-			city: "Miami",
-			state: "FL",
-			zipCode: "33131",
-			country: "USA",
-			community: "Brickell Heights",
-			neighborhood: "Brickell"
-		}
-	},
-	{
-		label: "800 Ocean Drive, Miami Beach, FL",
-		data: {
-			street: "800 Ocean Drive",
-			city: "Miami Beach",
-			state: "FL",
-			zipCode: "33139",
-			country: "USA",
-			community: "Art Deco District",
-			neighborhood: "South Beach"
-		}
-	},
-	{
-		label: "Av. Paulista 1000, São Paulo, SP",
-		data: {
-			street: "Av. Paulista 1000",
-			city: "São Paulo",
-			state: "SP",
-			zipCode: "01310-100",
-			country: "Brazil",
-			community: "Bela Vista",
-			neighborhood: "Bela Vista"
-		}
-	}
-];
-function AddressInput({ onAddressSelect, defaultValue = "", className, disabled }) {
-	const [open, setOpen] = import_react.useState(false);
-	const [value, setValue] = import_react.useState(defaultValue);
-	const [loading, setLoading] = import_react.useState(false);
-	const [suggestions, setSuggestions] = import_react.useState(MOCK_ADDRESSES);
-	const handleSelect = (addr) => {
-		setValue(addr.label);
-		onAddressSelect(addr.data);
-		setOpen(false);
-	};
-	const handleSearch = (term) => {
-		setLoading(true);
-		setTimeout(() => {
-			setSuggestions(MOCK_ADDRESSES.filter((addr) => addr.label.toLowerCase().includes(term.toLowerCase())));
-			setLoading(false);
-		}, 500);
-	};
-	import_react.useEffect(() => {
-		if (defaultValue) setValue(defaultValue);
-	}, [defaultValue]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, {
-		open,
-		onOpenChange: setOpen,
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
-			asChild: true,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "relative w-full group",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					value,
-					onChange: (e) => {
-						setValue(e.target.value);
-						handleSearch(e.target.value);
-						setOpen(true);
-					},
-					disabled,
-					className: cn("pr-8 transition-shadow focus:ring-2 bg-white text-black", className),
-					placeholder: "Search address (e.g. 123 Main St)",
-					role: "combobox",
-					"aria-expanded": open
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "absolute right-2.5 top-2.5 h-4 w-4 text-muted-foreground opacity-50 group-focus-within:opacity-100 transition-opacity" })]
-			})
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContent, {
-			className: "w-[300px] p-0 bg-white",
-			align: "start",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Command, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandInput, {
-				placeholder: "Type address...",
-				className: "h-9 bg-white text-black",
-				onValueChange: handleSearch
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandList, { children: loading ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "py-6 text-center text-sm text-black flex items-center justify-center gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "h-4 w-4 animate-spin" }), " Searching..."]
-			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandEmpty, {
-				className: "text-black",
-				children: "No address found."
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
-				heading: "Suggestions",
-				className: "text-black",
-				children: suggestions.map((addr) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
-					value: addr.label,
-					onSelect: () => handleSelect(addr),
-					className: "cursor-pointer hover:bg-slate-100 text-black",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "mr-2 h-4 w-4 text-muted-foreground" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex flex-col",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "font-medium text-black",
-								children: addr.label
-							}), addr.data.community && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-[10px] text-muted-foreground",
-								children: addr.data.community
-							})]
-						}),
-						value === addr.label && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "ml-auto h-4 w-4 opacity-100 text-black" })
-					]
-				}, addr.label))
-			})] }) })] })
+			})]
+		}), isOpen && results.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto",
+			children: results.map((item, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "p-2 text-sm hover:bg-slate-100 cursor-pointer border-b last:border-0 text-black",
+				onClick: () => handleSelect(item),
+				children: item.display_name
+			}, i))
 		})]
 	});
 }
@@ -65951,17 +63822,17 @@ function Properties() {
 		listingPrice: 0,
 		hoaValue: 0
 	});
-	const filteredProperties = properties$1.filter((p$1) => {
-		if (currentUser && "allowedProfileTypes" in currentUser && Array.isArray(currentUser.allowedProfileTypes) && !currentUser.allowedProfileTypes.includes(p$1.profileType)) return false;
+	const filteredProperties = properties$1.filter((p) => {
+		if (currentUser && "allowedProfileTypes" in currentUser && Array.isArray(currentUser.allowedProfileTypes) && !currentUser.allowedProfileTypes.includes(p.profileType)) return false;
 		return true;
-	}).filter((p$1) => {
-		const pName = p$1.name || "";
-		const pAddress = p$1.address || "";
-		const condoName = condominiums$1.find((c$1) => c$1.id === p$1.condominiumId)?.name || "";
-		const hotelName = hotels$1.find((h) => h.id === p$1.hotelId)?.name || "";
+	}).filter((p) => {
+		const pName = p.name || "";
+		const pAddress = p.address || "";
+		const condoName = condominiums$1.find((c$1) => c$1.id === p.condominiumId)?.name || "";
+		const hotelName = hotels$1.find((h) => h.id === p.hotelId)?.name || "";
 		const matchesFilter = pName.toLowerCase().includes(filter.toLowerCase()) || pAddress.toLowerCase().includes(filter.toLowerCase()) || condoName.toLowerCase().includes(filter.toLowerCase()) || hotelName.toLowerCase().includes(filter.toLowerCase());
-		const matchesStatus = statusFilter === "all" || p$1.status === statusFilter;
-		const matchesProfile = profileFilter === "all" || p$1.profileType === profileFilter;
+		const matchesStatus = statusFilter === "all" || p.status === statusFilter;
+		const matchesProfile = profileFilter === "all" || p.profileType === profileFilter;
 		return matchesFilter && matchesStatus && matchesProfile;
 	});
 	const getStatusColor = (status) => {
@@ -66052,7 +63923,7 @@ function Properties() {
 		if (selectedHotel) comm = selectedHotel.name;
 		else if (selectedCondo) comm = selectedCondo.name;
 		if (editingId) {
-			const existing = properties$1.find((p$1) => p$1.id === editingId);
+			const existing = properties$1.find((p) => p.id === editingId);
 			if (existing) {
 				updateProperty({
 					...existing,
@@ -66819,7 +64690,7 @@ var TabsList$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTabs, loop = true, ...listProps } = props;
 	const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
 	const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
 		asChild: true,
 		...rovingFocusGroupScope,
 		orientation: context.orientation,
@@ -66935,307 +64806,43 @@ var TabsContent = import_react.forwardRef(({ className, ...props }, ref) => /* @
 	...props
 }));
 TabsContent.displayName = Content.displayName;
-var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
-		className: cn("flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50", className),
-		ref,
-		...props
-	});
-});
-Textarea.displayName = "Textarea";
-function FileUpload({ value, onChange, label, accept, disabled }) {
-	const { t } = useLanguageStore_default();
-	const inputRef = (0, import_react.useRef)(null);
-	const handleFileChange = (e) => {
-		const file = e.target.files?.[0];
-		if (file) onChange(URL.createObjectURL(file));
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "flex flex-col gap-2",
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: label || t("common.upload") }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex gap-2 items-center",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-					type: "file",
-					ref: inputRef,
-					className: "hidden",
-					accept,
-					onChange: handleFileChange,
-					disabled
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-					type: "button",
-					variant: "outline",
-					onClick: () => inputRef.current?.click(),
-					disabled,
-					className: "w-full bg-white hover:bg-slate-50 border-slate-200 shadow-sm",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "h-4 w-4 mr-2" }),
-						" ",
-						t("common.upload")
-					]
-				})]
-			}),
-			value && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "text-xs text-emerald-600 truncate mt-1 flex items-center gap-1 font-medium",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-1.5 rounded-full bg-emerald-500" }), t("common.success")]
-			})
-		]
-	});
-}
 function PropertyOverview({ data, onChange, canEdit }) {
-	const { t, language } = useLanguageStore_default();
-	const score = data.healthScore || 80;
-	const locale$2 = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-		className: "bg-white",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-			className: "flex flex-row justify-between items-start",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-				className: "text-black",
-				children: t("properties.overview") || "Overview"
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
-				variant: "outline",
-				className: "flex items-center gap-1 px-3 py-1 bg-white border-slate-200",
+		className: "border-slate-200 shadow-sm bg-white",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Basic Information" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+			className: "space-y-4",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid grid-cols-2 gap-4",
 				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trophy, { className: "h-3 w-3 text-yellow-500" }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-						className: "text-black",
-						children: [t("gamification.health_score") || "Health Score", ":"]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-						className: `ml-1 font-bold ${score >= 90 ? "text-green-600" : "text-yellow-600"}`,
-						children: [score, "/100"]
-					})
-				]
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-			className: "grid grid-cols-1 md:grid-cols-2 gap-6",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") || "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-						className: "w-full block",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Property Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 							value: data.name,
 							onChange: (e) => onChange("name", e.target.value),
-							disabled: !canEdit,
-							placeholder: t("properties.search_placeholder") || "Property Name",
-							className: "text-black bg-white border-slate-300"
-						})
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t("properties.property_value") || "Listing Price", " ($)"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-						className: "w-full block",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
-							value: data.listingPrice || 0,
-							onChange: (val) => onChange("listingPrice", val),
-							disabled: !canEdit,
-							locale: locale$2,
-							className: "text-black bg-white border-slate-300"
-						})
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.profile_filter") || "Profile Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-						value: data.profileType,
-						onValueChange: (v) => onChange("profileType", v),
-						disabled: !canEdit,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "text-black bg-white border-slate-300",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, {
-							className: "bg-white",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "short_term",
-								className: "text-black",
-								children: t("properties.profile_short") || "Short Term"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "long_term",
-								className: "text-black",
-								children: t("properties.profile_long") || "Long Term"
-							})]
+							disabled: !canEdit
 						})]
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.type") || "Property Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-						value: data.type,
-						onValueChange: (v) => onChange("type", v),
-						disabled: !canEdit,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "text-black bg-white border-slate-300",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, {
-							className: "bg-white",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "House",
-									className: "text-black",
-									children: t("properties.house") || "House"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Condo",
-									className: "text-black",
-									children: t("properties.condo") || "Condo"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Townhouse",
-									className: "text-black",
-									children: t("properties.townhouse") || "Townhouse"
-								})
-							]
-						})]
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.status") || "Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-						value: data.status,
-						onValueChange: (v) => onChange("status", v),
-						disabled: !canEdit,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "text-black bg-white border-slate-300",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, {
-							className: "bg-white",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "interested",
-									className: "text-black",
-									children: t("status.interested") || "Interested"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "rented",
-									className: "text-black",
-									children: t("status.rented") || "Rented"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "available",
-									className: "text-black",
-									children: t("status.available") || "Available"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "in_registration",
-									className: "text-black",
-									children: t("status.in_registration") || "In Registration"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "suspended",
-									className: "text-black",
-									children: t("status.suspended") || "Suspended"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "released",
-									className: "text-black",
-									children: t("status.released") || "Released"
-								})
-							]
-						})]
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.marketing") || "Marketing Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-						value: data.marketingStatus || "unlisted",
-						onValueChange: (v) => onChange("marketingStatus", v),
-						disabled: !canEdit,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "text-black bg-white border-slate-300",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, {
-							className: "bg-white",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "listed",
-								className: "text-black",
-								children: t("properties.publish_portals") || "Listed"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "unlisted",
-								className: "text-black",
-								children: t("common.inactive") || "Unlisted"
-							})]
-						})]
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2 col-span-1 md:col-span-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.info_label") || "Description" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-						className: "w-full block",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
-							value: data.additionalInfo || "",
-							onChange: (e) => onChange("additionalInfo", e.target.value),
-							disabled: !canEdit,
-							placeholder: t("properties.additional_info_placeholder") || "Additional details...",
-							className: "text-black bg-white border-slate-300 min-h-[100px]"
-						})
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2 col-span-1 md:col-span-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.cover_image") || "Cover Image" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "space-y-2",
-						children: data.image ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "relative w-full max-w-md aspect-video rounded-md overflow-hidden bg-slate-100 border border-slate-200",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-								src: data.image,
-								alt: "Property",
-								className: "w-full h-full object-cover",
-								crossOrigin: "anonymous",
-								onError: (e) => {
-									e.currentTarget.src = "/placeholder.svg";
-									e.currentTarget.onerror = null;
-								}
-							}), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-								className: "absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:bg-red-600 transition-colors shadow-sm font-medium",
-								onClick: () => onChange("image", ""),
-								title: "Remove Cover Image",
-								children: "Delete Image"
-							})]
-						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "max-w-md",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
-								value: data.image,
-								onChange: (url) => onChange("image", url),
-								disabled: !canEdit,
-								label: t("properties.upload_image") || "Upload Image"
-							})
-						})
-					})]
-				})
-			]
-		})]
-	});
-}
-function LocationMap({ address, city, state, zipCode, country }) {
-	const fullAddress = [
-		address,
-		city,
-		state,
-		zipCode,
-		country
-	].filter(Boolean).join(", ");
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-		className: "h-full min-h-[300px]",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-			className: "flex items-center gap-2",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-5 w-5" }), " Location Map"]
-		}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-			className: "h-[calc(100%-4rem)] min-h-[250px] bg-slate-100 flex items-center justify-center rounded-md m-6 mt-0",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "text-center text-muted-foreground p-6",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-10 w-10 mx-auto mb-4 opacity-20" }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "font-semibold text-lg mb-2",
-						children: "Map View Unavailable"
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-sm max-w-[250px] mx-auto italic",
-						children: fullAddress || "No address provided"
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Property Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: data.type,
+							onChange: (e) => onChange("type", e.target.value),
+							disabled: !canEdit
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Profile Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: data.profileType,
+							disabled: true
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: data.status,
+							disabled: true
+						})]
 					})
 				]
 			})
@@ -67243,109 +64850,54 @@ function LocationMap({ address, city, state, zipCode, country }) {
 	});
 }
 function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$1 }) {
-	const { t } = useLanguageStore_default();
-	const { hotels: hotels$1, towers: towers$1 } = useHotelStore_default();
-	const selectedCountry = data.country || "US";
-	const isHotelLinked = !!data.hotelId && data.hotelId !== "none";
-	const handleCountryChange = (val) => {
-		onChange("country", val);
-		onChange("zipCode", "");
-	};
-	const handleZipChange = (e) => {
-		onChange("zipCode", applyZipCodeMask(e.target.value, selectedCountry));
-	};
-	const handleHotelChange = (val) => {
-		if (val === "none") {
-			onChange("hotelId", void 0);
-			onChange("towerId", void 0);
-		} else {
-			const hotel = hotels$1.find((h) => h.id === val);
-			if (hotel) {
-				onChange("hotelId", val);
-				onChange("towerId", void 0);
-				onChange("address", hotel.address || "");
-				onChange("number", hotel.number || "");
-				onChange("neighborhood", hotel.neighborhood || "");
-				onChange("city", hotel.city || "");
-				onChange("state", hotel.state || "");
-				onChange("zipCode", hotel.zipCode || "");
-				onChange("country", hotel.country || "US");
-			}
-		}
-	};
-	const isZipInvalid = !data.zipCode || isGenericOrPlaceholder(data.zipCode);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex flex-col gap-6",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-				className: "flex items-center gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-5 w-5" }), " Hierarchy & Associations"]
-			}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-				className: "grid gap-4",
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+		className: "border-slate-200 shadow-sm bg-white",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Location Details" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+			className: "space-y-4",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid grid-cols-1 md:grid-cols-2 gap-4",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Parent Hotel Link" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-							value: data.hotelId || "none",
-							onValueChange: handleHotelChange,
-							disabled: !canEdit,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Hotel (Optional)" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: "none",
-								children: "None"
-							}), hotels$1.map((h) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: h.id,
-								children: h.name
-							}, h.id))] })]
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Address" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: data.address,
+							onChange: (e) => onChange("address", e.target.value),
+							disabled: !canEdit
 						})]
 					}),
-					isHotelLinked && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid grid-cols-3 gap-4 pt-2 border-t border-slate-100",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Tower / Wing" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: data.towerId || "none",
-									onValueChange: (v) => onChange("towerId", v === "none" ? void 0 : v),
-									disabled: !canEdit,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "none",
-										children: "None"
-									}), towers$1.filter((t$1) => t$1.hotelId === data.hotelId).map((t$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: t$1.id,
-										children: t$1.name
-									}, t$1.id))] })]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Floor" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: data.floor || "",
-									onChange: (e) => onChange("floor", e.target.value),
-									disabled: !canEdit,
-									placeholder: "e.g. 5"
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Room / Suite" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: data.roomNumber || "",
-									onChange: (e) => onChange("roomNumber", e.target.value),
-									disabled: !canEdit,
-									placeholder: "e.g. 501"
-								})]
-							})
-						]
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "City" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: data.city || "",
+							onChange: (e) => onChange("city", e.target.value),
+							disabled: !canEdit
+						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2 mt-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.location.linked_condo") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "State" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: data.state || "",
+							onChange: (e) => onChange("state", e.target.value),
+							disabled: !canEdit
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Zip Code" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: data.zipCode || "",
+							onChange: (e) => onChange("zipCode", e.target.value),
+							disabled: !canEdit
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2 col-span-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Linked Condominium" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
 							value: data.condominiumId || "none",
 							onValueChange: (v) => onChange("condominiumId", v === "none" ? void 0 : v),
 							disabled: !canEdit,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "None" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: "none",
-								children: t("common.none")
+								children: "None"
 							}), condominiums$1.map((c$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 								value: c$1.id,
 								children: c$1.name
@@ -67353,426 +64905,65 @@ function PropertyLocation({ data, onChange, canEdit, condominiums: condominiums$
 						})]
 					})
 				]
-			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("properties.location.address") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-				className: "grid gap-4",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-							value: selectedCountry,
-							onValueChange: handleCountryChange,
-							disabled: !canEdit || isHotelLinked,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "US",
-									children: t("properties.location.country_us")
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "BR",
-									children: t("properties.location.country_br")
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "ES",
-									children: t("properties.location.country_es")
-								})
-							] })]
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid grid-cols-4 gap-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2 col-span-3",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-								t("properties.location.address"),
-								" ",
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "text-red-500",
-									children: "*"
-								})
-							] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								className: "w-full block",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: data.address,
-									onChange: (e) => onChange("address", e.target.value),
-									disabled: !canEdit || isHotelLinked,
-									placeholder: t("properties.search_placeholder")
-								})
-							})]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2 col-span-1",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "No." }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								className: "w-full block",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: data.number || "",
-									onChange: (e) => onChange("number", e.target.value),
-									disabled: !canEdit || isHotelLinked,
-									placeholder: "No."
-								})
-							})]
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid grid-cols-2 gap-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.location.neighborhood") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								className: "w-full block",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: data.neighborhood || "",
-									onChange: (e) => onChange("neighborhood", e.target.value),
-									disabled: !canEdit || isHotelLinked
-								})
-							})]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-								t("properties.zip_code"),
-								" ",
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "text-red-500",
-									children: "*"
-								})
-							] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								className: "w-full block",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: data.zipCode || "",
-									onChange: handleZipChange,
-									disabled: !canEdit || isHotelLinked,
-									required: true,
-									className: isZipInvalid ? "border-red-300" : "",
-									placeholder: selectedCountry === "BR" ? "00000-000" : "00000"
-								})
-							})]
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid grid-cols-2 gap-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.city_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								className: "w-full block",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: data.city || "",
-									onChange: (e) => onChange("city", e.target.value),
-									disabled: !canEdit || isHotelLinked
-								})
-							})]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.state_placeholder") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								className: "w-full block",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: data.state || "",
-									onChange: (e) => onChange("state", e.target.value),
-									disabled: !canEdit || isHotelLinked
-								})
-							})]
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2 pt-2 border-t mt-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.info_label") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-							className: "w-full block",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: data.additionalInfo || "",
-								onChange: (e) => onChange("additionalInfo", e.target.value),
-								disabled: !canEdit,
-								placeholder: t("properties.location.complement_placeholder")
-							})
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.location.community") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-							className: "w-full block",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: data.community,
-								onChange: (e) => onChange("community", e.target.value),
-								disabled: !canEdit || isHotelLinked
-							})
-						})]
-					})
-				]
-			})] })]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LocationMap, {
-			address: data.address,
-			city: data.city,
-			state: data.state,
-			zipCode: data.zipCode,
-			country: selectedCountry
+			})
 		})]
 	});
 }
-function PropertyFeatures({ data, onChange, canEdit, condominium }) {
-	const { t } = useLanguageStore_default();
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("properties.tabs.features") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-		className: "grid grid-cols-1 md:grid-cols-3 gap-6",
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.bedrooms") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					type: "number",
-					value: data.bedrooms,
-					onChange: (e) => onChange("bedrooms", Number(e.target.value)),
-					disabled: !canEdit
-				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.bathrooms") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					type: "number",
-					value: data.bathrooms,
-					onChange: (e) => onChange("bathrooms", Number(e.target.value)),
-					disabled: !canEdit
-				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.guests") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					type: "number",
-					value: data.guests,
-					onChange: (e) => onChange("guests", Number(e.target.value)),
-					disabled: !canEdit
-				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "md:col-span-3 border-t pt-4 mt-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-					className: "font-semibold text-sm mb-4",
-					children: t("properties.features.wifi_connectivity")
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid grid-cols-1 md:grid-cols-2 gap-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.ssid") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-							className: "w-full block",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: data.wifiSsid || "",
-								onChange: (e) => onChange("wifiSsid", e.target.value),
-								disabled: !canEdit,
-								placeholder: "SSID"
-							})
-						})]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.password") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-							className: "w-full block",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: data.wifiPassword || "",
-								onChange: (e) => onChange("wifiPassword", e.target.value),
-								disabled: !canEdit,
-								placeholder: "********"
-							})
-						})]
-					})]
-				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "md:col-span-3 border-t pt-4 mt-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
-					className: "font-semibold text-sm mb-4 flex items-center gap-2",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-4 w-4" }),
-						" ",
-						t("properties.features.access_codes")
-					]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.unit_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								className: "w-full block",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: data.accessCodeUnit || "",
-									onChange: (e) => onChange("accessCodeUnit", e.target.value),
-									disabled: !canEdit,
-									placeholder: "1234"
-								})
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.building_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								className: "w-full block",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: data.accessCodeBuilding || "",
-									onChange: (e) => onChange("accessCodeBuilding", e.target.value),
-									disabled: !canEdit,
-									placeholder: "#5566"
-								})
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.pool_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, {
-								className: "w-full block relative",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: data.accessCodePool || "",
-									onChange: (e) => onChange("accessCodePool", e.target.value),
-									disabled: !canEdit,
-									placeholder: "9090",
-									className: "pl-8"
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Waves, { className: "absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground z-10" })]
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("properties.features.staff_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-								className: "w-full block",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: data.accessCodeCleaning || "",
-									onChange: (e) => onChange("accessCodeCleaning", e.target.value),
-									disabled: !canEdit,
-									placeholder: "Internal use"
-								})
-							})]
-						})
-					]
-				})]
-			}),
-			condominium && condominium.accessCredentials && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "md:col-span-3 border-t pt-4 mt-4 bg-muted/20 p-4 rounded-lg",
+function PropertyFeatures({ data, onChange, canEdit }) {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+		className: "border-slate-200 shadow-sm bg-white",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Features & Amenities" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+			className: "space-y-4",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid grid-cols-3 gap-4",
 				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
-						className: "font-semibold text-sm flex items-center gap-2 text-muted-foreground mb-3",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lock, { className: "h-4 w-4" }),
-							" ",
-							t("properties.features.condo_read_only")
-						]
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Bedrooms" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							type: "number",
+							value: data.bedrooms,
+							onChange: (e) => onChange("bedrooms", Number(e.target.value)),
+							disabled: !canEdit
+						})]
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "grid grid-cols-2 md:grid-cols-4 gap-4",
-						children: Object.entries(condominium.accessCredentials).map(([key, val]) => val && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-							className: "text-xs text-muted-foreground uppercase",
-							children: key.replace(/([A-Z])/g, " $1").trim()
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, {
-							blur: true,
-							className: "block",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "font-mono text-sm font-semibold",
-								children: val
-							})
-						})] }, key))
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Bathrooms" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							type: "number",
+							value: data.bathrooms,
+							onChange: (e) => onChange("bathrooms", Number(e.target.value)),
+							disabled: !canEdit
+						})]
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-xs text-muted-foreground mt-2 italic",
-						children: t("properties.features.condo_hint", { condo: condominium.name })
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Max Guests" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							type: "number",
+							value: data.guests,
+							onChange: (e) => onChange("guests", Number(e.target.value)),
+							disabled: !canEdit
+						})]
 					})
 				]
 			})
-		]
-	})] });
+		})]
+	});
 }
-function PropertyMedia({ data, onChange, canEdit }) {
-	const { t } = useLanguageStore_default();
-	const { toast: toast$2 } = useToast();
-	const galleryInputRef = (0, import_react.useRef)(null);
-	const [isUploading, setIsUploading] = (0, import_react.useState)(false);
-	const handleGalleryUpload = (e) => {
-		const files = e.target.files;
-		if (files && files.length > 0) {
-			setIsUploading(true);
-			setTimeout(() => {
-				const newImages = Array.from(files).map((file) => URL.createObjectURL(file));
-				onChange("gallery", [...data.gallery || [], ...newImages]);
-				setIsUploading(false);
-				if (galleryInputRef.current) galleryInputRef.current.value = "";
-				toast$2({
-					title: "Sucesso",
-					description: `${newImages.length} foto(s) adicionada(s) à galeria.`
-				});
-			}, 1e3);
-		}
-	};
-	const handleRemoveGalleryImage = (index$1) => {
-		onChange("gallery", (data.gallery || []).filter((_$1, i) => i !== index$1));
-		toast$2({
-			title: "Removido",
-			description: "Imagem removida da galeria."
-		});
-	};
-	const handleSetMainPhoto = (url) => {
-		onChange("image", url);
-		toast$2({
-			title: "Foto Principal Atualizada",
-			description: "A imagem de capa foi alterada."
-		});
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "space-y-6",
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "grid grid-cols-1 gap-6",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Imagem Principal" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Esta é a imagem de capa da propriedade." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "max-w-md",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
-					value: data.image,
-					onChange: (url) => onChange("image", url),
-					disabled: !canEdit,
-					label: "Alterar Capa"
-				})
-			}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-				className: "flex flex-row items-center justify-between",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Galeria de Fotos" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Fotos adicionais da propriedade." })] }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-					type: "file",
-					ref: galleryInputRef,
-					className: "hidden",
-					multiple: true,
-					accept: "image/*",
-					onChange: handleGalleryUpload
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-					onClick: () => galleryInputRef.current?.click(),
-					disabled: isUploading,
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "mr-2 h-4 w-4" }), isUploading ? "Enviando..." : "Adicionar Fotos"]
-				})] })]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: !data.gallery || data.gallery.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg",
-				children: "Sem fotos na galeria."
-			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "grid grid-cols-2 md:grid-cols-4 gap-4",
-				children: data.gallery.map((img, index$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "relative group aspect-video rounded-lg overflow-hidden border bg-muted",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-							src: img,
-							alt: `Gallery ${index$1}`,
-							className: "w-full h-full object-cover transition-transform group-hover:scale-105",
-							crossOrigin: "anonymous",
-							onError: (e) => {
-								e.currentTarget.src = "/placeholder.svg";
-								e.currentTarget.onerror = null;
-							}
-						}),
-						data.image === img && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "absolute top-2 left-2 bg-trust-blue text-white text-[10px] px-2 py-0.5 rounded-full z-10 flex items-center gap-1",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: "h-3 w-3 fill-white" }), " Principal"]
-						}),
-						canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								variant: "secondary",
-								size: "sm",
-								className: "h-7 text-xs",
-								onClick: () => handleSetMainPhoto(img),
-								children: "Definir Principal"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-								asChild: true,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									variant: "destructive",
-									size: "icon",
-									className: "h-8 w-8",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-								})
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Imagem" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Tem certeza que deseja remover esta imagem da galeria?" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-								onClick: () => handleRemoveGalleryImage(index$1),
-								children: "Excluir"
-							})] })] })] })]
-						})
-					]
-				}, index$1))
-			}) })] })]
-		})
+function PropertyMedia({ data }) {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+		className: "border-slate-200 shadow-sm bg-white",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Media Gallery" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: data.image ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+			src: data.image,
+			alt: data.name,
+			className: "w-full max-w-md rounded-lg shadow-sm",
+			crossOrigin: "anonymous",
+			onError: (e) => {
+				e.currentTarget.src = "/placeholder.svg";
+			}
+		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "p-8 text-center text-muted-foreground border-dashed border-2 rounded-lg",
+			children: "No primary image set."
+		}) })]
 	});
 }
 function PropertyDetails() {
@@ -67789,7 +64980,7 @@ function PropertyDetails() {
 	(0, import_react.useEffect)(() => {
 		setIsLoading(true);
 		const timer = setTimeout(() => {
-			const found = properties$1.find((p$1) => p$1.id === id);
+			const found = properties$1.find((p) => p.id === id);
 			if (found) {
 				setProperty(found);
 				setFormData(found);
@@ -67985,8 +65176,8 @@ function PropertyDetails() {
 	});
 }
 function useStateMachine(initialState, machine) {
-	return import_react.useReducer((state, event) => {
-		return machine[state][event] ?? state;
+	return import_react.useReducer((state$1, event) => {
+		return machine[state$1][event] ?? state$1;
 	}, initialState);
 }
 var SCROLL_AREA_NAME = "ScrollArea";
@@ -68139,7 +65330,7 @@ var ScrollAreaScrollbarScroll = import_react.forwardRef((props, forwardedRef) =>
 	const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
 	const isHorizontal = props.orientation === "horizontal";
 	const debounceScrollEnd = useDebounceCallback(() => send("SCROLL_END"), 100);
-	const [state, send] = useStateMachine("hidden", {
+	const [state$1, send] = useStateMachine("hidden", {
 		hidden: { SCROLL: "scrolling" },
 		scrolling: {
 			SCROLL_END: "idle",
@@ -68156,12 +65347,12 @@ var ScrollAreaScrollbarScroll = import_react.forwardRef((props, forwardedRef) =>
 		}
 	});
 	import_react.useEffect(() => {
-		if (state === "idle") {
+		if (state$1 === "idle") {
 			const hideTimer = window.setTimeout(() => send("HIDE"), context.scrollHideDelay);
 			return () => window.clearTimeout(hideTimer);
 		}
 	}, [
-		state,
+		state$1,
 		context.scrollHideDelay,
 		send
 	]);
@@ -68188,9 +65379,9 @@ var ScrollAreaScrollbarScroll = import_react.forwardRef((props, forwardedRef) =>
 		debounceScrollEnd
 	]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
-		present: forceMount || state !== "hidden",
+		present: forceMount || state$1 !== "hidden",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollAreaScrollbarVisible, {
-			"data-state": state === "hidden" ? "hidden" : "visible",
+			"data-state": state$1 === "hidden" ? "hidden" : "visible",
 			...scrollbarProps,
 			ref: forwardedRef,
 			onPointerEnter: composeEventHandlers(props.onPointerEnter, () => send("POINTER_ENTER")),
@@ -68676,142 +65867,137 @@ var useTenantStore_default = useTenantStore;
 var usePartnerStore = () => {
 	const context = (0, import_react.useContext)(AppContext);
 	if (!context) throw new Error("usePartnerStore must be used within AppProvider");
-	const deletePartner = (id) => {
-		const partner = context.partners.find((p$1) => p$1.id === id);
-		if (partner) context.updatePartner({
-			...partner,
-			status: "inactive"
-		});
-	};
 	return {
 		partners: context.partners,
-		genericServiceRates: context.genericServiceRates,
-		serviceCategories: context.serviceCategories,
-		tasks: context.tasks,
 		addPartner: context.addPartner,
-		updatePartner: context.updatePartner,
-		deletePartner,
-		addGenericServiceRate: context.addGenericServiceRate,
-		updateGenericServiceRate: context.updateGenericServiceRate,
-		deleteGenericServiceRate: context.deleteGenericServiceRate,
-		addServiceCategory: context.addServiceCategory,
-		updateServiceCategory: context.updateServiceCategory,
-		deleteServiceCategory: context.deleteServiceCategory
+		updatePartner: context.updatePartner
 	};
 };
 var usePartnerStore_default = usePartnerStore;
 function TaskDetailsSheet({ task, open, onOpenChange }) {
-	const { t, language } = useLanguageStore_default();
 	if (!task) return null;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sheet, {
 		open,
 		onOpenChange,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetContent, {
-			className: "sm:max-w-[500px] overflow-y-auto",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex justify-between items-start",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetTitle, {
-						className: "text-xl font-bold",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, { children: task.status })]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetDescription, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2 mt-1",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-3 w-3" }),
-						" ",
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyName })
-					]
-				}) })] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "py-6 space-y-6",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
-								className: "text-sm font-bold uppercase text-muted-foreground",
-								children: t("common.details")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid grid-cols-2 gap-4 text-sm",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex flex-col gap-1",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-											className: "text-muted-foreground flex items-center gap-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-3 w-3" }), " Scheduled"]
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "font-medium",
-											children: format(new Date(task.date), "PPP")
-										})]
+			className: "sm:max-w-md overflow-y-auto",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetHeader, {
+				className: "mb-6",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetTitle, {
+					className: "text-xl",
+					children: task.title
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetDescription, { children: "Task Details" })]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex gap-2 flex-wrap",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+								variant: "outline",
+								className: "uppercase text-xs",
+								children: task.status.replace("_", " ")
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+								variant: "secondary",
+								className: "uppercase text-xs",
+								children: task.type
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+								className: "uppercase text-xs",
+								children: task.priority
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 bg-slate-50 p-4 rounded-lg border",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-start gap-3",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-5 w-5 text-slate-500 mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "font-semibold text-sm",
+										children: "Property"
 									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex flex-col gap-1",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-											className: "text-muted-foreground flex items-center gap-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }), " Assignee"]
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "font-medium",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.assignee })
-										})]
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-sm text-slate-700",
+										children: task.propertyName
 									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex flex-col gap-1",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-muted-foreground",
-											children: "Priority"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "capitalize",
-											children: task.priority
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex flex-col gap-1",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "text-muted-foreground",
-											children: "Type"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "capitalize",
-											children: t(`partners.${task.type}`) || task.type
-										})]
+									task.propertyAddress && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-xs text-slate-500",
+										children: task.propertyAddress
 									})
-								]
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
-								className: "text-sm font-bold uppercase text-muted-foreground",
-								children: t("common.description")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "bg-muted/30 p-3 rounded-md text-sm",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.description || "No description provided." })
-							})]
-						}),
-						task.evidence && task.evidence.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Separator, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
-								className: "text-sm font-bold uppercase text-muted-foreground",
-								children: "Evidence"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "grid grid-cols-2 gap-2",
-								children: task.evidence.map((ev, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "relative aspect-video rounded-md overflow-hidden border",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-										src: ev.url,
-										alt: `Evidence ${i}`,
-										className: "w-full h-full object-cover"
+								] })]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-start gap-3",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-5 w-5 text-slate-500 mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "font-semibold text-sm",
+									children: "Assignee"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-slate-700",
+									children: task.assignee
+								})] })]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-start gap-3",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-5 w-5 text-slate-500 mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "font-semibold text-sm",
+									children: "Scheduled Date"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-slate-700",
+									children: format(new Date(task.date), "PPP")
+								})] })]
+							}),
+							(task.price !== void 0 || task.laborCost !== void 0) && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-start gap-3",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-5 w-5 text-slate-500 mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "font-semibold text-sm",
+										children: "Financials"
+									}),
+									task.price !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+										className: "text-sm text-slate-700",
+										children: ["Price: $", task.price]
+									}),
+									task.laborCost !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+										className: "text-sm text-slate-700",
+										children: ["Labor: $", task.laborCost]
+									}),
+									task.materialCost !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+										className: "text-sm text-slate-700",
+										children: ["Material: $", task.materialCost]
 									})
-								}, ev.id))
-							})]
-						})] })
-					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					onClick: () => onOpenChange(false),
-					children: "Close"
-				}) })
-			]
+								] })]
+							}),
+							task.description && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-start gap-3",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-5 w-5 text-slate-500 mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "font-semibold text-sm",
+									children: "Description"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-slate-700 whitespace-pre-wrap",
+									children: task.description
+								})] })]
+							})
+						]
+					}),
+					task.images && task.images.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+						className: "font-semibold text-sm mb-3",
+						children: "Images"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "grid grid-cols-2 gap-2",
+						children: task.images.map((img, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "aspect-square rounded-md overflow-hidden border",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+								src: img,
+								alt: `Task image ${i}`,
+								className: "w-full h-full object-cover"
+							})
+						}, i))
+					})] })
+				]
+			})]
 		})
 	});
 }
@@ -68919,10 +66105,10 @@ function CalendarPage() {
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 							value: "all",
 							children: t("common.all")
-						}), partners$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: p$1.id,
-							children: p$1.name
-						}, p$1.id))] })]
+						}), partners$1.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+							value: p.id,
+							children: p.name
+						}, p.id))] })]
 					})]
 				})]
 			}),
@@ -69152,109 +66338,62 @@ function CalendarPage() {
 		]
 	});
 }
-function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = false }) {
-	const { t, language } = useLanguageStore_default();
-	const getPriorityColor = (priority) => {
-		switch (priority) {
-			case "critical": return "text-red-700 bg-red-100 border-red-200";
-			case "high": return "text-orange-700 bg-orange-100 border-orange-200";
-			case "medium": return "text-blue-700 bg-blue-100 border-blue-200";
-			default: return "text-slate-700 bg-slate-100 border-slate-200";
-		}
-	};
-	const getStatusColor = (status) => {
-		switch (status) {
-			case "completed": return "bg-green-100 text-green-800";
-			case "in_progress": return "bg-blue-100 text-blue-800";
-			case "pending": return "bg-yellow-100 text-yellow-800";
-			case "pending_approval": return "bg-purple-100 text-purple-800";
-			default: return "bg-slate-100 text-slate-800";
+function TaskCard({ task, onStatusChange, canEdit }) {
+	const getPriorityStyle = (p) => {
+		switch (p) {
+			case "critical": return "text-red-700 bg-red-50 border-red-200";
+			case "high": return "text-orange-700 bg-orange-50 border-orange-200";
+			case "medium": return "text-blue-700 bg-blue-50 border-blue-200";
+			default: return "text-slate-700 bg-slate-50 border-slate-200";
 		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-		className: "hover:shadow-md transition-all border-slate-200 bg-white group",
+		className: "hover:shadow-md transition-shadow bg-white relative group cursor-grab active:cursor-grabbing border-slate-200",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 			className: "p-4 flex flex-col gap-3",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex justify-between items-start",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-						variant: "outline",
-						className: cn("font-bold", getPriorityColor(task.priority)),
-						children: task.priority.toUpperCase()
-					}), canEdit && onStatusChange && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
-						asChild: true,
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "ghost",
-							size: "icon",
-							className: "h-6 w-6",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ellipsis, { className: "h-4 w-4" })
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
-						align: "end",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuLabel, { children: t("tasks.change_status") }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-								onClick: () => onStatusChange("pending"),
-								children: t("common.pending")
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-								onClick: () => onStatusChange("in_progress"),
-								children: t("tasks.in_progress")
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuItem, {
-								onClick: () => onStatusChange("completed"),
-								children: t("common.completed")
-							})
-						]
-					})] })]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
-					className: "font-bold text-base leading-tight text-slate-900 line-clamp-2",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-					className: "text-xs text-muted-foreground mt-1 line-clamp-1 flex items-center gap-1",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyName })]
-				})] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center justify-between text-xs text-slate-600 font-medium mt-1",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-1",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: formatDate(task.date, language) })]
-					}), task.assignee && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center gap-1",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.assignee }) })]
+						className: "flex flex-wrap gap-1",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: "outline",
+							className: "text-[10px] uppercase bg-slate-100 font-bold text-slate-700",
+							children: task.type
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							variant: "outline",
+							className: cn("text-[10px] uppercase font-bold", getPriorityStyle(task.priority)),
+							children: task.priority
+						})]
+					}), task.backToBack && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+						variant: "destructive",
+						className: "text-[10px] uppercase px-1 py-0 h-4",
+						children: "B2B"
 					})]
 				}),
-				task.description && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "text-xs text-slate-500 bg-slate-50 p-2 rounded line-clamp-2",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.description })
-				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+					className: "font-bold text-sm text-slate-900 leading-tight",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.title })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-1 text-xs text-slate-500 mt-1",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "truncate",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.propertyName })
+					})]
+				})] }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "pt-2 flex items-center justify-between border-t border-slate-100",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-						variant: "secondary",
-						className: cn("text-[10px]", getStatusColor(task.status)),
-						children: t(`common.${task.status}`) || task.status
+					className: "flex items-center justify-between text-xs text-slate-600 border-t border-slate-100 pt-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-1",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 text-slate-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "font-medium truncate max-w-[100px]",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: task.assignee })
+						})]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex gap-1",
-						children: [task.images && task.images.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
-							variant: "outline",
-							className: "gap-1 px-1.5",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image, { className: "h-3 w-3" }),
-								" ",
-								task.images.length
-							]
-						}), task.evidence && task.evidence.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
-							variant: "outline",
-							className: "gap-1 px-1.5 bg-green-50 text-green-700 border-green-200",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheckBig, { className: "h-3 w-3" }),
-								" ",
-								task.evidence.length
-							]
+						className: "flex items-center gap-1",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-3 w-3 text-slate-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "font-medium",
+							children: format(new Date(task.date), "MMM dd")
 						})]
 					})]
 				})
@@ -69262,117 +66401,112 @@ function TaskCard({ task, onStatusChange, onUpload, onAddEvidence, canEdit = fal
 		})
 	});
 }
-function CreateTaskDialog({ open: controlledOpen, onOpenChange, initialPropertyId, initialDate }) {
-	const [internalOpen, setInternalOpen] = (0, import_react.useState)(false);
-	const isControlled = controlledOpen !== void 0;
-	const isOpen = isControlled ? controlledOpen : internalOpen;
-	const setIsOpen = isControlled ? onOpenChange : setInternalOpen;
+function CreateTaskDialog() {
+	const [open, setOpen] = (0, import_react.useState)(false);
 	const { addTask } = useTaskStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
-	const { currentUser } = useAuthStore_default();
-	const { t } = useLanguageStore_default();
+	const { partners: partners$1 } = usePartnerStore_default();
 	const { toast: toast$2 } = useToast();
-	const [newTask, setNewTask] = (0, import_react.useState)({
+	const [form, setForm] = (0, import_react.useState)({
 		title: "",
-		propertyId: initialPropertyId || "",
-		type: "maintenance",
+		propertyId: "",
+		type: "",
 		priority: "medium",
-		date: initialDate ? initialDate.toISOString().split("T")[0] : "",
-		description: ""
+		assigneeId: "",
+		date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
 	});
 	const handleSave = () => {
-		if (!newTask.title || !newTask.propertyId) {
+		if (!form.title || !form.propertyId || !form.type) {
 			toast$2({
-				title: "Error",
-				description: "Title and Property are required.",
+				title: "Validation Error",
+				description: "Please fill all required fields",
 				variant: "destructive"
 			});
 			return;
 		}
-		const prop = properties$1.find((p$1) => p$1.id === newTask.propertyId);
+		const prop = properties$1.find((p) => p.id === form.propertyId);
+		const partner = partners$1.find((p) => p.id === form.assigneeId);
 		addTask({
-			...newTask,
 			id: `task-${Date.now()}`,
+			title: form.title,
+			propertyId: form.propertyId,
+			propertyName: prop?.name || "",
+			propertyAddress: prop?.address,
+			type: form.type,
+			priority: form.priority,
 			status: "pending",
-			propertyName: prop?.name || "Unknown",
-			date: newTask.date ? new Date(newTask.date).toISOString() : (/* @__PURE__ */ new Date()).toISOString(),
-			assignee: "Unassigned",
-			createdBy: currentUser.id
+			date: form.date,
+			assigneeId: form.assigneeId,
+			assignee: partner?.name || "Unassigned",
+			source: "manual"
 		});
-		toast$2({
-			title: "Success",
-			description: "Task created."
-		});
-		if (setIsOpen) setIsOpen(false);
-		setNewTask({
+		toast$2({ title: "Task created successfully" });
+		setOpen(false);
+		setForm({
 			title: "",
 			propertyId: "",
-			type: "maintenance",
+			type: "",
 			priority: "medium",
-			date: "",
-			description: ""
+			assigneeId: "",
+			date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
 		});
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-		open: isOpen,
-		onOpenChange: setIsOpen,
-		children: [!isControlled && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+		open,
+		onOpenChange: setOpen,
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
 			asChild: true,
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-				className: "bg-trust-blue gap-2",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
-					" ",
-					t("common.new_task")
-				]
+				className: "bg-trust-blue text-white gap-2 h-9",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " New Task"]
 			})
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("common.create_title") }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Create New Task" }) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-4 py-4",
+				className: "space-y-4 py-4",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("tasks.task_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: newTask.title,
-							onChange: (e) => setNewTask({
-								...newTask,
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Title *" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: form.title,
+							onChange: (e) => setForm({
+								...form,
 								title: e.target.value
 							})
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.property") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-							value: newTask.propertyId,
-							onValueChange: (v) => setNewTask({
-								...newTask,
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Property *" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: form.propertyId,
+							onValueChange: (v) => setForm({
+								...form,
 								propertyId: v
 							}),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Property" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: p$1.id,
-								children: p$1.name
-							}, p$1.id)) })]
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Property" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: properties$1.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: p.id,
+								children: p.name
+							}, p.id)) })]
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid grid-cols-2 gap-4",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.type") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-								value: newTask.type,
-								onValueChange: (v) => setNewTask({
-									...newTask,
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Type *" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: form.type,
+								onValueChange: (v) => setForm({
+									...form,
 									type: v
 								}),
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "maintenance",
-										children: t("partners.maintenance")
-									}),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Type" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 										value: "cleaning",
-										children: t("partners.cleaning")
+										children: "Cleaning"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "maintenance",
+										children: "Maintenance"
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 										value: "inspection",
@@ -69381,11 +66515,11 @@ function CreateTaskDialog({ open: controlledOpen, onOpenChange, initialPropertyI
 								] })]
 							})]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.priority") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-								value: newTask.priority,
-								onValueChange: (v) => setNewTask({
-									...newTask,
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Priority" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: form.priority,
+								onValueChange: (v) => setForm({
+									...form,
 									priority: v
 								}),
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
@@ -69410,119 +66544,111 @@ function CreateTaskDialog({ open: controlledOpen, onOpenChange, initialPropertyI
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							type: "date",
-							value: newTask.date,
-							onChange: (e) => setNewTask({
-								...newTask,
-								date: e.target.value
-							})
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
-							value: newTask.description,
-							onChange: (e) => setNewTask({
-								...newTask,
-								description: e.target.value
-							})
+						className: "grid grid-cols-2 gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Assignee" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: form.assigneeId,
+								onValueChange: (v) => setForm({
+									...form,
+									assigneeId: v
+								}),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Unassigned" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: partners$1.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: p.id,
+									children: p.name
+								}, p.id)) })]
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "date",
+								value: form.date,
+								onChange: (e) => setForm({
+									...form,
+									date: e.target.value
+								})
+							})]
 						})]
 					})
 				]
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "outline",
+				onClick: () => setOpen(false),
+				children: "Cancel"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 				onClick: handleSave,
-				children: t("common.save")
-			}) })
+				children: "Create Task"
+			})] })
 		] })]
 	});
 }
-function TaskInvoiceDialog({ open, onOpenChange, initialTask }) {
+function TaskInvoiceDialog({ open, onOpenChange }) {
 	const { addInvoice } = useFinancialStore_default();
-	const { properties: properties$1 } = usePropertyStore_default();
-	const { currentUser } = useAuthStore_default();
 	const { toast: toast$2 } = useToast();
-	const { t } = useLanguageStore_default();
-	const [description, setDescription] = (0, import_react.useState)(initialTask ? `Invoice for ${initialTask.title}` : "");
-	const [amount, setAmount] = (0, import_react.useState)(initialTask ? initialTask.price || 0 : 0);
-	const [propertyId, setPropertyId] = (0, import_react.useState)(initialTask ? initialTask.propertyId : "");
-	const [billTo, setBillTo] = (0, import_react.useState)("");
+	const [form, setForm] = (0, import_react.useState)({
+		description: "",
+		amount: ""
+	});
 	const handleSave = () => {
-		if (!description || !amount || !propertyId) {
+		if (!form.description || !form.amount) {
 			toast$2({
-				title: t("common.error"),
-				description: t("common.required"),
+				title: "Error",
+				description: "Please fill all fields",
 				variant: "destructive"
 			});
 			return;
 		}
 		addInvoice({
 			id: `inv-${Date.now()}`,
-			description,
-			amount,
+			description: form.description,
+			amount: Number(form.amount),
 			status: "pending",
-			date: (/* @__PURE__ */ new Date()).toISOString(),
-			fromId: currentUser.id,
-			toId: billTo || "owner",
-			propertyId,
-			type: "generic"
+			date: (/* @__PURE__ */ new Date()).toISOString()
 		});
-		toast$2({
-			title: t("common.success"),
-			description: "Invoice created."
-		});
+		toast$2({ title: "Invoice Generated" });
 		onOpenChange(false);
-		setDescription("");
-		setAmount(0);
+		setForm({
+			description: "",
+			amount: ""
+		});
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open,
 		onOpenChange,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("invoices.create_new") }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Generate Task Invoice" }) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-4 py-4",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.property") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-							value: propertyId,
-							onValueChange: setPropertyId,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: p$1.id,
-								children: p$1.name
-							}, p$1.id)) })]
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
-							value: description,
-							onChange: (e) => setDescription(e.target.value)
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.value") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
-							value: amount,
-							onChange: setAmount
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("invoices.bill_to") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: billTo,
-							onChange: (e) => setBillTo(e.target.value)
-						})]
-					})
-				]
+				className: "space-y-4 py-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "space-y-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Description" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+						value: form.description,
+						onChange: (e) => setForm({
+							...form,
+							description: e.target.value
+						})
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "space-y-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Amount" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+						type: "number",
+						value: form.amount,
+						onChange: (e) => setForm({
+							...form,
+							amount: e.target.value
+						})
+					})]
+				})]
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "outline",
+				onClick: () => onOpenChange(false),
+				children: "Cancel"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 				onClick: handleSave,
-				children: t("common.save")
-			}) })
+				children: "Generate"
+			})] })
 		] })
 	});
 }
@@ -69580,46 +66706,65 @@ TableCaption.displayName = "TableCaption";
 function EditTaskDialog({ task, open, onOpenChange }) {
 	const { updateTask } = useTaskStore_default();
 	const { toast: toast$2 } = useToast();
-	const [formData, setFormData] = (0, import_react.useState)({});
+	const [form, setForm] = (0, import_react.useState)({});
 	(0, import_react.useEffect)(() => {
-		if (task) setFormData({ ...task });
+		if (task) setForm(task);
 	}, [task]);
 	const handleSave = () => {
-		if (task && formData) {
+		if (task) {
 			updateTask({
 				...task,
-				...formData
+				...form
 			});
-			toast$2({ title: "Task Updated" });
+			toast$2({ title: "Task updated successfully" });
 			onOpenChange(false);
 		}
 	};
+	if (!task) return null;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open,
 		onOpenChange,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Edit Task" }) }),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-4 py-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Title" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-						value: formData.title || "",
-						onChange: (e) => setFormData({
-							...formData,
-							title: e.target.value
+				className: "space-y-4 py-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Title" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: form.title || "",
+							onChange: (e) => setForm({
+								...form,
+								title: e.target.value
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							type: "date",
+							value: form.date?.split("T")[0] || "",
+							onChange: (e) => setForm({
+								...form,
+								date: e.target.value
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "grid grid-cols-2 gap-4",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Price" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "number",
+								value: form.price || "",
+								onChange: (e) => setForm({
+									...form,
+									price: Number(e.target.value)
+								})
+							})]
 						})
-					})]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Description" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
-						value: formData.description || "",
-						onChange: (e) => setFormData({
-							...formData,
-							description: e.target.value
-						})
-					})]
-				})]
+					})
+				]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 				variant: "outline",
@@ -69627,47 +66772,65 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 				children: "Cancel"
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 				onClick: handleSave,
-				className: "bg-trust-blue",
 				children: "Save Changes"
 			})] })
 		] })
 	});
 }
+var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
+		className: cn("flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50", className),
+		ref,
+		...props
+	});
+});
+Textarea.displayName = "Textarea";
 function RejectTaskDialog({ taskId, open, onOpenChange }) {
 	const { rejectTask } = useTaskStore_default();
 	const { toast: toast$2 } = useToast();
 	const [reason, setReason] = (0, import_react.useState)("");
-	const handleConfirm = () => {
+	const handleReject = () => {
 		if (!reason.trim()) {
 			toast$2({
-				title: "Error",
-				description: "Reason is required",
+				title: "Validation Error",
+				description: "Please provide a reason for rejection.",
 				variant: "destructive"
 			});
 			return;
 		}
 		rejectTask(taskId, reason);
-		toast$2({ title: "Task Rejected" });
+		toast$2({
+			title: "Task Rejected",
+			description: "The task has been marked as rejected."
+		});
 		onOpenChange(false);
 		setReason("");
 	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialog, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open,
 		onOpenChange,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Reject Task" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Please provide a reason for rejecting this task. This will be sent to the requester." })] }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "py-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Reason" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
-					value: reason,
-					onChange: (e) => setReason(e.target.value),
-					placeholder: "Why is this being rejected?"
-				})]
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Reject Task" }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "space-y-4 py-4",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "space-y-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Reason for Rejection *" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+						placeholder: "Explain why this task is being rejected...",
+						value: reason,
+						onChange: (e) => setReason(e.target.value),
+						className: "min-h-[100px]"
+					})]
+				})
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-				onClick: handleConfirm,
-				className: "bg-red-600 hover:bg-red-700",
-				children: "Reject"
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "outline",
+				onClick: () => onOpenChange(false),
+				children: "Cancel"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "destructive",
+				onClick: handleReject,
+				children: "Reject Task"
 			})] })
 		] })
 	});
@@ -69694,7 +66857,7 @@ function Tasks() {
 	const filteredTasks = (0, import_react.useMemo)(() => {
 		return tasks$1.filter((t$1) => {
 			if (isOwner) {
-				if (properties$1.find((p$1) => p$1.id === t$1.propertyId)?.ownerId !== currentUser.id) return false;
+				if (properties$1.find((p) => p.id === t$1.propertyId)?.ownerId !== currentUser.id) return false;
 			}
 			if (t$1.assignedRole) {
 				const isAdmin = ["platform_owner", "software_tenant"].includes(currentUser.role);
@@ -69756,7 +66919,7 @@ function Tasks() {
 	const checkCanApprove = (task) => {
 		if (task.status !== "pending_approval") return false;
 		if (isAdminOrPM) return true;
-		const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
+		const isMyProperty = properties$1.find((p) => p.id === task.propertyId)?.ownerId === currentUser.id;
 		if (task.approvalStatus === "owner_pending") return isOwner && isMyProperty;
 		return false;
 	};
@@ -70541,8 +67704,8 @@ function Messages() {
 	const [newMessage, setNewMessage] = (0, import_react.useState)("");
 	const [searchTerm, setSearchTerm] = (0, import_react.useState)("");
 	const scrollRef = (0, import_react.useRef)(null);
-	const filteredMessages = messages$1.filter((m$1) => m$1.contact.toLowerCase().includes(searchTerm.toLowerCase()));
-	const activeChat = (0, import_react.useMemo)(() => messages$1.find((m$1) => m$1.id === activeThread), [messages$1, activeThread]);
+	const filteredMessages = messages$1.filter((m) => m.contact.toLowerCase().includes(searchTerm.toLowerCase()));
+	const activeChat = (0, import_react.useMemo)(() => messages$1.find((m) => m.id === activeThread), [messages$1, activeThread]);
 	(0, import_react.useEffect)(() => {
 		if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
 	}, [activeChat?.history]);
@@ -70579,14 +67742,14 @@ function Messages() {
 					})
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ScrollArea, {
 					className: "flex-1 custom-scrollbar",
-					children: [filteredMessages.map((m$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-						onClick: () => setActiveThread(m$1.id),
-						className: `w-full flex items-start gap-3 p-4 text-left border-b border-slate-100 transition-colors hover:bg-slate-50 ${activeThread === m$1.id ? "bg-slate-50" : ""}`,
+					children: [filteredMessages.map((m) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+						onClick: () => setActiveThread(m.id),
+						className: `w-full flex items-start gap-3 p-4 text-left border-b border-slate-100 transition-colors hover:bg-slate-50 ${activeThread === m.id ? "bg-slate-50" : ""}`,
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
 							className: "h-10 w-10 border border-slate-200",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, { src: m$1.avatar }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, { src: m.avatar }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
 								className: "bg-slate-100 text-black",
-								children: m$1.contact.charAt(0)
+								children: m.contact.charAt(0)
 							})]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex-1 overflow-hidden",
@@ -70594,17 +67757,17 @@ function Messages() {
 								className: "flex justify-between items-center mb-1",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 									className: "font-semibold text-sm truncate text-slate-900",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: m$1.contact })
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: m.contact })
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 									className: "text-[10px] text-muted-foreground font-medium",
-									children: format(new Date(m$1.time), "HH:mm")
+									children: format(new Date(m.time), "HH:mm")
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 								className: "text-xs text-muted-foreground truncate font-medium",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: m$1.lastMessage })
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: m.lastMessage })
 							})]
 						})]
-					}, m$1.id)), filteredMessages.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					}, m.id)), filteredMessages.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 						className: "p-8 text-center text-sm text-muted-foreground",
 						children: "No conversations found."
 					})]
@@ -70785,476 +67948,28 @@ var Switch = import_react.forwardRef(({ className, ...props }, ref) => /* @__PUR
 	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Thumb, { className: cn("pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0") })
 }));
 Switch.displayName = Root.displayName;
-var globalConfig = {
-	tiers: [{
-		id: "tier-1",
-		name: "Essential",
-		basePrice: 49,
-		maxUnits: 10,
-		additionalUnitCost: 2,
-		region: "global",
-		features: [
-			"Basic Reporting",
-			"Up to 10 Properties",
-			"Standard Support"
-		]
-	}, {
-		id: "tier-2",
-		name: "Professional",
-		basePrice: 199,
-		maxUnits: 50,
-		additionalUnitCost: 1.5,
-		region: "global",
-		features: [
-			"Advanced Analytics",
-			"Up to 50 Properties",
-			"Priority Support"
-		]
-	}],
-	discounts: [{
-		id: "disc-1",
-		name: "SUMMER2025",
-		type: "percentage",
-		value: 15,
-		expiresAt: "2025-08-31"
-	}],
-	pmOverrides: []
-};
-var listeners = /* @__PURE__ */ new Set();
-var useSubscriptionStore = () => {
-	const [subscriptionConfig, setSubscriptionConfig] = (0, import_react.useState)(globalConfig);
-	(0, import_react.useEffect)(() => {
-		const handler = () => setSubscriptionConfig(globalConfig);
-		listeners.add(handler);
-		return () => {
-			listeners.delete(handler);
-		};
-	}, []);
-	const updateSubscriptionConfig = (newConfig) => {
-		globalConfig = newConfig;
-		listeners.forEach((listener) => listener());
-	};
-	return {
-		subscriptionConfig,
-		updateSubscriptionConfig
-	};
-};
-var useSubscriptionStore_default = useSubscriptionStore;
 function SubscriptionSettings() {
-	const { subscriptionConfig, updateSubscriptionConfig } = useSubscriptionStore_default();
-	const { allUsers } = useAuthStore_default();
-	const { toast: toast$2 } = useToast();
-	const pms = allUsers.filter((u$1) => u$1.role === "software_tenant");
-	const [tierOpen, setTierOpen] = (0, import_react.useState)(false);
-	const [discountOpen, setDiscountOpen] = (0, import_react.useState)(false);
-	const [overrideOpen, setOverrideOpen] = (0, import_react.useState)(false);
-	const [newTier, setNewTier] = (0, import_react.useState)({ region: "global" });
-	const [newDiscount, setNewDiscount] = (0, import_react.useState)({ type: "percentage" });
-	const [newOverride, setNewOverride] = (0, import_react.useState)({});
-	const handleSaveTier = () => {
-		if (!newTier.name || !newTier.basePrice) return;
-		const tier = {
-			...newTier,
-			id: `tier-${Date.now()}`,
-			features: ["Standard features", "Support"]
-		};
-		updateSubscriptionConfig({
-			...subscriptionConfig,
-			tiers: [...subscriptionConfig.tiers, tier]
-		});
-		setTierOpen(false);
-		setNewTier({ region: "global" });
-		toast$2({ title: "Tier created" });
-	};
-	const handleDeleteTier = (id) => {
-		updateSubscriptionConfig({
-			...subscriptionConfig,
-			tiers: subscriptionConfig.tiers.filter((t) => t.id !== id)
-		});
-	};
-	const handleSaveDiscount = () => {
-		if (!newDiscount.name || !newDiscount.value || !newDiscount.expiresAt) return;
-		const discount = {
-			...newDiscount,
-			id: `disc-${Date.now()}`
-		};
-		updateSubscriptionConfig({
-			...subscriptionConfig,
-			discounts: [...subscriptionConfig.discounts, discount]
-		});
-		setDiscountOpen(false);
-		setNewDiscount({ type: "percentage" });
-		toast$2({ title: "Discount created" });
-	};
-	const handleDeleteDiscount = (id) => {
-		updateSubscriptionConfig({
-			...subscriptionConfig,
-			discounts: subscriptionConfig.discounts.filter((d) => d.id !== id)
-		});
-	};
-	const handleSaveOverride = () => {
-		if (!newOverride.pmId || newOverride.fixedRate === void 0) return;
-		const override = {
-			...newOverride,
-			id: `ovr-${Date.now()}`
-		};
-		updateSubscriptionConfig({
-			...subscriptionConfig,
-			pmOverrides: [...subscriptionConfig.pmOverrides, override]
-		});
-		setOverrideOpen(false);
-		setNewOverride({});
-		toast$2({ title: "Override created" });
-	};
-	const handleDeleteOverride = (id) => {
-		updateSubscriptionConfig({
-			...subscriptionConfig,
-			pmOverrides: subscriptionConfig.pmOverrides.filter((o) => o.id !== id)
-		});
-	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-		className: "mt-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Subscription & Pricing Config" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Manage SaaS pricing tiers, regional costs, and promotional discounts." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
-			defaultValue: "tiers",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
-					className: "mb-4",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-							value: "tiers",
-							children: "Base Tiers"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-							value: "discounts",
-							children: "Discounts"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-							value: "overrides",
-							children: "PM Overrides"
-						})
-					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
-					value: "tiers",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "flex justify-end mb-4",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-							open: tierOpen,
-							onOpenChange: setTierOpen,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-								asChild: true,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-									className: "gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Add Tier"]
-								})
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "New Pricing Tier" }) }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-4 py-4",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Tier Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: newTier.name || "",
-												onChange: (e) => setNewTier({
-													...newTier,
-													name: e.target.value
-												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid grid-cols-2 gap-4",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Base Price ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													type: "number",
-													value: newTier.basePrice || "",
-													onChange: (e) => setNewTier({
-														...newTier,
-														basePrice: Number(e.target.value)
-													})
-												})]
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Max Included Units" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													type: "number",
-													value: newTier.maxUnits || "",
-													onChange: (e) => setNewTier({
-														...newTier,
-														maxUnits: Number(e.target.value)
-													})
-												})]
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid grid-cols-2 gap-4",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Additional Unit Cost ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													type: "number",
-													value: newTier.additionalUnitCost || "",
-													onChange: (e) => setNewTier({
-														...newTier,
-														additionalUnitCost: Number(e.target.value)
-													})
-												})]
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Region" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-													value: newTier.region,
-													onValueChange: (v) => setNewTier({
-														...newTier,
-														region: v
-													}),
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-															value: "global",
-															children: "Global"
-														}),
-														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-															value: "us",
-															children: "United States"
-														}),
-														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-															value: "eu",
-															children: "Europe"
-														}),
-														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-															value: "br",
-															children: "Brazil"
-														})
-													] })]
-												})]
-											})]
-										})
-									]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									onClick: handleSaveTier,
-									children: "Save Tier"
-								}) })
-							] })]
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Name" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Base Price" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Max Units" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Extra Unit Cost" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Region" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: "Actions"
-						})
-					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: subscriptionConfig.tiers.map((tier) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "font-bold",
-							children: tier.name
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: ["$", tier.basePrice] }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: tier.maxUnits }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: ["$", tier.additionalUnitCost] }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: "outline",
-							className: "uppercase",
-							children: tier.region
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								variant: "ghost",
-								size: "icon",
-								className: "text-red-500",
-								onClick: () => handleDeleteTier(tier.id),
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-							})
-						})
-					] }, tier.id)) })] })]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
-					value: "discounts",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "flex justify-end mb-4",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-							open: discountOpen,
-							onOpenChange: setDiscountOpen,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-								asChild: true,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-									className: "gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Add Promo"]
-								})
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "New Temporary Discount" }) }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-4 py-4",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Promo Name / Code" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: newDiscount.name || "",
-												onChange: (e) => setNewDiscount({
-													...newDiscount,
-													name: e.target.value
-												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid grid-cols-2 gap-4",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-													value: newDiscount.type,
-													onValueChange: (v) => setNewDiscount({
-														...newDiscount,
-														type: v
-													}),
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "percentage",
-														children: "Percentage"
-													}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-														value: "fixed",
-														children: "Fixed Amount"
-													})] })]
-												})]
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Value" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													type: "number",
-													value: newDiscount.value || "",
-													onChange: (e) => setNewDiscount({
-														...newDiscount,
-														value: Number(e.target.value)
-													})
-												})]
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Expires At" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												type: "date",
-												value: newDiscount.expiresAt || "",
-												onChange: (e) => setNewDiscount({
-													...newDiscount,
-													expiresAt: e.target.value
-												})
-											})]
-										})
-									]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									onClick: handleSaveDiscount,
-									children: "Save Discount"
-								}) })
-							] })]
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Code / Name" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Value" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Expires" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: "Actions"
-						})
-					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: subscriptionConfig.discounts.map((disc) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "font-bold",
-							children: disc.name
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: disc.type === "percentage" ? `${disc.value}%` : `$${disc.value}` }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: disc.expiresAt }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								variant: "ghost",
-								size: "icon",
-								className: "text-red-500",
-								onClick: () => handleDeleteDiscount(disc.id),
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-							})
-						})
-					] }, disc.id)) })] })]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
-					value: "overrides",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "flex justify-end mb-4",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-							open: overrideOpen,
-							onOpenChange: setOverrideOpen,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-								asChild: true,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-									className: "gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Add Override"]
-								})
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "PM Pricing Override" }) }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-4 py-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Select Property Manager" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-											value: newOverride.pmId || "",
-											onValueChange: (v) => setNewOverride({
-												...newOverride,
-												pmId: v
-											}),
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select PM..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: pms.map((pm) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: pm.id,
-												children: pm.name
-											}, pm.id)) })]
-										})]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "grid gap-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Fixed Monthly Rate ($)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "number",
-											value: newOverride.fixedRate ?? "",
-											onChange: (e) => setNewOverride({
-												...newOverride,
-												fixedRate: Number(e.target.value)
-											})
-										})]
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									onClick: handleSaveOverride,
-									children: "Save Override"
-								}) })
-							] })]
-						})
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Property Manager" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Fixed Rate" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: "Actions"
-						})
-					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: subscriptionConfig.pmOverrides.map((ovr) => {
-						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-								className: "font-bold",
-								children: pms.find((p$1) => p$1.id === ovr.pmId)?.name || "Unknown"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, { children: [
-								"$",
-								ovr.fixedRate,
-								" /mo (Flat)"
-							] }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-								className: "text-right",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									variant: "ghost",
-									size: "icon",
-									className: "text-red-500",
-									onClick: () => handleDeleteOverride(ovr.id),
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-								})
-							})
-						] }, ovr.id);
-					}) })] })]
-				})
-			]
-		}) })]
+		className: "border-slate-200 shadow-sm bg-white",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Subscription Plan" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Manage your billing and tier limits." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+			className: "space-y-6",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex justify-between items-center bg-blue-50 p-4 rounded-lg border border-blue-100",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+					className: "font-bold text-blue-900",
+					children: "Pro Plan"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-sm text-blue-700",
+					children: "Unlimited users, up to 50 properties."
+				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+					className: "bg-blue-600 text-white hover:bg-blue-700",
+					children: "Active"
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-sm text-slate-500",
+				children: "Contact support to upgrade your plan or increase your property limits."
+			})]
+		})]
 	});
 }
 function Settings() {
@@ -71560,38 +68275,10 @@ function Settings() {
 		})]
 	});
 }
-var COUNTRIES = {
-	US: {
-		code: "+1",
-		flag: "🇺🇸",
-		mask: "(999) 999-9999",
-		maxLength: 14
-	},
-	BR: {
-		code: "+55",
-		flag: "🇧🇷",
-		mask: "(99) 99999-9999",
-		maxLength: 15
-	},
-	ES: {
-		code: "+34",
-		flag: "🇪🇸",
-		mask: "999 99 99 99",
-		maxLength: 13
-	}
-};
-function PhoneInput({ className, value, onChange, defaultCountry = "US", country: controlledCountry, onCountryChange, ...props }) {
-	const [internalCountry, setInternalCountry] = import_react.useState(defaultCountry);
-	const currentCountry = controlledCountry || internalCountry;
-	const handleCountryChange = (val) => {
-		const newCountry = val;
-		if (onCountryChange) onCountryChange(newCountry);
-		else setInternalCountry(newCountry);
-	};
-	const handlePhoneChange = (e) => {
+function PhoneInput({ value, onChange, country = "US", onCountryChange, className, ...props }) {
+	const handleChange = (e) => {
 		const rawValue = e.target.value;
-		const maskedValue = applyPhoneMask(rawValue, currentCountry);
-		if (maskedValue.length > COUNTRIES[currentCountry].maxLength) return;
+		const maskedValue = applyPhoneMask(rawValue, country);
 		onChange({
 			...e,
 			target: {
@@ -71600,252 +68287,200 @@ function PhoneInput({ className, value, onChange, defaultCountry = "US", country
 			}
 		});
 	};
+	import_react.useEffect(() => {
+		if (value) {
+			const maskedValue = applyPhoneMask(value, country);
+			if (maskedValue !== value) onChange({ target: { value: maskedValue } });
+		}
+	}, [country]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: cn("flex gap-2", className),
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-			value: currentCountry,
-			onValueChange: handleCountryChange,
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-				className: "w-[100px] bg-white text-black",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectValue, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-					className: "mr-2",
-					children: COUNTRIES[currentCountry].flag
-				}), COUNTRIES[currentCountry].code] })
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, {
-				className: "bg-white",
-				children: Object.entries(COUNTRIES).map(([key, data]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-					value: key,
-					className: "text-black hover:bg-slate-100",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "mr-2",
-						children: data.flag
-					}), data.code]
-				}, key))
-			})]
+		className: "flex w-full",
+		children: [onCountryChange && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("select", {
+			className: "h-10 rounded-l-md border border-r-0 border-input bg-slate-50 px-2 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+			value: country,
+			onChange: (e) => onCountryChange(e.target.value),
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+					value: "US",
+					children: "🇺🇸 +1"
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+					value: "BR",
+					children: "🇧🇷 +55"
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+					value: "ES",
+					children: "🇪🇸 +34"
+				})
+			]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-			...props,
+			type: "tel",
 			value,
-			onChange: handlePhoneChange,
-			placeholder: COUNTRIES[currentCountry].mask,
-			maxLength: COUNTRIES[currentCountry].maxLength,
-			className: cn("flex-1 bg-white text-black", className)
+			onChange: handleChange,
+			className: `h-10 ${onCountryChange ? "rounded-l-none" : ""} ${className || ""}`,
+			...props
 		})]
 	});
 }
-function DocumentVault({ documents, onUpdate, canEdit, title, description, entityContext }) {
-	const { t, language } = useLanguageStore_default();
-	const { toast: toast$2 } = useToast();
-	const docInputRef = (0, import_react.useRef)(null);
-	const [isUploading, setIsUploading] = (0, import_react.useState)(false);
-	const [uploadDialogOpen, setUploadDialogOpen] = (0, import_react.useState)(false);
-	const [selectedFile, setSelectedFile] = (0, import_react.useState)(null);
-	const [selectedCategory, setSelectedCategory] = (0, import_react.useState)("Other");
-	const [linkedEntity, setLinkedEntity] = (0, import_react.useState)(entityContext?.id || "");
-	const handleFileSelect = (e) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			setSelectedFile(file);
-			if (entityContext) setLinkedEntity(entityContext.id);
-			setUploadDialogOpen(true);
-		}
+function DocumentVault({ documents, onUpdate, canEdit = false, entityContext }) {
+	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
+	const [form, setForm] = (0, import_react.useState)({ category: "Other" });
+	const handleAdd = () => {
+		if (!form.name || !form.url) return;
+		const newDoc = {
+			id: `doc-${Date.now()}`,
+			name: form.name,
+			url: form.url,
+			category: form.category || "Other",
+			date: (/* @__PURE__ */ new Date()).toISOString(),
+			linkedEntityId: entityContext?.id,
+			linkedEntityType: entityContext?.type,
+			linkedEntityName: entityContext?.name
+		};
+		onUpdate([...documents, newDoc]);
+		setIsAddOpen(false);
+		setForm({ category: "Other" });
 	};
-	const handleConfirmUpload = () => {
-		if (!selectedFile) return;
-		setIsUploading(true);
-		setTimeout(() => {
-			const newDoc = {
-				id: `doc-${Date.now()}`,
-				name: selectedFile.name,
-				url: URL.createObjectURL(selectedFile),
-				date: (/* @__PURE__ */ new Date()).toISOString(),
-				type: selectedFile.type,
-				size: `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`,
-				category: selectedCategory,
-				linkedEntityId: linkedEntity || void 0,
-				linkedEntityName: linkedEntity === entityContext?.id ? entityContext.name : void 0,
-				linkedEntityType: linkedEntity === entityContext?.id ? entityContext.type : void 0
-			};
-			onUpdate([...documents || [], newDoc]);
-			setIsUploading(false);
-			setUploadDialogOpen(false);
-			setSelectedFile(null);
-			if (docInputRef.current) docInputRef.current.value = "";
-			toast$2({
-				title: t("common.success"),
-				description: t("common.upload") + " " + t("common.completed")
-			});
-		}, 1e3);
+	const handleRemove = (id) => {
+		onUpdate(documents.filter((d) => d.id !== id));
 	};
-	const handleRemoveDoc = (docId) => {
-		onUpdate((documents || []).filter((d) => d.id !== docId));
-		toast$2({
-			title: t("common.removed"),
-			description: t("common.delete_success")
-		});
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-		className: "flex flex-row items-center justify-between",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: title || t("common.documents") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: description || t("common.documents") })] }), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-			type: "file",
-			ref: docInputRef,
-			className: "hidden",
-			accept: ".pdf,.doc,.docx,.txt,.jpg,.png",
-			onChange: handleFileSelect
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-			onClick: () => docInputRef.current?.click(),
-			className: "bg-trust-blue",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "mr-2 h-4 w-4" }), t("common.upload")]
-		})] })]
-	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
-		open: uploadDialogOpen,
-		onOpenChange: setUploadDialogOpen,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("common.upload") }) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-4 py-4",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.details") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "p-2 border rounded bg-muted text-sm flex items-center gap-2 text-black",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(File, { className: "h-4 w-4 text-blue-500" }), selectedFile?.name]
-						})]
-					}),
-					entityContext && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Link Document to Specific Person" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-							value: linkedEntity,
-							onValueChange: setLinkedEntity,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Person..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-								value: entityContext.id,
-								children: [
-									entityContext.name,
-									" (",
-									t(`roles.${entityContext.type}`),
-									")"
-								]
-							}) })]
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.category") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-							value: selectedCategory,
-							onValueChange: (v) => setSelectedCategory(v),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Contract",
-									children: t("common.contracts")
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-									value: "ID",
-									children: ["ID / ", t("common.tax_id")]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Passport",
-									children: "Passport"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "SSN",
-									children: "SSN / Tax ID"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Insurance",
-									children: "Insurance"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Deed",
-									children: "Deed"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Inspection",
-									children: "Inspection"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-									value: "Other",
-									children: t("common.none")
-								})
-							] })]
-						})]
-					})
-				]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				variant: "outline",
-				onClick: () => setUploadDialogOpen(false),
-				children: t("common.cancel")
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				onClick: handleConfirmUpload,
-				disabled: isUploading,
-				children: isUploading ? "..." : t("common.confirm")
-			})] })
-		] })
-	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "space-y-4",
-		children: !documents || documents.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg",
-			children: t("common.empty")
-		}) : documents.map((doc) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "bg-blue-100 p-2 rounded-full",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-5 w-5 text-blue-600" })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "font-medium text-sm text-black",
-							children: doc.name
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: "secondary",
-							className: "text-xs",
-							children: doc.category
-						}),
-						doc.linkedEntityName && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
-							variant: "outline",
-							className: "text-xs",
-							children: ["Linked to: ", doc.linkedEntityName]
-						})
-					]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-					className: "text-xs text-muted-foreground text-black",
-					children: [
-						formatDate(doc.date, language),
-						" •",
-						" ",
-						doc.size || "Unknown size"
-					]
-				})] })]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex items-center gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-					href: doc.url,
-					download: doc.name,
-					target: "_blank",
-					rel: "noopener noreferrer",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						size: "icon",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4" })
-					})
-				}), canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						size: "icon",
-						className: "text-red-500 hover:text-red-700",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm_delete") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-					onClick: () => handleRemoveDoc(doc.id),
-					children: t("common.delete")
-				})] })] })] })]
-			})]
-		}, doc.id))
-	})] })] });
+		children: [
+			canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex justify-end",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					variant: "outline",
+					size: "sm",
+					onClick: () => setIsAddOpen(true),
+					className: "gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Add Document"]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "border rounded-md divide-y bg-white",
+				children: [documents.map((doc) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center justify-between p-3 hover:bg-slate-50 transition-colors",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-3",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "bg-blue-50 p-2 rounded",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, { className: "h-5 w-5 text-blue-600" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+							className: "text-sm font-medium text-slate-900 flex items-center gap-2",
+							children: [doc.name, doc.category === "Contract" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShieldCheck, {
+								className: "h-3 w-3 text-green-600",
+								title: "Legal Document"
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex gap-2 text-xs text-slate-500",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "bg-slate-100 px-1.5 py-0.5 rounded uppercase",
+								children: doc.category
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: format(new Date(doc.date), "MMM dd, yyyy") })]
+						})] })]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-1",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								title: "View",
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+									href: doc.url,
+									target: "_blank",
+									rel: "noreferrer",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-4 w-4 text-slate-600" })
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								title: "Download",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "h-4 w-4 text-slate-600" })
+							}),
+							canEdit && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								variant: "ghost",
+								size: "icon",
+								onClick: () => handleRemove(doc.id),
+								className: "text-red-500 hover:text-red-700 hover:bg-red-50",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+							})
+						]
+					})]
+				}, doc.id)), documents.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "p-8 text-center text-sm text-slate-500",
+					children: "No documents uploaded yet."
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: isAddOpen,
+				onOpenChange: setIsAddOpen,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Upload Document" }) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4 py-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Document Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: form.name || "",
+									onChange: (e) => setForm({
+										...form,
+										name: e.target.value
+									}),
+									placeholder: "e.g. Signed Lease Agreement"
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Category" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: form.category,
+									onValueChange: (v) => setForm({
+										...form,
+										category: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: [
+										"Contract",
+										"Insurance",
+										"ID",
+										"Passport",
+										"SSN",
+										"DriverLicense",
+										"Other"
+									].map((c$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: c$1,
+										children: c$1
+									}, c$1)) })]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "File URL (Mock Upload)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: form.url || "",
+									onChange: (e) => setForm({
+										...form,
+										url: e.target.value
+									}),
+									placeholder: "https://..."
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "outline",
+						onClick: () => setIsAddOpen(false),
+						children: "Cancel"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleAdd,
+						disabled: !form.name || !form.url,
+						children: "Save Document"
+					})] })
+				] })
+			})
+		]
+	});
 }
 function Tenants() {
 	const { tenants: tenants$1, addTenant, updateTenant, formatAppCurrency, currency } = (0, import_react.useContext)(AppContext);
@@ -73944,7 +70579,7 @@ function Hotels() {
 												children: "*"
 											})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												placeholder: "E.g. Grand Heritage Hotel",
-												value: form.name,
+												value: form.name ?? "",
 												onChange: (e) => setForm({
 													...form,
 													name: e.target.value
@@ -73957,7 +70592,7 @@ function Hotels() {
 												className: "grid gap-2",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.manager") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													placeholder: t("common.manager"),
-													value: form.managerName,
+													value: form.managerName ?? "",
 													onChange: (e) => setForm({
 														...form,
 														managerName: e.target.value
@@ -73967,7 +70602,7 @@ function Hotels() {
 												className: "grid gap-2",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													placeholder: "+1 (555) 000-0000",
-													value: form.managerPhone,
+													value: form.managerPhone ?? "",
 													onChange: (e) => setForm({
 														...form,
 														managerPhone: e.target.value
@@ -73979,7 +70614,7 @@ function Hotels() {
 											className: "grid gap-2",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												placeholder: "manager@hotel.com",
-												value: form.managerEmail,
+												value: form.managerEmail ?? "",
 												onChange: (e) => setForm({
 													...form,
 													managerEmail: e.target.value
@@ -73995,7 +70630,7 @@ function Hotels() {
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "grid gap-2",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-												value: form.country,
+												value: form.country ?? "US",
 												onValueChange: (val) => setForm({
 													...form,
 													country: val
@@ -74022,7 +70657,7 @@ function Hotels() {
 												className: "grid gap-2 col-span-3",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Street Address" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													placeholder: "Street name",
-													value: form.address,
+													value: form.address ?? "",
 													onChange: (e) => setForm({
 														...form,
 														address: e.target.value
@@ -74032,7 +70667,7 @@ function Hotels() {
 												className: "grid gap-2 col-span-1",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Number" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													placeholder: "No.",
-													value: form.number,
+													value: form.number ?? "",
 													onChange: (e) => setForm({
 														...form,
 														number: e.target.value
@@ -74046,7 +70681,7 @@ function Hotels() {
 												className: "grid gap-2",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Neighborhood" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													placeholder: "Neighborhood",
-													value: form.neighborhood,
+													value: form.neighborhood ?? "",
 													onChange: (e) => setForm({
 														...form,
 														neighborhood: e.target.value
@@ -74059,7 +70694,7 @@ function Hotels() {
 													children: "*"
 												})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													placeholder: "City",
-													value: form.city,
+													value: form.city ?? "",
 													onChange: (e) => setForm({
 														...form,
 														city: e.target.value
@@ -74073,7 +70708,7 @@ function Hotels() {
 												className: "grid gap-2",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "State / Province" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													placeholder: "State",
-													value: form.state,
+													value: form.state ?? "",
 													onChange: (e) => setForm({
 														...form,
 														state: e.target.value
@@ -74083,7 +70718,7 @@ function Hotels() {
 												className: "grid gap-2",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Zip Code" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													placeholder: "Zip Code",
-													value: form.zipCode,
+													value: form.zipCode ?? "",
 													onChange: (e) => setForm({
 														...form,
 														zipCode: e.target.value
@@ -74112,7 +70747,7 @@ function Hotels() {
 										children: [form.towersList.filter((t$1) => !t$1.isDeleted).map((t$1, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "flex gap-2 items-center",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: t$1.name,
+												value: t$1.name ?? "",
 												onChange: (e) => {
 													const val = e.target.value;
 													setForm((prev) => ({
@@ -75829,7 +72464,7 @@ function HotelRoomDetails() {
 	const { t, language } = useLanguageStore_default();
 	const { currency } = useFinancialStore_default();
 	const { toast: toast$2 } = useToast();
-	const room = properties$1.find((p$1) => p$1.id === roomId);
+	const room = properties$1.find((p) => p.id === roomId);
 	const hotel = hotels$1.find((h) => h.id === hotelId);
 	const tower = towers$1.find((t$1) => t$1.id === towerId);
 	const [formData, setFormData] = (0, import_react.useState)(room ? { ...room } : null);
@@ -76331,27 +72966,39 @@ function Users() {
 		})]
 	});
 }
+var countryToCurrency = {
+	US: "USD",
+	BR: "BRL",
+	ES: "EUR"
+};
+var countryToLocale = {
+	US: "en-US",
+	BR: "pt-BR",
+	ES: "es-ES"
+};
 function ServicePricing() {
-	const { genericServiceRates: genericServiceRates$1, addGenericServiceRate, updateGenericServiceRate, deleteGenericServiceRate, formatAppCurrency } = (0, import_react.useContext)(AppContext);
-	const { t } = useLanguageStore_default();
+	const { genericServiceRates: genericServiceRates$1, addGenericServiceRate, updateGenericServiceRate, deleteGenericServiceRate } = (0, import_react.useContext)(AppContext);
+	const { t, language } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const [search, setSearch] = (0, import_react.useState)("");
 	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
 	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
-	const [form, setForm] = (0, import_react.useState)({
+	const defaultForm = {
 		serviceName: "",
+		country: "US",
 		servicePrice: 0,
 		productPrice: 0,
 		pmValue: 0,
 		partnerPayment: 0,
 		validFrom: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
-	});
+	};
+	const [form, setForm] = (0, import_react.useState)(defaultForm);
 	const [deleteId, setDeleteId] = (0, import_react.useState)(null);
 	const filteredRates = genericServiceRates$1.filter((r$1) => r$1.serviceName.toLowerCase().includes(search.toLowerCase()));
 	const handleSave = () => {
 		if (!form.serviceName) {
 			toast$2({
-				title: t("common.error"),
+				title: t("common.error") || "Error",
 				variant: "destructive"
 			});
 			return;
@@ -76361,37 +73008,33 @@ function ServicePricing() {
 				...editingRecord,
 				...form
 			});
-			toast$2({ title: t("common.success") });
+			toast$2({ title: t("common.success") || "Success" });
 		} else {
 			addGenericServiceRate({
 				id: `sr-${Date.now()}`,
 				serviceName: form.serviceName,
+				country: form.country || "US",
 				servicePrice: Number(form.servicePrice) || 0,
 				productPrice: Number(form.productPrice) || 0,
 				pmValue: Number(form.pmValue) || 0,
 				partnerPayment: Number(form.partnerPayment) || 0,
 				validFrom: form.validFrom || (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
 			});
-			toast$2({ title: t("common.success") });
+			toast$2({ title: t("common.success") || "Success" });
 		}
 		setIsAddOpen(false);
 		setEditingRecord(null);
-		setForm({
-			serviceName: "",
-			servicePrice: 0,
-			productPrice: 0,
-			pmValue: 0,
-			partnerPayment: 0,
-			validFrom: ""
-		});
+		setForm(defaultForm);
 	};
 	const handleDelete = () => {
 		if (deleteId) {
 			deleteGenericServiceRate(deleteId);
-			toast$2({ title: t("common.delete_success") });
+			toast$2({ title: t("common.delete_success") || "Deleted successfully" });
 			setDeleteId(null);
 		}
 	};
+	const currentCurrency = countryToCurrency[form.country || "US"] || "USD";
+	const currentLocale = countryToLocale[form.country || "US"] || "en-US";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
 		children: [
@@ -76399,14 +73042,14 @@ function ServicePricing() {
 				className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 					className: "text-3xl font-bold tracking-tight text-slate-900",
-					children: t("common.service_pricing")
+					children: t("service_pricing.title")
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-muted-foreground",
-					children: "Price catalog for generic services and products."
+					children: t("service_pricing.desc")
 				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-2",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-						placeholder: t("common.search"),
+						placeholder: t("common.search") || "Search...",
 						value: search,
 						onChange: (e) => setSearch(e.target.value),
 						className: "w-64"
@@ -76416,14 +73059,7 @@ function ServicePricing() {
 							setIsAddOpen(v);
 							if (!v) {
 								setEditingRecord(null);
-								setForm({
-									serviceName: "",
-									servicePrice: 0,
-									productPrice: 0,
-									pmValue: 0,
-									partnerPayment: 0,
-									validFrom: ""
-								});
+								setForm(defaultForm);
 							}
 						},
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
@@ -76433,52 +73069,89 @@ function ServicePricing() {
 								children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
 									" ",
-									t("common.add")
+									t("common.add") || "Add"
 								]
 							})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") : t("common.add") }) }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-4 py-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "space-y-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-										value: form.serviceName,
-										onChange: (e) => setForm({
-											...form,
-											serviceName: e.target.value
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+							className: "sm:max-w-[500px]",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") || "Edit" : t("common.add") || "Add" }) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-4 py-4",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+												value: form.country || "US",
+												onValueChange: (val) => setForm({
+													...form,
+													country: val
+												}),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select_country") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "US",
+														children: t("common.country_us")
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "BR",
+														children: t("common.country_br")
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+														value: "ES",
+														children: t("common.country_es")
+													})
+												] })]
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "space-y-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("service_pricing.service_name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												value: form.serviceName,
+												onChange: (e) => setForm({
+													...form,
+													serviceName: e.target.value
+												})
+											})]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid grid-cols-2 gap-4",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("service_pricing.cost_price") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+													value: form.servicePrice,
+													onChange: (val) => setForm({
+														...form,
+														servicePrice: val
+													}),
+													currency: currentCurrency,
+													locale: currentLocale
+												})]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "space-y-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("service_pricing.product_price") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+													value: form.productPrice,
+													onChange: (val) => setForm({
+														...form,
+														productPrice: val
+													}),
+													currency: currentCurrency,
+													locale: currentLocale
+												})]
+											})]
 										})
-									})]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-2 gap-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Cost Price" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "number",
-											value: form.servicePrice,
-											onChange: (e) => setForm({
-												...form,
-												servicePrice: Number(e.target.value)
-											})
-										})]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Sale Price" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "number",
-											value: form.productPrice,
-											onChange: (e) => setForm({
-												...form,
-												productPrice: Number(e.target.value)
-											})
-										})]
-									})]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								onClick: handleSave,
-								children: t("common.save")
-							}) })
-						] })]
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "outline",
+									onClick: () => setIsAddOpen(false),
+									children: t("common.cancel")
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: handleSave,
+									className: "bg-trust-blue text-white",
+									children: t("common.save")
+								})] })
+							]
+						})]
 					})]
 				})]
 			}),
@@ -76489,76 +73162,87 @@ function ServicePricing() {
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 						className: "bg-slate-50",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Service Name" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Cost Price" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("service_pricing.service_name") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.country") }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("service_pricing.cost_price") }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 								className: "text-right",
-								children: "Sale Price"
+								children: t("service_pricing.product_price")
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 								className: "text-right",
 								children: t("common.actions")
 							})
 						] })
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [filteredRates.map((service) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
-						className: "hover:bg-slate-50",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-								className: "font-medium text-slate-900",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: service.serviceName })
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatAppCurrency(service.servicePrice) }) }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-								className: "text-right font-medium",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formatAppCurrency(service.productPrice) })
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-								className: "text-right",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
-									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-										variant: "ghost",
-										size: "icon",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ellipsis, { className: "h-4 w-4" })
-									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
-									align: "end",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
-										onClick: () => {
-											setEditingRecord(service);
-											setForm(service);
-											setIsAddOpen(true);
-										},
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
-											" ",
-											t("common.edit")
-										]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
-										className: "text-red-600",
-										onClick: () => setDeleteId(service.id),
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
-											" ",
-											t("common.delete")
-										]
-									})]
-								})] })
-							})
-						]
-					}, service.id)), filteredRates.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-						colSpan: 4,
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [filteredRates.map((service) => {
+						const formatOpts = {
+							style: "currency",
+							currency: countryToCurrency[service.country || "US"] || "USD"
+						};
+						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+							className: "hover:bg-slate-50",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "font-medium text-slate-900",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: service.serviceName })
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+									variant: "outline",
+									children: service.country || "US"
+								}) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: new Intl.NumberFormat(countryToLocale[service.country || "US"] || "en-US", formatOpts).format(service.servicePrice) }) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-right font-medium",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: new Intl.NumberFormat(countryToLocale[service.country || "US"] || "en-US", formatOpts).format(service.productPrice) })
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-right",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+											variant: "ghost",
+											size: "icon",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Ellipsis, { className: "h-4 w-4" })
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuContent, {
+										align: "end",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
+											onClick: () => {
+												setEditingRecord(service);
+												setForm(service);
+												setIsAddOpen(true);
+											},
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+												" ",
+												t("common.edit") || "Edit"
+											]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenuItem, {
+											className: "text-red-600",
+											onClick: () => setDeleteId(service.id),
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+												" ",
+												t("common.delete") || "Delete"
+											]
+										})]
+									})] })
+								})
+							]
+						}, service.id);
+					}), filteredRates.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						colSpan: 5,
 						className: "text-center py-6 text-muted-foreground",
-						children: t("common.empty")
+						children: t("common.empty") || "No records found."
 					}) })] })] })
 				})
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialog, {
 				open: !!deleteId,
 				onOpenChange: (v) => !v && setDeleteId(null),
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm_delete") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm_delete") || "Confirm Delete" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") || "This action cannot be undone." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") || "Cancel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
 					onClick: handleDelete,
-					children: t("common.delete")
+					children: t("common.delete") || "Delete"
 				})] })] })
 			})
 		]
@@ -76938,762 +73622,141 @@ function Workflows() {
 		]
 	});
 }
-var useOwnerStore = () => {
-	const context = (0, import_react.useContext)(AppContext);
-	if (!context) throw new Error("useOwnerStore must be used within AppProvider");
-	return {
-		owners: context.owners,
-		addOwner: context.addOwner,
-		updateOwner: context.updateOwner
-	};
-};
-var useOwnerStore_default = useOwnerStore;
-function CloseNegotiationDialog({ open, onOpenChange, onConfirm, currentValue }) {
-	const { t, language } = useLanguageStore_default();
-	const { toast: toast$2 } = useToast();
-	const [newValue, setNewValue] = (0, import_react.useState)(currentValue);
-	const [newStart, setNewStart] = (0, import_react.useState)("");
-	const [newEnd, setNewEnd] = (0, import_react.useState)("");
-	const [contractUrl, setContractUrl] = (0, import_react.useState)("");
-	(0, import_react.useEffect)(() => {
-		if (open) setNewValue(currentValue);
-	}, [open, currentValue]);
-	const handleConfirm = () => {
-		if (!newStart || !newEnd || !contractUrl) {
-			toast$2({
-				title: t("common.error"),
-				description: t("renewals.fill_all_fields"),
-				variant: "destructive"
-			});
-			return;
-		}
-		onConfirm({
-			newValue,
-			newStart,
-			newEnd,
-			contractUrl
-		});
-		setNewStart("");
-		setNewEnd("");
-		setContractUrl("");
-	};
-	const loc = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
-		open,
-		onOpenChange,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-			className: "sm:max-w-[500px]",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: t("renewals.close_negotiation") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: t("renewals.close_negotiation_desc") })] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-5 py-4",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-								className: "font-semibold",
-								children: t("renewals.new_value")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
-								value: newValue,
-								onChange: setNewValue,
-								locale: loc,
-								className: "w-full"
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-									className: "font-semibold",
-									children: t("renewals.new_start_date")
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									type: "date",
-									value: newStart,
-									onChange: (e) => setNewStart(e.target.value),
-									className: "w-full"
-								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-									className: "font-semibold",
-									children: t("renewals.new_end_date")
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									type: "date",
-									value: newEnd,
-									onChange: (e) => setNewEnd(e.target.value),
-									className: "w-full"
-								})]
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-								className: "font-semibold",
-								children: t("renewals.contract_upload")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileUpload, {
-								value: contractUrl,
-								onChange: setContractUrl,
-								accept: ".pdf,.doc,.docx"
-							})]
-						})
-					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, {
-					className: "gap-3 sm:gap-2 pt-2 border-t mt-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "outline",
-						className: "w-full sm:w-auto",
-						onClick: () => onOpenChange(false),
-						children: t("common.cancel")
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						className: "w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white",
-						onClick: handleConfirm,
-						children: t("common.confirm")
-					})]
-				})
-			]
-		})
-	});
-}
-function OwnerNegotiationTab({ tenant, owner, history, onSend, onUpdateTenant }) {
-	const { t, language } = useLanguageStore_default();
-	const { toast: toast$2 } = useToast();
-	const [text, setText] = (0, import_react.useState)("");
-	const [proposed, setProposed] = (0, import_react.useState)(tenant.suggestedRenewalPrice || tenant.rentValue || 0);
-	const [decision, setDecision] = (0, import_react.useState)(tenant.ownerDecision || "pending");
-	const loc = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
-	const formatLocalCurrency = (value) => {
-		return new Intl.NumberFormat(loc, {
-			style: "currency",
-			currency: "USD"
-		}).format(value);
-	};
-	(0, import_react.useEffect)(() => {
-		if (tenant.suggestedRenewalPrice) setProposed(tenant.suggestedRenewalPrice);
-		if (tenant.ownerDecision) setDecision(tenant.ownerDecision);
-	}, [tenant.suggestedRenewalPrice, tenant.ownerDecision]);
-	const handleSendProposal = () => {
-		onUpdateTenant({
-			suggestedRenewalPrice: proposed,
-			ownerDecision: decision
-		});
-		onSend(`Property Manager sent a proposal: ${formatLocalCurrency(proposed)}. Status marked as: ${t(`common.${decision}`)}`);
-		toast$2({
-			title: t("common.success"),
-			description: t("common.success")
-		});
-	};
-	const formatTime = (iso) => {
-		try {
-			if (!iso) return "";
-			const date$1 = parseISO(iso);
-			if (isValid(date$1)) return format(date$1, "dd/MM HH:mm");
-			return iso;
-		} catch {
-			return iso;
-		}
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "mt-4 space-y-4 flex flex-col h-full",
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
-				className: "pb-2",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-					className: "text-sm flex items-center gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-4 w-4 text-green-600" }), t("renewals.pricing_owner_approval")]
-				})
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-				className: "flex flex-col gap-4",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex flex-col sm:flex-row justify-between sm:items-center text-sm gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-							className: "text-muted-foreground",
-							children: [t("renewals.current_value"), ":"]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "font-bold text-lg",
-							children: formatLocalCurrency(tenant.rentValue)
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid grid-cols-1 sm:grid-cols-2 gap-4 items-start",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-								className: "text-xs font-semibold",
-								children: t("renewals.proposed_value")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
-								value: proposed,
-								onChange: setProposed,
-								locale: loc,
-								className: "w-full"
-							})]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-								className: "text-xs font-semibold",
-								children: t("common.status")
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-								value: decision,
-								onValueChange: setDecision,
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-									className: "w-full",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") })
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "pending",
-										children: t("common.pending")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "accepted",
-										children: t("common.accepted")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "counter",
-										children: t("common.counter")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "rejected",
-										children: t("common.rejected")
-									})
-								] })]
-							})]
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "pt-2",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							size: "default",
-							className: "w-full bg-trust-blue hover:bg-blue-700 text-white transition-colors",
-							onClick: handleSendProposal,
-							children: t("renewals.update_terms_notify")
-						})
-					})
-				]
-			})] }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
-				className: "h-[250px] border rounded-md p-4 bg-slate-50 flex-1",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "flex flex-col gap-4",
-					children: history.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "text-center text-muted-foreground text-sm pt-4",
-						children: t("renewals.empty_messages")
-					}) : history.map((msg, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: cn("flex flex-col max-w-[85%]", msg.senderId === "me" ? "self-end items-end" : "self-start items-start"),
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: cn("p-3 rounded-lg text-sm shadow-sm", msg.senderId === "me" ? "bg-trust-blue text-white rounded-br-none" : "bg-white border rounded-bl-none"),
-							children: msg.text
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-[10px] text-muted-foreground mt-1 font-medium",
-							children: formatTime(msg.timestamp)
-						})]
-					}, idx))
-				})
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex gap-2 items-center bg-white p-2 rounded-lg border shadow-sm shrink-0",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					className: "border-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none px-2",
-					placeholder: t("renewals.type_message"),
-					value: text,
-					onChange: (e) => setText(e.target.value),
-					onKeyDown: (e) => e.key === "Enter" && !e.shiftKey && text.trim() && (onSend(text.trim()), setText(""))
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					size: "icon",
-					className: "shrink-0 rounded-full h-8 w-8 bg-trust-blue",
-					disabled: !text.trim(),
-					onClick: () => {
-						onSend(text.trim());
-						setText("");
-					},
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Send, { className: "h-4 w-4" })
-				})]
-			})
-		]
-	});
-}
-function TenantNegotiationTab({ tenant, history, onSend, onUpdateTenant }) {
-	const { t, language } = useLanguageStore_default();
-	const { toast: toast$2 } = useToast();
-	const [text, setText] = (0, import_react.useState)("");
-	const [decision, setDecision] = (0, import_react.useState)(tenant.tenantDecision || "pending");
-	(0, import_react.useEffect)(() => {
-		if (tenant.tenantDecision) setDecision(tenant.tenantDecision);
-	}, [tenant.tenantDecision]);
-	const loc = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
-	const formatLocalCurrency = (value) => {
-		return new Intl.NumberFormat(loc, {
-			style: "currency",
-			currency: "USD"
-		}).format(value);
-	};
-	const proposedRent = tenant.suggestedRenewalPrice || tenant.rentValue;
-	const ownerAccepted = tenant.ownerDecision === "accepted";
-	const handleSendProposal = () => {
-		onUpdateTenant({ tenantDecision: decision });
-		onSend(`Property Manager updated Tenant status to: ${t(`common.${decision}`)}`);
-		toast$2({
-			title: t("common.success"),
-			description: t("common.success")
-		});
-	};
-	const formatTime = (iso) => {
-		try {
-			if (!iso) return "";
-			const date$1 = parseISO(iso);
-			if (isValid(date$1)) return format(date$1, "dd/MM HH:mm");
-			return iso;
-		} catch {
-			return iso;
-		}
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "mt-4 space-y-4 flex flex-col h-full",
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
-				className: "pb-2",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-					className: "text-sm flex items-center gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(UserCheck, { className: "h-4 w-4 text-blue-600" }), t("renewals.pricing_tenant_approval")]
-				})
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-				className: "flex flex-col gap-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex flex-col sm:flex-row justify-between sm:items-center text-sm gap-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-						className: "text-muted-foreground",
-						children: [t("renewals.new_rent_value"), ":"]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "text-left sm:text-right",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "font-bold text-lg text-trust-blue",
-							children: formatLocalCurrency(proposedRent)
-						}), !ownerAccepted && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "text-xs text-orange-600 font-medium mt-1",
-							children: t("renewals.pending_owner_approval")
-						})]
-					})]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "space-y-2 mt-2",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-						className: "text-xs font-semibold",
-						children: t("common.status")
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex flex-col sm:flex-row gap-3 items-start sm:items-stretch",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "w-full sm:flex-1",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-								value: decision,
-								onValueChange: setDecision,
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-									className: "w-full h-10",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") })
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "pending",
-										children: t("common.pending")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "accepted",
-										children: t("common.accepted")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "counter",
-										children: t("common.counter")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "rejected",
-										children: t("common.rejected")
-									})
-								] })]
-							})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							size: "default",
-							className: "w-full sm:w-auto h-10 bg-trust-blue hover:bg-blue-700 text-white shrink-0",
-							onClick: handleSendProposal,
-							children: t("renewals.save_decision")
-						})]
-					})]
-				})]
-			})] }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
-				className: "h-[250px] border rounded-md p-4 bg-slate-50 flex-1",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "flex flex-col gap-4",
-					children: history.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "text-center text-muted-foreground text-sm pt-4",
-						children: t("renewals.empty_messages")
-					}) : history.map((msg, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: cn("flex flex-col max-w-[85%]", msg.senderId === "me" ? "self-end items-end" : "self-start items-start"),
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: cn("p-3 rounded-lg text-sm shadow-sm", msg.senderId === "me" ? "bg-trust-blue text-white rounded-br-none" : "bg-white border rounded-bl-none"),
-							children: msg.text
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-[10px] text-muted-foreground mt-1 font-medium",
-							children: formatTime(msg.timestamp)
-						})]
-					}, idx))
-				})
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex gap-2 items-center bg-white p-2 rounded-lg border shadow-sm shrink-0",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					className: "border-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none px-2",
-					placeholder: t("renewals.type_message"),
-					value: text,
-					onChange: (e) => setText(e.target.value),
-					onKeyDown: (e) => e.key === "Enter" && !e.shiftKey && text.trim() && (onSend(text.trim()), setText(""))
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					size: "icon",
-					className: "shrink-0 rounded-full h-8 w-8 bg-trust-blue",
-					disabled: !text.trim(),
-					onClick: () => {
-						onSend(text.trim());
-						setText("");
-					},
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Send, { className: "h-4 w-4" })
-				})]
-			})
-		]
-	});
-}
 function NegotiationSheet({ open, onOpenChange, tenantId }) {
-	const { tenants: tenants$1, updateTenant, renewTenantContract } = useTenantStore_default();
-	const { properties: properties$1 } = usePropertyStore_default();
-	const { owners: owners$1 } = useOwnerStore_default();
-	const { messages: messages$1, sendMessage, startChat } = useMessageStore_default();
-	const { currentUser } = useAuthStore_default();
+	const { tenants: tenants$1, updateTenantNegotiation } = useTenantStore_default();
 	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const tenant = tenants$1.find((t$1) => t$1.id === tenantId);
-	const property$2 = tenant ? properties$1.find((p$1) => p$1.id === tenant.propertyId) : null;
-	const owner = property$2 ? owners$1.find((o) => o.id === property$2.ownerId) : null;
-	const [newLogNote, setNewLogNote] = (0, import_react.useState)("");
-	const [closeDialogOpen, setCloseDialogOpen] = (0, import_react.useState)(false);
+	const [status, setStatus] = (0, import_react.useState)("");
+	const [price, setPrice] = (0, import_react.useState)("");
+	const [note, setNote] = (0, import_react.useState)("");
 	(0, import_react.useEffect)(() => {
-		if (open && tenant) {
-			startChat(tenant.id);
-			if (owner) startChat(owner.id);
+		if (tenant) {
+			setStatus(tenant.negotiationStatus || "negotiating");
+			setPrice(tenant.suggestedRenewalPrice?.toString() || "");
+			setNote("");
 		}
-	}, [
-		open,
-		tenant,
-		owner,
-		startChat
-	]);
-	const tenantMessages = (0, import_react.useMemo)(() => messages$1.find((m$1) => m$1.contactId === tenant?.id), [messages$1, tenant?.id]);
-	const ownerMessages = (0, import_react.useMemo)(() => messages$1.find((m$1) => m$1.contactId === owner?.id), [messages$1, owner?.id]);
-	const aggregatedHistory = (0, import_react.useMemo)(() => {
-		if (!tenant && !owner) return [];
-		const tHistory = tenantMessages?.history.map((msg) => ({
-			...msg,
-			role: msg.senderId === "me" ? "manager" : "tenant",
-			senderName: msg.senderId === "me" ? "Me" : tenant?.name || "Tenant",
-			origin: "tenant_chat"
-		})) || [];
-		const oHistory = ownerMessages?.history.map((msg) => ({
-			...msg,
-			role: msg.senderId === "me" ? "manager" : "owner",
-			senderName: msg.senderId === "me" ? "Me" : owner?.name || "Owner",
-			origin: "owner_chat"
-		})) || [];
-		return [...tHistory, ...oHistory].sort((a$1, b$1) => (isValid(parseISO(a$1.timestamp)) ? parseISO(a$1.timestamp).getTime() : 0) - (isValid(parseISO(b$1.timestamp)) ? parseISO(b$1.timestamp).getTime() : 0));
-	}, [
-		tenantMessages,
-		ownerMessages,
-		tenant,
-		owner
-	]);
-	if (!tenant) return null;
-	const handleSaveNotes = () => {
-		if (newLogNote.trim()) {
-			const log$1 = {
-				id: Date.now().toString(),
+	}, [tenant, open]);
+	const handleSave = () => {
+		if (!tenantId) return;
+		updateTenantNegotiation(tenantId, {
+			status,
+			suggestedPrice: price ? Number(price) : void 0,
+			log: note ? {
+				id: `log-${Date.now()}`,
 				date: (/* @__PURE__ */ new Date()).toISOString(),
-				action: "Note",
-				note: newLogNote,
-				user: currentUser.name
-			};
-			const currentLogs = tenant.negotiationLogs || [];
-			updateTenant({
-				...tenant,
-				negotiationLogs: [...currentLogs, log$1]
-			});
-			setNewLogNote("");
-			toast$2({ title: t("common.success") });
-		}
-	};
-	const initiateClose = () => {
-		if (tenant.ownerDecision !== "accepted" || tenant.tenantDecision !== "accepted") {
-			toast$2({
-				title: t("common.error"),
-				description: t("renewals.both_must_accept"),
-				variant: "destructive"
-			});
-			return;
-		}
-		setCloseDialogOpen(true);
-	};
-	const handleCloseConfirm = (data) => {
-		renewTenantContract(tenant.id, data.newEnd, data.newValue, data.newStart, {
-			id: `doc-${Date.now()}`,
-			name: "Renewal_Contract.pdf",
-			url: data.contractUrl,
-			date: (/* @__PURE__ */ new Date()).toISOString(),
-			category: "Contract",
-			linkedEntityId: tenant.id
+				action: "Note added",
+				note,
+				user: "Admin"
+			} : void 0
 		});
-		toast$2({
-			title: t("common.success"),
-			description: t("renewals.contract_renewed")
-		});
-		setCloseDialogOpen(false);
+		toast$2({ title: "Updated Successfully" });
 		onOpenChange(false);
 	};
-	const formatTime = (iso) => {
-		try {
-			if (!iso) return "";
-			const date$1 = parseISO(iso);
-			if (isValid(date$1)) return format(date$1, "dd/MM HH:mm");
-			return iso;
-		} catch {
-			return iso;
-		}
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sheet, {
+	if (!tenant) return null;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sheet, {
 		open,
 		onOpenChange,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetContent, {
-			className: "w-[90vw] sm:w-[600px] overflow-y-auto",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SheetTitle, {
-					className: "flex items-center gap-2",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-5 w-5" }),
-						" ",
-						t("renewals.negotiation_hub")
-					]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetDescription, { children: t("renewals.negotiation_hub_desc") })] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-4 py-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid grid-cols-2 gap-4 p-4 bg-muted/20 rounded-lg",
+			className: "sm:max-w-md overflow-y-auto",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetHeader, {
+				className: "mb-6",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SheetTitle, { children: "Manage Renewal" })
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "bg-slate-50 p-4 rounded-lg border",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "font-semibold",
+							children: tenant.name
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+							className: "text-sm text-slate-500",
+							children: ["Current Rent: $", tenant.rentValue]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex flex-col gap-1",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
-									className: "text-xs text-muted-foreground flex items-center gap-1",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }),
-										" ",
-										t("renewals.tenant")
-									]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "font-medium text-sm truncate flex items-center gap-2",
-									children: [tenant.name, /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2 w-2 rounded-full bg-blue-500" })]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex flex-col gap-1",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
-									className: "text-xs text-muted-foreground flex items-center gap-1",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3" }),
-										" ",
-										t("renewals.owner")
-									]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "font-medium text-sm truncate flex items-center gap-2",
-									children: [owner?.name || t("common.none"), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2 w-2 rounded-full bg-green-500" })]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "col-span-2 flex flex-col gap-1",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
-									className: "text-xs text-muted-foreground flex items-center gap-1",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-3 w-3" }),
-										" ",
-										t("common.property")
-									]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "font-medium text-sm truncate",
-									children: property$2?.name
-								})]
-							})
-						]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
-						defaultValue: "owner",
-						className: "w-full",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
-								className: "grid w-full grid-cols-5 h-auto min-h-10 p-1",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-										value: "owner",
-										className: "text-xs whitespace-normal sm:whitespace-nowrap h-full",
-										children: t("renewals.owner")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-										value: "tenant",
-										className: "text-xs whitespace-normal sm:whitespace-nowrap h-full",
-										children: t("renewals.tenant")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-										value: "aggregated",
-										className: "text-xs whitespace-normal sm:whitespace-nowrap h-full",
-										children: t("common.history") || "Unified"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-										value: "documents",
-										className: "text-xs whitespace-normal sm:whitespace-nowrap h-full",
-										children: t("common.documents")
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
-										value: "internal",
-										className: "text-xs whitespace-normal sm:whitespace-nowrap h-full",
-										children: t("renewals.add_note").split(" ")[0] || "Notes"
-									})
-								]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
-								value: "owner",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OwnerNegotiationTab, {
-									tenant,
-									owner,
-									history: ownerMessages?.history || [],
-									onSend: (text) => owner && sendMessage(owner.id, text),
-									onUpdateTenant: (data) => updateTenant({
-										...tenant,
-										...data
-									})
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
-								value: "tenant",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TenantNegotiationTab, {
-									tenant,
-									history: tenantMessages?.history || [],
-									onSend: (text) => sendMessage(tenant.id, text),
-									onUpdateTenant: (data) => updateTenant({
-										...tenant,
-										...data
-									})
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
-								value: "aggregated",
-								className: "mt-4 space-y-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex items-center gap-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded border border-yellow-200",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lock, { className: "h-4 w-4 shrink-0" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("renewals.confidential_note") })]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
-									className: "h-[300px] border rounded-md p-4 bg-slate-50",
-									children: aggregatedHistory.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "text-center text-muted-foreground text-sm pt-8",
-										children: t("renewals.empty_messages")
-									}) : aggregatedHistory.map((msg, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "mb-4 text-sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "flex justify-between items-center mb-1",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-												className: "font-bold flex items-center gap-1 text-xs",
-												children: [
-													msg.role === "tenant" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 text-blue-500" }),
-													msg.role === "owner" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-3 w-3 text-green-500" }),
-													msg.role === "manager" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShieldCheck, { className: "h-3 w-3 text-purple-500" }),
-													msg.senderName
-												]
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-[10px] text-muted-foreground",
-												children: formatTime(msg.timestamp)
-											})]
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: cn("p-2 rounded-lg border text-sm", msg.role === "manager" && "bg-purple-50 border-purple-100 ml-8", msg.role === "tenant" && "bg-blue-50 border-blue-100 mr-8", msg.role === "owner" && "bg-green-50 border-green-100 mr-8"),
-											children: msg.text
-										})]
-									}, `${msg.id}-${idx}`))
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
-								value: "documents",
-								className: "mt-4",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DocumentVault, {
-									documents: tenant.documents || [],
-									onUpdate: (docs) => updateTenant({
-										...tenant,
-										documents: docs
-									}),
-									canEdit: true,
-									title: t("common.documents")
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
-								value: "internal",
-								className: "mt-4 space-y-4",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ScrollArea, {
-									className: "h-[200px] border rounded-md p-4 bg-slate-50",
-									children: [tenant.negotiationLogs?.map((log$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "text-sm flex flex-col gap-1 bg-white p-2 border rounded mb-2 shadow-sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "flex justify-between text-xs text-muted-foreground",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "font-semibold text-slate-700",
-												children: log$1.user
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: formatTime(log$1.date) })]
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-											className: "text-slate-900",
-											children: log$1.note
-										})]
-									}, log$1.id)), (!tenant.negotiationLogs || tenant.negotiationLogs.length === 0) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "text-center text-muted-foreground text-sm pt-4",
-										children: t("renewals.empty_notes")
-									})]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "gap-2 flex flex-col",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("renewals.add_note") }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
-											value: newLogNote,
-											onChange: (e) => setNewLogNote(e.target.value)
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: status,
+									onValueChange: setStatus,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "negotiating",
+											children: "Negotiating"
 										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-											size: "sm",
-											onClick: handleSaveNotes,
-											className: "w-fit",
-											children: t("common.save")
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "owner_contacted",
+											children: "Owner Contacted"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "tenant_contacted",
+											children: "Tenant Contacted"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "vacating",
+											children: "Vacating"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "closed",
+											children: "Closed / Renewed"
 										})
-									]
+									] })]
 								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Suggested Price" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "number",
+									value: price,
+									onChange: (e) => setPrice(e.target.value)
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Add Note" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+									value: note,
+									onChange: (e) => setNote(e.target.value),
+									placeholder: "Internal negotiation note..."
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								onClick: handleSave,
+								className: "w-full",
+								children: "Save Changes"
 							})
 						]
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "mt-6 pt-4 border-t flex flex-col sm:flex-row justify-between gap-3",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "outline",
-						className: "w-full sm:flex-1 whitespace-normal h-auto py-2",
-						onClick: () => updateTenant({
-							...tenant,
-							negotiationStatus: "vacating"
-						}),
-						children: t("renewals.mark_vacating")
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						className: "w-full sm:flex-1 bg-emerald-600 hover:bg-emerald-700 text-white whitespace-normal h-auto py-2",
-						onClick: initiateClose,
-						children: t("renewals.close_negotiation")
-					})]
-				})
-			]
+					}),
+					tenant.negotiationLogs && tenant.negotiationLogs.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "mt-8 space-y-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+							className: "font-semibold text-sm",
+							children: "History"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "space-y-3",
+							children: tenant.negotiationLogs.map((log$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "text-sm border-l-2 border-blue-500 pl-3",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+									className: "text-xs text-slate-500",
+									children: [
+										new Date(log$1.date).toLocaleDateString(),
+										" - ",
+										log$1.user
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "mt-1",
+									children: log$1.note
+								})]
+							}, log$1.id))
+						})]
+					})
+				]
+			})]
 		})
-	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CloseNegotiationDialog, {
-		open: closeDialogOpen,
-		onOpenChange: setCloseDialogOpen,
-		onConfirm: handleCloseConfirm,
-		currentValue: tenant.suggestedRenewalPrice || tenant.rentValue
-	})] });
+	});
 }
 function Renewals() {
 	const { tenants: tenants$1 } = useTenantStore_default();
@@ -77818,7 +73881,7 @@ function Renewals() {
 							})
 						] })
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [filteredTenants.map((tenant) => {
-						const property$2 = properties$1.find((p$1) => p$1.id === tenant.propertyId);
+						const property$2 = properties$1.find((p) => p.id === tenant.propertyId);
 						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
 							className: "hover:bg-slate-50 cursor-pointer",
 							onClick: () => handleManage(tenant.id),
@@ -78163,14 +74226,14 @@ function ShortTerm() {
 	const [form, setForm] = (0, import_react.useState)(defaultForm);
 	const applicablePromotions = (0, import_react.useMemo)(() => {
 		if (form.propertyId === "none") return [];
-		const selectedProp = properties$1.find((p$1) => p$1.id === form.propertyId);
-		return promotions$1.filter((p$1) => {
-			if (!p$1.active) return false;
-			if (p$1.targetType === "all" || !p$1.targetType) return true;
-			if (p$1.targetType === "property" && p$1.targetId === form.propertyId) return true;
-			if (p$1.targetType === "hotel" && selectedProp?.hotelId === p$1.targetId) {
-				if (p$1.scope === "global" || !p$1.scope) return true;
-				if (p$1.scope === "specific_rooms" && p$1.roomIds?.includes(form.propertyId)) return true;
+		const selectedProp = properties$1.find((p) => p.id === form.propertyId);
+		return promotions$1.filter((p) => {
+			if (!p.active) return false;
+			if (p.targetType === "all" || !p.targetType) return true;
+			if (p.targetType === "property" && p.targetId === form.propertyId) return true;
+			if (p.targetType === "hotel" && selectedProp?.hotelId === p.targetId) {
+				if (p.scope === "global" || !p.scope) return true;
+				if (p.scope === "specific_rooms" && p.roomIds?.includes(form.propertyId)) return true;
 			}
 			return false;
 		});
@@ -78182,8 +74245,8 @@ function ShortTerm() {
 	const discountAmount = (0, import_react.useMemo)(() => {
 		const base = Number(form.baseAmount) || 0;
 		if (form.promotionId !== "none") {
-			const p$1 = promotions$1.find((x$2) => x$2.id === form.promotionId);
-			if (p$1) return p$1.type === "percentage" ? base * (p$1.value / 100) : p$1.value;
+			const p = promotions$1.find((x$2) => x$2.id === form.promotionId);
+			if (p) return p.type === "percentage" ? base * (p.value / 100) : p.value;
 		}
 		return 0;
 	}, [
@@ -78203,7 +74266,7 @@ function ShortTerm() {
 			});
 			return;
 		}
-		const prop = properties$1.find((p$1) => p$1.id === form.propertyId);
+		const prop = properties$1.find((p) => p.id === form.propertyId);
 		addBooking({
 			id: `booking-${Date.now()}`,
 			propertyId: form.propertyId,
@@ -78293,10 +74356,10 @@ function ShortTerm() {
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione..." }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 										value: "none",
 										children: "Selecione..."
-									}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: p$1.id,
-										children: p$1.name
-									}, p$1.id))] })]
+									}), properties$1.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: p.id,
+										children: p.name
+									}, p.id))] })]
 								})]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -78359,15 +74422,15 @@ function ShortTerm() {
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Nenhuma" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "none",
 											children: "Nenhuma"
-										}), applicablePromotions.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-											value: p$1.id,
+										}), applicablePromotions.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+											value: p.id,
 											children: [
-												p$1.code,
+												p.code,
 												" (",
-												p$1.type === "percentage" ? `${p$1.value}%` : `$${p$1.value}`,
+												p.type === "percentage" ? `${p.value}%` : `$${p.value}`,
 												")"
 											]
-										}, p$1.id))] })]
+										}, p.id))] })]
 									})]
 								})]
 							}),
@@ -78468,10 +74531,10 @@ function ShortTerm() {
 														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 															value: "none",
 															children: "Selecione..."
-														}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-															value: p$1.id,
-															children: p$1.name
-														}, p$1.id))] })]
+														}), properties$1.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+															value: p.id,
+															children: p.name
+														}, p.id))] })]
 													})]
 												}),
 												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -78531,10 +74594,10 @@ function ShortTerm() {
 															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Nenhuma" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 																value: "none",
 																children: "Nenhuma"
-															}), applicablePromotions.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-																value: p$1.id,
-																children: p$1.code
-															}, p$1.id))] })]
+															}), applicablePromotions.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																value: p.id,
+																children: p.code
+															}, p.id))] })]
 														})]
 													})]
 												}),
@@ -78583,8 +74646,8 @@ function Reports() {
 	const totalInvoices = financials$1.invoices.length;
 	const totalRevenue = financials$1.invoices.filter((i) => i.status === "paid").reduce((acc, i) => acc + i.amount, 0);
 	const activeTenants = tenants$1.filter((t$1) => t$1.status === "active").length;
-	const propertiesByCity = properties$1.reduce((acc, p$1) => {
-		const city = p$1.city || "Unknown";
+	const propertiesByCity = properties$1.reduce((acc, p) => {
+		const city = p.city || "Unknown";
 		acc[city] = (acc[city] || 0) + 1;
 		return acc;
 	}, {});
@@ -78602,15 +74665,15 @@ function Reports() {
 	const occupancyData = [
 		{
 			name: "Occupied",
-			value: properties$1.filter((p$1) => p$1.status === "occupied" || p$1.status === "rented").length
+			value: properties$1.filter((p) => p.status === "occupied" || p.status === "rented").length
 		},
 		{
 			name: "Vacant",
-			value: properties$1.filter((p$1) => p$1.status === "available" || p$1.status === "vacant").length
+			value: properties$1.filter((p) => p.status === "available" || p.status === "vacant").length
 		},
 		{
 			name: "Maintenance",
-			value: properties$1.filter((p$1) => p$1.status === "maintenance").length
+			value: properties$1.filter((p) => p.status === "maintenance").length
 		}
 	];
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -79468,6 +75531,49 @@ function NightAudit() {
 		})]
 	});
 }
+function useAdRotation(ads, displayCount = 2, rotationIntervalSeconds = 10) {
+	const [visibleAds, setVisibleAds] = (0, import_react.useState)([]);
+	(0, import_react.useEffect)(() => {
+		if (!ads || ads.length === 0) {
+			setVisibleAds([]);
+			return;
+		}
+		if (ads.length <= displayCount) {
+			setVisibleAds(ads);
+			return;
+		}
+		setVisibleAds([...ads].sort(() => .5 - Math.random()).slice(0, displayCount));
+		const interval = setInterval(() => {
+			setVisibleAds((current) => {
+				const nextAds = [...ads].filter((a$1) => !current.find((c$1) => c$1.id === a$1.id));
+				return (nextAds.length >= displayCount ? nextAds : [...nextAds, ...current]).sort(() => .5 - Math.random()).slice(0, displayCount);
+			});
+		}, rotationIntervalSeconds * 1e3);
+		return () => clearInterval(interval);
+	}, [
+		ads,
+		displayCount,
+		rotationIntervalSeconds
+	]);
+	return visibleAds;
+}
+var usePublicityStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("usePublicityStore must be used within AppProvider");
+	return {
+		advertisements: context.advertisements,
+		addAdvertisement: context.addAdvertisement,
+		updateAdvertisement: context.updateAdvertisement,
+		deleteAdvertisement: context.deleteAdvertisement,
+		advertisers: context.advertisers,
+		addAdvertiser: context.addAdvertiser,
+		updateAdvertiser: context.updateAdvertiser,
+		deleteAdvertiser: context.deleteAdvertiser,
+		adPricing: context.adPricing,
+		updateAdPricing: context.updateAdPricing
+	};
+};
+var usePublicityStore_default = usePublicityStore;
 function Performance() {
 	const { t, language } = useLanguageStore_default();
 	const { advertisements: advertisements$1 } = usePublicityStore_default();
@@ -79801,237 +75907,101 @@ function Performance() {
 		]
 	});
 }
-function ServiceDialog({ open, onOpenChange, onSave, service }) {
-	const { t } = useLanguageStore_default();
-	const { currency } = useFinancialStore_default();
-	const locale$2 = getCurrencyLocale(currency);
-	const [data, setData] = (0, import_react.useState)({});
-	const [prices, setPrices] = (0, import_react.useState)([]);
-	const [newPrice, setNewPrice] = (0, import_react.useState)(0);
-	const [newStartDate, setNewStartDate] = (0, import_react.useState)("");
-	const [newEndDate, setNewEndDate] = (0, import_react.useState)("");
-	const [error, setError] = (0, import_react.useState)("");
+function ServiceDialog({ open, onOpenChange, service, onSave }) {
+	const [form, setForm] = (0, import_react.useState)({
+		active: true,
+		category: "other"
+	});
 	(0, import_react.useEffect)(() => {
-		setData(service || {
-			name: "",
-			description: "",
-			price: 0,
-			category: "other",
-			active: true
+		if (service) setForm(service);
+		else setForm({
+			active: true,
+			category: "other"
 		});
-		setPrices(service?.prices || []);
-		setNewPrice(0);
-		setNewStartDate("");
-		setNewEndDate("");
-		setError("");
 	}, [service, open]);
-	const handleAddPrice = () => {
-		if (!newStartDate || !newEndDate) {
-			setError(t("common.validation_error") + ": Datas são obrigatórias.");
-			return;
-		}
-		if (newStartDate > newEndDate) {
-			setError(t("common.validation_error") + ": Data de Início deve ser anterior à Data de Término.");
-			return;
-		}
-		setError("");
-		setPrices([...prices, {
-			id: `price-${Date.now()}`,
-			price: newPrice,
-			startDate: newStartDate,
-			endDate: newEndDate
-		}]);
-		setNewPrice(0);
-		setNewStartDate("");
-		setNewEndDate("");
-	};
-	const handleRemovePrice = (id) => {
-		setPrices(prices.filter((p$1) => p$1.id !== id));
-	};
 	const handleSave = () => {
-		if (!data.name) {
-			setError(t("common.name_required"));
-			return;
-		}
-		onSave({
-			...data,
-			prices
-		});
+		onSave(form);
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open,
 		onOpenChange,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-			className: "max-w-md max-h-[90vh] overflow-y-auto bg-white",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogTitle, { children: [
-					service ? t("common.edit") : t("common.new"),
-					" ",
-					t("sidebar.guest_services")
-				] }) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-4 py-4",
-					children: [
-						error && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "text-red-500 text-sm",
-							children: error
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t("common.name"), " *"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: data.name || "",
-								onChange: (e) => setData({
-									...data,
-									name: e.target.value
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: service ? "Edit Service" : "Add Service" }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "space-y-4 py-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: form.name || "",
+							onChange: (e) => setForm({
+								...form,
+								name: e.target.value
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-2 gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Base Price" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "number",
+								value: form.price || "",
+								onChange: (e) => setForm({
+									...form,
+									price: Number(e.target.value)
 								})
 							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: data.description || "",
-								onChange: (e) => setData({
-									...data,
-									description: e.target.value
-								})
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid grid-cols-2 gap-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-									t("common.value"),
-									" Base (",
-									currency,
-									") *"
-								] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
-									value: data.price || 0,
-									onChange: (val) => setData({
-										...data,
-										price: val
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Category" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: form.category,
+								onValueChange: (v) => setForm({
+									...form,
+									category: v
+								}),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "spa",
+										children: "Spa"
 									}),
-									currency,
-									locale: locale$2
-								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t("common.category"), " *"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: data.category || "other",
-									onValueChange: (v) => setData({
-										...data,
-										category: v
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "transport",
+										children: "Transport"
 									}),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "transport",
-											children: "Transport"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "dining",
-											children: "Dining"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "spa",
-											children: "Spa"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "other",
-											children: "Other"
-										})
-									] })]
-								})]
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "dining",
+										children: "Dining"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "other",
+										children: "Other"
+									})
+								] })]
 							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "border-t pt-4 mt-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-								className: "text-base font-semibold mb-4 block",
-								children: "Preços Específicos por Período"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex flex-col gap-3",
-								children: [prices.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex items-center justify-between bg-slate-50 p-2 rounded border",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "text-sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "font-medium",
-											children: new Intl.NumberFormat(locale$2, {
-												style: "currency",
-												currency
-											}).format(p$1.price)
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-											className: "text-slate-500 ml-2",
-											children: [
-												"(",
-												p$1.startDate,
-												" - ",
-												p$1.endDate,
-												")"
-											]
-										})]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-										variant: "ghost",
-										size: "icon",
-										className: "text-red-500 h-8 w-8",
-										onClick: () => handleRemovePrice(p$1.id),
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-									})]
-								}, p$1.id)), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-3 gap-2 items-end bg-slate-50 p-3 rounded border",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2 col-span-3 mb-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-												"Novo Preço (",
-												currency,
-												")"
-											] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
-												value: newPrice,
-												onChange: (val) => setNewPrice(val),
-												currency,
-												locale: locale$2
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Data de Início" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												type: "date",
-												value: newStartDate,
-												onChange: (e) => setNewStartDate(e.target.value)
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Data de Término" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												type: "date",
-												value: newEndDate,
-												onChange: (e) => setNewEndDate(e.target.value)
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-											variant: "outline",
-											onClick: handleAddPrice,
-											className: "w-full",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4 mr-1" }), " Add"]
-										})
-									]
-								})]
-							})]
-						})
-					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					variant: "outline",
-					onClick: () => onOpenChange(false),
-					children: t("common.cancel")
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					onClick: handleSave,
-					className: "bg-trust-blue text-white",
-					children: t("common.save")
-				})] })
-			]
-		})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center justify-between mt-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Active" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+							checked: form.active,
+							onCheckedChange: (c$1) => setForm({
+								...form,
+								active: c$1
+							})
+						})]
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "outline",
+				onClick: () => onOpenChange(false),
+				children: "Cancel"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				onClick: handleSave,
+				children: "Save"
+			})] })
+		] })
 	});
 }
 function GuestServices() {
@@ -80302,222 +76272,101 @@ function GuestServices() {
 		]
 	});
 }
-function ProductDialog({ open, onOpenChange, onSave, product }) {
-	const { t } = useLanguageStore_default();
-	const { currency } = useFinancialStore_default();
-	const locale$2 = getCurrencyLocale(currency);
-	const [data, setData] = (0, import_react.useState)({});
-	const [prices, setPrices] = (0, import_react.useState)([]);
-	const [newPrice, setNewPrice] = (0, import_react.useState)(0);
-	const [newStartDate, setNewStartDate] = (0, import_react.useState)("");
-	const [newEndDate, setNewEndDate] = (0, import_react.useState)("");
-	const [error, setError] = (0, import_react.useState)("");
+function ProductDialog({ open, onOpenChange, product, onSave }) {
+	const [form, setForm] = (0, import_react.useState)({
+		active: true,
+		category: "minibar"
+	});
 	(0, import_react.useEffect)(() => {
-		setData(product || {
-			name: "",
-			price: 0,
-			category: "minibar",
-			active: true
+		if (product) setForm(product);
+		else setForm({
+			active: true,
+			category: "minibar"
 		});
-		setPrices(product?.prices || []);
-		setNewPrice(0);
-		setNewStartDate("");
-		setNewEndDate("");
-		setError("");
 	}, [product, open]);
-	const handleAddPrice = () => {
-		if (!newStartDate || !newEndDate) {
-			setError(t("common.validation_error") + ": Datas são obrigatórias.");
-			return;
-		}
-		if (newStartDate > newEndDate) {
-			setError(t("common.validation_error") + ": Data de Início deve ser anterior à Data de Término.");
-			return;
-		}
-		setError("");
-		setPrices([...prices, {
-			id: `price-${Date.now()}`,
-			price: newPrice,
-			startDate: newStartDate,
-			endDate: newEndDate
-		}]);
-		setNewPrice(0);
-		setNewStartDate("");
-		setNewEndDate("");
-	};
-	const handleRemovePrice = (id) => {
-		setPrices(prices.filter((p$1) => p$1.id !== id));
-	};
 	const handleSave = () => {
-		if (!data.name) {
-			setError(t("common.name_required"));
-			return;
-		}
-		onSave({
-			...data,
-			prices
-		});
+		onSave(form);
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open,
 		onOpenChange,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-			className: "max-w-md max-h-[90vh] overflow-y-auto bg-white",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogTitle, { children: [product ? t("common.edit") : t("common.new"), " Produto"] }) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "grid gap-4 py-4",
-					children: [
-						error && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "text-red-500 text-sm",
-							children: error
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t("common.name"), " *"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: data.name || "",
-								onChange: (e) => setData({
-									...data,
-									name: e.target.value
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: product ? "Edit Product" : "Add Product" }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "space-y-4 py-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: form.name || "",
+							onChange: (e) => setForm({
+								...form,
+								name: e.target.value
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-2 gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Price" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "number",
+								value: form.price || "",
+								onChange: (e) => setForm({
+									...form,
+									price: Number(e.target.value)
 								})
 							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid grid-cols-2 gap-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-									t("common.value"),
-									" Base (",
-									currency,
-									") *"
-								] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
-									value: data.price || 0,
-									onChange: (val) => setData({
-										...data,
-										price: val
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Category" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: form.category,
+								onValueChange: (v) => setForm({
+									...form,
+									category: v
+								}),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "minibar",
+										children: "Minibar"
 									}),
-									currency,
-									locale: locale$2
-								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [t("common.category"), " *"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: data.category || "minibar",
-									onValueChange: (v) => setData({
-										...data,
-										category: v
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "restaurant",
+										children: "Restaurant"
 									}),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "minibar",
-											children: "Minibar"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "restaurant",
-											children: "Restaurante"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "laundry",
-											children: "Lavanderia"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "shop",
-											children: "Loja"
-										})
-									] })]
-								})]
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "laundry",
+										children: "Laundry"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "shop",
+										children: "Shop"
+									})
+								] })]
 							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "border-t pt-4 mt-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-								className: "text-base font-semibold mb-4 block",
-								children: "Preços Específicos por Período"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex flex-col gap-3",
-								children: [prices.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex items-center justify-between bg-slate-50 p-2 rounded border",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "text-sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-											className: "font-medium",
-											children: new Intl.NumberFormat(locale$2, {
-												style: "currency",
-												currency
-											}).format(p$1.price)
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-											className: "text-slate-500 ml-2",
-											children: [
-												"(",
-												p$1.startDate,
-												" - ",
-												p$1.endDate,
-												")"
-											]
-										})]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-										variant: "ghost",
-										size: "icon",
-										className: "text-red-500 h-8 w-8",
-										onClick: () => handleRemovePrice(p$1.id),
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-									})]
-								}, p$1.id)), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-3 gap-2 items-end bg-slate-50 p-3 rounded border",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2 col-span-3 mb-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-												"Novo Preço (",
-												currency,
-												")"
-											] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
-												value: newPrice,
-												onChange: (val) => setNewPrice(val),
-												currency,
-												locale: locale$2
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Data de Início" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												type: "date",
-												value: newStartDate,
-												onChange: (e) => setNewStartDate(e.target.value)
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Data de Término" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												type: "date",
-												value: newEndDate,
-												onChange: (e) => setNewEndDate(e.target.value)
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-											variant: "outline",
-											onClick: handleAddPrice,
-											className: "w-full",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4 mr-1" }), " Add"]
-										})
-									]
-								})]
-							})]
-						})
-					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					variant: "outline",
-					onClick: () => onOpenChange(false),
-					children: t("common.cancel")
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					onClick: handleSave,
-					className: "bg-trust-blue text-white",
-					children: t("common.save")
-				})] })
-			]
-		})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center justify-between mt-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Active" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+							checked: form.active,
+							onCheckedChange: (c$1) => setForm({
+								...form,
+								active: c$1
+							})
+						})]
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "outline",
+				onClick: () => onOpenChange(false),
+				children: "Cancel"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				onClick: handleSave,
+				children: "Save"
+			})] })
+		] })
 	});
 }
 function PointOfSale() {
@@ -80565,10 +76414,10 @@ function PointOfSale() {
 	};
 	const addToCart = (item) => {
 		setCart((prev) => {
-			if (prev.find((p$1) => p$1.item.id === item.id)) return prev.map((p$1) => p$1.item.id === item.id ? {
-				...p$1,
-				quantity: p$1.quantity + 1
-			} : p$1);
+			if (prev.find((p) => p.item.id === item.id)) return prev.map((p) => p.item.id === item.id ? {
+				...p,
+				quantity: p.quantity + 1
+			} : p);
 			return [...prev, {
 				item,
 				quantity: 1
@@ -80933,866 +76782,206 @@ function PointOfSale() {
 		]
 	});
 }
-var useManagementStore = () => {
-	const context = (0, import_react.useContext)(AppContext);
-	if (!context) throw new Error("useManagementStore must be used within AppProvider");
-	return {
-		guestServices: context.guestServices,
-		serviceOrders: context.serviceOrders,
-		addGuestService: context.addGuestService,
-		updateGuestService: context.updateGuestService,
-		deleteGuestService: context.deleteGuestService,
-		addServiceOrder: context.addServiceOrder,
-		posItems: context.posItems,
-		posTransactions: context.posTransactions,
-		addPosItem: context.addPosItem,
-		updatePosItem: context.updatePosItem,
-		deletePosItem: context.deletePosItem,
-		addPosTransaction: context.addPosTransaction,
-		promotions: context.promotions,
-		campaigns: context.campaigns,
-		addPromotion: context.addPromotion,
-		updatePromotion: context.updatePromotion,
-		deletePromotion: context.deletePromotion,
-		addCampaign: context.addCampaign,
-		updateCampaign: context.updateCampaign,
-		deleteCampaign: context.deleteCampaign,
-		marketingWorkflows: context.marketingWorkflows,
-		emailTemplates: context.emailTemplates,
-		addMarketingWorkflow: context.addMarketingWorkflow,
-		updateMarketingWorkflow: context.updateMarketingWorkflow,
-		deleteMarketingWorkflow: context.deleteMarketingWorkflow,
-		addEmailTemplate: context.addEmailTemplate,
-		updateEmailTemplate: context.updateEmailTemplate,
-		deleteEmailTemplate: context.deleteEmailTemplate
-	};
-};
-var useManagementStore_default = useManagementStore;
 function MarketingAutomation() {
-	const { marketingWorkflows: marketingWorkflows$1, emailTemplates: emailTemplates$1, addMarketingWorkflow, updateMarketingWorkflow, deleteMarketingWorkflow, addEmailTemplate, updateEmailTemplate, deleteEmailTemplate } = useManagementStore_default();
+	const { marketingWorkflows: marketingWorkflows$1, addMarketingWorkflow } = (0, import_react.useContext)(AppContext);
 	const { toast: toast$2 } = useToast();
-	const { t } = useLanguageStore_default();
-	const [workflowDialogOpen, setWorkflowDialogOpen] = (0, import_react.useState)(false);
-	const [templateDialogOpen, setTemplateDialogOpen] = (0, import_react.useState)(false);
-	const [editingWorkflow, setEditingWorkflow] = (0, import_react.useState)({
+	const [open, setOpen] = (0, import_react.useState)(false);
+	const [form, setForm] = (0, import_react.useState)({
 		name: "",
 		trigger: "booking_confirmed",
-		offsetTime: 0,
-		active: true
+		offsetTime: 0
 	});
-	const [editingTemplate, setEditingTemplate] = (0, import_react.useState)({
-		name: "",
-		subject: "",
-		body: ""
-	});
-	const handleSaveWorkflow = () => {
-		if (!editingWorkflow.name || !editingWorkflow.templateId) {
-			toast$2({
-				title: t("common.error"),
-				description: t("common.validation_error"),
-				variant: "destructive"
-			});
-			return;
-		}
-		if (editingWorkflow.id) updateMarketingWorkflow(editingWorkflow);
-		else addMarketingWorkflow({
-			...editingWorkflow,
-			id: `mw-${Date.now()}`
-		});
-		setWorkflowDialogOpen(false);
-		setEditingWorkflow({
-			name: "",
-			trigger: "booking_confirmed",
-			offsetTime: 0,
+	const handleSave = () => {
+		if (!form.name) return;
+		addMarketingWorkflow({
+			id: `m-wf-${Date.now()}`,
+			name: form.name,
+			trigger: form.trigger,
+			offsetTime: Number(form.offsetTime),
+			templateId: "t1",
 			active: true
 		});
-		toast$2({
-			title: t("common.success"),
-			description: t("marketing.workflow_started", {
-				action: "save",
-				name: editingWorkflow.name
-			})
-		});
-	};
-	const handleSaveTemplate = () => {
-		if (!editingTemplate.name || !editingTemplate.subject || !editingTemplate.body) {
-			toast$2({
-				title: t("common.error"),
-				description: t("common.validation_error"),
-				variant: "destructive"
-			});
-			return;
-		}
-		if (editingTemplate.id) updateEmailTemplate(editingTemplate);
-		else addEmailTemplate({
-			...editingTemplate,
-			id: `et-${Date.now()}`
-		});
-		setTemplateDialogOpen(false);
-		setEditingTemplate({
+		setOpen(false);
+		setForm({
 			name: "",
-			subject: "",
-			body: ""
+			trigger: "booking_confirmed",
+			offsetTime: 0
 		});
-		toast$2({
-			title: t("common.success"),
-			description: t("common.save")
-		});
+		toast$2({ title: "Automation workflow created." });
 	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "grid gap-6",
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-				className: "flex flex-row items-center justify-between",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("marketing.automated_workflows") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("marketing.automated_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-					onClick: () => setWorkflowDialogOpen(true),
-					className: "gap-2",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
-						" ",
-						t("marketing.new_workflow")
-					]
-				})]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.trigger_event") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.timing") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("marketing.template") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-					className: "text-right",
-					children: t("common.actions")
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+		className: "flex flex-row justify-between items-center",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Automated Workflows" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+			open,
+			onOpenChange: setOpen,
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+				asChild: true,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					size: "sm",
+					children: "Add Workflow"
 				})
-			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: marketingWorkflows$1.map((wf) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					className: "font-medium",
-					children: wf.name
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					className: "capitalize",
-					children: t(`marketing.${wf.trigger}`) || wf.trigger
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: wf.offsetTime === 0 ? t("marketing.immediately") : `${Math.abs(wf.offsetTime)} ${t("marketing.hours")} ${wf.offsetTime > 0 ? t("marketing.after") : t("marketing.before")}` }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: emailTemplates$1.find((t$1) => t$1.id === wf.templateId)?.name || "Unknown" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-					variant: wf.active ? "default" : "secondary",
-					children: wf.active ? t("common.active") : t("common.inactive")
-				}) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					className: "text-right",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex justify-end gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "ghost",
-							size: "icon",
-							onClick: () => {
-								setEditingWorkflow(wf);
-								setWorkflowDialogOpen(true);
-							},
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-4 w-4" })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "ghost",
-							size: "icon",
-							className: "text-red-500",
-							onClick: () => deleteMarketingWorkflow(wf.id),
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-						})]
-					})
-				})
-			] }, wf.id)) })] }) })] }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-				className: "flex flex-row items-center justify-between",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("marketing.email_templates") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("marketing.email_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-					onClick: () => setTemplateDialogOpen(true),
-					variant: "outline",
-					className: "gap-2",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, { className: "h-4 w-4" }),
-						" ",
-						t("marketing.new_message")
-					]
-				})]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
-				children: emailTemplates$1.map((tpl) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: "bg-slate-50",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-						className: "p-4 pb-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex justify-between items-start",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-								className: "text-base font-bold",
-								children: tpl.name
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex gap-1",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									variant: "ghost",
-									size: "icon",
-									className: "h-6 w-6",
-									onClick: () => {
-										setEditingTemplate(tpl);
-										setTemplateDialogOpen(true);
-									},
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pen, { className: "h-3 w-3" })
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									variant: "ghost",
-									size: "icon",
-									className: "h-6 w-6 text-red-500",
-									onClick: () => deleteEmailTemplate(tpl.id),
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-3 w-3" })
-								})]
-							})]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
-							className: "text-xs truncate",
-							children: tpl.subject
-						})]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-						className: "p-4 pt-2 text-xs text-muted-foreground line-clamp-3",
-						children: tpl.body
-					})]
-				}, tpl.id))
-			}) })] }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
-				open: workflowDialogOpen,
-				onOpenChange: setWorkflowDialogOpen,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingWorkflow.id ? t("common.edit") + " " + t("marketing.new_workflow") : t("marketing.new_workflow") }) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-4 py-4",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.name") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									value: editingWorkflow.name,
-									onChange: (e) => setEditingWorkflow({
-										...editingWorkflow,
-										name: e.target.value
-									})
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.trigger_event") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: editingWorkflow.trigger,
-									onValueChange: (v) => setEditingWorkflow({
-										...editingWorkflow,
-										trigger: v
-									}),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "booking_confirmed",
-											children: t("marketing.booking_confirmed")
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "check_in",
-											children: t("marketing.check_in")
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "check_out",
-											children: t("marketing.check_out")
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "cancellation",
-											children: t("marketing.cancellation")
-										})
-									] })]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-										t("marketing.timing"),
-										" (",
-										t("marketing.hours"),
-										" offset)"
-									] }),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-										type: "number",
-										value: editingWorkflow.offsetTime,
-										onChange: (e) => setEditingWorkflow({
-											...editingWorkflow,
-											offsetTime: Number(e.target.value)
-										}),
-										placeholder: "e.g. -24 for 1 day before"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-										className: "text-xs text-muted-foreground",
-										children: "Negative for \"before\", positive for \"after\", 0 for \"immediate\"."
-									})
-								]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.template") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: editingWorkflow.templateId,
-									onValueChange: (v) => setEditingWorkflow({
-										...editingWorkflow,
-										templateId: v
-									}),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: t("common.select") }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: emailTemplates$1.map((t$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: t$1.id,
-										children: t$1.name
-									}, t$1.id)) })]
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
-									checked: editingWorkflow.active,
-									onCheckedChange: (c$1) => setEditingWorkflow({
-										...editingWorkflow,
-										active: c$1
-									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.active") })]
-							})
-						]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						onClick: handleSaveWorkflow,
-						children: t("common.save")
-					}) })
-				] })
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
-				open: templateDialogOpen,
-				onOpenChange: setTemplateDialogOpen,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-					className: "max-w-lg",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingTemplate.id ? t("common.edit") + " " + t("marketing.template") : t("marketing.new_message") }) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-4 py-4",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.template") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-										value: editingTemplate.name,
-										onChange: (e) => setEditingTemplate({
-											...editingTemplate,
-											name: e.target.value
-										})
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.subject") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-										value: editingTemplate.subject,
-										onChange: (e) => setEditingTemplate({
-											...editingTemplate,
-											subject: e.target.value
-										})
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-2",
-									children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.body") }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
-											value: editingTemplate.body,
-											onChange: (e) => setEditingTemplate({
-												...editingTemplate,
-												body: e.target.value
-											}),
-											rows: 6
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-											className: "text-xs text-muted-foreground",
-											children: [
-												t("marketing.placeholders"),
-												": ",
-												"{guest_name}",
-												",",
-												" ",
-												"{property_name}",
-												", ",
-												"{check_in}",
-												", ",
-												"{check_out}",
-												"."
-											]
-										})
-									]
-								})
-							]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							onClick: handleSaveTemplate,
-							children: t("common.save")
-						}) })
-					]
-				})
-			})
-		]
-	});
-}
-function MultiSelect({ options: options$1, selected, onChange, placeholder = "Select items...", className }) {
-	const [open, setOpen] = import_react.useState(false);
-	const handleUnselect = (item) => {
-		onChange(selected.filter((i) => i !== item));
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Popover, {
-		open,
-		onOpenChange: setOpen,
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverTrigger, {
-			asChild: true,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-				variant: "outline",
-				role: "combobox",
-				"aria-expanded": open,
-				className: cn("w-full justify-between h-auto min-h-10 hover:bg-background", className),
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex gap-1 flex-wrap",
-					children: [selected.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "text-muted-foreground font-normal",
-						children: placeholder
-					}), selected.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
-						variant: "secondary",
-						className: "mr-1 mb-1",
-						onClick: (e) => {
-							e.stopPropagation();
-							handleUnselect(item);
-						},
-						children: [options$1.find((opt) => opt.value === item)?.label || item, /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-							className: "ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-							onKeyDown: (e) => {
-								if (e.key === "Enter") handleUnselect(item);
-							},
-							onMouseDown: (e) => {
-								e.preventDefault();
-								e.stopPropagation();
-							},
-							onClick: (e) => {
-								e.preventDefault();
-								e.stopPropagation();
-								handleUnselect(item);
-							},
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-3 w-3 text-muted-foreground hover:text-foreground" })
-						})]
-					}, item))]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronsUpDown, { className: "h-4 w-4 shrink-0 opacity-50" })]
-			})
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContent, {
-			className: "w-full p-0",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Command, {
-				className: "w-full",
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "New Automation" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "space-y-4 py-4",
 				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandInput, { placeholder: "Search..." }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandEmpty, { children: "No item found." }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandGroup, {
-						className: "max-h-64 overflow-auto",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommandList, { children: options$1.map((option) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CommandItem, {
-							onSelect: () => {
-								onChange(selected.includes(option.value) ? selected.filter((item) => item !== option.value) : [...selected, option.value]);
-								setOpen(true);
-							},
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: cn("mr-2 h-4 w-4", selected.includes(option.value) ? "opacity-100" : "opacity-0") }), option.label]
-						}, option.value)) })
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: form.name,
+							onChange: (e) => setForm({
+								...form,
+								name: e.target.value
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Trigger" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+							value: form.trigger,
+							onValueChange: (v) => setForm({
+								...form,
+								trigger: v
+							}),
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "booking_confirmed",
+								children: "Booking Confirmed"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "check_in",
+								children: "Check-in"
+							})] })]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleSave,
+						className: "w-full",
+						children: "Save"
 					})
 				]
-			})
+			})] })]
 		})]
-	});
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Name" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Trigger" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" })
+	] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: marketingWorkflows$1.map((w) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+			className: "font-medium",
+			children: w.name
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+			className: "capitalize",
+			children: w.trigger.replace("_", " ")
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: w.active ? "Active" : "Inactive" })
+	] }, w.id)) })] }) })] });
 }
 function PromotionsManagement() {
-	const { promotions: promotions$1, addPromotion, updatePromotion, deletePromotion, properties: properties$1, hotels: hotels$1, formatAppCurrency } = (0, import_react.useContext)(AppContext);
-	const { t } = useLanguageStore_default();
+	const { promotions: promotions$1, addPromotion } = (0, import_react.useContext)(AppContext);
 	const { toast: toast$2 } = useToast();
-	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
-	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
-	const defaultForm = {
+	const [open, setOpen] = (0, import_react.useState)(false);
+	const [form, setForm] = (0, import_react.useState)({
 		code: "",
-		description: "",
 		type: "percentage",
-		value: 0,
-		targetType: "all",
-		targetId: "none",
-		scope: "global",
-		roomIds: [],
-		startDate: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
-		endDate: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
-		active: true
-	};
-	const [form, setForm] = (0, import_react.useState)(defaultForm);
-	const getTargetLabel = (type, id) => {
-		if (type === "all" || !type) return t("common.all");
-		if (type === "property") {
-			const prop = properties$1.find((p$1) => p$1.id === id);
-			return prop ? prop.name : id;
-		}
-		if (type === "hotel") {
-			const hotel = hotels$1.find((h) => h.id === id);
-			return hotel ? hotel.name : id;
-		}
-		return id;
-	};
-	const availableRooms = form.targetType === "hotel" ? properties$1.filter((p$1) => p$1.hotelId === form.targetId).map((p$1) => ({
-		label: p$1.name,
-		value: p$1.id
-	})) : form.targetType === "property" && form.targetId !== "none" ? properties$1.filter((p$1) => p$1.id === form.targetId).map((p$1) => ({
-		label: p$1.name,
-		value: p$1.id
-	})) : [];
-	const handleSave = () => {
-		if (!form.code || form.value === void 0) {
-			toast$2({
-				title: t("common.error"),
-				description: t("common.validation_error"),
-				variant: "destructive"
-			});
-			return;
-		}
-		const payload = {
-			...defaultForm,
-			...editingRecord || {
-				id: `promo-${Date.now()}`,
-				usageCount: 0
-			},
-			...form,
-			value: Number(form.value)
-		};
-		if (editingRecord) {
-			updatePromotion(payload);
-			toast$2({ title: t("common.success") });
-		} else {
-			addPromotion(payload);
-			toast$2({ title: t("common.success") });
-		}
-		setIsAddOpen(false);
-		setEditingRecord(null);
-		setForm(defaultForm);
-	};
-	const handleDelete = (id) => {
-		deletePromotion(id);
-		toast$2({ title: t("common.delete_success") });
-	};
-	const openEdit = (promo) => {
-		setEditingRecord(promo);
-		setForm({
-			code: promo.code,
-			description: promo.description || "",
-			type: promo.type,
-			value: promo.value,
-			targetType: promo.targetType || "all",
-			targetId: promo.targetId || "none",
-			scope: promo.scope || "global",
-			roomIds: promo.roomIds || [],
-			startDate: promo.startDate,
-			endDate: promo.endDate,
-			active: promo.active
-		});
-		setIsAddOpen(true);
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "flex flex-col gap-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex justify-between items-center",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
-				className: "text-xl font-bold text-slate-900",
-				children: t("marketing.promotions")
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-muted-foreground text-sm",
-				children: t("marketing.manage_promotions")
-			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-				open: isAddOpen,
-				onOpenChange: (v) => {
-					setIsAddOpen(v);
-					if (!v) {
-						setEditingRecord(null);
-						setForm(defaultForm);
-					}
-				},
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						className: "bg-trust-blue gap-2 text-white",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
-							" ",
-							t("common.add")
-						]
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-					className: "max-w-md",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") : t("common.add") }) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-4 py-4",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-2 gap-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											value: form.code,
-											onChange: (e) => setForm({
-												...form,
-												code: e.target.value
-											}),
-											placeholder: "e.g. SUMMER20"
-										})]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "space-y-2 flex items-end pb-2",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "flex items-center gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
-												checked: form.active,
-												onCheckedChange: (c$1) => setForm({
-													...form,
-													active: c$1
-												})
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.active") })]
-										})
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "space-y-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.description") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
-										value: form.description,
-										onChange: (e) => setForm({
-											...form,
-											description: e.target.value
-										}),
-										rows: 2
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-2 gap-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.discount_type") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-											value: form.type,
-											onValueChange: (v) => setForm({
-												...form,
-												type: v
-											}),
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "percentage",
-												children: "Percentage (%)"
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "fixed_amount",
-												children: "Fixed Amount"
-											})] })]
-										})]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-											t("marketing.discount_value"),
-											" (",
-											form.type === "percentage" ? "%" : "$",
-											")"
-										] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "number",
-											value: form.value,
-											onChange: (e) => setForm({
-												...form,
-												value: Number(e.target.value)
-											})
-										})]
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid grid-cols-2 gap-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.start_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "date",
-											value: form.startDate,
-											onChange: (e) => setForm({
-												...form,
-												startDate: e.target.value
-											})
-										})]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.end_date") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "date",
-											value: form.endDate,
-											onChange: (e) => setForm({
-												...form,
-												endDate: e.target.value
-											})
-										})]
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "space-y-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("marketing.target") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-										value: form.targetType,
-										onValueChange: (v) => setForm({
-											...form,
-											targetType: v,
-											targetId: "none"
-										}),
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "all",
-												children: t("common.all")
-											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "hotel",
-												children: t("common.hotels")
-											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "property",
-												children: t("common.properties")
-											})
-										] })]
-									})]
-								}),
-								form.targetType !== "all" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "space-y-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
-										"Select",
-										" ",
-										form.targetType === "hotel" ? t("common.hotels") : t("common.properties")
-									] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-										value: form.targetId,
-										onValueChange: (v) => setForm({
-											...form,
-											targetId: v
-										}),
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
-												value: "none",
-												children: [t("common.select"), "..."]
-											}),
-											form.targetType === "hotel" && hotels$1.map((h) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: h.id,
-												children: h.name
-											}, h.id)),
-											form.targetType === "property" && properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: p$1.id,
-												children: p$1.name
-											}, p$1.id))
-										] })]
-									})]
-								}),
-								form.targetType !== "all" && form.targetId !== "none" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "space-y-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Scope" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-										value: form.scope,
-										onValueChange: (v) => setForm({
-											...form,
-											scope: v,
-											roomIds: []
-										}),
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "global",
-											children: "General / All Rooms"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "specific_rooms",
-											children: "Specific Rooms"
-										})] })]
-									})]
-								}),
-								form.scope === "specific_rooms" && form.targetId !== "none" && availableRooms.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "space-y-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Specific Rooms" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MultiSelect, {
-										options: availableRooms,
-										selected: form.roomIds || [],
-										onChange: (selected) => setForm({
-											...form,
-											roomIds: selected
-										}),
-										placeholder: "Select rooms..."
-									})]
-								})
-							]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							onClick: handleSave,
-							children: t("common.save")
-						}) })
-					]
-				})]
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-			className: "border-slate-200 shadow-sm bg-white",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-				className: "p-0 overflow-auto",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
-					className: "bg-slate-50",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Code" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Target" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Discount" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Dates" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Usage" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: "Actions"
-						})
-					] })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [promotions$1.map((promo) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
-					className: "hover:bg-slate-50",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-							className: "font-bold text-slate-900",
-							children: [promo.code, promo.description && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "text-xs text-muted-foreground font-normal line-clamp-1",
-								children: promo.description
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex flex-col",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-sm font-medium",
-								children: getTargetLabel(promo.targetType, promo.targetId)
-							}), promo.scope === "specific_rooms" && promo.roomIds && promo.roomIds.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-								className: "text-xs text-muted-foreground",
-								children: [promo.roomIds.length, " specific rooms"]
-							})]
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: "secondary",
-							children: promo.type === "percentage" ? `${promo.value}%` : formatAppCurrency(promo.value)
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-							className: "text-sm text-muted-foreground",
-							children: [
-								promo.startDate,
-								" - ",
-								promo.endDate
-							]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: promo.usageCount }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: promo.active ? "default" : "outline",
-							children: promo.active ? t("common.active") : "Inactive"
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex justify-end gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									variant: "outline",
-									size: "sm",
-									onClick: () => openEdit(promo),
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4" })
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-										variant: "destructive",
-										size: "sm",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm_delete") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-									onClick: () => handleDelete(promo.id),
-									children: t("common.delete")
-								})] })] })] })]
-							})
-						})
-					]
-				}, promo.id)), promotions$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 7,
-					className: "text-center py-6 text-muted-foreground",
-					children: t("common.empty")
-				}) })] })] })
-			})
-		})]
+		value: ""
 	});
+	const handleSave = () => {
+		if (!form.code) return;
+		addPromotion({
+			id: `promo-${Date.now()}`,
+			code: form.code.toUpperCase(),
+			type: form.type,
+			value: Number(form.value) || 0,
+			active: true,
+			startDate: (/* @__PURE__ */ new Date()).toISOString(),
+			endDate: (/* @__PURE__ */ new Date()).toISOString(),
+			usageCount: 0
+		});
+		setOpen(false);
+		setForm({
+			code: "",
+			type: "percentage",
+			value: ""
+		});
+		toast$2({ title: "Promotion created." });
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+		className: "flex flex-row justify-between items-center",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Promo Codes" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+			open,
+			onOpenChange: setOpen,
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+				asChild: true,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					size: "sm",
+					children: "Add Promo"
+				})
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "New Promo Code" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "space-y-4 py-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Code" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: form.code,
+							onChange: (e) => setForm({
+								...form,
+								code: e.target.value.toUpperCase()
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-2 gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: form.type,
+								onValueChange: (v) => setForm({
+									...form,
+									type: v
+								}),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "percentage",
+									children: "Percentage"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "fixed_amount",
+									children: "Fixed Amount"
+								})] })]
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Value" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								type: "number",
+								value: form.value,
+								onChange: (e) => setForm({
+									...form,
+									value: e.target.value
+								})
+							})]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						onClick: handleSave,
+						className: "w-full",
+						children: "Save"
+					})
+				]
+			})] })]
+		})]
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Code" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Type" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Value" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Usage" })
+	] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: promotions$1.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+			className: "font-bold",
+			children: p.code
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+			className: "capitalize",
+			children: p.type.replace("_", " ")
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: p.type === "percentage" ? `${p.value}%` : `$${p.value}` }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: p.usageCount })
+	] }, p.id)) })] }) })] });
 }
 function Marketing() {
 	const { campaigns: campaigns$1, addCampaign, updateCampaign, deleteCampaign } = (0, import_react.useContext)(AppContext);
@@ -82210,21 +77399,48 @@ function RequirePermission({ children, resource, action = "view" }) {
 	}
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PermissionErrorBoundary, { children });
 }
-var useTourStore = () => {
-	const context = (0, import_react.useContext)(AppContext);
-	if (!context) throw new Error("useTourStore must be used within AppProvider");
+var listeners = /* @__PURE__ */ new Set();
+var state = {
+	isTourOpen: false,
+	currentStepIndex: 0,
+	tourSteps: []
+};
+const useTourStore = () => {
+	const [localState, setLocalState] = (0, import_react.useState)(state);
+	(0, import_react.useEffect)(() => {
+		listeners.add(setLocalState);
+		return () => {
+			listeners.delete(setLocalState);
+		};
+	}, []);
+	const updateState = (newState) => {
+		state = {
+			...state,
+			...newState
+		};
+		listeners.forEach((l) => l(state));
+	};
 	return {
-		isTourOpen: context.isTourOpen,
-		currentStepIndex: context.currentStepIndex,
-		tourSteps: context.tourSteps,
-		tutorialModules: context.tutorialModules,
-		activeVideo: context.activeVideo,
-		startTour: context.startTour,
-		endTour: context.endTour,
-		nextStep: context.nextStep,
-		prevStep: context.prevStep,
-		openVideo: context.openVideo,
-		closeVideo: context.closeVideo
+		...localState,
+		startTour: (steps) => updateState({
+			isTourOpen: true,
+			currentStepIndex: 0,
+			tourSteps: steps
+		}),
+		endTour: () => updateState({
+			isTourOpen: false,
+			currentStepIndex: 0
+		}),
+		nextStep: () => {
+			if (state.currentStepIndex < state.tourSteps.length - 1) updateState({ currentStepIndex: state.currentStepIndex + 1 });
+			else updateState({
+				isTourOpen: false,
+				currentStepIndex: 0
+			});
+		},
+		prevStep: () => {
+			if (state.currentStepIndex > 0) updateState({ currentStepIndex: state.currentStepIndex - 1 });
+		}
 	};
 };
 var useTourStore_default = useTourStore;
@@ -82592,7 +77808,7 @@ var App = () => {
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/service-pricing",
 								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
-									resource: "settings",
+									resource: "service_pricing",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ServicePricing, {})
 								})
 							}),
@@ -82706,6 +77922,6 @@ var App = () => {
 	});
 };
 var App_default = App;
-(0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
+(0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-BM0AL96m.js.map
+//# sourceMappingURL=index-Ocbuc6M7.js.map
