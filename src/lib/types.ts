@@ -809,12 +809,13 @@ export interface PartnerEmployee {
 export interface Partner {
   id: string
   name: string
-  type: 'agent' | 'cleaning' | 'maintenance'
+  type: 'agent' | 'cleaning' | 'maintenance' | string
   companyName?: string
+  teams?: string
   email: string
   phone: string
   country?: string
-  status: 'active' | 'inactive'
+  status: 'active' | 'inactive' | string
   rating?: number
   role: UserRole
   avatar?: string
@@ -1221,4 +1222,3 @@ export interface PMSpecificPricing {
   pmId: string
   fixedRate: number
 }
-

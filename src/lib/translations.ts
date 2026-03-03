@@ -3148,4 +3148,3 @@ export const translations = {
     },
   },
 }
-

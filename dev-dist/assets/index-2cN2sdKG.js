@@ -19465,6 +19465,17 @@ var LogOut = createLucideIcon("log-out", [
 		key: "1uf3rs"
 	}]
 ]);
+var Mail = createLucideIcon("mail", [["path", {
+	d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7",
+	key: "132q7q"
+}], ["rect", {
+	x: "2",
+	y: "4",
+	width: "20",
+	height: "16",
+	rx: "2",
+	key: "izxlao"
+}]]);
 var MapPin = createLucideIcon("map-pin", [["path", {
 	d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0",
 	key: "1r0f0z"
@@ -19527,6 +19538,10 @@ var Pencil = createLucideIcon("pencil", [["path", {
 }], ["path", {
 	d: "m15 5 4 4",
 	key: "1mk7zo"
+}]]);
+var Phone = createLucideIcon("phone", [["path", {
+	d: "M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384",
+	key: "9njp5v"
 }]]);
 var Plus = createLucideIcon("plus", [["path", {
 	d: "M5 12h14",
@@ -19699,6 +19714,16 @@ var ShoppingCart = createLucideIcon("shopping-cart", [
 var Star = createLucideIcon("star", [["path", {
 	d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z",
 	key: "r04s7s"
+}]]);
+var Tag = createLucideIcon("tag", [["path", {
+	d: "M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z",
+	key: "vktsd0"
+}], ["circle", {
+	cx: "7.5",
+	cy: "7.5",
+	r: ".5",
+	fill: "currentColor",
+	key: "kqv944"
 }]]);
 var Trash2 = createLucideIcon("trash-2", [
 	["path", {
@@ -53513,7 +53538,9 @@ const translations = {
 			owner_portal: "Portal Proprietário",
 			partner_portal: "Portal Parceiro",
 			housekeeping: "Limpeza",
-			night_audit: "Auditoria Noturna"
+			night_audit: "Auditoria Noturna",
+			calendar: "Calendário",
+			partners: "Parceiros"
 		},
 		housekeeping: {
 			title: "Limpeza / Housekeeping",
@@ -54627,7 +54654,9 @@ const translations = {
 			owner_portal: "Owner Portal",
 			partner_portal: "Partner Portal",
 			housekeeping: "Housekeeping",
-			night_audit: "Night Audit"
+			night_audit: "Night Audit",
+			calendar: "Calendar",
+			partners: "Partners"
 		},
 		housekeeping: {
 			title: "Housekeeping",
@@ -55742,7 +55771,9 @@ const translations = {
 			owner_portal: "Portal Propietario",
 			partner_portal: "Portal Socio",
 			housekeeping: "Limpieza",
-			night_audit: "Auditoría Nocturna"
+			night_audit: "Auditoría Nocturna",
+			calendar: "Calendario",
+			partners: "Socios"
 		},
 		housekeeping: {
 			title: "Limpieza",
@@ -56726,7 +56757,8 @@ const AppProvider = ({ children }) => {
 			}
 			return typeof current === "string" ? current : void 0;
 		};
-		let text = resolveKey(translations[language], key) || resolveKey(translations["en"], key) || key;
+		let text = resolveKey(translations[language], key) || resolveKey(translations["en"], key);
+		if (!text) text = (key.split(".").pop() || key).split("_").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
 		if (params) Object.entries(params).forEach(([pkey, pval]) => {
 			text = text.replace(`{${pkey}}`, pval);
 		});
@@ -69561,24 +69593,42 @@ function OwnerDetails() {
 	});
 }
 function Partners() {
-	const { partners: partners$1, addPartner, updatePartner } = (0, import_react.useContext)(AppContext);
+	const context = (0, import_react.useContext)(AppContext);
+	const partners$1 = context?.partners || [];
+	const addPartner = context?.addPartner;
+	const updatePartner = context?.updatePartner;
 	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
+	const [search, setSearch] = (0, import_react.useState)("");
 	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
 	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
 	const [form, setForm] = (0, import_react.useState)({
 		name: "",
 		companyName: "",
-		type: ""
+		teams: "",
+		type: "maintenance"
+	});
+	const filteredPartners = partners$1.filter((p) => {
+		const term = search.toLowerCase();
+		return (p?.name || "").toLowerCase().includes(term) || (p?.companyName || "").toLowerCase().includes(term) || (p?.teams || "").toLowerCase().includes(term);
 	});
 	const handleAdd = () => {
-		addPartner({
+		if (!form.name) {
+			toast$2({
+				title: t("common.validation_error") || "Erro de Validação",
+				description: t("common.name_required") || "O nome é obrigatório.",
+				variant: "destructive"
+			});
+			return;
+		}
+		if (addPartner) addPartner({
 			id: `partner-${Date.now()}`,
-			name: form.name || "Novo Parceiro",
-			companyName: form.companyName,
-			type: form.type || "cleaning",
-			email: "",
-			phone: "",
+			name: form.name,
+			companyName: form.companyName || "",
+			teams: form.teams || "",
+			type: form.type || "maintenance",
+			email: form.email || "",
+			phone: form.phone || "",
 			status: "active",
 			role: "partner"
 		});
@@ -69586,67 +69636,166 @@ function Partners() {
 		setForm({
 			name: "",
 			companyName: "",
-			type: ""
+			teams: "",
+			type: "maintenance"
 		});
-		toast$2({ title: "Parceiro incluído com sucesso" });
+		toast$2({
+			title: t("common.success") || "Sucesso",
+			description: "Parceiro incluído com sucesso."
+		});
 	};
 	const handleEdit = () => {
-		if (editingRecord) updatePartner({
+		if (editingRecord && updatePartner) updatePartner({
 			...editingRecord,
-			name: form.name,
-			companyName: form.companyName,
+			name: form.name || editingRecord.name,
+			companyName: form.companyName || "",
+			teams: form.teams || "",
 			type: form.type || editingRecord.type
 		});
 		setEditingRecord(null);
-		toast$2({ title: "Parceiro alterado com sucesso" });
+		setIsAddOpen(false);
+		toast$2({
+			title: t("common.success") || "Sucesso",
+			description: "Parceiro alterado com sucesso."
+		});
 	};
 	const handleDelete = (id) => {
-		toast$2({ title: "Parceiro excluído com sucesso" });
+		toast$2({
+			title: t("common.delete_success") || "Excluído",
+			description: "O parceiro foi removido do sistema."
+		});
+	};
+	const openEdit = (partner) => {
+		setEditingRecord(partner);
+		setForm({
+			name: partner.name,
+			companyName: partner.companyName || "",
+			teams: partner.teams || "",
+			type: partner.type || "maintenance"
+		});
+		setIsAddOpen(true);
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "flex flex-col gap-6 p-6",
+		className: "flex flex-col gap-6 p-6 animate-in fade-in duration-500",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex justify-between items-center",
+			className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 				className: "text-3xl font-bold tracking-tight text-slate-900",
-				children: t("common.partners") || "Parceiros"
+				children: t("sidebar.partners") || "Parceiros"
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 				className: "text-muted-foreground",
-				children: "Manage your service partners."
-			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-				open: isAddOpen,
-				onOpenChange: setIsAddOpen,
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						className: "bg-trust-blue gap-2 text-white",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Parceiro" }) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-4 py-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							placeholder: "Nome",
-							value: form.name,
-							onChange: (e) => setForm({
-								...form,
-								name: e.target.value
-							})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							placeholder: "Empresa",
-							value: form.companyName,
-							onChange: (e) => setForm({
-								...form,
-								companyName: e.target.value
-							})
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						onClick: handleAdd,
-						children: "Salvar"
-					}) })
-				] })]
+				children: t("partners.subtitle") || "Gerencie empresas parceiras e equipes."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-2 w-full md:w-auto",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "relative flex-1 md:w-64",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+						placeholder: t("common.search") || "Buscar...",
+						value: search,
+						onChange: (e) => setSearch(e.target.value),
+						className: "pl-9 bg-white"
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+					open: isAddOpen,
+					onOpenChange: (v) => {
+						setIsAddOpen(v);
+						if (!v) {
+							setEditingRecord(null);
+							setForm({
+								name: "",
+								companyName: "",
+								teams: "",
+								type: "maintenance"
+							});
+						}
+					},
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							className: "bg-trust-blue gap-2 text-white shrink-0",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+								" ",
+								t("common.add") || "Incluir"
+							]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") || "Alterar Parceiro" : t("common.add") || "Incluir Parceiro" }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-4 py-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+										t("common.name") || "Nome",
+										" ",
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "text-red-500",
+											children: "*"
+										})
+									] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										placeholder: t("common.name") || "Nome",
+										value: form.name,
+										onChange: (e) => setForm({
+											...form,
+											name: e.target.value
+										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("partners.company_name") || "Empresa (Company)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "relative",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											placeholder: t("partners.company_name") || "Nome da Empresa",
+											value: form.companyName,
+											onChange: (e) => setForm({
+												...form,
+												companyName: e.target.value
+											}),
+											className: "pl-9"
+										})]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("partners.teams") || "Equipes (Teams)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "relative",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											placeholder: "Ex: Equipe Alpha, Limpeza Norte",
+											value: form.teams,
+											onChange: (e) => setForm({
+												...form,
+												teams: e.target.value
+											}),
+											className: "pl-9"
+										})]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.type") || "Tipo" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										placeholder: "Ex: cleaning, maintenance, agent",
+										value: form.type,
+										onChange: (e) => setForm({
+											...form,
+											type: e.target.value
+										})
+									})]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "outline",
+							onClick: () => setIsAddOpen(false),
+							children: t("common.cancel") || "Cancelar"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							onClick: editingRecord ? handleEdit : handleAdd,
+							className: "bg-trust-blue text-white",
+							children: t("common.save") || "Salvar"
+						})] })
+					] })]
+				})]
 			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
@@ -69656,107 +69805,211 @@ function Partners() {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.name") || "Nome" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Type" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Company" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.type") || "Tipo" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("partners.company_name") || "Empresa" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("partners.teams") || "Equipes" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.status") || "Status" }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
-							children: "Ações"
+							children: t("common.actions") || "Ações"
 						})
 					] })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [partners$1.slice(0, 50).map((partner) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [filteredPartners.map((partner) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
 					className: "hover:bg-slate-50",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "font-medium text-slate-900",
-							children: partner.name
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner?.name })
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "capitalize",
-							children: partner.type
+							children: partner?.type || "unknown"
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: partner.companyName }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner?.companyName || "-" }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner?.teams || "-" }) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: partner.status === "active" ? "default" : "secondary",
-							children: partner.status
+							variant: partner?.status === "active" ? "default" : "secondary",
+							children: partner?.status || "unknown"
 						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "text-right",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex justify-end gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-									open: editingRecord?.id === partner.id,
-									onOpenChange: (open) => !open && setEditingRecord(null),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-										asChild: true,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+										to: `/partners/${partner?.id}`,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 											variant: "outline",
 											size: "sm",
-											onClick: () => {
-												setEditingRecord(partner);
-												setForm({
-													name: partner.name,
-													companyName: partner.companyName || "",
-													type: partner.type
-												});
-											},
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
+											className: "text-slate-700",
+											children: t("common.view") || "Visualizar"
 										})
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Parceiro" }) }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "space-y-4 py-4",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												placeholder: "Nome",
-												value: form.name,
-												onChange: (e) => setForm({
-													...form,
-													name: e.target.value
-												})
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												placeholder: "Empresa",
-												value: form.companyName,
-												onChange: (e) => setForm({
-													...form,
-													companyName: e.target.value
-												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-											onClick: handleEdit,
-											children: "Salvar"
-										}) })
-									] })]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-										variant: "destructive",
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+										variant: "outline",
 										size: "sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
-									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Parceiro" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-									onClick: () => handleDelete(partner.id),
-									children: "Excluir"
-								})] })] })] })]
+										onClick: () => openEdit(partner),
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }),
+											" ",
+											t("common.edit") || "Alterar"
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+										asChild: true,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+											variant: "destructive",
+											size: "sm",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }),
+												" ",
+												t("common.delete") || "Excluir"
+											]
+										})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("common.confirm_delete") || "Confirmar Exclusão" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("common.delete_desc") || "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") || "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+										onClick: () => handleDelete(partner?.id),
+										children: t("common.delete") || "Excluir"
+									})] })] })] })
+								]
 							})
 						})
 					]
-				}, partner.id)), partners$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 5,
+				}, partner?.id)), filteredPartners.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					colSpan: 6,
 					className: "text-center py-6 text-muted-foreground",
-					children: t("common.empty")
+					children: t("common.empty") || "Nenhum registro encontrado."
 				}) })] })] })
 			})
 		})]
 	});
 }
 function PartnerDetails() {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "p-6",
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Partner Details" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-slate-600",
-			children: "Details module under construction."
-		}) })] })
+	const { id } = useParams();
+	const navigate = useNavigate();
+	const partners$1 = (0, import_react.useContext)(AppContext)?.partners || [];
+	const { t } = useLanguageStore_default();
+	const partner = partners$1.find((p) => p.id === id);
+	if (!partner) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			className: "text-2xl font-bold mb-4",
+			children: "Partner Not Found"
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+			onClick: () => navigate("/partners"),
+			children: t("common.back") || "Go Back"
+		})]
+	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "p-6 flex flex-col gap-6 max-w-5xl mx-auto animate-in fade-in duration-500",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex items-center gap-4 bg-white p-4 rounded-lg border shadow-sm",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "outline",
+				size: "icon",
+				onClick: () => navigate("/partners"),
+				className: "border-slate-300",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-4 w-4 text-slate-700" })
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", {
+				className: "text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner.name }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+					variant: partner.status === "active" ? "default" : "secondary",
+					className: "ml-2",
+					children: partner.status || "unknown"
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+				className: "text-sm text-slate-500 font-medium capitalize flex items-center gap-1 mt-1",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tag, { className: "h-3 w-3" }), partner.type || "N/A"]
+			})] })]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "grid grid-cols-1 md:grid-cols-2 gap-6",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "border-slate-200 shadow-sm bg-white",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+					className: "pb-4 border-b",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+						className: "text-lg flex items-center gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "h-5 w-5 text-trust-blue" }), t("partners.company_info") || "Company Information"]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+					className: "pt-4 space-y-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-muted-foreground font-medium",
+							children: t("partners.company_name") || "Empresa (Company)"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm font-medium text-slate-900 mt-1",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner.companyName || "-" })
+						})] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-muted-foreground font-medium",
+							children: t("partners.teams") || "Equipes (Teams)"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+							className: "text-sm font-medium text-slate-900 mt-1 flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-4 w-4 text-slate-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner.teams || "-" })]
+						})] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-muted-foreground font-medium",
+							children: t("common.tax_id_label") || "Tax ID / Document"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm font-medium text-slate-900 mt-1",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner.cpfCnpj || "-" })
+						})] })
+					]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "border-slate-200 shadow-sm bg-white",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+					className: "pb-4 border-b",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+						className: "text-lg flex items-center gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users$1, { className: "h-5 w-5 text-trust-blue" }), t("common.contact_address") || "Contact & Address"]
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+					className: "pt-4 space-y-4",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-2 gap-4",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+								className: "text-sm text-muted-foreground font-medium flex items-center gap-1",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, { className: "h-3 w-3" }),
+									" ",
+									t("common.email") || "Email"
+								]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-sm font-medium text-slate-900 mt-1 truncate",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner.email || "-" })
+							})] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+								className: "text-sm text-muted-foreground font-medium flex items-center gap-1",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Phone, { className: "h-3 w-3" }),
+									" ",
+									t("common.phone") || "Phone"
+								]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-sm font-medium text-slate-900 mt-1",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner.phone || "-" })
+							})] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "col-span-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+									className: "text-sm text-muted-foreground font-medium flex items-center gap-1",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-3 w-3" }),
+										" ",
+										t("common.address") || "Address"
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-medium text-slate-900 mt-1",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: partner.address ? `${partner.address}${partner.city ? `, ${partner.city}` : ""}` : "-" })
+								})]
+							})
+						]
+					})
+				})]
+			})]
+		})]
 	});
 }
 function Condominiums() {
@@ -78038,4 +78291,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-BWZ6PlJU.js.map
+//# sourceMappingURL=index-2cN2sdKG.js.map
