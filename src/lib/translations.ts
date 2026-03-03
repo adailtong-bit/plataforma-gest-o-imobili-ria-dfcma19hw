@@ -133,6 +133,8 @@ export const translations = {
       partner_portal: 'Portal Parceiro',
       housekeeping: 'Limpeza',
       night_audit: 'Auditoria Noturna',
+      calendar: 'Calendário',
+      partners: 'Parceiros',
     },
     housekeeping: {
       title: 'Limpeza / Housekeeping',
@@ -1265,6 +1267,8 @@ export const translations = {
       partner_portal: 'Partner Portal',
       housekeeping: 'Housekeeping',
       night_audit: 'Night Audit',
+      calendar: 'Calendar',
+      partners: 'Partners',
     },
     housekeeping: {
       title: 'Housekeeping',
@@ -2397,6 +2401,8 @@ export const translations = {
       partner_portal: 'Portal Socio',
       housekeeping: 'Limpieza',
       night_audit: 'Auditoría Nocturna',
+      calendar: 'Calendario',
+      partners: 'Socios',
     },
     housekeeping: {
       title: 'Limpieza',
@@ -3142,3 +3148,4 @@ export const translations = {
     },
   },
 }
+
