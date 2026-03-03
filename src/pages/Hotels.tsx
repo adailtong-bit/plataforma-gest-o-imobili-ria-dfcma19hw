@@ -107,7 +107,7 @@ export default function Hotels() {
       .filter((t) => t.hotelId === h.id)
       .map((t) => ({ id: t.id, name: t.name }))
     setForm({
-      name: h.name,
+      name: h.name || '',
       managerName: h.managerName || '',
       managerPhone: h.managerPhone || '',
       managerEmail: h.managerEmail || '',
@@ -127,8 +127,8 @@ export default function Hotels() {
   const handleSave = () => {
     if (!form.name || !form.city) {
       toast({
-        title: 'Validation Error',
-        description: 'Name and City are required.',
+        title: t('hotel_form.validation_error'),
+        description: t('hotel_form.validation_error'),
         variant: 'destructive',
       })
       return
@@ -154,10 +154,10 @@ export default function Hotels() {
 
     if (editingRecord) {
       updateHotel({ ...editingRecord, ...hotelData } as Hotel)
-      toast({ title: 'Hotel updated successfully' })
+      toast({ title: t('common.save') })
     } else {
       addHotel(hotelData as Hotel)
-      toast({ title: 'Hotel created successfully' })
+      toast({ title: t('common.success') })
     }
 
     // Sync Towers
@@ -177,7 +177,7 @@ export default function Hotels() {
 
   const handleDelete = (id: string) => {
     deleteHotel(id)
-    toast({ title: 'Hotel deleted successfully' })
+    toast({ title: t('common.delete_success') })
   }
 
   const addTowerField = () => {
@@ -207,9 +207,7 @@ export default function Hotels() {
             <Building className="h-8 w-8 text-trust-blue" />
             {t('hotels.title')}
           </h1>
-          <p className="text-muted-foreground">
-            {t('hotels.subtitle') || 'Manage your hotel properties and wings.'}
-          </p>
+          <p className="text-muted-foreground">{t('hotels.subtitle')}</p>
         </div>
         <Dialog
           open={isAddOpen}
@@ -229,25 +227,32 @@ export default function Hotels() {
                 {editingRecord ? t('common.edit') : t('hotels.add_title')}
               </DialogTitle>
               <DialogDescription>
-                Define hotel details, full address, and internal divisions.
+                {t('hotel_form.define_divisions')}
               </DialogDescription>
             </DialogHeader>
 
             <Tabs defaultValue="details" className="w-full mt-4">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="location">Location</TabsTrigger>
-                <TabsTrigger value="towers">Towers / Wings</TabsTrigger>
+                <TabsTrigger value="details">
+                  {t('hotel_form.details')}
+                </TabsTrigger>
+                <TabsTrigger value="location">
+                  {t('hotel_form.location')}
+                </TabsTrigger>
+                <TabsTrigger value="towers">
+                  {t('hotel_form.towers_wings')}
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="details" className="space-y-4 py-4">
                 <div className="grid gap-2">
                   <Label>
-                    Hotel Name <span className="text-red-500">*</span>
+                    {t('hotel_form.hotel_name')}{' '}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <Input
-                    placeholder="E.g. Grand Heritage Hotel"
-                    value={form.name ?? ''}
+                    placeholder={t('hotel_form.placeholder_name')}
+                    value={form.name || ''}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
                 </div>
@@ -256,7 +261,7 @@ export default function Hotels() {
                     <Label>{t('common.manager')}</Label>
                     <Input
                       placeholder={t('common.manager')}
-                      value={form.managerName ?? ''}
+                      value={form.managerName || ''}
                       onChange={(e) =>
                         setForm({ ...form, managerName: e.target.value })
                       }
@@ -266,7 +271,7 @@ export default function Hotels() {
                     <Label>{t('common.phone')}</Label>
                     <Input
                       placeholder="+1 (555) 000-0000"
-                      value={form.managerPhone ?? ''}
+                      value={form.managerPhone || ''}
                       onChange={(e) =>
                         setForm({ ...form, managerPhone: e.target.value })
                       }
@@ -277,7 +282,7 @@ export default function Hotels() {
                   <Label>{t('common.email')}</Label>
                   <Input
                     placeholder="manager@hotel.com"
-                    value={form.managerEmail ?? ''}
+                    value={form.managerEmail || ''}
                     onChange={(e) =>
                       setForm({ ...form, managerEmail: e.target.value })
                     }
@@ -289,35 +294,41 @@ export default function Hotels() {
                 <div className="grid gap-2">
                   <Label>{t('common.country')}</Label>
                   <Select
-                    value={form.country ?? 'US'}
+                    value={form.country || 'US'}
                     onValueChange={(val) => setForm({ ...form, country: val })}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="US">United States</SelectItem>
-                      <SelectItem value="BR">Brazil</SelectItem>
-                      <SelectItem value="ES">Spain</SelectItem>
+                      <SelectItem value="US">
+                        {t('common.country_us')}
+                      </SelectItem>
+                      <SelectItem value="BR">
+                        {t('common.country_br')}
+                      </SelectItem>
+                      <SelectItem value="ES">
+                        {t('common.country_es')}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="grid grid-cols-4 gap-4">
                   <div className="grid gap-2 col-span-3">
-                    <Label>Street Address</Label>
+                    <Label>{t('hotel_form.street_address')}</Label>
                     <Input
-                      placeholder="Street name"
-                      value={form.address ?? ''}
+                      placeholder={t('hotel_form.street_address')}
+                      value={form.address || ''}
                       onChange={(e) =>
                         setForm({ ...form, address: e.target.value })
                       }
                     />
                   </div>
                   <div className="grid gap-2 col-span-1">
-                    <Label>Number</Label>
+                    <Label>{t('hotel_form.number')}</Label>
                     <Input
-                      placeholder="No."
-                      value={form.number ?? ''}
+                      placeholder={t('hotel_form.number')}
+                      value={form.number || ''}
                       onChange={(e) =>
                         setForm({ ...form, number: e.target.value })
                       }
@@ -326,10 +337,10 @@ export default function Hotels() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Neighborhood</Label>
+                    <Label>{t('hotel_form.neighborhood')}</Label>
                     <Input
-                      placeholder="Neighborhood"
-                      value={form.neighborhood ?? ''}
+                      placeholder={t('hotel_form.neighborhood')}
+                      value={form.neighborhood || ''}
                       onChange={(e) =>
                         setForm({ ...form, neighborhood: e.target.value })
                       }
@@ -337,11 +348,12 @@ export default function Hotels() {
                   </div>
                   <div className="grid gap-2">
                     <Label>
-                      City <span className="text-red-500">*</span>
+                      {t('hotel_form.city')}{' '}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
-                      placeholder="City"
-                      value={form.city ?? ''}
+                      placeholder={t('hotel_form.city')}
+                      value={form.city || ''}
                       onChange={(e) =>
                         setForm({ ...form, city: e.target.value })
                       }
@@ -350,20 +362,20 @@ export default function Hotels() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>State / Province</Label>
+                    <Label>{t('hotel_form.state')}</Label>
                     <Input
-                      placeholder="State"
-                      value={form.state ?? ''}
+                      placeholder={t('hotel_form.state')}
+                      value={form.state || ''}
                       onChange={(e) =>
                         setForm({ ...form, state: e.target.value })
                       }
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Zip Code</Label>
+                    <Label>{t('hotel_form.zip_code')}</Label>
                     <Input
-                      placeholder="Zip Code"
-                      value={form.zipCode ?? ''}
+                      placeholder={t('hotel_form.zip_code')}
+                      value={form.zipCode || ''}
                       onChange={(e) =>
                         setForm({ ...form, zipCode: e.target.value })
                       }
@@ -375,10 +387,11 @@ export default function Hotels() {
               <TabsContent value="towers" className="space-y-4 py-4">
                 <div className="flex justify-between items-center mb-2">
                   <Label className="text-muted-foreground">
-                    Define internal divisions like Towers or Wings.
+                    {t('hotel_form.define_divisions')}
                   </Label>
                   <Button variant="outline" size="sm" onClick={addTowerField}>
-                    <Plus className="h-4 w-4 mr-2" /> Add Division
+                    <Plus className="h-4 w-4 mr-2" />{' '}
+                    {t('hotel_form.add_division')}
                   </Button>
                 </div>
                 <div className="space-y-3">
@@ -387,7 +400,7 @@ export default function Hotels() {
                     .map((t, i) => (
                       <div key={t.id} className="flex gap-2 items-center">
                         <Input
-                          value={t.name ?? ''}
+                          value={t.name || ''}
                           onChange={(e) => {
                             const val = e.target.value
                             setForm((prev) => ({
@@ -397,7 +410,7 @@ export default function Hotels() {
                               ),
                             }))
                           }}
-                          placeholder="e.g. Tower A, North Wing"
+                          placeholder={t('hotel_form.towers_wings')}
                           className="flex-1"
                         />
                         <Button
@@ -412,7 +425,7 @@ export default function Hotels() {
                     ))}
                   {form.towersList.filter((t) => !t.isDeleted).length === 0 && (
                     <div className="text-center py-6 text-sm text-slate-500 border border-dashed rounded-md bg-slate-50">
-                      No divisions added. Click "Add Division" to create one.
+                      {t('hotel_form.no_divisions')}
                     </div>
                   )}
                 </div>
@@ -481,10 +494,11 @@ export default function Hotels() {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Hotel</AlertDialogTitle>
+                            <AlertDialogTitle>
+                              {t('hotel_form.delete_title')}
+                            </AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. Are you sure you
-                              want to permanently delete this hotel?
+                              {t('hotel_form.delete_desc')}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>

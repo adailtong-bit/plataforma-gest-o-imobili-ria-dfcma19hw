@@ -53511,7 +53511,37 @@ const translations = {
 			users: "Usuários",
 			tenant_portal: "Portal Inquilino",
 			owner_portal: "Portal Proprietário",
-			partner_portal: "Portal Parceiro"
+			partner_portal: "Portal Parceiro",
+			housekeeping: "Limpeza",
+			night_audit: "Auditoria Noturna"
+		},
+		housekeeping: {
+			title: "Limpeza / Housekeeping",
+			subtitle: "Gerencie tarefas de limpeza e agendamentos.",
+			task_title: "Título da Tarefa",
+			property: "Propriedade",
+			assignee: "Responsável",
+			date: "Data",
+			status: "Status"
+		},
+		hotel_form: {
+			hotel_name: "Nome do Hotel",
+			street_address: "Endereço",
+			number: "Número",
+			neighborhood: "Bairro",
+			city: "Cidade",
+			state: "Estado / Província",
+			zip_code: "CEP / Código Postal",
+			towers_wings: "Torres / Alas",
+			add_division: "Adicionar Divisão",
+			define_divisions: "Defina divisões internas como Torres ou Alas.",
+			validation_error: "Nome e Cidade são obrigatórios.",
+			placeholder_name: "Ex: Grand Heritage Hotel",
+			details: "Detalhes",
+			location: "Localização",
+			no_divisions: "Nenhuma divisão adicionada. Clique em \"Adicionar Divisão\" para criar uma.",
+			delete_title: "Excluir Hotel",
+			delete_desc: "Esta ação não pode ser desfeita. Tem certeza que deseja excluir este hotel permanentemente?"
 		},
 		hotels: {
 			title: "Hotéis",
@@ -53990,6 +54020,10 @@ const translations = {
 			email_placeholder: "email@hospede.com"
 		},
 		common: {
+			add_document: "Adicionar Documento",
+			document_name: "Nome do Documento",
+			file_url: "URL do Arquivo",
+			no_documents: "Nenhum documento ainda.",
 			personal_data: "Dados Pessoais",
 			contact_address: "Contato e Endereço",
 			documents: "Documentos",
@@ -54268,7 +54302,7 @@ const translations = {
 			profile_required: "Tipo de Perfil é obrigatório",
 			delete_success: "Propriedade excluída com sucesso.",
 			error_delete: "Erro ao excluir propriedade.",
-			all_profiles: "Todos os Perfis",
+			all_profiles: "Todos Perfis",
 			profile_filter: "Filtro de Perfil",
 			monthly: "Mensal",
 			quarterly: "Trimestral",
@@ -54591,7 +54625,37 @@ const translations = {
 			users: "Users",
 			tenant_portal: "Tenant Portal",
 			owner_portal: "Owner Portal",
-			partner_portal: "Partner Portal"
+			partner_portal: "Partner Portal",
+			housekeeping: "Housekeeping",
+			night_audit: "Night Audit"
+		},
+		housekeeping: {
+			title: "Housekeeping",
+			subtitle: "Manage cleaning tasks and schedules.",
+			task_title: "Task Title",
+			property: "Property",
+			assignee: "Assignee",
+			date: "Date",
+			status: "Status"
+		},
+		hotel_form: {
+			hotel_name: "Hotel Name",
+			street_address: "Street Address",
+			number: "Number",
+			neighborhood: "Neighborhood",
+			city: "City",
+			state: "State / Province",
+			zip_code: "Zip Code",
+			towers_wings: "Towers / Wings",
+			add_division: "Add Division",
+			define_divisions: "Define internal divisions like Towers or Wings.",
+			validation_error: "Name and City are required.",
+			placeholder_name: "E.g. Grand Heritage Hotel",
+			details: "Details",
+			location: "Location",
+			no_divisions: "No divisions added. Click \"Add Division\" to create one.",
+			delete_title: "Delete Hotel",
+			delete_desc: "This action cannot be undone. Are you sure you want to permanently delete this hotel?"
 		},
 		hotels: {
 			title: "Hotels",
@@ -55070,6 +55134,10 @@ const translations = {
 			email_placeholder: "guest@email.com"
 		},
 		common: {
+			add_document: "Add Document",
+			document_name: "Document Name",
+			file_url: "File URL (Mock Upload)",
+			no_documents: "No documents uploaded yet.",
 			personal_data: "Personal Data",
 			contact_address: "Contact & Address",
 			documents: "Documents",
@@ -55672,7 +55740,37 @@ const translations = {
 			users: "Usuarios",
 			tenant_portal: "Portal Inquilino",
 			owner_portal: "Portal Propietario",
-			partner_portal: "Portal Socio"
+			partner_portal: "Portal Socio",
+			housekeeping: "Limpieza",
+			night_audit: "Auditoría Nocturna"
+		},
+		housekeeping: {
+			title: "Limpieza",
+			subtitle: "Gestione tareas de limpieza y programaciones.",
+			task_title: "Título de la Tarea",
+			property: "Propiedad",
+			assignee: "Responsable",
+			date: "Fecha",
+			status: "Estado"
+		},
+		hotel_form: {
+			hotel_name: "Nombre del Hotel",
+			street_address: "Dirección",
+			number: "Número",
+			neighborhood: "Barrio",
+			city: "Ciudad",
+			state: "Estado / Provincia",
+			zip_code: "Código Postal",
+			towers_wings: "Torres / Alas",
+			add_division: "Añadir División",
+			define_divisions: "Defina divisiones internas como Torres o Alas.",
+			validation_error: "Nombre y Ciudad son obligatorios.",
+			placeholder_name: "Ej: Grand Heritage Hotel",
+			details: "Detalles",
+			location: "Ubicación",
+			no_divisions: "Ninguna división añadida. Haga clic en \"Añadir División\" para crear una.",
+			delete_title: "Eliminar Hotel",
+			delete_desc: "Esta acción no se puede deshacer. ¿Está seguro de que desea eliminar este hotel permanentemente?"
 		},
 		hotels: {
 			title: "Hoteles",
@@ -55855,7 +55953,7 @@ const translations = {
 			service_name: "Nombre del Servicio",
 			partner_payment: "Pago Socio",
 			pm_value: "Valor PM",
-			product_price: "Precio de Venta",
+			product_price: "Precio de Venda",
 			cost_price: "Precio de Costo",
 			valid_from: "Válido Desde",
 			valid_to: "Válido Hasta",
@@ -56153,6 +56251,10 @@ const translations = {
 			email_placeholder: "email@huesped.com"
 		},
 		common: {
+			add_document: "Añadir Documento",
+			document_name: "Nombre del Documento",
+			file_url: "URL del Archivo",
+			no_documents: "Ningún documento aún.",
 			personal_data: "Datos Personales",
 			contact_address: "Contacto y Dirección",
 			documents: "Documentos",
@@ -62945,13 +63047,13 @@ function AppSidebar() {
 			resource: "tasks"
 		},
 		{
-			title: "Housekeeping",
+			title: t("sidebar.housekeeping"),
 			url: "/housekeeping",
 			icon: HardHat,
 			resource: "tasks"
 		},
 		{
-			title: "Night Audit",
+			title: t("sidebar.night_audit"),
 			url: "/night-audit",
 			icon: MoonStar,
 			resource: "financial"
@@ -70427,7 +70529,7 @@ function Hotels() {
 			name: t$1.name
 		}));
 		setForm({
-			name: h.name,
+			name: h.name || "",
 			managerName: h.managerName || "",
 			managerPhone: h.managerPhone || "",
 			managerEmail: h.managerEmail || "",
@@ -70446,8 +70548,8 @@ function Hotels() {
 	const handleSave = () => {
 		if (!form.name || !form.city) {
 			toast$2({
-				title: "Validation Error",
-				description: "Name and City are required.",
+				title: t("hotel_form.validation_error"),
+				description: t("hotel_form.validation_error"),
 				variant: "destructive"
 			});
 			return;
@@ -70473,10 +70575,10 @@ function Hotels() {
 				...editingRecord,
 				...hotelData
 			});
-			toast$2({ title: "Hotel updated successfully" });
+			toast$2({ title: t("common.save") });
 		} else {
 			addHotel(hotelData);
-			toast$2({ title: "Hotel created successfully" });
+			toast$2({ title: t("common.success") });
 		}
 		form.towersList.forEach((t$1) => {
 			if (t$1.isDeleted && !t$1.isNew) deleteTower(t$1.id);
@@ -70496,7 +70598,7 @@ function Hotels() {
 	};
 	const handleDelete = (id) => {
 		deleteHotel(id);
-		toast$2({ title: "Hotel deleted successfully" });
+		toast$2({ title: t("common.delete_success") });
 	};
 	const addTowerField = () => {
 		setForm((prev) => ({
@@ -70526,7 +70628,7 @@ function Hotels() {
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-8 w-8 text-trust-blue" }), t("hotels.title")]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 				className: "text-muted-foreground",
-				children: t("hotels.subtitle") || "Manage your hotel properties and wings."
+				children: t("hotels.subtitle")
 			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 				open: isAddOpen,
 				onOpenChange: (v) => {
@@ -70546,7 +70648,7 @@ function Hotels() {
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 					className: "max-w-2xl max-h-[90vh] overflow-y-auto",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") : t("hotels.add_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "Define hotel details, full address, and internal divisions." })] }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? t("common.edit") : t("hotels.add_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: t("hotel_form.define_divisions") })] }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
 							defaultValue: "details",
 							className: "w-full mt-4",
@@ -70556,15 +70658,15 @@ function Hotels() {
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 											value: "details",
-											children: "Details"
+											children: t("hotel_form.details")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 											value: "location",
-											children: "Location"
+											children: t("hotel_form.location")
 										}),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 											value: "towers",
-											children: "Towers / Wings"
+											children: t("hotel_form.towers_wings")
 										})
 									]
 								}),
@@ -70574,12 +70676,16 @@ function Hotels() {
 									children: [
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "grid gap-2",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: ["Hotel Name ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-												className: "text-red-500",
-												children: "*"
-											})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												placeholder: "E.g. Grand Heritage Hotel",
-												value: form.name ?? "",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+												t("hotel_form.hotel_name"),
+												" ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+													className: "text-red-500",
+													children: "*"
+												})
+											] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												placeholder: t("hotel_form.placeholder_name"),
+												value: form.name || "",
 												onChange: (e) => setForm({
 													...form,
 													name: e.target.value
@@ -70592,7 +70698,7 @@ function Hotels() {
 												className: "grid gap-2",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.manager") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													placeholder: t("common.manager"),
-													value: form.managerName ?? "",
+													value: form.managerName || "",
 													onChange: (e) => setForm({
 														...form,
 														managerName: e.target.value
@@ -70602,7 +70708,7 @@ function Hotels() {
 												className: "grid gap-2",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 													placeholder: "+1 (555) 000-0000",
-													value: form.managerPhone ?? "",
+													value: form.managerPhone || "",
 													onChange: (e) => setForm({
 														...form,
 														managerPhone: e.target.value
@@ -70614,7 +70720,7 @@ function Hotels() {
 											className: "grid gap-2",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												placeholder: "manager@hotel.com",
-												value: form.managerEmail ?? "",
+												value: form.managerEmail || "",
 												onChange: (e) => setForm({
 													...form,
 													managerEmail: e.target.value
@@ -70630,7 +70736,7 @@ function Hotels() {
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "grid gap-2",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("common.country") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-												value: form.country ?? "US",
+												value: form.country || "US",
 												onValueChange: (val) => setForm({
 													...form,
 													country: val
@@ -70638,15 +70744,15 @@ function Hotels() {
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 														value: "US",
-														children: "United States"
+														children: t("common.country_us")
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 														value: "BR",
-														children: "Brazil"
+														children: t("common.country_br")
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 														value: "ES",
-														children: "Spain"
+														children: t("common.country_es")
 													})
 												] })]
 											})]
@@ -70655,9 +70761,9 @@ function Hotels() {
 											className: "grid grid-cols-4 gap-4",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2 col-span-3",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Street Address" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Street name",
-													value: form.address ?? "",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("hotel_form.street_address") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: t("hotel_form.street_address"),
+													value: form.address || "",
 													onChange: (e) => setForm({
 														...form,
 														address: e.target.value
@@ -70665,9 +70771,9 @@ function Hotels() {
 												})]
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2 col-span-1",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Number" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "No.",
-													value: form.number ?? "",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("hotel_form.number") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: t("hotel_form.number"),
+													value: form.number || "",
 													onChange: (e) => setForm({
 														...form,
 														number: e.target.value
@@ -70679,9 +70785,9 @@ function Hotels() {
 											className: "grid grid-cols-2 gap-4",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Neighborhood" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Neighborhood",
-													value: form.neighborhood ?? "",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("hotel_form.neighborhood") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: t("hotel_form.neighborhood"),
+													value: form.neighborhood || "",
 													onChange: (e) => setForm({
 														...form,
 														neighborhood: e.target.value
@@ -70689,12 +70795,16 @@ function Hotels() {
 												})]
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: ["City ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-													className: "text-red-500",
-													children: "*"
-												})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "City",
-													value: form.city ?? "",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, { children: [
+													t("hotel_form.city"),
+													" ",
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "text-red-500",
+														children: "*"
+													})
+												] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: t("hotel_form.city"),
+													value: form.city || "",
 													onChange: (e) => setForm({
 														...form,
 														city: e.target.value
@@ -70706,9 +70816,9 @@ function Hotels() {
 											className: "grid grid-cols-2 gap-4",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "State / Province" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "State",
-													value: form.state ?? "",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("hotel_form.state") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: t("hotel_form.state"),
+													value: form.state || "",
 													onChange: (e) => setForm({
 														...form,
 														state: e.target.value
@@ -70716,9 +70826,9 @@ function Hotels() {
 												})]
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "grid gap-2",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Zip Code" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-													placeholder: "Zip Code",
-													value: form.zipCode ?? "",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("hotel_form.zip_code") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													placeholder: t("hotel_form.zip_code"),
+													value: form.zipCode || "",
 													onChange: (e) => setForm({
 														...form,
 														zipCode: e.target.value
@@ -70735,19 +70845,23 @@ function Hotels() {
 										className: "flex justify-between items-center mb-2",
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
 											className: "text-muted-foreground",
-											children: "Define internal divisions like Towers or Wings."
+											children: t("hotel_form.define_divisions")
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 											variant: "outline",
 											size: "sm",
 											onClick: addTowerField,
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4 mr-2" }), " Add Division"]
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4 mr-2" }),
+												" ",
+												t("hotel_form.add_division")
+											]
 										})]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "space-y-3",
 										children: [form.towersList.filter((t$1) => !t$1.isDeleted).map((t$1, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 											className: "flex gap-2 items-center",
 											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												value: t$1.name ?? "",
+												value: t$1.name || "",
 												onChange: (e) => {
 													const val = e.target.value;
 													setForm((prev) => ({
@@ -70758,7 +70872,7 @@ function Hotels() {
 														} : x$2)
 													}));
 												},
-												placeholder: "e.g. Tower A, North Wing",
+												placeholder: t$1("hotel_form.towers_wings"),
 												className: "flex-1"
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 												variant: "ghost",
@@ -70769,7 +70883,7 @@ function Hotels() {
 											})]
 										}, t$1.id)), form.towersList.filter((t$1) => !t$1.isDeleted).length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 											className: "text-center py-6 text-sm text-slate-500 border border-dashed rounded-md bg-slate-50",
-											children: "No divisions added. Click \"Add Division\" to create one."
+											children: t("hotel_form.no_divisions")
 										})]
 									})]
 								})
@@ -70847,7 +70961,7 @@ function Hotels() {
 											t("common.delete")
 										]
 									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Delete Hotel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "This action cannot be undone. Are you sure you want to permanently delete this hotel?" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: t("hotel_form.delete_title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: t("hotel_form.delete_desc") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: t("common.cancel") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
 									onClick: () => handleDelete(h.id),
 									children: t("common.delete")
 								})] })] })] })]
@@ -75180,10 +75294,10 @@ function Housekeeping() {
 		className: "flex flex-col gap-6 p-6",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: "Housekeeping"
+			children: t("housekeeping.title")
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 			className: "text-muted-foreground",
-			children: "Manage cleaning tasks and schedules."
+			children: t("housekeeping.subtitle")
 		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
@@ -75191,10 +75305,10 @@ function Housekeeping() {
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
 					className: "bg-slate-50",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Task Title" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("housekeeping.task_title") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("common.property") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Assignee" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Date" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("housekeeping.assignee") }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("housekeeping.date") }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 							className: "text-right",
 							children: t("common.status")
@@ -75214,7 +75328,7 @@ function Housekeeping() {
 							className: "text-right",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: task.status === "completed" ? "default" : "secondary",
-								children: task.status.replace("_", " ")
+								children: t(`status.${task.status}`) || task.status.replace("_", " ")
 							})
 						})
 					]
@@ -77924,4 +78038,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-Ocbuc6M7.js.map
+//# sourceMappingURL=index-BWZ6PlJU.js.map

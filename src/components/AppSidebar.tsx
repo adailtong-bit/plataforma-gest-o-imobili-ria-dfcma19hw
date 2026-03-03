@@ -164,13 +164,13 @@ export function AppSidebar() {
       resource: 'tasks',
     },
     {
-      title: 'Housekeeping',
+      title: t('sidebar.housekeeping'),
       url: '/housekeeping',
       icon: HardHat,
       resource: 'tasks',
     },
     {
-      title: 'Night Audit',
+      title: t('sidebar.night_audit'),
       url: '/night-audit',
       icon: MoonStar,
       resource: 'financial',

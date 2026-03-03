@@ -23,21 +23,19 @@ export default function Housekeeping() {
     <div className="flex flex-col gap-6 p-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          Housekeeping
+          {t('housekeeping.title')}
         </h1>
-        <p className="text-muted-foreground">
-          Manage cleaning tasks and schedules.
-        </p>
+        <p className="text-muted-foreground">{t('housekeeping.subtitle')}</p>
       </div>
       <Card className="border-slate-200 shadow-sm bg-white">
         <CardContent className="p-0 overflow-auto">
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>Task Title</TableHead>
+                <TableHead>{t('housekeeping.task_title')}</TableHead>
                 <TableHead>{t('common.property')}</TableHead>
-                <TableHead>Assignee</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>{t('housekeeping.assignee')}</TableHead>
+                <TableHead>{t('housekeeping.date')}</TableHead>
                 <TableHead className="text-right">
                   {t('common.status')}
                 </TableHead>
@@ -60,7 +58,8 @@ export default function Housekeeping() {
                         task.status === 'completed' ? 'default' : 'secondary'
                       }
                     >
-                      {task.status.replace('_', ' ')}
+                      {t(`status.${task.status}`) ||
+                        task.status.replace('_', ' ')}
                     </Badge>
                   </TableCell>
                 </TableRow>
