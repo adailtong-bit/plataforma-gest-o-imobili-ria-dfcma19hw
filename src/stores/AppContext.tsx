@@ -482,10 +482,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         }
         return typeof current === 'string' ? current : undefined
       }
+
       let text =
         resolveKey(translations[language], key) ||
-        resolveKey(translations['en'], key) ||
-        key
+        resolveKey(translations['en'], key)
+
+      if (!text) {
+        const lastPart = key.split('.').pop() || key
+        text = lastPart
+          .split('_')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ')
+      }
+
       if (params) {
         Object.entries(params).forEach(([pkey, pval]) => {
           text = text.replace(`{${pkey}}`, pval)
@@ -1148,3 +1157,4 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     </AppContext.Provider>
   )
 }
+
