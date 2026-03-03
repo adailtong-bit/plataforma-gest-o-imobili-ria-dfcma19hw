@@ -16,6 +16,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectGroup,
+  SelectLabel,
 } from '@/components/ui/select'
 import { Plus } from 'lucide-react'
 import useTaskStore from '@/stores/useTaskStore'
@@ -36,6 +38,8 @@ export function CreateTaskDialog() {
     type: '',
     priority: 'medium',
     assigneeId: '',
+    partnerEmployeeId: '',
+    assigneeName: '',
     date: new Date().toISOString().split('T')[0],
   })
 
@@ -50,7 +54,6 @@ export function CreateTaskDialog() {
     }
 
     const prop = properties.find((p) => p.id === form.propertyId)
-    const partner = partners.find((p) => p.id === form.assigneeId)
 
     addTask({
       id: `task-${Date.now()}`,
@@ -62,8 +65,9 @@ export function CreateTaskDialog() {
       priority: form.priority as any,
       status: 'pending',
       date: form.date,
-      assigneeId: form.assigneeId,
-      assignee: partner?.name || 'Unassigned',
+      assigneeId: form.assigneeId || undefined,
+      partnerEmployeeId: form.partnerEmployeeId || undefined,
+      assignee: form.assigneeName || 'Unassigned',
       source: 'manual',
     })
 
@@ -75,8 +79,83 @@ export function CreateTaskDialog() {
       type: '',
       priority: 'medium',
       assigneeId: '',
+      partnerEmployeeId: '',
+      assigneeName: '',
       date: new Date().toISOString().split('T')[0],
     })
+  }
+
+  const taskTypeToSkills: Record<string, string[]> = {
+    cleaning: ['cleaning', 'deep_cleaning'],
+    maintenance: [
+      'plumbing',
+      'electrical',
+      'hvac',
+      'painting',
+      'general_maintenance',
+      'pool',
+      'pest_control',
+    ],
+  }
+
+  const requiredSkills = form.type ? taskTypeToSkills[form.type] || [] : []
+
+  const assignableStaff = partners.flatMap((partner) => {
+    return (partner.employees || []).map((emp) => ({
+      id: emp.id,
+      name: emp.name,
+      partnerId: partner.id,
+      partnerName: partner.name,
+      skills: emp.skills || [],
+    }))
+  })
+
+  const recommendedStaff = assignableStaff.filter((s) =>
+    s.skills.some((sk) => requiredSkills.includes(sk)),
+  )
+  const otherStaff = assignableStaff.filter(
+    (s) => !s.skills.some((sk) => requiredSkills.includes(sk)),
+  )
+
+  const currentAssigneeVal = form.partnerEmployeeId
+    ? `employee:${form.partnerEmployeeId}`
+    : form.assigneeId
+      ? `partner:${form.assigneeId}`
+      : 'none'
+
+  const handleAssigneeChange = (val: string) => {
+    if (val === 'none') {
+      setForm((prev) => ({
+        ...prev,
+        assigneeId: '',
+        partnerEmployeeId: '',
+        assigneeName: '',
+      }))
+      return
+    }
+
+    const [type, id] = val.split(':')
+    if (type === 'employee') {
+      const staff = assignableStaff.find((s) => s.id === id)
+      if (staff) {
+        setForm((prev) => ({
+          ...prev,
+          assigneeId: staff.partnerId,
+          partnerEmployeeId: staff.id,
+          assigneeName: `${staff.name} - ${staff.partnerName}`,
+        }))
+      }
+    } else if (type === 'partner') {
+      const partner = partners.find((p) => p.id === id)
+      if (partner) {
+        setForm((prev) => ({
+          ...prev,
+          assigneeId: partner.id,
+          partnerEmployeeId: '',
+          assigneeName: partner.name,
+        }))
+      }
+    }
   }
 
   return (
@@ -86,7 +165,7 @@ export function CreateTaskDialog() {
           <Plus className="h-4 w-4" /> New Task
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="bg-white">
         <DialogHeader>
           <DialogTitle>Create New Task</DialogTitle>
         </DialogHeader>
@@ -155,18 +234,58 @@ export function CreateTaskDialog() {
             <div className="space-y-2">
               <Label>Assignee</Label>
               <Select
-                value={form.assigneeId}
-                onValueChange={(v) => setForm({ ...form, assigneeId: v })}
+                value={currentAssigneeVal}
+                onValueChange={handleAssigneeChange}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Unassigned" />
                 </SelectTrigger>
                 <SelectContent>
-                  {partners.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.name}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="none">Unassigned</SelectItem>
+
+                  {recommendedStaff.length > 0 && (
+                    <SelectGroup>
+                      <SelectLabel className="text-trust-blue">
+                        Recommended Staff (Matches Skill)
+                      </SelectLabel>
+                      {recommendedStaff.map((staff) => (
+                        <SelectItem
+                          key={`emp-${staff.id}`}
+                          value={`employee:${staff.id}`}
+                        >
+                          {staff.name} - {staff.partnerName}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  )}
+
+                  {otherStaff.length > 0 && (
+                    <SelectGroup>
+                      <SelectLabel>Other Staff</SelectLabel>
+                      {otherStaff.map((staff) => (
+                        <SelectItem
+                          key={`emp-${staff.id}`}
+                          value={`employee:${staff.id}`}
+                        >
+                          {staff.name} - {staff.partnerName}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  )}
+
+                  {partners.length > 0 && (
+                    <SelectGroup>
+                      <SelectLabel>Partners (Agencies)</SelectLabel>
+                      {partners.map((partner) => (
+                        <SelectItem
+                          key={`pat-${partner.id}`}
+                          value={`partner:${partner.id}`}
+                        >
+                          {partner.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -184,7 +303,9 @@ export function CreateTaskDialog() {
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave}>Create Task</Button>
+          <Button onClick={handleSave} className="bg-trust-blue text-white">
+            Create Task
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

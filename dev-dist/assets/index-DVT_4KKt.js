@@ -62384,6 +62384,7 @@ var Icon = SelectIcon;
 var Portal$2 = SelectPortal;
 var Content2$2 = SelectContent$1;
 var Viewport$1 = SelectViewport;
+var Group = SelectGroup$1;
 var Label$1 = SelectLabel$1;
 var Item = SelectItem$1;
 var ItemText = SelectItemText;
@@ -62392,6 +62393,7 @@ var ScrollUpButton = SelectScrollUpButton$1;
 var ScrollDownButton = SelectScrollDownButton$1;
 var Separator = SelectSeparator$1;
 var Select = Root2$4;
+var SelectGroup = Group;
 var SelectValue = Value;
 var SelectTrigger = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Trigger$2, {
 	ref,
@@ -66572,6 +66574,8 @@ function CreateTaskDialog() {
 		type: "",
 		priority: "medium",
 		assigneeId: "",
+		partnerEmployeeId: "",
+		assigneeName: "",
 		date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
 	});
 	const handleSave = () => {
@@ -66584,7 +66588,6 @@ function CreateTaskDialog() {
 			return;
 		}
 		const prop = properties$1.find((p$1) => p$1.id === form.propertyId);
-		const partner = partners$1.find((p$1) => p$1.id === form.assigneeId);
 		addTask({
 			id: `task-${Date.now()}`,
 			title: form.title,
@@ -66595,8 +66598,9 @@ function CreateTaskDialog() {
 			priority: form.priority,
 			status: "pending",
 			date: form.date,
-			assigneeId: form.assigneeId,
-			assignee: partner?.name || "Unassigned",
+			assigneeId: form.assigneeId || void 0,
+			partnerEmployeeId: form.partnerEmployeeId || void 0,
+			assignee: form.assigneeName || "Unassigned",
 			source: "manual"
 		});
 		toast$2({ title: "Task created successfully" });
@@ -66607,8 +66611,63 @@ function CreateTaskDialog() {
 			type: "",
 			priority: "medium",
 			assigneeId: "",
+			partnerEmployeeId: "",
+			assigneeName: "",
 			date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
 		});
+	};
+	const requiredSkills = form.type ? {
+		cleaning: ["cleaning", "deep_cleaning"],
+		maintenance: [
+			"plumbing",
+			"electrical",
+			"hvac",
+			"painting",
+			"general_maintenance",
+			"pool",
+			"pest_control"
+		]
+	}[form.type] || [] : [];
+	const assignableStaff = partners$1.flatMap((partner) => {
+		return (partner.employees || []).map((emp) => ({
+			id: emp.id,
+			name: emp.name,
+			partnerId: partner.id,
+			partnerName: partner.name,
+			skills: emp.skills || []
+		}));
+	});
+	const recommendedStaff = assignableStaff.filter((s$1) => s$1.skills.some((sk) => requiredSkills.includes(sk)));
+	const otherStaff = assignableStaff.filter((s$1) => !s$1.skills.some((sk) => requiredSkills.includes(sk)));
+	const currentAssigneeVal = form.partnerEmployeeId ? `employee:${form.partnerEmployeeId}` : form.assigneeId ? `partner:${form.assigneeId}` : "none";
+	const handleAssigneeChange = (val) => {
+		if (val === "none") {
+			setForm((prev) => ({
+				...prev,
+				assigneeId: "",
+				partnerEmployeeId: "",
+				assigneeName: ""
+			}));
+			return;
+		}
+		const [type, id] = val.split(":");
+		if (type === "employee") {
+			const staff = assignableStaff.find((s$1) => s$1.id === id);
+			if (staff) setForm((prev) => ({
+				...prev,
+				assigneeId: staff.partnerId,
+				partnerEmployeeId: staff.id,
+				assigneeName: `${staff.name} - ${staff.partnerName}`
+			}));
+		} else if (type === "partner") {
+			const partner = partners$1.find((p$1) => p$1.id === id);
+			if (partner) setForm((prev) => ({
+				...prev,
+				assigneeId: partner.id,
+				partnerEmployeeId: "",
+				assigneeName: partner.name
+			}));
+		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 		open,
@@ -66619,127 +66678,153 @@ function CreateTaskDialog() {
 				className: "bg-trust-blue text-white gap-2 h-9",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " New Task"]
 			})
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Create New Task" }) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "space-y-4 py-4",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Title *" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: form.title,
-							onChange: (e) => setForm({
-								...form,
-								title: e.target.value
-							})
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Property *" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-							value: form.propertyId,
-							onValueChange: (v) => setForm({
-								...form,
-								propertyId: v
-							}),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Property" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-								value: p$1.id,
-								children: p$1.name
-							}, p$1.id)) })]
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid grid-cols-2 gap-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+			className: "bg-white",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Create New Task" }) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "space-y-4 py-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Type *" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-								value: form.type,
-								onValueChange: (v) => setForm({
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Title *" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: form.title,
+								onChange: (e) => setForm({
 									...form,
-									type: v
-								}),
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Type" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "cleaning",
-										children: "Cleaning"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "maintenance",
-										children: "Maintenance"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "inspection",
-										children: "Inspection"
-									})
-								] })]
+									title: e.target.value
+								})
 							})]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Priority" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-								value: form.priority,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Property *" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: form.propertyId,
 								onValueChange: (v) => setForm({
 									...form,
-									priority: v
+									propertyId: v
 								}),
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "low",
-										children: "Low"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "medium",
-										children: "Medium"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "high",
-										children: "High"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "critical",
-										children: "Critical"
-									})
-								] })]
-							})]
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid grid-cols-2 gap-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Assignee" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-								value: form.assigneeId,
-								onValueChange: (v) => setForm({
-									...form,
-									assigneeId: v
-								}),
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Unassigned" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: partners$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Property" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 									value: p$1.id,
 									children: p$1.name
 								}, p$1.id)) })]
 							})]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								type: "date",
-								value: form.date,
-								onChange: (e) => setForm({
-									...form,
-									date: e.target.value
-								})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Type *" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: form.type,
+									onValueChange: (v) => setForm({
+										...form,
+										type: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Type" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "cleaning",
+											children: "Cleaning"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "maintenance",
+											children: "Maintenance"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "inspection",
+											children: "Inspection"
+										})
+									] })]
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Priority" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: form.priority,
+									onValueChange: (v) => setForm({
+										...form,
+										priority: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "low",
+											children: "Low"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "medium",
+											children: "Medium"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "high",
+											children: "High"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "critical",
+											children: "Critical"
+										})
+									] })]
+								})]
 							})]
-						})]
-					})
-				]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				variant: "outline",
-				onClick: () => setOpen(false),
-				children: "Cancel"
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				onClick: handleSave,
-				children: "Create Task"
-			})] })
-		] })]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Assignee" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: currentAssigneeVal,
+									onValueChange: handleAssigneeChange,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Unassigned" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "none",
+											children: "Unassigned"
+										}),
+										recommendedStaff.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, {
+											className: "text-trust-blue",
+											children: "Recommended Staff (Matches Skill)"
+										}), recommendedStaff.map((staff) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+											value: `employee:${staff.id}`,
+											children: [
+												staff.name,
+												" - ",
+												staff.partnerName
+											]
+										}, `emp-${staff.id}`))] }),
+										otherStaff.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, { children: "Other Staff" }), otherStaff.map((staff) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+											value: `employee:${staff.id}`,
+											children: [
+												staff.name,
+												" - ",
+												staff.partnerName
+											]
+										}, `emp-${staff.id}`))] }),
+										partners$1.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, { children: "Partners (Agencies)" }), partners$1.map((partner) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: `partner:${partner.id}`,
+											children: partner.name
+										}, `pat-${partner.id}`))] })
+									] })]
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "date",
+									value: form.date,
+									onChange: (e) => setForm({
+										...form,
+										date: e.target.value
+									})
+								})]
+							})]
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "outline",
+					onClick: () => setOpen(false),
+					children: "Cancel"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					onClick: handleSave,
+					className: "bg-trust-blue text-white",
+					children: "Create Task"
+				})] })
+			]
+		})]
 	});
 }
 function TaskInvoiceDialog({ open, onOpenChange }) {
@@ -66864,6 +66949,7 @@ var TableCaption = import_react.forwardRef(({ className, ...props }, ref) => /* 
 TableCaption.displayName = "TableCaption";
 function EditTaskDialog({ task, open, onOpenChange }) {
 	const { updateTask } = useTaskStore_default();
+	const { partners: partners$1 } = usePartnerStore_default();
 	const { toast: toast$2 } = useToast();
 	const [form, setForm] = (0, import_react.useState)({});
 	(0, import_react.useEffect)(() => {
@@ -66880,60 +66966,215 @@ function EditTaskDialog({ task, open, onOpenChange }) {
 		}
 	};
 	if (!task) return null;
+	const requiredSkills = task.type ? {
+		cleaning: ["cleaning", "deep_cleaning"],
+		maintenance: [
+			"plumbing",
+			"electrical",
+			"hvac",
+			"painting",
+			"general_maintenance",
+			"pool",
+			"pest_control"
+		]
+	}[task.type] || [] : [];
+	const assignableStaff = partners$1.flatMap((partner) => {
+		return (partner.employees || []).map((emp) => ({
+			id: emp.id,
+			name: emp.name,
+			partnerId: partner.id,
+			partnerName: partner.name,
+			skills: emp.skills || []
+		}));
+	});
+	const recommendedStaff = assignableStaff.filter((s$1) => s$1.skills.some((sk) => requiredSkills.includes(sk)));
+	const otherStaff = assignableStaff.filter((s$1) => !s$1.skills.some((sk) => requiredSkills.includes(sk)));
+	const currentAssigneeVal = form.partnerEmployeeId ? `employee:${form.partnerEmployeeId}` : form.assigneeId ? `partner:${form.assigneeId}` : "none";
+	const handleAssigneeChange = (val) => {
+		if (val === "none") {
+			setForm((prev) => ({
+				...prev,
+				assigneeId: void 0,
+				partnerEmployeeId: void 0,
+				assignee: "Unassigned"
+			}));
+			return;
+		}
+		const [type, id] = val.split(":");
+		if (type === "employee") {
+			const staff = assignableStaff.find((s$1) => s$1.id === id);
+			if (staff) setForm((prev) => ({
+				...prev,
+				assigneeId: staff.partnerId,
+				partnerEmployeeId: staff.id,
+				assignee: `${staff.name} - ${staff.partnerName}`
+			}));
+		} else if (type === "partner") {
+			const partner = partners$1.find((p$1) => p$1.id === id);
+			if (partner) setForm((prev) => ({
+				...prev,
+				assigneeId: partner.id,
+				partnerEmployeeId: void 0,
+				assignee: partner.name
+			}));
+		}
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open,
 		onOpenChange,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Edit Task" }) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "space-y-4 py-4",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Title" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: form.title || "",
-							onChange: (e) => setForm({
-								...form,
-								title: e.target.value
-							})
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							type: "date",
-							value: form.date?.split("T")[0] || "",
-							onChange: (e) => setForm({
-								...form,
-								date: e.target.value
-							})
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "grid grid-cols-2 gap-4",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+			className: "max-h-[90vh] overflow-y-auto bg-white",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Edit Task" }) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "space-y-4 py-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Price" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								type: "number",
-								value: form.price || "",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Title" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: form.title || "",
 								onChange: (e) => setForm({
 									...form,
-									price: Number(e.target.value)
+									title: e.target.value
 								})
 							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Description" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
+								className: "flex min-h-[80px] w-full rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-trust-blue",
+								value: form.description || "",
+								onChange: (e) => setForm({
+									...form,
+									description: e.target.value
+								}),
+								placeholder: "Task details..."
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "date",
+									value: form.date?.split("T")[0] || "",
+									onChange: (e) => setForm({
+										...form,
+										date: new Date(e.target.value).toISOString()
+									})
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Priority" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: form.priority,
+									onValueChange: (v) => setForm({
+										...form,
+										priority: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "low",
+											children: "Low"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "medium",
+											children: "Medium"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "high",
+											children: "High"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "critical",
+											children: "Critical"
+										})
+									] })]
+								})]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: form.status,
+									onValueChange: (v) => setForm({
+										...form,
+										status: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "pending",
+											children: "Pending"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "in_progress",
+											children: "In Progress"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "completed",
+											children: "Completed"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "pending_approval",
+											children: "Pending Approval"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "rejected",
+											children: "Rejected"
+										})
+									] })]
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Assignee (Staff / Partner)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: currentAssigneeVal,
+									onValueChange: handleAssigneeChange,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Assignee" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "none",
+											children: "Unassigned"
+										}),
+										recommendedStaff.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, {
+											className: "text-trust-blue",
+											children: "Recommended Staff (Matches Skill)"
+										}), recommendedStaff.map((staff) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+											value: `employee:${staff.id}`,
+											children: [
+												staff.name,
+												" - ",
+												staff.partnerName
+											]
+										}, `emp-${staff.id}`))] }),
+										otherStaff.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, { children: "Other Staff" }), otherStaff.map((staff) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem, {
+											value: `employee:${staff.id}`,
+											children: [
+												staff.name,
+												" - ",
+												staff.partnerName
+											]
+										}, `emp-${staff.id}`))] }),
+										partners$1.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectGroup, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel, { children: "Partners (Agencies)" }), partners$1.map((partner) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: `partner:${partner.id}`,
+											children: partner.name
+										}, `pat-${partner.id}`))] })
+									] })]
+								})]
+							})]
 						})
-					})
-				]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				variant: "outline",
-				onClick: () => onOpenChange(false),
-				children: "Cancel"
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				onClick: handleSave,
-				children: "Save Changes"
-			})] })
-		] })
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "outline",
+					onClick: () => onOpenChange(false),
+					children: "Cancel"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					onClick: handleSave,
+					className: "bg-trust-blue text-white",
+					children: "Save Changes"
+				})] })
+			]
+		})
 	});
 }
 var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
@@ -67011,16 +67252,16 @@ function Tasks() {
 		"platform_owner",
 		"software_tenant",
 		"internal_user"
-	].includes(currentUser.role);
-	const isOwner = currentUser.role === "property_owner";
+	].includes(currentUser?.role);
+	const isOwner = currentUser?.role === "property_owner";
 	const filteredTasks = (0, import_react.useMemo)(() => {
 		return tasks$1.filter((t$1) => {
 			if (isOwner) {
-				if (properties$1.find((p$1) => p$1.id === t$1.propertyId)?.ownerId !== currentUser.id) return false;
+				if (properties$1.find((p$1) => p$1.id === t$1.propertyId)?.ownerId !== currentUser?.id) return false;
 			}
 			if (t$1.assignedRole) {
-				const isAdmin = ["platform_owner", "software_tenant"].includes(currentUser.role);
-				const isRoleMatch = t$1.assignedRole === currentUser.role;
+				const isAdmin = ["platform_owner", "software_tenant"].includes(currentUser?.role);
+				const isRoleMatch = t$1.assignedRole === currentUser?.role;
 				if (!isAdmin && !isRoleMatch) return false;
 			}
 			const typeMatch = filterType === "all" || t$1.type === filterType;
@@ -67078,7 +67319,7 @@ function Tasks() {
 	const checkCanApprove = (task) => {
 		if (task.status !== "pending_approval") return false;
 		if (isAdminOrPM) return true;
-		const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser.id;
+		const isMyProperty = properties$1.find((p$1) => p$1.id === task.propertyId)?.ownerId === currentUser?.id;
 		if (task.approvalStatus === "owner_pending") return isOwner && isMyProperty;
 		return false;
 	};
@@ -80065,4 +80306,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-CBBq64dB.js.map
+//# sourceMappingURL=index-DVT_4KKt.js.map

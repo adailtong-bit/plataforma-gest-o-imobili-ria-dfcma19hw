@@ -71,8 +71,8 @@ export default function Tasks() {
     'platform_owner',
     'software_tenant',
     'internal_user',
-  ].includes(currentUser.role)
-  const isOwner = currentUser.role === 'property_owner'
+  ].includes(currentUser?.role as any)
+  const isOwner = currentUser?.role === 'property_owner'
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
@@ -80,15 +80,15 @@ export default function Tasks() {
       if (isOwner) {
         // Owners only see tasks for their properties
         const property = properties.find((p) => p.id === t.propertyId)
-        if (property?.ownerId !== currentUser.id) return false
+        if (property?.ownerId !== currentUser?.id) return false
       }
 
       // Workflow Role Filtering
       if (t.assignedRole) {
         const isAdmin = ['platform_owner', 'software_tenant'].includes(
-          currentUser.role,
+          currentUser?.role as any,
         )
-        const isRoleMatch = t.assignedRole === currentUser.role
+        const isRoleMatch = t.assignedRole === currentUser?.role
 
         if (!isAdmin && !isRoleMatch) {
           return false
@@ -180,7 +180,7 @@ export default function Tasks() {
     if (isAdminOrPM) return true
 
     const property = properties.find((p) => p.id === task.propertyId)
-    const isMyProperty = property?.ownerId === currentUser.id
+    const isMyProperty = property?.ownerId === currentUser?.id
 
     if (task.approvalStatus === 'owner_pending') {
       return isOwner && isMyProperty
