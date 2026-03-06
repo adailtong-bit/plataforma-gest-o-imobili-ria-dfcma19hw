@@ -59789,26 +59789,61 @@ var useAuthStore = () => {
 };
 var useAuthStore_default = useAuthStore;
 function Login() {
-	const { login } = useAuthStore_default();
+	const { login, allUsers } = useAuthStore_default();
 	const navigate = useNavigate();
-	const handleLogin = () => {
-		login("admin@corepm.com");
+	const handleLogin = (email) => {
+		login(email);
 		navigate("/");
+	};
+	const getRoleIcon = (role) => {
+		switch (role?.toLowerCase()) {
+			case "admin":
+			case "super_admin": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shield, { className: "h-5 w-5 text-primary shrink-0" });
+			case "owner": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-5 w-5 text-blue-500 shrink-0" });
+			case "tenant": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-5 w-5 text-green-500 shrink-0" });
+			case "partner":
+			case "service": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "h-5 w-5 text-orange-500 shrink-0" });
+			default: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "h-5 w-5 text-slate-500 shrink-0" });
+		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "flex min-h-screen w-full items-center justify-center p-6 bg-slate-50",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-			className: "w-full max-w-sm",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Login" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+			className: "w-full max-w-sm shadow-md",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+				className: "text-center pb-6",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+					className: "text-2xl font-bold tracking-tight",
+					children: "COREPM"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Select an account to sign in" })]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: allUsers && allUsers.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex flex-col gap-2.5 max-h-[60vh] overflow-y-auto pr-1",
+				children: allUsers.map((user, index$1) => {
+					const uniqueKey = user.id ? `${user.id}-${index$1}` : `user-${index$1}`;
+					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						variant: "outline",
+						className: "w-full h-auto py-3 px-4 justify-start items-center hover:bg-slate-100 transition-colors gap-3",
+						onClick: () => handleLogin(user.email),
+						children: [getRoleIcon(user.role), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-col items-start text-left overflow-hidden flex-1",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-medium text-sm truncate w-full",
+								children: user.name || user.email
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "text-xs text-slate-500 font-normal capitalize",
+								children: user.role ? user.role.replace("_", " ") : "User"
+							})]
+						})]
+					}, uniqueKey);
+				})
+			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "flex flex-col gap-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "text-sm text-slate-500",
-					children: "Sign in to your account."
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					onClick: handleLogin,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					onClick: () => handleLogin("admin@corepm.com"),
+					className: "w-full h-11",
 					children: "Log In as Admin"
-				})]
-			})]
+				})
+			}) })]
 		})
 	});
 }
@@ -81860,4 +81895,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-C4IJUuoL.js.map
+//# sourceMappingURL=index-CxHkEGL_.js.map
