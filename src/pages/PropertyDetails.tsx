@@ -27,6 +27,7 @@ import { PropertyLocation } from '@/components/properties/PropertyLocation'
 import { PropertyFeatures } from '@/components/properties/PropertyFeatures'
 import { PropertyMedia } from '@/components/properties/PropertyMedia'
 import { PropertyFinancials } from '@/components/properties/PropertyFinancials'
+import { PropertyManagement } from '@/components/properties/PropertyManagement'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -215,16 +216,7 @@ export default function PropertyDetails() {
             />
           </TabsContent>
           <TabsContent value="management">
-            <div className="bg-white p-8 text-center rounded-lg border shadow-sm flex flex-col items-center justify-center min-h-[300px]">
-              <h3 className="text-xl font-bold text-slate-800 mb-2">
-                Management Workspace
-              </h3>
-              <p className="text-slate-500 max-w-md">
-                Access property maintenance workflows, calendars, and active
-                tasks here. Modules are synchronized with the central
-                operational dashboard.
-              </p>
-            </div>
+            <PropertyManagement property={formData} />
           </TabsContent>
           <TabsContent value="financials">
             <PropertyFinancials

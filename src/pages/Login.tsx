@@ -23,8 +23,11 @@ export default function Login() {
     switch (role?.toLowerCase()) {
       case 'admin':
       case 'super_admin':
+      case 'platform_owner':
+      case 'software_tenant':
         return <Shield className="h-5 w-5 text-primary shrink-0" />
       case 'owner':
+      case 'property_owner':
         return <Building className="h-5 w-5 text-blue-500 shrink-0" />
       case 'tenant':
         return <Home className="h-5 w-5 text-green-500 shrink-0" />
@@ -49,12 +52,8 @@ export default function Login() {
           {allUsers && allUsers.length > 0 ? (
             <div className="flex flex-col gap-2.5 max-h-[60vh] overflow-y-auto pr-1">
               {allUsers.map((user: any, index: number) => {
-                // Ensure unique key by combining id/email with index.
-                // This specifically resolves the runtime error:
-                // "Encountered two children with the same key, `owner1`"
-                const uniqueKey = user.id
-                  ? `${user.id}-${index}`
-                  : `user-${index}`
+                // Highly robust key generation to avoid list duplication errors
+                const uniqueKey = `${user.id || 'no-id'}-${user.email || 'no-email'}-${index}`
 
                 return (
                   <Button

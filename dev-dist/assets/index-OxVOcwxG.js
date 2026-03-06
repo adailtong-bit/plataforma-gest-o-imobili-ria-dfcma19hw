@@ -19204,6 +19204,15 @@ var ClipboardList = createLucideIcon("clipboard-list", [
 		key: "18s6g9"
 	}]
 ]);
+var Clock = createLucideIcon("clock", [["path", {
+	d: "M12 6v6l4 2",
+	key: "mmk7yg"
+}], ["circle", {
+	cx: "12",
+	cy: "12",
+	r: "10",
+	key: "1mglay"
+}]]);
 var CreditCard = createLucideIcon("credit-card", [["rect", {
 	width: "20",
 	height: "14",
@@ -56687,8 +56696,8 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 		messages: FULL_ACCESS,
 		users: FULL_ACCESS,
 		settings: FULL_ACCESS,
-		audit_logs: ["view"],
-		portal: ["view"],
+		audit_logs: FULL_ACCESS,
+		portal: FULL_ACCESS,
 		market_analysis: FULL_ACCESS,
 		workflows: FULL_ACCESS,
 		renewals: FULL_ACCESS,
@@ -56719,8 +56728,8 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 		messages: FULL_ACCESS,
 		users: FULL_ACCESS,
 		settings: FULL_ACCESS,
-		audit_logs: ["view"],
-		portal: ["view"],
+		audit_logs: FULL_ACCESS,
+		portal: FULL_ACCESS,
 		market_analysis: FULL_ACCESS,
 		workflows: FULL_ACCESS,
 		renewals: FULL_ACCESS,
@@ -59798,8 +59807,11 @@ function Login() {
 	const getRoleIcon = (role) => {
 		switch (role?.toLowerCase()) {
 			case "admin":
-			case "super_admin": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shield, { className: "h-5 w-5 text-primary shrink-0" });
-			case "owner": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-5 w-5 text-blue-500 shrink-0" });
+			case "super_admin":
+			case "platform_owner":
+			case "software_tenant": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shield, { className: "h-5 w-5 text-primary shrink-0" });
+			case "owner":
+			case "property_owner": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-5 w-5 text-blue-500 shrink-0" });
 			case "tenant": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(House, { className: "h-5 w-5 text-green-500 shrink-0" });
 			case "partner":
 			case "service": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "h-5 w-5 text-orange-500 shrink-0" });
@@ -59819,7 +59831,7 @@ function Login() {
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: allUsers && allUsers.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "flex flex-col gap-2.5 max-h-[60vh] overflow-y-auto pr-1",
 				children: allUsers.map((user, index$1) => {
-					const uniqueKey = user.id ? `${user.id}-${index$1}` : `user-${index$1}`;
+					const uniqueKey = `${user.id || "no-id"}-${user.email || "no-email"}-${index$1}`;
 					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						variant: "outline",
 						className: "w-full h-auto py-3 px-4 justify-start items-center hover:bg-slate-100 transition-colors gap-3",
@@ -66055,6 +66067,72 @@ function PropertyFinancials({ data, onChange, canEdit, owners: owners$1, partner
 		]
 	});
 }
+function PropertyManagement({ property: property$2 }) {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) return null;
+	const { tasks: tasks$1, calendarBlocks: calendarBlocks$1 } = context;
+	const propertyTasks = tasks$1.filter((t) => t.propertyId === property$2.id);
+	const propertyBlocks = calendarBlocks$1.filter((b$1) => b$1.propertyId === property$2.id);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "space-y-6",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+			className: "flex flex-row items-center justify-between pb-2",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Active Tasks & Maintenance" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Operational tasks currently assigned to this property." })] })
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: propertyTasks.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "space-y-4",
+			children: propertyTasks.map((task) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center justify-between p-4 border rounded-lg",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: `p-2 rounded-full ${task.status === "completed" ? "bg-green-100" : "bg-amber-100"}`,
+						children: task.status === "completed" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-5 w-5 text-green-600" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "h-5 w-5 text-amber-600" })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+						className: "font-semibold text-sm",
+						children: task.title
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+						className: "text-xs text-muted-foreground capitalize",
+						children: [
+							task.type.replace("_", " "),
+							" • ",
+							task.priority,
+							" priority"
+						]
+					})] })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+					variant: task.status === "completed" ? "default" : "secondary",
+					children: task.status
+				})]
+			}, task.id))
+		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "text-center py-8 text-muted-foreground border rounded-lg border-dashed",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Wrench, { className: "mx-auto h-8 w-8 text-slate-300 mb-2" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "No active tasks for this property." })]
+		}) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Calendar Blocks & Availability" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Scheduled blocks indicating maintenance or owner use." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: propertyBlocks.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "space-y-4",
+			children: propertyBlocks.map((block) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-4 p-4 border rounded-lg",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "bg-slate-100 p-2 rounded-full",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "h-5 w-5 text-slate-600" })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+					className: "font-semibold text-sm capitalize",
+					children: block.type.replace("_", " ")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					className: "text-xs text-muted-foreground",
+					children: [
+						format(new Date(block.startDate), "MMM dd, yyyy"),
+						" -",
+						" ",
+						format(new Date(block.endDate), "MMM dd, yyyy")
+					]
+				})] })]
+			}, block.id))
+		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "text-center py-8 text-muted-foreground border rounded-lg border-dashed",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "mx-auto h-8 w-8 text-slate-300 mb-2" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "No active calendar blocks." })]
+		}) })] })]
+	});
+}
 function PropertyDetails() {
 	const { id } = useParams();
 	const navigate = useNavigate();
@@ -66236,16 +66314,7 @@ function PropertyDetails() {
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 						value: "management",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "bg-white p-8 text-center rounded-lg border shadow-sm flex flex-col items-center justify-center min-h-[300px]",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-								className: "text-xl font-bold text-slate-800 mb-2",
-								children: "Management Workspace"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "text-slate-500 max-w-md",
-								children: "Access property maintenance workflows, calendars, and active tasks here. Modules are synchronized with the central operational dashboard."
-							})]
-						})
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PropertyManagement, { property: formData })
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 						value: "financials",
@@ -81282,7 +81351,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 	const { toast: toast$2 } = useToast();
 	const { t } = useLanguageStore_default();
 	const [hasAlerted, setHasAlerted] = (0, import_react.useState)(false);
-	const allowed = currentUser ? hasPermissionSync(currentUser, resource, action) : false;
+	const allowed = currentUser ? ["platform_owner", "software_tenant"].includes(currentUser.role) ? true : hasPermissionSync(currentUser, resource, action) : false;
 	(0, import_react.useEffect)(() => {
 		if (!isAuthLoading && isAuthenticated && !allowed && !hasAlerted) {
 			if (![
@@ -81895,4 +81964,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-CxHkEGL_.js.map
+//# sourceMappingURL=index-OxVOcwxG.js.map

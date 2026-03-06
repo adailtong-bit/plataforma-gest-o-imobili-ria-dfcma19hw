@@ -19,8 +19,8 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     messages: FULL_ACCESS,
     users: FULL_ACCESS,
     settings: FULL_ACCESS,
-    audit_logs: ['view'],
-    portal: ['view'],
+    audit_logs: FULL_ACCESS,
+    portal: FULL_ACCESS,
     market_analysis: FULL_ACCESS,
     workflows: FULL_ACCESS,
     renewals: FULL_ACCESS,
@@ -51,8 +51,8 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     messages: FULL_ACCESS,
     users: FULL_ACCESS,
     settings: FULL_ACCESS,
-    audit_logs: ['view'],
-    portal: ['view'],
+    audit_logs: FULL_ACCESS,
+    portal: FULL_ACCESS,
     market_analysis: FULL_ACCESS,
     workflows: FULL_ACCESS,
     renewals: FULL_ACCESS,
@@ -142,6 +142,8 @@ export const hasPermission = (
   action: Action,
 ): boolean => {
   if (!user || !user.role) return false
+
+  if (['platform_owner', 'software_tenant'].includes(user.role)) return true
 
   if (user.permissions && user.permissions.length > 0) {
     const override = user.permissions.find((p) => p.resource === resource)

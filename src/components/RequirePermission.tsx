@@ -71,9 +71,11 @@ export function RequirePermission({
 
   const [hasAlerted, setHasAlerted] = useState(false)
 
-  // Safely evaluate permissions ensuring currentUser exists to prevent unwanted UI hiding
+  // Safely evaluate permissions ensuring currentUser exists, overriding for platform owners
   const allowed = currentUser
-    ? hasPermissionSync(currentUser as User, resource, action)
+    ? ['platform_owner', 'software_tenant'].includes((currentUser as User).role)
+      ? true
+      : hasPermissionSync(currentUser as User, resource, action)
     : false
 
   useEffect(() => {
