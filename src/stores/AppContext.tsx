@@ -474,11 +474,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const { toast } = useToast()
 
-  // Improved auth loading synchronization
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsAuthLoading(false)
-    }, 150) // Reduced delay for immediate visual response
+    }, 150)
     return () => clearTimeout(timer)
   }, [])
 
@@ -569,9 +568,44 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const updateTask = (t: Task) =>
     setTasks(tasks.map((x) => (x.id === t.id ? t : x)))
   const deleteTask = (id: string) => setTasks(tasks.filter((x) => x.id !== id))
-  const updateTaskStatus = (id: string, status: Task['status']) =>
-    updateTask({ ...tasks.find((t) => t.id === id)!, status })
-  const approveTask = (id: string) => updateTaskStatus(id, 'pending')
+
+  const updateTaskStatus = (id: string, status: Task['status']) => {
+    setTasks((prev) => {
+      const updated = prev.map((t) => (t.id === id ? { ...t, status } : t))
+      return updated
+    })
+    if (status === 'completed') {
+      setTimeout(() => {
+        runWorkflows('maintenance_request')
+      }, 0)
+    }
+  }
+
+  const approveTask = (id: string) => {
+    setTasks((prev) => {
+      const task = prev.find((t) => t.id === id)
+      if (task) {
+        const amt = task.price || task.laborCost || 0
+        if (amt > 0) {
+          setTimeout(() => {
+            addInvoice({
+              id: `inv-auto-${Date.now()}`,
+              description: `Auto-generated Invoice for Task: ${task.title}`,
+              amount: amt,
+              status: 'pending',
+              date: new Date().toISOString(),
+              propertyId: task.propertyId,
+              bookingId: task.bookingId,
+              type: 'generic',
+            })
+          }, 0)
+        }
+        return prev.map((t) => (t.id === id ? { ...t, status: 'approved' } : t))
+      }
+      return prev
+    })
+  }
+
   const rejectTask = (id: string) => updateTaskStatus(id, 'rejected')
   const addInvoice = (i: Invoice) =>
     setFinancials((prev) => ({ ...prev, invoices: [...prev.invoices, i] }))
@@ -621,7 +655,44 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setPartners(partners.map((x) => (x.id === p.id ? p : x)))
   const deletePartner = (id: string) =>
     setPartners(partners.filter((x) => x.id !== id))
-  const addBooking = (b: Booking) => setBookings([...bookings, b])
+
+  const addBooking = (b: Booking) => {
+    setBookings((prev) => [...prev, b])
+
+    setCalendarBlocks((prev) => [
+      ...prev,
+      {
+        id: `block-auto-${Date.now()}`,
+        propertyId: b.propertyId,
+        startDate: b.checkIn,
+        endDate: b.checkOut,
+        type: 'external_sync',
+        notes: `Booking: ${b.guestName}`,
+        source: 'booking',
+      },
+    ])
+
+    setTasks((prev) => [
+      ...prev,
+      {
+        id: `task-clean-${Date.now()}`,
+        title: `Cleaning after checkout - ${b.guestName}`,
+        propertyId: b.propertyId,
+        propertyName: b.propertyName || 'Property',
+        status: 'pending',
+        type: 'cleaning',
+        assignee: 'Unassigned',
+        date: b.checkOut,
+        priority: 'high',
+        source: 'automation',
+      },
+    ])
+
+    setTimeout(() => {
+      runWorkflows('before_checkin', { booking: b })
+    }, 0)
+  }
+
   const updateBooking = (b: Booking) =>
     setBookings(bookings.map((x) => (x.id === b.id ? b : x)))
   const deleteBooking = (id: string) =>
@@ -948,7 +1019,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
               createdBy: currentUser.id,
             }
 
-            addTask(newTask)
+            setTasks((prev) => [...prev, newTask])
             tasksCreated++
           }
         })
@@ -961,7 +1032,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         })
       }
     },
-    [properties, partners, bookings, addTask, toast, currentUser.id],
+    [properties, partners, bookings, toast, currentUser.id],
   )
 
   const runWorkflows = useCallback(

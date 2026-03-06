@@ -1,662 +1,197 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Activity,
-  DollarSign,
-  Settings2,
-  Trophy,
-  Building,
-  TrendingUp,
-  Download,
-} from 'lucide-react'
-import { Calendar } from '@/components/ui/calendar'
-import { useState, useContext } from 'react'
-import { Button } from '@/components/ui/button'
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart'
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  Cell,
-  Pie,
-  PieChart,
-} from 'recharts'
-import { Badge } from '@/components/ui/badge'
-import useTaskStore from '@/stores/useTaskStore'
-import useFinancialStore from '@/stores/useFinancialStore'
-import useLanguageStore from '@/stores/useLanguageStore'
-import usePropertyStore from '@/stores/usePropertyStore'
-import useVisitStore from '@/stores/useVisitStore'
-import useShortTermStore from '@/stores/useShortTermStore'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Link } from 'react-router-dom'
+import { useContext } from 'react'
 import { AppContext } from '@/stores/AppContext'
+import { formatCurrency } from '@/lib/utils'
+import { Calendar } from '@/components/ui/calendar'
+import { Badge } from '@/components/ui/badge'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
-import { Progress } from '@/components/ui/progress'
-import { DataMask } from '@/components/DataMask'
-import { InvoiceViewer } from '@/components/financial/InvoiceViewer'
-import { Invoice } from '@/lib/types'
-import { useToast } from '@/hooks/use-toast'
+  DollarSign,
+  Home,
+  Percent,
+  TrendingUp,
+  AlertCircle,
+  Calendar as CalendarIcon,
+  CheckSquare,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export default function Index() {
-  return <DashboardContent />
-}
+  const { properties, bookings, tasks, financials, currency } =
+    useContext(AppContext)!
 
-function DashboardContent() {
-  const [date, setDate] = useState<Date | undefined>(new Date())
-  const { tasks, approveTask } = useTaskStore()
-  const { ledgerEntries, financials, formatCurrency } = useFinancialStore()
-  const { properties } = usePropertyStore()
-  const { visits } = useVisitStore()
-  const { bookings } = useShortTermStore()
-  const { t, language } = useLanguageStore()
-  const context = useContext(AppContext)
-  const selectedPropertyId = context?.selectedPropertyId || 'all'
-  const { toast } = useToast()
+  const totalRevenue = financials.invoices
+    .filter((i) => i.status === 'paid')
+    .reduce((acc, i) => acc + i.amount, 0)
 
-  const [viewInvoiceOpen, setViewInvoiceOpen] = useState(false)
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
+  // Fake calculation for KPIs if no real data
+  const occupancy =
+    bookings.length > 0
+      ? Math.min(
+          100,
+          Math.round((bookings.length / (properties.length || 1)) * 100),
+        )
+      : 0
+  const adr =
+    bookings.length > 0
+      ? bookings.reduce((acc, b) => acc + (b.baseAmount || 0), 0) /
+        bookings.length
+      : 0
+  const revPar = adr * (occupancy / 100)
 
-  // Dashboard Widget State
-  const [widgets, setWidgets] = useState({
-    kpi: true,
-    revenueChart: true,
-    calendar: true,
-    pending: true,
-    expenseChart: true,
-    health: true,
-  })
-  const [dialogOpen, setDialogOpen] = useState(false)
-
-  // Filter Data based on selectedPropertyId
-  const filteredEntries = ledgerEntries.filter((e) =>
-    selectedPropertyId === 'all' ? true : e.propertyId === selectedPropertyId,
-  )
-
-  const filteredTasks = tasks.filter((t) =>
-    selectedPropertyId === 'all' ? true : t.propertyId === selectedPropertyId,
-  )
-
-  // Calculate real metrics from ledger
-  const totalRevenue = filteredEntries
-    .filter((e) => e.type === 'income')
-    .reduce((acc, curr) => acc + curr.value || curr.amount, 0)
-
-  // Chart Data preparation
-  const locale =
-    language === 'es' ? 'es-ES' : language === 'pt' ? 'pt-BR' : 'en-US'
-
-  const chartData = filteredEntries.reduce(
-    (acc, entry) => {
-      const month = new Date(entry.date).toLocaleString(locale, {
-        month: 'short',
-      })
-      const existing = acc.find((d) => d.month === month)
-      if (existing) {
-        existing.value += entry.amount
-      } else {
-        acc.push({ month, value: entry.amount })
-      }
-      return acc
-    },
-    [] as { month: string; value: number }[],
-  )
-
-  const revenueData =
-    chartData.length > 0 ? chartData : financials.revenue || []
-
-  const chartConfig = {
-    maintenance: {
-      label: t('common.maintenance'),
-      color: 'hsl(var(--chart-1))',
-    },
-    cleaning: {
-      label: t('common.cleaning'),
-      color: 'hsl(var(--chart-2))',
-    },
-    taxes: {
-      label: t('common.taxes'),
-      color: 'hsl(var(--chart-3))',
-    },
-    utilities: {
-      label: t('common.utilities'),
-      color: 'hsl(var(--chart-4))',
-    },
-  }
-
-  // Real Estate Specific Metrics
-  const totalProperties = properties.length
-  const activeListings = properties.filter(
-    (p) => p.status === 'available',
-  ).length
-  const pendingVisits = visits.filter((v) => v.status === 'scheduled').length
-
-  // Hotel Specific Metrics
-  const totalRooms = properties.filter(
-    (p) => p.profileType === 'short_term',
-  ).length
-  const occupiedRooms = properties.filter(
-    (p) => p.profileType === 'short_term' && p.status === 'occupied',
-  ).length
-  const occupancyRate =
-    totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0
-
-  // Calculate ADR (Average Daily Rate) and RevPAR
-  const confirmedBookings = bookings.filter((b) => b.status !== 'cancelled')
-  const totalBookingRevenue = confirmedBookings.reduce(
-    (acc, b) => acc + b.totalAmount,
-    0,
-  )
-  const totalNights = confirmedBookings.reduce((acc, b) => {
-    const nights =
-      (new Date(b.checkOut).getTime() - new Date(b.checkIn).getTime()) /
-      (1000 * 60 * 60 * 24)
-    return acc + Math.max(1, nights)
-  }, 0)
-
-  const adr = totalNights > 0 ? totalBookingRevenue / totalNights : 0
-  const revPar = totalRooms > 0 ? totalBookingRevenue / (totalRooms * 30) : 0 // Rough monthly estimate
-
-  // Gamification: Calculate Global Health Score
-  const relevantProperties =
-    selectedPropertyId === 'all'
-      ? properties
-      : properties.filter((p) => p.id === selectedPropertyId)
-
-  const avgHealthScore =
-    relevantProperties.reduce((acc, p) => acc + (p.healthScore || 80), 0) /
-    (relevantProperties.length || 1)
-
-  const toggleWidget = (key: keyof typeof widgets) => {
-    setWidgets((prev) => ({ ...prev, [key]: !prev[key] }))
-  }
-
-  const handleExportDashboard = async () => {
-    try {
-      // Simulate html-to-image logic attempting to fetch external images
-      const targetImages = [
-        'https://img.usecurling.com/p/600/200?q=sale',
-        'https://img.usecurling.com/p/600/500?q=team',
-      ]
-
-      let fetchFailures = false
-
-      // Graceful Error Handling: catching "Failed to fetch" errors within html-to-image execution stack
-      await Promise.all(
-        targetImages.map(async (imgUrl) => {
-          try {
-            const response = await fetch(imgUrl, { mode: 'cors' })
-            if (!response.ok) {
-              throw new Error('HTTP N/A')
-            }
-          } catch (error) {
-            // Fix Image Request Error & Fidelity to Error Report
-            const errorReport = {
-              id: imgUrl.includes('team')
-                ? '31d92a76-bac4-48f4-9ac6-68b9f4dd2ced'
-                : `req-${Date.now()}`,
-              url: imgUrl,
-              method: 'GET',
-            }
-            console.warn(
-              `Erro na requisição GET ${imgUrl}: HTTP N/A`,
-              errorReport,
-              error,
-            )
-            fetchFailures = true
-            // Asset Fallback: skip the image generation process
-          }
-        }),
-      )
-
-      if (fetchFailures) {
-        toast({
-          title: 'Export Completed with Warnings',
-          description:
-            'External images could not be loaded. A default placeholder was used.',
-          variant: 'destructive',
-        })
-      } else {
-        toast({
-          title: 'Export Successful',
-          description: 'Dashboard exported with external images.',
-        })
-      }
-    } catch (error) {
-      console.error('Unhandled export error:', error)
-    }
-  }
+  const pendingApprovals = tasks.filter((t) => t.status === 'pending_approval')
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-black">
-            {t('common.real_estate_dashboard')}
-          </h1>
-          <p className="text-black font-medium">{t('dashboard.subtitle')}</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            className="gap-2 border-slate-300 text-black font-bold"
-            onClick={handleExportDashboard}
-          >
-            <Download className="h-4 w-4" /> {t('common.export')}
-          </Button>
-
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="gap-2 border-slate-300 text-black font-bold"
-              >
-                <Settings2 className="h-4 w-4" /> {t('dashboard.customize')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t('dashboard.customize_view')}</DialogTitle>
-                <DialogDescription>
-                  {t('dashboard.customize_desc')}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="kpi"
-                    checked={widgets.kpi}
-                    onCheckedChange={() => toggleWidget('kpi')}
-                  />
-                  <Label htmlFor="kpi">{t('dashboard.kpi_indicators')}</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="health"
-                    checked={widgets.health}
-                    onCheckedChange={() => toggleWidget('health')}
-                  />
-                  <Label htmlFor="health">
-                    {t('gamification.health_score')}
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="revenueChart"
-                    checked={widgets.revenueChart}
-                    onCheckedChange={() => toggleWidget('revenueChart')}
-                  />
-                  <Label htmlFor="revenueChart">
-                    {t('dashboard.revenue_chart')}
-                  </Label>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button onClick={() => setDialogOpen(false)}>
-                  {t('common.done')}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          Dashboard
+        </h1>
       </div>
 
-      {/* Real Estate KPI Cards */}
-      {widgets.kpi && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <Card className="border-slate-200 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-bold text-black">
-                {t('common.total_revenue')}
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-black" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black">
-                {formatCurrency(totalRevenue)}
-              </div>
-              <p className="text-xs text-black font-bold">
-                +20.1% {t('dashboard.from_last_month')}
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-slate-200 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-bold text-black">
-                {t('common.analytics.occupancy')}
-              </CardTitle>
-              <Building className="h-4 w-4 text-black" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black">
-                <DataMask>{occupancyRate}%</DataMask>
-              </div>
-              <p className="text-xs text-black font-bold">
-                {occupiedRooms} / {totalRooms} {t('hotels.rooms')}
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-slate-200 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-bold text-black">
-                {t('common.analytics.adr')}
-              </CardTitle>
-              <TrendingUp className="h-4 w-4 text-black" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black">
-                <DataMask>{formatCurrency(adr)}</DataMask>
-              </div>
-              <p className="text-xs text-black font-bold">
-                {t('market_analysis.avg_daily_rate')}
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-slate-200 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-bold text-black">
-                RevPAR
-              </CardTitle>
-              <Activity className="h-4 w-4 text-black" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black">
-                <DataMask>{formatCurrency(revPar)}</DataMask>
-              </div>
-              <p className="text-xs text-black font-bold">
-                {t('performance.financial_performance')}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Gamification Widget */}
-      {widgets.health && (
-        <Card className="bg-white text-black animate-in fade-in zoom-in-95 duration-500 shadow-md border-2 border-trust-blue">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-black font-bold">
-              <Trophy className="h-6 w-6 text-yellow-600" />
-              {t('gamification.portfolio_health')}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">
+              Total Revenue
             </CardTitle>
-            <CardDescription className="text-black font-medium">
-              {t('gamification.desc')}
-            </CardDescription>
+            <div className="bg-blue-50 p-2 rounded-full">
+              <DollarSign className="h-4 w-4 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4">
-              <div className="text-4xl font-bold text-black">
-                <DataMask>{avgHealthScore.toFixed(0)}</DataMask>
-              </div>
-              <div className="flex-1 space-y-1">
-                <div className="flex justify-between text-xs text-black font-bold">
-                  <span>
-                    {t('gamification.level')}: {t('gamification.expert')}
-                  </span>
-                  <span>{t('gamification.target')}: 100</span>
+            <div className="text-2xl font-bold text-slate-900">
+              {formatCurrency(totalRevenue, currency)}
+            </div>
+            <p className="text-xs text-green-600 font-medium flex items-center mt-1">
+              <TrendingUp className="h-3 w-3 mr-1" /> +12% from last month
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">
+              Occupancy Rate
+            </CardTitle>
+            <div className="bg-green-50 p-2 rounded-full">
+              <Percent className="h-4 w-4 text-green-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-900">
+              {occupancy}%
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              Average across all properties
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">
+              ADR (Avg Daily Rate)
+            </CardTitle>
+            <div className="bg-orange-50 p-2 rounded-full">
+              <Home className="h-4 w-4 text-orange-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-900">
+              {formatCurrency(adr, currency)}
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              For short-term rentals
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">
+              RevPAR
+            </CardTitle>
+            <div className="bg-purple-50 p-2 rounded-full">
+              <TrendingUp className="h-4 w-4 text-purple-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-900">
+              {formatCurrency(revPar, currency)}
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              Revenue Per Available Room
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="bg-white shadow-sm border-slate-200">
+          <CardHeader className="border-b bg-slate-50/50 pb-4">
+            <div className="flex items-center gap-2">
+              <CalendarIcon className="h-5 w-5 text-trust-blue" />
+              <CardTitle>Interactive Calendar</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6 flex justify-center">
+            <Calendar
+              mode="single"
+              className="rounded-md border shadow-sm w-full max-w-[350px]"
+            />
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white shadow-sm border-slate-200 flex flex-col">
+          <CardHeader className="flex flex-row items-center justify-between border-b bg-slate-50/50 pb-4">
+            <div className="flex items-center gap-2">
+              <CheckSquare className="h-5 w-5 text-orange-500" />
+              <CardTitle>Pending Approvals</CardTitle>
+            </div>
+            {pendingApprovals.length > 0 && (
+              <Badge className="bg-orange-100 text-orange-800 border-orange-200 font-bold hover:bg-orange-200">
+                {pendingApprovals.length} Action
+                {pendingApprovals.length !== 1 ? 's' : ''} Needed
+              </Badge>
+            )}
+          </CardHeader>
+          <CardContent className="flex-1 p-0 overflow-y-auto max-h-[350px]">
+            <div className="divide-y divide-slate-100">
+              {pendingApprovals.map((task) => (
+                <div
+                  key={task.id}
+                  className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
+                >
+                  <div>
+                    <p className="font-semibold text-sm text-slate-900">
+                      {task.title}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {task.propertyName}
+                    </p>
+                  </div>
+                  <Link to="/tasks">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-trust-blue border-blue-200 hover:bg-blue-50"
+                    >
+                      Review
+                    </Button>
+                  </Link>
                 </div>
-                <Progress value={avgHealthScore} className="h-3 bg-slate-200" />
-              </div>
+              ))}
+              {pendingApprovals.length === 0 && (
+                <div className="text-center text-slate-500 py-12 flex flex-col items-center">
+                  <div className="bg-slate-100 p-3 rounded-full mb-3">
+                    <CheckSquare className="h-6 w-6 text-slate-400" />
+                  </div>
+                  <p className="font-medium">All caught up!</p>
+                  <p className="text-sm">No tasks pending approval.</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
-      )}
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Main Chart */}
-        {widgets.revenueChart && (
-          <Card
-            className={`${widgets.calendar ? 'col-span-4' : 'col-span-7'} animate-in fade-in zoom-in-95 duration-500 border-slate-200 shadow-sm bg-white`}
-          >
-            <CardHeader>
-              <CardTitle className="text-black">
-                {t('dashboard.revenue_vs_expenses')}
-              </CardTitle>
-              <CardDescription className="text-black font-medium">
-                {t('dashboard.revenue_overview')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pl-2">
-              <DataMask className="w-full h-[300px] block">
-                <ChartContainer
-                  config={{
-                    revenue: {
-                      label: t('common.total'),
-                      color: 'hsl(var(--primary))',
-                    },
-                  }}
-                  className="h-[300px] w-full"
-                >
-                  <BarChart data={revenueData}>
-                    <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="month"
-                      tickLine={false}
-                      tickMargin={10}
-                      axisLine={false}
-                      tick={{ fill: 'black', fontSize: 12, fontWeight: 'bold' }}
-                    />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar
-                      dataKey="value"
-                      fill="var(--color-revenue)"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ChartContainer>
-              </DataMask>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Mini Calendar & Activity */}
-        {widgets.calendar && (
-          <Card
-            className={`${widgets.revenueChart ? 'col-span-3' : 'col-span-7'} animate-in fade-in zoom-in-95 duration-500 delay-100 border-slate-200 shadow-sm bg-white`}
-          >
-            <CardHeader>
-              <CardTitle className="text-black">
-                {t('dashboard.quick_calendar')}
-              </CardTitle>
-              <CardDescription className="text-black font-medium">
-                {t('dashboard.todays_activity')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex justify-center">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                className="rounded-md border border-slate-200 text-black font-medium"
-              />
-            </CardContent>
-          </Card>
-        )}
       </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Pending Approvals */}
-        {widgets.pending && (
-          <Card
-            className={`${widgets.expenseChart ? 'col-span-4' : 'col-span-7'} animate-in fade-in slide-in-from-left-4 duration-500 delay-200 border-slate-200 shadow-sm bg-white`}
-          >
-            <CardHeader>
-              <CardTitle className="text-black">
-                {t('dashboard.pending_approvals')}
-              </CardTitle>
-              <CardDescription className="text-black font-medium">
-                {t('dashboard.pending_desc')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {financials.invoices
-                  .filter((i) => i.status === 'pending')
-                  .filter((i) =>
-                    selectedPropertyId === 'all'
-                      ? true
-                      : i.propertyId === selectedPropertyId,
-                  )
-                  .map((invoice) => (
-                    <div
-                      key={invoice.id}
-                      className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="bg-orange-100 p-2 rounded-full">
-                          <Activity className="h-5 w-5 text-orange-700" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-sm text-black">
-                            <DataMask>{invoice.description}</DataMask>
-                          </p>
-                          <p className="text-xs text-black font-bold">
-                            {invoice.date} • <DataMask>{invoice.id}</DataMask>
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-black">
-                          <DataMask>{formatCurrency(invoice.amount)}</DataMask>
-                        </span>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="border-slate-300 text-black font-bold"
-                          onClick={() => {
-                            setSelectedInvoice(invoice)
-                            setViewInvoiceOpen(true)
-                          }}
-                        >
-                          {t('dashboard.review')}
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                {filteredTasks
-                  .filter((t) => t.status === 'pending_approval')
-                  .map((task) => (
-                    <div
-                      key={task.id}
-                      className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="bg-blue-100 p-2 rounded-full">
-                          <Activity className="h-5 w-5 text-blue-700" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-sm text-black">
-                            <DataMask>{task.title}</DataMask>
-                          </p>
-                          <p className="text-xs text-black font-bold">
-                            <DataMask>{task.propertyName}</DataMask> •{' '}
-                            <DataMask>{task.assignee}</DataMask>
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant="secondary"
-                          className="text-black border border-slate-300 font-bold"
-                        >
-                          {t('tasks.approval')}
-                        </Badge>
-                        <Button
-                          size="sm"
-                          variant="default"
-                          className="bg-trust-blue text-white font-bold"
-                          onClick={() => {
-                            approveTask(task.id)
-                            toast({
-                              title: t('common.success'),
-                              description: 'Task approved successfully.',
-                            })
-                          }}
-                        >
-                          {t('dashboard.approve')}
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                {financials.invoices.filter((i) => i.status === 'pending')
-                  .length === 0 &&
-                  filteredTasks.filter((t) => t.status === 'pending_approval')
-                    .length === 0 && (
-                    <div className="text-center text-sm text-slate-500 py-4">
-                      {t('common.empty')}
-                    </div>
-                  )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Expenses Chart */}
-        {widgets.expenseChart && (
-          <Card
-            className={`${widgets.pending ? 'col-span-3' : 'col-span-7'} animate-in fade-in slide-in-from-right-4 duration-500 delay-300 border-slate-200 shadow-sm bg-white`}
-          >
-            <CardHeader>
-              <CardTitle className="text-black">
-                {t('dashboard.expense_distribution')}
-              </CardTitle>
-              <CardDescription className="text-black font-medium">
-                {t('dashboard.expense_desc')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <DataMask className="w-full h-[250px] block">
-                <ChartContainer
-                  config={chartConfig}
-                  className="mx-auto aspect-square max-h-[250px]"
-                >
-                  <PieChart>
-                    <Pie
-                      data={financials.expenses}
-                      dataKey="value"
-                      nameKey="category"
-                      innerRadius={60}
-                      strokeWidth={5}
-                    >
-                      {financials.expenses.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                  </PieChart>
-                </ChartContainer>
-              </DataMask>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
-      {viewInvoiceOpen && (
-        <InvoiceViewer
-          open={viewInvoiceOpen}
-          onOpenChange={setViewInvoiceOpen}
-          invoice={selectedInvoice}
-        />
-      )}
     </div>
   )
 }

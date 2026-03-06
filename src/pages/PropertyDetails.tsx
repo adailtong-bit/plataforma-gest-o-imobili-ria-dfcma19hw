@@ -28,6 +28,8 @@ import { PropertyFeatures } from '@/components/properties/PropertyFeatures'
 import { PropertyMedia } from '@/components/properties/PropertyMedia'
 import { PropertyFinancials } from '@/components/properties/PropertyFinancials'
 import { PropertyManagement } from '@/components/properties/PropertyManagement'
+import { PropertyInventory } from '@/components/properties/PropertyInventory'
+import { PropertyHistory } from '@/components/properties/PropertyHistory'
 
 export default function PropertyDetails() {
   const { id } = useParams()
@@ -201,13 +203,45 @@ export default function PropertyDetails() {
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 md:w-[500px]">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="management">Management</TabsTrigger>
-          <TabsTrigger value="financials">Financials</TabsTrigger>
-          <TabsTrigger value="details">Details</TabsTrigger>
+        <TabsList className="flex flex-wrap h-auto bg-slate-100 p-1 rounded-md gap-1 w-full lg:w-fit mb-6">
+          <TabsTrigger
+            value="overview"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+          >
+            Overview
+          </TabsTrigger>
+          <TabsTrigger
+            value="management"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+          >
+            Management
+          </TabsTrigger>
+          <TabsTrigger
+            value="financials"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+          >
+            Financials
+          </TabsTrigger>
+          <TabsTrigger
+            value="details"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+          >
+            Details
+          </TabsTrigger>
+          <TabsTrigger
+            value="inventory"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+          >
+            Inventory
+          </TabsTrigger>
+          <TabsTrigger
+            value="history"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+          >
+            History
+          </TabsTrigger>
         </TabsList>
-        <div className="mt-6">
+        <div className="mt-0">
           <TabsContent value="overview">
             <PropertyOverview
               data={formData}
@@ -245,6 +279,12 @@ export default function PropertyDetails() {
               onChange={handleChange}
               canEdit={isEditing}
             />
+          </TabsContent>
+          <TabsContent value="inventory">
+            <PropertyInventory data={formData} />
+          </TabsContent>
+          <TabsContent value="history">
+            <PropertyHistory data={formData} />
           </TabsContent>
         </div>
       </Tabs>
