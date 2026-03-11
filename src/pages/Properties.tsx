@@ -70,6 +70,19 @@ export default function Properties() {
 
   const [selectedCountry, setSelectedCountry] = useState('US')
 
+  const isOwner = currentUser?.role === 'property_owner'
+  const canCreate = hasPermissionSync(
+    currentUser as User,
+    'properties',
+    'create',
+  )
+  const canEdit = hasPermissionSync(currentUser as User, 'properties', 'edit')
+  const canDelete = hasPermissionSync(
+    currentUser as User,
+    'properties',
+    'delete',
+  )
+
   const [newProp, setNewProp] = useState<Partial<Property>>({
     name: '',
     address: '',
@@ -98,6 +111,11 @@ export default function Properties() {
   })
 
   const accessibleProperties = properties.filter((p) => {
+    // Owner data isolation
+    if (isOwner) {
+      if (p.ownerId !== currentUser?.id) return false
+    }
+    // Profile type restriction (for normal staff)
     if (
       currentUser &&
       'allowedProfileTypes' in currentUser &&
@@ -395,7 +413,7 @@ export default function Properties() {
           <p className="text-black font-medium">{t('properties.subtitle')}</p>
         </div>
 
-        {hasPermissionSync(currentUser as User, 'properties', 'create') && (
+        {canCreate && (
           <Dialog
             open={open}
             onOpenChange={(v) => {
@@ -897,49 +915,53 @@ export default function Properties() {
                 </Button>
               </Link>
               <div className="flex w-full gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 text-black font-medium"
-                  onClick={(e) => handleEditClick(e, property)}
-                >
-                  <Pencil className="h-4 w-4 mr-2" /> Alterar
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="flex-1"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" /> Excluir
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        {t('common.delete_title')}
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {t('common.delete_desc')}
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
-                        {t('common.cancel')}
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleDelete(property.id)
-                        }}
+                {canEdit && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-black font-medium"
+                    onClick={(e) => handleEditClick(e, property)}
+                  >
+                    <Pencil className="h-4 w-4 mr-2" /> Alterar
+                  </Button>
+                )}
+                {canDelete && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="flex-1"
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        {t('common.delete')}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                        <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          {t('common.delete_title')}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {t('common.delete_desc')}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                          {t('common.cancel')}
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDelete(property.id)
+                          }}
+                        >
+                          {t('common.delete')}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
               </div>
             </CardFooter>
           </Card>

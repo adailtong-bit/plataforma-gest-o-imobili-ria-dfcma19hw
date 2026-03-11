@@ -5,17 +5,28 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Search, Send } from 'lucide-react'
+import { Search, Send, Plus } from 'lucide-react'
 import { format } from 'date-fns'
 import { DataMask } from '@/components/DataMask'
 import useLanguageStore from '@/stores/useLanguageStore'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { canChat } from '@/lib/permissions'
+import { User } from '@/lib/types'
 
 export default function Messages() {
-  const { messages, sendMessage, currentUser } = useContext(AppContext)!
+  const { messages, sendMessage, startChat, currentUser, allUsers } =
+    useContext(AppContext)!
   const { t } = useLanguageStore()
   const [activeThread, setActiveThread] = useState(messages[0]?.id)
   const [newMessage, setNewMessage] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [isNewChatOpen, setIsNewChatOpen] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const filteredMessages = messages.filter((m) =>
@@ -39,6 +50,24 @@ export default function Messages() {
     setNewMessage('')
   }
 
+  const availableContacts = allUsers.filter(
+    (u) => u.id !== currentUser?.id && canChat(currentUser as User, u as User),
+  )
+
+  const handleStartChat = (contact: User) => {
+    const existing = messages.find((m) => m.contactId === contact.id)
+    if (existing) {
+      setActiveThread(existing.id)
+    } else {
+      startChat(contact.id)
+      setTimeout(() => {
+        const newThread = messages.find((m) => m.contactId === contact.id)
+        if (newThread) setActiveThread(newThread.id)
+      }, 100)
+    }
+    setIsNewChatOpen(false)
+  }
+
   return (
     <div className="flex flex-col gap-6 h-[calc(100vh-6rem)] min-h-0">
       <div className="shrink-0">
@@ -53,6 +82,38 @@ export default function Messages() {
       <div className="flex gap-6 flex-1 min-h-0">
         <Card className="w-80 flex-col hidden md:flex border-slate-200 overflow-hidden shadow-sm bg-white">
           <div className="p-4 border-b border-slate-100 bg-white shrink-0">
+            <Dialog open={isNewChatOpen} onOpenChange={setIsNewChatOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  className="w-full mb-3 bg-trust-blue text-white"
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-2" /> New Chat
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Start New Conversation</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto">
+                  {availableContacts.map((c) => (
+                    <Button
+                      key={c.id}
+                      variant="outline"
+                      className="justify-start"
+                      onClick={() => handleStartChat(c as User)}
+                    >
+                      {c.name} ({c.role.replace('_', ' ')})
+                    </Button>
+                  ))}
+                  {availableContacts.length === 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      No available contacts.
+                    </p>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input

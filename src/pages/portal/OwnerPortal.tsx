@@ -1,16 +1,63 @@
+import { useContext } from 'react'
+import { AppContext } from '@/stores/AppContext'
+import { OwnerProperties } from '@/components/owners/OwnerProperties'
+import { OwnerTasks } from '@/components/owners/OwnerTasks'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Building2, ClipboardList } from 'lucide-react'
 
 export default function OwnerPortal() {
+  const { currentUser, properties, tasks } = useContext(AppContext)!
+
+  if (!currentUser) return null
+
+  const ownerProperties = properties.filter((p) => p.ownerId === currentUser.id)
+  const pendingTasks = tasks.filter(
+    (t) =>
+      ownerProperties.map((op) => op.id).includes(t.propertyId) &&
+      t.status === 'pending_approval' &&
+      t.approvalStatus === 'owner_pending',
+  )
+
   return (
-    <div className="p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Owner Portal</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-slate-600">Portal module under construction.</p>
-        </CardContent>
-      </Card>
+    <div className="flex flex-col gap-6 p-6 animate-in fade-in duration-500">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          Welcome, {currentUser.name}
+        </h1>
+        <p className="text-muted-foreground">Owner Asset Portal</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="border-slate-200 shadow-sm bg-white">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">
+              Registered Properties
+            </CardTitle>
+            <Building2 className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-900">
+              {ownerProperties.length}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-slate-200 shadow-sm bg-white">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">
+              Pending Task Approvals
+            </CardTitle>
+            <ClipboardList className="h-4 w-4 text-orange-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-600">
+              {pendingTasks.length}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <OwnerProperties ownerId={currentUser.id} properties={properties} />
+      <OwnerTasks ownerId={currentUser.id} properties={properties} />
     </div>
   )
 }

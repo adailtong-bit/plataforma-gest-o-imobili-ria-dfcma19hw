@@ -436,7 +436,16 @@ export default function Tasks() {
                         {task.title}
                       </TableCell>
                       <TableCell>{task.propertyName}</TableCell>
-                      <TableCell>{task.assignee}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span>{task.assignee}</span>
+                          {task.assignedRole && (
+                            <span className="text-[10px] text-muted-foreground capitalize">
+                              {task.assignedRole.replace('_', ' ')}
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         {format(new Date(task.date), 'dd/MM/yyyy')}
                       </TableCell>

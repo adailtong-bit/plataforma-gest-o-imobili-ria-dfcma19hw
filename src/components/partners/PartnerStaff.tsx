@@ -1,16 +1,8 @@
 import { useState } from 'react'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card'
 import { Partner, PartnerEmployee } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus, Pencil, Trash2, UserCircle } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -27,21 +19,8 @@ import {
   DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
-import { MultiSelect, OptionType } from '@/components/ui/multi-select'
 import { useToast } from '@/hooks/use-toast'
-
-const SKILL_OPTIONS: OptionType[] = [
-  { label: 'Cleaning', value: 'cleaning' },
-  { label: 'Deep Cleaning', value: 'deep_cleaning' },
-  { label: 'Plumbing', value: 'plumbing' },
-  { label: 'Electrical', value: 'electrical' },
-  { label: 'HVAC', value: 'hvac' },
-  { label: 'Painting', value: 'painting' },
-  { label: 'General Maintenance', value: 'general_maintenance' },
-  { label: 'Pool Maintenance', value: 'pool' },
-  { label: 'Pest Control', value: 'pest_control' },
-]
+import { Trash2 } from 'lucide-react'
 
 export function PartnerStaff({
   partner,
@@ -52,135 +31,87 @@ export function PartnerStaff({
   onUpdate: (partner: Partner) => void
   canEdit: boolean
 }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [form, setForm] = useState({ name: '', role: '', email: '', phone: '' })
   const { toast } = useToast()
-  const [isAddOpen, setIsAddOpen] = useState(false)
-  const [editingStaff, setEditingStaff] = useState<PartnerEmployee | null>(null)
-  const [form, setForm] = useState<{
-    name: string
-    phone: string
-    email: string
-    skills: string[]
-  }>({
-    name: '',
-    phone: '',
-    email: '',
-    skills: [],
-  })
 
-  const staff = partner.employees || []
-
-  const handleAddStaff = () => {
-    if (!form.name) return
-
-    const newStaff: PartnerEmployee = {
-      id: `staff-${Date.now()}`,
-      name: form.name,
-      role: 'Staff',
-      phone: form.phone,
-      email: form.email,
-      skills: form.skills,
-      status: 'active',
+  const handleAdd = () => {
+    if (!form.name || !form.role) {
+      toast({
+        title: 'Validation Error',
+        description: 'Name and role are required.',
+        variant: 'destructive',
+      })
+      return
     }
 
+    const newEmp: PartnerEmployee = {
+      id: `emp-${Date.now()}`,
+      name: form.name,
+      role: form.role,
+      email: form.email,
+      phone: form.phone,
+      status: 'active',
+    }
     onUpdate({
       ...partner,
-      employees: [...staff, newStaff],
+      employees: [...(partner.employees || []), newEmp],
     })
-
-    setIsAddOpen(false)
-    setForm({ name: '', phone: '', email: '', skills: [] })
-    toast({ title: 'Success', description: 'Team member added.' })
+    setIsOpen(false)
+    setForm({ name: '', role: '', email: '', phone: '' })
+    toast({ title: 'Employee added successfully' })
   }
 
-  const handleEditStaff = () => {
-    if (!editingStaff || !form.name) return
-
-    const updatedStaff = staff.map((s) => {
-      if (s.id === editingStaff.id) {
-        return {
-          ...s,
-          name: form.name,
-          phone: form.phone,
-          email: form.email,
-          skills: form.skills,
-        }
-      }
-      return s
-    })
-
+  const handleDelete = (empId: string) => {
     onUpdate({
       ...partner,
-      employees: updatedStaff,
+      employees: (partner.employees || []).filter((e) => e.id !== empId),
     })
-
-    setIsAddOpen(false)
-    setEditingStaff(null)
-    toast({ title: 'Success', description: 'Team member updated.' })
-  }
-
-  const handleDeleteStaff = (id: string) => {
-    onUpdate({
-      ...partner,
-      employees: staff.filter((s) => s.id !== id),
-    })
-    toast({ title: 'Success', description: 'Team member removed.' })
-  }
-
-  const openEdit = (employee: PartnerEmployee) => {
-    setEditingStaff(employee)
-    setForm({
-      name: employee.name,
-      phone: employee.phone || '',
-      email: employee.email || '',
-      skills: employee.skills || [],
-    })
-    setIsAddOpen(true)
+    toast({ title: 'Employee removed successfully' })
   }
 
   return (
-    <Card className="border-slate-200 shadow-sm bg-white">
-      <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
-        <div>
-          <CardTitle>Team & Staff</CardTitle>
-          <CardDescription>
-            Manage individual team members and their specific skills for task
-            allocation.
-          </CardDescription>
-        </div>
-        {canEdit && (
-          <Dialog
-            open={isAddOpen}
-            onOpenChange={(v) => {
-              setIsAddOpen(v)
-              if (!v) {
-                setEditingStaff(null)
-                setForm({ name: '', phone: '', email: '', skills: [] })
-              }
-            }}
-          >
+    <div className="space-y-4">
+      {canEdit && (
+        <div className="flex justify-end">
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-trust-blue text-white gap-2">
-                <Plus className="h-4 w-4" /> Add Team Member
+              <Button size="sm" className="bg-trust-blue text-white">
+                Add Team Member
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>
-                  {editingStaff ? 'Edit Team Member' : 'Add Team Member'}
-                </DialogTitle>
+                <DialogTitle>Add Team Member</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label>
-                    Full Name <span className="text-red-500">*</span>
-                  </Label>
+                  <Label>Name</Label>
                   <Input
-                    placeholder="Member Name"
+                    placeholder="Full Name"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label>Role</Label>
+                  <Input
+                    placeholder="e.g. Cleaner, Plumber"
+                    value={form.role}
+                    onChange={(e) => setForm({ ...form, role: e.target.value })}
+                  />
+                </div>
                 <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input
+                      placeholder="email@example.com"
+                      value={form.email}
+                      onChange={(e) =>
+                        setForm({ ...form, email: e.target.value })
+                      }
+                    />
+                  </div>
                   <div className="space-y-2">
                     <Label>Phone</Label>
                     <Input
@@ -191,113 +122,52 @@ export function PartnerStaff({
                       }
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Email</Label>
-                    <Input
-                      type="email"
-                      placeholder="Email"
-                      value={form.email}
-                      onChange={(e) =>
-                        setForm({ ...form, email: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Skills Map (For Task Allocation)</Label>
-                  <MultiSelect
-                    options={SKILL_OPTIONS}
-                    selected={form.skills}
-                    onChange={(val) => setForm({ ...form, skills: val })}
-                    placeholder="Select skills..."
-                  />
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsAddOpen(false)}>
+                <Button variant="outline" onClick={() => setIsOpen(false)}>
                   Cancel
                 </Button>
                 <Button
-                  onClick={editingStaff ? handleEditStaff : handleAddStaff}
+                  onClick={handleAdd}
                   className="bg-trust-blue text-white"
                 >
-                  Save
+                  Save Member
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
-        )}
-      </CardHeader>
-      <CardContent className="p-0">
+        </div>
+      )}
+
+      <div className="border rounded-md overflow-hidden">
         <Table>
           <TableHeader className="bg-slate-50">
             <TableRow>
-              <TableHead>Member</TableHead>
-              <TableHead>Contact Info</TableHead>
-              <TableHead>Skills</TableHead>
-              <TableHead>Status</TableHead>
-              {canEdit && <TableHead className="text-right">Actions</TableHead>}
+              <TableHead>Name</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Contact</TableHead>
+              {canEdit && <TableHead className="text-right">Action</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {staff.map((member) => (
-              <TableRow key={member.id}>
-                <TableCell className="font-medium flex items-center gap-2">
-                  <UserCircle className="h-5 w-5 text-slate-400" />
-                  {member.name}
-                </TableCell>
+            {(partner.employees || []).map((emp) => (
+              <TableRow key={emp.id} className="hover:bg-slate-50">
+                <TableCell className="font-medium">{emp.name}</TableCell>
+                <TableCell>{emp.role}</TableCell>
                 <TableCell>
-                  <div className="text-sm">
-                    {member.phone && <div>{member.phone}</div>}
-                    {member.email && (
-                      <div className="text-muted-foreground">
-                        {member.email}
-                      </div>
-                    )}
-                    {!member.phone && !member.email && '-'}
+                  <div className="flex flex-col text-xs text-slate-500">
+                    <span>{emp.email}</span>
+                    <span>{emp.phone}</span>
                   </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {member.skills && member.skills.length > 0 ? (
-                      member.skills.map((skill) => {
-                        const opt = SKILL_OPTIONS.find((s) => s.value === skill)
-                        return (
-                          <Badge
-                            key={skill}
-                            variant="secondary"
-                            className="font-normal text-xs"
-                          >
-                            {opt ? opt.label : skill}
-                          </Badge>
-                        )
-                      })
-                    ) : (
-                      <span className="text-muted-foreground text-sm">-</span>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={member.status === 'active' ? 'default' : 'outline'}
-                  >
-                    {member.status}
-                  </Badge>
                 </TableCell>
                 {canEdit && (
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => openEdit(member)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-red-500"
-                      onClick={() => handleDeleteStaff(member.id)}
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => handleDelete(emp.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -305,19 +175,19 @@ export function PartnerStaff({
                 )}
               </TableRow>
             ))}
-            {staff.length === 0 && (
+            {(!partner.employees || partner.employees.length === 0) && (
               <TableRow>
                 <TableCell
-                  colSpan={5}
-                  className="text-center py-8 text-muted-foreground"
+                  colSpan={canEdit ? 4 : 3}
+                  className="text-center text-muted-foreground py-6"
                 >
-                  No team members registered yet.
+                  No team members added yet.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

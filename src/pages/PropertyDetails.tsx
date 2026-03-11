@@ -6,8 +6,9 @@ import { useToast } from '@/hooks/use-toast'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useCondominiumStore from '@/stores/useCondominiumStore'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useAuthStore from '@/stores/useAuthStore'
 import { AppContext } from '@/stores/AppContext'
-import { Property } from '@/lib/types'
+import { Property, User } from '@/lib/types'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   AlertDialog,
@@ -36,6 +37,7 @@ export default function PropertyDetails() {
   const navigate = useNavigate()
   const { properties, updateProperty, deleteProperty } = usePropertyStore()
   const { condominiums } = useCondominiumStore()
+  const { currentUser, hasPermissionSync } = useAuthStore()
   const { owners, partners } = useContext(AppContext)!
   const { t } = useLanguageStore()
   const { toast } = useToast()
@@ -44,6 +46,13 @@ export default function PropertyDetails() {
   const [property, setProperty] = useState<Property | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState<Property | null>(null)
+
+  const canEdit = hasPermissionSync(currentUser as User, 'properties', 'edit')
+  const canDelete = hasPermissionSync(
+    currentUser as User,
+    'properties',
+    'delete',
+  )
 
   useEffect(() => {
     setIsLoading(true)
@@ -162,41 +171,45 @@ export default function PropertyDetails() {
             </>
           ) : (
             <>
-              <Button
-                variant="outline"
-                onClick={() => setIsEditing(true)}
-                className="border-slate-300 font-medium"
-              >
-                <Pencil className="h-4 w-4 mr-2" />{' '}
-                {t('common.edit') || 'Edit Property'}
-              </Button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="font-medium">
-                    <Trash2 className="h-4 w-4 mr-2" />{' '}
-                    {t('common.delete') || 'Delete'}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      {t('common.delete_title') || 'Are you absolutely sure?'}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {t('common.delete_desc') ||
-                        'This action cannot be undone. This will permanently delete the property record.'}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>
-                      {t('common.cancel') || 'Cancel'}
-                    </AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
+              {canEdit && (
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditing(true)}
+                  className="border-slate-300 font-medium"
+                >
+                  <Pencil className="h-4 w-4 mr-2" />{' '}
+                  {t('common.edit') || 'Edit Property'}
+                </Button>
+              )}
+              {canDelete && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="font-medium">
+                      <Trash2 className="h-4 w-4 mr-2" />{' '}
                       {t('common.delete') || 'Delete'}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {t('common.delete_title') || 'Are you absolutely sure?'}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {t('common.delete_desc') ||
+                          'This action cannot be undone. This will permanently delete the property record.'}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>
+                        {t('common.cancel') || 'Cancel'}
+                      </AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelete}>
+                        {t('common.delete') || 'Delete'}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </>
           )}
         </div>

@@ -62,11 +62,8 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     guest_services: FULL_ACCESS,
     pos: FULL_ACCESS,
     marketing: FULL_ACCESS,
-    // Removed system-level tabs
   },
   internal_user: {
-    // Internal users rely entirely on explicitly assigned permissions.
-    // We provide a base read-only access to dashboard so they can log in.
     dashboard: ['view'],
   },
   partner: {
@@ -119,7 +116,6 @@ export const hasPermission = (
 ): boolean => {
   if (!user || !user.role) return false
 
-  // Global bypass for platform_owner
   if (user.role === 'platform_owner') return true
 
   if (user.permissions && user.permissions.length > 0) {
@@ -142,18 +138,15 @@ export const canChat = (initiator: User, target: User): boolean => {
   const initiatorRole = initiator.role
   const targetRole = target.role
 
-  if (
-    ['platform_owner', 'software_tenant', 'internal_user'].includes(
-      initiatorRole,
-    )
-  ) {
+  if (initiatorRole === 'platform_owner' || targetRole === 'platform_owner') {
     return true
   }
 
-  if (
-    ['platform_owner', 'software_tenant', 'internal_user'].includes(targetRole)
-  ) {
-    return true
+  if (initiatorRole === 'property_owner') {
+    return ['software_tenant', 'internal_user'].includes(targetRole)
+  }
+  if (targetRole === 'property_owner') {
+    return ['software_tenant', 'internal_user'].includes(initiatorRole)
   }
 
   if (initiatorRole === 'partner' && targetRole === 'partner_employee') {
@@ -162,6 +155,13 @@ export const canChat = (initiator: User, target: User): boolean => {
 
   if (initiatorRole === 'partner_employee' && targetRole === 'partner') {
     return initiator.parentPartnerId === target.id
+  }
+
+  if (
+    ['software_tenant', 'internal_user'].includes(initiatorRole) ||
+    ['software_tenant', 'internal_user'].includes(targetRole)
+  ) {
+    return true
   }
 
   return false

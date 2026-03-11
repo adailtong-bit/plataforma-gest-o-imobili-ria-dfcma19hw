@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useContext } from 'react'
 import { AppContext } from '@/stores/AppContext'
 import { formatCurrency } from '@/lib/utils'
@@ -10,21 +10,34 @@ import {
   Home,
   Percent,
   TrendingUp,
-  AlertCircle,
   Calendar as CalendarIcon,
   CheckSquare,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function Index() {
-  const { properties, bookings, tasks, financials, currency } =
+  const { properties, bookings, tasks, financials, currency, currentUser } =
     useContext(AppContext)!
+
+  // Route portals based on user role to ensure absolute data isolation
+  if (currentUser?.role === 'property_owner') {
+    return <Navigate to="/portal/owner" replace />
+  }
+  if (
+    currentUser?.role === 'partner' ||
+    currentUser?.role === 'partner_employee'
+  ) {
+    return <Navigate to="/portal/partner" replace />
+  }
+  if (currentUser?.role === 'tenant') {
+    return <Navigate to="/portal/tenant" replace />
+  }
 
   const totalRevenue = financials.invoices
     .filter((i) => i.status === 'paid')
     .reduce((acc, i) => acc + i.amount, 0)
 
-  // Fake calculation for KPIs if no real data
+  // KPI calculations
   const occupancy =
     bookings.length > 0
       ? Math.min(

@@ -48,6 +48,13 @@ export function CreateTaskDialog() {
       ? partners.filter((p) => p.id === currentUser?.id)
       : []
 
+  const partnerData = isPartner
+    ? partners.find((p) => p.id === currentUser?.id)
+    : null
+  const availableProperties = isPartner
+    ? properties.filter((p) => partnerData?.linkedPropertyIds?.includes(p.id))
+    : properties
+
   const [form, setForm] = useState({
     title: '',
     propertyId: '',
@@ -72,13 +79,20 @@ export function CreateTaskDialog() {
       return
     }
 
-    const prop = properties.find((p) => p.id === form.propertyId)
+    const prop = availableProperties.find((p) => p.id === form.propertyId)
     const partner = partners.find((p) => p.id === form.assigneeId)
     const emp = partner?.employees?.find((e) => e.id === form.partnerEmployeeId)
 
     let assigneeName = 'Unassigned'
     if (emp) assigneeName = `${emp.name} - ${partner?.name}`
     else if (partner) assigneeName = partner.name
+
+    const priceToCheck =
+      form.pricingModel === 'pm_driven' ? form.price : form.laborCost
+    const isAboveThreshold = priceToCheck >= 100
+
+    const initialStatus = isAboveThreshold ? 'pending_approval' : 'pending'
+    const initialApprovalStatus = isAboveThreshold ? 'owner_pending' : undefined
 
     addTask({
       id: `task-${Date.now()}`,
@@ -88,7 +102,8 @@ export function CreateTaskDialog() {
       propertyAddress: prop?.address,
       type: form.type as any,
       priority: form.priority as any,
-      status: 'pending',
+      status: initialStatus,
+      approvalStatus: initialApprovalStatus,
       date: form.date,
       assigneeId: form.assigneeId || undefined,
       partnerEmployeeId: form.partnerEmployeeId || undefined,
@@ -100,7 +115,12 @@ export function CreateTaskDialog() {
       source: 'manual',
     })
 
-    toast({ title: 'Task created successfully' })
+    toast({
+      title: 'Task created successfully',
+      description: isAboveThreshold
+        ? 'Task value exceeds $100 and requires Owner Approval.'
+        : undefined,
+    })
     setOpen(false)
     setForm({
       title: '',
@@ -176,7 +196,7 @@ export function CreateTaskDialog() {
                 <SelectValue placeholder="Select Property" />
               </SelectTrigger>
               <SelectContent>
-                {properties.map((p) => (
+                {availableProperties.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.name}
                   </SelectItem>
@@ -298,7 +318,6 @@ export function CreateTaskDialog() {
             </div>
           </div>
 
-          {/* Financials Section */}
           <div className="space-y-4 border-t pt-4 mt-4">
             <h4 className="font-semibold text-sm">Financials & Pricing</h4>
 
