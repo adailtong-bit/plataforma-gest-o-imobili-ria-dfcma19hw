@@ -51,16 +51,10 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     messages: FULL_ACCESS,
     users: FULL_ACCESS,
     settings: FULL_ACCESS,
-    audit_logs: FULL_ACCESS,
     portal: FULL_ACCESS,
     market_analysis: FULL_ACCESS,
     workflows: FULL_ACCESS,
     renewals: FULL_ACCESS,
-    publicity: FULL_ACCESS,
-    short_term: FULL_ACCESS,
-    migration: FULL_ACCESS,
-    analytics: FULL_ACCESS,
-    automation: FULL_ACCESS,
     reports: FULL_ACCESS,
     visits: FULL_ACCESS,
     hotels: FULL_ACCESS,
@@ -68,30 +62,12 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
     guest_services: FULL_ACCESS,
     pos: FULL_ACCESS,
     marketing: FULL_ACCESS,
-    service_pricing: FULL_ACCESS,
+    // Removed system-level tabs
   },
   internal_user: {
+    // Internal users rely entirely on explicitly assigned permissions.
+    // We provide a base read-only access to dashboard so they can log in.
     dashboard: ['view'],
-    properties: FULL_ACCESS,
-    condominiums: FULL_ACCESS,
-    tenants: FULL_ACCESS,
-    owners: FULL_ACCESS,
-    partners: FULL_ACCESS,
-    calendar: FULL_ACCESS,
-    tasks: FULL_ACCESS,
-    messages: FULL_ACCESS,
-    short_term: FULL_ACCESS,
-    renewals: FULL_ACCESS,
-    reports: ['view'],
-    visits: FULL_ACCESS,
-    hotels: FULL_ACCESS,
-    users: ['view'],
-    guest_services: FULL_ACCESS,
-    pos: FULL_ACCESS,
-    financial: FULL_ACCESS,
-    automation: ['view'],
-    settings: ['view', 'edit'],
-    service_pricing: FULL_ACCESS,
   },
   partner: {
     dashboard: ['view'],
@@ -145,8 +121,6 @@ export const hasPermission = (
 
   // Global bypass for platform_owner
   if (user.role === 'platform_owner') return true
-
-  if (['software_tenant'].includes(user.role)) return true
 
   if (user.permissions && user.permissions.length > 0) {
     const override = user.permissions.find((p) => p.resource === resource)

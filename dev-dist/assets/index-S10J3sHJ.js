@@ -18199,7 +18199,7 @@ function useControllableState({ prop, defaultProp, onChange = () => {}, caller }
 	}
 	return [value, import_react.useCallback((nextValue) => {
 		if (isControlled) {
-			const value2 = isFunction$26(nextValue) ? nextValue(prop) : nextValue;
+			const value2 = isFunction$27(nextValue) ? nextValue(prop) : nextValue;
 			if (value2 !== prop) onChangeRef.current?.(value2);
 		} else setUncontrolledProp(nextValue);
 	}, [
@@ -18228,7 +18228,7 @@ function useUncontrolledState({ defaultProp, onChange }) {
 		onChangeRef
 	];
 }
-function isFunction$26(value) {
+function isFunction$27(value) {
 	return typeof value === "function";
 }
 var VISUALLY_HIDDEN_STYLES = Object.freeze({
@@ -24484,10 +24484,10 @@ var Observer = class {
 			if (typeof id !== "string" && typeof id !== "number") return { unwrap };
 			else return Object.assign(id, { unwrap });
 		};
-		this.custom = (jsx$30, data) => {
+		this.custom = (jsx$31, data) => {
 			const id = (data == null ? void 0 : data.id) || toastsCounter++;
 			this.create({
-				jsx: jsx$30(id),
+				jsx: jsx$31(id),
 				id,
 				...data
 			});
@@ -27021,11 +27021,11 @@ var Tooltip$2 = (props) => {
 	});
 };
 Tooltip$2.displayName = TOOLTIP_NAME;
-var TRIGGER_NAME$6 = "TooltipTrigger";
+var TRIGGER_NAME$7 = "TooltipTrigger";
 var TooltipTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTooltip, ...triggerProps } = props;
-	const context = useTooltipContext(TRIGGER_NAME$6, __scopeTooltip);
-	const providerContext = useTooltipProviderContext(TRIGGER_NAME$6, __scopeTooltip);
+	const context = useTooltipContext(TRIGGER_NAME$7, __scopeTooltip);
+	const providerContext = useTooltipProviderContext(TRIGGER_NAME$7, __scopeTooltip);
 	const popperScope = usePopperScope$3(__scopeTooltip);
 	const composedRefs = useComposedRefs(forwardedRef, import_react.useRef(null), context.onTriggerChange);
 	const isPointerDownRef = import_react.useRef(false);
@@ -27066,7 +27066,7 @@ var TooltipTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-TooltipTrigger$1.displayName = TRIGGER_NAME$6;
+TooltipTrigger$1.displayName = TRIGGER_NAME$7;
 var PORTAL_NAME$6 = "TooltipPortal";
 var [PortalProvider$3, usePortalContext$3] = createTooltipContext(PORTAL_NAME$6, { forceMount: void 0 });
 var TooltipPortal = (props) => {
@@ -27466,21 +27466,46 @@ const defaultFinancialSettings = {
 	isProduction: false,
 	globalCurrency: "USD"
 };
-const systemUsers = [{
-	id: "user1",
-	name: "Admin User",
-	email: "admin@corepm.com",
-	role: "platform_owner",
-	status: "active",
-	isFirstLogin: false
-}, {
-	id: "user2",
-	name: "Property Manager",
-	email: "pm@corepm.com",
-	role: "software_tenant",
-	status: "active",
-	isFirstLogin: false
-}];
+const systemUsers = [
+	{
+		id: "user1",
+		name: "Platform Admin",
+		email: "admin@corepm.com",
+		role: "platform_owner",
+		status: "active",
+		isFirstLogin: false
+	},
+	{
+		id: "user2",
+		name: "Acme Property Management",
+		email: "pm@corepm.com",
+		role: "software_tenant",
+		organizationId: "org_acme",
+		status: "active",
+		isFirstLogin: false
+	},
+	{
+		id: "user3",
+		name: "Staff Member (Acme)",
+		email: "staff@corepm.com",
+		role: "internal_user",
+		organizationId: "org_acme",
+		status: "active",
+		isFirstLogin: false,
+		permissions: [{
+			resource: "properties",
+			actions: [
+				"view",
+				"create",
+				"edit",
+				"delete"
+			]
+		}, {
+			resource: "dashboard",
+			actions: ["view"]
+		}]
+	}
+];
 const condominiums = [{
 	id: "condo1",
 	name: "Sunset Villas",
@@ -27493,7 +27518,8 @@ const condominiums = [{
 	accessCredentials: {
 		gate: "1234",
 		poolCode: "9988"
-	}
+	},
+	organizationId: "org_acme"
 }];
 const hotels = [{
 	id: "hotel1",
@@ -27504,18 +27530,21 @@ const hotels = [{
 	zipCode: "32819",
 	country: "US",
 	managerName: "Sarah Resort",
-	towers: ["t1", "t2"]
+	towers: ["t1", "t2"],
+	organizationId: "org_acme"
 }];
 const towers = [{
 	id: "t1",
 	hotelId: "hotel1",
 	name: "North Tower",
-	floors: 15
+	floors: 15,
+	organizationId: "org_acme"
 }, {
 	id: "t2",
 	hotelId: "hotel1",
 	name: "South Tower",
-	floors: 12
+	floors: 12,
+	organizationId: "org_acme"
 }];
 const properties = [{
 	id: "p1",
@@ -27536,7 +27565,8 @@ const properties = [{
 	ownerId: "owner1",
 	image: "https://img.usecurling.com/p/600/400?q=villa",
 	listingPrice: 250,
-	hoaValue: 400
+	hoaValue: 400,
+	organizationId: "org_acme"
 }, {
 	id: "p2",
 	name: "Room 501 - Grand Resort",
@@ -27558,7 +27588,8 @@ const properties = [{
 	ownerId: "owner1",
 	image: "https://img.usecurling.com/p/600/400?q=hotel%20room",
 	listingPrice: 150,
-	hoaValue: 0
+	hoaValue: 0,
+	organizationId: "org_acme"
 }];
 const tenants = [{
 	id: "t1",
@@ -27568,7 +27599,8 @@ const tenants = [{
 	status: "active",
 	role: "tenant",
 	rentValue: 2e3,
-	leaseEnd: "2024-12-31"
+	leaseEnd: "2024-12-31",
+	organizationId: "org_acme"
 }];
 const owners = [{
 	id: "owner1",
@@ -27576,7 +27608,8 @@ const owners = [{
 	email: "john@investor.com",
 	phone: "555-0202",
 	status: "active",
-	role: "property_owner"
+	role: "property_owner",
+	organizationId: "org_acme"
 }];
 const partners = [{
 	id: "partner1",
@@ -27585,7 +27618,8 @@ const partners = [{
 	email: "contact@eliteclean.com",
 	phone: "555-0303",
 	status: "active",
-	role: "partner"
+	role: "partner",
+	organizationId: "org_acme"
 }];
 const tasks = [{
 	id: "task1",
@@ -27597,7 +27631,8 @@ const tasks = [{
 	assignee: "Elite Cleaning",
 	assigneeId: "partner1",
 	date: (/* @__PURE__ */ new Date()).toISOString(),
-	priority: "high"
+	priority: "high",
+	organizationId: "org_acme"
 }];
 const ledgerEntries = [{
 	id: "le1",
@@ -27607,7 +27642,8 @@ const ledgerEntries = [{
 	category: "Rent",
 	amount: 2500,
 	description: "Monthly Rent - Alice",
-	status: "cleared"
+	status: "cleared",
+	organizationId: "org_acme"
 }];
 const financials = {
 	revenue: [
@@ -27653,7 +27689,8 @@ const messages = [{
 	time: (/* @__PURE__ */ new Date()).toISOString(),
 	unread: 0,
 	avatar: "",
-	history: []
+	history: [],
+	organizationId: "org_acme"
 }];
 const defaultPaymentIntegrations = [];
 const mockBankStatements = [];
@@ -27682,7 +27719,8 @@ const automationRules = [{
 	id: "rule1",
 	type: "auto_generate_invoice",
 	enabled: true,
-	event: "task_completion"
+	event: "task_completion",
+	organizationId: "org_acme"
 }];
 const marketAnalysisData = { marketTrends: [
 	{
@@ -30857,48 +30895,19 @@ const DEFAULT_PERMISSIONS_MATRIX = {
 		messages: FULL_ACCESS,
 		users: FULL_ACCESS,
 		settings: FULL_ACCESS,
-		audit_logs: FULL_ACCESS,
 		portal: FULL_ACCESS,
 		market_analysis: FULL_ACCESS,
 		workflows: FULL_ACCESS,
 		renewals: FULL_ACCESS,
-		publicity: FULL_ACCESS,
-		short_term: FULL_ACCESS,
-		migration: FULL_ACCESS,
-		analytics: FULL_ACCESS,
-		automation: FULL_ACCESS,
 		reports: FULL_ACCESS,
 		visits: FULL_ACCESS,
 		hotels: FULL_ACCESS,
 		performance: FULL_ACCESS,
 		guest_services: FULL_ACCESS,
 		pos: FULL_ACCESS,
-		marketing: FULL_ACCESS,
-		service_pricing: FULL_ACCESS
+		marketing: FULL_ACCESS
 	},
-	internal_user: {
-		dashboard: ["view"],
-		properties: FULL_ACCESS,
-		condominiums: FULL_ACCESS,
-		tenants: FULL_ACCESS,
-		owners: FULL_ACCESS,
-		partners: FULL_ACCESS,
-		calendar: FULL_ACCESS,
-		tasks: FULL_ACCESS,
-		messages: FULL_ACCESS,
-		short_term: FULL_ACCESS,
-		renewals: FULL_ACCESS,
-		reports: ["view"],
-		visits: FULL_ACCESS,
-		hotels: FULL_ACCESS,
-		users: ["view"],
-		guest_services: FULL_ACCESS,
-		pos: FULL_ACCESS,
-		financial: FULL_ACCESS,
-		automation: ["view"],
-		settings: ["view", "edit"],
-		service_pricing: FULL_ACCESS
-	},
+	internal_user: { dashboard: ["view"] },
 	partner: {
 		dashboard: ["view"],
 		portal: ["view"],
@@ -31045,7 +31054,7 @@ const AppProvider = ({ children }) => {
 	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("all");
 	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(!!localStorage.getItem("app_current_user_id"));
 	const [isAuthLoading, setIsAuthLoading] = (0, import_react.useState)(true);
-	const [currentUser, setCurrentUserObj] = (0, import_react.useState)(getInitialUser());
+	const [currentUserObj, setCurrentUserObj] = (0, import_react.useState)(getInitialUser());
 	const [isTourOpen, setIsTourOpen] = (0, import_react.useState)(false);
 	const [currentStepIndex, setCurrentStepIndex] = (0, import_react.useState)(0);
 	const [activeVideo, setActiveVideo] = (0, import_react.useState)(null);
@@ -31081,6 +31090,64 @@ const AppProvider = ({ children }) => {
 	const formatAppCurrency = (0, import_react.useCallback)((value) => {
 		return formatCurrency(value, currency);
 	}, [currency]);
+	const filterByOrg = (0, import_react.useCallback)((items) => {
+		if (!currentUserObj) return [];
+		if (currentUserObj.role === "platform_owner") return items;
+		return items.filter((item) => !item.organizationId || item.organizationId === currentUserObj.organizationId);
+	}, [currentUserObj]);
+	const attachOrg = (0, import_react.useCallback)((item) => {
+		if (currentUserObj?.role !== "platform_owner" && currentUserObj?.organizationId) return {
+			...item,
+			organizationId: currentUserObj.organizationId
+		};
+		return item;
+	}, [currentUserObj]);
+	const scopedProperties = (0, import_react.useMemo)(() => filterByOrg(properties$1), [properties$1, filterByOrg]);
+	const scopedCondominiums = (0, import_react.useMemo)(() => filterByOrg(condominiums$1), [condominiums$1, filterByOrg]);
+	const scopedHotels = (0, import_react.useMemo)(() => filterByOrg(hotels$1), [hotels$1, filterByOrg]);
+	const scopedTowers = (0, import_react.useMemo)(() => filterByOrg(towers$1), [towers$1, filterByOrg]);
+	const scopedTasks = (0, import_react.useMemo)(() => filterByOrg(tasks$1), [tasks$1, filterByOrg]);
+	const scopedTenants = (0, import_react.useMemo)(() => filterByOrg(tenants$1), [tenants$1, filterByOrg]);
+	const scopedOwners = (0, import_react.useMemo)(() => filterByOrg(owners$1), [owners$1, filterByOrg]);
+	const scopedPartners = (0, import_react.useMemo)(() => filterByOrg(partners$1), [partners$1, filterByOrg]);
+	const scopedBookings = (0, import_react.useMemo)(() => filterByOrg(bookings$1), [bookings$1, filterByOrg]);
+	const scopedVisits = (0, import_react.useMemo)(() => filterByOrg(visits$1), [visits$1, filterByOrg]);
+	const scopedUsers = (0, import_react.useMemo)(() => filterByOrg(users), [users, filterByOrg]);
+	const scopedAutomationRules = (0, import_react.useMemo)(() => filterByOrg(automationRules$1), [automationRules$1, filterByOrg]);
+	const scopedWorkflows = (0, import_react.useMemo)(() => filterByOrg(workflows$1), [workflows$1, filterByOrg]);
+	const scopedLedgerEntries = (0, import_react.useMemo)(() => filterByOrg(ledgerEntries$1), [ledgerEntries$1, filterByOrg]);
+	const scopedGuestServices = (0, import_react.useMemo)(() => filterByOrg(guestServices$1), [guestServices$1, filterByOrg]);
+	const scopedPosItems = (0, import_react.useMemo)(() => filterByOrg(posItems$1), [posItems$1, filterByOrg]);
+	const scopedPosTransactions = (0, import_react.useMemo)(() => filterByOrg(posTransactions$1), [posTransactions$1, filterByOrg]);
+	const scopedPromotions = (0, import_react.useMemo)(() => filterByOrg(promotions$1), [promotions$1, filterByOrg]);
+	const scopedCampaigns = (0, import_react.useMemo)(() => filterByOrg(campaigns$1), [campaigns$1, filterByOrg]);
+	const scopedFinancials = (0, import_react.useMemo)(() => ({
+		...financials$1,
+		invoices: filterByOrg(financials$1.invoices),
+		payments: filterByOrg(financials$1.payments)
+	}), [financials$1, filterByOrg]);
+	const allUsers = (0, import_react.useMemo)(() => {
+		const combinedList = [
+			...users,
+			...owners$1,
+			...partners$1,
+			...tenants$1
+		];
+		const uniqueUsers = [];
+		const seenIds = /* @__PURE__ */ new Set();
+		for (const item of combinedList) if (!seenIds.has(item.id)) {
+			seenIds.add(item.id);
+			uniqueUsers.push(item);
+		}
+		return filterByOrg(uniqueUsers);
+	}, [
+		users,
+		owners$1,
+		partners$1,
+		tenants$1,
+		filterByOrg
+	]);
+	const visibleMessages = (0, import_react.useMemo)(() => allMessages.filter((m$1) => m$1.ownerId === currentUserObj.id), [allMessages, currentUserObj.id]);
 	const login = (email) => {
 		const user = allUsers.find((u$1) => u$1.email.toLowerCase() === email.toLowerCase());
 		if (user) {
@@ -31102,21 +31169,21 @@ const AppProvider = ({ children }) => {
 			localStorage.setItem("app_current_user_id", u$1.id);
 		}
 	};
-	const addProperty = (p$1) => setProperties([...properties$1, p$1]);
-	const updateProperty = (p$1) => setProperties(properties$1.map((x$2) => x$2.id === p$1.id ? p$1 : x$2));
-	const deleteProperty = (id) => setProperties(properties$1.filter((x$2) => x$2.id !== id));
-	const addCondominium = (c$1) => setCondominiums([...condominiums$1, c$1]);
-	const updateCondominium = (c$1) => setCondominiums(condominiums$1.map((x$2) => x$2.id === c$1.id ? c$1 : x$2));
-	const deleteCondominium = (id) => setCondominiums(condominiums$1.filter((x$2) => x$2.id !== id));
-	const addHotel = (h) => setHotels([...hotels$1, h]);
-	const updateHotel = (h) => setHotels(hotels$1.map((x$2) => x$2.id === h.id ? h : x$2));
-	const deleteHotel = (id) => setHotels(hotels$1.filter((x$2) => x$2.id !== id));
-	const addTower = (t$1) => setTowers([...towers$1, t$1]);
-	const updateTower = (t$1) => setTowers(towers$1.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
-	const deleteTower = (id) => setTowers(towers$1.filter((x$2) => x$2.id !== id));
-	const addTask = (t$1) => setTasks([...tasks$1, t$1]);
-	const updateTask = (t$1) => setTasks(tasks$1.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
-	const deleteTask = (id) => setTasks(tasks$1.filter((x$2) => x$2.id !== id));
+	const addProperty = (p$1) => setProperties((prev) => [...prev, attachOrg(p$1)]);
+	const updateProperty = (p$1) => setProperties((prev) => prev.map((x$2) => x$2.id === p$1.id ? p$1 : x$2));
+	const deleteProperty = (id) => setProperties((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addCondominium = (c$1) => setCondominiums((prev) => [...prev, attachOrg(c$1)]);
+	const updateCondominium = (c$1) => setCondominiums((prev) => prev.map((x$2) => x$2.id === c$1.id ? c$1 : x$2));
+	const deleteCondominium = (id) => setCondominiums((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addHotel = (h) => setHotels((prev) => [...prev, attachOrg(h)]);
+	const updateHotel = (h) => setHotels((prev) => prev.map((x$2) => x$2.id === h.id ? h : x$2));
+	const deleteHotel = (id) => setHotels((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addTower = (t$1) => setTowers((prev) => [...prev, attachOrg(t$1)]);
+	const updateTower = (t$1) => setTowers((prev) => prev.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
+	const deleteTower = (id) => setTowers((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addTask = (t$1) => setTasks((prev) => [...prev, attachOrg(t$1)]);
+	const updateTask = (t$1) => setTasks((prev) => prev.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
+	const deleteTask = (id) => setTasks((prev) => prev.filter((x$2) => x$2.id !== id));
 	const updateTaskStatus = (id, status) => {
 		setTasks((prev) => {
 			return prev.map((t$1) => t$1.id === id ? {
@@ -31156,7 +31223,7 @@ const AppProvider = ({ children }) => {
 	const rejectTask = (id) => updateTaskStatus(id, "rejected");
 	const addInvoice = (i) => setFinancials((prev) => ({
 		...prev,
-		invoices: [...prev.invoices, i]
+		invoices: [...prev.invoices, attachOrg(i)]
 	}));
 	const updateInvoice = (i) => setFinancials((prev) => ({
 		...prev,
@@ -31166,30 +31233,30 @@ const AppProvider = ({ children }) => {
 		...prev,
 		invoices: prev.invoices.filter((x$2) => x$2.id !== id)
 	}));
-	const addGuestService = (s$1) => setGuestServices([...guestServices$1, s$1]);
-	const updateGuestService = (s$1) => setGuestServices(guestServices$1.map((x$2) => x$2.id === s$1.id ? s$1 : x$2));
-	const deleteGuestService = (id) => setGuestServices(guestServices$1.filter((x$2) => x$2.id !== id));
-	const addServiceOrder = (o) => setServiceOrders([...serviceOrders$1, o]);
-	const addPosItem = (i) => setPosItems([...posItems$1, i]);
-	const updatePosItem = (i) => setPosItems(posItems$1.map((x$2) => x$2.id === i.id ? i : x$2));
-	const deletePosItem = (id) => setPosItems(posItems$1.filter((x$2) => x$2.id !== id));
-	const addPosTransaction = (t$1) => setPosTransactions([...posTransactions$1, t$1]);
-	const addPromotion = (p$1) => setPromotions([...promotions$1, p$1]);
-	const updatePromotion = (p$1) => setPromotions(promotions$1.map((x$2) => x$2.id === p$1.id ? p$1 : x$2));
-	const deletePromotion = (id) => setPromotions(promotions$1.filter((x$2) => x$2.id !== id));
-	const addCampaign = (c$1) => setCampaigns([...campaigns$1, c$1]);
-	const updateCampaign = (c$1) => setCampaigns(campaigns$1.map((x$2) => x$2.id === c$1.id ? c$1 : x$2));
-	const deleteCampaign = (id) => setCampaigns(campaigns$1.filter((x$2) => x$2.id !== id));
-	const addTenant = (t$1) => setTenants([...tenants$1, t$1]);
-	const updateTenant = (t$1) => setTenants(tenants$1.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
-	const addOwner = (o) => setOwners([...owners$1, o]);
-	const updateOwner = (o) => setOwners(owners$1.map((x$2) => x$2.id === o.id ? o : x$2));
-	const addPartner = (p$1) => setPartners([...partners$1, p$1]);
-	const updatePartner = (p$1) => setPartners(partners$1.map((x$2) => x$2.id === p$1.id ? p$1 : x$2));
-	const deletePartner = (id) => setPartners(partners$1.filter((x$2) => x$2.id !== id));
+	const addGuestService = (s$1) => setGuestServices((prev) => [...prev, attachOrg(s$1)]);
+	const updateGuestService = (s$1) => setGuestServices((prev) => prev.map((x$2) => x$2.id === s$1.id ? s$1 : x$2));
+	const deleteGuestService = (id) => setGuestServices((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addServiceOrder = (o) => setServiceOrders((prev) => [...prev, attachOrg(o)]);
+	const addPosItem = (i) => setPosItems((prev) => [...prev, attachOrg(i)]);
+	const updatePosItem = (i) => setPosItems((prev) => prev.map((x$2) => x$2.id === i.id ? i : x$2));
+	const deletePosItem = (id) => setPosItems((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addPosTransaction = (t$1) => setPosTransactions((prev) => [...prev, attachOrg(t$1)]);
+	const addPromotion = (p$1) => setPromotions((prev) => [...prev, attachOrg(p$1)]);
+	const updatePromotion = (p$1) => setPromotions((prev) => prev.map((x$2) => x$2.id === p$1.id ? p$1 : x$2));
+	const deletePromotion = (id) => setPromotions((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addCampaign = (c$1) => setCampaigns((prev) => [...prev, attachOrg(c$1)]);
+	const updateCampaign = (c$1) => setCampaigns((prev) => prev.map((x$2) => x$2.id === c$1.id ? c$1 : x$2));
+	const deleteCampaign = (id) => setCampaigns((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addTenant = (t$1) => setTenants((prev) => [...prev, attachOrg(t$1)]);
+	const updateTenant = (t$1) => setTenants((prev) => prev.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
+	const addOwner = (o) => setOwners((prev) => [...prev, attachOrg(o)]);
+	const updateOwner = (o) => setOwners((prev) => prev.map((x$2) => x$2.id === o.id ? o : x$2));
+	const addPartner = (p$1) => setPartners((prev) => [...prev, attachOrg(p$1)]);
+	const updatePartner = (p$1) => setPartners((prev) => prev.map((x$2) => x$2.id === p$1.id ? p$1 : x$2));
+	const deletePartner = (id) => setPartners((prev) => prev.filter((x$2) => x$2.id !== id));
 	const addBooking = (b$1) => {
-		setBookings((prev) => [...prev, b$1]);
-		setCalendarBlocks((prev) => [...prev, {
+		setBookings((prev) => [...prev, attachOrg(b$1)]);
+		setCalendarBlocks((prev) => [...prev, attachOrg({
 			id: `block-auto-${Date.now()}`,
 			propertyId: b$1.propertyId,
 			startDate: b$1.checkIn,
@@ -31197,8 +31264,8 @@ const AppProvider = ({ children }) => {
 			type: "external_sync",
 			notes: `Booking: ${b$1.guestName}`,
 			source: "booking"
-		}]);
-		setTasks((prev) => [...prev, {
+		})]);
+		setTasks((prev) => [...prev, attachOrg({
 			id: `task-clean-${Date.now()}`,
 			title: `Cleaning after checkout - ${b$1.guestName}`,
 			propertyId: b$1.propertyId,
@@ -31209,26 +31276,26 @@ const AppProvider = ({ children }) => {
 			date: b$1.checkOut,
 			priority: "high",
 			source: "automation"
-		}]);
+		})]);
 		setTimeout(() => {
 			runWorkflows("before_checkin", { booking: b$1 });
 		}, 0);
 	};
-	const updateBooking = (b$1) => setBookings(bookings$1.map((x$2) => x$2.id === b$1.id ? b$1 : x$2));
-	const deleteBooking = (id) => setBookings(bookings$1.filter((x$2) => x$2.id !== id));
-	const addCalendarBlock = (b$1) => setCalendarBlocks([...calendarBlocks$1, b$1]);
-	const deleteCalendarBlock = (id) => setCalendarBlocks(calendarBlocks$1.filter((x$2) => x$2.id !== id));
-	const addMessageTemplate = (t$1) => setMessageTemplates([...messageTemplates$1, t$1]);
-	const updateMessageTemplate = (t$1) => setMessageTemplates(messageTemplates$1.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
-	const deleteMessageTemplate = (id) => setMessageTemplates(messageTemplates$1.filter((x$2) => x$2.id !== id));
-	const updateAutomationRule = (r$1) => setAutomationRules(automationRules$1.map((x$2) => x$2.id === r$1.id ? r$1 : x$2));
-	const addUser = (u$1) => setUsers([...users, u$1]);
-	const updateUser = (u$1) => setUsers(users.map((x$2) => x$2.id === u$1.id ? u$1 : x$2));
-	const deleteUser = (id) => setUsers(users.filter((x$2) => x$2.id !== id));
+	const updateBooking = (b$1) => setBookings((prev) => prev.map((x$2) => x$2.id === b$1.id ? b$1 : x$2));
+	const deleteBooking = (id) => setBookings((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addCalendarBlock = (b$1) => setCalendarBlocks((prev) => [...prev, attachOrg(b$1)]);
+	const deleteCalendarBlock = (id) => setCalendarBlocks((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addMessageTemplate = (t$1) => setMessageTemplates((prev) => [...prev, attachOrg(t$1)]);
+	const updateMessageTemplate = (t$1) => setMessageTemplates((prev) => prev.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
+	const deleteMessageTemplate = (id) => setMessageTemplates((prev) => prev.filter((x$2) => x$2.id !== id));
+	const updateAutomationRule = (r$1) => setAutomationRules((prev) => prev.map((x$2) => x$2.id === r$1.id ? r$1 : x$2));
+	const addUser = (u$1) => setUsers((prev) => [...prev, attachOrg(u$1)]);
+	const updateUser = (u$1) => setUsers((prev) => prev.map((x$2) => x$2.id === u$1.id ? u$1 : x$2));
+	const deleteUser = (id) => setUsers((prev) => prev.filter((x$2) => x$2.id !== id));
 	const updatePaymentIntegration = (i) => setPaymentIntegrations(paymentIntegrations.map((x$2) => x$2.provider === i.provider ? i : x$2));
 	const updateFinancialSettings = (s$1) => setFinancialSettings(s$1);
-	const uploadBankStatement = (s$1) => setBankStatements([...bankStatements, s$1]);
-	const addLedgerEntry = (e) => setLedgerEntries([...ledgerEntries$1, e]);
+	const uploadBankStatement = (s$1) => setBankStatements((prev) => [...prev, s$1]);
+	const addLedgerEntry = (e) => setLedgerEntries((prev) => [...prev, attachOrg(e)]);
 	const updateLedgerEntry = (e) => {
 		setLedgerEntries((prev) => {
 			const existing = prev.find((x$2) => x$2.id === e.id);
@@ -31253,33 +31320,33 @@ const AppProvider = ({ children }) => {
 			return updated;
 		});
 	};
-	const deleteLedgerEntry = (id) => setLedgerEntries(ledgerEntries$1.filter((x$2) => x$2.id !== id));
-	const addAuditLog = (l) => setAuditLogs([...auditLogs$1, {
+	const deleteLedgerEntry = (id) => setLedgerEntries((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addAuditLog = (l) => setAuditLogs((prev) => [...prev, attachOrg({
 		...l,
 		id: Date.now().toString(),
 		timestamp: (/* @__PURE__ */ new Date()).toISOString()
-	}]);
-	const addGenericServiceRate = (r$1) => setGenericServiceRates([...genericServiceRates$1, r$1]);
-	const updateGenericServiceRate = (r$1) => setGenericServiceRates(genericServiceRates$1.map((x$2) => x$2.id === r$1.id ? r$1 : x$2));
-	const deleteGenericServiceRate = (id) => setGenericServiceRates(genericServiceRates$1.filter((x$2) => x$2.id !== id));
-	const addServiceCategory = (c$1) => setServiceCategories([...serviceCategories$1, c$1]);
-	const updateServiceCategory = (c$1) => setServiceCategories(serviceCategories$1.map((x$2) => x$2.id === c$1.id ? c$1 : x$2));
-	const deleteServiceCategory = (id) => setServiceCategories(serviceCategories$1.filter((x$2) => x$2.id !== id));
-	const addNotification = (n) => setNotifications((prev) => [...prev, {
+	})]);
+	const addGenericServiceRate = (r$1) => setGenericServiceRates((prev) => [...prev, attachOrg(r$1)]);
+	const updateGenericServiceRate = (r$1) => setGenericServiceRates((prev) => prev.map((x$2) => x$2.id === r$1.id ? r$1 : x$2));
+	const deleteGenericServiceRate = (id) => setGenericServiceRates((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addServiceCategory = (c$1) => setServiceCategories((prev) => [...prev, attachOrg(c$1)]);
+	const updateServiceCategory = (c$1) => setServiceCategories((prev) => prev.map((x$2) => x$2.id === c$1.id ? c$1 : x$2));
+	const deleteServiceCategory = (id) => setServiceCategories((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addNotification = (n) => setNotifications((prev) => [...prev, attachOrg({
 		...n,
 		id: Date.now().toString(),
 		timestamp: (/* @__PURE__ */ new Date()).toISOString(),
 		read: false
-	}]);
-	const markNotificationAsRead = (id) => setNotifications(notifications$1.map((x$2) => x$2.id === id ? {
+	})]);
+	const markNotificationAsRead = (id) => setNotifications((prev) => prev.map((x$2) => x$2.id === id ? {
 		...x$2,
 		read: true
 	} : x$2));
-	const approveUser = (id) => setUsers(users.map((x$2) => x$2.id === id ? {
+	const approveUser = (id) => setUsers((prev) => prev.map((x$2) => x$2.id === id ? {
 		...x$2,
 		status: "active"
 	} : x$2));
-	const blockUser = (id) => setUsers(users.map((x$2) => x$2.id === id ? {
+	const blockUser = (id) => setUsers((prev) => prev.map((x$2) => x$2.id === id ? {
 		...x$2,
 		status: "blocked"
 	} : x$2));
@@ -31299,23 +31366,23 @@ const AppProvider = ({ children }) => {
 			return x$2;
 		}));
 	};
-	const updateTenantNegotiation = (id, d) => setTenants(tenants$1.map((x$2) => x$2.id === id ? {
+	const updateTenantNegotiation = (id, d) => setTenants((prev) => prev.map((x$2) => x$2.id === id ? {
 		...x$2,
 		...d
 	} : x$2));
-	const addAdvertisement = (a$1) => setAdvertisements([...advertisements$1, a$1]);
-	const updateAdvertisement = (a$1) => setAdvertisements(advertisements$1.map((x$2) => x$2.id === a$1.id ? a$1 : x$2));
-	const deleteAdvertisement = (id) => setAdvertisements(advertisements$1.filter((x$2) => x$2.id !== id));
-	const addAdvertiser = (a$1) => setAdvertisers([...advertisers, a$1]);
-	const updateAdvertiser = (a$1) => setAdvertisements(advertisers.map((x$2) => x$2.id === a$1.id ? a$1 : x$2));
-	const deleteAdvertiser = (id) => setAdvertisers(advertisers.filter((x$2) => x$2.id !== id));
+	const addAdvertisement = (a$1) => setAdvertisements((prev) => [...prev, attachOrg(a$1)]);
+	const updateAdvertisement = (a$1) => setAdvertisements((prev) => prev.map((x$2) => x$2.id === a$1.id ? a$1 : x$2));
+	const deleteAdvertisement = (id) => setAdvertisements((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addAdvertiser = (a$1) => setAdvertisers((prev) => [...prev, attachOrg(a$1)]);
+	const updateAdvertiser = (a$1) => setAdvertisers((prev) => prev.map((x$2) => x$2.id === a$1.id ? a$1 : x$2));
+	const deleteAdvertiser = (id) => setAdvertisers((prev) => prev.filter((x$2) => x$2.id !== id));
 	const updateAdPricing = (p$1) => setAdPricingState(p$1);
-	const addVisit = (v) => setVisits([...visits$1, v]);
-	const updateVisit = (v) => setVisits(visits$1.map((x$2) => x$2.id === v.id ? v : x$2));
-	const deleteVisit = (id) => setVisits(visits$1.filter((x$2) => x$2.id !== id));
-	const addWorkflow = (w) => setWorkflows([...workflows$1, w]);
-	const updateWorkflow = (w) => setWorkflows(workflows$1.map((x$2) => x$2.id === w.id ? w : x$2));
-	const deleteWorkflow = (id) => setWorkflows(workflows$1.filter((x$2) => x$2.id !== id));
+	const addVisit = (v) => setVisits((prev) => [...prev, attachOrg(v)]);
+	const updateVisit = (v) => setVisits((prev) => prev.map((x$2) => x$2.id === v.id ? v : x$2));
+	const deleteVisit = (id) => setVisits((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addWorkflow = (w) => setWorkflows((prev) => [...prev, attachOrg(w)]);
+	const updateWorkflow = (w) => setWorkflows((prev) => prev.map((x$2) => x$2.id === w.id ? w : x$2));
+	const deleteWorkflow = (id) => setWorkflows((prev) => prev.filter((x$2) => x$2.id !== id));
 	const runNightAudit = () => {};
 	const markPaymentAs = () => {};
 	const addTaskImage = () => {};
@@ -31331,7 +31398,7 @@ const AppProvider = ({ children }) => {
 			history: [...m$1.history, {
 				id: `hist_${Date.now()}`,
 				text,
-				senderId: currentUser.id,
+				senderId: currentUserObj.id,
 				timestamp: (/* @__PURE__ */ new Date()).toISOString(),
 				read: true
 			}]
@@ -31344,38 +31411,17 @@ const AppProvider = ({ children }) => {
 	const prevStep = () => setCurrentStepIndex(currentStepIndex - 1);
 	const openVideo = (url) => setActiveVideo(url);
 	const closeVideo = () => setActiveVideo(null);
-	const addFeedback = (f) => setFeedbacks([...feedbacks$1, f]);
-	const updateFeedback = (f) => setFeedbacks(feedbacks$1.map((x$2) => x$2.id === f.id ? f : x$2));
-	const addChannelMapping = (m$1) => setChannelMappings([...channelMappings$1, m$1]);
-	const updateChannelMapping = (m$1) => setChannelMappings(channelMappings$1.map((x$2) => x$2.id === m$1.id ? m$1 : x$2));
-	const deleteChannelMapping = (id) => setChannelMappings(channelMappings$1.filter((x$2) => x$2.id !== id));
-	const addMarketingWorkflow = (w) => setMarketingWorkflows([...marketingWorkflows$1, w]);
-	const updateMarketingWorkflow = (w) => setMarketingWorkflows(marketingWorkflows$1.map((x$2) => x$2.id === w.id ? w : x$2));
-	const deleteMarketingWorkflow = (id) => setMarketingWorkflows(marketingWorkflows$1.filter((x$2) => x$2.id !== id));
-	const addEmailTemplate = (t$1) => setEmailTemplates([...emailTemplates$1, t$1]);
-	const updateEmailTemplate = (t$1) => setEmailTemplates(emailTemplates$1.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
-	const deleteEmailTemplate = (id) => setEmailTemplates(emailTemplates$1.filter((x$2) => x$2.id !== id));
-	const visibleMessages = (0, import_react.useMemo)(() => allMessages.filter((m$1) => m$1.ownerId === currentUser.id), [allMessages, currentUser.id]);
-	const allUsers = (0, import_react.useMemo)(() => {
-		const combinedList = [
-			...users,
-			...owners$1,
-			...partners$1,
-			...tenants$1
-		];
-		const uniqueUsers = [];
-		const seenIds = /* @__PURE__ */ new Set();
-		for (const item of combinedList) if (!seenIds.has(item.id)) {
-			seenIds.add(item.id);
-			uniqueUsers.push(item);
-		}
-		return uniqueUsers;
-	}, [
-		users,
-		owners$1,
-		partners$1,
-		tenants$1
-	]);
+	const addFeedback = (f) => setFeedbacks((prev) => [...prev, attachOrg(f)]);
+	const updateFeedback = (f) => setFeedbacks((prev) => prev.map((x$2) => x$2.id === f.id ? f : x$2));
+	const addChannelMapping = (m$1) => setChannelMappings((prev) => [...prev, attachOrg(m$1)]);
+	const updateChannelMapping = (m$1) => setChannelMappings((prev) => prev.map((x$2) => x$2.id === m$1.id ? m$1 : x$2));
+	const deleteChannelMapping = (id) => setChannelMappings((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addMarketingWorkflow = (w) => setMarketingWorkflows((prev) => [...prev, attachOrg(w)]);
+	const updateMarketingWorkflow = (w) => setMarketingWorkflows((prev) => prev.map((x$2) => x$2.id === w.id ? w : x$2));
+	const deleteMarketingWorkflow = (id) => setMarketingWorkflows((prev) => prev.filter((x$2) => x$2.id !== id));
+	const addEmailTemplate = (t$1) => setEmailTemplates((prev) => [...prev, attachOrg(t$1)]);
+	const updateEmailTemplate = (t$1) => setEmailTemplates((prev) => prev.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
+	const deleteEmailTemplate = (id) => setEmailTemplates((prev) => prev.filter((x$2) => x$2.id !== id));
 	const updateRolePermissions = (0, import_react.useCallback)((role, resource, actions) => {
 		setRolePermissions((prev) => ({
 			...prev,
@@ -31437,7 +31483,7 @@ const AppProvider = ({ children }) => {
 						priority = "critical";
 						isBackToBack = true;
 					}
-					const newTask = {
+					const newTask = attachOrg({
 						id: `wf_task_${Date.now()}_${workflow.id}_${propertyId}_${index$1}`,
 						title: step.name,
 						description: step.description || `Auto-generated from workflow: ${workflow.name}`,
@@ -31454,8 +31500,8 @@ const AppProvider = ({ children }) => {
 						assignedRole,
 						source: "automation",
 						backToBack: isBackToBack,
-						createdBy: currentUser.id
-					};
+						createdBy: currentUserObj.id
+					});
 					setTasks((prev) => [...prev, newTask]);
 					tasksCreated++;
 				}
@@ -31470,10 +31516,11 @@ const AppProvider = ({ children }) => {
 		partners$1,
 		bookings$1,
 		toast$2,
-		currentUser.id
+		currentUserObj,
+		attachOrg
 	]);
 	const runWorkflows = (0, import_react.useCallback)((trigger, context) => {
-		const activeWorkflows = workflows$1.filter((wf) => wf.active && wf.trigger === trigger);
+		const activeWorkflows = scopedWorkflows.filter((wf) => wf.active && wf.trigger === trigger);
 		if (activeWorkflows.length === 0) return;
 		let propertyId = context?.property?.id || context?.booking?.propertyId;
 		if (propertyId) activeWorkflows.forEach((wf) => {
@@ -31485,33 +31532,33 @@ const AppProvider = ({ children }) => {
 		else activeWorkflows.forEach((wf) => {
 			executeWorkflow(wf);
 		});
-	}, [workflows$1, executeWorkflow]);
+	}, [scopedWorkflows, executeWorkflow]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppContext.Provider, {
 		value: {
-			properties: properties$1,
-			condominiums: condominiums$1,
-			hotels: hotels$1,
-			towers: towers$1,
-			tasks: tasks$1,
-			financials: financials$1,
+			properties: scopedProperties,
+			condominiums: scopedCondominiums,
+			hotels: scopedHotels,
+			towers: scopedTowers,
+			tasks: scopedTasks,
+			financials: scopedFinancials,
 			messages: visibleMessages,
-			tenants: tenants$1,
-			owners: owners$1,
-			partners: partners$1,
-			bookings: bookings$1,
+			tenants: scopedTenants,
+			owners: scopedOwners,
+			partners: scopedPartners,
+			bookings: scopedBookings,
 			calendarBlocks: calendarBlocks$1,
 			messageTemplates: messageTemplates$1,
-			automationRules: automationRules$1,
-			workflows: workflows$1,
-			currentUser,
+			automationRules: scopedAutomationRules,
+			workflows: scopedWorkflows,
+			currentUser: currentUserObj,
 			allUsers,
-			users,
+			users: scopedUsers,
 			isAuthenticated,
 			isAuthLoading,
 			paymentIntegrations,
 			financialSettings,
 			bankStatements,
-			ledgerEntries: ledgerEntries$1,
+			ledgerEntries: scopedLedgerEntries,
 			auditLogs: auditLogs$1,
 			genericServiceRates: genericServiceRates$1,
 			serviceCategories: serviceCategories$1,
@@ -31523,13 +31570,13 @@ const AppProvider = ({ children }) => {
 			currency,
 			typingStatus,
 			selectedPropertyId,
-			visits: visits$1,
+			visits: scopedVisits,
 			nightAudits,
-			guestServices: guestServices$1,
-			posItems: posItems$1,
-			posTransactions: posTransactions$1,
-			promotions: promotions$1,
-			campaigns: campaigns$1,
+			guestServices: scopedGuestServices,
+			posItems: scopedPosItems,
+			posTransactions: scopedPosTransactions,
+			promotions: scopedPromotions,
+			campaigns: scopedCampaigns,
 			serviceOrders: serviceOrders$1,
 			feedbacks: feedbacks$1,
 			channelMappings: channelMappings$1,
@@ -35388,23 +35435,23 @@ var Dialog$1 = (props) => {
 	});
 };
 Dialog$1.displayName = DIALOG_NAME;
-var TRIGGER_NAME$5 = "DialogTrigger";
+var TRIGGER_NAME$6 = "DialogTrigger";
 var DialogTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDialog, ...triggerProps } = props;
-	const context = useDialogContext(TRIGGER_NAME$5, __scopeDialog);
+	const context = useDialogContext(TRIGGER_NAME$6, __scopeDialog);
 	const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
 		type: "button",
 		"aria-haspopup": "dialog",
 		"aria-expanded": context.open,
 		"aria-controls": context.contentId,
-		"data-state": getState$3(context.open),
+		"data-state": getState$4(context.open),
 		...triggerProps,
 		ref: composedTriggerRef,
 		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
 	});
 });
-DialogTrigger$1.displayName = TRIGGER_NAME$5;
+DialogTrigger$1.displayName = TRIGGER_NAME$6;
 var PORTAL_NAME$5 = "DialogPortal";
 var [PortalProvider$2, usePortalContext$2] = createDialogContext(PORTAL_NAME$5, { forceMount: void 0 });
 var DialogPortal$1 = (props) => {
@@ -35447,7 +35494,7 @@ var DialogOverlayImpl = import_react.forwardRef((props, forwardedRef) => {
 		allowPinchZoom: true,
 		shards: [context.contentRef],
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-			"data-state": getState$3(context.open),
+			"data-state": getState$4(context.open),
 			...overlayProps,
 			ref: forwardedRef,
 			style: {
@@ -35546,7 +35593,7 @@ var DialogContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			id: context.contentId,
 			"aria-describedby": context.descriptionId,
 			"aria-labelledby": context.titleId,
-			"data-state": getState$3(context.open),
+			"data-state": getState$4(context.open),
 			...contentProps,
 			ref: composedRefs,
 			onDismiss: () => context.onOpenChange(false)
@@ -35590,7 +35637,7 @@ var DialogClose$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 DialogClose$1.displayName = CLOSE_NAME$1;
-function getState$3(open) {
+function getState$4(open) {
 	return open ? "open" : "closed";
 }
 var TITLE_WARNING_NAME = "DialogTitleWarning";
@@ -36647,11 +36694,11 @@ var MenuCheckboxItem = import_react.forwardRef((props, forwardedRef) => {
 		checked,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MenuItem, {
 			role: "menuitemcheckbox",
-			"aria-checked": isIndeterminate(checked) ? "mixed" : checked,
+			"aria-checked": isIndeterminate$1(checked) ? "mixed" : checked,
 			...checkboxItemProps,
 			ref: forwardedRef,
 			"data-state": getCheckedState(checked),
-			onSelect: composeEventHandlers(checkboxItemProps.onSelect, () => onCheckedChange?.(isIndeterminate(checked) ? true : !checked), { checkForDefaultPrevented: false })
+			onSelect: composeEventHandlers(checkboxItemProps.onSelect, () => onCheckedChange?.(isIndeterminate$1(checked) ? true : !checked), { checkForDefaultPrevented: false })
 		})
 	});
 });
@@ -36700,7 +36747,7 @@ var MenuItemIndicator = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeMenu, forceMount, ...itemIndicatorProps } = props;
 	const indicatorContext = useItemIndicatorContext(ITEM_INDICATOR_NAME$1, __scopeMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
-		present: forceMount || isIndeterminate(indicatorContext.checked) || indicatorContext.checked === true,
+		present: forceMount || isIndeterminate$1(indicatorContext.checked) || indicatorContext.checked === true,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
 			...itemIndicatorProps,
 			ref: forwardedRef,
@@ -36923,11 +36970,11 @@ MenuSubContent.displayName = SUB_CONTENT_NAME$1;
 function getOpenState(open) {
 	return open ? "open" : "closed";
 }
-function isIndeterminate(checked) {
+function isIndeterminate$1(checked) {
 	return checked === "indeterminate";
 }
 function getCheckedState(checked) {
-	return isIndeterminate(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
+	return isIndeterminate$1(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
 }
 function focusFirst(candidates) {
 	const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
@@ -37021,10 +37068,10 @@ var DropdownMenu$1 = (props) => {
 	});
 };
 DropdownMenu$1.displayName = DROPDOWN_MENU_NAME;
-var TRIGGER_NAME$4 = "DropdownMenuTrigger";
+var TRIGGER_NAME$5 = "DropdownMenuTrigger";
 var DropdownMenuTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, disabled = false, ...triggerProps } = props;
-	const context = useDropdownMenuContext(TRIGGER_NAME$4, __scopeDropdownMenu);
+	const context = useDropdownMenuContext(TRIGGER_NAME$5, __scopeDropdownMenu);
 	const menuScope = useMenuScope(__scopeDropdownMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Anchor2, {
 		asChild: true,
@@ -37059,7 +37106,7 @@ var DropdownMenuTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-DropdownMenuTrigger$1.displayName = TRIGGER_NAME$4;
+DropdownMenuTrigger$1.displayName = TRIGGER_NAME$5;
 var PORTAL_NAME$3 = "DropdownMenuPortal";
 var DropdownMenuPortal$1 = (props) => {
 	const { __scopeDropdownMenu, ...portalProps } = props;
@@ -37170,7 +37217,7 @@ var DropdownMenuRadioItem$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 DropdownMenuRadioItem$1.displayName = RADIO_ITEM_NAME;
-var INDICATOR_NAME$1 = "DropdownMenuItemIndicator";
+var INDICATOR_NAME$2 = "DropdownMenuItemIndicator";
 var DropdownMenuItemIndicator = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...itemIndicatorProps } = props;
 	const menuScope = useMenuScope(__scopeDropdownMenu);
@@ -37180,7 +37227,7 @@ var DropdownMenuItemIndicator = import_react.forwardRef((props, forwardedRef) =>
 		ref: forwardedRef
 	});
 });
-DropdownMenuItemIndicator.displayName = INDICATOR_NAME$1;
+DropdownMenuItemIndicator.displayName = INDICATOR_NAME$2;
 var SEPARATOR_NAME$1 = "DropdownMenuSeparator";
 var DropdownMenuSeparator$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...separatorProps } = props;
@@ -37442,11 +37489,11 @@ var Select$1 = (props) => {
 	});
 };
 Select$1.displayName = SELECT_NAME;
-var TRIGGER_NAME$3 = "SelectTrigger";
+var TRIGGER_NAME$4 = "SelectTrigger";
 var SelectTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, disabled = false, ...triggerProps } = props;
 	const popperScope = usePopperScope$1(__scopeSelect);
-	const context = useSelectContext(TRIGGER_NAME$3, __scopeSelect);
+	const context = useSelectContext(TRIGGER_NAME$4, __scopeSelect);
 	const isDisabled = context.disabled || disabled;
 	const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
 	const getItems = useCollection(__scopeSelect);
@@ -37508,7 +37555,7 @@ var SelectTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-SelectTrigger$1.displayName = TRIGGER_NAME$3;
+SelectTrigger$1.displayName = TRIGGER_NAME$4;
 var VALUE_NAME = "SelectValue";
 var SelectValue$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, className, style, children, placeholder = "", ...valueProps } = props;
@@ -38223,7 +38270,7 @@ var SelectArrow = import_react.forwardRef((props, forwardedRef) => {
 	}) : null;
 });
 SelectArrow.displayName = ARROW_NAME$1;
-var BUBBLE_INPUT_NAME$2 = "SelectBubbleInput";
+var BUBBLE_INPUT_NAME$3 = "SelectBubbleInput";
 var SelectBubbleInput = import_react.forwardRef(({ __scopeSelect, value, ...props }, forwardedRef) => {
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, ref);
@@ -38249,7 +38296,7 @@ var SelectBubbleInput = import_react.forwardRef(({ __scopeSelect, value, ...prop
 		defaultValue: value
 	});
 });
-SelectBubbleInput.displayName = BUBBLE_INPUT_NAME$2;
+SelectBubbleInput.displayName = BUBBLE_INPUT_NAME$3;
 function shouldShowPlaceholder(value) {
 	return value === "" || value === void 0;
 }
@@ -39545,7 +39592,7 @@ var AlertDialog$1 = (props) => {
 	});
 };
 AlertDialog$1.displayName = ROOT_NAME;
-var TRIGGER_NAME$2 = "AlertDialogTrigger";
+var TRIGGER_NAME$3 = "AlertDialogTrigger";
 var AlertDialogTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeAlertDialog, ...triggerProps } = props;
 	const dialogScope = useDialogScope(__scopeAlertDialog);
@@ -39555,7 +39602,7 @@ var AlertDialogTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		ref: forwardedRef
 	});
 });
-AlertDialogTrigger$1.displayName = TRIGGER_NAME$2;
+AlertDialogTrigger$1.displayName = TRIGGER_NAME$3;
 var PORTAL_NAME$1 = "AlertDialogPortal";
 var AlertDialogPortal$1 = (props) => {
 	const { __scopeAlertDialog, ...portalProps } = props;
@@ -39744,7 +39791,7 @@ var Radio = import_react.forwardRef((props, forwardedRef) => {
 			type: "button",
 			role: "radio",
 			"aria-checked": checked,
-			"data-state": getState$2(checked),
+			"data-state": getState$3(checked),
 			"data-disabled": disabled ? "" : void 0,
 			disabled,
 			value,
@@ -39771,22 +39818,22 @@ var Radio = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 Radio.displayName = RADIO_NAME;
-var INDICATOR_NAME = "RadioIndicator";
+var INDICATOR_NAME$1 = "RadioIndicator";
 var RadioIndicator = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeRadio, forceMount, ...indicatorProps } = props;
-	const context = useRadioContext(INDICATOR_NAME, __scopeRadio);
+	const context = useRadioContext(INDICATOR_NAME$1, __scopeRadio);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || context.checked,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
-			"data-state": getState$2(context.checked),
+			"data-state": getState$3(context.checked),
 			"data-disabled": context.disabled ? "" : void 0,
 			...indicatorProps,
 			ref: forwardedRef
 		})
 	});
 });
-RadioIndicator.displayName = INDICATOR_NAME;
-var BUBBLE_INPUT_NAME$1 = "RadioBubbleInput";
+RadioIndicator.displayName = INDICATOR_NAME$1;
+var BUBBLE_INPUT_NAME$2 = "RadioBubbleInput";
 var RadioBubbleInput = import_react.forwardRef(({ __scopeRadio, control, checked, bubbles = true, ...props }, forwardedRef) => {
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -39824,8 +39871,8 @@ var RadioBubbleInput = import_react.forwardRef(({ __scopeRadio, control, checked
 		}
 	});
 });
-RadioBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
-function getState$2(checked) {
+RadioBubbleInput.displayName = BUBBLE_INPUT_NAME$2;
+function getState$3(checked) {
 	return checked ? "checked" : "unchecked";
 }
 var ARROW_KEYS = [
@@ -40953,10 +41000,10 @@ var TabsList$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 TabsList$1.displayName = TAB_LIST_NAME;
-var TRIGGER_NAME$1 = "TabsTrigger";
+var TRIGGER_NAME$2 = "TabsTrigger";
 var TabsTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
-	const context = useTabsContext(TRIGGER_NAME$1, __scopeTabs);
+	const context = useTabsContext(TRIGGER_NAME$2, __scopeTabs);
 	const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
 	const triggerId = makeTriggerId(context.baseId, value);
 	const contentId = makeContentId(context.baseId, value);
@@ -40991,7 +41038,7 @@ var TabsTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-TabsTrigger$1.displayName = TRIGGER_NAME$1;
+TabsTrigger$1.displayName = TRIGGER_NAME$2;
 var CONTENT_NAME$1 = "TabsContent";
 var TabsContent$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTabs, value, forceMount, children, ...contentProps } = props;
@@ -44932,7 +44979,7 @@ var Switch$1 = import_react.forwardRef((props, forwardedRef) => {
 			role: "switch",
 			"aria-checked": checked,
 			"aria-required": required,
-			"data-state": getState$1(checked),
+			"data-state": getState$2(checked),
 			"data-disabled": disabled ? "" : void 0,
 			disabled,
 			value,
@@ -44964,14 +45011,14 @@ var SwitchThumb = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSwitch, ...thumbProps } = props;
 	const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
-		"data-state": getState$1(context.checked),
+		"data-state": getState$2(context.checked),
 		"data-disabled": context.disabled ? "" : void 0,
 		...thumbProps,
 		ref: forwardedRef
 	});
 });
 SwitchThumb.displayName = THUMB_NAME;
-var BUBBLE_INPUT_NAME = "SwitchBubbleInput";
+var BUBBLE_INPUT_NAME$1 = "SwitchBubbleInput";
 var SwitchBubbleInput = import_react.forwardRef(({ __scopeSwitch, control, checked, bubbles = true, ...props }, forwardedRef) => {
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -45009,8 +45056,8 @@ var SwitchBubbleInput = import_react.forwardRef(({ __scopeSwitch, control, check
 		}
 	});
 });
-SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME;
-function getState$1(checked) {
+SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
+function getState$2(checked) {
 	return checked ? "checked" : "unchecked";
 }
 var Root = Switch$1;
@@ -49267,10 +49314,10 @@ var PopoverAnchor = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 PopoverAnchor.displayName = ANCHOR_NAME;
-var TRIGGER_NAME = "PopoverTrigger";
+var TRIGGER_NAME$1 = "PopoverTrigger";
 var PopoverTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopePopover, ...triggerProps } = props;
-	const context = usePopoverContext(TRIGGER_NAME, __scopePopover);
+	const context = usePopoverContext(TRIGGER_NAME$1, __scopePopover);
 	const popperScope = usePopperScope(__scopePopover);
 	const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 	const trigger = /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
@@ -49278,7 +49325,7 @@ var PopoverTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		"aria-haspopup": "dialog",
 		"aria-expanded": context.open,
 		"aria-controls": context.contentId,
-		"data-state": getState(context.open),
+		"data-state": getState$1(context.open),
 		...triggerProps,
 		ref: composedTriggerRef,
 		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
@@ -49289,7 +49336,7 @@ var PopoverTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		children: trigger
 	});
 });
-PopoverTrigger$1.displayName = TRIGGER_NAME;
+PopoverTrigger$1.displayName = TRIGGER_NAME$1;
 var PORTAL_NAME = "PopoverPortal";
 var [PortalProvider, usePortalContext] = createPopoverContext(PORTAL_NAME, { forceMount: void 0 });
 var PopoverPortal = (props) => {
@@ -49407,7 +49454,7 @@ var PopoverContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			onFocusOutside,
 			onDismiss: () => context.onOpenChange(false),
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content$2, {
-				"data-state": getState(context.open),
+				"data-state": getState$1(context.open),
 				role: "dialog",
 				id: context.contentId,
 				...popperScope,
@@ -49448,7 +49495,7 @@ var PopoverArrow = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 PopoverArrow.displayName = ARROW_NAME;
-function getState(open) {
+function getState$1(open) {
 	return open ? "open" : "closed";
 }
 var Root2 = Popover$1;
@@ -52150,8 +52197,267 @@ function HotelRoomDetails() {
 		})
 	});
 }
+var CHECKBOX_NAME = "Checkbox";
+var [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX_NAME);
+var [CheckboxProviderImpl, useCheckboxContext] = createCheckboxContext(CHECKBOX_NAME);
+function CheckboxProvider(props) {
+	const { __scopeCheckbox, checked: checkedProp, children, defaultChecked, disabled, form, name, onCheckedChange, required, value = "on", internal_do_not_use_render } = props;
+	const [checked, setChecked] = useControllableState({
+		prop: checkedProp,
+		defaultProp: defaultChecked ?? false,
+		onChange: onCheckedChange,
+		caller: CHECKBOX_NAME
+	});
+	const [control, setControl] = import_react.useState(null);
+	const [bubbleInput, setBubbleInput] = import_react.useState(null);
+	const hasConsumerStoppedPropagationRef = import_react.useRef(false);
+	const isFormControl = control ? !!form || !!control.closest("form") : true;
+	const context = {
+		checked,
+		disabled,
+		setChecked,
+		control,
+		setControl,
+		name,
+		form,
+		value,
+		hasConsumerStoppedPropagationRef,
+		required,
+		defaultChecked: isIndeterminate(defaultChecked) ? false : defaultChecked,
+		isFormControl,
+		bubbleInput,
+		setBubbleInput
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CheckboxProviderImpl, {
+		scope: __scopeCheckbox,
+		...context,
+		children: isFunction$26(internal_do_not_use_render) ? internal_do_not_use_render(context) : children
+	});
+}
+var TRIGGER_NAME = "CheckboxTrigger";
+var CheckboxTrigger = import_react.forwardRef(({ __scopeCheckbox, onKeyDown, onClick, ...checkboxProps }, forwardedRef) => {
+	const { control, value, disabled, checked, required, setControl, setChecked, hasConsumerStoppedPropagationRef, isFormControl, bubbleInput } = useCheckboxContext(TRIGGER_NAME, __scopeCheckbox);
+	const composedRefs = useComposedRefs(forwardedRef, setControl);
+	const initialCheckedStateRef = import_react.useRef(checked);
+	import_react.useEffect(() => {
+		const form = control?.form;
+		if (form) {
+			const reset = () => setChecked(initialCheckedStateRef.current);
+			form.addEventListener("reset", reset);
+			return () => form.removeEventListener("reset", reset);
+		}
+	}, [control, setChecked]);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+		type: "button",
+		role: "checkbox",
+		"aria-checked": isIndeterminate(checked) ? "mixed" : checked,
+		"aria-required": required,
+		"data-state": getState(checked),
+		"data-disabled": disabled ? "" : void 0,
+		disabled,
+		value,
+		...checkboxProps,
+		ref: composedRefs,
+		onKeyDown: composeEventHandlers(onKeyDown, (event) => {
+			if (event.key === "Enter") event.preventDefault();
+		}),
+		onClick: composeEventHandlers(onClick, (event) => {
+			setChecked((prevChecked) => isIndeterminate(prevChecked) ? true : !prevChecked);
+			if (bubbleInput && isFormControl) {
+				hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+				if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+			}
+		})
+	});
+});
+CheckboxTrigger.displayName = TRIGGER_NAME;
+var Checkbox$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeCheckbox, name, checked, defaultChecked, required, disabled, value, onCheckedChange, form, ...checkboxProps } = props;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CheckboxProvider, {
+		__scopeCheckbox,
+		checked,
+		defaultChecked,
+		disabled,
+		required,
+		onCheckedChange,
+		name,
+		form,
+		value,
+		internal_do_not_use_render: ({ isFormControl }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CheckboxTrigger, {
+			...checkboxProps,
+			ref: forwardedRef,
+			__scopeCheckbox
+		}), isFormControl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CheckboxBubbleInput, { __scopeCheckbox })] })
+	});
+});
+Checkbox$1.displayName = CHECKBOX_NAME;
+var INDICATOR_NAME = "CheckboxIndicator";
+var CheckboxIndicator = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeCheckbox, forceMount, ...indicatorProps } = props;
+	const context = useCheckboxContext(INDICATOR_NAME, __scopeCheckbox);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
+		present: forceMount || isIndeterminate(context.checked) || context.checked === true,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+			"data-state": getState(context.checked),
+			"data-disabled": context.disabled ? "" : void 0,
+			...indicatorProps,
+			ref: forwardedRef,
+			style: {
+				pointerEvents: "none",
+				...props.style
+			}
+		})
+	});
+});
+CheckboxIndicator.displayName = INDICATOR_NAME;
+var BUBBLE_INPUT_NAME = "CheckboxBubbleInput";
+var CheckboxBubbleInput = import_react.forwardRef(({ __scopeCheckbox, ...props }, forwardedRef) => {
+	const { control, hasConsumerStoppedPropagationRef, checked, defaultChecked, required, disabled, name, value, form, bubbleInput, setBubbleInput } = useCheckboxContext(BUBBLE_INPUT_NAME, __scopeCheckbox);
+	const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
+	const prevChecked = usePrevious(checked);
+	const controlSize = useSize(control);
+	import_react.useEffect(() => {
+		const input = bubbleInput;
+		if (!input) return;
+		const inputProto = window.HTMLInputElement.prototype;
+		const setChecked = Object.getOwnPropertyDescriptor(inputProto, "checked").set;
+		const bubbles = !hasConsumerStoppedPropagationRef.current;
+		if (prevChecked !== checked && setChecked) {
+			const event = new Event("click", { bubbles });
+			input.indeterminate = isIndeterminate(checked);
+			setChecked.call(input, isIndeterminate(checked) ? false : checked);
+			input.dispatchEvent(event);
+		}
+	}, [
+		bubbleInput,
+		prevChecked,
+		checked,
+		hasConsumerStoppedPropagationRef
+	]);
+	const defaultCheckedRef = import_react.useRef(isIndeterminate(checked) ? false : checked);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.input, {
+		type: "checkbox",
+		"aria-hidden": true,
+		defaultChecked: defaultChecked ?? defaultCheckedRef.current,
+		required,
+		disabled,
+		name,
+		value,
+		form,
+		...props,
+		tabIndex: -1,
+		ref: composedRefs,
+		style: {
+			...props.style,
+			...controlSize,
+			position: "absolute",
+			pointerEvents: "none",
+			opacity: 0,
+			margin: 0,
+			transform: "translateX(-100%)"
+		}
+	});
+});
+CheckboxBubbleInput.displayName = BUBBLE_INPUT_NAME;
+function isFunction$26(value) {
+	return typeof value === "function";
+}
+function isIndeterminate(checked) {
+	return checked === "indeterminate";
+}
+function getState(checked) {
+	return isIndeterminate(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
+}
+var Checkbox = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox$1, {
+	ref,
+	className: cn("peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground", className),
+	...props,
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CheckboxIndicator, {
+		className: cn("flex items-center justify-center text-current"),
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4" })
+	})
+}));
+Checkbox.displayName = Checkbox$1.displayName;
+var MODULES = [
+	{
+		id: "dashboard",
+		label: "Dashboard"
+	},
+	{
+		id: "properties",
+		label: "Properties & Units"
+	},
+	{
+		id: "hotels",
+		label: "Hotels"
+	},
+	{
+		id: "condominiums",
+		label: "Condominiums"
+	},
+	{
+		id: "owners",
+		label: "Owners"
+	},
+	{
+		id: "tenants",
+		label: "Tenants"
+	},
+	{
+		id: "partners",
+		label: "Partners"
+	},
+	{
+		id: "tasks",
+		label: "Tasks & Maintenance"
+	},
+	{
+		id: "financial",
+		label: "Financial"
+	},
+	{
+		id: "reports",
+		label: "Reports"
+	},
+	{
+		id: "calendar",
+		label: "Calendar"
+	},
+	{
+		id: "short_term",
+		label: "Short Term"
+	},
+	{
+		id: "messages",
+		label: "Messages"
+	},
+	{
+		id: "performance",
+		label: "Performance"
+	},
+	{
+		id: "guest_services",
+		label: "Guest Services"
+	},
+	{
+		id: "pos",
+		label: "POS"
+	},
+	{
+		id: "marketing",
+		label: "Marketing"
+	},
+	{
+		id: "workflows",
+		label: "Workflows"
+	},
+	{
+		id: "renewals",
+		label: "Renewals"
+	}
+];
 function Users() {
-	const { users, addUser, updateUser, deleteUser } = (0, import_react.useContext)(AppContext);
+	const { users, addUser, updateUser, deleteUser, currentUser } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
@@ -52161,31 +52467,74 @@ function Users() {
 		email: "",
 		role: ""
 	});
-	const handleAdd = () => {
-		addUser({
-			id: `user-${Date.now()}`,
-			name: form.name || "Novo Usuário",
-			email: form.email,
-			role: form.role || "internal_user",
-			status: "active",
-			isFirstLogin: false
-		});
-		setIsAddOpen(false);
+	const [selectedModules, setSelectedModules] = (0, import_react.useState)([]);
+	const availableRoles = currentUser?.role === "platform_owner" ? [
+		"platform_owner",
+		"software_tenant",
+		"internal_user"
+	] : ["internal_user"];
+	const resetForm = () => {
 		setForm({
 			name: "",
 			email: "",
-			role: ""
+			role: currentUser?.role === "platform_owner" ? "" : "internal_user"
 		});
+		setSelectedModules([]);
+		setEditingRecord(null);
+	};
+	const handleAdd = () => {
+		if (!form.name || !form.email || !form.role) {
+			toast$2({
+				title: "Validation Error",
+				variant: "destructive"
+			});
+			return;
+		}
+		const permissions = form.role === "internal_user" ? selectedModules.map((m$1) => ({
+			resource: m$1,
+			actions: [
+				"view",
+				"create",
+				"edit",
+				"delete"
+			]
+		})) : void 0;
+		const newOrgId = form.role === "software_tenant" ? `org_${Date.now()}` : currentUser?.role !== "platform_owner" ? currentUser.organizationId : void 0;
+		addUser({
+			id: `user-${Date.now()}`,
+			name: form.name,
+			email: form.email,
+			role: form.role,
+			status: "active",
+			isFirstLogin: false,
+			permissions,
+			organizationId: newOrgId
+		});
+		setIsAddOpen(false);
+		resetForm();
 		toast$2({ title: "Usuário incluído com sucesso" });
 	};
 	const handleEdit = () => {
-		if (editingRecord) updateUser({
-			...editingRecord,
-			name: form.name,
-			email: form.email,
-			role: form.role || editingRecord.role
-		});
+		if (editingRecord) {
+			const permissions = form.role === "internal_user" ? selectedModules.map((m$1) => ({
+				resource: m$1,
+				actions: [
+					"view",
+					"create",
+					"edit",
+					"delete"
+				]
+			})) : editingRecord.permissions;
+			updateUser({
+				...editingRecord,
+				name: form.name,
+				email: form.email,
+				role: form.role || editingRecord.role,
+				permissions
+			});
+		}
 		setEditingRecord(null);
+		setIsAddOpen(false);
 		toast$2({ title: "Usuário alterado com sucesso" });
 	};
 	const handleDelete = (id) => {
@@ -52201,41 +52550,106 @@ function Users() {
 				children: t("sidebar.users") || "Usuários"
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 				className: "text-muted-foreground",
-				children: "Manage users and permissions here."
+				children: "Manage your team members and their access permissions."
 			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
 				open: isAddOpen,
-				onOpenChange: setIsAddOpen,
+				onOpenChange: (v) => {
+					setIsAddOpen(v);
+					if (!v) resetForm();
+					else if (currentUser?.role !== "platform_owner") setForm({
+						...form,
+						role: "internal_user"
+					});
+				},
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
 					asChild: true,
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 						className: "bg-trust-blue gap-2 text-white",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
 					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Usuário" }) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-4 py-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							placeholder: "Nome",
-							value: form.name,
-							onChange: (e) => setForm({
-								...form,
-								name: e.target.value
-							})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							placeholder: "Email",
-							value: form.email,
-							onChange: (e) => setForm({
-								...form,
-								email: e.target.value
-							})
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						onClick: handleAdd,
-						children: "Salvar"
-					}) })
-				] })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "max-w-2xl max-h-[90vh] overflow-y-auto",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingRecord ? "Alterar Usuário" : "Incluir Usuário" }) }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4 py-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2 col-span-2 md:col-span-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nome" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										placeholder: "Nome do usuário",
+										value: form.name,
+										onChange: (e) => setForm({
+											...form,
+											name: e.target.value
+										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2 col-span-2 md:col-span-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										type: "email",
+										placeholder: "email@exemplo.com",
+										value: form.email,
+										onChange: (e) => setForm({
+											...form,
+											email: e.target.value
+										})
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2 col-span-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Função (Role)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: form.role,
+										onValueChange: (v) => setForm({
+											...form,
+											role: v
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione a função" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: availableRoles.map((r$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: r$1,
+											children: t(`roles.${r$1}`) || r$1
+										}, r$1)) })]
+									})]
+								}),
+								form.role === "internal_user" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2 col-span-2 mt-4",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+											className: "text-base font-bold",
+											children: "Permissões de Acesso (Módulos)"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "text-xs text-muted-foreground mb-2",
+											children: "Selecione quais abas este membro da equipe poderá acessar e gerenciar."
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "grid grid-cols-1 md:grid-cols-2 gap-3 mt-2 border rounded-md p-4 bg-slate-50 shadow-inner",
+											children: MODULES.map((mod) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-center space-x-2",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
+													id: `mod-${mod.id}`,
+													checked: selectedModules.includes(mod.id),
+													onCheckedChange: (checked) => {
+														if (checked) setSelectedModules([...selectedModules, mod.id]);
+														else setSelectedModules(selectedModules.filter((id) => id !== mod.id));
+													}
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+													htmlFor: `mod-${mod.id}`,
+													className: "text-sm font-normal cursor-pointer",
+													children: mod.label
+												})]
+											}, mod.id))
+										})
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							onClick: editingRecord ? handleEdit : handleAdd,
+							children: "Salvar"
+						}) })
+					]
+				})]
 			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 			className: "border-slate-200 shadow-sm bg-white",
@@ -52263,7 +52677,7 @@ function Users() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: user.email }) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: "outline",
-							children: user.role
+							children: t(`roles.${user.role}`) || user.role
 						}) }),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 							variant: user.status === "active" ? "default" : "secondary",
@@ -52273,49 +52687,20 @@ function Users() {
 							className: "text-right",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex justify-end gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-									open: editingRecord?.id === user.id,
-									onOpenChange: (open) => !open && setEditingRecord(null),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-										asChild: true,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-											variant: "outline",
-											size: "sm",
-											onClick: () => {
-												setEditingRecord(user);
-												setForm({
-													name: user.name,
-													email: user.email,
-													role: user.role
-												});
-											},
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
-										})
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Usuário" }) }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "space-y-4 py-4",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												placeholder: "Nome",
-												value: form.name,
-												onChange: (e) => setForm({
-													...form,
-													name: e.target.value
-												})
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												placeholder: "Email",
-												value: form.email,
-												onChange: (e) => setForm({
-													...form,
-													email: e.target.value
-												})
-											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-											onClick: handleEdit,
-											children: "Salvar"
-										}) })
-									] })]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									variant: "outline",
+									size: "sm",
+									onClick: () => {
+										setEditingRecord(user);
+										setForm({
+											name: user.name,
+											email: user.email,
+											role: user.role
+										});
+										setSelectedModules(user.permissions?.map((p$1) => p$1.resource) || []);
+										setIsAddOpen(true);
+									},
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
 									asChild: true,
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
@@ -53220,7 +53605,7 @@ var require_react_is_development$1 = /* @__PURE__ */ __commonJSMin(((exports) =>
 		var ContextProvider = REACT_PROVIDER_TYPE;
 		var Element$1 = REACT_ELEMENT_TYPE;
 		var ForwardRef = REACT_FORWARD_REF_TYPE;
-		var Fragment$4 = REACT_FRAGMENT_TYPE;
+		var Fragment$5 = REACT_FRAGMENT_TYPE;
 		var Lazy = REACT_LAZY_TYPE$1;
 		var Memo = REACT_MEMO_TYPE;
 		var Portal$6 = REACT_PORTAL_TYPE;
@@ -53284,7 +53669,7 @@ var require_react_is_development$1 = /* @__PURE__ */ __commonJSMin(((exports) =>
 		exports.ContextProvider = ContextProvider;
 		exports.Element = Element$1;
 		exports.ForwardRef = ForwardRef;
-		exports.Fragment = Fragment$4;
+		exports.Fragment = Fragment$5;
 		exports.Lazy = Lazy;
 		exports.Memo = Memo;
 		exports.Portal = Portal$6;
@@ -64904,7 +65289,7 @@ var require_react_is_development = /* @__PURE__ */ __commonJSMin(((exports) => {
 		var ContextProvider = REACT_PROVIDER_TYPE;
 		var Element$1 = REACT_ELEMENT_TYPE;
 		var ForwardRef = REACT_FORWARD_REF_TYPE;
-		var Fragment$4 = REACT_FRAGMENT_TYPE;
+		var Fragment$5 = REACT_FRAGMENT_TYPE;
 		var Lazy = REACT_LAZY_TYPE$1;
 		var Memo = REACT_MEMO_TYPE;
 		var Portal$6 = REACT_PORTAL_TYPE;
@@ -64961,7 +65346,7 @@ var require_react_is_development = /* @__PURE__ */ __commonJSMin(((exports) => {
 		exports.ContextProvider = ContextProvider;
 		exports.Element = Element$1;
 		exports.ForwardRef = ForwardRef;
-		exports.Fragment = Fragment$4;
+		exports.Fragment = Fragment$5;
 		exports.Lazy = Lazy;
 		exports.Memo = Memo;
 		exports.Portal = Portal$6;
@@ -81413,7 +81798,8 @@ function RequirePermission({ children, resource, action = "view" }) {
 	const { t } = useLanguageStore_default();
 	const [hasAlerted, setHasAlerted] = (0, import_react.useState)(false);
 	const isPlatformOwner = currentUser?.role === "platform_owner";
-	const allowed = currentUser ? isPlatformOwner ? true : ["software_tenant"].includes(currentUser.role) ? true : hasPermissionSync(currentUser, resource, action) : false;
+	const isSoftwareTenant = currentUser?.role === "software_tenant";
+	const allowed = currentUser ? isPlatformOwner || isSoftwareTenant ? true : hasPermissionSync(currentUser, resource, action) : false;
 	(0, import_react.useEffect)(() => {
 		if (!isAuthLoading && isAuthenticated && !allowed && !hasAlerted) {
 			if (![
@@ -82026,4 +82412,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-DFCj5EzP.js.map
+//# sourceMappingURL=index-S10J3sHJ.js.map

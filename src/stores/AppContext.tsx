@@ -349,7 +349,6 @@ const getRoleName = (role: UserRole) => {
 const getInitialUser = () => {
   const savedId = localStorage.getItem('app_current_user_id')
 
-  // Need to gather from all possible sources since state is not yet initialized
   const localTenants = localStorage.getItem('app_tenants')
     ? JSON.parse(localStorage.getItem('app_tenants')!)
     : initialTenants
@@ -487,7 +486,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     !!localStorage.getItem('app_current_user_id'),
   )
   const [isAuthLoading, setIsAuthLoading] = useState(true)
-  const [currentUser, setCurrentUserObj] = useState<
+  const [currentUserObj, setCurrentUserObj] = useState<
     User | Owner | Partner | Tenant
   >(getInitialUser())
 
@@ -554,6 +553,124 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     [currency],
   )
 
+  // Data Isolation Helper
+  const filterByOrg = useCallback(
+    <T extends { organizationId?: string }>(items: T[]): T[] => {
+      if (!currentUserObj) return []
+      if (currentUserObj.role === 'platform_owner') return items
+      return items.filter(
+        (item) =>
+          !item.organizationId ||
+          item.organizationId === (currentUserObj as User).organizationId,
+      )
+    },
+    [currentUserObj],
+  )
+
+  const attachOrg = useCallback(
+    <T extends object>(item: T): T => {
+      if (
+        currentUserObj?.role !== 'platform_owner' &&
+        (currentUserObj as User)?.organizationId
+      ) {
+        return {
+          ...item,
+          organizationId: (currentUserObj as User).organizationId,
+        }
+      }
+      return item
+    },
+    [currentUserObj],
+  )
+
+  // Scoped Data
+  const scopedProperties = useMemo(
+    () => filterByOrg(properties),
+    [properties, filterByOrg],
+  )
+  const scopedCondominiums = useMemo(
+    () => filterByOrg(condominiums),
+    [condominiums, filterByOrg],
+  )
+  const scopedHotels = useMemo(() => filterByOrg(hotels), [hotels, filterByOrg])
+  const scopedTowers = useMemo(() => filterByOrg(towers), [towers, filterByOrg])
+  const scopedTasks = useMemo(() => filterByOrg(tasks), [tasks, filterByOrg])
+  const scopedTenants = useMemo(
+    () => filterByOrg(tenants),
+    [tenants, filterByOrg],
+  )
+  const scopedOwners = useMemo(() => filterByOrg(owners), [owners, filterByOrg])
+  const scopedPartners = useMemo(
+    () => filterByOrg(partners),
+    [partners, filterByOrg],
+  )
+  const scopedBookings = useMemo(
+    () => filterByOrg(bookings),
+    [bookings, filterByOrg],
+  )
+  const scopedVisits = useMemo(() => filterByOrg(visits), [visits, filterByOrg])
+  const scopedUsers = useMemo(() => filterByOrg(users), [users, filterByOrg])
+  const scopedAutomationRules = useMemo(
+    () => filterByOrg(automationRules),
+    [automationRules, filterByOrg],
+  )
+  const scopedWorkflows = useMemo(
+    () => filterByOrg(workflows),
+    [workflows, filterByOrg],
+  )
+  const scopedLedgerEntries = useMemo(
+    () => filterByOrg(ledgerEntries),
+    [ledgerEntries, filterByOrg],
+  )
+  const scopedGuestServices = useMemo(
+    () => filterByOrg(guestServices),
+    [guestServices, filterByOrg],
+  )
+  const scopedPosItems = useMemo(
+    () => filterByOrg(posItems),
+    [posItems, filterByOrg],
+  )
+  const scopedPosTransactions = useMemo(
+    () => filterByOrg(posTransactions),
+    [posTransactions, filterByOrg],
+  )
+  const scopedPromotions = useMemo(
+    () => filterByOrg(promotions),
+    [promotions, filterByOrg],
+  )
+  const scopedCampaigns = useMemo(
+    () => filterByOrg(campaigns),
+    [campaigns, filterByOrg],
+  )
+  const scopedFinancials = useMemo(
+    () => ({
+      ...financials,
+      invoices: filterByOrg(financials.invoices),
+      payments: filterByOrg(financials.payments),
+    }),
+    [financials, filterByOrg],
+  )
+
+  const allUsers = useMemo(() => {
+    const combinedList = [...users, ...owners, ...partners, ...tenants]
+    const uniqueUsers: (User | Owner | Partner | Tenant)[] = []
+    const seenIds = new Set<string>()
+
+    for (const item of combinedList) {
+      if (!seenIds.has(item.id)) {
+        seenIds.add(item.id)
+        uniqueUsers.push(item)
+      }
+    }
+
+    return filterByOrg(uniqueUsers)
+  }, [users, owners, partners, tenants, filterByOrg])
+
+  const visibleMessages = useMemo(
+    () => allMessages.filter((m) => m.ownerId === currentUserObj.id),
+    [allMessages, currentUserObj.id],
+  )
+
   const login = (email: string) => {
     const user = allUsers.find(
       (u) => u.email.toLowerCase() === email.toLowerCase(),
@@ -566,10 +683,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
     return false
   }
+
   const logout = () => {
     setIsAuthenticated(false)
     localStorage.removeItem('app_current_user_id')
   }
+
   const setCurrentUser = (id: string) => {
     const u = allUsers.find((u) => u.id === id)
     if (u) {
@@ -577,31 +696,39 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('app_current_user_id', u.id)
     }
   }
-  const addProperty = (p: Property) => setProperties([...properties, p])
+
+  // Mutators wrapped with attachOrg
+  const addProperty = (p: Property) =>
+    setProperties((prev) => [...prev, attachOrg(p)])
   const updateProperty = (p: Property) =>
-    setProperties(properties.map((x) => (x.id === p.id ? p : x)))
+    setProperties((prev) => prev.map((x) => (x.id === p.id ? p : x)))
   const deleteProperty = (id: string) =>
-    setProperties(properties.filter((x) => x.id !== id))
+    setProperties((prev) => prev.filter((x) => x.id !== id))
+
   const addCondominium = (c: Condominium) =>
-    setCondominiums([...condominiums, c])
+    setCondominiums((prev) => [...prev, attachOrg(c)])
   const updateCondominium = (c: Condominium) =>
-    setCondominiums(condominiums.map((x) => (x.id === c.id ? c : x)))
+    setCondominiums((prev) => prev.map((x) => (x.id === c.id ? c : x)))
   const deleteCondominium = (id: string) =>
-    setCondominiums(condominiums.filter((x) => x.id !== id))
-  const addHotel = (h: Hotel) => setHotels([...hotels, h])
+    setCondominiums((prev) => prev.filter((x) => x.id !== id))
+
+  const addHotel = (h: Hotel) => setHotels((prev) => [...prev, attachOrg(h)])
   const updateHotel = (h: Hotel) =>
-    setHotels(hotels.map((x) => (x.id === h.id ? h : x)))
+    setHotels((prev) => prev.map((x) => (x.id === h.id ? h : x)))
   const deleteHotel = (id: string) =>
-    setHotels(hotels.filter((x) => x.id !== id))
-  const addTower = (t: Tower) => setTowers([...towers, t])
+    setHotels((prev) => prev.filter((x) => x.id !== id))
+
+  const addTower = (t: Tower) => setTowers((prev) => [...prev, attachOrg(t)])
   const updateTower = (t: Tower) =>
-    setTowers(towers.map((x) => (x.id === t.id ? t : x)))
+    setTowers((prev) => prev.map((x) => (x.id === t.id ? t : x)))
   const deleteTower = (id: string) =>
-    setTowers(towers.filter((x) => x.id !== id))
-  const addTask = (t: Task) => setTasks([...tasks, t])
+    setTowers((prev) => prev.filter((x) => x.id !== id))
+
+  const addTask = (t: Task) => setTasks((prev) => [...prev, attachOrg(t)])
   const updateTask = (t: Task) =>
-    setTasks(tasks.map((x) => (x.id === t.id ? t : x)))
-  const deleteTask = (id: string) => setTasks(tasks.filter((x) => x.id !== id))
+    setTasks((prev) => prev.map((x) => (x.id === t.id ? t : x)))
+  const deleteTask = (id: string) =>
+    setTasks((prev) => prev.filter((x) => x.id !== id))
 
   const updateTaskStatus = (id: string, status: Task['status']) => {
     setTasks((prev) => {
@@ -641,8 +768,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const rejectTask = (id: string) => updateTaskStatus(id, 'rejected')
+
   const addInvoice = (i: Invoice) =>
-    setFinancials((prev) => ({ ...prev, invoices: [...prev.invoices, i] }))
+    setFinancials((prev) => ({
+      ...prev,
+      invoices: [...prev.invoices, attachOrg(i)],
+    }))
   const updateInvoice = (i: Invoice) =>
     setFinancials((prev) => ({
       ...prev,
@@ -653,49 +784,58 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       ...prev,
       invoices: prev.invoices.filter((x) => x.id !== id),
     }))
+
   const addGuestService = (s: GuestService) =>
-    setGuestServices([...guestServices, s])
+    setGuestServices((prev) => [...prev, attachOrg(s)])
   const updateGuestService = (s: GuestService) =>
-    setGuestServices(guestServices.map((x) => (x.id === s.id ? s : x)))
+    setGuestServices((prev) => prev.map((x) => (x.id === s.id ? s : x)))
   const deleteGuestService = (id: string) =>
-    setGuestServices(guestServices.filter((x) => x.id !== id))
+    setGuestServices((prev) => prev.filter((x) => x.id !== id))
+
   const addServiceOrder = (o: ServiceOrder) =>
-    setServiceOrders([...serviceOrders, o])
-  const addPosItem = (i: PosItem) => setPosItems([...posItems, i])
+    setServiceOrders((prev) => [...prev, attachOrg(o)])
+  const addPosItem = (i: PosItem) =>
+    setPosItems((prev) => [...prev, attachOrg(i)])
   const updatePosItem = (i: PosItem) =>
-    setPosItems(posItems.map((x) => (x.id === i.id ? i : x)))
+    setPosItems((prev) => prev.map((x) => (x.id === i.id ? i : x)))
   const deletePosItem = (id: string) =>
-    setPosItems(posItems.filter((x) => x.id !== id))
+    setPosItems((prev) => prev.filter((x) => x.id !== id))
+
   const addPosTransaction = (t: PosTransaction) =>
-    setPosTransactions([...posTransactions, t])
-  const addPromotion = (p: Promotion) => setPromotions([...promotions, p])
+    setPosTransactions((prev) => [...prev, attachOrg(t)])
+  const addPromotion = (p: Promotion) =>
+    setPromotions((prev) => [...prev, attachOrg(p)])
   const updatePromotion = (p: Promotion) =>
-    setPromotions(promotions.map((x) => (x.id === p.id ? p : x)))
+    setPromotions((prev) => prev.map((x) => (x.id === p.id ? p : x)))
   const deletePromotion = (id: string) =>
-    setPromotions(promotions.filter((x) => x.id !== id))
-  const addCampaign = (c: Campaign) => setCampaigns([...campaigns, c])
+    setPromotions((prev) => prev.filter((x) => x.id !== id))
+
+  const addCampaign = (c: Campaign) =>
+    setCampaigns((prev) => [...prev, attachOrg(c)])
   const updateCampaign = (c: Campaign) =>
-    setCampaigns(campaigns.map((x) => (x.id === c.id ? c : x)))
+    setCampaigns((prev) => prev.map((x) => (x.id === c.id ? c : x)))
   const deleteCampaign = (id: string) =>
-    setCampaigns(campaigns.filter((x) => x.id !== id))
-  const addTenant = (t: Tenant) => setTenants([...tenants, t])
+    setCampaigns((prev) => prev.filter((x) => x.id !== id))
+
+  const addTenant = (t: Tenant) => setTenants((prev) => [...prev, attachOrg(t)])
   const updateTenant = (t: Tenant) =>
-    setTenants(tenants.map((x) => (x.id === t.id ? t : x)))
-  const addOwner = (o: Owner) => setOwners([...owners, o])
+    setTenants((prev) => prev.map((x) => (x.id === t.id ? t : x)))
+  const addOwner = (o: Owner) => setOwners((prev) => [...prev, attachOrg(o)])
   const updateOwner = (o: Owner) =>
-    setOwners(owners.map((x) => (x.id === o.id ? o : x)))
-  const addPartner = (p: Partner) => setPartners([...partners, p])
+    setOwners((prev) => prev.map((x) => (x.id === o.id ? o : x)))
+  const addPartner = (p: Partner) =>
+    setPartners((prev) => [...prev, attachOrg(p)])
   const updatePartner = (p: Partner) =>
-    setPartners(partners.map((x) => (x.id === p.id ? p : x)))
+    setPartners((prev) => prev.map((x) => (x.id === p.id ? p : x)))
   const deletePartner = (id: string) =>
-    setPartners(partners.filter((x) => x.id !== id))
+    setPartners((prev) => prev.filter((x) => x.id !== id))
 
   const addBooking = (b: Booking) => {
-    setBookings((prev) => [...prev, b])
+    setBookings((prev) => [...prev, attachOrg(b)])
 
     setCalendarBlocks((prev) => [
       ...prev,
-      {
+      attachOrg({
         id: `block-auto-${Date.now()}`,
         propertyId: b.propertyId,
         startDate: b.checkIn,
@@ -703,12 +843,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         type: 'external_sync',
         notes: `Booking: ${b.guestName}`,
         source: 'booking',
-      },
+      }),
     ])
 
     setTasks((prev) => [
       ...prev,
-      {
+      attachOrg({
         id: `task-clean-${Date.now()}`,
         title: `Cleaning after checkout - ${b.guestName}`,
         propertyId: b.propertyId,
@@ -719,7 +859,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         date: b.checkOut,
         priority: 'high',
         source: 'automation',
-      },
+      }),
     ])
 
     setTimeout(() => {
@@ -728,25 +868,31 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const updateBooking = (b: Booking) =>
-    setBookings(bookings.map((x) => (x.id === b.id ? b : x)))
+    setBookings((prev) => prev.map((x) => (x.id === b.id ? b : x)))
   const deleteBooking = (id: string) =>
-    setBookings(bookings.filter((x) => x.id !== id))
+    setBookings((prev) => prev.filter((x) => x.id !== id))
+
   const addCalendarBlock = (b: CalendarBlock) =>
-    setCalendarBlocks([...calendarBlocks, b])
+    setCalendarBlocks((prev) => [...prev, attachOrg(b)])
   const deleteCalendarBlock = (id: string) =>
-    setCalendarBlocks(calendarBlocks.filter((x) => x.id !== id))
+    setCalendarBlocks((prev) => prev.filter((x) => x.id !== id))
+
   const addMessageTemplate = (t: MessageTemplate) =>
-    setMessageTemplates([...messageTemplates, t])
+    setMessageTemplates((prev) => [...prev, attachOrg(t)])
   const updateMessageTemplate = (t: MessageTemplate) =>
-    setMessageTemplates(messageTemplates.map((x) => (x.id === t.id ? t : x)))
+    setMessageTemplates((prev) => prev.map((x) => (x.id === t.id ? t : x)))
   const deleteMessageTemplate = (id: string) =>
-    setMessageTemplates(messageTemplates.filter((x) => x.id !== id))
+    setMessageTemplates((prev) => prev.filter((x) => x.id !== id))
+
   const updateAutomationRule = (r: AutomationRule) =>
-    setAutomationRules(automationRules.map((x) => (x.id === r.id ? r : x)))
-  const addUser = (u: User) => setUsers([...users, u])
+    setAutomationRules((prev) => prev.map((x) => (x.id === r.id ? r : x)))
+
+  const addUser = (u: User) => setUsers((prev) => [...prev, attachOrg(u)])
   const updateUser = (u: User) =>
-    setUsers(users.map((x) => (x.id === u.id ? u : x)))
-  const deleteUser = (id: string) => setUsers(users.filter((x) => x.id !== id))
+    setUsers((prev) => prev.map((x) => (x.id === u.id ? u : x)))
+  const deleteUser = (id: string) =>
+    setUsers((prev) => prev.filter((x) => x.id !== id))
+
   const updatePaymentIntegration = (i: PaymentIntegration) =>
     setPaymentIntegrations(
       paymentIntegrations.map((x) => (x.provider === i.provider ? i : x)),
@@ -754,9 +900,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const updateFinancialSettings = (s: FinancialSettings) =>
     setFinancialSettings(s)
   const uploadBankStatement = (s: BankStatement) =>
-    setBankStatements([...bankStatements, s])
+    setBankStatements((prev) => [...prev, s])
+
   const addLedgerEntry = (e: LedgerEntry) =>
-    setLedgerEntries([...ledgerEntries, e])
+    setLedgerEntries((prev) => [...prev, attachOrg(e)])
   const updateLedgerEntry = (e: LedgerEntry) => {
     setLedgerEntries((prev) => {
       const existing = prev.find((x) => x.id === e.id)
@@ -794,44 +941,51 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     })
   }
   const deleteLedgerEntry = (id: string) =>
-    setLedgerEntries(ledgerEntries.filter((x) => x.id !== id))
+    setLedgerEntries((prev) => prev.filter((x) => x.id !== id))
+
   const addAuditLog = (l: any) =>
-    setAuditLogs([
-      ...auditLogs,
-      { ...l, id: Date.now().toString(), timestamp: new Date().toISOString() },
+    setAuditLogs((prev) => [
+      ...prev,
+      attachOrg({
+        ...l,
+        id: Date.now().toString(),
+        timestamp: new Date().toISOString(),
+      }),
     ])
   const addGenericServiceRate = (r: ServiceRate) =>
-    setGenericServiceRates([...genericServiceRates, r])
+    setGenericServiceRates((prev) => [...prev, attachOrg(r)])
   const updateGenericServiceRate = (r: ServiceRate) =>
-    setGenericServiceRates(
-      genericServiceRates.map((x) => (x.id === r.id ? r : x)),
-    )
+    setGenericServiceRates((prev) => prev.map((x) => (x.id === r.id ? r : x)))
   const deleteGenericServiceRate = (id: string) =>
-    setGenericServiceRates(genericServiceRates.filter((x) => x.id !== id))
+    setGenericServiceRates((prev) => prev.filter((x) => x.id !== id))
   const addServiceCategory = (c: ServiceCategory) =>
-    setServiceCategories([...serviceCategories, c])
+    setServiceCategories((prev) => [...prev, attachOrg(c)])
   const updateServiceCategory = (c: ServiceCategory) =>
-    setServiceCategories(serviceCategories.map((x) => (x.id === c.id ? c : x)))
+    setServiceCategories((prev) => prev.map((x) => (x.id === c.id ? c : x)))
   const deleteServiceCategory = (id: string) =>
-    setServiceCategories(serviceCategories.filter((x) => x.id !== id))
+    setServiceCategories((prev) => prev.filter((x) => x.id !== id))
   const addNotification = (n: any) =>
     setNotifications((prev) => [
       ...prev,
-      {
+      attachOrg({
         ...n,
         id: Date.now().toString(),
         timestamp: new Date().toISOString(),
         read: false,
-      },
+      }),
     ])
   const markNotificationAsRead = (id: string) =>
-    setNotifications(
-      notifications.map((x) => (x.id === id ? { ...x, read: true } : x)),
+    setNotifications((prev) =>
+      prev.map((x) => (x.id === id ? { ...x, read: true } : x)),
     )
   const approveUser = (id: string) =>
-    setUsers(users.map((x) => (x.id === id ? { ...x, status: 'active' } : x)))
+    setUsers((prev) =>
+      prev.map((x) => (x.id === id ? { ...x, status: 'active' } : x)),
+    )
   const blockUser = (id: string) =>
-    setUsers(users.map((x) => (x.id === id ? { ...x, status: 'blocked' } : x)))
+    setUsers((prev) =>
+      prev.map((x) => (x.id === id ? { ...x, status: 'blocked' } : x)),
+    )
 
   const renewTenantContract = (
     id: string,
@@ -861,29 +1015,35 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const updateTenantNegotiation = (id: string, d: any) =>
-    setTenants(tenants.map((x) => (x.id === id ? { ...x, ...d } : x)))
+    setTenants((prev) => prev.map((x) => (x.id === id ? { ...x, ...d } : x)))
+
   const addAdvertisement = (a: Advertisement) =>
-    setAdvertisements([...advertisements, a])
+    setAdvertisements((prev) => [...prev, attachOrg(a)])
   const updateAdvertisement = (a: Advertisement) =>
-    setAdvertisements(advertisements.map((x) => (x.id === a.id ? a : x)))
+    setAdvertisements((prev) => prev.map((x) => (x.id === a.id ? a : x)))
   const deleteAdvertisement = (id: string) =>
-    setAdvertisements(advertisements.filter((x) => x.id !== id))
-  const addAdvertiser = (a: Advertiser) => setAdvertisers([...advertisers, a])
+    setAdvertisements((prev) => prev.filter((x) => x.id !== id))
+  const addAdvertiser = (a: Advertiser) =>
+    setAdvertisers((prev) => [...prev, attachOrg(a)])
   const updateAdvertiser = (a: Advertiser) =>
-    setAdvertisements(advertisers.map((x) => (x.id === a.id ? a : x)))
+    setAdvertisers((prev) => prev.map((x) => (x.id === a.id ? a : x)))
   const deleteAdvertiser = (id: string) =>
-    setAdvertisers(advertisers.filter((x) => x.id !== id))
+    setAdvertisers((prev) => prev.filter((x) => x.id !== id))
   const updateAdPricing = (p: AdPricing) => setAdPricingState(p)
-  const addVisit = (v: Visit) => setVisits([...visits, v])
+
+  const addVisit = (v: Visit) => setVisits((prev) => [...prev, attachOrg(v)])
   const updateVisit = (v: Visit) =>
-    setVisits(visits.map((x) => (x.id === v.id ? v : x)))
+    setVisits((prev) => prev.map((x) => (x.id === v.id ? v : x)))
   const deleteVisit = (id: string) =>
-    setVisits(visits.filter((x) => x.id !== id))
-  const addWorkflow = (w: Workflow) => setWorkflows([...workflows, w])
+    setVisits((prev) => prev.filter((x) => x.id !== id))
+
+  const addWorkflow = (w: Workflow) =>
+    setWorkflows((prev) => [...prev, attachOrg(w)])
   const updateWorkflow = (w: Workflow) =>
-    setWorkflows(workflows.map((x) => (x.id === w.id ? w : x)))
+    setWorkflows((prev) => prev.map((x) => (x.id === w.id ? w : x)))
   const deleteWorkflow = (id: string) =>
-    setWorkflows(workflows.filter((x) => x.id !== id))
+    setWorkflows((prev) => prev.filter((x) => x.id !== id))
+
   const runNightAudit = () => {}
   const markPaymentAs = () => {}
   const addTaskImage = () => {}
@@ -904,7 +1064,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 {
                   id: `hist_${Date.now()}`,
                   text,
-                  senderId: currentUser.id,
+                  senderId: currentUserObj.id,
                   timestamp: new Date().toISOString(),
                   read: true,
                 },
@@ -921,50 +1081,29 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const prevStep = () => setCurrentStepIndex(currentStepIndex - 1)
   const openVideo = (url: string) => setActiveVideo(url)
   const closeVideo = () => setActiveVideo(null)
-  const addFeedback = (f: Feedback) => setFeedbacks([...feedbacks, f])
+
+  const addFeedback = (f: Feedback) =>
+    setFeedbacks((prev) => [...prev, attachOrg(f)])
   const updateFeedback = (f: Feedback) =>
-    setFeedbacks(feedbacks.map((x) => (x.id === f.id ? f : x)))
+    setFeedbacks((prev) => prev.map((x) => (x.id === f.id ? f : x)))
   const addChannelMapping = (m: ChannelMapping) =>
-    setChannelMappings([...channelMappings, m])
+    setChannelMappings((prev) => [...prev, attachOrg(m)])
   const updateChannelMapping = (m: ChannelMapping) =>
-    setChannelMappings(channelMappings.map((x) => (x.id === m.id ? m : x)))
+    setChannelMappings((prev) => prev.map((x) => (x.id === m.id ? m : x)))
   const deleteChannelMapping = (id: string) =>
-    setChannelMappings(channelMappings.filter((x) => x.id !== id))
+    setChannelMappings((prev) => prev.filter((x) => x.id !== id))
   const addMarketingWorkflow = (w: MarketingWorkflow) =>
-    setMarketingWorkflows([...marketingWorkflows, w])
+    setMarketingWorkflows((prev) => [...prev, attachOrg(w)])
   const updateMarketingWorkflow = (w: MarketingWorkflow) =>
-    setMarketingWorkflows(
-      marketingWorkflows.map((x) => (x.id === w.id ? w : x)),
-    )
+    setMarketingWorkflows((prev) => prev.map((x) => (x.id === w.id ? w : x)))
   const deleteMarketingWorkflow = (id: string) =>
-    setMarketingWorkflows(marketingWorkflows.filter((x) => x.id !== id))
+    setMarketingWorkflows((prev) => prev.filter((x) => x.id !== id))
   const addEmailTemplate = (t: EmailTemplate) =>
-    setEmailTemplates([...emailTemplates, t])
+    setEmailTemplates((prev) => [...prev, attachOrg(t)])
   const updateEmailTemplate = (t: EmailTemplate) =>
-    setEmailTemplates(emailTemplates.map((x) => (x.id === t.id ? t : x)))
+    setEmailTemplates((prev) => prev.map((x) => (x.id === t.id ? t : x)))
   const deleteEmailTemplate = (id: string) =>
-    setEmailTemplates(emailTemplates.filter((x) => x.id !== id))
-
-  const visibleMessages = useMemo(
-    () => allMessages.filter((m) => m.ownerId === currentUser.id),
-    [allMessages, currentUser.id],
-  )
-
-  // Deduplicate all users list to fix the key replication error.
-  const allUsers = useMemo(() => {
-    const combinedList = [...users, ...owners, ...partners, ...tenants]
-    const uniqueUsers: (User | Owner | Partner | Tenant)[] = []
-    const seenIds = new Set<string>()
-
-    for (const item of combinedList) {
-      if (!seenIds.has(item.id)) {
-        seenIds.add(item.id)
-        uniqueUsers.push(item)
-      }
-    }
-
-    return uniqueUsers
-  }, [users, owners, partners, tenants])
+    setEmailTemplates((prev) => prev.filter((x) => x.id !== id))
 
   const updateRolePermissions = useCallback(
     (role: UserRole, resource: Resource, actions: Action[]) => {
@@ -983,7 +1122,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     async (user: User, resource: Resource, action: Action) => {
       if (!user || !user.role) return false
 
-      // Global bypass for platform_owner
       if (user.role === 'platform_owner') return true
 
       if (user.permissions && user.permissions.length > 0) {
@@ -1008,7 +1146,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     (user: User, resource: Resource, action: Action) => {
       if (!user || !user.role) return false
 
-      // Global bypass for platform_owner
       if (user.role === 'platform_owner') return true
 
       if (user.permissions && user.permissions.length > 0) {
@@ -1081,7 +1218,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
               isBackToBack = true
             }
 
-            const newTask: Task = {
+            const newTask: Task = attachOrg({
               id: `wf_task_${Date.now()}_${workflow.id}_${propertyId}_${index}`,
               title: step.name,
               description:
@@ -1102,8 +1239,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
               assignedRole: assignedRole,
               source: 'automation',
               backToBack: isBackToBack,
-              createdBy: currentUser.id,
-            }
+              createdBy: currentUserObj.id,
+            })
 
             setTasks((prev) => [...prev, newTask])
             tasksCreated++
@@ -1118,12 +1255,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         })
       }
     },
-    [properties, partners, bookings, toast, currentUser.id],
+    [properties, partners, bookings, toast, currentUserObj, attachOrg],
   )
 
   const runWorkflows = useCallback(
     (trigger: string, context?: any) => {
-      const activeWorkflows = workflows.filter(
+      const activeWorkflows = scopedWorkflows.filter(
         (wf) => wf.active && wf.trigger === trigger,
       )
 
@@ -1144,36 +1281,36 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         })
       }
     },
-    [workflows, executeWorkflow],
+    [scopedWorkflows, executeWorkflow],
   )
 
   return (
     <AppContext.Provider
       value={{
-        properties,
-        condominiums,
-        hotels,
-        towers,
-        tasks,
-        financials,
+        properties: scopedProperties,
+        condominiums: scopedCondominiums,
+        hotels: scopedHotels,
+        towers: scopedTowers,
+        tasks: scopedTasks,
+        financials: scopedFinancials,
         messages: visibleMessages,
-        tenants,
-        owners,
-        partners,
-        bookings,
+        tenants: scopedTenants,
+        owners: scopedOwners,
+        partners: scopedPartners,
+        bookings: scopedBookings,
         calendarBlocks,
         messageTemplates,
-        automationRules,
-        workflows,
-        currentUser,
+        automationRules: scopedAutomationRules,
+        workflows: scopedWorkflows,
+        currentUser: currentUserObj,
         allUsers,
-        users,
+        users: scopedUsers,
         isAuthenticated,
         isAuthLoading,
         paymentIntegrations,
         financialSettings,
         bankStatements,
-        ledgerEntries,
+        ledgerEntries: scopedLedgerEntries,
         auditLogs,
         genericServiceRates,
         serviceCategories,
@@ -1185,13 +1322,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         currency,
         typingStatus,
         selectedPropertyId,
-        visits,
+        visits: scopedVisits,
         nightAudits,
-        guestServices,
-        posItems,
-        posTransactions,
-        promotions,
-        campaigns,
+        guestServices: scopedGuestServices,
+        posItems: scopedPosItems,
+        posTransactions: scopedPosTransactions,
+        promotions: scopedPromotions,
+        campaigns: scopedCampaigns,
         serviceOrders,
         feedbacks,
         channelMappings,

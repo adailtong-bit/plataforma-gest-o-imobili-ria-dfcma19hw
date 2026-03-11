@@ -71,14 +71,14 @@ export function RequirePermission({
 
   const [hasAlerted, setHasAlerted] = useState(false)
 
-  // Safely evaluate permissions ensuring currentUser exists, prioritizing platform_owner bypass
+  // Safely evaluate permissions ensuring currentUser exists
   const isPlatformOwner = currentUser?.role === 'platform_owner'
+  const isSoftwareTenant = currentUser?.role === 'software_tenant'
+
   const allowed = currentUser
-    ? isPlatformOwner
+    ? isPlatformOwner || isSoftwareTenant
       ? true
-      : ['software_tenant'].includes((currentUser as User).role)
-        ? true
-        : hasPermissionSync(currentUser as User, resource, action)
+      : hasPermissionSync(currentUser as User, resource, action)
     : false
 
   useEffect(() => {

@@ -91,7 +91,7 @@ export const defaultFinancialSettings: FinancialSettings = {
 export const systemUsers: User[] = [
   {
     id: 'user1',
-    name: 'Admin User',
+    name: 'Platform Admin',
     email: 'admin@corepm.com',
     role: 'platform_owner',
     status: 'active',
@@ -99,11 +99,25 @@ export const systemUsers: User[] = [
   },
   {
     id: 'user2',
-    name: 'Property Manager',
+    name: 'Acme Property Management',
     email: 'pm@corepm.com',
     role: 'software_tenant',
+    organizationId: 'org_acme',
     status: 'active',
     isFirstLogin: false,
+  },
+  {
+    id: 'user3',
+    name: 'Staff Member (Acme)',
+    email: 'staff@corepm.com',
+    role: 'internal_user',
+    organizationId: 'org_acme',
+    status: 'active',
+    isFirstLogin: false,
+    permissions: [
+      { resource: 'properties', actions: ['view', 'create', 'edit', 'delete'] },
+      { resource: 'dashboard', actions: ['view'] },
+    ],
   },
 ]
 
@@ -118,6 +132,7 @@ export const condominiums: Condominium[] = [
     managerName: 'Mike Johnson',
     managerPhone: '+1 555-0192',
     accessCredentials: { gate: '1234', poolCode: '9988' },
+    organizationId: 'org_acme',
   },
 ]
 
@@ -132,12 +147,25 @@ export const hotels: Hotel[] = [
     country: 'US',
     managerName: 'Sarah Resort',
     towers: ['t1', 't2'],
+    organizationId: 'org_acme',
   },
 ]
 
 export const towers: Tower[] = [
-  { id: 't1', hotelId: 'hotel1', name: 'North Tower', floors: 15 },
-  { id: 't2', hotelId: 'hotel1', name: 'South Tower', floors: 12 },
+  {
+    id: 't1',
+    hotelId: 'hotel1',
+    name: 'North Tower',
+    floors: 15,
+    organizationId: 'org_acme',
+  },
+  {
+    id: 't2',
+    hotelId: 'hotel1',
+    name: 'South Tower',
+    floors: 12,
+    organizationId: 'org_acme',
+  },
 ]
 
 export const properties: Property[] = [
@@ -161,6 +189,7 @@ export const properties: Property[] = [
     image: 'https://img.usecurling.com/p/600/400?q=villa',
     listingPrice: 250,
     hoaValue: 400,
+    organizationId: 'org_acme',
   },
   {
     id: 'p2',
@@ -184,6 +213,7 @@ export const properties: Property[] = [
     image: 'https://img.usecurling.com/p/600/400?q=hotel%20room',
     listingPrice: 150,
     hoaValue: 0,
+    organizationId: 'org_acme',
   },
 ]
 
@@ -197,6 +227,7 @@ export const tenants: Tenant[] = [
     role: 'tenant',
     rentValue: 2000,
     leaseEnd: '2024-12-31',
+    organizationId: 'org_acme',
   },
 ]
 
@@ -208,6 +239,7 @@ export const owners: Owner[] = [
     phone: '555-0202',
     status: 'active',
     role: 'property_owner',
+    organizationId: 'org_acme',
   },
 ]
 
@@ -220,6 +252,7 @@ export const partners: Partner[] = [
     phone: '555-0303',
     status: 'active',
     role: 'partner',
+    organizationId: 'org_acme',
   },
 ]
 
@@ -235,6 +268,7 @@ export const tasks: Task[] = [
     assigneeId: 'partner1',
     date: new Date().toISOString(),
     priority: 'high',
+    organizationId: 'org_acme',
   },
 ]
 
@@ -248,6 +282,7 @@ export const ledgerEntries: LedgerEntry[] = [
     amount: 2500,
     description: 'Monthly Rent - Alice',
     status: 'cleared',
+    organizationId: 'org_acme',
   },
 ]
 
@@ -277,6 +312,7 @@ export const messages: Message[] = [
     unread: 0,
     avatar: '',
     history: [],
+    organizationId: 'org_acme',
   },
 ]
 
@@ -310,6 +346,7 @@ export const automationRules: AutomationRule[] = [
     type: 'auto_generate_invoice',
     enabled: true,
     event: 'task_completion',
+    organizationId: 'org_acme',
   },
 ]
 

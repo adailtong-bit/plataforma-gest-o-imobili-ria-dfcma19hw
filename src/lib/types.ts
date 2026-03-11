@@ -72,6 +72,7 @@ export interface GuestService {
   validityStart?: string
   seasonalPrices?: SeasonalPrice[]
   prices?: ItemPrice[]
+  organizationId?: string
 }
 
 export interface ServiceOrder {
@@ -84,6 +85,7 @@ export interface ServiceOrder {
   scheduledFor?: string
   status: 'pending' | 'delivered' | 'cancelled'
   notes?: string
+  organizationId?: string
 }
 
 export interface PosItem {
@@ -94,6 +96,7 @@ export interface PosItem {
   active: boolean
   validityStart?: string
   prices?: ItemPrice[]
+  organizationId?: string
 }
 
 export interface PosTransaction {
@@ -110,6 +113,7 @@ export interface PosTransaction {
   timestamp: string
   status: 'charged' | 'paid' | 'void'
   performedBy?: string
+  organizationId?: string
 }
 
 export interface Promotion {
@@ -128,6 +132,7 @@ export interface Promotion {
   targetId?: string
   scope?: 'global' | 'specific_rooms'
   roomIds?: string[]
+  organizationId?: string
 }
 
 export interface Campaign {
@@ -142,6 +147,7 @@ export interface Campaign {
   imageUrl?: string
   discountValue?: number
   discountType?: 'percentage' | 'fixed_amount'
+  organizationId?: string
 }
 
 export interface Feedback {
@@ -154,6 +160,7 @@ export interface Feedback {
   date: string
   status: 'new' | 'reviewed' | 'addressed'
   response?: string
+  organizationId?: string
 }
 
 export interface ChannelMapping {
@@ -165,6 +172,7 @@ export interface ChannelMapping {
   otaRateId?: string
   status: 'mapped' | 'error' | 'pending'
   lastSync?: string
+  organizationId?: string
 }
 
 export interface MarketingWorkflow {
@@ -174,6 +182,7 @@ export interface MarketingWorkflow {
   offsetTime: number
   templateId: string
   active: boolean
+  organizationId?: string
 }
 
 export interface EmailTemplate {
@@ -181,6 +190,7 @@ export interface EmailTemplate {
   name: string
   subject: string
   body: string
+  organizationId?: string
 }
 
 export interface AlertConfig {
@@ -251,6 +261,7 @@ export interface User {
   name: string
   email: string
   role: UserRole
+  organizationId?: string
   avatar?: string
   phone?: string
   country?: string
@@ -325,6 +336,7 @@ export interface Condominium {
   }
   contacts?: CondoContact[]
   feeHistory?: HoaFeeHistory[]
+  organizationId?: string
 }
 
 export interface HotelContact {
@@ -354,6 +366,7 @@ export interface Hotel {
   amenities?: string[]
   policies?: string[]
   contacts?: HotelContact[]
+  organizationId?: string
 }
 
 export interface Tower {
@@ -362,6 +375,7 @@ export interface Tower {
   name: string
   description?: string
   floors?: number
+  organizationId?: string
 }
 
 export type PropertyStatus =
@@ -633,6 +647,7 @@ export interface Property {
   amenities?: string[]
   channelMappings?: ChannelMapping[]
   contacts?: PropertyContact[]
+  organizationId?: string
 }
 
 export interface Tenant {
@@ -685,6 +700,7 @@ export interface Tenant {
   neighborhood?: string
   city?: string
   state?: string
+  organizationId?: string
 }
 
 export interface Booking {
@@ -716,6 +732,7 @@ export interface Booking {
   checkedOutAt?: string
   guestSignature?: string
   estimatedArrival?: string
+  organizationId?: string
 }
 
 export interface CalendarBlock {
@@ -727,6 +744,7 @@ export interface CalendarBlock {
   notes?: string
   taskId?: string
   source?: string
+  organizationId?: string
 }
 
 export interface MessageTemplate {
@@ -736,6 +754,7 @@ export interface MessageTemplate {
   subject: string
   content: string
   active: boolean
+  organizationId?: string
 }
 
 export interface Owner {
@@ -769,12 +788,14 @@ export interface Owner {
   addressNumber?: string
   complement?: string
   neighborhood?: string
+  organizationId?: string
 }
 
 export interface ServiceCategory {
   id: string
   name: string
   color: string
+  organizationId?: string
 }
 
 export interface ServiceRate {
@@ -793,6 +814,7 @@ export interface ServiceRate {
   description?: string
   teamPayout?: number
   pmCommissionType?: 'fixed' | 'percentage'
+  organizationId?: string
 }
 
 export interface PartnerEmployee {
@@ -853,6 +875,7 @@ export interface Partner {
   addressNumber?: string
   complement?: string
   neighborhood?: string
+  organizationId?: string
 }
 
 export interface Evidence {
@@ -920,6 +943,7 @@ export interface Task {
   createdBy?: string
   history?: TaskHistory[]
   assignedRole?: UserRole
+  organizationId?: string
 }
 
 export type TaskStatus =
@@ -941,6 +965,7 @@ export interface Invoice {
   propertyId?: string
   type?: 'team_to_partner' | 'partner_to_pm' | 'admin_to_pm' | 'generic'
   bookingId?: string
+  organizationId?: string
 }
 
 export interface Payment {
@@ -953,6 +978,7 @@ export interface Payment {
   dueDate: string
   status: 'paid' | 'pending' | 'overdue'
   type: 'rent' | 'deposit' | 'fee'
+  organizationId?: string
 }
 
 export interface LedgerEntry {
@@ -974,6 +1000,7 @@ export interface LedgerEntry {
   isRecurring?: boolean
   recurrenceFrequency?: 'monthly' | 'yearly'
   nextRecurrenceGenerated?: boolean
+  organizationId?: string
 }
 
 export interface AuditLog {
@@ -995,6 +1022,7 @@ export interface AuditLog {
   entity: string
   entityId?: string
   details?: string
+  organizationId?: string
 }
 
 export interface Notification {
@@ -1006,6 +1034,7 @@ export interface Notification {
   type: 'info' | 'warning' | 'success' | 'critical'
   link?: string
   category?: 'financial' | 'maintenance' | 'contract' | 'system'
+  organizationId?: string
 }
 
 export interface Financials {
@@ -1028,6 +1057,7 @@ export interface AutomationRule {
   template?: string
   threshold?: number
   event?: 'task_completion' | 'booking_confirmation'
+  organizationId?: string
 }
 
 export interface WorkflowStep {
@@ -1053,6 +1083,7 @@ export interface Workflow {
   steps: WorkflowStep[]
   active: boolean
   propertyIds?: string[]
+  organizationId?: string
 }
 
 export interface MarketData {
@@ -1081,6 +1112,7 @@ export interface Message {
   avatar: string
   type?: string
   history: ChatMessage[]
+  organizationId?: string
 }
 
 export interface ChatAttachment {
@@ -1190,6 +1222,7 @@ export interface Visit {
   assignedTo?: string
   assignedRole?: string
   reason?: string
+  organizationId?: string
 }
 
 export type TourStep = {
@@ -1222,6 +1255,7 @@ export interface NightAudit {
     checkOuts: number
     noShows: number
   }
+  organizationId?: string
 }
 
 export interface SubscriptionTier {
