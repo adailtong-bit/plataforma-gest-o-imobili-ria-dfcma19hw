@@ -27,6 +27,13 @@ import {
   DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { CurrencyInput } from '@/components/ui/currency-input'
 import { useToast } from '@/hooks/use-toast'
 import { formatCurrency } from '@/lib/utils'
@@ -47,15 +54,26 @@ export function PartnerPricing({
     name: string
     description: string
     partnerValue: number
-    pmValue: number
+    teamPayout: number
+    pmCommissionType: 'fixed' | 'percentage'
+    pmCommissionValue: number
   }>({
     name: '',
     description: '',
     partnerValue: 0,
-    pmValue: 0,
+    teamPayout: 0,
+    pmCommissionType: 'fixed',
+    pmCommissionValue: 0,
   })
 
   const services = partner.serviceRates || []
+
+  const pmValueCalculated =
+    form.pmCommissionType === 'percentage'
+      ? form.partnerValue * (form.pmCommissionValue / 100)
+      : form.pmCommissionValue
+
+  const totalCalculated = form.partnerValue + pmValueCalculated
 
   const handleAddService = () => {
     if (!form.name) return
@@ -65,8 +83,10 @@ export function PartnerPricing({
       serviceName: form.name,
       description: form.description,
       partnerPayment: form.partnerValue,
-      pmValue: form.pmValue,
-      servicePrice: form.partnerValue + form.pmValue,
+      teamPayout: form.teamPayout,
+      pmCommissionType: form.pmCommissionType,
+      pmValue: pmValueCalculated,
+      servicePrice: totalCalculated,
       productPrice: 0,
       validFrom: new Date().toISOString(),
       type: 'specific',
@@ -78,7 +98,14 @@ export function PartnerPricing({
     })
 
     setIsAddOpen(false)
-    setForm({ name: '', description: '', partnerValue: 0, pmValue: 0 })
+    setForm({
+      name: '',
+      description: '',
+      partnerValue: 0,
+      teamPayout: 0,
+      pmCommissionType: 'fixed',
+      pmCommissionValue: 0,
+    })
     toast({ title: 'Success', description: 'Activity added.' })
   }
 
@@ -92,8 +119,10 @@ export function PartnerPricing({
           serviceName: form.name,
           description: form.description,
           partnerPayment: form.partnerValue,
-          pmValue: form.pmValue,
-          servicePrice: form.partnerValue + form.pmValue,
+          teamPayout: form.teamPayout,
+          pmCommissionType: form.pmCommissionType,
+          pmValue: pmValueCalculated,
+          servicePrice: totalCalculated,
         }
       }
       return s
@@ -123,7 +152,12 @@ export function PartnerPricing({
       name: service.serviceName,
       description: service.description || '',
       partnerValue: service.partnerPayment,
-      pmValue: service.pmValue,
+      teamPayout: service.teamPayout || 0,
+      pmCommissionType: service.pmCommissionType || 'fixed',
+      pmCommissionValue:
+        service.pmCommissionType === 'percentage'
+          ? (service.pmValue / service.partnerPayment) * 100 || 0
+          : service.pmValue,
     })
     setIsAddOpen(true)
   }
@@ -134,7 +168,7 @@ export function PartnerPricing({
         <div>
           <CardTitle>Activities & Pricing</CardTitle>
           <CardDescription>
-            Register specific activities and their associated costs.
+            Register specific activities, team payouts, and PM commission rules.
           </CardDescription>
         </div>
         {canEdit && (
@@ -148,7 +182,9 @@ export function PartnerPricing({
                   name: '',
                   description: '',
                   partnerValue: 0,
-                  pmValue: 0,
+                  teamPayout: 0,
+                  pmCommissionType: 'fixed',
+                  pmCommissionValue: 0,
                 })
               }
             }}
@@ -158,7 +194,7 @@ export function PartnerPricing({
                 <Plus className="h-4 w-4" /> Add Activity
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-xl">
               <DialogHeader>
                 <DialogTitle>
                   {editingService ? 'Edit Activity' : 'Add Activity'}
@@ -185,26 +221,76 @@ export function PartnerPricing({
                     }
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 border-t pt-4">
                   <div className="space-y-2">
-                    <Label>Partner Cost (Payout)</Label>
+                    <Label>Base Partner Cost</Label>
                     <CurrencyInput
                       value={form.partnerValue}
                       onChange={(v) => setForm({ ...form, partnerValue: v })}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>PM Markup/Fee</Label>
+                    <Label>Team Member Payout (Info)</Label>
                     <CurrencyInput
-                      value={form.pmValue}
-                      onChange={(v) => setForm({ ...form, pmValue: v })}
+                      value={form.teamPayout}
+                      onChange={(v) => setForm({ ...form, teamPayout: v })}
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label>PM Commission Type</Label>
+                    <Select
+                      value={form.pmCommissionType}
+                      onValueChange={(v) =>
+                        setForm({ ...form, pmCommissionType: v as any })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="fixed">Fixed Amount</SelectItem>
+                        <SelectItem value="percentage">
+                          Percentage (%)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>PM Commission Value</Label>
+                    {form.pmCommissionType === 'fixed' ? (
+                      <CurrencyInput
+                        value={form.pmCommissionValue}
+                        onChange={(v) =>
+                          setForm({ ...form, pmCommissionValue: v })
+                        }
+                      />
+                    ) : (
+                      <Input
+                        type="number"
+                        value={form.pmCommissionValue}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            pmCommissionValue: Number(e.target.value),
+                          })
+                        }
+                        placeholder="%"
+                      />
+                    )}
+                  </div>
                 </div>
-                <div className="pt-2">
-                  <p className="text-sm font-medium text-slate-700">
-                    Total Charged to Owner/Guest:{' '}
-                    {formatCurrency(form.partnerValue + form.pmValue)}
+                <div className="pt-2 bg-slate-50 p-3 rounded-md border mt-2 space-y-1">
+                  <p className="text-sm font-medium text-slate-700 flex justify-between">
+                    <span>Partner Total:</span>
+                    <span>{formatCurrency(form.partnerValue)}</span>
+                  </p>
+                  <p className="text-sm font-medium text-slate-700 flex justify-between">
+                    <span>PM Commission:</span>
+                    <span>{formatCurrency(pmValueCalculated)}</span>
+                  </p>
+                  <p className="text-base font-bold text-slate-900 flex justify-between border-t border-slate-200 pt-2 mt-2">
+                    <span>Total Charged to Owner/Guest:</span>
+                    <span>{formatCurrency(totalCalculated)}</span>
                   </p>
                 </div>
               </div>
@@ -230,9 +316,9 @@ export function PartnerPricing({
           <TableHeader className="bg-slate-50">
             <TableRow>
               <TableHead>Activity Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="text-right">Partner Cost</TableHead>
-              <TableHead className="text-right">PM Markup</TableHead>
+              <TableHead className="text-right">Partner Base</TableHead>
+              <TableHead className="text-right">Team Payout</TableHead>
+              <TableHead className="text-right">PM Commission</TableHead>
               <TableHead className="text-right">Total Price</TableHead>
               {canEdit && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
@@ -242,15 +328,30 @@ export function PartnerPricing({
               <TableRow key={service.id}>
                 <TableCell className="font-medium">
                   {service.serviceName}
-                </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
-                  {service.description || '-'}
+                  {service.description && (
+                    <div className="text-xs text-muted-foreground font-normal">
+                      {service.description}
+                    </div>
+                  )}
                 </TableCell>
                 <TableCell className="text-right font-medium text-amber-600">
                   {formatCurrency(service.partnerPayment)}
                 </TableCell>
+                <TableCell className="text-right text-slate-500">
+                  {formatCurrency(service.teamPayout || 0)}
+                </TableCell>
                 <TableCell className="text-right text-emerald-600">
                   {formatCurrency(service.pmValue)}
+                  {service.pmCommissionType === 'percentage' && (
+                    <span className="text-xs ml-1 text-slate-400">
+                      (
+                      {(
+                        (service.pmValue / service.partnerPayment) *
+                        100
+                      ).toFixed(0)}
+                      %)
+                    </span>
+                  )}
                 </TableCell>
                 <TableCell className="text-right font-bold">
                   {formatCurrency(service.servicePrice)}

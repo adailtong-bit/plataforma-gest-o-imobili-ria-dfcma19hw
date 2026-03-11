@@ -139,6 +139,9 @@ export interface Campaign {
   promotions: string[]
   targetAudience?: 'all' | 'past_guests' | 'leads'
   description?: string
+  imageUrl?: string
+  discountValue?: number
+  discountType?: 'percentage' | 'fixed_amount'
 }
 
 export interface Feedback {
@@ -788,6 +791,8 @@ export interface ServiceRate {
   lastUpdated?: string
   country?: 'US' | 'BR' | 'ES'
   description?: string
+  teamPayout?: number
+  pmCommissionType?: 'fixed' | 'percentage'
 }
 
 export interface PartnerEmployee {

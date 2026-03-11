@@ -32,11 +32,20 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { MarketingAutomation } from '@/components/marketing/MarketingAutomation'
 import { PromotionsManagement } from '@/components/marketing/PromotionsManagement'
+import { Campaign } from '@/lib/types'
 
 export default function Marketing() {
   const { campaigns, addCampaign, updateCampaign, deleteCampaign } =
@@ -45,11 +54,15 @@ export default function Marketing() {
   const { toast } = useToast()
 
   const [isAddOpen, setIsAddOpen] = useState(false)
-  const [editingRecord, setEditingRecord] = useState<any>(null)
+  const [editingRecord, setEditingRecord] = useState<Campaign | null>(null)
   const [form, setForm] = useState({
     name: '',
     targetAudience: '',
     startDate: '',
+    endDate: '',
+    imageUrl: '',
+    discountType: 'percentage',
+    discountValue: '',
   })
 
   const handleAdd = () => {
@@ -58,12 +71,23 @@ export default function Marketing() {
       name: form.name || 'Nova Campanha',
       targetAudience: (form.targetAudience as any) || 'all',
       startDate: form.startDate || new Date().toISOString().split('T')[0],
-      endDate: new Date().toISOString().split('T')[0],
+      endDate: form.endDate || new Date().toISOString().split('T')[0],
       status: 'active',
       promotions: [],
+      imageUrl: form.imageUrl,
+      discountType: form.discountType as any,
+      discountValue: Number(form.discountValue) || 0,
     })
     setIsAddOpen(false)
-    setForm({ name: '', targetAudience: '', startDate: '' })
+    setForm({
+      name: '',
+      targetAudience: '',
+      startDate: '',
+      endDate: '',
+      imageUrl: '',
+      discountType: 'percentage',
+      discountValue: '',
+    })
     toast({ title: 'Campanha incluída com sucesso' })
   }
 
@@ -72,8 +96,13 @@ export default function Marketing() {
       updateCampaign({
         ...editingRecord,
         name: form.name,
-        targetAudience: form.targetAudience || editingRecord.targetAudience,
+        targetAudience:
+          (form.targetAudience as any) || editingRecord.targetAudience,
         startDate: form.startDate,
+        endDate: form.endDate,
+        imageUrl: form.imageUrl,
+        discountType: form.discountType as any,
+        discountValue: Number(form.discountValue) || 0,
       })
     }
     setEditingRecord(null)
@@ -111,31 +140,93 @@ export default function Marketing() {
                   <Plus className="h-4 w-4" /> Incluir Campanha
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>Incluir Campanha</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <Input
-                    placeholder="Nome da Campanha"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  />
-                  <Input
-                    placeholder="Público Alvo"
-                    value={form.targetAudience}
-                    onChange={(e) =>
-                      setForm({ ...form, targetAudience: e.target.value })
-                    }
-                  />
-                  <Input
-                    type="date"
-                    placeholder="Data de Início"
-                    value={form.startDate}
-                    onChange={(e) =>
-                      setForm({ ...form, startDate: e.target.value })
-                    }
-                  />
+                <div className="grid grid-cols-2 gap-4 py-4">
+                  <div className="space-y-2 col-span-2">
+                    <Label>Nome da Campanha</Label>
+                    <Input
+                      placeholder="Ex: Summer Sale"
+                      value={form.name}
+                      onChange={(e) =>
+                        setForm({ ...form, name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Público Alvo</Label>
+                    <Input
+                      placeholder="Ex: all, leads"
+                      value={form.targetAudience}
+                      onChange={(e) =>
+                        setForm({ ...form, targetAudience: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>URL da Imagem (Opcional)</Label>
+                    <Input
+                      placeholder="https://exemplo.com/img.jpg"
+                      value={form.imageUrl}
+                      onChange={(e) =>
+                        setForm({ ...form, imageUrl: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Data de Início</Label>
+                    <Input
+                      type="date"
+                      value={form.startDate}
+                      onChange={(e) =>
+                        setForm({ ...form, startDate: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Data de Fim</Label>
+                    <Input
+                      type="date"
+                      value={form.endDate}
+                      onChange={(e) =>
+                        setForm({ ...form, endDate: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Tipo de Desconto</Label>
+                    <Select
+                      value={form.discountType}
+                      onValueChange={(v) =>
+                        setForm({ ...form, discountType: v })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">
+                          Porcentagem (%)
+                        </SelectItem>
+                        <SelectItem value="fixed_amount">
+                          Valor Fixo ($)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Valor do Desconto</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      value={form.discountValue}
+                      onChange={(e) =>
+                        setForm({ ...form, discountValue: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
                 <DialogFooter>
                   <Button onClick={handleAdd}>Salvar</Button>
@@ -149,10 +240,12 @@ export default function Marketing() {
               <Table>
                 <TableHeader className="bg-slate-50">
                   <TableRow>
+                    <TableHead className="w-16">Img</TableHead>
                     <TableHead>Campaign Name</TableHead>
                     <TableHead>Target Audience</TableHead>
                     <TableHead>Start Date</TableHead>
                     <TableHead>End Date</TableHead>
+                    <TableHead>Discount</TableHead>
                     <TableHead>{t('common.status')}</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
@@ -160,14 +253,41 @@ export default function Marketing() {
                 <TableBody>
                   {campaigns.map((camp) => (
                     <TableRow key={camp.id} className="hover:bg-slate-50">
+                      <TableCell>
+                        {camp.imageUrl ? (
+                          <img
+                            src={camp.imageUrl}
+                            alt="campaign"
+                            className="h-10 w-10 rounded-md object-cover border bg-slate-50"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded-md bg-slate-100 flex items-center justify-center text-[10px] text-slate-400 font-medium">
+                            No Img
+                          </div>
+                        )}
+                      </TableCell>
                       <TableCell className="font-medium text-slate-900">
                         {camp.name}
                       </TableCell>
                       <TableCell className="capitalize">
-                        {camp.targetAudience}
+                        {camp.targetAudience || 'All'}
                       </TableCell>
                       <TableCell>{camp.startDate}</TableCell>
                       <TableCell>{camp.endDate}</TableCell>
+                      <TableCell>
+                        {camp.discountValue && camp.discountValue > 0 ? (
+                          <Badge
+                            variant="outline"
+                            className="bg-green-50 text-green-700"
+                          >
+                            {camp.discountType === 'percentage'
+                              ? `${camp.discountValue}% OFF`
+                              : `$${camp.discountValue} OFF`}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
                       <TableCell>
                         <Badge
                           variant={
@@ -195,45 +315,120 @@ export default function Marketing() {
                                     name: camp.name,
                                     targetAudience: camp.targetAudience || '',
                                     startDate: camp.startDate,
+                                    endDate: camp.endDate,
+                                    imageUrl: camp.imageUrl || '',
+                                    discountType:
+                                      camp.discountType || 'percentage',
+                                    discountValue:
+                                      camp.discountValue?.toString() || '',
                                   })
                                 }}
                               >
                                 <Pencil className="h-4 w-4 mr-2" /> Alterar
                               </Button>
                             </DialogTrigger>
-                            <DialogContent>
+                            <DialogContent className="max-w-2xl">
                               <DialogHeader>
                                 <DialogTitle>Alterar Campanha</DialogTitle>
                               </DialogHeader>
-                              <div className="space-y-4 py-4">
-                                <Input
-                                  placeholder="Nome da Campanha"
-                                  value={form.name}
-                                  onChange={(e) =>
-                                    setForm({ ...form, name: e.target.value })
-                                  }
-                                />
-                                <Input
-                                  placeholder="Público Alvo"
-                                  value={form.targetAudience}
-                                  onChange={(e) =>
-                                    setForm({
-                                      ...form,
-                                      targetAudience: e.target.value,
-                                    })
-                                  }
-                                />
-                                <Input
-                                  type="date"
-                                  placeholder="Data de Início"
-                                  value={form.startDate}
-                                  onChange={(e) =>
-                                    setForm({
-                                      ...form,
-                                      startDate: e.target.value,
-                                    })
-                                  }
-                                />
+                              <div className="grid grid-cols-2 gap-4 py-4">
+                                <div className="space-y-2 col-span-2">
+                                  <Label>Nome da Campanha</Label>
+                                  <Input
+                                    placeholder="Nome da Campanha"
+                                    value={form.name}
+                                    onChange={(e) =>
+                                      setForm({ ...form, name: e.target.value })
+                                    }
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Público Alvo</Label>
+                                  <Input
+                                    placeholder="Público Alvo"
+                                    value={form.targetAudience}
+                                    onChange={(e) =>
+                                      setForm({
+                                        ...form,
+                                        targetAudience: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>URL da Imagem</Label>
+                                  <Input
+                                    placeholder="https://..."
+                                    value={form.imageUrl}
+                                    onChange={(e) =>
+                                      setForm({
+                                        ...form,
+                                        imageUrl: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Data de Início</Label>
+                                  <Input
+                                    type="date"
+                                    value={form.startDate}
+                                    onChange={(e) =>
+                                      setForm({
+                                        ...form,
+                                        startDate: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Data de Fim</Label>
+                                  <Input
+                                    type="date"
+                                    value={form.endDate}
+                                    onChange={(e) =>
+                                      setForm({
+                                        ...form,
+                                        endDate: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Tipo de Desconto</Label>
+                                  <Select
+                                    value={form.discountType}
+                                    onValueChange={(v) =>
+                                      setForm({ ...form, discountType: v })
+                                    }
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="percentage">
+                                        Porcentagem (%)
+                                      </SelectItem>
+                                      <SelectItem value="fixed_amount">
+                                        Valor Fixo ($)
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Valor do Desconto</Label>
+                                  <Input
+                                    type="number"
+                                    placeholder="0"
+                                    value={form.discountValue}
+                                    onChange={(e) =>
+                                      setForm({
+                                        ...form,
+                                        discountValue: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </div>
                               </div>
                               <DialogFooter>
                                 <Button onClick={handleEdit}>Salvar</Button>
@@ -272,7 +467,7 @@ export default function Marketing() {
                   {campaigns.length === 0 && (
                     <TableRow>
                       <TableCell
-                        colSpan={6}
+                        colSpan={8}
                         className="text-center py-6 text-muted-foreground"
                       >
                         {t('common.empty')}

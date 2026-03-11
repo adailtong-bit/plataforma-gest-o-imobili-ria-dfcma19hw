@@ -11,7 +11,14 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Plus, Pencil, Trash2, Eye, MoreHorizontal } from 'lucide-react'
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Eye,
+  MoreHorizontal,
+  CheckCircle2,
+} from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -48,9 +55,11 @@ import { DataMask } from '@/components/DataMask'
 export default function Invoices() {
   const {
     financials,
+    ledgerEntries,
     addInvoice,
     updateInvoice,
     deleteInvoice,
+    updateLedgerEntry,
     formatAppCurrency,
   } = useContext(AppContext)!
   const { t } = useLanguageStore()
@@ -107,6 +116,25 @@ export default function Invoices() {
       toast({ title: t('common.delete_success') })
       setDeleteId(null)
     }
+  }
+
+  const handleMarkAsPaid = (inv: Invoice) => {
+    updateInvoice({ ...inv, status: 'paid' } as Invoice)
+    let updatedCount = 0
+    ledgerEntries.forEach((entry) => {
+      if (entry.referenceId === inv.id && entry.status === 'pending') {
+        updateLedgerEntry({
+          ...entry,
+          status: 'cleared',
+          paymentDate: new Date().toISOString(),
+        })
+        updatedCount++
+      }
+    })
+    toast({
+      title: t('common.success') || 'Success',
+      description: `Invoice paid. ${updatedCount} ledger entries cleared.`,
+    })
   }
 
   return (
@@ -242,6 +270,15 @@ export default function Invoices() {
                         >
                           <Eye className="h-4 w-4 mr-2" /> {t('common.view')}
                         </DropdownMenuItem>
+                        {inv.status !== 'paid' && (
+                          <DropdownMenuItem
+                            onClick={() => handleMarkAsPaid(inv)}
+                            className="text-green-600 focus:text-green-600"
+                          >
+                            <CheckCircle2 className="h-4 w-4 mr-2" /> Mark as
+                            Paid
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem
                           onClick={() => {
                             setEditingRecord(inv)
@@ -252,7 +289,7 @@ export default function Invoices() {
                           <Pencil className="h-4 w-4 mr-2" /> {t('common.edit')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="text-red-600"
+                          className="text-red-600 focus:text-red-600"
                           onClick={() => setDeleteId(inv.id)}
                         >
                           <Trash2 className="h-4 w-4 mr-2" />{' '}

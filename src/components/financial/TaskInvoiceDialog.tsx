@@ -23,7 +23,7 @@ export function TaskInvoiceDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const { addInvoice } = useFinancialStore()
+  const { addInvoice, addLedgerEntry } = useFinancialStore()
   const { currentUser } = useAuthStore()
   const { toast } = useToast()
   const [form, setForm] = useState({ description: '', amount: '' })
@@ -67,16 +67,55 @@ export function TaskInvoiceDialog({
       })
       return
     }
+
+    const invoiceId = `inv-${Date.now()}`
+    const totalAmount = Number(form.amount)
+
+    const partnerAmount = task?.laborCost || 0
+    const pmCommission = totalAmount - partnerAmount
+
+    if (task?.propertyId) {
+      addLedgerEntry({
+        id: `ledg-exp-${Date.now()}`,
+        propertyId: task.propertyId,
+        date: new Date().toISOString(),
+        type: 'expense',
+        category: task.type === 'cleaning' ? 'cleaning' : 'maintenance',
+        amount: totalAmount,
+        description: `Invoice: ${form.description}`,
+        status: 'pending',
+        costType: 'variable',
+        referenceId: invoiceId,
+      } as any)
+
+      if (pmCommission > 0) {
+        addLedgerEntry({
+          id: `ledg-inc-${Date.now()}`,
+          propertyId: 'none',
+          date: new Date().toISOString(),
+          type: 'income',
+          category: 'commission',
+          amount: pmCommission,
+          description: `PM Commission for: ${task.title}`,
+          status: 'pending',
+          costType: 'variable',
+          referenceId: invoiceId,
+        } as any)
+      }
+    }
+
     addInvoice({
-      id: `inv-${Date.now()}`,
+      id: invoiceId,
       description: form.description,
-      amount: Number(form.amount),
+      amount: totalAmount,
       status: 'pending',
       date: new Date().toISOString(),
       propertyId: task?.propertyId,
       bookingId: task?.bookingId,
+      type: 'generic',
     })
-    toast({ title: 'Invoice Generated' })
+
+    toast({ title: 'Invoice Generated and Accounted' })
     onOpenChange(false)
     setForm({ description: '', amount: '' })
   }
@@ -98,19 +137,28 @@ export function TaskInvoiceDialog({
             />
           </div>
           <div className="space-y-2">
-            <Label>Amount</Label>
+            <Label>Total Amount (Charged to Owner)</Label>
             <Input
               type="number"
               value={form.amount}
               onChange={(e) => setForm({ ...form, amount: e.target.value })}
             />
           </div>
+          {task?.laborCost && (
+            <div className="text-xs text-muted-foreground bg-slate-50 p-2 rounded-md border mt-2">
+              <p>Partner Cost: ${task.laborCost}</p>
+              <p>
+                Calculated PM Commission: $
+                {Math.max(0, Number(form.amount) - task.laborCost)}
+              </p>
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave}>Generate</Button>
+          <Button onClick={handleSave}>Generate & Account</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
